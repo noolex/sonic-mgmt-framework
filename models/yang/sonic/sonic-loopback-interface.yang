@@ -9,6 +9,9 @@ module sonic-loopback-interface {
    import sonic-vrf {
         prefix vrf;
     }
+   import sonic-common {
+        prefix cmn;
+    }
 
     organization
         "SONiC";
@@ -19,14 +22,19 @@ module sonic-loopback-interface {
     description
         "SONIC LOOPBACK INTERFACE";
 
-    revision 2019-07-02 {
-        description
-            "Initial revision.";
+    revision 2020-02-15 {
+            description
+                    "Add leafref for ipv6_use_link_local_only.";
     }
 
     revision 2019-12-01 {
         description
             "Add vrf_name for VRF interface binding.";
+    }
+
+    revision 2019-07-02 {
+        description
+            "Initial revision.";
     }
 
     container sonic-loopback-interface {
@@ -54,6 +62,13 @@ module sonic-loopback-interface {
                     type leafref {
                         path "/vrf:sonic-vrf/vrf:VRF/vrf:VRF_LIST/vrf:vrf_name";
                     }
+                }
+
+                leaf ipv6_use_link_local_only {
+                    type cmn:ipv6_mode;
+                    default disable; 
+                    description
+                        "Enable/Disable IPv6 on interface";
                 }
             }
 

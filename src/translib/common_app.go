@@ -240,6 +240,7 @@ func (app *CommonApp) processGet(dbs [db.MaxDB]*db.DB) (GetResponse, error) {
 	    }
 	    if targetObj != nil {
 		    err = ocbinds.Unmarshal(payload, targetObj)
+                    log.Info("----------payload, targetObj----", payload, targetObj)
 		    if err != nil {
 			    log.Error("ocbinds.Unmarshal()  failed. error:", err)
 			    resPayload = payload

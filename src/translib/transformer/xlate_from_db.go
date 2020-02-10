@@ -525,6 +525,7 @@ func yangListDataFill(dbs [db.MaxDB]*db.DB, ygRoot *ygot.GoStruct, uri string, r
 
 	_, ok := xYangSpecMap[xpath]
 	if ok {
+        log.Infof("#### TblXfmr for xpath: %v, %v", xpath, *xYangSpecMap[xpath].xfmrTbl)
 	if xYangSpecMap[xpath].xfmrTbl != nil {
 		xfmrTblFunc := *xYangSpecMap[xpath].xfmrTbl
 		if len(xfmrTblFunc) > 0 {
@@ -574,6 +575,7 @@ func yangListDataFill(dbs [db.MaxDB]*db.DB, ygRoot *ygot.GoStruct, uri string, r
 	for _, tbl = range(tblList) {
 
 		tblData, ok := (*dbDataMap)[cdb][tbl]
+                log.Infof("##########Processing table: %v, tblDataMap: %v", tbl, tblData)
 
 		if ok {
 			var mapSlice []typeMapOfInterface
@@ -622,6 +624,7 @@ func yangListInstanceDataFill(dbs [db.MaxDB]*db.DB, ygRoot *ygot.GoStruct, uri s
 	err = nil
 
 	curKeyMap, curUri, _ := dbKeyToYangDataConvert(uri, requestUri, xpath, dbKey, dbs[cdb].Opts.KeySeparator, txCache)
+        log.Infof("######## dbKey: %v, cur URI: %v curKeyMap:%v", dbKey, curUri, curKeyMap)
 	parentXpath := parentXpathGet(xpath)
 	_, ok := xYangSpecMap[xpath]
 	if ok && len(xYangSpecMap[xpath].xfmrFunc) > 0 {
@@ -640,11 +643,13 @@ func yangListInstanceDataFill(dbs [db.MaxDB]*db.DB, ygRoot *ygot.GoStruct, uri s
 	} else {
 		_, keyFromCurUri, _, _ := xpathKeyExtract(dbs[cdb], ygRoot, GET, curUri, requestUri, nil, txCache)
 		if dbKey == keyFromCurUri || keyFromCurUri == "" {
+                        log.Infof("######## dbKey: %v, keyFromCurUri: %v", dbKey, keyFromCurUri)
 			if dbKey == keyFromCurUri {
 				for k, kv := range curKeyMap {
 					curMap[k] = kv
 				}
 			}
+                        log.Infof("############ CurMap: %v", curMap)
 			curXpath, _ := XfmrRemoveXPATHPredicates(curUri)
 			yangDataFill(dbs, ygRoot, curUri, requestUri, curXpath, dbDataMap, curMap, tbl, dbKey, cdb, validate, txCache)
 		}
