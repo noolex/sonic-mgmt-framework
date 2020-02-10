@@ -38,6 +38,13 @@ module sonic-common {
         }
     }
 
+    typedef ipv6_mode {
+        type enumeration {
+            enum enable;
+            enum disable;
+        }
+    }
+
     container operation {
 	    leaf operation {
 		    type enumeration {
