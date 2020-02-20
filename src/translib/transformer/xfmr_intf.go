@@ -719,7 +719,7 @@ var DbToYang_intf_admin_status_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams
         return result, errors.New("Invalid interface type IntfTypeUnset");
     }
     if IntfTypeVxlan == intfType {
-	    return result, nil	
+	    return result, nil
     }
     intTbl := IntfTypeTblMap[intfType]
 
@@ -762,7 +762,7 @@ var DbToYang_intf_oper_status_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams)
         return result, errors.New("Invalid interface type IntfTypeUnset");
     }
     if IntfTypeVxlan == intfType {
-	    return result, nil	
+	    return result, nil
     }
     intTbl := IntfTypeTblMap[intfType]
     if intfType == IntfTypeMgmt {
@@ -807,7 +807,7 @@ var DbToYang_intf_eth_auto_neg_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams
         return result, errors.New("Invalid interface type IntfTypeUnset");
     }
     if IntfTypeVxlan == intfType {
-	    return result, nil	
+	    return result, nil
     }
     intTbl := IntfTypeTblMap[intfType]
 
@@ -838,7 +838,7 @@ var DbToYang_intf_eth_port_speed_xfmr FieldXfmrDbtoYang = func(inParams XfmrPara
         return result, errors.New("Invalid interface type IntfTypeUnset");
     }
     if IntfTypeVxlan == intfType {
-	    return result, nil	
+	    return result, nil
     }
     
     intTbl := IntfTypeTblMap[intfType]
@@ -1009,11 +1009,17 @@ func validateL3ConfigExists(d *db.DB, ifName *string) error {
 }
 
 /* Validate whether intf exists in DB */
-func validateIntfExists(d *db.DB, intfTs string, intfName string) error {
-    entry, err := d.GetEntry(&db.TableSpec{Name:intfTs}, db.Key{Comp: []string{intfName}})
+func validateIntfExists(d *db.DB, intfTs string, ifName string) error {
+    if len(ifName) == 0 {
+        return errors.New("Length of Interface name is zero")
+    }
+    entry, err := d.GetEntry(&db.TableSpec{Name:intfTs}, db.Key{Comp: []string{ifName}})
     if err != nil || !entry.IsPopulated() {
-        errStr := "Interface does not exist in DB"
-        return errors.New(errStr)
+        errStr := "Invalid Interface:" + ifName
+        if log.V(3) {
+            log.Error(errStr)
+        }
+        return tlerr.InvalidArgsError{Format:errStr}
     }
     return nil
 }
@@ -2277,10 +2283,8 @@ var YangToDb_intf_eth_port_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrP
                     return nil, tlerr.InvalidArgsError{Format: errStr}
                 }
                 /* Check if PortChannel exists */
-                err = validateLagExists(inParams.d, &intTbl.cfgDb.portTN, &lagStr)
+                err = validateIntfExists(inParams.d, intTbl.cfgDb.portTN, lagStr)
                 if err != nil {
-                    errStr := "Invalid PortChannel: " + lagStr
-                    err = tlerr.InvalidArgsError{Format: errStr}
                     return nil, err
                 }
                 /* Check if given iface already part of a PortChannel */
