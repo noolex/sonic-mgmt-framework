@@ -51,6 +51,13 @@ const (
 	OPENCONFIG_ACL_TYPE_L2   = "ACL_L2"
 	OC_ACL_APP_MODULE_NAME   = "/openconfig-acl:acl"
 	OC_ACL_YANG_PATH_PREFIX  = "/device/acl"
+	ACL_RULE_SRC_MAC         = "SRC_MAC"
+	ACL_RULE_DST_MAC         = "DST_MAC"
+	ACL_RULE_ETHER_TYPE      = "ETHER_TYPE"
+	ACL_RULE_PCP             = "PCP"
+	ACL_RULE_DEI             = "DEI"
+	ACL_RULE_ICMP_TYPE       = "ICMP_TYPE"
+	ACL_RULE_ICMP_CODE       = "ICMP_CODE"
 
 	MIN_PRIORITY = 1
 	MAX_PRIORITY = 65536
@@ -332,6 +339,7 @@ func (app *AclApp) processAclGet(dbs [db.MaxDB]*db.DB) error {
 		}
 	}
 
+	// TODO Check and Return Counter Type information
 	targetUriPath, _ := getYangPathFromUri(app.pathInfo.Path)
 	if isSubtreeRequest(app.pathInfo.Template, "/openconfig-acl:acl/acl-sets") {
 		if isSubtreeRequest(app.pathInfo.Template, "/openconfig-acl:acl/acl-sets/acl-set{}{}") {
@@ -357,7 +365,6 @@ func (app *AclApp) processAclGet(dbs [db.MaxDB]*db.DB) error {
 					app.convertInternalToOCAcl(aclKey, acl.AclSets, aclSet)
 				}
 			}
-
 		} else {
 			// Get all Acls and their rules
 			err = app.processCommonToplevelGetPath(dbs, acl, false)
@@ -744,7 +751,7 @@ func (app *AclApp) convertInternalToOCAclRule(aclName string, aclType ocbinds.E_
 func (app *AclApp) convertInternalToOCAclRuleProperties(ruleData db.Value, aclType ocbinds.E_OpenconfigAcl_ACL_TYPE, aclSet *ocbinds.OpenconfigAcl_Acl_AclSets_AclSet, entrySet *ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry) {
 	priority, _ := strconv.ParseInt(ruleData.Get("PRIORITY"), 10, 32)
 	seqId := uint32(MAX_PRIORITY - priority)
-	//ruleDescr := ruleData.Get("RULE_DESCRIPTION")
+	ruleDescr := ruleData.Get("DESCRIPTION")
 
 	if entrySet == nil {
 		if aclSet != nil {
@@ -755,13 +762,9 @@ func (app *AclApp) convertInternalToOCAclRuleProperties(ruleData db.Value, aclTy
 	}
 
 	entrySet.Config.SequenceId = &seqId
-	//entrySet.Config.Description = &ruleDescr
+	entrySet.Config.Description = &ruleDescr
 	entrySet.State.SequenceId = &seqId
-	//entrySet.State.Description = &ruleDescr
-	var num uint64
-	num = 0
-	entrySet.State.MatchedOctets = &num
-	entrySet.State.MatchedPackets = &num
+	entrySet.State.Description = &ruleDescr
 
 	ygot.BuildEmptyTree(entrySet.Transport)
 	ygot.BuildEmptyTree(entrySet.Actions)
@@ -789,6 +792,16 @@ func (app *AclApp) convertInternalToOCAclRuleProperties(ruleData db.Value, aclTy
 				entrySet.Actions.Config.ForwardingAction = ocbinds.OpenconfigAcl_FORWARDING_ACTION_DROP
 				entrySet.Actions.State.ForwardingAction = ocbinds.OpenconfigAcl_FORWARDING_ACTION_DROP
 			}
+		} else if ACL_RULE_ICMP_TYPE == ruleKey {
+			data, _ := strconv.ParseInt(ruleData.Get(ruleKey), 10, 8)
+			dataInt := uint8(data)
+			entrySet.Transport.Config.IcmpType = &dataInt
+			entrySet.Transport.State.IcmpType = &dataInt
+		} else if ACL_RULE_ICMP_CODE == ruleKey {
+			data, _ := strconv.ParseInt(ruleData.Get(ruleKey), 10, 8)
+			dataInt := uint8(data)
+			entrySet.Transport.Config.IcmpCode = &dataInt
+			entrySet.Transport.State.IcmpCode = &dataInt
 		} else if "Packets" == ruleKey {
 			pkts, _ := strconv.ParseUint(ruleData.Get(ruleKey), 10, 64)
 			entrySet.State.MatchedPackets = &pkts
@@ -850,11 +863,44 @@ func (app *AclApp) convertInternalToOCAclRuleProperties(ruleData db.Value, aclTy
 	} else if aclType == ocbinds.OpenconfigAcl_ACL_TYPE_ACL_L2 {
 		ygot.BuildEmptyTree(entrySet.L2)
 		for ruleKey := range ruleData.Field {
-			if "ETHER_TYPE" == ruleKey {
+			if ACL_RULE_ETHER_TYPE == ruleKey {
 				ethType, _ := strconv.ParseUint(strings.Replace(ruleData.Get(ruleKey), "0x", "", -1), 16, 32)
 				ethertype := getL2EtherType(ethType)
 				entrySet.L2.Config.Ethertype, _ = entrySet.L2.Config.To_OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_L2_Config_Ethertype_Union(ethertype)
 				entrySet.L2.State.Ethertype, _ = entrySet.L2.State.To_OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_L2_State_Ethertype_Union(ethertype)
+			} else if ACL_RULE_SRC_MAC == ruleKey {
+				parts := strings.Split(ruleData.Get(ruleKey), "/")
+				entrySet.L2.Config.SourceMac = &parts[0]
+                entrySet.L2.State.SourceMac = &parts[0]
+				if len(parts) > 1 {
+					entrySet.L2.Config.SourceMacMask = &parts[1]
+                    entrySet.L2.State.SourceMacMask = &parts[1]
+				}
+			} else if ACL_RULE_DST_MAC == ruleKey {
+				parts := strings.Split(ruleData.Get(ruleKey), "/")
+				entrySet.L2.Config.DestinationMac = &parts[0]
+                entrySet.L2.State.DestinationMac = &parts[0]
+				if len(parts) > 1 {
+					entrySet.L2.Config.DestinationMacMask = &parts[1]
+                    entrySet.L2.State.DestinationMacMask = &parts[1]
+				}
+			} else if ACL_RULE_PCP == ruleKey {
+				parts := strings.Split(ruleData.Get(ruleKey), "/")
+				pcp, _ := strconv.ParseUint(parts[0], 10, 8)
+				pcpRes := uint8(pcp)
+				entrySet.L2.Config.Pcp = &pcpRes
+                entrySet.L2.State.Pcp = &pcpRes
+				if len(parts) > 1 {
+					pcpMask, _ := strconv.ParseUint(parts[1], 10, 8)
+					pcpMaskRes := uint8(pcpMask)
+					entrySet.L2.Config.PcpMask = &pcpMaskRes
+                    entrySet.L2.State.PcpMask = &pcpMaskRes
+				}
+			} else if ACL_RULE_DEI == ruleKey {
+				dei, _ := strconv.ParseUint(ruleData.Get(ruleKey), 10, 8)
+				deiRes := uint8(dei)
+				entrySet.L2.Config.Dei = &deiRes
+                entrySet.L2.State.Dei = &deiRes
 			}
 		}
 	}
@@ -1319,12 +1365,9 @@ func (app *AclApp) convertOCAclBindingsToInternal() {
 func convertOCAclRuleToInternalAclRule(ruleData db.Value, seqId uint32, aclName string, aclType ocbinds.E_OpenconfigAcl_ACL_TYPE, rule *ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry) {
 	ruleIndex := seqId
 	ruleData.Field["PRIORITY"] = strconv.FormatInt(int64(MAX_PRIORITY-ruleIndex), 10)
-	// Rule Description is not supported in Sonic. So commenting this out.
-	/*
-	   if rule.Config != nil && rule.Config.Description != nil {
-	       ruleData.Field["RULE_DESCRIPTION"] = *rule.Config.Description
-	   }
-	*/
+	if rule.Config != nil && rule.Config.Description != nil {
+		ruleData.Field["DESCRIPTION"] = *rule.Config.Description
+	}
 
 	if ocbinds.OpenconfigAcl_ACL_TYPE_ACL_IPV4 == aclType {
 		convertOCToInternalIPv4(ruleData, aclName, ruleIndex, rule)
@@ -1332,9 +1375,7 @@ func convertOCAclRuleToInternalAclRule(ruleData db.Value, seqId uint32, aclName 
 		convertOCToInternalIPv6(ruleData, aclName, ruleIndex, rule)
 	} else if ocbinds.OpenconfigAcl_ACL_TYPE_ACL_L2 == aclType {
 		convertOCToInternalL2(ruleData, aclName, ruleIndex, rule)
-	} /*else if ocbinds.OpenconfigAcl_ACL_TYPE_ACL_MIXED == aclType {
-	  } */
-
+	}
 	convertOCToInternalTransport(ruleData, aclName, ruleIndex, rule)
 	convertOCToInternalInputInterface(ruleData, aclName, ruleIndex, rule)
 	convertOCToInternalInputAction(ruleData, aclName, ruleIndex, rule)
@@ -1350,14 +1391,36 @@ func convertOCToInternalL2(ruleData db.Value, aclName string, ruleIndex uint32, 
 		switch ethertypeType {
 		case reflect.TypeOf(ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_L2_Config_Ethertype_Union_E_OpenconfigPacketMatchTypes_ETHERTYPE{}):
 			v := (rule.L2.Config.Ethertype).(*ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_L2_Config_Ethertype_Union_E_OpenconfigPacketMatchTypes_ETHERTYPE)
-			//ruleData["ETHER_TYPE"] = v.E_OpenconfigPacketMatchTypes_ETHERTYPE.ΛMap()["E_OpenconfigPacketMatchTypes_ETHERTYPE"][int64(v.E_OpenconfigPacketMatchTypes_ETHERTYPE)].Name
-			fmt.Fprintf(&b, "0x%0.4x", ETHERTYPE_MAP[v.E_OpenconfigPacketMatchTypes_ETHERTYPE])
-			ruleData.Field["ETHER_TYPE"] = b.String()
+			//ruleData[ACL_RULE_ETHER_TYPE] = v.E_OpenconfigPacketMatchTypes_ETHERTYPE.ΛMap()["E_OpenconfigPacketMatchTypes_ETHERTYPE"][int64(v.E_OpenconfigPacketMatchTypes_ETHERTYPE)].Name
+			fmt.Fprintf(&b, "0x%x", ETHERTYPE_MAP[v.E_OpenconfigPacketMatchTypes_ETHERTYPE])
+			ruleData.Field[ACL_RULE_ETHER_TYPE] = b.String()
 		case reflect.TypeOf(ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_L2_Config_Ethertype_Union_Uint16{}):
 			v := (rule.L2.Config.Ethertype).(*ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_L2_Config_Ethertype_Union_Uint16)
-			fmt.Fprintf(&b, "0x%0.4x", v.Uint16)
-			ruleData.Field["ETHER_TYPE"] = b.String()
+			fmt.Fprintf(&b, "0x%x", v.Uint16)
+			ruleData.Field[ACL_RULE_ETHER_TYPE] = b.String()
 		}
+	}
+
+	if rule.L2.Config.SourceMac != nil && rule.L2.Config.SourceMacMask != nil {
+		ruleData.Field[ACL_RULE_SRC_MAC] = *rule.L2.Config.SourceMac + "/" + *rule.L2.Config.SourceMacMask
+	} else if rule.L2.Config.SourceMac != nil {
+		ruleData.Field[ACL_RULE_SRC_MAC] = *rule.L2.Config.SourceMac
+	}
+
+	if rule.L2.Config.DestinationMac != nil && rule.L2.Config.DestinationMacMask != nil {
+		ruleData.Field[ACL_RULE_DST_MAC] = *rule.L2.Config.DestinationMac + "/" + *rule.L2.Config.DestinationMacMask
+	} else if rule.L2.Config.DestinationMac != nil {
+		ruleData.Field[ACL_RULE_DST_MAC] = *rule.L2.Config.DestinationMac
+	}
+
+	if rule.L2.Config.Pcp != nil && rule.L2.Config.PcpMask != nil {
+		ruleData.Field[ACL_RULE_PCP] = strconv.FormatUint(uint64(*rule.L2.Config.Pcp), 10) + "/" + strconv.FormatUint(uint64(*rule.L2.Config.PcpMask), 10) 
+	} else if rule.L2.Config.Pcp != nil {
+		ruleData.Field[ACL_RULE_PCP] = strconv.FormatUint(uint64(*rule.L2.Config.Pcp), 10)
+	}
+
+	if rule.L2.Config.Dei != nil {
+		ruleData.Field[ACL_RULE_DEI] = strconv.FormatUint(uint64(*rule.L2.Config.Dei), 10)
 	}
 }
 
@@ -1477,6 +1540,13 @@ func convertOCToInternalTransport(ruleData db.Value, aclName string, ruleIndex u
 		fmt.Fprintf(&b, "0x%0.2x/0x%0.2x", tcpFlags, tcpFlags)
 		ruleData.Field["TCP_FLAGS"] = b.String()
 	}
+	
+	if rule.Transport.Config.IcmpType != nil {
+		ruleData.Field[ACL_RULE_ICMP_TYPE] = strconv.FormatUint(uint64(*rule.Transport.Config.IcmpType), 10)
+	}
+	if rule.Transport.Config.IcmpCode != nil {
+		ruleData.Field[ACL_RULE_ICMP_CODE] = strconv.FormatUint(uint64(*rule.Transport.Config.IcmpCode), 10)
+	}
 }
 
 func convertOCToInternalInputInterface(ruleData db.Value, aclName string, ruleIndex uint32, rule *ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry) {
@@ -1511,11 +1581,43 @@ func (app *AclApp) handleRuleFieldsDeletion(d *db.DB, aclKey string, ruleKey str
 	if nodeInfo.IsLeaf() {
 		switch nodeInfo.Name {
 		case "description":
-			(&ruleEntry).Remove("RULE_DESCRIPTION")
+			(&ruleEntry).Remove("DESCRIPTION")
 		// L2
 		case "ethertype":
-			(&ruleEntry).Remove("ETHER_TYPE")
-			// IPv4/IPv6
+			(&ruleEntry).Remove(ACL_RULE_ETHER_TYPE)
+		case "source-mac":
+			(&ruleEntry).Remove(ACL_RULE_SRC_MAC)
+		case "source-mac-mask":
+			src_mac := ruleEntry.Get(ACL_RULE_SRC_MAC)
+			if src_mac != "" {
+				parts := strings.Split(src_mac, "/")
+				if len(parts) > 1 {
+					ruleEntry.Set(ACL_RULE_SRC_MAC, parts[0])
+				}
+			}
+		case "destination-mac":
+			(&ruleEntry).Remove(ACL_RULE_DST_MAC)
+		case "destination-mac-mask":
+			dst_mac := ruleEntry.Get(ACL_RULE_DST_MAC)
+			if dst_mac != "" {
+				parts := strings.Split(dst_mac, "/")
+				if len(parts) > 1 {
+					ruleEntry.Set(ACL_RULE_DST_MAC, parts[0])
+				}
+			}
+		case "pcp":
+			(&ruleEntry).Remove(ACL_RULE_PCP)
+		case "pcp-mask":
+			pcp_val :=  ruleEntry.Get(ACL_RULE_PCP)
+			if pcp_val != "" {
+				parts := strings.Split(pcp_val, "/")
+				if len(parts) > 1 {
+					ruleEntry.Set(ACL_RULE_PCP, parts[0])
+				}
+			}
+		case "dei":
+			(&ruleEntry).Remove(ACL_RULE_DEI)
+		// IPv4/IPv6
 		case "source-address":
 			if strings.Contains(app.pathInfo.Path, "ipv4/config") {
 				(&ruleEntry).Remove("SRC_IP")
@@ -1532,17 +1634,21 @@ func (app *AclApp) handleRuleFieldsDeletion(d *db.DB, aclKey string, ruleKey str
 			(&ruleEntry).Remove("DSCP")
 		case "protocol":
 			(&ruleEntry).Remove("IP_PROTOCOL")
-			// transport
+		// transport
 		case "source-port":
 			(&ruleEntry).Remove("L4_SRC_PORT")
 			(&ruleEntry).Remove("L4_SRC_PORT_RANGE")
 		case "destination-port":
 			(&ruleEntry).Remove("L4_DST_PORT")
 			(&ruleEntry).Remove("L4_DST_PORT_RANGE")
-			// actions
+		case "icmp-type":
+			(&ruleEntry).Remove(ACL_RULE_ICMP_TYPE)
+		case "icmp-code":
+			(&ruleEntry).Remove(ACL_RULE_ICMP_CODE)
+		// actions
 		case "forwarding-action":
 			(&ruleEntry).Remove("PACKET_ACTION")
-			//input-interface
+		//input-interface
 		case "interface":
 			(&ruleEntry).Remove("IN_PORTS")
 			//case "subinterface":
@@ -1551,7 +1657,11 @@ func (app *AclApp) handleRuleFieldsDeletion(d *db.DB, aclKey string, ruleKey str
 		targetType := reflect.TypeOf(*app.ygotTarget)
 		switch targetType.Elem().Name() {
 		case "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_L2", "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_L2_Config":
-			(&ruleEntry).Remove("ETHER_TYPE")
+			(&ruleEntry).Remove(ACL_RULE_ETHER_TYPE)
+			(&ruleEntry).Remove(ACL_RULE_SRC_MAC)
+			(&ruleEntry).Remove(ACL_RULE_DST_MAC)
+			(&ruleEntry).Remove(ACL_RULE_PCP)
+			(&ruleEntry).Remove(ACL_RULE_DEI)
 		case "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_Ipv4", "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_Ipv4_Config":
 			(&ruleEntry).Remove("IP_PROTOCOL")
 			(&ruleEntry).Remove("SRC_IP")
@@ -1568,6 +1678,8 @@ func (app *AclApp) handleRuleFieldsDeletion(d *db.DB, aclKey string, ruleKey str
 			(&ruleEntry).Remove("L4_DST_PORT")
 			(&ruleEntry).Remove("L4_DST_PORT_RANGE")
 			(&ruleEntry).Remove("TCP_FLAGS")
+			(&ruleEntry).Remove(ACL_RULE_ICMP_TYPE)
+			(&ruleEntry).Remove(ACL_RULE_ICMP_CODE)
 		case "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_InputInterface", "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_InputInterface_InterfaceRef", "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_InputInterface_InterfaceRef_Config":
 			(&ruleEntry).Remove("IN_PORTS")
 		case "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_Actions", "OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_Actions_Config":
@@ -1738,17 +1850,13 @@ func getIpProtocol(proto int64) interface{} {
 }
 
 func getTransportSrcDestPorts(portVal string, portType string) interface{} {
-	var portRange string = ""
-
-	portNum, err := strconv.Atoi(portVal)
-	if err != nil && strings.Contains(portVal, "-") {
-		portRange = portVal
-	}
-
-	if len(portRange) > 0 {
-		return portRange
-	} else if portNum > 0 {
-		return uint16(portNum)
+    if strings.Contains(portVal, "-") {
+        return strings.Replace(portVal, "-", "..", 1)
+    } else if len(portVal) > 0 {
+        portNum, err := strconv.Atoi(portVal)
+	    if err == nil {
+            return uint16(portNum)
+	    }
 	} else {
 		if "src" == portType {
 			return ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_Transport_Config_SourcePort_ANY
@@ -1756,6 +1864,7 @@ func getTransportSrcDestPorts(portVal string, portType string) interface{} {
 			return ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry_Transport_Config_DestinationPort_ANY
 		}
 	}
+
 	return nil
 }
 

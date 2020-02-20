@@ -1,0 +1,67 @@
+module openconfig-acl-ext {
+
+    yang-version "1";
+
+    namespace "http://openconfig.net/yang/packet-match/extention";
+
+    prefix "oc-acl-ext";
+
+    import openconfig-acl { prefix oc-acl; }
+
+    description
+        "This model describes the packet match extensions.";
+
+    revision 2020-02-08 {
+        description
+            "Initial augment file.";
+    }
+
+    // augment statements
+    grouping ethernet-header-ext-config {
+        leaf pcp {
+            type uint8 {
+                range "0..7";
+            }
+            description "IEEE 802 Priority Code Point";
+        }
+        leaf pcp-mask {
+            type uint8 {
+                range "0..7";
+            }
+            description "IEEE 802 Priority Code Point";
+        }
+        leaf dei {
+            type uint8 {
+                range "0..1";
+            }
+            description "IEEE 802 Drop Eligible Indicator";
+        }
+    }
+
+    grouping "transport-fields-ext-config" {
+        leaf icmp-type {
+            type uint8;
+            description "ICMP or ICMPv6 Type";
+        }
+        leaf icmp-code {
+            type uint8;
+            description "ICMP or ICMPv6 Code";
+        }
+    }
+
+    augment "/oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:l2/oc-acl:config" {
+        uses ethernet-header-ext-config;
+    }
+
+    augment "/oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:l2/oc-acl:state" {
+        uses ethernet-header-ext-config;
+    }
+    
+    augment "/oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:transport/oc-acl:config" {
+        uses transport-fields-ext-config;
+    }
+
+    augment "/oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:transport/oc-acl:state" {
+        uses transport-fields-ext-config;
+    }
+}

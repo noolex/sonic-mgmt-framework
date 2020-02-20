@@ -24,6 +24,8 @@ import pwd
 from six.moves.urllib.parse import quote
 import syslog
 import requests
+from requests.structures import CaseInsensitiveDict
+from requests import request, RequestException
 
 urllib3.disable_warnings()
 
@@ -60,13 +62,11 @@ class ApiClient(object):
                     sess.cert = (cert, key)
 
     def set_headers(self):
-        from requests.structures import CaseInsensitiveDict
         return CaseInsensitiveDict({
             'User-Agent': "CLI"
         })
 
     def request(self, method, path, data=None, headers={}, query=None):
-        from requests import request, RequestException
 
         url = '{0}{1}'.format(self.api_uri, path)
 
@@ -132,7 +132,6 @@ class ApiClient(object):
 
     @staticmethod
     def _make_error_response(errMessage, errType='client', errTag='operation-failed'):
-        import requests
         r = Response(requests.Response())
         r.content = {'ietf-restconf:errors':{ 'error':[ {
             'error-type':errType, 'error-tag':errTag, 'error-message':errMessage }]}}
