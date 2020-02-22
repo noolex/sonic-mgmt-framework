@@ -751,7 +751,6 @@ func (app *AclApp) convertInternalToOCAclRule(aclName string, aclType ocbinds.E_
 func (app *AclApp) convertInternalToOCAclRuleProperties(ruleData db.Value, aclType ocbinds.E_OpenconfigAcl_ACL_TYPE, aclSet *ocbinds.OpenconfigAcl_Acl_AclSets_AclSet, entrySet *ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry) {
 	priority, _ := strconv.ParseInt(ruleData.Get("PRIORITY"), 10, 32)
 	seqId := uint32(MAX_PRIORITY - priority)
-	ruleDescr := ruleData.Get("DESCRIPTION")
 
 	if entrySet == nil {
 		if aclSet != nil {
@@ -762,9 +761,7 @@ func (app *AclApp) convertInternalToOCAclRuleProperties(ruleData db.Value, aclTy
 	}
 
 	entrySet.Config.SequenceId = &seqId
-	entrySet.Config.Description = &ruleDescr
 	entrySet.State.SequenceId = &seqId
-	entrySet.State.Description = &ruleDescr
 
 	ygot.BuildEmptyTree(entrySet.Transport)
 	ygot.BuildEmptyTree(entrySet.Actions)
@@ -809,6 +806,10 @@ func (app *AclApp) convertInternalToOCAclRuleProperties(ruleData db.Value, aclTy
 		} else if "Bytes" == ruleKey {
 			bytes, _ := strconv.ParseUint(ruleData.Get(ruleKey), 10, 64)
 			entrySet.State.MatchedOctets = &bytes
+		} else if "DESCRIPTION" == ruleKey {
+			ruleDescr := ruleData.Get("DESCRIPTION")
+			entrySet.Config.Description = &ruleDescr
+			entrySet.State.Description = &ruleDescr
 		}
 	}
 
@@ -1282,7 +1283,7 @@ func (app *AclApp) convertOCAclsToInternal() {
 						app.aclTableMap[aclKey].Field[ACL_TYPE] = SONIC_ACL_TYPE_L2
 					}
 
-					if aclSet.Config.Description != nil && len(*aclSet.Config.Description) > 0 {
+					if aclSet.Config.Description != nil {
 						app.aclTableMap[aclKey].Field[ACL_DESCRIPTION] = *aclSet.Config.Description
 					}
 				}
