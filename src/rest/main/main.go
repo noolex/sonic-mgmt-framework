@@ -40,12 +40,12 @@ import (
 
 // Command line parameters
 var (
-	port      int    // Server port
-	certFile  string // Server certificate file path
-	keyFile   string // Server private key file path
-	caFile    string // Client CA certificate file path
-	cliCAFile string // CLI client CA certificate file path
-	clientAuth = server.UserAuth{"password": false, "user": false, "cert": false, "jwt": false}
+	port       int    // Server port
+	certFile   string // Server certificate file path
+	keyFile    string // Server private key file path
+	caFile     string // Client CA certificate file path
+	cliCAFile  string // CLI client CA certificate file path
+	clientAuth = server.NewUserAuth()
 )
 
 func init() {
@@ -117,7 +117,8 @@ func main() {
 	server.JwtRefreshInt = time.Duration(30 * time.Second)
 	server.JwtValidInt = time.Duration(3600 * time.Second)
 
-	router := server.NewRouter(clientAuth)
+	rtrConfig := server.RouterConfig{Auth: clientAuth}
+	router := server.NewRouter(&rtrConfig)
 
 	address := fmt.Sprintf(":%d", port)
 
@@ -153,6 +154,10 @@ func main() {
 // server, and will not be used for any other client.
 func spawnUnixListener() {
 	var CLIAuth = server.UserAuth{"password": false, "cert": true, "jwt": true}
+	rtrConfig := server.RouterConfig{
+		Auth: CLIAuth,
+	}
+
 	tlsConfig := tls.Config{
 		ClientAuth:               tls.RequireAndVerifyClientCert,
 		Certificates:             prepareServerCertificate(),
@@ -169,7 +174,7 @@ func spawnUnixListener() {
 	}
 
 	localServer := &http.Server{
-		Handler:   server.NewRouter(CLIAuth),
+		Handler:   server.NewRouter(&rtrConfig),
 		TLSConfig: &tlsConfig,
 	}
 

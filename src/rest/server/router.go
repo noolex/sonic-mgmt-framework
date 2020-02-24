@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"translib"
+
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 )
@@ -51,12 +52,23 @@ type Router struct {
 
 	// optionsHandler is the common handler for OPTIONS requests.
 	optionsHandler http.Handler
+
+	// config for this Router instance
+	config RouterConfig
+}
+
+// RouterConfig holds runtime configurations for a Router instance.
+type RouterConfig struct {
+	// auth holds client authentication modes
+	Auth UserAuth
 }
 
 // ServeHTTP resolves and invokes the handler for http request r.
 // RESTCONF paths are served from the routeTree; rest from mux router.
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := cleanPath(r.URL.EscapedPath())
+	r = setContextValue(r, routerConfigContextKey, &router.config)
+
 	if isServeFromTree(path) {
 		router.serveFromTree(path, r, w)
 	} else {
@@ -138,7 +150,7 @@ type routeNode struct {
 }
 
 // add function registers a REST API info into routeTree.
-func (t *routeTree) add(parentPrefix, path string, rr *routeRegInfo, auth UserAuth) {
+func (t *routeTree) add(parentPrefix, path string, rr *routeRegInfo) {
 	root, next := pathSplit(path)
 	node := (*t)[root]
 	if node == nil {
@@ -158,14 +170,14 @@ func (t *routeTree) add(parentPrefix, path string, rr *routeRegInfo, auth UserAu
 			node.handlers = make(map[string]http.Handler)
 		}
 
-		node.handlers[rr.method] = withMiddleware(rr.handler, rr.name, auth)
+		node.handlers[rr.method] = withMiddleware(rr.handler, rr.name)
 
 	} else {
 		if node.subpaths == nil {
 			node.subpaths = make(routeTree)
 		}
 
-		node.subpaths.add(node.path, next, rr, auth)
+		node.subpaths.add(node.path, next, rr)
 	}
 }
 
@@ -302,13 +314,17 @@ func AddRoute(name, method, pattern string, handler http.HandlerFunc) {
 // NewRouter creates a new http router instance for the REST server.
 // Includes all routes registered via AddRoute API as well as few
 // in-built routes.
-func NewRouter(auth UserAuth) http.Handler {
-	router := newRouter(auth)
+func NewRouter(config *RouterConfig) http.Handler {
+	router := newRouter()
+	if config != nil {
+		router.config = *config
+	}
+
 	return withStat(router)
 }
 
 // newRouter creates a new Router instance from the registered routes.
-func newRouter(auth UserAuth) *Router {
+func newRouter() *Router {
 	var mb muxBuilder
 	mb.init()
 
@@ -316,7 +332,7 @@ func newRouter(auth UserAuth) *Router {
 		rcRoutes:  make(routeTree),
 		muxRoutes: mb.router,
 		optionsHandler: withMiddleware(
-			http.HandlerFunc(commonOptionsHandler), "optionsHandler", auth),
+			http.HandlerFunc(commonOptionsHandler), "optionsHandler"),
 	}
 
 	glog.Infof("Server has %d routes", len(allRoutes))
@@ -324,17 +340,17 @@ func newRouter(auth UserAuth) *Router {
 
 	for _, rr := range allRoutes {
 		if isServeFromTree(rr.path) {
-			router.rcRoutes.add("", rr.path, &rr, auth)
+			router.rcRoutes.add("", rr.path, &rr)
 			rcRouteCount++
 		} else {
-			mb.add(&rr, auth)
+			mb.add(&rr)
 			muxRouteCount++
 		}
 	}
 
 	glog.Infof("Installed %d routes on routeTree and %d on mux", rcRouteCount, muxRouteCount)
 
-	mb.finish(auth)
+	mb.finish()
 	return router
 }
 
@@ -355,23 +371,23 @@ func (mb *muxBuilder) init() {
 }
 
 // add creates a new route in mux router
-func (mb *muxBuilder) add(rr *routeRegInfo, auth UserAuth) {
+func (mb *muxBuilder) add(rr *routeRegInfo) {
 	glog.V(2).Infof("Adding %s, %s %s", rr.name, rr.method, rr.path)
 
 	mb.paths[rr.path] = true
-	h := withMiddleware(rr.handler, rr.name, auth)
+	h := withMiddleware(rr.handler, rr.name)
 	mb.router.Name(rr.name).Methods(rr.method).Path(rr.path).Handler(h)
 }
 
 // finish creates routes for all internal service API handlers in
 // mux router. Should be called after all REST API routes are added.
-func (mb *muxBuilder) finish(auth UserAuth) {
+func (mb *muxBuilder) finish() {
 	router := mb.router
 
 	// Register common OPTIONS handler for every path template
 	// New sub-router is used to avoid extra match during regular APIs
 	sr := router.Methods("OPTIONS").Subrouter()
-	oh := withMiddleware(http.HandlerFunc(commonOptionsHandler), "optionsHandler", auth)
+	oh := withMiddleware(http.HandlerFunc(commonOptionsHandler), "optionsHandler")
 	for p := range mb.paths {
 		sr.Path(p).Handler(oh)
 	}
@@ -385,10 +401,10 @@ func (mb *muxBuilder) finish(auth UserAuth) {
 		Handler(http.RedirectHandler("/ui/index.html", 301))
 
 	//Allow POST for user/pass auth and or GET for cert auth.
-	router.Methods("POST","GET").Path("/authenticate").Handler(
-		withAuthContextMiddleware(http.HandlerFunc(Authenticate), "jwtAuthHandler", auth))
-	router.Methods("POST","GET").Path("/refresh").Handler(
-		withAuthContextMiddleware(http.HandlerFunc(Refresh), "jwtRefreshHandler", auth))	
+	router.Methods("POST", "GET").Path("/authenticate").Handler(
+		withAuthContextMiddleware(http.HandlerFunc(Authenticate), "jwtAuthHandler"))
+	router.Methods("POST", "GET").Path("/refresh").Handler(
+		withAuthContextMiddleware(http.HandlerFunc(Refresh), "jwtRefreshHandler"))
 
 	// To download yang models
 	ydirHandler := http.FileServer(http.Dir(translib.GetYangPath()))
@@ -420,6 +436,13 @@ func GetContextWithRouteInfo(r *http.Request) (*RequestContext, *http.Request) {
 	return rc, r
 }
 
+// getRouterConfig returns the RouterConfig from current HTTP
+// requests's context. Returns nil if the RouterConfig was not set.
+func getRouterConfig(r *http.Request) *RouterConfig {
+	config, _ := getContextValue(r, routerConfigContextKey).(*RouterConfig)
+	return config
+}
+
 // loggingMiddleware returns a handler which times and logs the request.
 // It should be the top handler in the middleware chain.
 func loggingMiddleware(inner http.Handler, name string) http.Handler {
@@ -444,11 +467,8 @@ func loggingMiddleware(inner http.Handler, name string) http.Handler {
 
 // withMiddleware function prepares the default middleware chain for
 // REST APIs.
-func withMiddleware(h http.Handler, name string, auth UserAuth) http.Handler {
-	
-	h = authMiddleware(h, auth)
-	
-
+func withMiddleware(h http.Handler, name string) http.Handler {
+	h = authMiddleware(h)
 	return loggingMiddleware(h, name)
 }
 
@@ -456,14 +476,16 @@ func withMiddleware(h http.Handler, name string, auth UserAuth) http.Handler {
 // authentication and authorization. This middleware will return
 // 401 response if authentication fails and 403 if authorization
 // fails.
-func authMiddleware(inner http.Handler, auth UserAuth) http.Handler {
-	if !auth.Any() {
-		return inner
-	}
-
+func authMiddleware(inner http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		config := getRouterConfig(r)
+		if config == nil || !config.Auth.Any() {
+			inner.ServeHTTP(w, r)
+			return
+		}
+
 		rc, r := GetContext(r)
-		rc.ClientAuth = auth
+		rc.ClientAuth = config.Auth
 		glog.V(2).Infof("Valid Auth Modes: %s", rc.ClientAuth)
 		var err error
 		success := false
@@ -502,11 +524,14 @@ func authMiddleware(inner http.Handler, auth UserAuth) http.Handler {
 
 // withAuthContextMiddleware adds UserAuth to request's context.
 // It implicitly adds loggingMiddleware too. Used by JWT login handlers
-func withAuthContextMiddleware(inner http.Handler, name string, auth UserAuth) http.Handler {
+func withAuthContextMiddleware(inner http.Handler, name string) http.Handler {
 	return loggingMiddleware(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			rc, r := GetContext(r)
-			rc.ClientAuth = auth
+
+			if config := getRouterConfig(r); config != nil {
+				rc.ClientAuth = config.Auth
+			}
 
 			inner.ServeHTTP(w, r)
 		}),
