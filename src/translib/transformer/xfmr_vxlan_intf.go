@@ -1178,6 +1178,16 @@ var YangToDb_vxlan_vni_instance_subtree_xfmr SubTreeXfmrYangToDb = func(inParams
 					mapNameList := strings.Split(dbkey.Get(1), "_")
 					vniNum, _ := strconv.ParseUint(mapNameList[1], 10, 32)
 					vniId = uint32(vniNum)
+					log.Info("mapNameList ==> ", mapNameList)
+					log.Info("niName ==> ", niName)
+					log.Info("vniId ==> ", vniId)
+					if mapNameList[2] == niName {
+						tblKeyStr = vtepName + "|" + "map_" + strconv.Itoa(int(vniId)) + "_" + niName
+						log.Info ("tblKeyStr ==> ", tblKeyStr)
+						valueMap[tblKeyStr] = db.Value{Field: make(map[string]string)}
+						valueMap[tblKeyStr].Field["vlan"] = niName
+						valueMap[tblKeyStr].Field["vni"] = strconv.Itoa(int(vniId))
+					}
 				} else if strings.HasPrefix(niName, "Vrf") {
 					vrfEntry, err := inParams.d.GetEntry(&db.TableSpec{Name: tblName}, db.Key{Comp: []string{niName}})
 					if err != nil {
@@ -1191,6 +1201,18 @@ var YangToDb_vxlan_vni_instance_subtree_xfmr SubTreeXfmrYangToDb = func(inParams
 				}
 			}
 		}
+		
+		if strings.HasPrefix(niName, "Vlan") {
+			if len(valueMap) > 0 {
+				log.Info("vniId ==> deleting ", vniId)
+				res_map[tblName] = valueMap
+				return res_map, err	
+			} else {
+				log.Info("vniId ==> NO delete ", vniId)
+				return nil, err
+			}
+		}
+		 
 	} else {
 		for vniKey, _ := range reqP.vxlanNetInstObj.VxlanVniInstances.VniInstance {
 			vniId = vniKey.VniId
