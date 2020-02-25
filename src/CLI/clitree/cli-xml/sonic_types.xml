@@ -1092,5 +1092,12 @@ limitations under the License.
 	help=""
 	/>
     <!--=======================================================-->
+    <PTYPE
+        name="FLOWGROUP_ID"
+        method="integer"
+        pattern="1..254"
+        help="Drop Monitor flowgroup ID range "
+        />
+    <!--=======================================================-->
 
 </CLISH_MODULE>
