@@ -36,6 +36,12 @@ module openconfig-acl-ext {
             }
             description "IEEE 802 Drop Eligible Indicator";
         }
+        leaf vlanid {
+            type uint16 {
+                range "1..4094";
+            }
+            description "VLAN ID";
+        }
     }
 
     grouping "transport-fields-ext-config" {

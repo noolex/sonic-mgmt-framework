@@ -26,6 +26,8 @@ import ipaddress
 import traceback
 import json
 import cli_log as log
+import os
+import re
 
 
 proto_number_map = OrderedDict([("1", "IP_ICMP"),
@@ -143,12 +145,13 @@ def __create_acl_rule_l2(args):
             body["acl-entry"][0]["l2"]["config"]['dei'] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'vlan':
+            body["acl-entry"][0]["l2"]["config"]['vlanid'] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'remark':
-            descr = " ".join(args[next_item + 1:])
-            if descr.startswith('"') and descr.endswith('"'):
-                descr = descr[1:-1]
-            body["acl-entry"][0]["config"]['description'] = descr
+            full_cmd = os.getenv('USER_COMMAND', None)
+            match = re.search('remark (["]?.*["]?)', full_cmd)
+            if match:
+                body["acl-entry"][0]["config"]['description'] = match.group(1)
             next_item = len(args)
         else:
             ethertype = args[next_item]
@@ -287,6 +290,9 @@ def __create_acl_rule_ipv4_ipv6(args):
             flags_list.append("tcp_{}".format(args[next_item]).upper())
             next_item += 1
         elif args[next_item] == "vlan":
+            body["acl-entry"][0]["l2"] = {}
+            body["acl-entry"][0]["l2"]['config'] = {}
+            body["acl-entry"][0]["l2"]['config']['vlanid'] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'type':
             body["acl-entry"][0]["transport"]["config"]["icmp-type"] = int(args[next_item + 1])
@@ -295,10 +301,10 @@ def __create_acl_rule_ipv4_ipv6(args):
             body["acl-entry"][0]["transport"]["config"]["icmp-code"] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'remark':
-            descr = " ".join(args[next_item + 1:])
-            if descr.startswith('"') and descr.endswith('"'):
-                descr = descr[1:-1]
-            body["acl-entry"][0]["config"]['description'] = descr
+            full_cmd = os.getenv('USER_COMMAND', None)
+            match = re.search('remark (["]?.*["]?)', full_cmd)
+            if match:
+                body["acl-entry"][0]["config"]['description'] = match.group(1)
             next_item = len(args)
         else:
             l4_port_type = "destination-port"
@@ -454,14 +460,13 @@ def handle_get_all_acl_binding_request(args):
 
 
 def set_acl_remark_request(args):
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/config/description', acl_name=args[0], acl_type=args[1])
-    descr = " ".join(args[2:])
-    if descr.startswith('"') and descr.endswith('"'):
-        descr = descr[1:-1]
-
-    body = {"description": descr}
-
-    return acl_client.patch(keypath, body)
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/config/description',
+                      acl_name=args[0], acl_type=args[1])
+    full_cmd = os.getenv('USER_COMMAND', None)
+    match = re.search('remark (["]?.*["]?)', full_cmd)
+    if match:
+        body = {"description": match.group(1)}
+        return acl_client.patch(keypath, body)
 
 
 def __set_acl_rule_remark(args):
@@ -469,17 +474,17 @@ def __set_acl_rule_remark(args):
         '/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/acl-entries/acl-entry={sequence_id}/config/description',
         acl_name=args[0], acl_type=args[1], sequence_id=args[2])
 
-    descr = " ".join(args[4:])
-    if descr.startswith('"') and descr.endswith('"'):
-        descr = descr[1:-1]
+    full_cmd = os.getenv('USER_COMMAND', None)
+    match = re.search('remark (["]?.*["]?)', full_cmd)
+    if match:
+        body = {"description": match.group(1)}
 
-    body = {"description": descr}
-
-    return acl_client.patch(keypath, body)
+        return acl_client.patch(keypath, body)
 
 
 def clear_acl_remark_request(args):
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/config/description', acl_name=args[0], acl_type=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/config/description',
+                      acl_name=args[0], acl_type=args[1])
 
     return acl_client.delete(keypath)
 
@@ -738,6 +743,13 @@ def __parse_acl_entry(data, acl_entry):
     elif 'l2' in acl_entry:
         __convert_l2_rule_to_user_fmt(acl_entry, rule_data)
 
+    try:
+        vlanid = acl_entry['l2']['state']['openconfig-acl-ext:vlanid']
+        rule_data.append('vlan')
+        rule_data.append(vlanid)
+    except KeyError:
+        pass
+
     data[seq_id]['rule_data'] = rule_data
 
 
@@ -749,13 +761,14 @@ def handle_get_acl_details_response(response, args):
             data = OrderedDict()
             if len(args) == 1:
                 log.log_debug('Get details for specific ACL Type {}'.format(args[0]))
+                acl_type = __convert_oc_acl_type_to_user_fmt(args[0])
+                data[acl_type] = OrderedDict()
+
                 for acl_set in resp_content["openconfig-acl:acl-sets"]["acl-set"]:
                     if not acl_set['type'].endswith(args[0]):
                         continue
 
-                    acl_type = __convert_oc_acl_type_to_user_fmt(acl_set['type'])
                     acl_name = acl_set['name']
-                    data[acl_type] = OrderedDict()
                     data[acl_type][acl_name] = OrderedDict()
                     data[acl_type][acl_name]['rules'] = OrderedDict()
 
@@ -794,10 +807,12 @@ def handle_get_acl_details_response(response, args):
     else:
         if response.status_code != 404:
             print(response.error_message())
+        elif len(args) == 2:
+            print('%Error: ACL {} not found'.format(args[1]))
 
 
 def handle_get_all_acl_binding_response(response, args):
-    render_data = dict()
+    render_data = OrderedDict()
     log.log_debug(json.dumps(response.content, indent=4))
     if response.ok():
         resp_content = response.content

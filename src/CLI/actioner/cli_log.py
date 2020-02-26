@@ -18,6 +18,7 @@
 ################################################################################
 
 import syslog
+import inspect
 
 syslog.openlog('sonic-cli')
 __enable_debug = False
@@ -25,23 +26,41 @@ __enable_print = False
 
 
 def log_debug(msg):
+    if not isinstance(msg, basestring):
+        msg = str(msg)
+
     if __enable_debug:
         syslog.syslog(syslog.LOG_DEBUG, msg)
+
     if __enable_print:
-        for line in msg.split('\r\n'):
-            print('DEBUG:: ' + line)
+        caller_frame = inspect.stack()[1][0]
+        frame_info = inspect.getframeinfo(caller_frame)
+        for line in msg.split('\n'):
+            print('[{}:{}] DEBUG:: {}'.format(frame_info.function, frame_info.lineno, line))
 
 
 def log_info(msg):
+    if not isinstance(msg, basestring):
+        msg = str(msg)
+
     syslog.syslog(syslog.LOG_INFO, msg)
+
     if __enable_print:
-        for line in msg.split('\r\n'):
-            print('INFO:: ' + line)
+        caller_frame = inspect.stack()[1][0]
+        frame_info = inspect.getframeinfo(caller_frame)
+        for line in msg.split('\n'):
+            print('[{}:{}] INFO:: {}'.format(frame_info.function, frame_info.lineno, line))
 
 
 def log_error(msg):
+    if not isinstance(msg, basestring):
+        msg = str(msg)
+
     syslog.syslog(syslog.LOG_ERR, msg)
+
     if __enable_print:
-        for line in msg.split('\r\n'):
-            print('ERROR:: ' + line)
+        caller_frame = inspect.stack()[1][0]
+        frame_info = inspect.getframeinfo(caller_frame)
+        for line in msg.split('\n'):
+            print('[{}:{}] ERROR:: {}'.format(frame_info.function, frame_info.lineno, line))
 
