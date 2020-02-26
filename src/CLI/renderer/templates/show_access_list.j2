@@ -1,11 +1,17 @@
 {% for acl_type, acl_type_data in json_output.iteritems() %}
     {% for acl_name, acl_data in acl_type_data.iteritems() %}
         {{- acl_type }} access-list {{ acl_name }}
-        {% for seq_no, acl_entry in acl_data.iteritems() %}
+        {% if 'description' in acl_data %}
+          {{- "  remark" }} {{ acl_data['description'] }}
+        {% endif %}
+        {% for seq_no, acl_entry in acl_data['rules'].iteritems() %}
             {% if 'packets' in acl_entry %}
                 {{- "    seq" }} {{ seq_no }} {{ acl_entry['rule_data']|join(' ') }} ({{ acl_entry['packets'] }} packets) [{{ acl_entry['octets'] }} bytes]
             {% else %}
                 {{- "    seq" }} {{ seq_no }} {{ acl_entry['rule_data']|join(' ') }}
+            {% endif %}
+            {% if 'description' in acl_entry %}
+                {{- "      remark" }} {{ acl_entry['description'] }}
             {% endif %}
         {% endfor %}
     {% endfor %}

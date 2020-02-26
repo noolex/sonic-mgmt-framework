@@ -22,10 +22,11 @@ import collections
 from collections import OrderedDict
 import cli_client as cc
 from scripts.render_cli import show_cli_output
-import syslog
 import ipaddress
 import traceback
 import json
+import cli_log as log
+
 
 proto_number_map = OrderedDict([("1", "IP_ICMP"),
                                 ("icmp", "IP_ICMP"),
@@ -54,22 +55,6 @@ ethertype_rev_map = {val: key for key, val in ethertype_map.items()}
 pcp_rev_map = {val: key for key, val in pcp_map.items()}
 
 acl_client = cc.ApiClient()
-enable_debug = False
-
-if enable_debug:
-    syslog.openlog('sonic-cli')
-
-def log_debug(msg):
-    if enable_debug:
-        syslog.syslog(syslog.LOG_DEBUG, msg)
-
-
-def log_info(msg):
-    syslog.syslog(syslog.LOG_INFO, msg)
-
-
-def log_error(msg):
-    syslog.syslog(syslog.LOG_ERR, msg)
 
 
 def handle_create_acl_request(args):
@@ -81,8 +66,7 @@ def handle_create_acl_request(args):
         "type": args[1],
         "config": {
             "name": args[0],
-            "type": args[1],
-            "description": ""
+            "type": args[1]
         }
     }]
 
@@ -144,15 +128,6 @@ def __create_acl_rule_l2(args):
         print('%Error: Incorrect destination MAC Address')
         return
 
-    if next_item < len(args) and args[next_item] not in ['pcp', 'dei', 'vlan']:
-        ethertype = args[next_item]
-        if ethertype in ethertype_map:
-            body["acl-entry"][0]["l2"]["config"]['ethertype'] = ethertype_map[ethertype]
-        else:
-            ethertype = "0x{:04x}".format(int(args[next_item], base=0))
-            body["acl-entry"][0]["l2"]["config"]['ethertype'] = int(ethertype, base=0)
-        next_item += 1
-
     while next_item < len(args):
         if args[next_item] == 'pcp':
             if args[next_item + 1] in pcp_map:
@@ -168,12 +143,23 @@ def __create_acl_rule_l2(args):
             body["acl-entry"][0]["l2"]["config"]['dei'] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'vlan':
-            pass
+            next_item += 2
+        elif args[next_item] == 'remark':
+            descr = " ".join(args[next_item + 1:])
+            if descr.startswith('"') and descr.endswith('"'):
+                descr = descr[1:-1]
+            body["acl-entry"][0]["config"]['description'] = descr
+            next_item = len(args)
         else:
-            print("%Error: Internal error. Unable to handle argument {}".format(args[next_item]))
-            return
+            ethertype = args[next_item]
+            if ethertype in ethertype_map:
+                body["acl-entry"][0]["l2"]["config"]['ethertype'] = ethertype_map[ethertype]
+            else:
+                ethertype = "0x{:04x}".format(int(args[next_item], base=0))
+                body["acl-entry"][0]["l2"]["config"]['ethertype'] = int(ethertype, base=0)
+            next_item += 1
 
-    log_debug(str(body))
+    log.log_debug(str(body))
     return acl_client.patch(keypath, body)
 
 
@@ -182,7 +168,7 @@ def __create_acl_rule_ipv4_ipv6(args):
                       name=args[0], acl_type=args[1])
 
     forwarding_action = "ACCEPT" if args[3] == 'permit' else 'DROP'
-    log_debug('Forwarding action is {}'.format(forwarding_action))
+    log.log_debug('Forwarding action is {}'.format(forwarding_action))
 
     body = collections.defaultdict()
     if args[1] == 'ACL_IPV4':
@@ -235,7 +221,7 @@ def __create_acl_rule_ipv4_ipv6(args):
     else:
         protocol = int(args[4])
 
-    log_debug('Protocol is {}'.format(protocol))
+    log.log_debug('Protocol is {}'.format(protocol))
     if protocol:
         body["acl-entry"][0][af]["config"]["protocol"] = protocol
 
@@ -253,7 +239,7 @@ def __create_acl_rule_ipv4_ipv6(args):
             return
         next_item += 1
     elif args[5] == 'any':
-        log_debug('No value stored for src ip as any')
+        log.log_debug('No value stored for src ip as any')
     elif '/' in args[5]:
         try:
             if 'ipv4' == af:
@@ -262,11 +248,11 @@ def __create_acl_rule_ipv4_ipv6(args):
                 ipaddress.IPv6Network(args[5].decode('utf-8'))
             body["acl-entry"][0][af]["config"]["source-address"] = args[5]
         except ipaddress.AddressValueError as e:
-            log_error(str(e))
+            log.log_error(str(e))
             print("%Error: Invalid {} prefix {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[5]))
             return
         except ipaddress.NetmaskValueError as e:
-            log_error(str(e))
+            log.log_error(str(e))
             print("%Error: Invalid mask for {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[5]))
             return
     else:
@@ -276,7 +262,7 @@ def __create_acl_rule_ipv4_ipv6(args):
     flags_list = []
     l4_port_type = "source-port"
     while next_item < len(args):
-        log_debug("{} {}".format(next_item, args[next_item]))
+        log.log_debug("{} {}".format(next_item, args[next_item]))
         if args[next_item] == 'eq':
             body["acl-entry"][0]["transport"]["config"][l4_port_type] = int(args[next_item + 1])
             next_item += 2
@@ -308,6 +294,12 @@ def __create_acl_rule_ipv4_ipv6(args):
         elif args[next_item] == 'code':
             body["acl-entry"][0]["transport"]["config"]["icmp-code"] = int(args[next_item + 1])
             next_item += 2
+        elif args[next_item] == 'remark':
+            descr = " ".join(args[next_item + 1:])
+            if descr.startswith('"') and descr.endswith('"'):
+                descr = descr[1:-1]
+            body["acl-entry"][0]["config"]['description'] = descr
+            next_item = len(args)
         else:
             l4_port_type = "destination-port"
             if args[next_item] == 'host':
@@ -332,11 +324,11 @@ def __create_acl_rule_ipv4_ipv6(args):
                         ipaddress.IPv6Network(args[next_item].decode('utf-8'))
                     body["acl-entry"][0][af]["config"]["destination-address"] = args[next_item]
                 except ipaddress.AddressValueError as e:
-                    log_error(str(e))
+                    log.log_error(str(e))
                     print("%Error: Invalid {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item]))
                     return
                 except ipaddress.NetmaskValueError as e:
-                    log_error(str(e))
+                    log.log_error(str(e))
                     print("%Error: Invalid mask for {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item]))
                     return
                 next_item += 1
@@ -347,15 +339,21 @@ def __create_acl_rule_ipv4_ipv6(args):
     if bool(flags_list):
         body["acl-entry"][0]["transport"]["config"]["tcp-flags"] = flags_list
 
-    log_debug(str(body))
+    log.log_debug(str(body))
     return acl_client.patch(keypath, body)
 
 
 def handle_create_acl_rule_request(args):
     if args[1] == 'ACL_L2':
-        return __create_acl_rule_l2(args)
+        if args[3] == 'remark':
+            return __set_acl_rule_remark(args)
+        else:
+            return __create_acl_rule_l2(args)
     if args[1] == 'ACL_IPV4' or args[1] == 'ACL_IPV6':
-        return __create_acl_rule_ipv4_ipv6(args)
+        if args[3] == 'remark':
+            return __set_acl_rule_remark(args)
+        else:
+            return __create_acl_rule_ipv4_ipv6(args)
 
 
 def handle_delete_acl_request(args):
@@ -365,9 +363,14 @@ def handle_delete_acl_request(args):
 
 
 def handle_delete_acl_rule_request(args):
-    keypath = cc.Path(
-        '/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries/acl-entry={sequence_id}',
-        name=args[0], acl_type=args[1], sequence_id=args[2])
+    if len(args) == 3:
+        keypath = cc.Path(
+            '/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries/acl-entry={sequence_id}',
+            name=args[0], acl_type=args[1], sequence_id=args[2])
+    else:
+        keypath = cc.Path(
+            '/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries/acl-entry={sequence_id}/config/description',
+            name=args[0], acl_type=args[1], sequence_id=args[2])
     return acl_client.delete(keypath)
 
 
@@ -417,10 +420,12 @@ def handle_bind_acl_request(args):
                             "set-name": args[0],
                             "type": args[1]
                         }
-                    }]}
+                    }
+                ]
+            }
         }]}
 
-    log_debug(str(body))
+    log.log_debug(str(body))
     return acl_client.patch(keypath, body)
 
 
@@ -438,7 +443,7 @@ def handle_get_acl_details_request(args):
     if len(args) == 1:
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets')
     else:
-        keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries',
+        keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}',
                           name=args[1], acl_type=args[0])
     return acl_client.get(keypath)
 
@@ -446,6 +451,45 @@ def handle_get_acl_details_request(args):
 def handle_get_all_acl_binding_request(args):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces')
     return acl_client.get(keypath)
+
+
+def set_acl_remark_request(args):
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/config/description', acl_name=args[0], acl_type=args[1])
+    descr = " ".join(args[2:])
+    if descr.startswith('"') and descr.endswith('"'):
+        descr = descr[1:-1]
+
+    body = {"description": descr}
+
+    return acl_client.patch(keypath, body)
+
+
+def __set_acl_rule_remark(args):
+    keypath = cc.Path(
+        '/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/acl-entries/acl-entry={sequence_id}/config/description',
+        acl_name=args[0], acl_type=args[1], sequence_id=args[2])
+
+    descr = " ".join(args[4:])
+    if descr.startswith('"') and descr.endswith('"'):
+        descr = descr[1:-1]
+
+    body = {"description": descr}
+
+    return acl_client.patch(keypath, body)
+
+
+def clear_acl_remark_request(args):
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/config/description', acl_name=args[0], acl_type=args[1])
+
+    return acl_client.delete(keypath)
+
+
+def __clear_acl_rule_remark(args):
+    keypath = cc.Path(
+        '/restconf/data/openconfig-acl:acl/acl-sets/acl-set={acl_name},{acl_type}/acl-entries/acl-entry={sequence_id}/config/description',
+        acl_name=args[0], acl_type=args[1], sequence_id=args[2])
+
+    return acl_client.delete(keypath)
 
 
 def handle_generic_set_response(response, args):
@@ -477,12 +521,12 @@ def handle_generic_delete_response(response, args):
             else:
                 print(response.error_message())
         except Exception as e:
-            log_error(str(e))
+            log.log_error(str(e))
             print(response.error_message())
 
 
 def __convert_ip_protocol_to_user_fmt(proto):
-    log_debug(proto)
+    log.log_debug(proto)
     if isinstance(proto, basestring):
         proto = proto.replace('openconfig-packet-match-types:', '')
 
@@ -630,7 +674,7 @@ def __convert_mac_addr_to_user_fmt(acl_entry, rule_data, field):
         rule_data.append('any')
 
 
-def __convert_l2_rule_to_user_fmt (acl_entry, rule_data):
+def __convert_l2_rule_to_user_fmt(acl_entry, rule_data):
     __convert_mac_addr_to_user_fmt(acl_entry, rule_data, 'source-mac')
     __convert_mac_addr_to_user_fmt(acl_entry, rule_data, 'destination-mac')
 
@@ -676,6 +720,11 @@ def __parse_acl_entry(data, acl_entry):
     except KeyError:
         pass
 
+    try:
+        data[seq_id]['description'] = acl_entry['state']['description']
+    except KeyError:
+        pass
+
     rule_data = list()
     if 'openconfig-acl:ACCEPT' == acl_entry['actions']['state']["forwarding-action"]:
         rule_data.append('permit')
@@ -695,37 +744,52 @@ def __parse_acl_entry(data, acl_entry):
 def handle_get_acl_details_response(response, args):
     if response.ok():
         resp_content = response.content
-        log_debug(json.dumps(resp_content))
+        log.log_debug(json.dumps(resp_content, indent=4))
         if bool(resp_content):
-            data = dict()
+            data = OrderedDict()
             if len(args) == 1:
-                log_debug('Get details for specific ACL Type {}'.format(args[0]))
+                log.log_debug('Get details for specific ACL Type {}'.format(args[0]))
                 for acl_set in resp_content["openconfig-acl:acl-sets"]["acl-set"]:
                     if not acl_set['type'].endswith(args[0]):
                         continue
 
                     acl_type = __convert_oc_acl_type_to_user_fmt(acl_set['type'])
                     acl_name = acl_set['name']
-                    data[acl_type] = dict()
-                    data[acl_type][acl_name] = dict()
+                    data[acl_type] = OrderedDict()
+                    data[acl_type][acl_name] = OrderedDict()
+                    data[acl_type][acl_name]['rules'] = OrderedDict()
+
+                    try:
+                        data[acl_type][acl_name]['description'] = acl_set['state']['description']
+                    except KeyError:
+                        pass
+
                     try:
                         for acl_entry in acl_set['acl-entries']['acl-entry']:
-                            __parse_acl_entry(data[acl_type][acl_name], acl_entry)
+                            __parse_acl_entry(data[acl_type][acl_name]['rules'], acl_entry)
                     except KeyError:
                         pass
             else:
-                log_debug('Get details for ACL Type {}::{}'.format(args[0], args[1]))
+                log.log_debug('Get details for ACL Type {}::{}'.format(args[0], args[1]))
                 acl_type = __convert_oc_acl_type_to_user_fmt(args[0])
                 acl_name = args[1]
-                data[acl_type] = dict()
-                data[acl_type][acl_name] = dict()
+                data[acl_type] = OrderedDict()
+                data[acl_type][acl_name] = OrderedDict()
+                data[acl_type][acl_name]['rules'] = OrderedDict()
+
+                acl_set = resp_content['openconfig-acl:acl-set'][0]
                 try:
-                    for acl_entry in resp_content['openconfig-acl:acl-entries']['acl-entry']:
-                        __parse_acl_entry(data[acl_type][acl_name], acl_entry)
+                    data[acl_type][acl_name]['description'] = acl_set['state']['description']
                 except KeyError:
                     pass
 
-            log_debug(str(data))
+                try:
+                    for acl_entry in acl_set['acl-entries']['acl-entry']:
+                        __parse_acl_entry(data[acl_type][acl_name]['rules'], acl_entry)
+                except KeyError:
+                    pass
+
+            log.log_debug(str(data))
             show_cli_output('show_access_list.j2', data)
     else:
         if response.status_code != 404:
@@ -734,7 +798,7 @@ def handle_get_acl_details_response(response, args):
 
 def handle_get_all_acl_binding_response(response, args):
     render_data = dict()
-    log_debug(json.dumps(response.content, indent=4))
+    log.log_debug(json.dumps(response.content, indent=4))
     if response.ok():
         resp_content = response.content
         if bool(resp_content):
@@ -755,7 +819,7 @@ def handle_get_all_acl_binding_response(response, args):
                                                                                "IPv6", in_acl_data["set-name"]]))
 
             # TODO Sort the data in the order Eth->Po->Vlan->Switch
-            log_debug(str(render_data))
+            log.log_debug(str(render_data))
             show_cli_output('show_access_group.j2', render_data)
     else:
         if response.status_code != 404:
@@ -770,7 +834,9 @@ request_handlers = {
     'bind_acl': handle_bind_acl_request,
     'unbind_acl': handle_unbind_acl_request,
     'get_acl_details': handle_get_acl_details_request,
-    'get_all_acl_binding': handle_get_all_acl_binding_request
+    'get_all_acl_binding': handle_get_all_acl_binding_request,
+    'set_acl_remark': set_acl_remark_request,
+    'clear_acl_remark': clear_acl_remark_request
 }
 
 response_handlers = {
@@ -781,18 +847,20 @@ response_handlers = {
     'bind_acl': handle_generic_set_response,
     'unbind_acl': handle_generic_delete_response,
     'get_acl_details': handle_get_acl_details_response,
-    'get_all_acl_binding': handle_get_all_acl_binding_response
+    'get_all_acl_binding': handle_get_all_acl_binding_response,
+    'set_acl_remark': handle_generic_set_response,
+    'clear_acl_remark': handle_generic_delete_response
 }
 
 
 def run(op_str, args):
     try:
-        log_debug(str(args))
+        log.log_debug(str(args))
         resp = request_handlers[op_str](args)
         if resp:
             response_handlers[op_str](resp, args)
     except Exception as e:
-        log_error(traceback.format_exc())
+        log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))
     return
 

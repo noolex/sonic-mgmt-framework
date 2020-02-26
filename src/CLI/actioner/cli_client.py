@@ -26,6 +26,8 @@ import syslog
 import requests
 from requests.structures import CaseInsensitiveDict
 from requests import request, RequestException
+from collections import OrderedDict
+
 
 urllib3.disable_warnings()
 
@@ -163,7 +165,7 @@ class Response(object):
             if response.content is None or len(response.content) == 0:
                 self.content = None
             elif _has_json_content(response):
-                self.content = json.loads(response.content)
+                self.content = json.loads(response.content, object_pairs_hook=OrderedDict)
         except ValueError:
             # TODO Can we set status_code to 5XX in this case???
             # Json parsing can fail only if server returned bad json

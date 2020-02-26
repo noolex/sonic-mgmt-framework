@@ -115,20 +115,12 @@ limitations under the License.
         <!-- Inheritance -->
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
-
-        <COMMAND name="no seq" help="Sequence number">
-            <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl_rule ${name} ACL_L2 ${seq-no}</ACTION>
-        </COMMAND>
+        <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_L2"/>
 
         <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
-                <PARAM name="action-options" help="" ptype="SUBCOMMAND" mode="switch">
-                    <PARAM name="deny" help="Drop traffic in data plane" ptype="SUBCOMMAND" mode="subcommand"/>
-                    <PARAM name="permit" help="Allow traffic in control and data plane" ptype="SUBCOMMAND"  mode="subcommand"/>
-                </PARAM>
-                <PARAM name="src-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch">
+                <MACRO name="ACL-ACTION-OPTIONS"/>
+                <PARAM name="src-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
                     <PARAM name="src-mac-addr-mask" help="Source MAC address and mask" ptype="ACL_MAC_ADDR_MASK"/>
                     <PARAM name="src-mac-any" help="Any source MAC address" ptype="SUBCOMMAND" mode="subcommand"  value="any"/>
                     <PARAM name="src-mac-host" help="source MAC address" ptype="SUBCOMMAND" mode="subcommand"  value="host">
@@ -136,7 +128,7 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
 
-                <PARAM name="dst-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="dst-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
                     <PARAM name="dst-mac-addr-mask" help="Destination MAC address and mask" ptype="ACL_MAC_ADDR_MASK"/>
                     <PARAM name="dst-mac-any" help="Any destination MAC address" ptype="SUBCOMMAND" mode="subcommand" value="any"/>
                     <PARAM name="dst-mac-host" help="Destination MAC address" ptype="SUBCOMMAND" mode="subcommand" value="host">
@@ -144,14 +136,14 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
 
-                <PARAM name="ethertype" help="Match packets using Ethertype value" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
+                <PARAM name="ethertype" help="Match packets using Ethertype value" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='"${action-options}" != "remark"'>
                     <PARAM name="ethertype-ip" help="IPv4 ethertype (0x800)" ptype="SUBCOMMAND" mode="subcommand" value="ip"/>
                     <PARAM name="ethertype-ipv6" help="IPv6 ethertype (0x86dd)" ptype="SUBCOMMAND" mode="subcommand" value="ipv6"/>
                     <PARAM name="ethertype-arp" help="ARP ethertype (0x806)" ptype="SUBCOMMAND" mode="subcommand" value="arp"/>
                     <PARAM name="ETHERTYPE" help="Ethertype value (0x600-0xffff)" ptype="ETHERTYPE_VALUE"/>
                 </PARAM>
 
-                <PARAM name="pcp" help="Match packets using PCP value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                <PARAM name="pcp" help="Match packets using PCP value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
                     <PARAM name="pcp-options" help="" ptype="SUBCOMMAND" mode="switch">
                         <PARAM name="pcp-val" help="PCP value. (VALUE or MASK in range 0-7)" ptype="PCP_VALUE_MASK"/>
                         <PARAM name="pcp-be" help="Best effort (0)" ptype="SUBCOMMAND" mode="subcommand" value="be"/>
@@ -165,7 +157,7 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
 
-                <PARAM name="dei" help="Match packets using DEI value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                <PARAM name="dei" help="Match packets using DEI value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
                     <PARAM name="dei-val" help="DEI value (range 0-1)" ptype="DEI_VALUE"/>
                 </PARAM>
 
@@ -179,12 +171,7 @@ limitations under the License.
         <!-- Inheritance -->
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
-
-        <COMMAND name="no seq" help="Sequence number">
-            <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl_rule ${name} ACL_IPV4 ${seq-no}</ACTION>
-        </COMMAND>
+        <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV4"/>
 
         <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
@@ -207,12 +194,7 @@ limitations under the License.
         <!-- Inheritance -->
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
-
-        <COMMAND name="no seq" help="Sequence number">
-            <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl_rule ${name} ACL_IPV6 ${seq-no}</ACTION>
-        </COMMAND>
+        <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV6"/>
 
         <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
