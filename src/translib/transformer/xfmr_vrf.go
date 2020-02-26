@@ -198,6 +198,34 @@ func isIntfBindToOtherVrf(intf_tbl_name string, intf_name string, nwInst_name st
         }
 }
 
+func ValidateIntfNotL3ConfigedOtherThanVrf(d *db.DB, tblName string, intfName string) error {
+        var err error
+        log.Info ("ValidateIntfNotL3ConfigedOtherThanVrf: table %v, intf %v", tblName, intfName)
+
+        ipKeys, err := doGetIntfIpKeys(d, tblName, intfName)
+        if (err == nil && len(ipKeys) > 0) {
+            errStr := "Interface: " + intfName + " configured with IP address"
+            log.Info("ValidateIntfNotL3ConfigedOtherThanVrf: ", errStr);
+            err = tlerr.InvalidArgsError{Format: errStr}
+        }
+        if err != nil {
+            return err
+        }
+
+        IntfMap, _ := d.GetMapAll(&db.TableSpec{Name:tblName+"|"+intfName})
+        for key, _ := range IntfMap.Field {
+            if (key == "NULL" || key == "vrf_name") {
+                continue
+            } else {
+                errStr := "L3 Configuration exists for Interface: " + intfName
+                log.Info("ValidateIntfNotL3ConfigedOtherThanVrf: ", errStr);
+                err = tlerr.InvalidArgsError{Format: errStr}
+                break
+            }
+        }
+        return err
+}
+
 func xfmr_set_default_vrf_configDb() error {
         log.Info ("xfmr_set_default_vrf_configDb")
 
@@ -240,7 +268,6 @@ func xfmr_set_default_vrf_configDb() error {
 
         return err
 }
-
 
 func init() {
         xfmr_set_default_vrf_configDb()
@@ -739,16 +766,12 @@ var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb
             }
 
             /* Check if L3 configs present on given interface */
-            if intf_type == IntfTypeLoopback {
-                ipKeys, err1 := doGetIntfIpKeys(inParams.d, LOOPBACK_INTERFACE_TN, intfId)
-                if (err1 == nil && len(ipKeys) > 0) {
-                    errStr := "Interface: " + intfId + " configured with IP address"
-                    log.Info("YangToDb_network_instance_interface_binding_subtree_xfmr: ", errStr);
-                    err = tlerr.InvalidArgsError{Format: errStr}
-                }
-            } else {
-                err = validateL3ConfigExists(inParams.d, &intfId)
+            err = ValidateIntfNotL3ConfigedOtherThanVrf(inParams.d, intf_tbl_name, intfId)
+            if err != nil {
+                return res_map, err
             }
+        } else if (inParams.oper == DELETE) {
+            err = ValidateIntfNotL3ConfigedOtherThanVrf(inParams.d, intf_tbl_name, intfId)
             if err != nil {
                 return res_map, err
             }
