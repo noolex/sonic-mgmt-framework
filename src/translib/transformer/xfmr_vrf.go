@@ -204,7 +204,7 @@ func ValidateIntfNotL3ConfigedOtherThanVrf(d *db.DB, tblName string, intfName st
 
         ipKeys, err := doGetIntfIpKeys(d, tblName, intfName)
         if (err == nil && len(ipKeys) > 0) {
-            errStr := "Interface: " + intfName + " configured with IP address"
+            errStr :=  "IP address configuration exists for " + intfName
             log.Info("ValidateIntfNotL3ConfigedOtherThanVrf: ", errStr);
             err = tlerr.InvalidArgsError{Format: errStr}
         }
@@ -217,7 +217,7 @@ func ValidateIntfNotL3ConfigedOtherThanVrf(d *db.DB, tblName string, intfName st
             if (key == "NULL" || key == "vrf_name") {
                 continue
             } else {
-                errStr := "L3 Configuration exists for Interface: " + intfName
+                errStr := "Layer 3 configuration exists for " + intfName
                 log.Info("ValidateIntfNotL3ConfigedOtherThanVrf: ", errStr);
                 err = tlerr.InvalidArgsError{Format: errStr}
                 break
