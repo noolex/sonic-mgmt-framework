@@ -299,6 +299,13 @@ submodule openconfig-rib-bgp-attributes {
       reference
         "RFC 7311 - The Accumulated IGP Metric Attribute for BGP";
     }
+
+    leaf weight {
+      type uint32;
+      description
+        "The weight given to the path within the set of segment
+        lists that are included in the tunnel attribute sub-TLV.";
+    }
   }
 
   grouping bgp-unknown-attr-flags-state {

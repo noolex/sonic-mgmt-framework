@@ -1011,6 +1011,11 @@ func fill_ipv4_spec_pfx_nbr_in_pre_rib_data (ipv4InPreRoute_obj *ocbinds.
         routeAttrSets.LocalPref = &_localPref
     }
 
+    if value, ok := pathData["weight"] ; ok {
+        _weight := uint32(value.(float64))
+        routeAttrSets.Weight = &_weight
+    }
+
     if value, ok := pathData["med"] ; ok {
         _med := uint32(value.(float64))
         routeAttrSets.Med = &_med
@@ -1310,6 +1315,11 @@ func fill_ipv4_spec_pfx_nbr_in_post_rib_data (ipv4InPostRoute_obj *ocbinds.
         routeAttrSets.LocalPref = &_localPref
     }
 
+    if value, ok := pathData["weight"] ; ok {
+        _weight := uint32(value.(float64))
+        routeAttrSets.Weight = &_weight
+    }
+
     if value, ok := pathData["med"] ; ok {
         _med := uint32(value.(float64))
         routeAttrSets.Med = &_med
@@ -1477,6 +1487,11 @@ func fill_ipv6_spec_pfx_nbr_in_post_rib_data (ipv6InPostRoute_obj *ocbinds.
         routeAttrSets.LocalPref = &_localPref
     }
 
+    if value, ok := pathData["weight"] ; ok {
+        _weight := uint32(value.(float64))
+        routeAttrSets.Weight = &_weight
+    }
+
     if value, ok := pathData["med"] ; ok {
         _med := uint32(value.(float64))
         routeAttrSets.Med = &_med
@@ -1635,6 +1650,11 @@ func fill_ipv4_spec_pfx_nbr_out_post_rib_data (ipv4OutPostRoute_obj *ocbinds.
         ipv4OutPostRouteAttrSets.LocalPref = &_localPref
     }
 
+    if value, ok := prefixData["weight"] ; ok {
+        _weight := uint32(value.(float64))
+        ipv4OutPostRouteAttrSets.Weight = &_weight
+    }
+
     if value, ok := prefixData["med"] ; ok {
         _med := uint32(value.(float64))
         ipv4OutPostRouteAttrSets.Med = &_med
@@ -1769,6 +1789,11 @@ func fill_ipv6_spec_pfx_nbr_out_post_rib_data (ipv6OutPostRoute_obj *ocbinds.
     if value, ok := prefixData["localPref"] ; ok {
         _localPref := uint32(value.(float64))
         ipv6OutPostRouteAttrSets.LocalPref = &_localPref
+    }
+
+    if value, ok := prefixData["weight"] ; ok {
+        _weight := uint32(value.(float64))
+        ipv6OutPostRouteAttrSets.Weight = &_weight
     }
 
     if value, ok := prefixData["med"] ; ok {
