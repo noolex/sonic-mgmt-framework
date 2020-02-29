@@ -21,6 +21,8 @@ func init () {
     XlateFuncBind("DbToYang_bgp_nbr_peer_type_fld_xfmr", DbToYang_bgp_nbr_peer_type_fld_xfmr)
     XlateFuncBind("YangToDb_bgp_af_nbr_tbl_key_xfmr", YangToDb_bgp_af_nbr_tbl_key_xfmr)
     XlateFuncBind("DbToYang_bgp_af_nbr_tbl_key_xfmr", DbToYang_bgp_af_nbr_tbl_key_xfmr)
+    XlateFuncBind("YangToDb_bgp_nbr_asn_fld_xfmr", YangToDb_bgp_nbr_asn_fld_xfmr)
+    XlateFuncBind("DbToYang_bgp_nbr_asn_fld_xfmr", DbToYang_bgp_nbr_asn_fld_xfmr)    
     XlateFuncBind("YangToDb_bgp_nbr_afi_safi_name_fld_xfmr", YangToDb_bgp_nbr_afi_safi_name_fld_xfmr)
     XlateFuncBind("DbToYang_bgp_nbr_afi_safi_name_fld_xfmr", DbToYang_bgp_nbr_afi_safi_name_fld_xfmr)
     XlateFuncBind("YangToDb_bgp_af_nbr_proto_tbl_key_xfmr", YangToDb_bgp_af_nbr_proto_tbl_key_xfmr)
@@ -36,6 +38,9 @@ func init () {
     XlateFuncBind("YangToDb_bgp_nbrs_nbr_auth_password_xfmr", YangToDb_bgp_nbrs_nbr_auth_password_xfmr)
     XlateFuncBind("DbToYang_bgp_nbrs_nbr_auth_password_xfmr", DbToYang_bgp_nbrs_nbr_auth_password_xfmr)
 }
+
+
+var configDbAdd, _ = db.NewDB(getDBOptions(db.ConfigDB))
 
 var bgp_nbr_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, error) {
     var tblList []string
@@ -256,7 +261,79 @@ var DbToYang_bgp_nbr_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrParams) (m
     return rmap, nil
 }
 
+var YangToDb_bgp_nbr_asn_fld_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
+    res_map := make(map[string]string)
+
+    var err error
+    if inParams.param == nil {
+        err = errors.New("No Params");
+        return res_map, err
+    }
+
+ 
+    log.Info("YangToDb_bgp_nbr_asn_fld_xfmr: Xpath ", inParams.uri)
+    if inParams.oper == DELETE {
+        res_map["asn"] = ""
+        return res_map, nil
+    }
+
+    pathInfo := NewPathInfo(inParams.uri)
+    vrf := pathInfo.Var("name")
+    pNbrAddr   := pathInfo.Var("neighbor-address")
+    if ((len(vrf) == 0) ||  (len(pNbrAddr) == 0)) {
+        err = errors.New("Missing Params to make key");
+        return res_map, err
+    }
+
+    nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR"}
+    /* Form the key */
+    neigh_key := db.Key{Comp: []string{vrf, pNbrAddr}}
+
+    entryValue, err := configDbAdd.GetEntry(nbrCfgTblTs, neigh_key)
+    if err != nil {
+        log.Info("YangToDb_bgp_nbr_peer_type_fld_xfmr: entry not found for key ", neigh_key)
+        return res_map, err
+    }
+    neigh_field := entryValue.Field;
+
+    if value, ok := neigh_field["peer_type"] ; ok {
+        err = errors.New("Can't configure asn in BGP_NEIGHBOR as peer_type is set to " + value);
+        return res_map, err
+    }
+
+    asn_no, _ := inParams.param.(*uint32)
+
+    log.Info("YangToDb_bgp_nbr_peer_type_fld_xfmr: ", inParams.ygRoot, " Xpath: ", inParams.uri, " asn : ", *asn_no)
+
+    res_map["asn"] = strconv.FormatUint(uint64(*asn_no), 10)
+    return res_map, err
+}
+
+var DbToYang_bgp_nbr_asn_fld_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams) (map[string]interface{}, error) {
+
+    result := make(map[string]interface{})
+
+    data := (*inParams.dbDataMap)[inParams.curDb]
+    log.Info("DbToYang_bgp_nbr_asn_fld_xfmr : ", data, "inParams : ", inParams)
+
+    pTbl := data["BGP_NEIGHBOR"]
+    if _, ok := pTbl[inParams.key]; !ok {
+        log.Info("DbToYang_bgp_nbr_asn_fld_xfmr BGP neighbor not found : ", inParams.key)
+        return result, errors.New("BGP neighbor not found : " + inParams.key)
+    }
+    pGrpKey := pTbl[inParams.key]
+    asn, ok := pGrpKey.Field["asn"]
+
+   if ok {
+        result["peer-as"],_ = strconv.ParseFloat(asn, 64)
+    } else {
+        log.Info("asn field not found in DB")
+    }
+    return result, nil
+}
+
 var YangToDb_bgp_nbr_peer_type_fld_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
+
     res_map := make(map[string]string)
 
     var err error
@@ -273,6 +350,31 @@ var YangToDb_bgp_nbr_peer_type_fld_xfmr FieldXfmrYangToDb = func(inParams XfmrPa
     peer_type, _ := inParams.param.(ocbinds.E_OpenconfigBgp_PeerType)
     log.Info("YangToDb_bgp_nbr_peer_type_fld_xfmr: ", inParams.ygRoot, " Xpath: ", inParams.uri, " peer-type: ", peer_type)
 
+    pathInfo := NewPathInfo(inParams.uri)
+
+    vrf := pathInfo.Var("name")
+    pNbrAddr   := pathInfo.Var("neighbor-address")
+    if ((len(vrf) == 0) ||  (len(pNbrAddr) == 0)) {
+        err = errors.New("Missing Params to make key");
+        return res_map, err
+    }
+ 
+    nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR"}
+    /* Form the key */
+    neigh_key := db.Key{Comp: []string{vrf, pNbrAddr}}
+    
+    entryValue, err := configDbAdd.GetEntry(nbrCfgTblTs, neigh_key) 
+    if err != nil {
+        log.Info("YangToDb_bgp_nbr_peer_type_fld_xfmr: entry not found for key ", neigh_key)
+        return res_map, err
+    }
+    /* Either ASN or peer_type can be configured , not both */
+    neigh_field := entryValue.Field;
+    if value, ok := neigh_field["asn"] ; ok {
+        err = errors.New("Can't configure peer_type in BGP_NEIGHBOR as asn is set to " + value);
+        return res_map, err
+    }
+    
     if (peer_type == ocbinds.OpenconfigBgp_PeerType_INTERNAL) {
         res_map["peer_type"] = "internal"
     }  else if (peer_type == ocbinds.OpenconfigBgp_PeerType_EXTERNAL) {
@@ -281,9 +383,7 @@ var YangToDb_bgp_nbr_peer_type_fld_xfmr FieldXfmrYangToDb = func(inParams XfmrPa
         err = errors.New("Peer Type Missing");
         return res_map, err
     }
-
     return res_map, nil
-
 }
 
 var DbToYang_bgp_nbr_peer_type_fld_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams) (map[string]interface{}, error) {

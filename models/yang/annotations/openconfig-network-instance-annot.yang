@@ -1676,7 +1676,7 @@ module openconfig-network-instance-annot {
 /* neighbor->config->peer-as */
     deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-netinst:config/oc-netinst:peer-as {
       deviate add {
-            sonic-ext:field-name "asn";
+            sonic-ext:field-transformer "bgp_nbr_asn_fld_xfmr";
       }
     }
 
