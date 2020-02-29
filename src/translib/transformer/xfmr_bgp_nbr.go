@@ -19,6 +19,7 @@ func init () {
     XlateFuncBind("DbToYang_bgp_nbr_address_fld_xfmr", DbToYang_bgp_nbr_address_fld_xfmr)
     XlateFuncBind("YangToDb_bgp_nbr_peer_type_fld_xfmr", YangToDb_bgp_nbr_peer_type_fld_xfmr)
     XlateFuncBind("DbToYang_bgp_nbr_peer_type_fld_xfmr", DbToYang_bgp_nbr_peer_type_fld_xfmr)
+    XlateFuncBind("bgp_af_nbr_tbl_xfmr", bgp_af_nbr_tbl_xfmr)
     XlateFuncBind("YangToDb_bgp_af_nbr_tbl_key_xfmr", YangToDb_bgp_af_nbr_tbl_key_xfmr)
     XlateFuncBind("DbToYang_bgp_af_nbr_tbl_key_xfmr", DbToYang_bgp_af_nbr_tbl_key_xfmr)
     XlateFuncBind("YangToDb_bgp_nbr_afi_safi_name_fld_xfmr", YangToDb_bgp_nbr_afi_safi_name_fld_xfmr)
@@ -37,38 +38,94 @@ func init () {
     XlateFuncBind("DbToYang_bgp_nbrs_nbr_auth_password_xfmr", DbToYang_bgp_nbrs_nbr_auth_password_xfmr)
 }
 
+func util_fill_db_datamap_per_bgp_nbr_from_frr_info (inParams XfmrParams, vrf string, nbrAddr string,
+                                                     afiSafiType ocbinds.E_OpenconfigBgpTypes_AFI_SAFI_TYPE,
+                                                     peerData map[string]interface {}) {
+    afiSafiDbType := "ipv4_unicast"
+    if afiSafiType == ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV6_UNICAST {afiSafiDbType = "ipv6_unicast"}
+
+    key := vrf + "|" + nbrAddr + "|" + afiSafiDbType
+    nbrAfCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR_AF"}
+    nbrAfEntryKey := db.Key{Comp: []string{vrf, nbrAddr, afiSafiDbType}}
+    entryValue, _ := inParams.d.GetEntry(nbrAfCfgTblTs, nbrAfEntryKey)
+    (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"][key] = entryValue
+
+    if value, ok := peerData["dynamicPeer"].(bool) ; ok {if (value == false) {return}
+    } else {return}
+
+    key = vrf + "|" + nbrAddr
+    if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
+        (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = db.Value{Field: make(map[string]string)}
+    }
+}
+
+func util_fill_bgp_nbr_info_per_af_from_frr_info (inParams XfmrParams, vrf string, nbrAddr string,
+                                                  afiSafiType ocbinds.E_OpenconfigBgpTypes_AFI_SAFI_TYPE) {
+    cmd := "show ip bgp vrf" + " " + vrf + " " + "ipv4 summary json"
+    if afiSafiType == ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV6_UNICAST {
+        cmd = "show ip bgp vrf" + " " + vrf + " " + "ipv6 summary json"
+    }
+    bgpNeighOutputJson, _:= exec_vtysh_cmd (cmd)
+
+    if _, ok := bgpNeighOutputJson["warning"] ; ok {return}
+
+    ipUcastFrrContainer := "ipv4Unicast"
+    if afiSafiType == ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV6_UNICAST {ipUcastFrrContainer = "ipv6Unicast"}
+
+    ipUnicast, ok := bgpNeighOutputJson[ipUcastFrrContainer].(map[string]interface{}) ; if !ok {return}
+    peers, ok := ipUnicast["peers"].(map[string]interface{}) ; if !ok {return}
+
+    if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
+        (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"] = make(map[string]db.Value)
+    }
+    if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"]; !ok {
+        (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"] = make(map[string]db.Value)
+    }
+
+    if len(nbrAddr) != 0 {
+        peerData, ok := peers[nbrAddr].(map[string]interface{}) ; if !ok {return}
+        util_fill_db_datamap_per_bgp_nbr_from_frr_info (inParams, vrf, nbrAddr, afiSafiType, peerData)
+    } else {
+        for peer, peerData := range peers {
+            util_fill_db_datamap_per_bgp_nbr_from_frr_info (inParams, vrf, peer, afiSafiType, peerData.(map[string]interface{}))
+        }
+    }
+}
+
+func fill_bgp_nbr_details_from_frr_info (inParams XfmrParams, vrf string, nbrAddr string) {
+    util_fill_bgp_nbr_info_per_af_from_frr_info (inParams, vrf, nbrAddr, ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV4_UNICAST)
+    util_fill_bgp_nbr_info_per_af_from_frr_info (inParams, vrf, nbrAddr, ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV6_UNICAST)
+}
+
 var bgp_nbr_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, error) {
     var tblList []string
-    var err error
-    var vrf string
-    var key string
 
     log.Info("bgp_nbr_tbl_xfmr: ", inParams.uri)
     pathInfo := NewPathInfo(inParams.uri)
 
-    vrf = pathInfo.Var("name")
+    vrf := pathInfo.Var("name")
     bgpId      := pathInfo.Var("identifier")
     protoName  := pathInfo.Var("name#2")
-    pNbrAddr   := pathInfo.Var("neighbor-address")
+    nbrAddr   := pathInfo.Var("neighbor-address")
 
     if len(pathInfo.Vars) <  3 {
-        err = errors.New("Invalid Key length");
+        err := errors.New("Invalid Key length");
         log.Info("Invalid Key length", len(pathInfo.Vars))
         return tblList, err
     }
 
     if len(vrf) == 0 {
-        err = errors.New("vrf name is missing");
+        err := errors.New("vrf name is missing");
         log.Info("VRF Name is Missing")
         return tblList, err
     }
     if strings.Contains(bgpId,"BGP") == false {
-        err = errors.New("BGP ID is missing");
+        err := errors.New("BGP ID is missing");
         log.Info("BGP ID is missing")
         return tblList, err
     }
     if len(protoName) == 0 {
-        err = errors.New("Protocol Name is missing");
+        err := errors.New("Protocol Name is missing");
         log.Info("Protocol Name is Missing")
         return tblList, err
     }
@@ -79,27 +136,26 @@ var bgp_nbr_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, erro
     }
 
     tblList = append(tblList, "BGP_NEIGHBOR")
-    if len(pNbrAddr) != 0 {
-        key = vrf + "|" + pNbrAddr
-        log.Info("bgp_nbr_tbl_xfmr: key - ", key)
+
+    if len(nbrAddr) != 0 {
+        key := vrf + "|" + nbrAddr
         if (inParams.dbDataMap != nil) {
             if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
                 (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"] = make(map[string]db.Value)
             }
 
-            nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR"}
-            nbrEntryKey := db.Key{Comp: []string{vrf, pNbrAddr}}
-
             if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
-                var entryValue db.Value
-                if entryValue, err = inParams.d.GetEntry(nbrCfgTblTs, nbrEntryKey) ; err == nil {
+                nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR"}
+                nbrEntryKey := db.Key{Comp: []string{vrf, nbrAddr}}
+                entryValue, err := inParams.d.GetEntry(nbrCfgTblTs, nbrEntryKey) ; if err == nil {
                     (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = entryValue
                 }
             }
+
+            fill_bgp_nbr_details_from_frr_info (inParams, vrf, nbrAddr)
         }
     } else {
         if(inParams.dbDataMap != nil) {
-            err = errors.New("Opertational error")
             nbrKeys, _ := inParams.d.GetKeys(&db.TableSpec{Name:"BGP_NEIGHBOR"})
             if len(nbrKeys) > 0 {
                 if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
@@ -110,84 +166,21 @@ var bgp_nbr_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, erro
                         continue
                     }
 
-                    key = nkey.Get(0) + "|" + nkey.Get(1)
-                    log.Info("bgp_nbr_tbl_xfmr: Static Neighbor key - ", key)
-                    nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR"}
-                    nbrEntryKey := db.Key{Comp: []string{nkey.Get(0), nkey.Get(1)}}
-
+                    key := nkey.Get(0) + "|" + nkey.Get(1)
                     if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
-                        var entryValue db.Value
-                        if entryValue, err = inParams.d.GetEntry(nbrCfgTblTs, nbrEntryKey) ; err == nil {
+                        nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR"}
+                        nbrEntryKey := db.Key{Comp: []string{nkey.Get(0), nkey.Get(1)}}
+                        entryValue, err := inParams.d.GetEntry(nbrCfgTblTs, nbrEntryKey) ; if err == nil {
                             (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = entryValue
                         }
                     }
                 }
             }
 
-            cmd := "show ip bgp vrf" + " " + vrf + " " + "ipv4 summary json"
-            bgpNeighOutputJson, _:= exec_vtysh_cmd (cmd)
-
-            if _, ok := bgpNeighOutputJson["warning"] ; !ok {
-                ipv4Unicast, ok := bgpNeighOutputJson["ipv4Unicast"].(map[string]interface{})
-                if ok {
-                    peers, ok := ipv4Unicast["peers"].(map[string]interface{})
-                    if ok {
-                        if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
-                            (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"] = make(map[string]db.Value)
-                        }
-
-                        for peer, _peerData := range peers {
-                            peerData := _peerData.(map[string]interface {})
-                            if value, ok := peerData["dynamicPeer"].(bool) ; ok {
-                                if (value == false) {
-                                    continue
-                                }
-                            } else {
-                                continue;
-                            }
-
-                            key = vrf + "|" + peer
-                            log.Info("bgp_nbr_tbl_xfmr: Dynamic ipv4 neighbor key - ", key)
-                            if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
-                                (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = db.Value{Field: make(map[string]string)}
-                            }
-                        }
-                    }
-                }
-            }
-            cmd = "show ip bgp vrf" + " " + vrf + " " + "ipv6 summary json"
-            bgpNeighOutputJson, _= exec_vtysh_cmd (cmd)
-
-            if _, ok := bgpNeighOutputJson["warning"] ; !ok {
-                ipv6Unicast, ok := bgpNeighOutputJson["ipv6Unicast"].(map[string]interface{})
-                if ok {
-                    peers, ok := ipv6Unicast["peers"].(map[string]interface{})
-                    if ok {
-                        if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
-                            (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"] = make(map[string]db.Value)
-                        }
-
-                        for peer, _peerData := range peers {
-                            peerData := _peerData.(map[string]interface {})
-                            if value, ok := peerData["dynamicPeer"].(bool) ; ok {
-                                if (value == false) {
-                                   continue
-                                }
-                            } else {
-                               continue;
-                            }
-
-                            key = vrf + "|" + peer
-                            log.Info("bgp_nbr_tbl_xfmr: Dynamic ipv6 neighbor key - ", key)
-                            if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
-                                (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = db.Value{Field: make(map[string]string)}
-                            }
-                        }
-                    }
-                }
-            }
+            fill_bgp_nbr_details_from_frr_info (inParams, vrf, "")
         }
     }
+
     return tblList, nil
 }
 
@@ -422,6 +415,96 @@ var DbToYang_bgp_nbr_afi_safi_name_fld_xfmr FieldXfmrDbtoYang = func(inParams Xf
     return result, err
 }
 
+var bgp_af_nbr_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, error) {
+    var tblList, nil_tblList []string
+
+    log.Info("bgp_af_nbr_tbl_xfmr: ", inParams.uri)
+    pathInfo := NewPathInfo(inParams.uri)
+
+    vrf := pathInfo.Var("name")
+    bgpId := pathInfo.Var("identifier")
+    protoName := pathInfo.Var("name#2")
+    nbrAddr := pathInfo.Var("neighbor-address")
+    afiSafiName := pathInfo.Var("afi-safi-name")
+
+    if len(pathInfo.Vars) <  4 {
+        err := errors.New("Invalid Key length");
+        log.Info("Invalid Key length", len(pathInfo.Vars))
+        return nil_tblList, err
+    }
+
+    if len(vrf) == 0 {
+        err_str := "VRF name is missing"
+        err := errors.New(err_str); log.Info(err_str)
+        return nil_tblList, err
+    }
+    if strings.Contains(bgpId,"BGP") == false {
+        err_str := "BGP ID is missing"
+        err := errors.New(err_str); log.Info(err_str)
+        return nil_tblList, err
+    }
+    if len(protoName) == 0 {
+        err_str := "Protocol Name is Missing"
+        err := errors.New(err_str); log.Info(err_str)
+        return nil_tblList, err
+    }
+    if len(nbrAddr) == 0 {
+        err_str := "Neighbor Address is missing"
+        err := errors.New(err_str); log.Info(err_str)
+        return nil_tblList, err
+    }
+
+    if (inParams.oper != GET) {
+        tblList = append(tblList, "BGP_NEIGHBOR_AF")
+        return tblList, nil
+    }
+
+    tblList = append(tblList, "BGP_NEIGHBOR_AF")
+
+    if len(afiSafiName) != 0 {
+        _, afiSafiNameDbStr, ok := get_afi_safi_name_enum_dbstr_for_ocstr (afiSafiName) ; if !ok {
+             err_str := "AFI-SAFI : " + afiSafiName + " not supported"
+             err := errors.New(err_str); log.Info(err_str)
+             return nil_tblList, err
+        }
+
+        if (inParams.dbDataMap != nil) {
+            if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"]; !ok {
+                (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"] = make(map[string]db.Value)
+            }
+            key := vrf + "|" + nbrAddr + "|" + afiSafiNameDbStr
+            if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"][key]; !ok {
+                nbrAfCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR_AF"}
+                nbrAfEntryKey := db.Key{Comp: []string{vrf, nbrAddr, afiSafiNameDbStr}}
+                entryValue, err := inParams.d.GetEntry(nbrAfCfgTblTs, nbrAfEntryKey) ; if err == nil {
+                    (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"][key] = entryValue
+                }
+            }
+        }
+    } else {
+        if(inParams.dbDataMap != nil) {
+            nbrKeys, _ := inParams.d.GetKeys(&db.TableSpec{Name:"BGP_NEIGHBOR_AF"})
+            if len(nbrKeys) > 0 {
+                if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"]; !ok {
+                    (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"] = make(map[string]db.Value)
+                }
+                for _, nkey := range nbrKeys {
+                    if nkey.Get(0) != vrf || nkey.Get(1) != nbrAddr {continue}
+                    key := nkey.Get(0) + "|" + nkey.Get(1) + "|" + nkey.Get(2)
+                    if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"][key]; !ok {
+                        nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR_AF"}
+                        nbrEntryKey := db.Key{Comp: []string{nkey.Get(0), nkey.Get(1), nkey.Get(2)}}
+                        entryValue, err := inParams.d.GetEntry(nbrCfgTblTs, nbrEntryKey) ; if err == nil {
+                            (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR_AF"][key] = entryValue
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return tblList, nil
+}
 
 var YangToDb_bgp_af_nbr_tbl_key_xfmr KeyXfmrYangToDb = func(inParams XfmrParams) (string, error) {
     var err error
@@ -1271,10 +1354,11 @@ var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
             afiSafi_cmd = "ipv6"
     }
 
+    _enabled := false
     if cfgDbEntry, cfgdb_get_err := get_spec_nbr_af_cfg_tbl_entry (inParams.dbs[db.ConfigDB], &nbr_af_key) ; cfgdb_get_err == nil {
         nbrs_af_state_obj.AfiSafiName = nbr_af_key.afiSafiNameEnum
         if value, ok := cfgDbEntry["admin_status"] ; ok {
-            _enabled, _ := strconv.ParseBool(value)
+            _enabled, _ = strconv.ParseBool(value)
             nbrs_af_state_obj.Enabled = &_enabled
         }
 
@@ -1352,6 +1436,7 @@ var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
             if ipv4UnicastMap, ok := AddrFamilyMap["ipv4Unicast"].(map[string]interface{}) ; ok {
                 log.Info("IPv4 dump: %v", AddrFamilyMap)
                 _active = true
+                _enabled = true
                 if value, ok := ipv4UnicastMap["acceptedPrefixCounter"] ; ok {
                     _activeRcvdPrefixes = uint32(value.(float64))
                     log.Info("IPv4 dump recd: %d", _activeRcvdPrefixes)
@@ -1366,6 +1451,7 @@ var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
         } else if nbrs_af_state_obj.AfiSafiName == ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV6_UNICAST {
             if ipv6UnicastMap, ok := AddrFamilyMap["ipv6Unicast"].(map[string]interface{}) ; ok {
                 _active = true
+                _enabled = true
                 if value, ok := ipv6UnicastMap["acceptedPrefixCounter"] ; ok {
                     _activeRcvdPrefixes = uint32(value.(float64))
                     _prefixes.Received = &_activeRcvdPrefixes
@@ -1377,7 +1463,7 @@ var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
            }
         }
     }
- 
+
     vtysh_cmd = "show ip bgp vrf " + nbr_af_key.niName + " " + afiSafi_cmd + " neighbors " + nbr_af_key.nbrAddr + " received-routes json"
     rcvdRoutesJson, rcvd_cmd_err := exec_vtysh_cmd (vtysh_cmd)
     if rcvd_cmd_err != nil {
@@ -1394,6 +1480,7 @@ var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
         }
     }
     nbrs_af_state_obj.Active = &_active
+    nbrs_af_state_obj.Enabled = &_enabled
     nbrs_af_state_obj.Prefixes = &_prefixes
 
     return err;
