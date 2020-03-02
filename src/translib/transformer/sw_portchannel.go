@@ -57,7 +57,7 @@ func validateLagExists(d *db.DB, lagTs *string, lagName *string) error {
     entry, err := d.GetEntry(&db.TableSpec{Name:*lagTs}, db.Key{Comp: []string{*lagName}})
     if err != nil || !entry.IsPopulated() {
         errStr := "Invalid PortChannel:" + *lagName
-        return errors.New(errStr)
+        return tlerr.InvalidArgsError{Format:errStr}
     }
     return nil
 }
@@ -133,7 +133,7 @@ func validateIntfAssociatedWithPortChannel(d *db.DB, ifName *string) error {
     if err == nil {
         for i, _ := range lagKeys {
             if *ifName == lagKeys[i].Get(1) {
-                errStr := "Given interface is member of " + lagKeys[i].Get(0)
+                errStr := lagKeys[i].Get(1) + " is already part of : " + lagKeys[i].Get(0)
                 log.Error(errStr)
                 return tlerr.InvalidArgsError{Format:errStr}
             }
@@ -407,8 +407,6 @@ var DbToYang_intf_lag_state_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams
     /*Validate given PortChannel exists */
     err = validateLagExists(inParams.d, &intTbl.cfgDb.portTN, &ifName)
     if err != nil {
-        errStr := "Invalid PortChannel: " + ifName
-        err = tlerr.InvalidArgsError{Format: errStr}
         return err
     }
 
@@ -480,16 +478,13 @@ func deleteLagIntfAndMembers(inParams *XfmrParams, lagName *string) error {
     /* Validate given PortChannel exits */
     err = validateLagExists(inParams.d, &intTbl.cfgDb.portTN, lagName)
     if err != nil {
-        errStr := "PortChannel does not exist: " + *lagName
-        log.Error(errStr)
-        return errors.New(errStr)
+        return err
     }
 
     /* Restrict deletion if iface configured as member-port of any Vlan */
     err = validateIntfAssociatedWithVlan(inParams.d, lagName)
     if err != nil {
-        errStr := "Interface configured as member-port of Vlan"
-        return tlerr.InvalidArgsError{Format: errStr}
+        return err
     }
 
     /* Handle PORTCHANNEL_INTERFACE TABLE */

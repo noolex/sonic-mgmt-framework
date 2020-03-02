@@ -216,6 +216,29 @@ type JSONEeprom  struct {
 
 }
 
+func getSoftwareVersion() string {
+    var versionString string
+    versionFile, err := os.Open("/etc/sonic/sonic_version.yml")
+    if err != nil {
+        log.Infof("sonic_version.yml open failed")
+        return ""
+    }
+    defer versionFile.Close()
+    versionScanner := bufio.NewScanner(versionFile)
+    versionScanner.Split(bufio.ScanLines)
+
+    for versionScanner.Scan() {
+        if strings.Contains(versionScanner.Text(), "build_version:") {
+            res1 := strings.Split(versionScanner.Text(), ": ")
+            versionString = res1[1]
+            break
+        }
+    }
+    versionFile.Close()
+
+    return versionString
+}
+
 func (app *PlatformApp) getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform_Components_Component_State, all bool) (error) {
 
     log.Infof("getSysEepromFromFile Enter")
@@ -293,6 +316,9 @@ func (app *PlatformApp) getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform
         }
         if jsoneeprom.Software_Version != "" {
             eeprom.SoftwareVersion = &jsoneeprom.Software_Version
+        } else {
+            versionString := getSoftwareVersion()
+            eeprom.SoftwareVersion = &versionString
         }
     } else {
         targetUriPath, _ := getYangPathFromUri(app.path.Path)
@@ -320,7 +346,7 @@ func (app *PlatformApp) getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform
                 eeprom.SerialNo = &jsoneeprom.Serial_Number
             }
             if jsoneeprom.Service_Tag != "" {
-                if eeprom.SerialNo == nil {
+                if eeprom.SerialNo == nil || *eeprom.SerialNo == "" {
                     eeprom.SerialNo = &jsoneeprom.Service_Tag
                 }
             }
@@ -335,7 +361,7 @@ func (app *PlatformApp) getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform
                 eeprom.HardwareVersion = &jsoneeprom.Label_Revision
             }
             if jsoneeprom.Hardware_Version != "" {
-                if eeprom.HardwareVersion == nil {
+                if eeprom.HardwareVersion == nil || *eeprom.HardwareVersion == "" {
                     eeprom.HardwareVersion = &jsoneeprom.Hardware_Version
                 }
             }
@@ -348,17 +374,20 @@ func (app *PlatformApp) getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform
                 eeprom.MfgName = &jsoneeprom.Manufacturer
             }
             if jsoneeprom.Vendor_Name != "" {
-                if eeprom.MfgName == nil {
+                if eeprom.MfgName == nil || *eeprom.MfgName == "" {
                     eeprom.MfgName = &jsoneeprom.Vendor_Name
                 }
             }
         case "/openconfig-platform:components/component/state/software-version":
             if jsoneeprom.Software_Version != "" {
                 eeprom.SoftwareVersion = &jsoneeprom.Software_Version
+            } else {
+                versionString := getSoftwareVersion()
+                eeprom.SoftwareVersion = &versionString
             }
         }
     }
-    return nil 
+    return nil
 }
 
 func (app *PlatformApp) getPlatformEnvironment (pf_comp *ocbinds.OpenconfigPlatform_Components_Component) (error) {
@@ -374,6 +403,10 @@ func (app *PlatformApp) getPlatformEnvironment (pf_comp *ocbinds.OpenconfigPlatf
     for scanner.Scan() {
         var pf_sensor_cat *ocbinds.OpenconfigPlatform_Components_Component_Subcomponents_Subcomponent_State_SensorCategory
         log.Infof("comp: %s",scanner.Text())
+        if strings.Contains(scanner.Text(), "Total Power") {
+            continue
+        }
+
         SubCatFound := false
         pf_scomp,_ := pf_comp.Subcomponents.NewSubcomponent(scanner.Text())
         ygot.BuildEmptyTree(pf_scomp)

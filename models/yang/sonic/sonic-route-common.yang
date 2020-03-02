@@ -57,7 +57,10 @@ module sonic-route-common {
                     type leafref {
                         path "/srmap:sonic-route-map/srmap:ROUTE_MAP_SET/srmap:ROUTE_MAP_SET_LIST/srmap:name";
                     }
-                    max-elements 1;
+                    must "(count(current()) = 1)" {
+                        error-app-tag "max-allowed-route-map-reached";
+                        error-message "Only one route-map can be associated";
+                    }
                 }
 
                 leaf metric {

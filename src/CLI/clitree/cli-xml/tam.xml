@@ -34,6 +34,21 @@ limitations under the License.
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION builtin="clish_pyobj">sonic_cli_tam get_sonic_tam_sonic_tam_tam_device_table show_tam_device.j2</ACTION>
+	   <DOCGEN>
+		   <DESCRIPTION>
+			   This command is used to show TAM device information.
+		   </DESCRIPTION>
+		   <USAGE>
+			   This command displays the configured TAM Device Identifier.  
+		   </USAGE>
+		   <EXAMPLE summary="Show TAM info">
+			   sonic# show tam device
+			   ---------------------------------------------------------
+			   TAM Device Information
+			   ---------------------------------------------------------
+			   device-id: 5000
+		   </EXAMPLE>
+	   </DOCGEN>
     </COMMAND>
     <COMMAND name="show tam collector" 
              help="Show TAM collector info" 
@@ -41,10 +56,25 @@ limitations under the License.
              ptype="SUBCOMMAND">
       <PARAM name="name" 
              help="Name of the collector" 
-             ptype="STRING_32" 
+             ptype="STRING_63" 
              optional="true"> 
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_tam get_sonic_tam_sonic_tam_tam_collector_table show_tam_collector.j2 ${name}</ACTION>
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   This command is used to show TAM collector information.
+	   </DESCRIPTION>
+	   <USAGE>
+		   This command displays the configured TAM collector information.
+	   </USAGE>
+	   <EXAMPLE summary="Show TAM collector info">
+		   sonic# show tam collector
+		   ------------------------------------------------------------------------------------------------
+		   NAME           IP TYPE        IP ADDRESS     PORT
+		   ------------------------------------------------------------------------------------------------
+		   c1             ipv4           3.3.3.3        7777
+	   </EXAMPLE>
+       </DOCGEN>
     </COMMAND>
   </VIEW>
 
@@ -73,6 +103,17 @@ limitations under the License.
              ptype="UINT16"> 
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_tam patch_sonic_tam_sonic_tam_tam_device_table_tam_device_table_list_deviceid device ${device-id}</ACTION>
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   This command is used to configure the deviceId of the switch. Last 23 bits of mac-address are used as default deviceId
+	   </DESCRIPTION>
+	   <USAGE>
+		   This command is used to configure the device identifier of the switch 
+	   </USAGE>
+	   <EXAMPLE summary="Configure device-id">
+		   sonic(config-tam)# device-id 5000
+	   </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <!-- tam collector -->
@@ -82,7 +123,7 @@ limitations under the License.
              mode="subcommand">
       <PARAM name="name" 
              help="Collector name" 
-             ptype="STRING"> 
+             ptype="STRING_63"> 
       </PARAM>
       <PARAM name="type" 
              help="Collector ip address type" 
@@ -112,6 +153,18 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_tam patch_list_sonic_tam_sonic_tam_tam_collector_table_tam_collector_table_list ${name} ${ip-type-val} ${ip-addr-val} ${port-val}</ACTION>
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   This command is used to configure the external collector IP address and port.
+		   Report will be forwarded to the collector accordingly.
+	   </DESCRIPTION>
+	   <USAGE>
+		   Reports are sent by the configured external collector by the silicon.
+	   </USAGE>
+	   <EXAMPLE summary="Configure TAM collector">
+		   sonic(config-tam)# collector c1 type ipv4 ip 3.3.3.3 port 7777
+	   </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <!-- config sub view for int-ifa configuration -->
@@ -127,6 +180,17 @@ limitations under the License.
              ptype="SUBCOMMAND" 
              mode="subcommand">
       <ACTION builtin="clish_pyobj">sonic_cli_tam patch_sonic_tam_sonic_tam_tam_device_table_tam_device_table_list_deviceid device 0</ACTION>
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   This command is used to remove the configured device-id.
+	   </DESCRIPTION>
+	   <USAGE>
+                   This command is used to clear the user-configured device-id. Default device identifier will be used in the absence of user configured device-id.
+	   </USAGE>
+	   <EXAMPLE summary="Clear TAM device ID">
+		   sonic(config-tam)# no device-id
+	   </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <!-- no tam collector -->
@@ -136,10 +200,20 @@ limitations under the License.
              mode="subcommand">
       <PARAM name="name" 
              help="Collector name" 
-             ptype="STRING"> 
+             ptype="STRING_63"> 
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_tam delete_sonic_tam_sonic_tam_tam_collector_table_tam_collector_table_list ${name}</ACTION>
-
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   This command is used to clear collector configuration. 
+	   </DESCRIPTION>
+	   <USAGE>
+		   This command is used to clear collector configuration. 
+	   </USAGE>
+	   <EXAMPLE summary="Clear TAM Collector information">
+		   sonic(config-tam)# no collector c1
+	   </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
   </VIEW>

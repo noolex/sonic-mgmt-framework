@@ -35,7 +35,7 @@
     <COMMAND name="username" help="Add new user" ptype="SUBCOMMAND" mode="subcommand">
        <PARAM name="user-name" help="User name string" ptype="STRING"></PARAM>
            <PARAM name="password" help="Clear text password " ptype="SUBCOMMAND" mode="subcommand"> <PARAM name="passwd" help="Type clear text password string" ptype="STRING"></PARAM>
-               <PARAM name="role" help="User role" ptype="SUBCOMMAND" mode="subcommand"> <PARAM name="rl" help="Type User role string" ptype="STRING">
+		   <PARAM name="role" help="User role" ptype="SUBCOMMAND" mode="subcommand"> <PARAM name="rl" help="User role (admin/operator)" ptype="STRING">
 	       </PARAM>
            </PARAM>
        </PARAM>

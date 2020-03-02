@@ -150,33 +150,48 @@
 ---
 > 	clish_ptype_method_e method, clish_ptype_preprocess_e preprocess,
 > 	const char *ext_pattern, const char *ext_help)
-36a182,183
+36a182,184
 > 	this->ext_pattern = NULL;
 >         this->ext_help = NULL;
-37a185,190
+> 	this->usename = BOOL_TRUE;
+37a186,191
 > 	this->u.select.ext_help = NULL;
 > 
 > 	if (ext_pattern || ext_help) {
 > 		/* set the pattern */
 > 		clish_ptype__set_extpattern(this, ext_pattern, method, ext_help);
 > 	}
-66a220,225
+66a221,226
 > 		case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 > 			regfree(&this->u.regexp_select.regexp);
 > 			lub_argv_delete(this->u.regexp_select.items);
 > 			if (this->u.regexp_select.ext_help)
 > 				lub_argv_delete(this->u.regexp_select.ext_help);
 > 			break;
-82c241,242
+72a233
+> 	this->name = NULL;
+73a235
+> 	this->text = NULL;
+74a237
+> 	this->pattern = NULL;
+75a239,243
+> 	this->range = NULL;
+> 	lub_string_free(this->ext_pattern);
+> 	this->ext_pattern = NULL;
+> 	lub_string_free(this->ext_help);
+> 	this->ext_help = NULL;
+76a245
+> 
+82c251,252
 < 	clish_ptype_method_e method, clish_ptype_preprocess_e preprocess)
 ---
 > 	clish_ptype_method_e method, clish_ptype_preprocess_e preprocess,
 > 	const char *ext_pattern, const char *ext_help)
-87c247
+87c257
 < 		clish_ptype_init(this, name, help, pattern, method, preprocess);
 ---
 > 		clish_ptype_init(this, name, help, pattern, method, preprocess, ext_pattern, ext_help);
-144a305,343
+144a315,353
 > char *clish_ptype_regexp_select__get_name(const clish_ptype_t * this,
 > 	unsigned index)
 > {
@@ -216,7 +231,7 @@
 > }
 > 
 > /*--------------------------------------------------------- */
-190a390,416
+190a400,426
 > 	case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 > 	{
 > 		/* Setup the selection values to the help text */
@@ -244,30 +259,30 @@
 > 		break;
 > 	}
 > 	/*------------------------------------------------- */
-203c429,430
+203c439,440
 < 	"code"
 ---
 > 	"code",
 > 	"regexp_select"
-214a442,447
+214a452,457
 > clish_ptype_method_e clish_ptype__get_method(const clish_ptype_t * this)
 > {
 > 	return (clish_ptype_method_e) (this->method);
 > }
 > 
 > /*--------------------------------------------------------- */
-264c497
+264c507
 < 	lub_argv_t *matches, const char *text)
 ---
 > 	lub_argv_t *matches, const char *text,  const char *penultimate_text)
-267a501
+267a511
 > 	bool ret = false;
-270c504,505
+270c514,515
 < 	if (this->method != CLISH_PTYPE_METHOD_SELECT)
 ---
 > 	if (this->method != CLISH_PTYPE_METHOD_SELECT &&
 > 		this->method != CLISH_PTYPE_METHOD_REGEXP_SELECT)
-274,284c509,512
+274,284c519,522
 < 	result = clish_ptype_validate(this, text);
 < 	if (result) {
 < 		lub_argv_add(matches, result);
@@ -284,7 +299,7 @@
 > 	{
 > 		result = clish_ptype_validate(this, text, BOOL_TRUE);
 > 		if (result) {
-286c514,540
+286c524,550
 < 		lub_string_free(result);
 ---
 > 			lub_string_free(result);
@@ -314,13 +329,13 @@
 >                         return;
 > 
 >                 clish_ptype_regexp_select_get_match(this, text, matches);
-287a542
+287a552
 > 
-292c547
+292c557
 < 	const char *text, bool_t translate)
 ---
 > 	const char *text, bool_t translate, bool_t isHelp)
-346a602,716
+346a612,726
 >         case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 >         {
 >         	unsigned i;
@@ -436,19 +451,19 @@
 > 	}
 > 
 > 	/*------------------------------------------------- */
-437c807
+437c817
 < char *clish_ptype_validate(clish_ptype_t * this, const char *text)
 ---
 > char *clish_ptype_validate(clish_ptype_t * this, const char *text, bool_t isHelp)
-439c809
+439c819
 < 	return clish_ptype_validate_or_translate(this, text, BOOL_FALSE);
 ---
 > 	return clish_ptype_validate_or_translate(this, text, BOOL_FALSE, BOOL_TRUE);
-445c815
+445c825
 < 	return clish_ptype_validate_or_translate(this, text, BOOL_TRUE);
 ---
 > 	return clish_ptype_validate_or_translate(this, text, BOOL_TRUE, BOOL_FALSE);
-500a871,885
+500a881,895
 > 	case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 >                 {
 >                         int result;
@@ -464,7 +479,7 @@
 >                 }
 > 
 > 	/*------------------------------------------------- */
-506a892,1014
+506a902,1024
 > 
 > 
 > void clish_ptype__set_extpattern(clish_ptype_t * this,

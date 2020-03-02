@@ -51,7 +51,7 @@ module openconfig-network-instance-deviation {
 	
 	typedef igmp-snooping-query-interval-type {
 		type uint16 {
-		  range 1..1024;
+		  range 1..18000;
 		}
 		units "seconds";
 		default 125;

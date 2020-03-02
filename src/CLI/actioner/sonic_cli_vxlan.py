@@ -140,7 +140,10 @@ def invoke(func, args):
                 body = { "sonic-vrf:vni": int(args[2])}
             else:
                  body = { "sonic-vrf:vni": 0}
-            return aa.patch(keypath, body)
+
+            api_response =  aa.patch(keypath, body)
+            config_response_handler(api_response, func, args)
+            return api_response
         else:
             fail = 0
             keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL_MAP/VXLAN_TUNNEL_MAP_LIST')

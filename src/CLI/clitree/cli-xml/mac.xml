@@ -323,18 +323,12 @@ limitations under the License.
         name="clear mac"
         help="Clear MAC"
         >
-    <ACTION>
-        builtin="clish_nop"
-    </ACTION>
     </COMMAND>
 
     <COMMAND
         name="clear mac address-table"
         help="Clear MAC address table"
         >
-    <ACTION>
-        builtin="clish_nop"
-    </ACTION>
     </COMMAND>
 
     <COMMAND

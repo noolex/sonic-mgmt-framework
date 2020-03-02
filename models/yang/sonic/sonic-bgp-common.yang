@@ -19,6 +19,10 @@ module sonic-bgp-common {
         prefix svlan;
     }
 
+    import sonic-loopback-interface {
+        prefix lointf;
+    }
+
     import sonic-routing-policy-sets {
         prefix srpolsets;
     }
@@ -210,6 +214,9 @@ module sonic-bgp-common {
                 }
                 type leafref {
                     path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
+                }
+                type leafref {
+                    path "/lointf:sonic-loopback-interface/lointf:LOOPBACK_INTERFACE/lointf:LOOPBACK_INTERFACE_LIST/lointf:loIfName";
                 }
             }
             description "Local source address or interface name to use for connection.";
@@ -549,9 +556,9 @@ module sonic-bgp-common {
             type string;
         }
 
-        leaf flooding {
+        /*leaf flooding {
             type string;
-        }
+        }*/
 
         leaf dad-enabled {
             type boolean;

@@ -79,6 +79,13 @@
                 </USAGE>
                 <EXAMPLE summary="show vxlan vrf-vni map">
                     sonic# show vxlan vrfvnimap
+
+                    +-------+-------+
+                    | VRF   |   VNI |
+                    +=======+=======+
+                    | Vrf1  |   600 |
+                    +-------+-------+
+                    Total count : 1
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>

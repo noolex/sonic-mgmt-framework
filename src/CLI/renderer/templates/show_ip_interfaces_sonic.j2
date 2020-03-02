@@ -6,6 +6,7 @@
 {% set vars = {'flags': ""} %}
 {% set vars = {'ipv4_src_pfx': ""} %}
 {% if json_output %}
+Flags: U-Unnumbered interface
 -----------------------------------------------------------------------------------------------
 {{'%-20s'|format("Interface")}}{{'%-35s'|format("IP address/mask")}}{{'%-15s'|format("Master")}}{{'%-15s'|format("Admin/Oper")}}{{'%-15s'|format("Flags")}}
 -----------------------------------------------------------------------------------------------
@@ -28,6 +29,19 @@
 {% for ifKey in intfTblList %}
   {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
   {% if vars.update({'ipv4_src_pfx':ifKey["ipPrefix"]}) %}{% endif %}
+  {% if vars.update({'flags':""}) %}{% endif %}
+  {% for nKey in json_output %}
+      {% if "sonic-interface:INTF_TABLE_LIST" in nKey -%}
+          {% set intfEntryTblList = json_output["sonic-interface:INTF_TABLE_LIST"] %}
+          {% for intfEntry in intfEntryTblList -%}
+              {% if vars.name == intfEntry["ifName"] -%}
+                     {% if "unnumbered" in intfEntry %}
+                         {% if vars.update({'flags':"U"}) %}{% endif %}
+                     {% endif %}
+              {% endif %}
+          {% endfor %}
+      {% endif %}
+  {% endfor %}
   {% if vars.name.startswith('Ethernet') %}
       {% if vars.update({'admin_state':"down"}) %}{% endif %}
       {% if vars.update({'oper_state':"down"}) %}{% endif %}

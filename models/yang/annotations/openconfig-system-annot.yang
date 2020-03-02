@@ -32,6 +32,13 @@ module openconfig-system-annot {
         }
     }
 
+     deviation /oc-sys:system/oc-sys:config {
+        deviate add {
+            sonic-ext:key-transformer "sys_config_key_xfmr";
+            sonic-ext:table-name "DEVICE_METADATA";
+        }
+    }
+
     deviation /oc-sys:system/oc-sys:aaa/oc-sys:server-groups/oc-sys:server-group/oc-sys:config {
       deviate add {
           sonic-ext:key-transformer "global_sg_key_xfmr";

@@ -98,7 +98,7 @@ def run(func, args):
 
             elif args[1] == 'mac-addr': #### -- show mac address table [address <mac-address>]--- ###
                 for mac_entry in mac_entries:
-                    if args[2] == mac_entry['mac-address']:
+                    if args[2] == mac_entry['mac-address'].lower():
                         mac_table_list.append(fill_mac_info(mac_entry))
 
             elif args[1] == 'vlan': #### -- show mac address table [vlan <vlan-id>]--- ###
@@ -115,7 +115,7 @@ def run(func, args):
             elif args[1] == 'static':
                 if args[2] == 'address':
                     for mac_entry in mac_entries:
-                        if args[3] == mac_entry['mac-address'] and mac_entry['state']['entry-type'] == 'STATIC':
+                        if args[3] == mac_entry['mac-address'].lower() and mac_entry['state']['entry-type'] == 'STATIC':
                             mac_table_list.append(fill_mac_info(mac_entry))
 
                 elif args[2] == 'vlan':
@@ -137,7 +137,8 @@ def run(func, args):
             elif args[1] == 'dynamic':
                 if args[2] == 'address':
                     for mac_entry in mac_entries:
-                        if args[3] == mac_entry['mac-address'] and mac_entry['state']['entry-type'] == 'DYNAMIC':
+                        if args[3] == mac_entry['mac-address'].lower() and mac_entry['state']['entry-type'] == 'DYNAMIC':
+
                             mac_table_list.append(fill_mac_info(mac_entry))
 
                 elif args[2] == 'vlan':

@@ -258,20 +258,7 @@
 > 	if(str) {
 > 		lub_string_free(str);
 > 	}
-124a314,325
->     /* Handle resource leak */
->         if((method == CLISH_PTYPE_METHOD_REGEXP_SELECT) &&
->            (clish_ptype__get_usename(this->ptype) != USE_RANGE)){
->         /* Dynamic memory is allocated and
->          * retun pointer is assigned to range. Since at this point
->          * variable range going out of scope free the memory
->          * it was pointing to avoid resource leak .
->          */
->          lub_string_free((char*)range);
->          range = NULL;
->          
->     }
-135,166c336,340
+135,166c324,328
 < CLISH_SET_STR(param, ptype_name);
 < CLISH_GET_STR(param, ptype_name);
 < CLISH_SET_STR(param, access);
@@ -310,35 +297,35 @@
 > 	unsigned index)
 > {
 > 	return clish_paramv__get_param(this->paramv, index);
-170c344
+170c332
 < _CLISH_GET_STR(param, range)
 ---
 > clish_paramv_t *clish_param__get_paramv(clish_param_t * this)
-172,173c346
+172,173c334
 < 	assert(inst);
 < 	return clish_ptype__get_range(inst->ptype);
 ---
 > 	return this->paramv;
-177,178c350
+177,178c338
 < clish_param_t *clish_param__get_param(const clish_param_t * this,
 < 	unsigned int index)
 ---
 > unsigned int clish_param__get_param_count(const clish_param_t * this)
-180,181c352
+180,181c340
 < 	assert(this);
 < 	return clish_paramv__get_param(this->paramv, index);
 ---
 > 	return clish_paramv__get_count(this->paramv);
-185c356
+185c344
 < _CLISH_GET(param, unsigned int, param_count)
 ---
 > void clish_param__set_optional(clish_param_t * this, bool_t optional)
-187,188c358
+187,188c346
 < 	assert(inst);
 < 	return clish_paramv__get_count(inst->paramv);
 ---
 > 	this->optional = optional;
-189a360,483
+189a348,471
 > 
 > /*--------------------------------------------------------- */
 > bool_t clish_param__get_optional(const clish_param_t * this)

@@ -147,6 +147,14 @@ int call_pyobj(char *cmd, const char *arg) {
 
     func = PyObject_GetAttrString(module, "run");
 
+    if (!func || !PyCallable_Check(func)) {
+        lub_dump_printf("%%Error: Internal error.\n");
+        syslog(LOG_WARNING, "clish_pyobj: Function run not found in module %s", token[0]);
+        Py_XDECREF(module);
+        Py_XDECREF(name);
+        return -1;
+    }
+
     args = PyTuple_New(2);
     PyTuple_SetItem(args, 0, PyBytes_FromString(token[1]));
 
@@ -162,9 +170,17 @@ int call_pyobj(char *cmd, const char *arg) {
         pyobj_handle_error();
         syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", cmd, arg);
         ret_code = 1;
+    } else {
+        if (PyInt_Check(value)) {
+            ret_code = PyInt_AsLong(value);
+        }
+        if (ret_code) {
+            syslog(LOG_WARNING, "clish_pyobj: [cmd=%s][args:%s] ret_code:%d", cmd, arg, ret_code);
+        }
     }
 
     Py_XDECREF(module);
+    Py_XDECREF(name);
     Py_XDECREF(func);
     Py_XDECREF(args);
     Py_XDECREF(value);

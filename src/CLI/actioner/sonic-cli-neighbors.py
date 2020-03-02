@@ -25,6 +25,9 @@ from scripts.render_cli import show_cli_output
 import urllib3
 urllib3.disable_warnings()
 
+aa = cc.ApiClient()
+macDict = {}
+
 def get_keypath(func,args):
     keypath = None
     instance = None
@@ -51,57 +54,38 @@ def get_keypath(func,args):
 
     return keypath, body
 
-def fdb_call(macAddr, vlanName):
-    aa = cc.ApiClient()
-
-    vlanId = vlanName[len("Vlan"):]
-    macAddr = macAddr.strip()
-
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', name='default', macaddress=macAddr, vlan=vlanId)
+def build_mac_list():
+    global macDict
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries', name='default')
 
     try:
         response = aa.get(keypath)
         response = response.content
 
-        if 'openconfig-network-instance:entry' in response.keys():
-                instance = response['openconfig-network-instance:entry'][0]['interface']['interface-ref']['state']['interface']
+        macContainer = response.get('openconfig-network-instance:entries')
+        macList = macContainer.get('entry')
 
-        if instance is not None:
-                return instance
-        return "-"
+        for macEntry in macList:
+            vlan = macEntry.get('vlan')
+            if vlan is None:
+                continue
+            mac = macEntry.get('mac-address')
+            if mac is None:
+                continue
 
+            intf = macEntry.get('interface').get('interface-ref').get('state').get('interface')
+            if intf is None:
+                continue
+
+            key = "Vlan" + str(vlan) + "-" + mac
+            macDict[key] = intf
     except:
-        return "-"
-
-def process_single_nbr(response, args):
-    nbr_list = []
-    ext_intf_name = "-"
-    nbr = response['openconfig-if-ip:neighbor']
-
-    if nbr[0]['state'] is None:
-      return
-
-    ipAddr = nbr[0]['state']['ip']
-    if ipAddr is None:
-        return
-
-    macAddr = nbr[0]['state']['link-layer-address']
-    if macAddr is None:
-        return
-
-    if args[1].startswith('Vlan'):
-      ext_intf_name = fdb_call(macAddr, args[1])
-
-    nbr_table_entry = {'ipAddr':ipAddr,
-                       'macAddr':macAddr,
-                       'intfName':args[1],
-                       'extIntfName':ext_intf_name
-                     }
-    nbr_list.append(nbr_table_entry)
-    return nbr_list
+        print "%Error: Internal error"
 
 def process_nbrs_intf(response, args):
     nbr_list = []
+    ifName = args[1]
+    isMacDictAvailable = False
     if response['openconfig-if-ip:neighbors'] is None:
         return
 
@@ -119,8 +103,14 @@ def process_nbrs_intf(response, args):
         if macAddr is None:
             return[]
 
-        if args[1].startswith('Vlan'):
-            ext_intf_name = fdb_call(macAddr, args[1])
+        if ifName.startswith('Vlan'):
+            if isMacDictAvailable is False:
+                build_mac_list()
+                isMacDictAvailable = True
+            key = ifName + "-" + macAddr
+            ext_intf_name = macDict.get(key)
+            if ext_intf_name is None:
+                ext_intf_name = "-"
 
         nbr_table_entry = {'ipAddr':ipAddr,
                             'macAddr':macAddr,
@@ -133,6 +123,7 @@ def process_nbrs_intf(response, args):
 
 def process_sonic_nbrs(response, args):
     nbr_list = []
+    isMacDictAvailable = False
 
     if response['sonic-neighbor:NEIGH_TABLE'] is None:
         return
@@ -164,7 +155,13 @@ def process_sonic_nbrs(response, args):
             return []
 
         if ifName.startswith('Vlan'):
-            ext_intf_name = fdb_call(macAddr, ifName)
+            if isMacDictAvailable is False:
+                build_mac_list()
+                isMacDictAvailable = True
+            key = ifName + "-" + macAddr
+            ext_intf_name = macDict.get(key)
+            if ext_intf_name is None:
+                ext_intf_name = "-"
 
         nbr_table_entry = {'ipAddr':ipAddr,
                            'macAddr':macAddr,
@@ -183,7 +180,7 @@ def process_sonic_nbrs(response, args):
     return nbr_list
 
 def run(func, args):
-    aa = cc.ApiClient()
+    global macDict
 
     # create a body block
     keypath, body = get_keypath(func, args)
@@ -207,9 +204,7 @@ def run(func, args):
         if response is None:
             return
 
-        if 'openconfig-if-ip:neighbor' in response.keys():
-            nbr_list = process_single_nbr(response, args)
-        elif 'openconfig-if-ip:neighbors' in response.keys():
+        if 'openconfig-if-ip:neighbors' in response.keys():
             nbr_list = process_nbrs_intf(response, args)
         elif 'sonic-neighbor:NEIGH_TABLE' in response.keys():
             nbr_list = process_sonic_nbrs(response, args)
@@ -222,10 +217,11 @@ def run(func, args):
         else:
             return
 
+        macDict = {}
         show_cli_output(args[0],nbr_list)
         return
     except:
-        print "Error: Unexpected response from the server"
+        print "%Error: Internal error"
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

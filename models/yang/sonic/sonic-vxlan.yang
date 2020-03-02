@@ -51,21 +51,11 @@ module sonic-vxlan {
                         error-message "Error: Name should start with vtep";
                         error-app-tag invalid-vtep-name;
                     }
-                    must "(/cmn:operation/cmn:operation != 'UPDATE')"
-                    {
-                        error-message "Error: Update not allowed";
-                        error-app-tag update-disallowed;
-                    }
                     type string;
                 }
 
                 leaf src_ip {
                     type inet:ipv4-address;
-                    must "(/cmn:operation/cmn:operation != 'UPDATE')"
-                    {
-                        error-message "Error: Update not allowed";
-                        error-app-tag update-disallowed;
-                    }
                 }
             }
         }
@@ -74,6 +64,7 @@ module sonic-vxlan {
 
             list VXLAN_TUNNEL_MAP_LIST { 
                 key "name mapname";
+		sonic-ext:custom-validation ValidateVxlanMapDelete;
 
                 leaf name {
                     must "(/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE') or " + 
@@ -122,22 +113,12 @@ module sonic-vxlan {
 
                 leaf name {
                     type string;
-                    must "(/cmn:operation/cmn:operation != 'UPDATE')"
-                    {
-                        error-message "Error: Update not allowed";
-                        error-app-tag update-disallowed;
-                    }
                 }
 
                 leaf source_vtep {
                     mandatory true;
                     type leafref {
                         path "../../../VXLAN_TUNNEL/VXLAN_TUNNEL_LIST/name";
-                    }
-                    must "(/cmn:operation/cmn:operation != 'UPDATE')"
-                    {
-                        error-message "Error: Update not allowed";
-                        error-app-tag update-disallowed;
                     }
                 }
             }

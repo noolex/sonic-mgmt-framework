@@ -181,6 +181,10 @@ module sonic-interface {
                 leaf ifName {
                     type string;
                 }
+
+                leaf unnumbered {
+                    type string;
+                }
             }
 
             list INTF_TABLE_IPADDR_LIST {

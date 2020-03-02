@@ -299,7 +299,8 @@ func sonicKeyDataAdd(dbIndex db.DBNum, keyNameList []string, xpathPrefix string,
                 keyValList = strings.SplitN(keyStr, keySeparator, len(keyNameList))
         } else {
                 /* number of dbKey values more than number of keys */
-                if keySeparator == ":" && hasIpv6AddString(keyStr) {
+                if keySeparator == ":" && (hasIpv6AddString(keyStr)|| hasMacAddString(keyStr)) {
+			xfmrLogInfoAll("Key Str has ipv6/mac address with : separator")
                         if len(keyNameList) == 2 {
                                 valList := strings.SplitN(keyStr, keySeparator, -1)
                                 /* IPV6 address is first entry */
@@ -316,11 +317,13 @@ func sonicKeyDataAdd(dbIndex db.DBNum, keyNameList []string, xpathPrefix string,
                                                 xfmrLogInfoAll("No ipv6 or mac address found in value. Cannot split value ")
                                         }
                                 }
+				xfmrLogInfoAll("KeyValList has %v", keyValList)
                         } else {
                                 xfmrLogInfoAll("Number of keys : %v", len(keyNameList))
                         }
                 } else {
                         keyValList = strings.SplitN(keyStr, keySeparator, -1)
+			xfmrLogInfoAll("Split all keys KeyValList has %v", keyValList)
                 }
         }
         xfmrLogInfoAll("yang keys list - %v, xpathprefix - %v, DB-key string - %v, DB-key list after db key separator split - %v, dbIndex - %v", keyNameList, xpathPrefix, keyStr, keyValList, dbIndex)
@@ -862,6 +865,12 @@ func yangFloatIntToGoType(t yang.TypeKind, v float64) (interface{}, error) {
 
 func unmarshalJsonToDbData(schema *yang.Entry, fieldName string, value interface{}) (string, error) {
         var data string
+
+        switch v := value.(type) {
+        case string:
+              return fmt.Sprintf("%v", v), nil
+        }
+
         ykind := schema.Type.Kind
 
         switch ykind {

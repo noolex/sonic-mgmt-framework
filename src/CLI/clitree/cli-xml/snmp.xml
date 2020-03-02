@@ -18,6 +18,33 @@ Copyright 2020 Broadcom, Inc.
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_get show_snmp.j2</ACTION>
     <xi:include href="include/pipe.xml"/>
     <xi:include href="include/pipe.xml"/>
+    <DOCGEN>
+      <DESCRIPTION>
+        Displays the Simple Network Management Protocol (SNMP) server information including 
+        the physical location of the switch, the organization responsible for the network, 
+        SNMP engine identification, trap status and the agent addresses, if configured. 
+        SNMP engine identification is derived from the device MAC address on an initial boot.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to view global SNMP server information.
+      </USAGE>
+      <EXAMPLE>
+        sonic# show snmp-server
+        
+        Location   : Lab1, Rack-10
+        Contact    : Broadcom Support
+        EngineID   : 8000013703525400f6817e
+        Traps      : enable
+        
+        Agent Addresses:
+        
+                       IP Address               UDP Port            Interface            
+        --------------------------------------- -------- --------------------------------
+        1.2.3.4                                 161                                      
+        1.2.3.4                                 1024                                     
+        1.2.3.5                                 1024     Ethernet10                      
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!-- show snmp-server community -->
@@ -25,6 +52,23 @@ Copyright 2020 Broadcom, Inc.
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_community_get show_snmp_community.j2</ACTION>
     <xi:include href="include/pipe.xml"/>
     <xi:include href="include/pipe.xml"/>
+    <DOCGEN>
+      <DESCRIPTION>
+        Displays the SNMP communities configured on the switch and the community group 
+        association, if configured. Communities are used by SNMPv2 protocol to access the switch.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to view the configured SNMP communities.
+      </USAGE>
+      <EXAMPLE>
+        sonic# show snmp-server community
+        
+                 Community Name                     Group Name           
+        -------------------------------- --------------------------------
+        comm1                            group-lab                       
+        comm2                            None                            
+      </EXAMPLE>
+    </DOCGEN>
    </COMMAND>
 
 <!-- show snmp-server group -->
@@ -32,6 +76,25 @@ Copyright 2020 Broadcom, Inc.
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_group_access_get show_snmp_group.j2</ACTION>
     <xi:include href="include/pipe.xml"/>
     <xi:include href="include/pipe.xml"/>
+    <DOCGEN>
+      <DESCRIPTION>
+        Displays the SNMP groups configured on the switch. The model and security information 
+        indicate the SNMP protocol and security level used to access the system via the group. 
+        View names indicate the view that a group provides read, write or trap access to.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to view the configured SNMP groups.
+      </USAGE>
+      <EXAMPLE>
+        sonic# show snmp-server group
+        
+           Group Name      Model: Security       Read View        Write View      Notify View   
+        ---------------- -------------------- ---------------- ---------------- ----------------
+        group-floor1     v2c: no-auth-no-priv ro_view          wr_view          None            
+        group-floor2     v3 : auth-priv       r_view           None             None            
+        group-lab        v2c: no-auth-no-priv None             None             None            
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!-- show snmp-server user -->
@@ -39,6 +102,24 @@ Copyright 2020 Broadcom, Inc.
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_user_get show_snmp_user.j2</ACTION>
     <xi:include href="include/pipe.xml"/>
     <xi:include href="include/pipe.xml"/>
+    <DOCGEN>
+      <DESCRIPTION>
+        Displays the SNMPv3 users configured on the switch including any authentication 
+        and/or encryption algorithm for the user. The group name indicates a group 
+        that defines the SNMPv3 access parameters.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to view the configured SNMPv3 users.
+      </USAGE>
+      <EXAMPLE>
+        sonic# show snmp-server user 
+        
+                   User Name                        Group Name            Auth  Privacy
+        -------------------------------- -------------------------------- ----- -------
+        user1                            group-lab                        md5   aes-128
+        user2                            group-floor2                     None  None   
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!-- show snmp-server view -->
@@ -46,6 +127,23 @@ Copyright 2020 Broadcom, Inc.
   <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_view_get show_snmp_view.j2</ACTION>
   <xi:include href="include/pipe.xml"/>
   <xi:include href="include/pipe.xml"/>
+    <DOCGEN>
+      <DESCRIPTION>
+        Displays the SNMP views configured on the switch including the OID tree that 
+        the view includes or excludes.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to view the configured SNMP views.
+      </USAGE>
+      <EXAMPLE>
+        sonic# show snmp-server view 
+        
+                   View Name                         OID Tree               Type  
+        -------------------------------- -------------------------------- --------
+        view1                            1.2.3.4.5.6.7.8.9.1              included
+        view2                            1.2.3.4.5.6.7.8.9.5.1            excluded
+      </EXAMPLE>
+    </DOCGEN>
 </COMMAND>
 
 <!-- show snmp-server host -->
@@ -53,6 +151,28 @@ Copyright 2020 Broadcom, Inc.
   <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_host_get show_snmp_host.j2</ACTION>
   <xi:include href="include/pipe.xml"/>
   <xi:include href="include/pipe.xml"/>
+    <DOCGEN>
+      <DESCRIPTION>
+        Displays the SNMP hosts to which the trap or inform messages are sent by the SNMP agent. 
+        Timeout indicates the number of seconds before the traps/informs time out when sending to a host. 
+        Retries indicate the number of times the traps/informs are sent after timing out.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to view the configured SNMP hosts.
+      </USAGE>
+      <EXAMPLE>
+        sonic# show snmp-server host
+        
+                     Target Address              Type    Community    Ver T-Out Retries
+        --------------------------------------- ------ -------------- --- ----- -------
+        1.2.3.4                                 trap   comm1          v2c 15    3      
+        
+        
+                     Target Address              Type    User Name        Security    T-Out Retries
+        --------------------------------------- ------ -------------- --------------- ----- -------
+        1001::1                                 inform user1          auth-priv       200   10     
+      </EXAMPLE>
+    </DOCGEN>
 </COMMAND>
 
 </VIEW>
@@ -78,21 +198,71 @@ Before each command articulation, a comment is shown with the desired command sy
   <COMMAND name="snmp-server location" help="Configure SNMP Location">
     <PARAM name="location-name" help="SNMP location" ptype="STRING"/>
     <ACTION>python $SONIC_CLI_ROOT/sonic_cli_snmp.py  snmp_location  "${location-name}"&#xA; </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure the physical location of the switch.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure the SNMP server location information.
+      </USAGE>
+      <EXAMPLE>
+        sonic# configure terminal
+        sonic(config)# snmp-server location "Lab1, Rack-10"
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
   <COMMAND name="snmp-server contact" help="Configure SNMP Contact">
     <PARAM name="contact-name" help="SNMP contact" ptype="STRING"/>
     <ACTION>python $SONIC_CLI_ROOT/sonic_cli_snmp.py  snmp_contact  "${contact-name}"&#xA; </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure the contact information about the organization responsible for the network.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure the SNMP server contact information.
+      </USAGE>
+      <EXAMPLE>
+        sonic# configure terminal
+        sonic(config)# snmp-server contact "Broadcom Support"
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
   <COMMAND name="snmp-server enable" help="Configure SNMP Traps">
     <PARAM name="trap" help="Enable traps" ptype="SUBCOMMAND"  mode="subcommand"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_trap enable</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Enable the SNMP authentication flag on the switch. The flag is disabled by default.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure the SNMP authentication flag.
+      </USAGE>
+      <EXAMPLE>
+        sonic# configure terminal
+        sonic(config)# snmp-server enable trap
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
   <COMMAND name="snmp-server engine" help="Configure SNMP Engine ID">
     <PARAM name="engineID" help="SNMP Engine ID" ptype="ENGINE_ID_TYPE"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_engine  ${engineID}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure the SNMP engine identification on the local device. It is a hexadecimal 
+        string used for localizing configuration. The default engine ID is derived from 
+        the device MAC address.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure the SNMP engine ID.
+      </USAGE>
+      <EXAMPLE>
+        sonic# configure terminal
+        sonic(config)# snmp-server engine 8100013703525400abcd
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
   <COMMAND name="snmp-server agentaddress" help="Configure SNMP Agent Address">
@@ -105,6 +275,28 @@ Before each command articulation, a comment is shown with the desired command sy
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_agentaddr  ${__params}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure one or more SNMP agent addresses and optionally set the UDP port number on 
+        which the SNMP server listens for requests, and the Virtual Routing and Forwarding (VRF) 
+        interface used by the management station to access SNMP. The default UDP port is 161.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure an SNMP agent address, UDP port number, and VRF interface.
+      </USAGE>
+      <EXAMPLE summary="Add an SNMP agent address using the default UDP port number.">
+        sonic# configure terminal
+        sonic(config)# snmp-server agentaddress 1.2.3.4
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP agent address specifying a non-default UDP port number.">
+        sonic# configure terminal
+        sonic(config)# snmp-server agentaddress 1.2.3.4 port 1024
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP agent address specifying a non-default UDP port number and a VRF interface.">
+        sonic# configure terminal
+        sonic(config)# snmp-server agentaddress 1.2.3.5 port 1024 interface Ethernet10
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--============= This is currently unsupported ===============================
@@ -135,6 +327,22 @@ Before each command articulation, a comment is shown with the desired command sy
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_community_add  ${community-name}  ${group-name}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure one or more SNMP communities and optionally associate them with a group.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure an SNMP community and group.
+      </USAGE>
+      <EXAMPLE summary="Add an SNMP community without specifying a group.">
+        sonic# configure terminal
+        sonic(config)# snmp-server community comm1
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP community and associate it with a group.">
+        sonic# configure terminal
+        sonic(config)# snmp-server community comm1 group group-lab
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -148,6 +356,32 @@ Before each command articulation, a comment is shown with the desired command sy
       <MACRO name="SNMP-RWN-VIEWS-OPTIONS" arg=""/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_group_access_add ${__params}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure one or more SNMPv2c and SNMPv3 access groups and optionally set the views which 
+        the group uses for the GET/SET requests and to send traps. Authentication and privacy can be 
+        set for SNMPv3 groups only. Groups are used when configuring SNMP communities and users.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure an SNMP access group.
+      </USAGE>
+      <EXAMPLE summary="Add an SNMP group that can only access via SNMPv2c without associating it with a view.">
+        sonic# configure terminal
+        sonic(config)# snmp-server group group1 v2c
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP group that can only access via SNMPv2c associating it with a view for only sending out traps.">
+        sonic# configure terminal
+        sonic(config)# snmp-server group group1 v2c notify no_view
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP group that can only access via SNMPv3 specifying the security level and without associating it with a view.">
+        sonic# configure terminal
+        sonic(config)# snmp-server group group-floor2 v3 priv
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP group that can only access via SNMPv3 associating it with the views for the GET/SET requests and sending out traps.">
+        sonic# configure terminal
+        sonic(config)# snmp-server group group-floor2 v3 priv read r_view write w_view notify n_view
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -203,6 +437,32 @@ Before each command articulation, a comment is shown with the desired command sy
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_user_add ${__params}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure one or more SNMPv3 users and optionally set the authentication and group 
+        association. Authentication passwords can be encrypted. If password encryption is desired, 
+        it must be specified prior to setting the authentication type.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure an SNMPv3 user.
+      </USAGE>
+      <EXAMPLE summary="Add an SNMPv3 user without authentication and group association.">
+        sonic# configure terminal
+        sonic(config)# snmp-server user user1
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMPv3 user without authentication associating it with a group.">
+        sonic# configure terminal
+        sonic(config)# snmp-server user user1 group group-lab
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMPv3 user specifying authentication and group association.">
+        sonic# configure terminal
+        sonic(config)# snmp-server user user1 group group-lab auth md5 auth-password pwd priv aes-128 priv-password pwd
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMPv3 user specifying encrypted authentication and group association.">
+        sonic# configure terminal
+        sonic(config)# snmp-server user user2 group group-floor2 encrypted auth sha auth-password abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd priv des priv-password abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -215,6 +475,19 @@ Before each command articulation, a comment is shown with the desired command sy
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_view_add  ${view-name}  ${oid-tree} ${inclusion-option}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure one or more SNMP views and set the OID tree to include or exclude from the view.
+        SNMP views are used by the groups for the GET/SET requests and to send traps.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure a SNMP view.
+      </USAGE>
+      <EXAMPLE summary="Add an SNMP view that excludes the OID tree.">
+        sonic# configure terminal
+        sonic(config)# snmp-server view view2 1.2.3.4.5.6.7.8.9.2 excluded
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -280,6 +553,33 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_host_add ${__params}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configure one or more SNMP IPv4 or IPv6 hosts to which the trap or inform messages are 
+        sent to by the SNMP agent. Optionally set the timeout and number of retries for the inform 
+        messages sent to a host. Timeout indicates the number of seconds before the informs time out 
+        when sending to a host. Retries indicate the number of times the informs are sent after timing out.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure an SNMP host.
+      </USAGE>
+      <EXAMPLE summary="Add an SNMP IPv4 host community to receive SNMPv2c traps.">
+        sonic# configure terminal
+        sonic(config)# snmp-server host 1.2.3.4 community comm1 traps v2c
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP IPv4 host user to receive SNMPv3 informs without authentication specifying the timeout and number of retries.">
+        sonic# configure terminal
+        sonic(config)# snmp-server host 1.2.3.5 user user1 informs noauth timeout 200 retries 10
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP IPv6 host community to receive SNMPv2c informs without authentication specifying the timeout and number of retries.">
+        sonic# configure terminal
+        sonic(config)# snmp-server host 2001::1 community comm2 informs timeout 150 retries 5        
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP IPv6 host user to receive SNMPv3 traps with authentication and privacy.">
+        sonic# configure terminal
+        sonic(config)# snmp-server host 3001::1 user u1 traps priv
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -289,19 +589,67 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
 
   <COMMAND name="no snmp-server location" help="Remove SNMP Location">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_location</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Clear the physical location of the switch.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to clear the SNMP server location information.
+      </USAGE>
+      <EXAMPLE>
+        sonic# configure terminal
+        sonic(config)# no snmp-server location
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
   <COMMAND name="no snmp-server contact" help="Remove SNMP Contact">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_contact</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Clear the contact information about the organization responsible for the network.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to clear the SNMP server contact information.
+      </USAGE>
+      <EXAMPLE>
+        sonic# configure terminal
+        sonic(config)# no snmp-server contact
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
   <COMMAND name="no snmp-server enable" help="Configure SNMP Traps">
     <PARAM name="trap" help="Enable traps" ptype="SUBCOMMAND"  mode="subcommand"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_trap disable</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Disable the SNMP authentication flag on the switch.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to disable the SNMP authentication flag.
+      </USAGE>
+      <EXAMPLE>
+        sonic# configure terminal
+        sonic(config)# no snmp-server enable trap
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
   <COMMAND name="no snmp-server engine" help="Configure SNMP Engine ID">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_engine</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Delete the configured SNMP engine identification on the local device.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to delete the configured SNMP engine ID.
+      </USAGE>
+      <EXAMPLE>
+        sonic# configure terminal
+        sonic(config)# no snmp-server engine
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
   <COMMAND name="no snmp-server agentaddress" help="Configure SNMP Agent Address">
@@ -314,6 +662,27 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  no_snmp_agentaddr  ${__params}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Delete a configured SNMP agent address specifying any optionally set 
+        UDP port number and/or the VRF interface.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to delete an SNMP agent address.
+      </USAGE>
+      <EXAMPLE summary="Delete an SNMP agent address that uses the default UDP port.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server agentaddress 1.2.3.4
+      </EXAMPLE>
+      <EXAMPLE summary="Delete an SNMP agent address and the non-default UDP port it uses.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server agentaddress 1.2.3.4 port 1024
+      </EXAMPLE>
+      <EXAMPLE summary="Delete an SNMP agent address including the non-default UDP port and VRF interface it uses.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server agentaddress 1.2.3.5 port 1024 interface Ethernet10
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--============= This is currently unsupported ===============================
@@ -331,6 +700,18 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
   <COMMAND name="no snmp-server community" help="Remove SNMP Community" ptype="SUBCOMMAND" mode="subcommand">
     <PARAM name="community-name" help="SNMP Community to remove" ptype="SNMP_IDENTIFIER"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_community_delete  ${community-name}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Delete a configured SNMP community.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to delete an SNMP community.
+      </USAGE>
+      <EXAMPLE summary="Delete an SNMP community.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server community comm1
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -343,6 +724,23 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
       <MACRO name="SNMP-SECURITY-MODELS" arg=""/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_group_access_delete  ${__params}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Delete a configured SNMP access group specifying the security model (v2c or v3) it uses. 
+        When deleting an SNMPv3 access group, also specify the type of security that the group uses.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to delete an SNMP access group.
+      </USAGE>
+      <EXAMPLE summary="Delete an SNMP group that can only access via SNMPv2c.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server group group1 v2c
+      </EXAMPLE>
+      <EXAMPLE summary="Delete an SNMP group that can only access via SNMPv3 specifying the security it uses.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server group group-floor2 v3 priv
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -352,6 +750,18 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
     <PARAM name="username" help="Unique SNMP Group Name" ptype="SNMP_IDENTIFIER">
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_user_delete  ${username}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Delete a configured SNMPv3 user.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to delete an SNMPv3 user.
+      </USAGE>
+      <EXAMPLE summary="Delete an SNMPv3 user.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server user user1
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -362,6 +772,18 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
       <PARAM name="oid-tree" help="OID Tree" ptype="OID_IDENTIFIER"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_view_delete  ${view-name}  ${oid-tree}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Delete a configured SNMP view specifying the OID tree it is configured to include or exclude.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to delete an SNMP view.
+      </USAGE>
+      <EXAMPLE summary="Delete an SNMP view specifying the OID tree it excludes.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server view view2 1.2.3.4.5.6.7.8.9.2
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 <!--=========================================================================
@@ -370,6 +792,22 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
   <COMMAND name="no snmp-server host" help="Remove SNMP Host">
     <PARAM name="host-addr" help="Host address, IPv4, IPv6 or hostname" ptype="HOSTNAME_OR_IPADDR"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_host_delete  ${host-addr}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Delete a configured SNMP IPv4 or IPv6 host.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to delete an SNMP host.
+      </USAGE>
+      <EXAMPLE summary="Delete an SNMP IPv4 host.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server host 1.2.3.4
+      </EXAMPLE>
+      <EXAMPLE summary="Delete an SNMP IPv6 host.">
+        sonic# configure terminal
+        sonic(config)# no snmp-server host 3001::1
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
 
 </VIEW>

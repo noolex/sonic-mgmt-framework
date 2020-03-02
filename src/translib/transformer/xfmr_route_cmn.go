@@ -82,10 +82,10 @@ var YangToDb_route_table_conn_key_xfmr KeyXfmrYangToDb = func(inParams XfmrParam
 
     if strings.Contains(srcProto, "DIRECTLY_CONNECTED") {
         source = "connected"
-    } else if strings.Contains(srcProto, "OSPF") {
-        source = "ospf"
     } else if strings.Contains(srcProto, "OSPF3") {
         source = "ospf3"
+    } else if strings.Contains(srcProto, "OSPF") {
+        source = "ospf"
     } else if strings.Contains(srcProto, "STATIC") {
         source = "static"
     } else {

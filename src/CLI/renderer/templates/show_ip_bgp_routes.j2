@@ -12,9 +12,15 @@
 {% set vars = {'members': ""} %}
 {% if json_output -%}
 {% for key in json_output %}
-{% if "openconfig-network-instance:config" in key %}
-{% set globalConfig = json_output["openconfig-network-instance:config"] %}
-{% if vars.update({'routerId':globalConfig["router-id"]}) %}{% endif %}
+{% if "openconfig-network-instance:global" in key %}
+{% set bgpGlobal = json_output["openconfig-network-instance:global"] %}
+{% set globalConfig = bgpGlobal['config'] %}
+{% set globalState = bgpGlobal['state'] %}
+{% if 'router-id' in globalState %}
+{% if vars.update({'routerId':globalState["router-id"]}) %}{% endif %}
+{% else %}
+{% if vars.update({'routerId':'0.0.0.0'}) %}{% endif %}
+{% endif %}
 {% if vars.update({'asNum':globalConfig["as"]}) %}{% endif %}
 {% endif %}
 {% endfor %}

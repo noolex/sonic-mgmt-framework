@@ -32,10 +32,14 @@ module sonic-ifa {
                     type enumeration {
                         enum feature;
                     }
+                    description
+                        "Feature identifier name in IFA feature table.";
                 }
 
                 leaf enable {
                     type boolean;
+                    description
+                        "Flag to enable or disable IFA feature.";
                 }
             }
         }
@@ -51,16 +55,22 @@ module sonic-ifa {
                         pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,32})';
                         length 1..32;
                     }
+                    description
+                        "Flow name in IFA flow configuration list.";
                 }
 
                 leaf acl-table-name {
                     mandatory true;
                     type string;
+                    description
+                        "ACL table name used in IFA flow configuration table.";
                 }
 
                 leaf acl-rule-name {
                     mandatory true;
                     type string;
+                    description
+                        "ACL rule name used in IFA flow configuration table.";
                 }
 
                 leaf sampling-rate {
@@ -69,6 +79,9 @@ module sonic-ifa {
                             error-app-tag "Invalid IFA flow sampling rate.";
                         }
                     }
+                    description
+                        "Sampling rate for the packets belonging to the flow that
+                         need to be tagged with IFA meta-data";
                 }
 
                 leaf collector-name {
@@ -76,6 +89,8 @@ module sonic-ifa {
                         pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,32})';
                         length 1..32;
                     }
+                    description
+                        "Collector name where IFA report is to be forwarded.";
                 }
             }
         }

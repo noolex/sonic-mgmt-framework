@@ -17,6 +17,7 @@
 {% set vars = {'bestRoute': False} %}
 {% set vars = {'time': "0"} %}
 {% set vars = {'members': ""} %}
+{% set vars = {'communities': ""} %}
 {% if json_output -%}
   {% for key in json_output %}
     {% if "openconfig-network-instance:config" in key %}
@@ -81,6 +82,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
          {% if pathList %}
             {% for path in pathList %}
                {% if vars.update({'members':''}) %} {% endif %}
+               {% if vars.update({'communities':''}) %} {% endif %}
                {% if vars.update({'weight':"0"}) %}{% endif %}
                {% for key in path %}
                  {% if "state" in key %}
@@ -131,12 +133,21 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                         {% if vars.update({'members': temp|join(" ")}) %} {% endif %}
                        {% endif %}
                     {% endif %}
+                    {% if "community" in attr_sets %}
+                       {% set community_list = attr_sets['community'] %}
+                       {% set temp = [] %}
+                       {% for community in community_list %}
+                            {%  do temp.append(community) %}
+                       {% endfor %}
+                    {% endif %}
+                    {% if vars.update({'communities': temp|join(" ")}) %} {% endif %}
                  {% endif %}
-              {% endfor %}
+               {% endfor %}
  
 {{'  %s'|format(vars.members)}}
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
 {{'      Origin '}}{{ vars.origin }}{{', '}}{{vars.validRoute}}{% if vars.bestRoute == 'best' %}{{', '}}{{vars.bestRoute}}{% endif %}{{'\n'}}
+{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}
 {{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}
             {% endfor %}
          {% endif %}

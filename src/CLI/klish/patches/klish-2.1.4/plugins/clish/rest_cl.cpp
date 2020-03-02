@@ -106,10 +106,31 @@ int print_error(const char *str) {
         cJSON *err_msg = cJSON_GetObjectItemCaseSensitive(error, "error-message");
         if (err_msg) {
             lub_dump_printf("%% Error: %s\r\n", err_msg->valuestring);
+        /* Since error-message is an optional attribute, we need to check for "error-tag"
+           and print the error-message accordingly */
+        } else {
+            std::string err_msg = "operation failed";
+
+            cJSON* err_tag = cJSON_GetObjectItemCaseSensitive(error, "error-tag");
+            if(err_tag == nullptr) {
+                lub_dump_printf("%% Error: %s\r\n", err_msg.c_str());
+                return 1;
+            }
+            std::string err_tag_str = std::string {err_tag->valuestring};
+
+            if(err_tag_str == "invalid-value") {
+                err_msg = "validation failed";
+            } else if (err_tag_str == "operation-not-supported") {
+                err_msg = "not supported";
+            } else if (err_tag_str == "access-denied") {
+                err_msg = "not authorized";
+            } else {
+                err_msg = "operation failed";
+            }
+            lub_dump_printf("%% Error: %s\r\n", err_msg.c_str());
         }
         return 1;
     }
-
     return 0;
 }
 

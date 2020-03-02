@@ -30,6 +30,31 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_community_show_all show_bgp_com.j2&#xA;
         fi&#xA;
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          This command displays BGP community lists configured on the device.
+        </DESCRIPTION>
+        <USAGE>
+          User configures community-list to use it in route-maps to design BGP
+          routing policies. This command enables users to display the community
+          lists configured on this device. User can provide community list name
+          optional CLI key to display only that community list. If community list 
+          name is not specified, all community lists will be displayed by this command.
+        </USAGE>
+        <EXAMPLE summary="The following command displays all communities
+          configured in BGP">
+          sonic# show bgp community-list
+          Expanded community list CommList_Exp:   match: ANY
+               300:500
+               800:900
+               no-export
+          Standard community list CommList_RT:  match: ANY
+               100:200
+               no-export
+               no-peer
+               65100:3456
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
     <COMMAND name="show bgp ext-community-list" help="Extended community list">
         <PARAM name="list-name" help="Extended community list name" ptype="STRING" optional="true"> </PARAM>
@@ -39,6 +64,28 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_ext_community_show_all show_bgp_extcom.j2&#xA;
         fi&#xA;
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          This command displays BGP extended community lists configured on the device.
+        </DESCRIPTION>
+        <USAGE>
+          User configures extended community-list to use it in route-maps to design BGP
+          routing policies. This command enables users to display the extended community
+          lists configured on this device. User can provide extended community list name
+          optional CLI key to display only that extended community list. If
+          extended community list name is not specified, all extended community lists will 
+          be displayed by this command.
+        </USAGE>
+        <EXAMPLE summary="The following command displays all extended communities
+          configured in BGP">
+          sonic# show bgp ext-community-list
+          Standard extended community list ExtComm_AllowInt:  match: ALL
+               rt:19.32.56.167:65011,rt:31.67.182.214:3001,soo:01:65010,soo:.13.175.21:65101
+          Standard extended community list ExtComm_BlockExt:  match: ANY
+               rt:4020:65104
+               soo:9.54.32.165:65200
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
     <COMMAND name="show bgp as-path-access-list" help="AS path acces list">
         <PARAM name="list-name" help="AS path list name" ptype="STRING" optional="true"> </PARAM>
@@ -48,6 +95,27 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_aspath_show_all show_bgp_aspath.j2&#xA;
         fi&#xA;
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          This command displays BGP AS Path lists configured on the device.
+        </DESCRIPTION>
+        <USAGE>
+          User configures AS Path lists to use it in route-maps and with
+          neighbors to design BGP routing policies. This command enables users 
+          to display the AS Path lists configured on this device. User can 
+          provide AS path list name optional CLI key to display only that AS
+          Path list. If AS Path list name is not specified, all AS Path lists will 
+          be displayed by this command.
+        </USAGE>
+        <EXAMPLE summary="The following command displays all AS Path lists
+          configured in BGP">
+          sonic# show bgp as-path-access-list
+          AS path list asp_private:
+             members: ^65000.*6510565109$,65107.*65200
+          AS path list asp_public:
+             members: ^107.*2301.*709$,97.*201
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
    </VIEW>
 
@@ -447,6 +515,27 @@ limitations under the License.
             builtin="clish_nop"&#xA;
         fi
     </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command creates BGP community list
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to create BGP community list. The command provides
+        options to create expanded or standard community and accepts community
+        in AA:NN, IP:NN and well-known communities format. This command also
+        provides any and all constructs to enable user to design community
+        filters with clause match any or all. For expanded community, user can
+        specify a regular expression of communities.
+      </USAGE>
+      <EXAMPLE summary="The following command creates a community list named
+        CommList_RT">
+        sonic# configure terminal
+        sonic(config)# bgp community-list standard CommList_RT 100:200
+        sonic(config)# bgp community-list standard CommList_RT no-export 
+        sonic(config)# bgp community-list standard CommList_RT no-peer 
+        sonic(config)# bgp community-list standard CommList_RT 65100:3456
+      </EXAMPLE>
+     </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -498,6 +587,23 @@ limitations under the License.
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_as_path_list ${as-path-list-name} ${regx-id}&#xA;
     </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command creates BGP AS Path list
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to create BGP AS Path list. User can enter a regular
+        expression of AS Paths that provides flexible and powerful match
+        support. The command also provides any and all options to allow matching
+        all or any entry in as-path-list
+      </USAGE>
+      <EXAMPLE summary="The following command creates two entries for a as-path list named
+        asp_private">
+        sonic# configure terminal
+        sonic(config)# bgp as-path-list asp_private regex ^65000.*6510565109$
+        sonic(config)# bgp as-path-list asp_private regex 65107.*65200
+      </EXAMPLE>
+     </DOCGEN>
     </COMMAND>
 
     <COMMAND

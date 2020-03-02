@@ -154,6 +154,13 @@ limitations under the License.
         pattern="1312..&MAX_MTU;"
         help=""
         />
+     <!--=======================================================-->
+     <PTYPE
+        name="MGMT_RANGE_MTU"
+        method="integer"
+        pattern="1500..&MAX_MTU;"
+        help=""
+        />
     <!--=======================================================-->
     <PTYPE
         name="RANGE_0_63"
@@ -313,6 +320,13 @@ limitations under the License.
         help="Hostname string"
         />
     <!--=======================================================-->
+    <PTYPE 
+        name="STR_ASN_LST"
+        pattern="^[0-9\,]*$"
+        help="asn list"
+        />
+    <!--=======================================================--> 
+
     <PTYPE
         name="HOSTNAME_STR_64"
         pattern="(&HOSTNAME_PATTERN_64;)"
@@ -1057,7 +1071,7 @@ limitations under the License.
     <PTYPE
         name="VLAN_INTERFACE"
         method="regexp_select"
-        ext_pattern="Vlan(1-4093)"
+        ext_pattern="Vlan(1-4094)"
         pattern="&VLAN_ALL_INTF;"
         help=""
         />

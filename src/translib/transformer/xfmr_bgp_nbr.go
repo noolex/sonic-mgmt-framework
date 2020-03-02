@@ -8,6 +8,7 @@ import (
     "strconv"
     "github.com/openconfig/ygot/ygot"
     log "github.com/golang/glog"
+    "net"
 )
 
 func init () {
@@ -77,6 +78,7 @@ var bgp_nbr_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, erro
         return tblList, nil
     }
 
+    tblList = append(tblList, "BGP_NEIGHBOR")
     if len(pNbrAddr) != 0 {
         key = vrf + "|" + pNbrAddr
         log.Info("bgp_nbr_tbl_xfmr: key - ", key)
@@ -84,8 +86,15 @@ var bgp_nbr_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, erro
             if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
                 (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"] = make(map[string]db.Value)
             }
+
+            nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR"}
+            nbrEntryKey := db.Key{Comp: []string{vrf, pNbrAddr}}
+
             if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
-                (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = db.Value{Field: make(map[string]string)}
+                var entryValue db.Value
+                if entryValue, err = inParams.d.GetEntry(nbrCfgTblTs, nbrEntryKey) ; err == nil {
+                    (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = entryValue
+                }
             }
         }
     } else {
@@ -102,58 +111,83 @@ var bgp_nbr_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, erro
                     }
 
                     key = nkey.Get(0) + "|" + nkey.Get(1)
+                    log.Info("bgp_nbr_tbl_xfmr: Static Neighbor key - ", key)
+                    nbrCfgTblTs := &db.TableSpec{Name: "BGP_NEIGHBOR"}
+                    nbrEntryKey := db.Key{Comp: []string{nkey.Get(0), nkey.Get(1)}}
+
                     if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
-                        (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = db.Value{Field: make(map[string]string)}
+                        var entryValue db.Value
+                        if entryValue, err = inParams.d.GetEntry(nbrCfgTblTs, nbrEntryKey) ; err == nil {
+                            (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = entryValue
+                        }
                     }
                 }
             }
 
-            var ok bool
-            cmd := "show ip bgp vrf" + " " + vrf + " " + "summary json"
-            bgpNeighOutputJson, cmd_err := exec_vtysh_cmd (cmd)
-            if (cmd_err != nil) {
-                log.Errorf ("Failed !! Error:%s", cmd_err);
-                return tblList, err
-            }
+            cmd := "show ip bgp vrf" + " " + vrf + " " + "ipv4 summary json"
+            bgpNeighOutputJson, _:= exec_vtysh_cmd (cmd)
 
-            if outError, ok := bgpNeighOutputJson["warning"] ; ok {
-                log.Errorf ("%s failed !!, %s", outError)
-                return tblList, err
-            }
+            if _, ok := bgpNeighOutputJson["warning"] ; !ok {
+                ipv4Unicast, ok := bgpNeighOutputJson["ipv4Unicast"].(map[string]interface{})
+                if ok {
+                    peers, ok := ipv4Unicast["peers"].(map[string]interface{})
+                    if ok {
+                        if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
+                            (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"] = make(map[string]db.Value)
+                        }
 
-            ipv4Unicast, ok := bgpNeighOutputJson["ipv4Unicast"].(map[string]interface{})
-            if !ok {return tblList, err}
+                        for peer, _peerData := range peers {
+                            peerData := _peerData.(map[string]interface {})
+                            if value, ok := peerData["dynamicPeer"].(bool) ; ok {
+                                if (value == false) {
+                                    continue
+                                }
+                            } else {
+                                continue;
+                            }
 
-            if vrfName, ok := ipv4Unicast["vrfName"] ; (!ok || vrfName != vrf) {
-                log.Errorf ("Failed !! GET-req vrf:%s not same as JSON-VRFname:%s", vrf, vrfName)
-                return tblList, err
-            }
-            peers, ok := ipv4Unicast["peers"].(map[string]interface{})
-            if !ok {return tblList,err}
-
-            if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
-                (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"] = make(map[string]db.Value)
-            }
-
-            for peer, _peerData := range peers {
-                peerData := _peerData.(map[string]interface {})
-                if value, ok := peerData["dynamicPeer"].(bool) ; ok {
-                  if (value == false) {
-                      continue
-                  }
-                } else {
-                  continue;
+                            key = vrf + "|" + peer
+                            log.Info("bgp_nbr_tbl_xfmr: Dynamic ipv4 neighbor key - ", key)
+                            if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
+                                (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = db.Value{Field: make(map[string]string)}
+                            }
+                        }
+                    }
                 }
+            }
+            cmd = "show ip bgp vrf" + " " + vrf + " " + "ipv6 summary json"
+            bgpNeighOutputJson, _= exec_vtysh_cmd (cmd)
 
-                key = vrf + "|" + peer
-                log.Info("bgp_nbr_tbl_xfmr: key - ", key)
-                if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
-                    (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = db.Value{Field: make(map[string]string)}
+            if _, ok := bgpNeighOutputJson["warning"] ; !ok {
+                ipv6Unicast, ok := bgpNeighOutputJson["ipv6Unicast"].(map[string]interface{})
+                if ok {
+                    peers, ok := ipv6Unicast["peers"].(map[string]interface{})
+                    if ok {
+                        if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"]; !ok {
+                            (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"] = make(map[string]db.Value)
+                        }
+
+                        for peer, _peerData := range peers {
+                            peerData := _peerData.(map[string]interface {})
+                            if value, ok := peerData["dynamicPeer"].(bool) ; ok {
+                                if (value == false) {
+                                   continue
+                                }
+                            } else {
+                               continue;
+                            }
+
+                            key = vrf + "|" + peer
+                            log.Info("bgp_nbr_tbl_xfmr: Dynamic ipv6 neighbor key - ", key)
+                            if _, ok := (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key]; !ok {
+                                (*inParams.dbDataMap)[db.ConfigDB]["BGP_NEIGHBOR"][key] = db.Value{Field: make(map[string]string)}
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-    tblList = append(tblList, "BGP_NEIGHBOR")
     return tblList, nil
 }
 
@@ -253,8 +287,6 @@ var YangToDb_bgp_nbr_peer_type_fld_xfmr FieldXfmrYangToDb = func(inParams XfmrPa
 }
 
 var DbToYang_bgp_nbr_peer_type_fld_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams) (map[string]interface{}, error) {
-
-    var err error
     result := make(map[string]interface{})
 
     data := (*inParams.dbDataMap)[inParams.curDb]
@@ -277,7 +309,7 @@ var DbToYang_bgp_nbr_peer_type_fld_xfmr FieldXfmrDbtoYang = func(inParams XfmrPa
     } else {
         log.Info("peer_type field not found in DB")
     }
-    return result, err
+    return result, nil
 }
 
 var YangToDb_bgp_nbr_tx_add_paths_fld_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
@@ -306,7 +338,7 @@ var YangToDb_bgp_nbr_tx_add_paths_fld_xfmr FieldXfmrYangToDb = func(inParams Xfm
         return res_map, err
     }
 
-    return res_map, nil
+    return res_map, err
 
 }
 
@@ -623,10 +655,12 @@ func fill_nbr_state_cmn_info (nbr_key *_xfmr_bgp_nbr_state_key, frrNbrDataValue 
     var err error
     nbrState := nbr_obj.State
     nbrState.NeighborAddress = &nbr_key.nbrAddr
-    frrNbrDataJson := frrNbrDataValue.(map[string]interface{})
 
-    if value, ok := frrNbrDataJson["bgpState"] ; ok {
-        switch value {
+    if frrNbrDataValue != nil {
+        frrNbrDataJson := frrNbrDataValue.(map[string]interface{})
+
+        if value, ok := frrNbrDataJson["bgpState"] ; ok {
+            switch value {
             case "Idle":
                 nbrState.SessionState = ocbinds.OpenconfigBgp_Bgp_Neighbors_Neighbor_State_SessionState_IDLE
             case "Connect":
@@ -639,121 +673,210 @@ func fill_nbr_state_cmn_info (nbr_key *_xfmr_bgp_nbr_state_key, frrNbrDataValue 
                 nbrState.SessionState = ocbinds.OpenconfigBgp_Bgp_Neighbors_Neighbor_State_SessionState_OPENCONFIRM
             case "Established":
                 nbrState.SessionState = ocbinds.OpenconfigBgp_Bgp_Neighbors_Neighbor_State_SessionState_ESTABLISHED
-        }
-    }
-
-    if value, ok := frrNbrDataJson["localAs"] ; ok {
-        _localAs := uint32(value.(float64))
-        nbrState.LocalAs = &_localAs
-    }
-
-    if value, ok := frrNbrDataJson["remoteAs"] ; ok {
-        _peerAs := uint32(value.(float64))
-        nbrState.PeerAs = &_peerAs
-    }
-
-    if value, ok := frrNbrDataJson["portForeign"] ; ok {
-        _peerPort := uint16(value.(float64))
-        nbrState.PeerPort = &_peerPort
-    }
-
-    if value, ok := frrNbrDataJson["bgpTimerUpEstablishedEpoch"] ; ok {
-        _lastEstablished := uint64(value.(float64))
-        nbrState.LastEstablished = &_lastEstablished
-    }
-
-    if value, ok := frrNbrDataJson["connectionsEstablished"] ; ok {
-        _establishedTransitions := uint64(value.(float64))
-        nbrState.EstablishedTransitions = &_establishedTransitions
-    }
-
-    if statsMap, ok := frrNbrDataJson["messageStats"].(map[string]interface{}) ; ok {
-        var _rcvd_msgs ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_State_Messages_Received
-        var _sent_msgs ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_State_Messages_Sent
-        var _msgs ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_State_Messages
-        var _queues ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_State_Queues
-        _msgs.Received = &_rcvd_msgs
-        _msgs.Sent = &_sent_msgs
-        nbrState.Messages = &_msgs
-        nbrState.Queues = &_queues
-
-        if value, ok := statsMap["capabilityRecv"] ; ok {
-            _capability_rcvd := uint64(value.(float64))
-            _rcvd_msgs.CAPABILITY = &_capability_rcvd
-        }
-        if value, ok := statsMap["keepalivesRecv"] ; ok {
-            _keepalive_rcvd := uint64(value.(float64))
-            _rcvd_msgs.KEEPALIVE = &_keepalive_rcvd
-        }
-        if value, ok := statsMap["notificationsRecv"] ; ok {
-            _notification_rcvd := uint64(value.(float64))
-            _rcvd_msgs.NOTIFICATION = &_notification_rcvd
-        }
-        if value, ok := statsMap["opensRecv"] ; ok {
-            _open_rcvd := uint64(value.(float64))
-            _rcvd_msgs.OPEN = &_open_rcvd
-        }
-        if value, ok := statsMap["routeRefreshRecv"] ; ok {
-            _routeRefresh_rcvd := uint64(value.(float64))
-            _rcvd_msgs.ROUTE_REFRESH = &_routeRefresh_rcvd
-        }
-        if value, ok := statsMap["updatesRecv"] ; ok {
-            _update_rcvd := uint64(value.(float64))
-            _rcvd_msgs.UPDATE = &_update_rcvd
+            }
         }
 
-        if value, ok := statsMap["capabilitySent"] ; ok {
-            _capability_sent := uint64(value.(float64))
-            _sent_msgs.CAPABILITY = &_capability_sent
-        }
-        if value, ok := statsMap["keepalivesSent"] ; ok {
-            _keepalive_sent := uint64(value.(float64))
-            _sent_msgs.KEEPALIVE = &_keepalive_sent
-        }
-        if value, ok := statsMap["notificationsSent"] ; ok {
-            _notification_sent := uint64(value.(float64))
-            _sent_msgs.NOTIFICATION = &_notification_sent
-        }
-        if value, ok := statsMap["opensSent"] ; ok {
-            _open_sent := uint64(value.(float64))
-            _sent_msgs.OPEN = &_open_sent
-        }
-        if value, ok := statsMap["routeRefreshSent"] ; ok {
-            _routeRefresh_sent := uint64(value.(float64))
-            _sent_msgs.ROUTE_REFRESH = &_routeRefresh_sent
-        }
-        if value, ok := statsMap["updatesSent"] ; ok {
-            _update_sent := uint64(value.(float64))
-            _sent_msgs.UPDATE = &_update_sent
+        if value, ok := frrNbrDataJson["adminShutDown"] ; (ok && (value == true)) {
+            _enabled, _ := strconv.ParseBool("false")
+            nbrState.Enabled = &_enabled
+        } else {
+            _enabled, _ := strconv.ParseBool("true")
+            nbrState.Enabled = &_enabled
         }
 
-        if value, ok := statsMap["depthOutq"] ; ok {
-            _output := uint32(value.(float64))
-            _queues.Output = &_output
+        if value, ok := frrNbrDataJson["localAs"] ; ok {
+            _localAs := uint32(value.(float64))
+            nbrState.LocalAs = &_localAs
         }
-        if value, ok := statsMap["depthInq"] ; ok {
-            _input := uint32(value.(float64))
-            _queues.Input = &_input
-        }
-    }
 
-    if capabMap, ok := frrNbrDataJson["neighborCapabilities"].(map[string]interface{}) ; ok {
-        for capability,_ := range capabMap {
-            switch capability {
-                case "4byteAs":
+        if value, ok := frrNbrDataJson["remoteAs"] ; ok {
+            _peerAs := uint32(value.(float64))
+            nbrState.PeerAs = &_peerAs
+        }
+
+        if value, ok := frrNbrDataJson["portForeign"] ; ok {
+            _peerPort := uint16(value.(float64))
+            nbrState.PeerPort = &_peerPort
+        }
+
+        if value, ok := frrNbrDataJson["bgpTimerUpEstablishedEpoch"] ; ok {
+            _lastEstablished := uint64(value.(float64))
+            nbrState.LastEstablished = &_lastEstablished
+        }
+
+        if routerId, ok := frrNbrDataJson["remoteRouterId"] ; ok {
+            _routerId := routerId.(string)
+            nbrState.RemoteRouterId = &_routerId
+        }
+
+        if value, ok := frrNbrDataJson["connectionsEstablished"] ; ok {
+            _establishedTransitions := uint64(value.(float64))
+            nbrState.EstablishedTransitions = &_establishedTransitions
+        }
+
+        if value, ok := frrNbrDataJson["connectionsDropped"] ; ok {
+            _connectionsDropped := uint64(value.(float64))
+            nbrState.ConnectionsDropped = &_connectionsDropped
+        }
+
+        if value, ok := frrNbrDataJson["lastResetTimerMsecs"] ; ok {
+            _lastResetTimerSec := uint64(value.(float64))/1000
+            nbrState.LastResetTime = &_lastResetTimerSec
+        }
+
+        if resetReason, ok := frrNbrDataJson["lastResetDueTo"] ; ok {
+            _resetReason := resetReason.(string)
+            nbrState.LastResetReason = &_resetReason
+        }
+
+        if value, ok := frrNbrDataJson["bgpTimerLastRead"] ; ok {
+            _lastRead := uint64(value.(float64))/1000
+            nbrState.LastRead = &_lastRead
+        }
+
+        if value, ok := frrNbrDataJson["bgpTimerLastWrite"] ; ok {
+            _lastWrite := uint64(value.(float64))/1000
+            nbrState.LastWrite = &_lastWrite
+        }
+
+        if statsMap, ok := frrNbrDataJson["messageStats"].(map[string]interface{}) ; ok {
+            var _rcvd_msgs ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_State_Messages_Received
+            var _sent_msgs ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_State_Messages_Sent
+            var _msgs ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_State_Messages
+            var _queues ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_State_Queues
+            _msgs.Received = &_rcvd_msgs
+            _msgs.Sent = &_sent_msgs
+            nbrState.Messages = &_msgs
+            nbrState.Queues = &_queues
+
+            if value, ok := statsMap["capabilityRecv"] ; ok {
+                _capability_rcvd := uint64(value.(float64))
+                _rcvd_msgs.CAPABILITY = &_capability_rcvd
+            }
+            if value, ok := statsMap["keepalivesRecv"] ; ok {
+                _keepalive_rcvd := uint64(value.(float64))
+                _rcvd_msgs.KEEPALIVE = &_keepalive_rcvd
+            }
+            if value, ok := statsMap["notificationsRecv"] ; ok {
+                _notification_rcvd := uint64(value.(float64))
+                _rcvd_msgs.NOTIFICATION = &_notification_rcvd
+            }
+            if value, ok := statsMap["opensRecv"] ; ok {
+                _open_rcvd := uint64(value.(float64))
+                _rcvd_msgs.OPEN = &_open_rcvd
+            }
+            if value, ok := statsMap["routeRefreshRecv"] ; ok {
+                _routeRefresh_rcvd := uint64(value.(float64))
+                _rcvd_msgs.ROUTE_REFRESH = &_routeRefresh_rcvd
+            }
+            if value, ok := statsMap["updatesRecv"] ; ok {
+                _update_rcvd := uint64(value.(float64))
+                _rcvd_msgs.UPDATE = &_update_rcvd
+            }
+
+            if value, ok := statsMap["capabilitySent"] ; ok {
+                _capability_sent := uint64(value.(float64))
+                _sent_msgs.CAPABILITY = &_capability_sent
+            }
+            if value, ok := statsMap["keepalivesSent"] ; ok {
+                _keepalive_sent := uint64(value.(float64))
+                _sent_msgs.KEEPALIVE = &_keepalive_sent
+            }
+            if value, ok := statsMap["notificationsSent"] ; ok {
+                _notification_sent := uint64(value.(float64))
+                _sent_msgs.NOTIFICATION = &_notification_sent
+            }
+            if value, ok := statsMap["opensSent"] ; ok {
+                _open_sent := uint64(value.(float64))
+                _sent_msgs.OPEN = &_open_sent
+            }
+            if value, ok := statsMap["routeRefreshSent"] ; ok {
+                _routeRefresh_sent := uint64(value.(float64))
+                _sent_msgs.ROUTE_REFRESH = &_routeRefresh_sent
+            }
+            if value, ok := statsMap["updatesSent"] ; ok {
+                _update_sent := uint64(value.(float64))
+                _sent_msgs.UPDATE = &_update_sent
+            }
+
+            if value, ok := statsMap["depthOutq"] ; ok {
+                _output := uint32(value.(float64))
+                _queues.Output = &_output
+            }
+            if value, ok := statsMap["depthInq"] ; ok {
+                _input := uint32(value.(float64))
+                _queues.Input = &_input
+            }
+        }
+        nbrState.SupportedCapabilities = nil
+        if capabMap, ok := frrNbrDataJson["neighborCapabilities"].(map[string]interface{}) ; ok {
+
+            if value, ok := capabMap["4byteAs"].(string) ; ok {
+                switch value {
+                case "advertisedAndReceived":
                     nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ASN32)
-                case "addPath":
-                    nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ADD_PATHS)
-                case "routeRefresh":
+                case "advertised":
+                    nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ASN32_ADVERTISED_ONLY)
+                case "received":
+                    nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ASN32_RECEIVED_ONLY)
+                }
+            }
+
+            if addPath, ok := capabMap["addPath"].(map[string]interface{}) ; ok {
+                if ipv4UCast, ok := addPath["ipv4Unicast"].(map[string]interface{}) ; ok {
+                    if value, ok := ipv4UCast["rxAdvertised"].(bool) ; (ok && value == true) {
+                        nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ADD_PATHS_ADVERTISED_ONLY)
+                    }
+                    if value, ok := ipv4UCast["rxReceived"].(bool) ; (ok && value == true) {
+                        nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ADD_PATHS_RECEIVED_ONLY)
+                    }
+                    if value, ok := ipv4UCast["rxAdvertisedAndReceived"].(bool) ; (ok && value == true) {
+                        nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ADD_PATHS)
+                    }
+                }
+            }
+
+            if value, ok := capabMap["routeRefresh"].(string) ; ok {
+                switch value {
+                case "advertisedAndReceivedOldNew":
+                    fallthrough
+                case "advertisedAndReceivedOld":
+                    fallthrough
+                case "advertisedAndReceivedNew":
                     nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ROUTE_REFRESH)
-                case "multiprotocolExtensions":
-                    nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_MPBGP)
-                case "gracefulRestart":
+                case "advertised":
+                    nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ROUTE_REFRESH_ADVERTISED_ONLY)
+                case "received":
+                    nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_ROUTE_REFRESH_RECEIVED_ONLY)
+                }
+            }
+
+            if multi, ok := capabMap["multiprotocolExtensions"].(map[string]interface{}) ; ok {
+                if ipv4UCast, ok := multi["ipv4Unicast"].(map[string]interface{}) ; ok {
+                    if value, ok := ipv4UCast["advertised"].(bool) ; (ok && value == true) {
+                        nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_MPBGP_ADVERTISED_ONLY)
+                    }
+                    if value, ok := ipv4UCast["received"].(bool) ; (ok && value == true) {
+                        nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_MPBGP_RECEIVED_ONLY)
+                    }
+                    if value, ok := ipv4UCast["advertisedAndReceived"].(bool) ; (ok && value == true) {
+                        nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_MPBGP)
+                    }
+                }
+            }
+
+            if value, ok := capabMap["gracefulRestartCapability"].(string) ; ok {
+                switch value {
+                case "advertisedAndReceived":
                     nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_GRACEFUL_RESTART)
+                case "advertised":
+                    nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_GRACEFUL_RESTART_ADVERTISED_ONLY)
+                case "received":
+                    nbrState.SupportedCapabilities = append(nbrState.SupportedCapabilities, ocbinds.OpenconfigBgpTypes_BGP_CAPABILITY_GRACEFUL_RESTART_RECEIVED_ONLY)
+                }
             }
         }
     }
-
     _dynamically_cfred := true
 
     if cfgDbEntry, cfgdb_get_err := get_spec_nbr_cfg_tbl_entry (cfgDb, nbr_key) ; cfgdb_get_err == nil {
@@ -835,16 +958,6 @@ func fill_nbr_state_cmn_info (nbr_key *_xfmr_bgp_nbr_state_key, frrNbrDataValue 
             nbrState.StrictCapabilityMatch = &_strictCapabilityMatch
         }
 
-        if value, ok := cfgDbEntry["bfd"] ; ok {
-            _bfd, _ := strconv.ParseBool(value)
-            nbrState.Bfd = &_bfd
-        }
-
-        if value, ok := cfgDbEntry["bfd_check_ctrl_plane_failure"] ; ok {
-            _bfd_ctrl_plan_failure, _ := strconv.ParseBool(value)
-            nbrState.BfdCheckControlPlaneFailure = &_bfd_ctrl_plan_failure
-        }
-
         if value, ok := cfgDbEntry["local_as_no_prepend"] ; ok {
             _localAsNoPrepend, _ := strconv.ParseBool(value)
             nbrState.LocalAsNoPrepend = &_localAsNoPrepend
@@ -868,18 +981,19 @@ func fill_nbr_state_timers_info (nbr_key *_xfmr_bgp_nbr_state_key, frrNbrDataVal
                                  nbr_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor) error {
     var err error
     nbrTimersState := nbr_obj.Timers.State
-    frrNbrDataJson := frrNbrDataValue.(map[string]interface{})
+    if (frrNbrDataValue != nil) {
+        frrNbrDataJson := frrNbrDataValue.(map[string]interface{})
 
-    if value, ok := frrNbrDataJson["bgpTimerHoldTimeMsecs"] ; ok {
-        _neg_hold_time := (value.(float64))/1000
-        nbrTimersState.NegotiatedHoldTime = &_neg_hold_time
+        if value, ok := frrNbrDataJson["bgpTimerHoldTimeMsecs"] ; ok {
+            _neg_hold_time := (value.(float64))/1000
+            nbrTimersState.NegotiatedHoldTime = &_neg_hold_time
+        }
+
+        if value, ok := frrNbrDataJson["bgpTimerKeepAliveIntervalMsecs"] ; ok {
+            _keepaliveInterval := (value.(float64))/1000
+            nbrTimersState.KeepaliveInterval = &_keepaliveInterval
+        }
     }
-
-    if value, ok := frrNbrDataJson["bgpTimerKeepAliveIntervalMsecs"] ; ok {
-        _keepaliveInterval := (value.(float64))/1000
-        nbrTimersState.KeepaliveInterval = &_keepaliveInterval
-    }
-
     if cfgDbEntry, cfgdb_get_err := get_spec_nbr_cfg_tbl_entry (cfgDb, nbr_key) ; cfgdb_get_err == nil {
         if value, ok := cfgDbEntry["conn_retry"] ; ok {
             _connectRetry, _ := strconv.ParseFloat(value, 64)
@@ -901,27 +1015,28 @@ func fill_nbr_state_timers_info (nbr_key *_xfmr_bgp_nbr_state_key, frrNbrDataVal
 func fill_nbr_state_transport_info (nbr_key *_xfmr_bgp_nbr_state_key, frrNbrDataValue interface{}, cfgDb *db.DB,
                                     nbr_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor) error {
     var err error
-
+    ygot.BuildEmptyTree(nbr_obj.Transport)
     nbrTransportState := nbr_obj.Transport.State
-    frrNbrDataJson := frrNbrDataValue.(map[string]interface{})
+    if (frrNbrDataValue != nil) {
+        frrNbrDataJson := frrNbrDataValue.(map[string]interface{})
 
-    if value, ok := frrNbrDataJson["hostLocal"] ; ok {
-        _localAddress := string(value.(string))
-        nbrTransportState.LocalAddress = &_localAddress
+        if value, ok := frrNbrDataJson["hostLocal"] ; ok {
+            _localAddress := string(value.(string))
+            nbrTransportState.LocalAddress = &_localAddress
+        }
+        if value, ok := frrNbrDataJson["portLocal"] ; ok {
+            _localPort := uint16(value.(float64))
+            nbrTransportState.LocalPort = &_localPort
+        }
+        if value, ok := frrNbrDataJson["hostForeign"] ; ok {
+            _remoteAddress := string(value.(string))
+            nbrTransportState.RemoteAddress = &_remoteAddress
+        }
+        if value, ok := frrNbrDataJson["portForeign"] ; ok {
+            _remotePort := uint16(value.(float64))
+            nbrTransportState.RemotePort = &_remotePort
+        }
     }
-    if value, ok := frrNbrDataJson["portLocal"] ; ok {
-        _localPort := uint16(value.(float64))
-        nbrTransportState.LocalPort = &_localPort
-    }
-    if value, ok := frrNbrDataJson["hostForeign"] ; ok {
-        _remoteAddress := string(value.(string))
-        nbrTransportState.RemoteAddress = &_remoteAddress
-    }
-    if value, ok := frrNbrDataJson["portForeign"] ; ok {
-        _remotePort := uint16(value.(float64))
-        nbrTransportState.RemotePort = &_remotePort
-    }
-
     if cfgDbEntry, cfgdb_get_err := get_spec_nbr_cfg_tbl_entry (cfgDb, nbr_key) ; cfgdb_get_err == nil {
         if value, ok := cfgDbEntry["passive_mode"] ; ok {
             _passiveMode, _ := strconv.ParseBool(value)
@@ -950,16 +1065,23 @@ func get_specific_nbr_state (get_req_uri_type E_bgp_nbr_state_get_req_uri_t,
                              nbr_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor,
                              cfgDb *db.DB, nbr_key *_xfmr_bgp_nbr_state_key) error {
     var err error
-
+    var nbrKey string
     vtysh_cmd := "show ip bgp vrf " + nbr_key.niName + " neighbors " + nbr_key.nbrAddr + " json"
     nbrMapJson, cmd_err := exec_vtysh_cmd (vtysh_cmd)
     if cmd_err != nil {
-        log.Errorf("Failed to fetch bgp neighbors state info for niName:%s nbrAddr:%s. Err: %s\n", nbr_key.niName, nbr_key.nbrAddr, cmd_err)
-        return cmd_err
+        log.Errorf("Failed to fetch bgp neighbors state info for niName:%s nbrAddr:%s. Err: %s vtysh_cmd %s \n", nbr_key.niName, nbr_key.nbrAddr, cmd_err, vtysh_cmd)
     }
 
-    if frrNbrDataJson, ok := nbrMapJson[nbr_key.nbrAddr].(map[string]interface{}) ; ok {
+    if net.ParseIP(nbr_key.nbrAddr) == nil {
+        nbrKey = nbr_key.nbrAddr
+    } else {
+        nbrKey = net.ParseIP(nbr_key.nbrAddr).String()
+    }
+
+    if frrNbrDataJson, ok := nbrMapJson[nbrKey].(map[string]interface{}) ; ok {
         err = fill_nbr_state_info (get_req_uri_type, nbr_key, frrNbrDataJson, cfgDb, nbr_obj)
+    } else {
+        err = fill_nbr_state_info (get_req_uri_type, nbr_key, nil, cfgDb, nbr_obj)
     }
 
     return err
@@ -1133,6 +1255,7 @@ func get_spec_nbr_af_cfg_tbl_entry (cfgDb *db.DB, key *_xfmr_bgp_nbr_af_state_ke
 
 var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) error {
     var err error
+    var nbrKey string
     cmn_log := "GET: xfmr for BGP-nbrs-nbr-af state"
 
     nbrs_af_state_obj, nbr_af_key, get_err := validate_nbr_af_state_get (inParams, cmn_log);
@@ -1143,34 +1266,13 @@ var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
     var afiSafi_cmd string
     switch (nbr_af_key.afiSafiNameEnum) {
         case ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV4_UNICAST:
-            afiSafi_cmd = "ipv4 unicast"
+            afiSafi_cmd = "ipv4"
         case ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV6_UNICAST:
-            afiSafi_cmd = "ipv6 unicast"
+            afiSafi_cmd = "ipv6"
     }
-
-    vtysh_cmd := "show ip bgp vrf " + nbr_af_key.niName + " " + afiSafi_cmd + " neighbors " + nbr_af_key.nbrAddr + " received-routes json"
-    rcvdRoutesJson, rcvd_cmd_err := exec_vtysh_cmd (vtysh_cmd)
-    if rcvd_cmd_err != nil {
-        log.Errorf("Failed check to fetch bgp neighbors received-routes state info for niName:%s nbrAddr:%s afi-safi-name:%s. Err: %s\n",
-                   nbr_af_key.niName, nbr_af_key.nbrAddr, afiSafi_cmd, rcvd_cmd_err)
-    }
-
-    vtysh_cmd = "show ip bgp vrf " + nbr_af_key.niName + " neighbors " + nbr_af_key.nbrAddr + " json"
-    nbrMapJson, nbr_cmd_err := exec_vtysh_cmd (vtysh_cmd)
-    if nbr_cmd_err != nil {
-        log.Errorf("Failed to fetch bgp neighbors state info for niName:%s nbrAddr:%s afi-safi-name:%s. Err: %s\n",
-                   nbr_af_key.niName, nbr_af_key.nbrAddr, afiSafi_cmd, nbr_cmd_err)
-        return nbr_cmd_err
-    }
-
-    frrNbrDataJson, ok := nbrMapJson[nbr_af_key.nbrAddr].(map[string]interface{}); if !ok {
-        log.Errorf("Failed to decode data from bgp neighbors state info for niName:%s nbrAddr:%s afi-safi-name:%s. Err: %s\n",
-                   nbr_af_key.niName, nbr_af_key.nbrAddr, afiSafi_cmd, nbr_cmd_err)
-        return nbr_cmd_err
-    }
-    nbrs_af_state_obj.AfiSafiName = nbr_af_key.afiSafiNameEnum
 
     if cfgDbEntry, cfgdb_get_err := get_spec_nbr_af_cfg_tbl_entry (inParams.dbs[db.ConfigDB], &nbr_af_key) ; cfgdb_get_err == nil {
+        nbrs_af_state_obj.AfiSafiName = nbr_af_key.afiSafiNameEnum
         if value, ok := cfgDbEntry["admin_status"] ; ok {
             _enabled, _ := strconv.ParseBool(value)
             nbrs_af_state_obj.Enabled = &_enabled
@@ -1220,25 +1322,45 @@ var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
         }
     }
 
+    vtysh_cmd := "show ip bgp vrf " + nbr_af_key.niName + " " + afiSafi_cmd + " neighbors " + nbr_af_key.nbrAddr + " json"
+    nbrMapJson, nbr_cmd_err := exec_vtysh_cmd (vtysh_cmd)
+    if nbr_cmd_err != nil {
+        log.Errorf("Failed to fetch bgp neighbors state info for niName:%s nbrAddr:%s afi-safi-name:%s. Err: %s, Cmd: %s\n",
+                   nbr_af_key.niName, nbr_af_key.nbrAddr, afiSafi_cmd, nbr_cmd_err, vtysh_cmd)
+        return nil
+    }
+    if net.ParseIP(nbr_af_key.nbrAddr) == nil {
+        nbrKey = nbr_af_key.nbrAddr
+    } else {
+        nbrKey = net.ParseIP(nbr_af_key.nbrAddr).String()
+    }
+
+    frrNbrDataJson, ok := nbrMapJson[nbrKey].(map[string]interface{}); if !ok {
+        log.Errorf("Failed data from bgp neighbors state info for niName:%s nbrAddr:%s afi-safi-name:%s. Err: %s vtysh_cmd: %s \n",
+                   nbr_af_key.niName, nbr_af_key.nbrAddr, afiSafi_cmd, nbr_cmd_err, vtysh_cmd)
+        return nil
+    }
+
     _active := false
     var _prefixes ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Neighbors_Neighbor_AfiSafis_AfiSafi_State_Prefixes
 
     var _activeRcvdPrefixes, _activeSentPrefixes uint32
+    nbrs_af_state_obj.AfiSafiName = nbr_af_key.afiSafiNameEnum
     if AddrFamilyMap, ok := frrNbrDataJson["addressFamilyInfo"].(map[string]interface{}) ; ok {
-    log.Info("Family dump: %v %d", AddrFamilyMap, nbrs_af_state_obj.AfiSafiName)
+        log.Info("Family dump: %v %d", AddrFamilyMap, nbrs_af_state_obj.AfiSafiName)
         if nbrs_af_state_obj.AfiSafiName == ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV4_UNICAST {
             if ipv4UnicastMap, ok := AddrFamilyMap["ipv4Unicast"].(map[string]interface{}) ; ok {
-    log.Info("IPv4 dump: %v", AddrFamilyMap)
+                log.Info("IPv4 dump: %v", AddrFamilyMap)
                 _active = true
                 if value, ok := ipv4UnicastMap["acceptedPrefixCounter"] ; ok {
                     _activeRcvdPrefixes = uint32(value.(float64))
-    log.Info("IPv4 dump recd: %d", _activeRcvdPrefixes)
+                    log.Info("IPv4 dump recd: %d", _activeRcvdPrefixes)
                     _prefixes.Received = &_activeRcvdPrefixes
                 }
                 if value, ok := ipv4UnicastMap["sentPrefixCounter"] ; ok {
                     _activeSentPrefixes = uint32(value.(float64))
                     _prefixes.Sent = &_activeSentPrefixes
-    log.Info("IPv4 dump set: %d", _activeSentPrefixes)
+                    log.Info("IPv4 dump set: %d", _activeSentPrefixes)
                 }
             }
         } else if nbrs_af_state_obj.AfiSafiName == ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_IPV6_UNICAST {
@@ -1255,7 +1377,14 @@ var DbToYang_bgp_nbrs_nbr_af_state_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
            }
         }
     }
-   
+ 
+    vtysh_cmd = "show ip bgp vrf " + nbr_af_key.niName + " " + afiSafi_cmd + " neighbors " + nbr_af_key.nbrAddr + " received-routes json"
+    rcvdRoutesJson, rcvd_cmd_err := exec_vtysh_cmd (vtysh_cmd)
+    if rcvd_cmd_err != nil {
+        log.Errorf("Failed check to fetch bgp neighbors received-routes state info for niName:%s nbrAddr:%s afi-safi-name:%s. Err: %s\n",
+                   nbr_af_key.niName, nbr_af_key.nbrAddr, afiSafi_cmd, rcvd_cmd_err)
+    }
+
     if rcvd_cmd_err == nil {
         var _receivedPrePolicy uint32
         if value, ok := rcvdRoutesJson["totalPrefixCounter"] ; ok {

@@ -230,7 +230,7 @@ def process_input_file(filename, fd, macro_data):
             macroname = []
             data = input_file.readlines()
             docgen = False            
-            for line in data:
+            for line in data:              
                 if "<DOCGEN" in line:
                     docgen =  True
                 if "</DOCGEN" in line:
@@ -238,11 +238,6 @@ def process_input_file(filename, fd, macro_data):
                 if '<DOCGEN' in line and "</DOCGEN" in line:
                     docgen =  True
                 nargs = 0
-                # preserve formatting for strings inside documentation tags
-                # if line.find("<DOCGEN") == 0:                     
-                #     docgen =  True
-                # if line.find("</DOCGEN") == 0:
-                #     docgen =  False
                 if not docgen:
                     line = ' '.join(line.split())
                 if '<DOCGEN' in line and "</DOCGEN" in line:
@@ -320,9 +315,19 @@ def load_all_macros (macro_dir_path):
             macro_file_name = macro_dir_path + "/" + macro_file_name
             with open(macro_file_name, "r") as macrofile:
                 data = macrofile.readlines()
-
+                docgen =  False
                 for line in data:
-                    line = ' '.join(line.split())
+                    if "<DOCGEN" in line:
+                        docgen =  True
+                    if "</DOCGEN" in line:
+                        docgen =  False
+                    if '<DOCGEN' in line and "</DOCGEN" in line:
+                        docgen =  True
+                    if not docgen:
+                        line = ' '.join(line.split())
+                    if '<DOCGEN' in line and "</DOCGEN" in line:
+                        docgen =  False
+                    #line = ' '.join(line.split())
                     macro_data.append(line)
                 macrofile.close()
     return macro_data

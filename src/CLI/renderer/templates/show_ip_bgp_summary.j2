@@ -13,6 +13,22 @@
     {% if 'neighbor' in neighbor_list %}
         {% set neighbors = neighbor_list['neighbor'] %}
         {% for neighbor in neighbors %}
+            {% set ns = namespace(print = False) %}
+            {% if 'afi-safis' in neighbor %}
+                {% set afi_safis = neighbor['afi-safis']['afi-safi'] %}
+                {% for afi_safi in afi_safis %}
+                    {% if 'state' in afi_safi %}
+                        {% if 'afi-safi-name' in afi_safi['state'] %}
+                            {% if afi_safi['state']['afi-safi-name'] == json_output['afisafiname'] and 'enabled' in afi_safi['state'] and afi_safi['state']['enabled'] == True %}
+                                {% set ns.print = True %}
+                            {% endif %}
+                        {% endif %}
+                     {% endif %}
+                 {% endfor %}
+            {% endif %}
+            {% if ns.print == False %}
+               {% continue %}
+            {% endif %}
             {% set n_state = neighbor['state'] %}
             {{-neighbor['neighbor-address'].ljust(16)-}}
             {{-'4'.ljust(4)-}}
@@ -22,9 +38,23 @@
                 {{-' '.ljust(6)-}}
             {% endif %}
             {% if 'messages' in n_state %}
+                {% set n_sent = 0 %}
+                {% set n_rcvd = 0 %}
                 {% set n_messages = n_state['messages'] %}
-                {{-(n_messages['received']['UPDATE']|string).ljust(10)-}}
-                {{-(n_messages['sent']['UPDATE']|string).ljust(10)-}}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:OPEN']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:OPEN']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['NOTIFICATION']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['NOTIFICATION']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['UPDATE']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['UPDATE']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:KEEPALIVE']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:KEEPALIVE']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:ROUTE-REFRESH']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:ROUTE-REFRESH']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:CAPABILITY']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:CAPABILITY']|int %}
+                {{-(n_rcvd|string).ljust(10)-}}
+                {{-(n_sent|string).ljust(10)-}}
             {% else %}
                 {{-'0'.ljust(10)-}}
                 {{-'0'.ljust(10)-}}

@@ -132,12 +132,38 @@ limitations under the License.
             help="Donor Interface Name"
             ptype="STRING" />
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure IPv4 unnumbered interface at the interface level.
+			</USAGE>
+			<EXAMPLE summary="Configure IPv4 unnumbered interface">
+				sonic-cli(config)# interface Ethernet 0
+				sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
+			</EXAMPLE>
+		</DOCGEN>
     </COMMAND>
 
     <COMMAND
         name="no ip unnumbered"
-	    help="Configure IPv4 unnumbered interface" >
+	    help="Unconfigure IPv4 unnumbered interface" >
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure IPv4 unnumbered interface.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure IPv4 unnumbered interface at the interface level.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure IPv4 unnumbered interface">
+				sonic-cli(config)# interface Ethernet 0
+				sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
+				sonic-cli(conf-if-Ethernet0)# no ip unnumbered
+			</EXAMPLE>
+		</DOCGEN>
     </COMMAND>
 </VIEW>
 
@@ -267,13 +293,40 @@ limitations under the License.
              name="donor-interface"
              help="Donor Interface Name"
              ptype="STRING" />
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": ${donor-interface}}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure IPv4 unnumbered interface at the interface level.
+			</USAGE>
+			<EXAMPLE summary="Configure IPv4 unnumbered interface">
+				sonic-cli(config)# interface PortChannel 1 
+				sonic-cli(conf-if-po1)# ip unnumbered Loopback1
+			</EXAMPLE>
+		</DOCGEN>
      </COMMAND>
 
      <COMMAND
          name="no ip unnumbered"
-         help="Configure IPv4 unnumbered interface" >
+         help="Unconfigure IPv4 unnumbered interface" >
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure IPv4 unnumbered interface.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure IPv4 unnumbered interface at the interface level.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure IPv4 unnumbered interface">
+				sonic-cli(config)# interface PortChannel 1 
+				sonic-cli(conf-if-po1)# ip unnumbered Loopback1
+				sonic-cli(conf-if-po1)# no ip unnumbered
+			</EXAMPLE>
+		</DOCGEN>
      </COMMAND>
 </VIEW>
 

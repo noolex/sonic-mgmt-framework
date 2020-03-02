@@ -15,10 +15,8 @@ func roleToGroup(role string) []string {
 	switch role {
 	case "admin":
 		return []string{"admin", "sudo", "docker"}
-	
 	case "operator":
 		return []string{"operator", "docker"}
-	
 	default:
 		return []string{}
 	}

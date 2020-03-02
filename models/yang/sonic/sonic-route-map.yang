@@ -23,8 +23,8 @@ module sonic-route-map {
         prefix srpolsets;
     }
 
-    import sonic-vlan-interface {
-        prefix svlanint;
+    import sonic-vlan {
+        prefix svlan;
     }
 
     organization
@@ -64,7 +64,7 @@ module sonic-route-map {
                 path "/spc:sonic-portchannel/spc:PORTCHANNEL/spc:PORTCHANNEL_LIST/spc:name";
             }
             type leafref {
-                path "/svlanint:sonic-vlan-interface/svlanint:VLAN_INTERFACE/svlanint:VLAN_INTERFACE_LIST/svlanint:vlanName";
+                path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
             }
         }
     }
@@ -159,17 +159,34 @@ module sonic-route-map {
                 }
 
                 leaf-list match_neighbor {
-                    type inet:ip-address;
+                    type union {
+                        type inet:ip-address;
+                        type leafref {
+                            path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+                        }
+                        type leafref {
+                            path "/spc:sonic-portchannel/spc:PORTCHANNEL/spc:PORTCHANNEL_LIST/spc:name";
+                        }
+                        type leafref {
+                            path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
+                        }
+                    }
                     description
-                        "List of IP addresses in the neighbor set";
-                    max-elements 1;
+                        "IP addresse or interface for match operation.";
+                    must "(count(current()) = 1)" {
+                        error-app-tag "max-allowed-neighbor-reached";
+                        error-message "Only one neighbor or interface can be configured.";
+                    }
                 }
 
                 leaf-list match_tag {
                     type tag-type;
                     description
-                        "Value of the tag set member";
-                    max-elements 1;
+                        "Value of the tag match member";
+                    must "(count(current()) = 1)" {
+                        error-app-tag "max-allowed-tag-reached";
+                        error-message "Only one tag value can be configured.";
+                    }
                 }
 
                 leaf match_med{
@@ -222,13 +239,17 @@ module sonic-route-map {
                 leaf set_next_hop{
                     type string;
                 }
-
+                 
                 leaf set_repeat_asn{
                     type uint8;
                 }
 
                 leaf set_asn{
                     type uint32;
+                }
+ 
+                leaf set_asn_list{
+                    type string;
                 }
 
                 leaf-list set_community_inline {
@@ -249,6 +270,16 @@ module sonic-route-map {
                     type leafref {
                         path "/srpolsets:sonic-routing-policy-sets/srpolsets:EXTENDED_COMMUNITY_SET/srpolsets:EXTENDED_COMMUNITY_SET_LIST/srpolsets:name";
                     }
+                }
+
+                leaf set_tag {
+                    type tag-type;
+                    description
+                        "Value of the tag set member";
+                }
+
+                leaf set_weight{
+                    type uint32;
                 }
 
             }

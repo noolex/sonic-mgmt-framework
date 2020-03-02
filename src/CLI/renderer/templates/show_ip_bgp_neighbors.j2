@@ -1,9 +1,13 @@
-{% if 'openconfig-network-instance:neighbors' in json_output %}
+{% if 'openconfig-network-instance:neighbors' in json_output and 'openconfig-network-instance:global' in json_output %}
     {% set neighbor_list = json_output['openconfig-network-instance:neighbors'] %}
+    {% set bgp_global = json_output['openconfig-network-instance:global'] %}
+    {% set g_config = bgp_global['config'] %}
+    {% set g_state = bgp_global['state'] %}
     {% if 'neighbor' in neighbor_list %}
         {{ '\n' }}
         {% set neighbors = neighbor_list['neighbor'] %}
         {% for neighbor in neighbors %}
+            {% if 'state' in neighbor %}
             {% set n_state = neighbor['state'] %}
             {{-'BGP neighbor is '}}{{neighbor['neighbor-address']-}}
             {{-', remote AS '}}{{n_state['peer-as']-}}
@@ -19,118 +23,100 @@
             {% set vars = {'nbr_enabled': False} %}
             {% if vars.update({'nbr_enabled':n_state['enabled']}) %}{% endif %}
             {% if vars.nbr_enabled == True %}
-                {{-'  Administratively up\n'}}
             {% else %}
                 {{-'  Administratively shut down\n'}}
             {% endif %}
             {{-'  BGP version '}}{{'4'-}}
-            {{-', remote router ID '}}{{' '-}}
-            {{-', local router ID '}}{{' '}}
+            {% set vars = {'remote_router_id': ""} %}
+            {% if vars.update({'remote_router_id':n_state['openconfig-bgp-ext:remote-router-id']}) %}{% endif %}
+            {{-', remote router ID '}}{{vars.remote_router_id|string}}{{' '-}}
+            {% if 'router-id' in g_state %}
+                {{-', local router ID '}}{{g_state['router-id']}}
+            {% else %}
+                {{-', local router ID '}}{{'0.0.0.0'}}{{'\n'}}
+            {% endif %}
+
             {% if 'session-state' in n_state %}
-                {{-'  BGP state = '}}{{(n_state['session-state']|string)-}}
+                {{-'  BGP state = '}}{{n_state['session-state'][0]|string|upper}}{{n_state['session-state'][1:]|string|lower-}}
                 {% if 'last-established' in n_state %} 
                     {{-', up for '}}{{n_state['last-established']|string}}{{'\n'}}
                 {% else %}
-                    {{-', up for '}}{{'00d:00h:00m:00s'}}{{'\n'}}
+                    {{'\n'}}
                 {% endif %}
             {% else %}
                 {{-'  BGP state = Unestablished'}}
             {% endif %}
+            {% set vars = {'last_read': ""} %}
+            {% set vars = {'last_write': ""} %}
+            {% set vars = {'reset_reason': ""} %}
+            {% set vars = {'reset_time': ""} %}
+            {% set vars = {'conn_eas': ""} %}
+            {% set vars = {'conn_drop': ""} %}
+            {% if vars.update({'last_read':n_state['openconfig-bgp-ext:last-read']}) %}{% endif %}
+            {% if vars.update({'last_write':n_state['openconfig-bgp-ext:last-write']}) %}{% endif %}
+            {{-'  Last read '}}{{vars.last_read}}{{', Last write '}}{{vars.last_write}}{{'\n'}}
+
             {% set vars = {'hold_time': ""} %}
             {% set vars = {'kpa_intvl': ""} %}
             {% set vars = {'nego_time': ""} %}
-            {% set vars = {'min_adv_intvl': ""} %}
-            {% if vars.update({'hold_time':neighbor['timers']['state']['hold-time']}) %}{% endif %}
-            {% if vars.update({'kpa_intvl':neighbor['timers']['state']['keepalive-interval']}) %}{% endif %}
-            {% if vars.update({'nego_time':neighbor['timers']['state']['negotiated-hold-time']}) %}{% endif %}
-            {% if vars.update({'min_adv_intvl':neighbor['timers']['state']['minimum-advertisement-interval']}) %}{% endif %}
-            {{-'  Hold time is '}}{{vars.hold_time}}{{' seconds'-}}
-            {{-', keepalive interval is '}}{{vars.kpa_intvl}}{{' seconds'-}}
-            {{-', negotiated hold time is '}}{{vars.nego_time}}{{' seconds'}}{{'\n'}}
+            {% set vars = {'min_adv_intvl': "30"} %}
+            {% if 'timers' in neighbor and 'state' in neighbor['timers'] %}
+              {% if vars.update({'hold_time':neighbor['timers']['state']['hold-time']}) %}{% endif %}
+              {% if vars.update({'kpa_intvl':neighbor['timers']['state']['keepalive-interval']}) %}{% endif %}
+              {% if vars.update({'nego_time':neighbor['timers']['state']['negotiated-hold-time']}) %}{% endif %}
+              {% if 'minimum-advertisement-interval' in neighbor['timers']['state'] %}
+                {% if vars.update({'min_adv_intvl':neighbor['timers']['state']['minimum-advertisement-interval']}) %}{% endif %}
+              {% endif %}
+            {% endif %}
+            {{-'  Hold time is '}}{{vars.nego_time}}{{' seconds'-}}
+            {{-', keepalive interval is '}}{{vars.kpa_intvl}}{{' seconds'-}}{{'\n'}}
             {{-'  Minimum time between advertisement runs is '}}{{vars.min_adv_intvl}}{{' seconds'}}{{'\n'}}
-
-            {% if 'afi-safis' in neighbor %}
-                {% set afi_safis = neighbor['afi-safis']['afi-safi'] %}
-                {% for afi_safi in afi_safis %}
-                    {% if 'state' in afi_safi %}
-                        {% if 'enabled' in afi_safi['state'] %}
-                            {% if afi_safi['state']['enabled'] == True %}
-                                {{-'  Address-families enabled\n'}}
-                            {% else %}
-                                {{-'  Address-families disabled\n'}}
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                {% for afi_safi in afi_safis %}
-                    {% if 'state' in afi_safi %}
-                        {% if 'prefixes' in afi_safi['state'] and 'received' in afi_safi['state']['prefixes'] %}
-                            {{-'  Prefixes received '}}{{afi_safi['state']['prefixes']['received']}}{{'\n'}}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-
-                {% for afi_safi in afi_safis %}
-                    {% if 'state' in afi_safi %}
-                        {% if 'openconfig-bgp-ext:route-reflector-client' in afi_safi['state'] %}
-                            {% if afi_safi['state']['openconfig-bgp-ext:route-reflector-client'] == True %}
-                                {{-'Route reflector client enabled\n'}}
-                            {% else %}
-                                {{-'Route reflector client disabled\n'}}
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                {% for afi_safi in afi_safis %}
-                    {% if 'state' in afi_safi %}
-                        {% if 'openconfig-bgp-ext:send-community' in afi_safi['state'] %}
-                            {{-'Community attribute sent to this neighbor '}}{{afi_safi['state']['openconfig-bgp-ext:send-community']}}{{'\n'}}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-
-                {% for afi_safi in afi_safis %}
-                    {% if 'apply-policy' in afi_safi and 'state' in afi_safi['apply-policy'] %}
-                        {% if 'import-policy' in afi_safi['apply-policy']['state'] %}
-                            {% set import_policys = afi_safi['apply-policy']['state']['import-policy'] %}
-                            {% set import_policys_len = import_policys|length %}
-                            {{-'  Import policy:\n'}}
-                            {% for import_policy in afi_safi['apply-policy']['state']['import-policy'] %}
-                                {% if loop.index == 1 %}
-                                    {{-'    '}}{{import_policy|string}}
-                                {% elif loop.index == import_policys_len %}
-                                    {{-', '}}{{import_policy|string}}{{'\n'}}
-                                {% else %}
-                                    {{-', '}}{{import_policy|string}}
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                        {% if 'export-policy' in afi_safi['apply-policy']['state'] %}
-                            {% set export_policys = afi_safi['apply-policy']['state']['export-policy'] %}
-                            {% set export_policys_len = export_policys|length %}
-                            {{-'  Export policy:\n'}}
-                            {% for export_policy in afi_safi['apply-policy']['state']['export-policy'] %}
-                                {% if loop.index == 1 %}
-                                    {{-'    '}}{{export_policy|string}}
-                                {% elif loop.index == export_policys_len %}
-                                    {{-', '}}{{export_policy|string}}{{'\n'}}
-                                {% else %}
-                                    {{-', '}}{{export_policy|string}}
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-
-            {% endif %}
-
             {% set vars = {'nbr_bfd': False} %}
-            {% if vars.update({'nbr_bfd':n_state['openconfig-bgp-ext:bfd']}) %}{% endif %}
-            {% if vars.nbr_bfd == True %}
-                {{-'  BFD enabled\n'}}
+            {% if 'openconfig-bfd:enable-bfd' in neighbor %}
+                {% set n_tp_state = neighbor['openconfig-bfd:enable-bfd']['state'] %}
+                {% if vars.update({'nbr_bfd':n_tp_state['enabled']}) %}{% endif %}
+                {% if vars.nbr_bfd == True %}
+                    {{-'  BFD enabled\n'}}
+                {% endif %}
             {% endif %}
+            {% if 'supported-capabilities' in n_state %}
             {{-'  Neighbor capabilities:\n'}}
-            {{-'    4 Byte AS: advertised and received\n'}}
+                {% set supported_caps = n_state['supported-capabilities'] %}
+                {% for supported_cap in supported_caps %}
+                    {% if supported_cap == 'openconfig-bgp-ext:ASN32_ADVERTISED_ONLY' %}
+                        {{-'    4 Byte AS: advertised'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:ASN32_RECEIVED_ONLY' %}
+                        {{-'    4 Byte AS: received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-types:ASN32' %}
+                        {{-'    4 Byte AS: advertised and received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:ADD_PATHS_ADVERTISED_ONLY' %}
+                        {{-'    AddPath: advertised'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:ADD_PATHS_RECEIVED_ONLY' %}
+                        {{-'    AddPath: received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-types:ADD_PATHS' %}
+                        {{-'    AddPath: advertised and received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:ROUTE_REFRESH_ADVERTISED_ONLY' %}
+                        {{-'    Route refresh: advertised'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:ROUTE_REFRESH_RECEIVED_ONLY' %}
+                        {{-'    Route refresh: received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-types:ROUTE_REFRESH' %}
+                        {{-'    Route refresh: advertised and received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:GRACEFUL_RESTART_ADVERTISED_ONLY' %}
+                        {{-'    Graceful restart: advertised'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:GRACEFUL_RESTART_RECEIVED_ONLY' %}
+                        {{-'    Graceful restart: received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-types:GRACEFUL_RESTART' %}
+                        {{-'    Graceful restart: advertised and received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-types:MPBGP' %}
+                        {{-'    Multiprotocol Extension: advertised and received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:MPBGP_RECEIVED_ONLY' %}
+                        {{-'    Multiprotocol Extension: received'}}{{'\n'}}
+                    {% elif supported_cap == 'openconfig-bgp-ext:MPBGP_ADVERTISED_ONLY' %}
+                        {{-'    Multiprotocol Extension: advertised'}}{{'\n'}}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
             {% if 'queues' in n_state %}
                 {% set n_queues = n_state['queues'] %}
                 {{-'  Message statistics:\n'}}
@@ -177,14 +163,93 @@
                 {{-(n_rcvd|string)}}
                 {{'\n'}}
             {% endif %}
-            {% if 'transport' in neighbor %}
+
+            {% if 'afi-safis' in neighbor %}
+                {% set afi_safis = neighbor['afi-safis']['afi-safi'] %}
+                {% for afi_safi in afi_safis %}
+                    {% if 'state' in afi_safi %}
+                        {% if 'afi-safi-name' in afi_safi['state'] %}
+                            {% if afi_safi['state']['afi-safi-name'] == 'openconfig-bgp-types:IPV4_UNICAST' %}
+                                {{-'  For address family: IPv4 Unicast\n'}}
+                            {% else %}
+                                {{-'  For address family: IPv6 Unicast\n'}}
+                            {% endif %}
+                        {% endif %}
+
+                        {% if 'enabled' in afi_safi['state'] %}
+                            {% if afi_safi['state']['enabled'] == True %}
+                                {{-'    Address-family enabled\n'}}
+                            {% else %}
+                                {{-'    Address-family disabled\n'}}
+                            {% endif %}
+                            {% if 'prefixes' in afi_safi['state'] and 'received' in afi_safi['state']['prefixes'] %}
+                               {{-'    Prefixes received '}}{{afi_safi['state']['prefixes']['received']}}{{'\n'}}
+                            {% endif %}
+                            {% if 'openconfig-bgp-ext:route-reflector-client' in afi_safi['state'] %}
+                               {% if afi_safi['state']['openconfig-bgp-ext:route-reflector-client'] == True %}
+                                   {{-'    Route reflector client enabled\n'}}
+                               {% else %}
+                                   {{-'    Route reflector client disabled\n'}}
+                               {% endif %}
+                            {% endif %}
+                            {% if 'openconfig-bgp-ext:send-community' in afi_safi['state'] %}
+                               {{-'    Community attribute sent to this neighbor '}}{{afi_safi['state']['openconfig-bgp-ext:send-community']}}{{'\n'}}
+                            {% endif %}
+                            {% if 'apply-policy' in afi_safi and 'state' in afi_safi['apply-policy'] %}
+                               {% if 'import-policy' in afi_safi['apply-policy']['state'] %}
+                                 {% set import_policys = afi_safi['apply-policy']['state']['import-policy'] %}
+                                 {% set import_policys_len = import_policys|length %}
+                                 {{-'    Import policy:\n'}}
+                                 {% for import_policy in afi_safi['apply-policy']['state']['import-policy'] %}
+                                    {% if loop.index == 1 %}
+                                       {{-'    '}}{{import_policy|string}}
+                                    {% elif loop.index == import_policys_len %}
+                                       {{-', '}}{{import_policy|string}}{{'\n'}}
+                                    {% else %}
+                                       {{-', '}}{{import_policy|string}}
+                                    {% endif %}
+                                 {% endfor %}
+                               {% endif %}
+                               {% if 'export-policy' in afi_safi['apply-policy']['state'] %}
+                                 {% set export_policys = afi_safi['apply-policy']['state']['export-policy'] %}
+                                 {% set export_policys_len = export_policys|length %}
+                                 {{-'     Export policy:\n'}}
+                                 {% for export_policy in afi_safi['apply-policy']['state']['export-policy'] %}
+                                   {% if loop.index == 1 %}
+                                      {{-'    '}}{{export_policy|string}}
+                                   {% elif loop.index == export_policys_len %}
+                                      {{-', '}}{{export_policy|string}}{{'\n'}}
+                                   {% else %}
+                                      {{-', '}}{{export_policy|string}}
+                                   {% endif %}
+                                 {% endfor %}
+                               {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if vars.update({'reset_reason':n_state['openconfig-bgp-ext:last-reset-reason']}) %}{% endif %}
+            {% if vars.update({'reset_time':n_state['openconfig-bgp-ext:last-reset-time']}) %}{% endif %}
+            {% if vars.update({'conn_eas':n_state['established-transitions']}) %}{% endif %}
+            {% if vars.update({'conn_drop':n_state['openconfig-bgp-ext:connections-dropped']}) %}{% endif %}
+
+            {{-'  Connections established '}}{{vars.conn_eas}}{{', dropped '}}{{vars.conn_drop}}{{'\n'}}
+            {{-'  Last reset '}}{{vars.reset_time}}{{', Last reset reason '}}{{vars.reset_reason|string}}{{'\n'}}
+            {% if 'transport' in neighbor and 'state' in neighbor['transport'] %}
                 {% set n_tp_state = neighbor['transport']['state'] %}
-                {{-'Local host: '}}{{n_tp_state['local-address']-}}
+                {{-'  Local host: '}}{{n_tp_state['local-address']-}}
                 {{-', Local port: '}}{{n_tp_state['local-port']}}{{'\n'}}
-                {{-'Foreign host: '}}{{n_tp_state['remote-address']-}}
+                {{-'  Foreign host: '}}{{n_tp_state['remote-address']-}}
                 {{-', Foreign port: '}}{{n_tp_state['remote-port']}}{{'\n'}}
             {% endif %}
+            {% set vars = {'conn_retry_time': "120"} %}
+            {% if 'timers' in neighbor and 'state' in neighbor['timers'] and 'connect-retry' in neighbor['timers']['state'] %}
+               {% if vars.update({'conn_retry_time':neighbor['timers']['state']['connect-retry']}) %}{% endif %}
+            {% endif %}
+               {{-'  BGP Connect Retry Timer in Seconds '}}{{vars.conn_retry_time}}{{'\n'}}
             {{ '\n' }}
+        {% endif %}
         {% endfor %}
         {{ '\n' }}
     {% endif %}

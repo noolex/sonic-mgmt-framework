@@ -25,8 +25,8 @@ func (t *CustomValidation) ValidateCollectorIp(vc *CustValidationCtxt) CVLErrorI
 			    }
 	}
 
-	if ip.IsLoopback() || ip.IsUnspecified() || ip.Equal(net.IPv4bcast) || ip.IsMulticast() {
-		errStr:= "Sflow collector IP is not valid, IP is either reserved, unspecified, loopback, or broadcast"
+	if ip.IsUnspecified() || ip.Equal(net.IPv4bcast) || ip.IsMulticast() {
+		errStr:= "Sflow collector IP is not valid, IP is either reserved, unspecified, or broadcast"
 		util.CVL_LEVEL_LOG(util.ERROR,"%s",errStr)
 		return CVLErrorInfo{
 			            ErrCode: CVL_SYNTAX_INVALID_INPUT_DATA,

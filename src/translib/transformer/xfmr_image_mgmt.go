@@ -95,6 +95,39 @@ func image_mgmt_operation(command string, body []byte) ([]byte, error) {
             (strings.HasPrefix(imagename, "https:") == false)) {
             err = errors.New("ERROR:Invalid image url.") 
           }
+
+          if (err == nil) {
+
+            /* Check if mgmt VRF configured */
+            d, err1 := db.NewDB(getDBOptions(db.ConfigDB))
+
+            if err1 != nil {
+              log.Infof("image_mgmt_operation, unable to get configDB, error %v", err1)
+            }
+
+            defer d.DeleteDB()
+
+            if (err1 == nil) {
+              var MGMT_VRF_TABLE string
+              MGMT_VRF_TABLE = "MGMT_VRF_CONFIG"
+
+              mgmtVrfTable := &db.TableSpec{Name: MGMT_VRF_TABLE}
+              key := db.Key{Comp: []string{"vrf_global"}}
+
+              dbEntry, err1 := d.GetEntry(mgmtVrfTable, key)
+              if (err1 != nil) {
+                log.Info("image_mgmt_operation, mgmt vrf not found")
+              }
+
+              if (err1 == nil) {
+                mgmtVrfconfiguredStr := (&dbEntry).Get("mgmtVrfEnabled")
+
+                if (mgmtVrfconfiguredStr == "true") {
+                  options = append(options, "-mgmt")
+                }
+              }
+            }
+          }
         }
 
         if err == nil {

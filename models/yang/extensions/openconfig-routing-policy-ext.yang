@@ -33,6 +33,15 @@ module openconfig-routing-policy-ext {
         }
     }
 
+    grouping asn_list_val {
+         leaf asn_list{
+           type string;
+           description
+                "Comma separated list of asn numbers";
+            
+      }
+    }
+
     grouping routing-policy-ext-action {
         leaf action {
             type routing-policy-ext-action-type;
@@ -46,9 +55,19 @@ module openconfig-routing-policy-ext {
             "Configuration data for neighbor set definitions";
 
         leaf-list address {
-            type oc-inet:ip-address;
+            type union {
+                type oc-inet:ip-address;
+
+                // TODO: in YANG 1.1, unions support leafref types which
+                // should be used here to reference a configured interface by
+                // name
+                // type leafref {
+                //    path "/oc-if:interfaces/oc-if:interface/oc-if:name";
+                // }
+                type string;
+            }
             description
-                "List of IP addresses in the neighbor set";
+                "List of IP addresses or interfaces in the neighbor set";
         }
     }
 
@@ -62,6 +81,10 @@ module openconfig-routing-policy-ext {
                 "Value of the tag set member";
         }
     }
+
+    augment /oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:statements/oc-rpol:statement/oc-rpol:actions/oc-bgp-pol:bgp-actions/oc-bgp-pol:set-as-path-prepend/oc-bgp-pol:config {
+        uses asn_list_val;
+   }
 
     deviation /oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:statements/oc-rpol:statement/oc-rpol:conditions/oc-bgp-pol:bgp-conditions/oc-bgp-pol:community-count {
         deviate not-supported;

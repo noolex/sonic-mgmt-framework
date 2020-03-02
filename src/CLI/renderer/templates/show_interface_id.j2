@@ -47,8 +47,9 @@
         {% if vars.update({'name':interface[key]["name"]}) %}{% endif %}
         {% if vars.update({'admin_state':interface[key]["admin-status"]}) %}{% endif %}
         {% if vars.update({'oper_state':interface[key]["oper-status"]}) %}{% endif %}
-	{% if vars.update({'description':interface[key]["description"]}) %}{% endif %}
+        {% if vars.update({'description':interface[key]["description"]}) %}{% endif %}
         {% if vars.update({'mtu':interface[key]["mtu"]}) %}{% endif %}
+        {% if "counters" in interface[key] %}
         {% if vars.update({'in_pkts':interface[key]["counters"]["in-pkts"]}) %}{% endif %}
         {% if vars.update({'in_octets':interface[key]["counters"]["in-octets"]}) %}{% endif %}
         {% if vars.update({'in_multi':interface[key]["counters"]["in-multicast-pkts"]}) %}{% endif %}
@@ -64,6 +65,7 @@
         {% if vars.update({'out_errors':interface[key]["counters"]["in-errors"]}) %}{% endif %}
         {% if vars.update({'out_discards':interface[key]["counters"]["out-discards"]}) %}{% endif %}
         {% if vars.update({'last_clear':interface[key]["counters"]["last-clear"]}) %}{% endif %}
+        {% endif %}
       {% endif %}
       {% if "subinterfaces" in key  %}
         {% for subinterface in interface[key] %}

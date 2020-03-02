@@ -159,7 +159,7 @@ func spawnUnixListener() {
 	}
 
 	tlsConfig := tls.Config{
-		ClientAuth:               tls.RequireAndVerifyClientCert,
+		ClientAuth:               tls.RequireAnyClientCert,
 		Certificates:             prepareServerCertificate(),
 		ClientCAs:                prepareCACertificates(cliCAFile),
 		MinVersion:               tls.VersionTLS12,

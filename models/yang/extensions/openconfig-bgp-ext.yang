@@ -16,6 +16,8 @@ module openconfig-bgp-ext {
   import openconfig-bgp-policy { prefix oc-bgp-pol; }
   import openconfig-bgp { prefix oc-bgp; }
   import openconfig-rib-bgp { prefix oc-rib-bgp; }
+  import openconfig-yang-types { prefix oc-yang; }
+  import openconfig-bfd { prefix oc-bfd; }
 
   description
     "This module describes a YANG model for BGP protocol
@@ -106,6 +108,76 @@ module openconfig-bgp-ext {
 		  BOTH: both standard and extended community
           LARGE: large BGP community
           ALL: standard, extended and large community";
+  }
+
+  identity MPBGP_RECEIVED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "Multi-protocol extensions to BGP";
+    reference "RFC2858";
+  }
+
+  identity ROUTE_REFRESH_RECEIVED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "The BGP route-refresh functionality";
+    reference "RFC2918";
+  }
+
+  identity ASN32_RECEIVED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "4-byte (32-bit) AS number functionality";
+    reference "RFC6793";
+  }
+
+  identity GRACEFUL_RESTART_RECEIVED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "Graceful restart functionality";
+    reference "RFC4724";
+  }
+
+  identity ADD_PATHS_RECEIVED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "BGP add-paths";
+    reference "draft-ietf-idr-add-paths";
+  }
+
+  identity MPBGP_ADVERTISED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "Multi-protocol extensions to BGP";
+    reference "RFC2858";
+  }
+
+  identity ROUTE_REFRESH_ADVERTISED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "The BGP route-refresh functionality";
+    reference "RFC2918";
+  }
+
+  identity ASN32_ADVERTISED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "4-byte (32-bit) AS number functionality";
+    reference "RFC6793";
+  }
+
+  identity GRACEFUL_RESTART_ADVERTISED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "Graceful restart functionality";
+    reference "RFC4724";
+  }
+
+  identity ADD_PATHS_ADVERTISED_ONLY {
+    base oc-bgp-types:BGP_CAPABILITY;
+    description
+      "BGP add-paths";
+    reference "draft-ietf-idr-add-paths";
   }
 
   grouping bgp-ext-peer-group-config {
@@ -288,21 +360,19 @@ module openconfig-bgp-ext {
           type decimal64 {
               fraction-digits 2;
           }
-          default 90;
+          default 180;
           description
               "Time interval in seconds that a BGP session will be
               considered active in the absence of keepalive or other
               messages from the peer.  The hold-time is typically
               set to 3x the keepalive-interval.";
-          reference
-              "RFC 4271 - A Border Gateway Protocol 4, Sec. 10";
       }
 
       leaf keepalive-interval {
           type decimal64 {
               fraction-digits 2;
           }
-          default 30;
+          default 60;
           description
               "Time interval in seconds between transmission of keepalive
               messages to the neighbor.  Typically set to 1/3 the
@@ -628,18 +698,6 @@ module openconfig-bgp-ext {
               "Advertise extended next-hop capability to the peer.";
       }
 
-      leaf bfd {
-          type boolean;
-          description
-              "Enable BFD for the neighbor group.";
-      }
-
-      leaf bfd-check-control-plane-failure {
-          type boolean;
-          description
-              "Link dataplane status with BGP control plane.";
-      }
-
       leaf capability-dynamic {
           type boolean;
           description
@@ -698,7 +756,49 @@ module openconfig-bgp-ext {
               "Replace the configured AS Number with the local-as number in AS-Path advertisements";
       }
   }
+  grouping bgp-ext-neighbor-group-state { 
 
+  
+      leaf connections-dropped {
+          type oc-yang:counter64;
+          description
+              "This indicates the Number of times a TCP and BGP connection has been successfully established.";
+      }
+
+      leaf last-reset-time {
+          type uint64;
+          description
+             "This value indicates the time peering session was last reset in seconds.";
+      }
+
+      leaf last-reset-reason {
+          type string;
+          description
+              "Indicates the reason the BGP neighbor down";
+      }
+      
+      leaf last-read {
+          type uint64;
+          description
+             "This value indicates the time that the
+             BGP last received a message from neighbor in seconds"; 
+      }
+
+      leaf last-write {
+          type uint64;
+          description
+             "This value indicates the time that the
+             BGP last sent message from neighbor in seconds"; 
+      }
+     
+      leaf remote-router-id {
+          type oc-yang:dotted-quad;
+          description
+             "A identifier for the remote network instance - typically
+              used within associated routing protocols or signalling
+              routing information in another network instance";
+      }
+  }
   grouping bgp-ext-neighbor-group-afi-safi-allow-own-as-config {
       leaf enabled {
           type boolean;
@@ -1145,6 +1245,14 @@ module openconfig-bgp-ext {
            }
         }
      }
+  }
+  
+  grouping bgp-ext-neighbor-group-bfd-config {
+      leaf bfd-check-control-plane-failure {
+          type boolean;
+          description
+              "Link dataplane status with BGP control plane.";
+      }
   }
 
   deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:global/oc-netinst:state/oc-netinst:total-paths {
@@ -1880,6 +1988,7 @@ deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:p
 
   augment /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-netinst:state {
       uses bgp-ext-neighbor-group-config;
+      uses bgp-ext-neighbor-group-state;
   }
 
   augment /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-netinst:state/oc-netinst:messages/oc-netinst:sent {
@@ -1902,6 +2011,7 @@ deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:p
   augment /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:peer-groups/oc-netinst:peer-group/oc-netinst:state {
       uses bgp-ext-peer-group-config;
       uses bgp-ext-neighbor-group-config;
+      uses bgp-ext-neighbor-group-state;
   }
 
   augment /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-netinst:afi-safis/oc-netinst:afi-safi/oc-netinst:config {
@@ -2124,6 +2234,45 @@ deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:p
  
   deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-netinst:state/oc-netinst:auth-password {
 	  deviate not-supported;
+  }
+  augment /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-bfd:enable-bfd/oc-bfd:config {
+      uses bgp-ext-neighbor-group-bfd-config;
+  }
+
+  augment /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-bfd:enable-bfd/oc-bfd:state {
+      uses bgp-ext-neighbor-group-bfd-config;
+  }
+
+  augment /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:peer-groups/oc-netinst:peer-group/oc-bfd:enable-bfd/oc-bfd:config {
+      uses bgp-ext-neighbor-group-bfd-config;
+  }
+
+  augment /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:peer-groups/oc-netinst:peer-group/oc-bfd:enable-bfd/oc-bfd:state {
+      uses bgp-ext-neighbor-group-bfd-config;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-netinst:timers/oc-netinst:config/oc-netinst:hold-time {
+      deviate replace {
+          default 180;
+      }
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:peer-groups/oc-netinst:peer-group/oc-netinst:timers/oc-netinst:config/oc-netinst:hold-time {
+      deviate replace {
+          default 180;
+      }
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-netinst:timers/oc-netinst:config/oc-netinst:keepalive-interval {
+      deviate replace {
+          default 60;
+      }
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:peer-groups/oc-netinst:peer-group/oc-netinst:timers/oc-netinst:config/oc-netinst:keepalive-interval {
+      deviate replace {
+          default 60;
+      }
   }
 
 }
