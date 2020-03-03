@@ -40,14 +40,14 @@ module sonic-acl {
     description
         "SONIC ACL";
 
-    revision 2019-05-15 {
-        description
-            "Initial revision.";
-    }
-
     revision 2020-02-20 {
         description
             "L2 ACL support and update must and when expressions.";
+    }
+
+    revision 2019-05-15 {
+        description
+            "Initial revision.";
     }
 
     container sonic-acl {
