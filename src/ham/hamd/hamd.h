@@ -76,6 +76,7 @@ public:
 
     // DBus "accounts" interface
     virtual ::DBus::Struct< bool, std::string > useradd(const std::string& login, const std::vector< std::string >& roles, const std::string& hashed_pw);
+    virtual ::DBus::Struct< bool, std::string > usermod(const std::string& login, const std::vector< std::string >& roles, const std::string& hashed_pw);
     virtual ::DBus::Struct< bool, std::string > userdel(const std::string& login);
     virtual ::DBus::Struct< bool, std::string > passwd(const std::string& login, const std::string& hashed_pw);
     virtual ::DBus::Struct< bool, std::string > set_roles(const std::string& login, const std::vector< std::string >& roles);
