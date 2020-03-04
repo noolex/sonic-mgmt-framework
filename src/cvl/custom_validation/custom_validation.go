@@ -322,3 +322,37 @@ func (t *CustomValidation) ValidatePtp(
 
 	return CVLErrorInfo{ErrCode: CVL_SUCCESS}
 }
+
+// Path: generic
+// Purpose: To make sure the value of a leaf is not changed after its set during create
+// Returns -  CVL Error object 
+func (t *CustomValidation) ValidateLeafConstant(
+	vc *CustValidationCtxt) CVLErrorInfo {
+
+	log.Infof("ValidateLeafConstant operation %d on %s:%s:%s  ", vc.CurCfg.VOp, vc.CurCfg.Key, vc.YNodeName, vc.YNodeVal)
+
+	if (vc.CurCfg.VOp == OP_CREATE) || (vc.CurCfg.VOp == OP_DELETE) {
+		return CVLErrorInfo{ErrCode: CVL_SUCCESS}
+	}
+
+	val, err := vc.RClient.HGet(vc.CurCfg.Key, vc.YNodeName).Result()
+	if err != nil && err != redis.Nil {
+		log.Info("ValidateLeafConstant error getting old value:", err);
+		return CVLErrorInfo{ErrCode: CVL_ERROR}
+	}
+
+	if err == redis.Nil {
+		log.Info("No old value is set. Allow update")
+		return CVLErrorInfo{ErrCode: CVL_SUCCESS}
+	}
+
+	log.Infof("ValidateLeafConstant Old value is %s", val);
+
+	if val != vc.YNodeVal {
+		log.Errorf("%s:%s value change from %s to %s not allowed", vc.CurCfg.Key, vc.YNodeName, val, vc.YNodeVal)
+		return CVLErrorInfo{ErrCode: CVL_ERROR, Keys:[]string{vc.CurCfg.Key}, Value: vc.YNodeVal, Field: vc.YNodeName, Msg: "Field update not allowed"}
+	}
+
+	log.Infof("ValidateLeafConstant update doesnt change the value. allow");
+	return CVLErrorInfo{ErrCode: CVL_SUCCESS}
+}

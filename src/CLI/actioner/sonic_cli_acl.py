@@ -258,6 +258,11 @@ def __create_acl_rule_ipv4_ipv6(args):
             log.log_error(str(e))
             print("%Error: Invalid mask for {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[5]))
             return
+        except ValueError as e:
+            log.log_error(str(e))
+            print("%Error: {}. Please fix the {} address or prefix length".format(str(e), "IPv4" if 'ipv4' == af else 'IPv6'))
+            return
+
     else:
         print("%Error: Unknown option {}".format(args[5]))
         return
