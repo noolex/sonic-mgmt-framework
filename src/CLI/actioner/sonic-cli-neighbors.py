@@ -61,9 +61,16 @@ def build_mac_list():
     try:
         response = aa.get(keypath)
         response = response.content
+        if response is None:
+           return
 
         macContainer = response.get('openconfig-network-instance:entries')
+        if macContainer is None:
+           return
+
         macList = macContainer.get('entry')
+        if macList is None:
+           return
 
         for macEntry in macList:
             vlan = macEntry.get('vlan')
@@ -83,108 +90,115 @@ def build_mac_list():
         print "%Error: Internal error"
 
 def process_nbrs_intf(response, args):
-    nbr_list = []
+    outputList = []
     ifName = args[1]
     isMacDictAvailable = False
-    if response['openconfig-if-ip:neighbors'] is None:
-        return
 
-    nbrs = response['openconfig-if-ip:neighbors']['neighbor']
-    if nbrs is None:
-        return
+    nbrsContainer = response.get('openconfig-if-ip:neighbors')
+    if nbrsContainer is None:
+        return[]
 
-    for nbr in nbrs:
-        ext_intf_name = "-"
-        ipAddr = nbr['state']['ip']
+    nbrsList = nbrsContainer.get('neighbor')
+    if nbrsList is None:
+        return[]
+
+    for nbr in nbrsList:
+        extIntfName = "-"
+        state = nbr.get('state')
+        if state is None:
+            continue
+
+        ipAddr = state.get('ip')
         if ipAddr is None:
-            return[]
+            continue
 
-        macAddr = nbr['state']['link-layer-address']
+        macAddr = state.get('link-layer-address')
         if macAddr is None:
-            return[]
+            continue
 
         if ifName.startswith('Vlan'):
             if isMacDictAvailable is False:
                 build_mac_list()
                 isMacDictAvailable = True
             key = ifName + "-" + macAddr
-            ext_intf_name = macDict.get(key)
-            if ext_intf_name is None:
-                ext_intf_name = "-"
+            extIntfName = macDict.get(key)
+            if extIntfName is None:
+                extIntfName = "-"
 
-        nbr_table_entry = {'ipAddr':ipAddr,
+        nbrTableEntry = {'ipAddr':ipAddr,
                             'macAddr':macAddr,
                             'intfName':args[1],
-                            'extIntfName':ext_intf_name
+                            'extIntfName':extIntfName
                           }
-        nbr_list.append(nbr_table_entry)
+        outputList.append(nbrTableEntry)
 
-    return nbr_list
+    return outputList
 
 def process_sonic_nbrs(response, args):
-    nbr_list = []
+    outputList = []
     isMacDictAvailable = False
 
-    if response['sonic-neighbor:NEIGH_TABLE'] is None:
-        return
+    nbrsContainer = response.get('sonic-neighbor:NEIGH_TABLE')
+    if nbrsContainer is None:
+        return []
 
-    nbrs = response['sonic-neighbor:NEIGH_TABLE']['NEIGH_TABLE_LIST']
-    if nbrs is None:
-        return
+    nbrsList = nbrsContainer.get('NEIGH_TABLE_LIST')
+    if nbrsList is None:
+        return []
 
-    for nbr in nbrs:
-        ext_intf_name = "-"
+    for nbr in nbrsList:
+        extIntfName = "-"
 
-        family = nbr['family']
+        family = nbr.get('family')
         if family is None:
-            return []
+            continue
 
         if family != args[1]:
             continue
 
-        ifName = nbr['ifname']
+        ifName = nbr.get('ifname')
         if ifName is None:
-            return []
+            continue
 
-        ipAddr = nbr['ip']
+        ipAddr = nbr.get('ip')
         if ipAddr is None:
-            return []
+            continue
 
-        macAddr = nbr['neigh']
+        macAddr = nbr.get('neigh')
         if macAddr is None:
-            return []
+            continue
 
         if ifName.startswith('Vlan'):
             if isMacDictAvailable is False:
                 build_mac_list()
                 isMacDictAvailable = True
             key = ifName + "-" + macAddr
-            ext_intf_name = macDict.get(key)
-            if ext_intf_name is None:
-                ext_intf_name = "-"
+            extIntfName = macDict.get(key)
+            if extIntfName is None:
+                extIntfName = "-"
 
-        nbr_table_entry = {'ipAddr':ipAddr,
+        nbrTableEntry = {'ipAddr':ipAddr,
                            'macAddr':macAddr,
                            'intfName':ifName,
-                           'extIntfName':ext_intf_name
+                           'extIntfName':extIntfName
                         }
         if (len(args) == 4):
             if (args[2] == "mac" and args[3] == macAddr):
-                nbr_list.append(nbr_table_entry)
+                outputList.append(nbrTableEntry)
         elif (len(args) == 3 and args[2] != "summary"):
             if args[2] == ipAddr:
-                nbr_list.append(nbr_table_entry)
+                outputList.append(nbrTableEntry)
         else:
-            nbr_list.append(nbr_table_entry)
+            outputList.append(nbrTableEntry)
 
-    return nbr_list
+    return outputList
 
 def run(func, args):
     global macDict
 
     # create a body block
     keypath, body = get_keypath(func, args)
-    nbr_list = []
+    outputList = []
 
     try:
         if (func == 'rpc_sonic_clear_neighbors'):
@@ -205,9 +219,9 @@ def run(func, args):
             return
 
         if 'openconfig-if-ip:neighbors' in response.keys():
-            nbr_list = process_nbrs_intf(response, args)
+            outputList = process_nbrs_intf(response, args)
         elif 'sonic-neighbor:NEIGH_TABLE' in response.keys():
-            nbr_list = process_sonic_nbrs(response, args)
+            outputList = process_sonic_nbrs(response, args)
         elif 'sonic-neighbor:output' in response.keys():
             status = response['sonic-neighbor:output']
             status = status['response']
@@ -218,7 +232,7 @@ def run(func, args):
             return
 
         macDict = {}
-        show_cli_output(args[0],nbr_list)
+        show_cli_output(args[0], outputList)
         return
     except:
         print "%Error: Internal error"

@@ -2,7 +2,7 @@ module openconfig-system-ext {
 
     yang-version "1";
 
-    namespace "http://openconfig.net/yang/system/extention";
+    namespace "http://openconfig.net/yang/system/extension";
 
     prefix "oc-sys-ext";
 

@@ -406,6 +406,24 @@ func Delete(req SetRequest) (SetResponse, error) {
 
 	log.Info("Delete request received with path =", path)
 
+	requestPathInfo := NewPathInfo(path)
+    requestUriPath, err := getYangPathFromUri(requestPathInfo.Path)
+
+	log.Info("requestUriPath : ", requestUriPath)
+
+    switch requestUriPath {
+        case "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet": fallthrough
+        case "/openconfig-interfaces:interfaces/interface/subinterfaces": fallthrough
+        case "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface": fallthrough
+        case "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv4": fallthrough
+        case "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv6": 
+        {
+			log.Info("delete on this container not allowed")
+			resp.ErrSrc = AppErr
+            return resp, tlerr.New("DELETE operation not supported on this container")
+        }
+    }
+
 	app, appInfo, err := getAppModule(path)
 
 	if err != nil {

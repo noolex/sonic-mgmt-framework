@@ -167,13 +167,20 @@ module sonic-snmp {
 		container SNMP_SERVER_COMMUNITY {
       list SNMP_SERVER_COMMUNITY_LIST {
         key index;
+        description
+          "List of communities.";
 
         leaf index {
           type identifier;
+          description
+            "Index into the community list which must be the community name.";
         }
 
         leaf securityName {
           type security-name;
+          description
+            "The group this community is a member of. For communities with no
+             group association, securityName should be set to 'None'.";
         }
       }
     }
@@ -181,17 +188,25 @@ module sonic-snmp {
     container SNMP_SERVER_VIEW {
       list SNMP_SERVER_VIEW_LIST {
         key name;
+        description
+          "Definition of MIB views.";
 
         leaf name {
           type view-name;
+          description
+            "The name of this VACM MIB view.";
         }
 
         leaf-list include {
-           type wildcard-object-identifier;
+          type wildcard-object-identifier;
+          description
+            "A family of subtrees included in this MIB view.";
         }
 
         leaf-list exclude {
           type wildcard-object-identifier;
+          description
+            "A family of subtrees excluded in this MIB view.";
         }
       }
     }
@@ -199,9 +214,17 @@ module sonic-snmp {
     container SNMP_SERVER_GROUP {
       list SNMP_SERVER_GROUP_LIST {
         key name;
+        description
+          "VACM groups.
+
+           Groups are explicitly defined in this list. Group members are defined
+           in the 'member' list and access for the group is defined in the
+           'access' list.";
+
         leaf name {
           type group-name;
-          description "SNMP group name";
+          description
+            "The name of this SNMP VACM group.";
         }
       }
     }
@@ -209,8 +232,14 @@ module sonic-snmp {
     container SNMP_SERVER_GROUP_MEMBER {
       list SNMP_SERVER_GROUP_MEMBER_LIST {
         key "groupName securityName";
+        description
+          "A member of this VACM group.
+
+           A specific combination of securityName and securityModel MUST NOT be
+           present in more than one group.";
+
         leaf groupName {
-          description "SNMP group name";
+          description "SNMP VACM group name.";
           type leafref {
             path "/ssnmp:sonic-snmp/SNMP_SERVER_GROUP/SNMP_SERVER_GROUP_LIST/name";
           }
@@ -218,10 +247,14 @@ module sonic-snmp {
 
         leaf securityName {
           type security-name;
+          description
+            "The securityName of a group member.";
         }
 
         leaf securityModel {
           type security-model;
+          description
+            "The security models under which this securityName is a member of this group.";
         }
       }
     }
@@ -229,6 +262,9 @@ module sonic-snmp {
     container SNMP_SERVER_GROUP_ACCESS {
       list SNMP_SERVER_GROUP_ACCESS_LIST {
         key "groupName context securityModel securityLevel";
+        description
+          "Definition of access rights for VACM group.";
+
         leaf groupName {
           description "SNMP group name";
           type leafref {
@@ -238,6 +274,8 @@ module sonic-snmp {
 
         leaf context {
           type context-name;
+          description
+            "The context under which the access rights apply. For this version, this MUST be 'Default'.";
         }
 
         leaf contextMatch {
@@ -250,22 +288,32 @@ module sonic-snmp {
 
         leaf securityModel {
           type security-model-or-any;
+          description
+            "The security model under which the access rights apply.";
         }
 
         leaf securityLevel {
           type security-level;
+          description
+            "The minimum security level under which the access rights apply.";
         }
 
         leaf readView {
           type view-name;
+          description
+            "The name of the MIB view authorizing read access.";
         }
 
         leaf writeView {
           type view-name;
+          description
+            "The name of the MIB view authorizing write access. As the MIBs are currently read-only, the value of this view-name is immaterial.";
         }
 
         leaf notifyView {
           type view-name;
+          description
+            "The name of the MIB view authorizing notify access.";
         }
       }
     }
@@ -273,25 +321,37 @@ module sonic-snmp {
     container SNMP_SERVER_USER {
       list SNMP_SERVER_USER_LIST {
         key name;
+        description
+          "SNMPv3 user list.";
 
         leaf name {
           type identifier;
+          description
+            "SNMPv3 user name.";
         }
 
         leaf shaKey {
           type yang:hex-string;
+          description
+            "The presence of this key enables SHA authentication for the user.";
         }
 
         leaf md5Key {
           type yang:hex-string;
+          description
+            "The presence of this key enables MD5 authentication for the user.";
         }
 
         leaf desKey {
           type yang:hex-string;
+          description
+            "The presence of this key enables DES encryption for the user.";
         }
 
         leaf aesKey {
           type yang:hex-string;
+          description
+            "The presence of this key enables AES-128 encryption for the user.";
         }
       }
     }
@@ -299,21 +359,33 @@ module sonic-snmp {
     container SNMP_SERVER_PARAMS {
       list SNMP_SERVER_PARAMS_LIST {
         key name;
+        description
+          "List of target parameters.";
 
         leaf name {
           type identifier;
+          description
+            "The name associated to the target parameters. This needs to match
+             targetParams from the associated entry in the SNMP_SERVER_TARGET
+             list.";
         }
 
         leaf securityNameV2 {
           type security-name;
+          description
+            "The community name of the SNMPv2 target entry.";
         }
 
         leaf user {
           type security-name;
+          description
+            "The user name of the SNMPv3 target entry.";
         }
 
         leaf security-level {
           type security-level;
+          description
+            "The security level of the SNMPv3 target entry.";
         }
       }
     }
@@ -321,24 +393,39 @@ module sonic-snmp {
     container SNMP_SERVER_TARGET {
       list SNMP_SERVER_TARGET_LIST {
         key name;
+        description
+          "List of targets.";
 
         leaf name {
           type identifier;
+          description
+            "Administrative name of the target entry.";
         }
 
         leaf-list tag {
           type tag-value;
+          description
+            "Tag values used to select target addresses. Should be one of
+             TrapNotify or InformNotify.";
         }
 
         leaf timeout {
           type uint32;
+          units "0.01 seconds";
+          description
+            "Needed only if this target can receive InformRequest-PDUs.";
         }
 
         leaf retries {
           type uint8;
+          description
+            "Needed only if this target can receive InformRequest-PDUs.";
         }
 
         leaf targetParams {
+          description
+            "The name associated to the target parameters. This needs to match
+             the name from the associated entry in the SNMP_SERVER_PARAMS list.";
           type leafref {
             path "/ssnmp:sonic-snmp/SNMP_SERVER_PARAMS/SNMP_SERVER_PARAMS_LIST/name";
           }
@@ -346,10 +433,14 @@ module sonic-snmp {
 
         leaf ip {
           type inet:ip-address;
+          description
+            "The IPv4 or IPv6 address of the target.";
         }
 
         leaf port {
           type inet:port-number;
+          description
+            "UDP port number.";
         }
       }
     }
@@ -366,10 +457,16 @@ module sonic-snmp {
 
         leaf enabled {
           type boolean;
+          description
+            "Enables the SNMP engine. This is always true";
         }
 
         leaf engine-id {
           type engine-id;
+          description
+            "The local SNMP engine's administratively assigned unique
+             identifier. If this leaf is not set, the device automatically
+             calculates an engine ID, as described in RFC 3411.";
         }
       }
     }

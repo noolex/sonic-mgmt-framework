@@ -4,7 +4,9 @@
     {% for vrf_data in json_output %}
         {% for vrf_name,vrf_info in vrf_data.items() %}
             {% if vrf_name == 'mgmt' %}
-                {{-'mgmt'.ljust(20)}}{{'eth0'}}
+                {% if vrf_info['openconfig-network-instance:config']['enabled'] == True %}
+                    {{-'mgmt'.ljust(20)}}{{'eth0'}}
+                {% endif %}
             {% else %}
                 {% set ns = namespace(v_name=vrf_name) %}
                 {% set intfs = vrf_info['openconfig-network-instance:interface'] %}
