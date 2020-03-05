@@ -884,7 +884,13 @@ func dbMapCreate(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 }
 
 func yangNodeForUriGet(uri string, ygRoot *ygot.GoStruct) (interface{}, error) {
-	path, _ := ygot.StringToPath(uri, ygot.StructuredPath, ygot.StringSlicePath)
+	path, err := ygot.StringToPath(uri, ygot.StructuredPath, ygot.StringSlicePath)
+	if path == nil || err != nil {
+		log.Warningf("For uri %v - StringToPath failure", uri)
+		errStr := fmt.Sprintf("Ygot stringTopath failed for uri(%v)", uri)
+		return nil, tlerr.InternalError{Format: errStr}
+	}
+
 	for _, p := range path.Elem {
 		pathSlice := strings.Split(p.Name, ":")
 		p.Name = pathSlice[len(pathSlice)-1]

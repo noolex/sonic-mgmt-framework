@@ -698,15 +698,16 @@ func hdl_get_bgp_evpn_local_rib (ribAfiSafi_obj *ocbinds.OpenconfigNetworkInstan
             patharrayarray, ok := prefix_data["paths"].([]interface{}) ; if !ok {
                 log.Info("patharray not parsed")
             }
-            for i, patharray := range patharrayarray {
-                if i > 0 {continue}
-                for j, path := range patharray.([]interface{}) {
-                    if j > 0 {continue}
+            for _, patharray := range patharrayarray {
+                for _, path := range patharray.([]interface{}) {
                     path_data, ok := path.(map[string]interface{}) ; if !ok {
                       log.Info("path not parsed")
+                      continue
                     }
-                    pathId := uint32(j)
-                    if ok := fill_evpn_spec_pfx_path_loc_rib_data (evpnLocRibRoutes_obj,rd, prefix, pathId, path_data) ; !ok {continue}
+                    if value, ok := path_data["pathId"] ; ok {
+                      pathId := uint32(value.(float64))
+                      if ok := fill_evpn_spec_pfx_path_loc_rib_data (evpnLocRibRoutes_obj,rd, prefix, pathId, path_data) ; !ok {continue}
+                    }
                 }
             }
         }
@@ -794,6 +795,408 @@ func fill_evpn_spec_pfx_path_loc_rib_data (ipv4LocRibRoutes_obj *ocbinds.Opencon
             for _, _data := range _community_slice {
                 if _ext_community_union, err := ipv4LocRibRouteAttrSets.To_OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_LocRib_Routes_Route_AttrSets_ExtCommunity_Union (_data) ; err == nil {
                     ipv4LocRibRouteAttrSets.ExtCommunity = append (ipv4LocRibRouteAttrSets.ExtCommunity, _ext_community_union)
+                }
+            }
+        }
+    }
+
+    return true
+}
+
+func hdl_get_all_bgp_nbrs_evpn_adj_rib (bgpRib_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib,
+                                   rib_key *_xfmr_bgp_rib_key, afiSafiType ocbinds.E_OpenconfigBgpTypes_AFI_SAFI_TYPE, dbg_log *string) (error) {
+    var err error
+    oper_err := errors.New("Operational error")
+    var ok bool
+
+    log.Infof("%s ==> GET-ALL: Nbrs-Adj-RIB invoke with keys {%s} afiSafiType:%d", *dbg_log, print_rib_keys(rib_key), afiSafiType)
+
+    log.Infof("%s ==> Nbr-RIB invoke with keys {%s} afiSafiType:%d", *dbg_log, print_rib_keys(rib_key), afiSafiType)
+
+    cmd := "show bgp l2vpn evpn route detail json"
+
+    bgpRibOutputJson, cmd_err := exec_vtysh_cmd (cmd)
+    if (cmd_err != nil) {
+        log.Errorf ("%s failed !! Error:%s", *dbg_log, cmd_err);
+        return oper_err
+    }
+
+    if len(bgpRibOutputJson) == 0 {
+        log.Errorf ("%s Empty !", *dbg_log);
+        return nil
+    }
+
+    if outError, ok := bgpRibOutputJson["warning"] ; ok {
+        log.Errorf ("%s failed !!, %s", outError)
+        return oper_err
+    }
+
+    var ribAfiSafis_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis
+    if ribAfiSafis_obj = bgpRib_obj.AfiSafis ; ribAfiSafis_obj == nil {
+        var _ribAfiSafis ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis
+        bgpRib_obj.AfiSafis = &_ribAfiSafis
+        ribAfiSafis_obj = bgpRib_obj.AfiSafis
+    }
+
+    var ribAfiSafi_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi
+    if ribAfiSafi_obj, ok = ribAfiSafis_obj.AfiSafi[afiSafiType] ; !ok {
+        ribAfiSafi_obj, _ = ribAfiSafis_obj.NewAfiSafi (afiSafiType)
+    }
+
+    var l2vpnEvpn_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn
+    var evpnNbrs_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors
+    if afiSafiType == ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_L2VPN_EVPN {
+        if l2vpnEvpn_obj = ribAfiSafi_obj.L2VpnEvpn ; l2vpnEvpn_obj == nil {
+            var _l2vpnEvpn ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn
+            ribAfiSafi_obj.L2VpnEvpn = &_l2vpnEvpn
+            l2vpnEvpn_obj = ribAfiSafi_obj.L2VpnEvpn
+        }
+
+        if evpnNbrs_obj = l2vpnEvpn_obj.Neighbors ; evpnNbrs_obj == nil {
+            var _evpnNbrs_obj ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors
+            l2vpnEvpn_obj.Neighbors = &_evpnNbrs_obj
+            evpnNbrs_obj = l2vpnEvpn_obj.Neighbors
+        }
+    }
+
+    //Parse and fill
+    for rd, _ := range bgpRibOutputJson {
+        rd_data, ok := bgpRibOutputJson[rd].(map[string]interface{}) ; if !ok {continue}
+        for prefix, _ := range rd_data {
+            prefix_data, ok := rd_data[prefix].(map[string]interface{}) ; if !ok {continue}
+            patharrayarray, ok := prefix_data["paths"].([]interface{}) ; if !ok {continue}       
+            neighbors, ok := prefix_data["advertisedTo"].(map[string]interface{}) ; if ok {
+                for nbrAddr, _ := range neighbors {
+                    for _, patharray := range patharrayarray {
+                        for _, path := range patharray.([]interface{}) {
+                            path_data, ok := path.(map[string]interface{}) ; if !ok {
+                                continue
+                            }
+                            var evpnNbr_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor
+                            rib_key.nbrAddr = nbrAddr
+                            if evpnNbr_obj, ok = bgpRib_obj.AfiSafis.AfiSafi[afiSafiType].L2VpnEvpn.Neighbors.Neighbor[rib_key.nbrAddr]; !ok {
+                                if evpnNbr_obj, err = evpnNbrs_obj.NewNeighbor (nbrAddr) ; err != nil {continue}
+                                ygot.BuildEmptyTree(evpnNbr_obj)
+                                _nbrAddr := nbrAddr
+                                evpnNbr_obj.State.NeighborAddress = &_nbrAddr   
+                            }
+                            fill_bgp_evpn_nbr_adj_rib_out_post (evpnNbr_obj, rib_key, rd, prefix, path_data, dbg_log) 
+                        }
+                    }
+                }
+            }
+            for _, patharray := range patharrayarray {
+                for _, path := range patharray.([]interface{}) {
+                    path_data, ok := path.(map[string]interface{}) ; if !ok { continue }
+                    peer, ok := path_data["peer"].(map[string]interface{})
+                    if !ok {continue}
+
+                    nbrAddr, ok := peer["peerId"].(string)
+                    if !ok || nbrAddr == "0.0.0.0" {continue}
+                    var evpnNbr_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor
+                    rib_key.nbrAddr = nbrAddr
+                    if evpnNbr_obj, ok = bgpRib_obj.AfiSafis.AfiSafi[afiSafiType].L2VpnEvpn.Neighbors.Neighbor[rib_key.nbrAddr]; !ok {
+                        if evpnNbr_obj, err = evpnNbrs_obj.NewNeighbor (nbrAddr) ; err != nil {continue}
+                        ygot.BuildEmptyTree(evpnNbr_obj)
+                        _nbrAddr := nbrAddr
+                        evpnNbr_obj.State.NeighborAddress = &_nbrAddr  
+                    }
+                    fill_bgp_evpn_nbr_adj_rib_in_pre (evpnNbr_obj, rib_key, rd, prefix, path_data, dbg_log) 
+                }
+            }
+        }
+    }
+
+    return err
+}
+
+func fill_bgp_evpn_nbr_adj_rib_in_pre (evpnNbr_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor,
+                                       rib_key *_xfmr_bgp_rib_key, rd string, prefix string, routes map[string]interface{}, dbg_log *string) (error) {
+    var err error
+    var ok bool
+    evpnNbrAdjRibInPre_obj := evpnNbr_obj.AdjRibInPre
+
+    if evpnNbrAdjRibInPre_obj == nil {
+        var _evpnNbrAdjRibInPre ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre
+        evpnNbr_obj.AdjRibInPre = &_evpnNbrAdjRibInPre
+        evpnNbrAdjRibInPre_obj = evpnNbr_obj.AdjRibInPre
+    }
+
+    var evpnInPreRoutes_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre_Routes
+    if evpnInPreRoutes_obj = evpnNbrAdjRibInPre_obj.Routes ; evpnInPreRoutes_obj == nil {
+        var _evpnInPreRoutes ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre_Routes
+        evpnNbrAdjRibInPre_obj.Routes = &_evpnInPreRoutes
+        evpnInPreRoutes_obj = evpnNbrAdjRibInPre_obj.Routes
+    }
+
+    pathId := uint32(routes["pathId"].(float64))
+
+    /*if (rib_key.prefix != "" && (prefix != rib_key.prefix)) {continue}
+    if (rib_key.pathIdKey != "" && (pathId != rib_key.pathId)) {continue}*/
+
+    key := ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre_Routes_Route_Key{
+        RouteDistinguisher: rd,
+        Prefix: prefix,
+        PathId: pathId,
+    }
+
+    var evpnInPreRoute_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre_Routes_Route
+    if evpnInPreRoute_obj, ok = evpnInPreRoutes_obj.Route[key] ; !ok {
+        evpnInPreRoute_obj, err = evpnInPreRoutes_obj.NewRoute (rd, prefix, pathId) ; if err != nil {log.Info("new route nil")}
+    }
+    ygot.BuildEmptyTree(evpnInPreRoute_obj)
+    if ok := fill_evpn_spec_pfx_nbr_in_pre_rib_data (evpnInPreRoute_obj, prefix, pathId, routes) ; !ok {log.Info("Failed")}
+
+
+    return err
+}
+
+func fill_evpn_spec_pfx_nbr_in_pre_rib_data (evpnInPreRoute_obj *ocbinds.
+                                              OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre_Routes_Route,
+                                              prefix string, pathId uint32, pathData map[string]interface{}) bool {
+    nbrRouteState := evpnInPreRoute_obj.State
+    nbrRouteState.Prefix = &prefix
+    nbrRouteState.PathId = &pathId
+
+    /* State Attributes */
+    if value, ok := pathData["valid"].(bool) ; ok {
+        nbrRouteState.ValidRoute = &value
+    }
+
+    symbol, ok := pathData["appliedStatusSymbols"].(map[string]interface{})
+    if ok {
+        if value, ok := symbol["*"] ; ok {
+            _value := value.(bool)
+            nbrRouteState.ValidRoute = &_value
+        }
+    }
+
+    lastUpdate, ok := pathData["lastUpdate"].(map[string]interface{})
+    if ok {
+        if value, ok := lastUpdate["epoch"] ; ok {
+            _lastUpdateEpoch := uint64(value.(float64))
+            nbrRouteState.LastModified = &_lastUpdateEpoch
+        }
+    }
+
+    /* Attr Sets */
+    routeAttrSets := evpnInPreRoute_obj.AttrSets
+
+    if value, ok := pathData["atomicAggregate"].(bool) ; ok {
+        routeAttrSets.AtomicAggregate = &value
+    }
+
+    if value, ok := pathData["localPref"] ; ok {
+        _localPref := uint32(value.(float64))
+        routeAttrSets.LocalPref = &_localPref
+    }
+
+    if value, ok := pathData["med"] ; ok {
+        _med := uint32(value.(float64))
+        routeAttrSets.Med = &_med
+    }
+
+    if value, ok := pathData["originatorId"].(string) ; ok {
+        routeAttrSets.OriginatorId = &value
+    }
+
+    if value, ok := pathData["origin"].(string) ; ok {
+        parse_origin_type_data (value, &routeAttrSets.Origin)
+    }
+
+    /* Attr Sets Aggregator */
+    routeAggState := routeAttrSets.Aggregator.State
+
+    if value, ok := pathData["aggregatorAs"] ; ok {
+        _as := uint32(value.(float64))
+        routeAggState.As = &_as
+    }
+
+    if value, ok := pathData["aggregatorId"].(string) ; ok {
+        routeAggState.Address = &value
+    }
+
+    if value, ok := pathData["aspath"].(map[string]interface{}) ; ok {
+        if asPathSegments, ok := value["segments"].([]interface {}) ; ok {
+            for _, asPathSegmentsData := range asPathSegments {
+                var _segment ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre_Routes_Route_AttrSets_AsPath_AsSegment
+                ygot.BuildEmptyTree (&_segment)
+                if ok = parse_aspath_segment_data (asPathSegmentsData.(map[string]interface {}), &_segment.State.Type, &_segment.State.Member) ; ok {
+                   routeAttrSets.AsPath.AsSegment = append (routeAttrSets.AsPath.AsSegment, &_segment)
+                }
+            }
+        }
+    }
+
+    if value, ok := pathData["nextHop"] ; ok {
+        _value := value.(string)
+        routeAttrSets.NextHop = &_value
+    }
+
+    if value, ok := pathData["clusterList"].(map[string]interface{}) ; ok {
+        if _list, ok := value["list"].([]interface{}) ; ok {
+            for _, _listData := range _list {
+                routeAttrSets.ClusterList = append (routeAttrSets.ClusterList, _listData.(string))
+            }
+        }
+    }
+
+    if value, ok := pathData["community"].(map[string]interface{}) ; ok {
+        if _list, ok := value["list"].([]interface{}) ; ok {
+            for _, _listData := range _list {
+                if _community_union, err := routeAttrSets.To_OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre_Routes_Route_AttrSets_Community_Union (_listData.(string)) ; err == nil {
+                    routeAttrSets.Community = append (routeAttrSets.Community, _community_union)
+                }
+            }
+        }
+    }
+
+    if value, ok := pathData["extendedCommunity"].(map[string]interface{}) ; ok {
+        if _value, ok := value["string"] ; ok {
+            _community_slice := strings.Split (_value.(string), " ")
+            for _, _data := range _community_slice {
+                if _ext_community_union, err := routeAttrSets.To_OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibInPre_Routes_Route_AttrSets_ExtCommunity_Union (_data) ; err == nil {
+                    routeAttrSets.ExtCommunity = append (routeAttrSets.ExtCommunity, _ext_community_union)
+                }
+            }
+        }
+    }
+
+    return true
+}
+
+func fill_bgp_evpn_nbr_adj_rib_out_post (evpnNbr_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor,
+                                         rib_key *_xfmr_bgp_rib_key, rd string, prefix string, routes map[string]interface{}, dbg_log *string) (error) {
+    var err error
+    var ok bool
+
+    evpnNbrAdjRibOutPost_obj := evpnNbr_obj.AdjRibOutPost
+
+    if evpnNbrAdjRibOutPost_obj == nil {
+        var _evpnNbrAdjRibOutPost ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost
+        evpnNbr_obj.AdjRibOutPost = &_evpnNbrAdjRibOutPost
+        evpnNbrAdjRibOutPost_obj = evpnNbr_obj.AdjRibOutPost
+    }
+
+    var evpnOutPostRoutes_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost_Routes
+    if evpnOutPostRoutes_obj = evpnNbrAdjRibOutPost_obj.Routes ; evpnOutPostRoutes_obj == nil {
+        var _evpnOutPostRoutes ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost_Routes
+        evpnNbrAdjRibOutPost_obj.Routes = &_evpnOutPostRoutes
+        evpnOutPostRoutes_obj = evpnNbrAdjRibOutPost_obj.Routes
+    }
+
+    pathId := uint32(routes["pathId"].(float64))
+
+    /*if (rib_key.prefix != "" && (prefix != rib_key.prefix)) {continue}
+    if (rib_key.pathIdKey != "" && (pathId != rib_key.pathId)) {continue}*/
+
+    key := ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost_Routes_Route_Key{
+        RouteDistinguisher: rd,
+        Prefix: prefix,
+        PathId: pathId,
+    }
+
+    var evpnOutPostRoute_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost_Routes_Route
+    if evpnOutPostRoute_obj, ok = evpnOutPostRoutes_obj.Route[key] ; !ok {
+        evpnOutPostRoute_obj, err = evpnOutPostRoutes_obj.NewRoute (rd, prefix, pathId) ; if err != nil {log.Info("not created")}
+    }
+    ygot.BuildEmptyTree(evpnOutPostRoute_obj)
+    if ok := fill_evpn_spec_pfx_nbr_out_post_rib_data (evpnOutPostRoute_obj, prefix, pathId, routes) ; !ok {log.Info("fill failed")}
+
+    return err
+}
+
+func fill_evpn_spec_pfx_nbr_out_post_rib_data (evpnOutPostRoute_obj *ocbinds.
+                                               OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost_Routes_Route,
+                                               prefix string, pathId uint32, prefixData map[string]interface{}) bool {
+    evpnNbrOutPostRouteState := evpnOutPostRoute_obj.State
+    evpnNbrOutPostRouteState.Prefix = &prefix
+    evpnNbrOutPostRouteState.PathId = &pathId
+
+    lastUpdate, ok := prefixData["lastUpdate"].(map[string]interface{})
+    if ok {
+        if value, ok := lastUpdate["epoch"] ; ok {
+            _lastUpdateEpoch := uint64(value.(float64))
+            evpnNbrOutPostRouteState.LastModified = &_lastUpdateEpoch
+        }
+    }
+
+    evpnOutPostRouteAttrSets := evpnOutPostRoute_obj.AttrSets
+
+    if value, ok := prefixData["atomicAggregate"].(bool) ; ok {
+        evpnOutPostRouteAttrSets.AtomicAggregate = &value
+    }
+
+    if value, ok := prefixData["localPref"] ; ok {
+        _localPref := uint32(value.(float64))
+        evpnOutPostRouteAttrSets.LocalPref = &_localPref
+    }
+
+    if value, ok := prefixData["med"] ; ok {
+        _med := uint32(value.(float64))
+        evpnOutPostRouteAttrSets.Med = &_med
+    }
+
+    if value, ok := prefixData["originatorId"].(string) ; ok {
+        evpnOutPostRouteAttrSets.OriginatorId = &value
+    }
+
+    if value, ok := prefixData["origin"].(string) ; ok {
+        parse_origin_type_data (value, &evpnOutPostRouteAttrSets.Origin)
+    }
+
+    evpnOutPostRouteAggState := evpnOutPostRouteAttrSets.Aggregator.State
+
+    if value, ok := prefixData["aggregatorAs"] ; ok {
+        _as := uint32(value.(float64))
+        evpnOutPostRouteAggState.As = &_as
+    }
+
+    if value, ok := prefixData["aggregatorId"].(string) ; ok {
+        evpnOutPostRouteAggState.Address = &value
+    }
+
+    if value, ok := prefixData["aspath"].(map[string]interface{}) ; ok {
+        if asPathSegments, ok := value["segments"].([]interface {}) ; ok {
+            for _, asPathSegmentsData := range asPathSegments {
+                var _segment ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost_Routes_Route_AttrSets_AsPath_AsSegment
+                ygot.BuildEmptyTree (&_segment)
+                if ok = parse_aspath_segment_data (asPathSegmentsData.(map[string]interface {}), &_segment.State.Type, &_segment.State.Member) ; ok {
+                   evpnOutPostRouteAttrSets.AsPath.AsSegment = append (evpnOutPostRouteAttrSets.AsPath.AsSegment, &_segment)
+                }
+            }
+        }
+    }
+
+    if value, ok := prefixData["nextHop"] ; ok {
+        _value := value.(string)
+        evpnOutPostRouteAttrSets.NextHop = &_value
+    }
+
+    if value, ok := prefixData["clusterList"].(map[string]interface{}) ; ok {
+        if _list, ok := value["list"].([]interface{}) ; ok {
+            for _, _listData := range _list {
+                evpnOutPostRouteAttrSets.ClusterList = append (evpnOutPostRouteAttrSets.ClusterList, _listData.(string))
+            }
+        }
+    }
+
+    if value, ok := prefixData["community"].(map[string]interface{}) ; ok {
+        if _list, ok := value["list"].([]interface{}) ; ok {
+            for _, _listData := range _list {
+                if _community_union, err := evpnOutPostRouteAttrSets.To_OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost_Routes_Route_AttrSets_Community_Union (_listData.(string)) ; err == nil {
+                    evpnOutPostRouteAttrSets.Community = append (evpnOutPostRouteAttrSets.Community, _community_union)
+                }
+            }
+        }
+    }
+
+    if value, ok := prefixData["extendedCommunity"].(map[string]interface{}) ; ok {
+        if _value, ok := value["string"] ; ok {
+            _community_slice := strings.Split (_value.(string), " ")
+            for _, _data := range _community_slice {
+                if _ext_community_union, err := evpnOutPostRouteAttrSets.To_OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis_AfiSafi_L2VpnEvpn_Neighbors_Neighbor_AdjRibOutPost_Routes_Route_AttrSets_ExtCommunity_Union (_data) ; err == nil {
+                    evpnOutPostRouteAttrSets.ExtCommunity = append (evpnOutPostRouteAttrSets.ExtCommunity, _ext_community_union)
                 }
             }
         }

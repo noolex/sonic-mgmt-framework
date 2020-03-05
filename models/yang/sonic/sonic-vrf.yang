@@ -5,6 +5,9 @@ module sonic-vrf {
     import sonic-common {
         prefix scommon;
     }
+    import sonic-extension {
+        prefix sonic-ext;
+    }
 
     organization
         "SONiC";
@@ -49,6 +52,7 @@ module sonic-vrf {
                 }
 
                 leaf vni {
+		    sonic-ext:custom-validation ValidateVrfVNI;
                     type uint32 {
                         range "0..16777215" {
                             error-message "VNI ID out of range";

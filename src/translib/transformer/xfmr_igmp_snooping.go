@@ -178,7 +178,6 @@ func getUriPath(uri string) (*gnmipb.Path, error) {
 }
 
 func (reqP *reqProcessor) setIGMPSnoopingObjFromReq() error {
-	var err error
 
 	igmpsPath := &gnmipb.Path{}
 
@@ -191,23 +190,25 @@ func (reqP *reqProcessor) setIGMPSnoopingObjFromReq() error {
 		}
 	}
 
-	fmt.Println("igmpsPath => ", igmpsPath)
+	log.Info("igmpsPath => ", igmpsPath)
 
-	targetNodeList, err := ytypes.GetNode(ocbinds.SchemaTree["Device"], reqP.rootObj, igmpsPath)
-
-	if err != nil {
-		return tlerr.InvalidArgs("Interface list node not found in the request: %v", err)
+	if reqP.opcode == 1 { // GET case - we create the target node if not exist in the device object - its an workaround since tranformer is giving nil object
+		if ygNode, _, errYg := ytypes.GetOrCreateNode(ocbinds.SchemaTree["Device"], reqP.rootObj, igmpsPath); errYg == nil && ygNode != nil {
+			reqP.igmpsObj = ygNode.(*ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_IgmpSnooping)
+		} else {
+			return tlerr.InvalidArgs("Invalid URI in the request")
+		} 
+	} else {
+		if targetNodeList, errTmp := ytypes.GetNode(ocbinds.SchemaTree["Device"], reqP.rootObj, igmpsPath); errTmp != nil || len(targetNodeList) == 0 {
+			return tlerr.InvalidArgs("Invalid URI in the request")	
+		} else {
+			reqP.igmpsObj = targetNodeList[0].Data.(*ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_IgmpSnooping)
+		}	
 	}
-
-	if len(targetNodeList) == 0 {
-		return tlerr.InvalidArgs("Interfaces node not found in the request: %s", *reqP.uri)
-	}
-
-	reqP.igmpsObj = targetNodeList[0].Data.(*ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_IgmpSnooping)
 
 	fmt.Println("igmpSnoopingObj ==> ", reqP.igmpsObj)
 
-	return err
+	return nil
 }
 
 func (reqP *reqProcessor) handleDeleteReq() (*map[string]map[string]db.Value, error) {
@@ -600,16 +601,19 @@ var YangToDb_igmp_snooping_subtree_xfmr SubTreeXfmrYangToDb = func(inParams Xfmr
 	fmt.Println("YangToDb_igmp_snooping_subtree_xfmr entering => ", inParams)
 
 	path, err := getUriPath(inParams.uri)
-
-        pathInfo := NewPathInfo(inParams.uri)
-        protoId := pathInfo.Var("identifier")
-        if strings.Contains(protoId,"IGMP_SNOOPING") == false {
-            return nil, errors.New("IGMP Proto ID is missing")
-        }
+    pathInfo := NewPathInfo(inParams.uri)
+    niName := pathInfo.Var("name")
+    protoId := pathInfo.Var("identifier")
+    if strings.Contains(protoId,"IGMP_SNOOPING") == false {
+        return nil, errors.New("IGMP Proto ID is missing")
+    }
 
 	if err != nil {
 		return nil, err
-	}
+	} else if niName != "default" {
+		fmt.Println("YangToDb_igmp_snooping_subtree_xfmr - called with incorrect network-instance - name => ", niName, " and returning error..")
+		return nil, tlerr.NotFound("Resource Not Found")
+	} 
 
 	reqP := &reqProcessor{&inParams.uri, path, inParams.oper, (*inParams.ygRoot).(*ocbinds.Device), inParams.param, inParams.d, inParams.dbs, nil, nil, nil, nil}
 
@@ -636,15 +640,19 @@ var DbToYang_igmp_snooping_subtree_xfmr SubTreeXfmrDbToYang = func(inParams Xfmr
 
 	path, err := getUriPath(inParams.uri)
 
-        pathInfo := NewPathInfo(inParams.uri)
-        protoId := pathInfo.Var("identifier")
-        if strings.Contains(protoId,"IGMP_SNOOPING") == false {
-            return errors.New("IGMP Proto ID is missing")
-        }
+    pathInfo := NewPathInfo(inParams.uri)
+    niName := pathInfo.Var("name")
+    protoId := pathInfo.Var("identifier")
+    if strings.Contains(protoId,"IGMP_SNOOPING") == false {
+        return errors.New("IGMP Proto ID is missing")
+    }
 
 	if err != nil {
 		return err
-	}
+	} else if niName != "default" {
+		fmt.Println("YangToDb_igmp_snooping_subtree_xfmr - called with incorrect network-instance - name => ", niName, " and returning error..")
+		return tlerr.NotFound("Resource Not Found")
+	} 
 
 	reqP := &reqProcessor{&inParams.uri, path, inParams.oper, (*inParams.ygRoot).(*ocbinds.Device), inParams.param, inParams.d, inParams.dbs, nil, nil, nil, nil}
 

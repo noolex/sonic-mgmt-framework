@@ -223,36 +223,19 @@ func (app *lldpApp) processGet(dbs [db.MaxDB]*db.DB) (GetResponse, error)  {
             }
             ygot.BuildEmptyTree(oneIfInfo)
             app.getLldpNeighInfoFromInternalMap(&ifname, oneIfInfo)
-            if *app.ygotTarget == lldpIntfObj {
-                payload, err = dumpIetfJson(lldpIntfObj, true)
-            } else if *app.ygotTarget == lldpIntfObj.Interfaces {
-                payload, err = dumpIetfJson(lldpIntfObj, true)
-            } else {
-                log.Info("Wrong request!")
-            }
-
+            payload, err = generateGetResponsePayload(app.path.Path, (*app.ygotRoot).(*ocbinds.Device), app.ygotTarget)
         }
-    } else if targetUriPath == "/openconfig-lldp:lldp/interfaces/interface" {
+   } else if (strings.Contains(targetUriPath, "/openconfig-lldp:lldp/interfaces/interface")) {
         intfObj := lldpIntfObj.Interfaces
         ygot.BuildEmptyTree(intfObj)
         if intfObj.Interface != nil && len(intfObj.Interface) > 0 {
             for ifname, _ := range intfObj.Interface {
-                log.Info("if-name = ", ifname)
                 app.getLldpInfoFromDB(&ifname)
                 ifInfo := intfObj.Interface[ifname]
                 ygot.BuildEmptyTree(ifInfo)
                 app.getLldpNeighInfoFromInternalMap(&ifname, ifInfo)
-
-                if *app.ygotTarget == intfObj.Interface[ifname] {
-                    payload, err = dumpIetfJson(intfObj, true)
-                    if err != nil {
-                        log.Info("Creation of subinterface subtree failed!")
-                        return GetResponse{Payload: payload, ErrSrc: AppErr}, err
-                    }
-                } else {
-                    log.Info("Wrong request!")
-                }
             }
+            payload, err = generateGetResponsePayload(app.path.Path, (*app.ygotRoot).(*ocbinds.Device), app.ygotTarget)
         } else {
             log.Info("No data")
         }
@@ -271,11 +254,16 @@ func (app *lldpApp) processAction(dbs [db.MaxDB]*db.DB) (ActionResponse, error) 
 /** Helper function to populate JSON response for GET request **/
 func (app *lldpApp) getLldpNeighInfoFromInternalMap(ifName *string, ifInfo *ocbinds.OpenconfigLldp_Lldp_Interfaces_Interface) {
 
-    ngInfo, err := ifInfo.Neighbors.NewNeighbor(*ifName)
-    if err != nil {
-        log.Info("Creation of subinterface subtree failed!")
-        return
+    var err error
+    ngInfo, ok := ifInfo.Neighbors.Neighbor[*ifName]
+    if !ok {
+        ngInfo, err = ifInfo.Neighbors.NewNeighbor(*ifName)
+        if err != nil {
+            log.Info("Creation of neighbor failed!")
+            return
+        }
     }
+
     ygot.BuildEmptyTree(ngInfo)
     neighAttrMap:= app.lldpNeighTableMap[*ifName]
     for attr, value := range neighAttrMap {

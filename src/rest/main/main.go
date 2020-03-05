@@ -154,7 +154,7 @@ func main() {
 func spawnUnixListener() {
 	var CLIAuth = server.UserAuth{"password": false, "cert": true, "jwt": true}
 	tlsConfig := tls.Config{
-		ClientAuth:               tls.RequireAndVerifyClientCert,
+		ClientAuth:               tls.RequireAnyClientCert,
 		Certificates:             prepareServerCertificate(),
 		ClientCAs:                prepareCACertificates(cliCAFile),
 		MinVersion:               tls.VersionTLS12,

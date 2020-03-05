@@ -107,6 +107,23 @@ def invoke(func, args):
     elif func == 'ip_prefix_delete':
         keypath, body = generate_ipprefix_uri(args, 1)
         return aa.delete(keypath)
+
+    elif func == 'ip_prefix_show_all':
+        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets')
+        return aa.get(keypath)
+
+    elif func == 'ip_prefix_show_specific':
+        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={name}',name=args[1])
+        return aa.get(keypath)
+
+    elif func == 'ipv6_prefix_show_all':
+        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets')
+        return aa.get(keypath)
+
+    elif func == 'ipv6_prefix_show_specific':
+        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={name}',name=args[1])
+        return aa.get(keypath)
+
     else:
     	return aa.cli_not_implemented(func)
 

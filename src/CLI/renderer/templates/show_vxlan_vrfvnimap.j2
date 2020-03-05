@@ -6,7 +6,7 @@
 {% if json_output -%}
 
 {% for tunnel in  json_output['sonic-vrf:VRF_LIST'] %}
-{% if 'vni' in tunnel and tunnel['vni'] != '' %}
+{% if 'vni' in tunnel and tunnel['vni'] != '' and tunnel['vni'] != 0 %}
 {{'%-8s'|format(tunnel['vrf_name'])}}  {{'%-8s'|format(tunnel['vni'])}}
   {% set count.value = count.value + 1 %}
 {% endif %}

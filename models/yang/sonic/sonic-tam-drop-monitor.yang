@@ -32,18 +32,31 @@ module sonic-tam-drop-monitor {
 
 	container TAM_DROP_MONITOR_FEATURE_TABLE {
 
+	    description
+	       "Enable Drop Monitor Feature.";
+
+
             list TAM_DROP_MONITOR_FEATURE_TABLE_LIST {
                 key "name";
+	        description
+	            "Feature Table List to enable Drop-Monitor feature.";
+
 	        sonic-ext:custom-validation ValidateTAMFeature;
 
                 leaf name {
                     type enumeration {
                         enum feature;
                     }
+
+		    description
+		       "Feature Table key name.";
                 }
 
                 leaf enable {
                     type boolean;
+
+		    description
+		       "Feature Table enable flag.";
                 }
             }
         }
@@ -53,12 +66,19 @@ module sonic-tam-drop-monitor {
 
 		list TAM_DROP_MONITOR_AGING_INTERVAL_TABLE_LIST {
 			key "name";
+		        description
+			  "Configures an aging-interval for drop-monitor flows configured in the system. 
+                           The aging interval determines how long the system waits before it decides that drops have ceased on a flow.";
+
 	                sonic-ext:custom-validation ValidateTAMFeature;
 
 			leaf name {
 				type enumeration {
 					enum aging;
 				}
+
+				description
+				     "Aging Table key name.";
 			}
 
 			leaf aging-interval {
@@ -67,8 +87,11 @@ module sonic-tam-drop-monitor {
 						error-message "Drop monitor aging interval is out of range";
 						error-app-tag drop-monitor-aging-invalid;
 					}
+
 				}
 
+                                description
+			                 "Aging Interval defines the duration the switch waits to sends Drop-stop report to the collector after the drop event ceases on a flow.";
 				default 3;
 			}
 		}
@@ -78,20 +101,29 @@ module sonic-tam-drop-monitor {
 
 		list SAMPLE_RATE_TABLE_LIST {
 			key "name";
+		        description
+			  "Create a sample session that co-relates a sampling rate with a session name.";
 
 			leaf name {
 				type string {
 					pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,71})';
 					length 1..72;
 				}
+
+				description
+				     "The sample session is identified by the name and can be used by multiple features to indicate sampling configuration.";
 			}
 
 			leaf sampling-rate {
 				type uint16 {
 					range "1..65535"{
+				                error-message "Sampling-rate is out of range";
 						error-app-tag "Invalid Drop Monitor Sampling Rate.";
 					}
 				}
+
+				description
+				     "One packet in every sampling rate packets will be sampled..";
 			}
 		}
 	}
@@ -100,23 +132,36 @@ module sonic-tam-drop-monitor {
 
             list TAM_DROP_MONITOR_FLOW_TABLE_LIST {
                 key "name";
+		description
+		       "Associates a flow configuration (specified by the ACL table and ACL rule) with a collector, sampling configuration and flowgroup-id.";
+
 	        sonic-ext:custom-validation ValidateTAMFeature;
 
                 leaf name {
 			type string {
 				pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,71})';
 				length 1..72;
+
 			}
+
+		        description
+			        "Name of the flow. It should be unique.";
                 }
 
                 leaf acl-table-name {
 			mandatory true;
 			type string;
+
+		        description
+			        "Parameter to map acl table to the flow.";
                 }
 
                 leaf acl-rule-name {
 			mandatory true;
 			type string;
+
+		        description
+			        "Parameter to map acl rule to the flow.";
                 }
 
 		leaf sample {
@@ -124,6 +169,9 @@ module sonic-tam-drop-monitor {
 				pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,32})';
 				length 1..32;
 			}
+
+		        description
+			        "Map sampling rate configuration to the flow.";
 		}
 
 		leaf collector-name {
@@ -131,6 +179,9 @@ module sonic-tam-drop-monitor {
 				pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,32})';
 				length 1..32;
 			}
+
+		        description
+			        "Map collector to the flow.";
 		}
 
 		leaf flowgroup-id {
@@ -147,6 +198,9 @@ module sonic-tam-drop-monitor {
 				error-app-tag "invalid-flowgroup-id";
 				error-message "Only single flowgroup-id is allowed for unique ACL table and rule combination";
 			}
+
+		        description
+			        "Flow group ID. Must be unique per flow.";
 		}
 
 		container state {
@@ -154,17 +208,23 @@ module sonic-tam-drop-monitor {
                         sonic-ext:key-delim ":";
 
 			config false;
-			description "State data for TAM INT IFA FS FLOW";
+			description "State data for Drop Monitor Flow";
 
 
 			leaf MATCHED_PACKETS {
 				type yang:counter64;
                                 default 0;
+
+		                description
+			            "Count of the number of packets matching the current ACL entry.";
 			}
 
 			leaf MATCHED_OCTETS {
 				type yang:counter64;
                                 default 0;
+
+		                description
+			            "Count of the number of octets (bytes) matching the current ACL entry.";
 			}
 		}
 

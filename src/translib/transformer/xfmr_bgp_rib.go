@@ -2422,6 +2422,18 @@ var DbToYang_bgp_routes_get_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams)
                     return oper_err
                 }
             }
+        case "/openconfig-network-instance:network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi/openconfig-bgp-evpn-ext:l2vpn-evpn/neighbors": fallthrough
+        case "/openconfig-network-instance:network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi/openconfig-bgp-evpn-ext:l2vpn-evpn/neighbors/neighbor": fallthrough
+        case "/openconfig-network-instance:network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi/openconfig-bgp-evpn-ext:l2vpn-evpn/neighbors/neighbor/adj-rib-in-pre": fallthrough
+        case "/openconfig-network-instance:network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi/openconfig-bgp-evpn-ext:l2vpn-evpn/neighbors/neighbor/adj-rib-in-pre/routes": fallthrough
+        case "/openconfig-network-instance:network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi/openconfig-bgp-evpn-ext:l2vpn-evpn/neighbors/neighbor/adj-rib-in-pre/routes/route": fallthrough
+        case "/openconfig-network-instance:network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi/openconfig-bgp-evpn-ext:l2vpn-evpn/neighbors/neighbor/adj-rib-out-post": fallthrough
+        case "/openconfig-network-instance:network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi/openconfig-bgp-evpn-ext:l2vpn-evpn/neighbors/neighbor/adj-rib-out-post/routes": fallthrough
+        case "/openconfig-network-instance:network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi/openconfig-bgp-evpn-ext:l2vpn-evpn/neighbors/neighbor/adj-rib-out-post/routes/route":
+            if (rib_key.afiSafiName == "L2VPN_EVPN") {
+                err = hdl_get_all_bgp_nbrs_evpn_adj_rib (bgpRib_obj, &rib_key, ocbinds.OpenconfigBgpTypes_AFI_SAFI_TYPE_L2VPN_EVPN, &dbg_log) ; if err != nil {return oper_err}
+            }
+
     }
 
     return err;

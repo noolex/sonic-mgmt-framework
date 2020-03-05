@@ -32,6 +32,34 @@
             <ACTION>
                 python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_erase ${__full_line}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Erase the existing switch configuration files except the management interface configuration,
+                    or cancel the configuration erase operation.
+
+                    "write erase" command deletes the startup configuration JSON file and all application
+                    configuration files in the /etc/sonic directory. The management interface configuration
+                    in the startup configuration file is retained so that the user can access the switch using
+                    the same management address after the switch reboot.
+
+                    For the write erase command operation to take effect, the user has to reboot the switch
+                    after issuing the write erase command. If the user wishes to not proceed with the configuration
+                    removal operation, the write erase cancel command can be used to undo the previously issued
+                    write erase command.
+
+                </DESCRIPTION>
+                <USAGE>
+                    Use the command "write erase" to erase the existing switch configuration files except for the management interface configuration.
+                    Use the command "no write erase" to cancel configuration erase operation.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# configure terminal
+                    sonic(config)# write erase
+                    Existing switch configuration files except management interface configuration will be removed, continue? [y/N]:
+                    sonic(config)# no write erase
+                    Switch configuration erase operation will be cancelled, continue? [y/N]:
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND
             name="write erase boot"
@@ -39,6 +67,25 @@
             <ACTION>
                 python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_erase ${__full_line}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Erase the configuration files including management interface configuration.
+
+                    The "write erase boot" command deletes the startup configuration JSON file and all
+                    application configuration files in the /etc/sonic directory. The management
+                    interface configuration in the startup configuration JSON file is also removed.
+                    The SONiC switch boots with a factory default configuration file.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to erase the configuration files including the management
+                    interface configuration.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# configure terminal
+                    sonic(config)# write erase boot
+                    Existing switch configuration files will be removed, continue? [y/N]:
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND
             name="write erase install"
@@ -46,6 +93,27 @@
             <ACTION>
                 python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_erase ${__full_line}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Restore SONiC switch content to default values.
+
+                    The "write erase install" command removes all changes made by the user.
+                    All user installed packages and file changes are removed. It also deletes
+                    the startup configuration JSON file and the files in /etc/sonic directory.
+                    The SONiC switch is reverted to the same state as a newly installed image.
+                    After the SONiC switch is rebooted, if the Zero Touch Provisioning (ZTP)
+                    feature is enabled, the SONIC switch will start performing ZTP to discover
+                    and download the switch configuration.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to restore SONiC switch content to default values.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# configure terminal
+                    sonic(config)# write erase install
+                    All SONiC switch content will be restored to default values, continue? [y/N]:
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
    </VIEW>
 

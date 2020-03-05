@@ -865,6 +865,12 @@ func yangFloatIntToGoType(t yang.TypeKind, v float64) (interface{}, error) {
 
 func unmarshalJsonToDbData(schema *yang.Entry, fieldName string, value interface{}) (string, error) {
         var data string
+
+        switch v := value.(type) {
+        case string:
+              return fmt.Sprintf("%v", v), nil
+        }
+
         ykind := schema.Type.Kind
 
         switch ykind {

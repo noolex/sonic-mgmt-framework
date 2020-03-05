@@ -72,4 +72,16 @@ module openconfig-system-ext {
               RADIUS server when it is unresponsive";
         }
     }
+
+    deviation /oc-sys:system/oc-sys:config/oc-sys:domain-name {
+       deviate not-supported;
+    }
+
+    deviation /oc-sys:system/oc-sys:config/oc-sys:login-banner {
+        deviate not-supported;
+    }
+
+    deviation /oc-sys:system/oc-sys:config/oc-sys:motd-banner {
+        deviate not-supported;
+    }
 }

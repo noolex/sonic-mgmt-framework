@@ -328,7 +328,7 @@
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_udld_list_multiplier ${multiplier}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Configure UDLD multiplier value. This multiplier value is used to determine the timeout interval (i.e. message-time x multiplier value) after which UDLD declares the state of the link.
+                    Configure UDLD multiplier value. This multiplier value is used to determine the timeout interval (i.e. message-time x multiplier value) after which UDLD declares the link as Unidirectonal.
                 </DESCRIPTION>
                 <USAGE>
                     Use this command to set UDLD multiplier value. Default multiplier value is 3.

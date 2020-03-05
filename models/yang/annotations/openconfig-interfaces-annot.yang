@@ -141,8 +141,15 @@ module openconfig-interfaces-annot {
             sonic-ext:subtree-transformer "sw_vlans_xfmr";
         }
     }
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces {
+        deviate add {
+            sonic-ext:table-name "NONE";
+        }
+    }
+
     deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface {
         deviate add {
+            sonic-ext:table-transformer "intf_subintfs_table_xfmr";
             sonic-ext:key-transformer "intf_subintfs_xfmr";
         }
     }

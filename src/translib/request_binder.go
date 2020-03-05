@@ -64,10 +64,11 @@ type requestBinder struct {
 	pathTmp            *gnmi.Path
 	targetNodePath     *gnmi.Path
 	targetNodeListInst bool
+	isOpenconfig       bool
 }
 
 func getRequestBinder(uri *string, payload *[]byte, opcode int, appRootNodeType *reflect.Type) *requestBinder {
-	return &requestBinder{uri, payload, opcode, appRootNodeType, nil, nil, false}
+	return &requestBinder{uri, payload, opcode, appRootNodeType, nil, nil, false, false}
 }
 
 func (binder *requestBinder) unMarshallPayload(workObj *interface{}) error {
@@ -93,10 +94,38 @@ func (binder *requestBinder) unMarshallPayload(workObj *interface{}) error {
 	return nil
 }
 
+func (binder *requestBinder) validateObjectType (errObj error) error {
+	
+	if errObj == nil {
+		return nil
+	}
+	
+	errStr := errObj.Error()
+
+	if binder.opcode == GET || binder.isOpenconfig == false {
+		tmpStr := strings.Replace(errStr, "ERROR_READONLY_OBJECT_FOUND", "", -1)
+		if len (tmpStr) > 0 {
+			log.Info("validateObjectType ==> GET == return err string ==> ", tmpStr)
+			return errors.New(tmpStr)
+		} else {
+			return nil
+		}	
+	} else {
+		if strings.Contains(errStr, "ERROR_READONLY_OBJECT_FOUND") == true {
+			log.Info("validateObjectType ==> WRITE == return err string")
+			return errors.New("SET operation not allowed on the read-only object")
+		} else {
+			log.Info("validateObjectType ==> WRITE == return err string")
+			return errors.New(errStr)
+		}
+	}
+}
+
 func (binder *requestBinder) validateRequest(deviceObj *ocbinds.Device) error {
 	if binder.pathTmp == nil || len(binder.pathTmp.Elem) == 0 {
 		if binder.opcode == UPDATE || binder.opcode == REPLACE {
 			err := deviceObj.Validate(&ytypes.LeafrefOptions{IgnoreMissingData: true})
+			err = binder.validateObjectType (err)
 			if err != nil {
 				return err
 			}
@@ -119,6 +148,7 @@ func (binder *requestBinder) validateRequest(deviceObj *ocbinds.Device) error {
 			basePathObj, ok := (baseTreeNode[0].Data).(ygot.ValidatedGoStruct)
 			if ok == true {
 				err := basePathObj.Validate(&ytypes.LeafrefOptions{IgnoreMissingData: true})
+				err = binder.validateObjectType (err)
 				if err != nil {
 					return err
 				}
@@ -215,6 +245,7 @@ func (binder *requestBinder) unMarshall() (*ygot.GoStruct, *interface{}, error) 
 		targetObj, ok := (*tmpTargetNode).(ygot.ValidatedGoStruct)
 		if ok == true {
 			err := targetObj.Validate(&ytypes.LeafrefOptions{IgnoreMissingData: true})
+			err = binder.validateObjectType (err)
 			if err != nil {
 				return nil, nil, tlerr.TranslibSyntaxValidationError{StatusCode: 400, ErrorStr: err}
 			}
@@ -261,9 +292,13 @@ func (binder *requestBinder) unMarshallUri(deviceObj *ocbinds.Device) (*interfac
 	} else {
 		binder.pathTmp = path
 	}
-
-	for _, p := range path.Elem {
+	
+	for idx, p := range path.Elem {
 		pathSlice := strings.Split(p.Name, ":")
+		if idx == 0 && len(pathSlice) > 0 && strings.HasPrefix(pathSlice[0], "openconfig-") == true {
+			log.Info("URI path - setting isOpenconfig flag ==> ", pathSlice[0])
+			binder.isOpenconfig = true
+		}
 		p.Name = pathSlice[len(pathSlice)-1]
 	}
 

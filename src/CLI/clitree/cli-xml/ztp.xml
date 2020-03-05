@@ -11,6 +11,37 @@
     <COMMAND name="show ztp-status" help="Show ZTP status">
       <ACTION builtin="clish_pyobj">sonic_cli_ztp get_openconfig_ztp_ztp_state show_ztp.j2 ${__full_line} </ACTION>
       <xi:include href="include/pipe.xml"/>
+      <DOCGEN>
+          <DESCRIPTION>
+              Show the status of ZTP operation.
+          </DESCRIPTION>
+          <USAGE>
+              Use this command to show the status of ZTP operation.
+
+              These are the possible current states or result of ZTP session:
+               - IN-PROGRESS: ZTP session is currently in progress. ZTP service is processing switch provisioning information.
+               - SUCCESS: ZTP service has successfully processed the switch provisioning information.
+               - FAILED: ZTP service has failed to process the switch provisioning information.
+               - Not Started: ZTP service has not started processing the discovered switch provisioning information.
+
+              These are the state and result of a configuration section:
+               - IN-PROGRESS: Corresponding configuration section is currently being processed.
+               - SUCCESS: Corresponding configuration section was processed successfully.
+               - FAILED: Corresponding configuration section failed to execute successfully.
+               - Not Started: ZTP service has not started processing the corresponding configuration section.
+               - DISABLED: Corresponding configuration section has been marked as disabled and will not be processed.
+
+          </USAGE>
+          <EXAMPLE>
+              sonic# show ztp-status
+              ========================================
+              ZTP
+              ========================================
+              ZTP Admin Mode      : True
+              ZTP Service         : Inactive
+              ZTP Status          : Not Started
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
   </VIEW>
   <VIEW name="configure-view">
@@ -25,6 +56,19 @@
     </COMMAND>
     <COMMAND name="ztp enable" help="Administratively enable ZTP">
       <ACTION builtin="clish_pyobj">sonic_cli_ztp patch_openconfig_ztp_ztp_config ${__full_line} </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Administratively enable or disable ZTP.
+          </DESCRIPTION>
+          <USAGE>
+              Use these commands to administratively enable or disable ZTP.
+          </USAGE>
+          <EXAMPLE>
+              sonic# configure terminal
+              sonic(config)# ztp enable
+              sonic(config)# no ztp enable
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
   </VIEW>
 </CLISH_MODULE>

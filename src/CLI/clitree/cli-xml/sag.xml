@@ -34,6 +34,12 @@ limitations under the License.
         <ACTION>
                python $SONIC_CLI_ROOT/sonic-cli-show-sag.py get_ip_sag show_ip_sag.j2 None&#xA;
        </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Displays IPv4 static-anycast-gateway information.
+        </DESCRIPTION>
+     </DOCGEN>
+	   
     </COMMAND>
     <COMMAND
         help="show IPv6 SAG commands"
@@ -42,7 +48,12 @@ limitations under the License.
         <ACTION>
                python $SONIC_CLI_ROOT/sonic-cli-show-sag.py get_ipv6_sag show_ip_sag.j2 None&#xA;
        </ACTION>
-    </COMMAND>
+     <DOCGEN>
+        <DESCRIPTION>
+          Displays IPv6 static-anycast-gateway information.
+        </DESCRIPTION>
+     </DOCGEN>    
+	</COMMAND>
 
 </VIEW>
 
@@ -52,21 +63,42 @@ limitations under the License.
     <COMMAND name="ip anycast-address" help="Configure IPv4 Static Anycast Gateway">
       <PARAM name="anycast-addr" help="Anycast Gateway Address" ptype="IP_ADDR_MASK"> </PARAM>
 		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-sag.py patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv4_sag_ipv4_config_static_anycast_gateway ${vlan_name} ${anycast-addr}&#xA; </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Configures IPv4 Static Anycast Gateway Address for an Interface.
+        </DESCRIPTION>
+     </DOCGEN>
+
     </COMMAND>
     <!-- no ip static-anycast-gateway -->
     <COMMAND name="no ip anycast-address" help="Unconfigure IPv4 Static Anycast Gateway">
       <PARAM name="anycast-addr" help="Anycast Gateway Address" ptype="IP_ADDR_MASK"> </PARAM>
       <ACTION>python $SONIC_CLI_ROOT/sonic-cli-sag.py del_llist_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv4_sag_ipv4_config_static_anycast_gateway ${vlan_name} ${anycast-addr}&#xA; </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Removes IPv4 Static Anycast Gateway Address from an Interface.
+        </DESCRIPTION>
+     </DOCGEN>
     </COMMAND>
     <!-- ipv6 anycast-address -->
     <COMMAND name="ipv6 anycast-address" help="Configure IPv6 Static Anycast Gateway">
       <PARAM name="anycast-addr" help="Anycast Gateway Address" ptype="IPV6_ADDR_MASK"> </PARAM>
       <ACTION>python $SONIC_CLI_ROOT/sonic-cli-sag.py patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv6_sag_ipv6_config_static_anycast_gateway ${vlan_name} ${anycast-addr}&#xA; </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Configures IPv6 Static Anycast Gateway Address for an Interface.
+        </DESCRIPTION>
+     </DOCGEN>
     </COMMAND>
     <!-- no ipv6 anycast-address -->
     <COMMAND name="no ipv6 anycast-address" help="Unconfigure IPv6 Static Anycast Gateway">
       <PARAM name="anycast-addr" help="Anycast Gateway Address" ptype="IPV6_ADDR_MASK"> </PARAM>
       <ACTION>python $SONIC_CLI_ROOT/sonic-cli-sag.py del_llist_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv6_sag_ipv6_config_static_anycast_gateway ${vlan_name} ${anycast-addr}&#xA; </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Removes IPv6 Static Anycast Gateway Address from an Interface.
+        </DESCRIPTION>
+     </DOCGEN>
     </COMMAND>
   </VIEW>
   <VIEW name="configure-view">
@@ -74,11 +106,21 @@ limitations under the License.
     <COMMAND name="ip anycast-mac-address" help="Configure Anycast Gateway MAC address">
       <PARAM name="anycast-mac" help="Anycast Gateway MAC Address" ptype="MAC_ADDR"> </PARAM>
       <ACTION>python $SONIC_CLI_ROOT/sonic-cli-sag.py patch_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_anycast_mac ${anycast-mac}&#xA; </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Configures MAC address for all the Static Anycast Gateway Addresses on the system.
+        </DESCRIPTION>
+     </DOCGEN>
     </COMMAND>
     <!-- no ip anycast-mac-address -->
     <COMMAND name="no ip anycast-mac-address" help="Configure Anycast Gateway MAC address">
       <PARAM name="anycast-mac" help="Anycast Gateway MAC Address" ptype="MAC_ADDR"> </PARAM>
       <ACTION>python $SONIC_CLI_ROOT/sonic-cli-sag.py delete_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_anycast_mac ${anycast-mac}&#xA; </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Removes MAC address for all the Static Anycast Gateway Addresses on the system.
+        </DESCRIPTION>
+     </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -114,7 +156,15 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-sag.py patch_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_ipv4_enable False&#xA;
         fi&#xA;	
 		
-		</ACTION>    </COMMAND>
+		</ACTION>
+		
+        <DOCGEN>
+          <DESCRIPTION>
+            Enable/Disable IPv4 Static Anycast Gateway functionality. By default it is enabled.
+          </DESCRIPTION>
+        </DOCGEN>
+		  
+		</COMMAND>
 
     <COMMAND
         name="ipv6 anycast-address"
@@ -149,7 +199,15 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-sag.py patch_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_ipv6_enable False&#xA;
         fi&#xA;	
 		
-		</ACTION>      </COMMAND>
+		</ACTION> 
+
+        <DOCGEN>
+          <DESCRIPTION>
+            Enable/Disable IPv4 Static Anycast Gateway functionality. By default it is enabled.
+          </DESCRIPTION>
+        </DOCGEN>
+
+		</COMMAND>
 
   </VIEW>
 </CLISH_MODULE>

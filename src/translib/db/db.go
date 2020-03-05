@@ -970,7 +970,8 @@ func (d *DB) DeleteTable(ts *TableSpec) error {
 	// For each key in Keys
 	// 	Delete the entry
 	for i := 0; i < len(keys); i++ {
-		e := d.DeleteEntry(ts, keys[i])
+		// Don't define/declare a nested scope ``e''
+		e = d.DeleteEntry(ts, keys[i])
 		if e != nil {
 			glog.Warning("DeleteTable: DeleteEntry: " + e.Error())
 			break

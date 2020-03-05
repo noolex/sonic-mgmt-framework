@@ -22,6 +22,9 @@ var network_instance_protocols_ptotocol_table_name_xfmr TableXfmrFunc = func (in
             (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"] = make(map[string]db.Value)
             (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["BGP|bgp"] = db.Value{Field: make(map[string]string)}
             (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["BGP|bgp"].Field["NULL"] = "NULL"
+            (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["IGMP_SNOOPING|IGMP-SNOOPING"] = db.Value{Field: make(map[string]string)}
+			(*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["IGMP_SNOOPING|IGMP-SNOOPING"].Field["NULL"] = "NULL"
+
             tblList = append(tblList, "CFG_PROTO_TBL")
         }
     }

@@ -605,11 +605,11 @@ func (app *AclApp) convertDBAclRulesToInternal(dbs [db.MaxDB]*db.DB, aclName str
 
 	var err error
 	if len(ruleName) > 0 {
-        aclData, acl_err := dbCl.GetEntry(app.aclTs, db.Key{Comp: []string{aclName}})
-        if acl_err != nil {
-            log.Info("Configdb getentry failed for acl ", aclName)
-            return acl_err
-        }
+		aclData, acl_err := dbCl.GetEntry(app.aclTs, db.Key{Comp: []string{aclName}})
+		if acl_err != nil {
+			log.Info("Configdb getentry failed for acl ", aclName)
+			return acl_err
+		}
 		ruleKey.Comp = []string{aclName, ruleName, strings.ToUpper(aclData.Get("stage"))}
 	}
 	if ruleKey.Len() > 1 {
@@ -631,11 +631,11 @@ func (app *AclApp) convertDBAclRulesToInternal(dbs [db.MaxDB]*db.DB, aclName str
 		}
 		app.ruleTableMap[aclName][ruleName] = ruleData
 	} else {
-        aclData, acl_err := dbCl.GetEntry(app.aclTs, db.Key{Comp: []string{aclName}})
-        if acl_err != nil {
-            log.Info("Configdb getentry failed for acl ", aclName)
-            return acl_err
-        }
+		aclData, acl_err := dbCl.GetEntry(app.aclTs, db.Key{Comp: []string{aclName}})
+		if acl_err != nil {
+			log.Info("Configdb getentry failed for acl ", aclName)
+			return acl_err
+		}
 
 		ruleKeys, err := dbCl.GetKeys(app.ruleTs)
 		if err != nil {
@@ -644,7 +644,7 @@ func (app *AclApp) convertDBAclRulesToInternal(dbs [db.MaxDB]*db.DB, aclName str
 		for i, _ := range ruleKeys {
 			if aclName == ruleKeys[i].Get(0) {
 				app.convertDBAclRulesToInternal(dbs, aclName, "", db.Key{Comp: []string{ruleKeys[i].Get(0),
-                            ruleKeys[i].Get(1), strings.ToUpper(aclData.Get("stage"))}})
+					ruleKeys[i].Get(1), strings.ToUpper(aclData.Get("stage"))}})
 			}
 		}
 	}
@@ -1189,13 +1189,13 @@ func (app *AclApp) handleBindingsDeletion(d *db.DB) error {
 					intfs := aclEntry.GetList("ports")
 					intfs = removeElement(intfs, intfId)
 					aclEntry.SetList("ports", intfs)
-					err = d.SetEntry(app.aclTs, aclKeys[i], aclEntry)
-					if err != nil {
-						return err
-					}
 					// If last interface removed, then remove stage field also
 					if len(intfs) == 0 {
 						aclEntry.Remove("stage")
+					}
+					err = d.SetEntry(app.aclTs, aclKeys[i], aclEntry)
+					if err != nil {
+						return err
 					}
 				}
 			SkipDBProcessing:

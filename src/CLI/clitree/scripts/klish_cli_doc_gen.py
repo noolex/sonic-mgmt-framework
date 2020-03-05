@@ -18,8 +18,8 @@ class CliDoc:
     noformCmdSoupDict = OrderedDict()
     modelsDict = OrderedDict()
     viewsDict = OrderedDict()
+    viewsCmdDict = OrderedDict()
     viewsSoupDict = OrderedDict()
-    clidocroot = None
     ptyperoot = None
 
     """
@@ -29,13 +29,28 @@ class CliDoc:
         pass
     
     @staticmethod
+    def create_viewDict(command, view_name):        
+        viewFp = None
+        if view_name not in CliDoc.viewsDict:
+            viewFp2 = StringIO()   
+            viewFp2.write("<viewroot>")
+            CliDoc.viewsDict[view_name] = viewFp2
+            viewFp = viewFp2
+            CliDoc.viewsCmdDict[view_name] = list()
+        else:
+            viewFp = CliDoc.viewsDict[view_name]                        
+        
+        if command not in CliDoc.viewsCmdDict[view_name]:
+            CliDoc.viewsCmdDict[view_name].append(command)
+            viewFp.write(str(command))
+
+    @staticmethod
     def parse_klish_xmls():
         """
         Reads Klish XMLs and 
         creates a CLI model in a BeautifulSoup object format
         """
         log.info("XML DIR: " + CliDoc.klish_xml_path_dir)
-        log.info(CliDoc.klish_xml_path_dir)
         models = glob.glob(os.path.join(CliDoc.klish_xml_path_dir,'*.xml'))
         ptypeFp = StringIO()
         ptypeFp.write("<ptyperoot>")  
@@ -45,17 +60,11 @@ class CliDoc:
                 if model not in CliDoc.modelsDict:
                     CliDoc.modelsDict[model] = soup
                     for command in soup.select('COMMAND[view]'):
-                        view_name = command['view']
-                        viewFp = None
-                        if view_name not in CliDoc.viewsDict:
-                            viewFp2 = StringIO()   
-                            viewFp2.write("<viewroot>")
-                            CliDoc.viewsDict[view_name] = viewFp2
-                            viewFp = viewFp2
-                        else:
-                            viewFp = CliDoc.viewsDict[view_name]                        
-                        viewFp.write(str(command))
+                        CliDoc.create_viewDict(command, command['view'])
                         
+                    for param in soup.select('PARAM[view]'):
+                        CliDoc.create_viewDict(param.find_parent('COMMAND'), param['view'])
+
                     for ptype in soup.find_all('PTYPE'):
                         ptypeFp.write(str(ptype))                      
         
@@ -260,7 +269,9 @@ class CliDoc:
 
                     if cli_string.startswith("no "):
                         if cli_string not in CliDoc.noformCmdSoupDict:
-                            CliDoc.noformCmdSoupDict[cli_string] = command_tag
+                            CliDoc.noformCmdSoupDict[cli_string] = [command_tag]
+                        else:
+                            CliDoc.noformCmdSoupDict[cli_string].append(command_tag)
                         continue
 
                     if cli_string == "exit" \
@@ -323,12 +334,22 @@ class CliDoc:
                     # print("\tparams:")
                     # print("\t", paramsList)
                     
-                    cliGuideFp = None
-                    if command_tag["name"] not in commandsGuideDict:
-                        cliGuideFp = StringIO()                        
-                        commandsGuideDict[command_tag["name"]] = cliGuideFp
-                    else:
-                        cliGuideFp = commandsGuideDict[command_tag["name"]]
+                    # cliGuideFp = None
+                    # if command_tag["name"] not in commandsGuideDict:
+                    #     cliGuideFp = StringIO()                        
+                    #     commandsGuideDict[command_tag["name"]] = cliGuideFp
+                    # else:
+                    #     cliGuideFp = commandsGuideDict[command_tag["name"]]
+
+                    cliGuideFp = StringIO()
+                    if command_tag["name"] not in commandsGuideDict:                      
+                        commandsGuideDict[command_tag["name"]] = []
+                    
+                    cmd_entry = {
+                        'view_name': view_name,
+                        'fp': cliGuideFp
+                    }
+                    commandsGuideDict[command_tag["name"]].append(cmd_entry)
 
                     # Add Command Section
                     cliGuideFp.write("## %s \n\n" %(command_tag["name"]))
@@ -408,31 +429,42 @@ class CliDoc:
         
         with open(CliDoc.klish_xml_path_dir + '/' + "cli_reference_guide.md", "w") as cliGuideFp:
             cliGuideFp.write("# The SONiC CLI Reference Guide \n\n")
-            for content_key in sorted (commandsGuideDict.keys()): 
-                contents = commandsGuideDict[content_key].getvalue()
-                noForm = 'no ' + content_key
-                if noForm in CliDoc.noformCmdSoupDict:
-                    noCmdFp = StringIO()
-                    noFormSoup = CliDoc.noformCmdSoupDict[noForm]
-                    noCmd = None
-                    insertindex = 0
-                    for index, line in enumerate(filter(None,contents.split('\n'))):
-                        noCmdFp.write(line + '\n')
-                        if noCmd is not None and index == insertindex:
-                            noCmdFp.write(noCmd + "\n")
-                            noCmd = None              
-                        if line.startswith("### Syntax") and noCmd is None:
-                            cmdListNoForm = []
-                            paramsListNoForm = []
-                            no_cli_string = noFormSoup['name']
-                            if noFormSoup.find('PARAM') is not None:
-                                CliDoc.handle_params(noFormSoup, no_cli_string, cmdListNoForm, paramsListNoForm)                        
-                            else:
-                                cmdListNoForm.append(CliDoc.filter_extra_spaces(no_cli_string))
-                            noCmd = cmdListNoForm[-1]
-                            insertindex = index + 2
-                    contents = noCmdFp.getvalue()
-                cliGuideFp.write(contents)
+            for content_key in sorted (commandsGuideDict.keys()):
+                # if  content_key == "activate":
+                #     import pdb; pdb.set_trace()
+                for cmd_entry in commandsGuideDict[content_key]:
+                    contents = cmd_entry['fp'].getvalue()
+                    cmd_view = cmd_entry['view_name']
+                    #contents = commandsGuideDict[content_key].getvalue()
+                    noForm = 'no ' + content_key
+                    if noForm in CliDoc.noformCmdSoupDict:
+                        noCmdFp = StringIO()
+                        noCmdPresent = False
+                        for noFormSoup in CliDoc.noformCmdSoupDict[noForm]:
+                            noFormSoup_view = noFormSoup.find_parent('VIEW')['name']
+                            if cmd_view != noFormSoup_view:
+                                continue
+                            noCmd = None
+                            insertindex = 0
+                            noCmdPresent = True
+                            for index, line in enumerate(filter(None,contents.split('\n'))):
+                                noCmdFp.write(line + '\n')
+                                if noCmd is not None and index == insertindex:
+                                    noCmdFp.write(noCmd + "\n")
+                                    noCmd = None              
+                                if line.startswith("### Syntax") and noCmd is None:
+                                    cmdListNoForm = []
+                                    paramsListNoForm = []
+                                    no_cli_string = noFormSoup['name']
+                                    if noFormSoup.find('PARAM') is not None:
+                                        CliDoc.handle_params(noFormSoup, no_cli_string, cmdListNoForm, paramsListNoForm)                        
+                                    else:
+                                        cmdListNoForm.append(CliDoc.filter_extra_spaces(no_cli_string))
+                                    noCmd = cmdListNoForm[-1]
+                                    insertindex = index + 2
+                        if noCmdPresent:
+                            contents = noCmdFp.getvalue()
+                    cliGuideFp.write(contents)
                             
 if __name__== "__main__":
     if len(sys.argv) > 1:

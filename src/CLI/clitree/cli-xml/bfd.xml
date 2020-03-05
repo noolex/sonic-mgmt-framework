@@ -62,6 +62,17 @@ limitations under the License.
             fi&#xA;
         fi&#xA;
 	</ACTION>
+        <DOCGEN>
+		<DESCRIPTION>
+			Display specific Bidirectional Forwarding detection(BFD) peer with the specificed filters..
+		</DESCRIPTION>
+		<EXAMPLE summary="Display singlehop peer">
+			device# show bfd peer 192.168.2.1 interface Ethernet0
+		</EXAMPLE>
+		<EXAMPLE summary="Display multihop peer">
+			device# show bfd peer 192.168.2.1 mulithop local-address 192.168.2.2
+		</EXAMPLE>
+	</DOCGEN>
     </COMMAND>
 
     <COMMAND name = "show bfd peer counters" help = "Show BFD peer counters information" >
@@ -97,6 +108,17 @@ limitations under the License.
             fi&#xA;
         fi&#xA;
 	</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Displays counters for the specified Bidirectional Forwarding detection(BFD) peer with the input filters.
+        </DESCRIPTION>
+        <EXAMPLE summary="Display singlehop peer counters">
+            device# show bfd peer counters 192.168.2.1 interface Ethernet0
+        </EXAMPLE>
+        <EXAMPLE summary="Display multihop peer">
+            device# show bfd peer counters 192.168.2.1 mulithop local-address 192.168.2.2
+        </EXAMPLE>
+    </DOCGEN> 
     </COMMAND>
     
     <COMMAND name = "show bfd peers" help = "BFD peers status" >
@@ -111,12 +133,28 @@ limitations under the License.
 	    python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers.j2 ${vrf-name} ${__full_line}&#xA;
         fi&#xA;
 	</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Displays all Bidirectional Forwarding detection(BFD) peers.
+        </DESCRIPTION>
+        <EXAMPLE summary="Display BFD peers">
+            device# show bfd peers
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "show bfd peers counters" help = "Show BFD peer counters information" >
         <ACTION>
             python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrf-name} ${__full_line}&#xA; 
 	</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Displays counters for all the Bidirectional Forwarding detection(BFD) peers.
+        </DESCRIPTION>
+        <EXAMPLE summary="Display BFD peers">
+            device# show bfd peers counters
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "clear bfd" help = "Bidirection Forwarding Detection" >
@@ -142,6 +180,14 @@ limitations under the License.
             </PARAM>
             <PARAM name = "counters" help = "clear BFD peer counters information" ptype="SUBCOMMAND" mode="subcommand" > </PARAM>
         <ACTION builtin="clish_nop"/> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Clears counters of the specific Bidirectional Forwarding detection(BFD) peer with the filters. BFD packet counters will be reset to 0.
+            </DESCRIPTION>
+            <EXAMPLE summary="Clear BFD peer counter">
+                device# clear bfd peer 192.168.2.1 interface Ethernet0 counters
+            </EXAMPLE>
+        </DOCGEN> 
     </COMMAND>
 
     <COMMAND name = "debug bfd" help = "Bidirection Forwarding Detection" >
@@ -212,6 +258,34 @@ limitations under the License.
 	    fi&#xA;
         fi&#xA;
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure single-hop and multi-hop Bidirectional Forwarding detection(BFD) peer.
+            </DESCRIPTION>
+            <USAGE>
+                For single-hop BFD peer interace must be configured and for multi-hop BFD peer local address must be configured.
+            </USAGE>
+            <EXAMPLE summary="Configure single-hop BFD peer with default vrf">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+            </EXAMPLE>
+            <EXAMPLE summary="Configure single-hop BFD peer with user vrf">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0 vrf Vrf1
+            </EXAMPLE>
+            <EXAMPLE summary="Configure multi-hop BFD peer with default vrf">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.2 multihop local-address 192.168.0.3
+            </EXAMPLE>
+            <EXAMPLE summary="Configure multi-hop BFD peer with user vrf">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.2 multihop local-address 192.168.0.3 vrf Vrf1
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "no peer" help = "Configure peer" view="configure-peer-view">
@@ -247,6 +321,31 @@ limitations under the License.
             fi&#xA;
 	fi&#xA;
 	</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure Bidirectional Forwarding detection(BFD) single-hop and multi-hop peer.
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure single-hop BFD peer with default vrf">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# no peer 192.168.0.5 interface Ethernet0
+            </EXAMPLE>
+            <EXAMPLE summary="Unconfigure single-hop BFD peer with user vrf">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# no peer 192.168.0.5 interface Ethernet0 vrf Vrf1
+            </EXAMPLE>
+            <EXAMPLE summary="Unconfigure multi-hop BFD peer with default vrf">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# no peer 192.168.0.2 multihop local-address 192.168.0.3
+            </EXAMPLE>
+            <EXAMPLE summary="Unconfigure multi-hop BFD peer with user vrf">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# no peer 192.168.0.2 multihop local-address 192.168.0.3 vrf Vrf1
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
 </VIEW> 
@@ -282,6 +381,20 @@ limitations under the License.
 	    fi&#xA;
 	fi&#xA;
         </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure detection multiplier for Bidirectional Forwarding detection(BFD) peer for timeout.
+            </DESCRIPTION>
+            <USAGE>
+                Default value is 3.
+            </USAGE>
+            <EXAMPLE summary="Configure detection multiplier">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+                device(conf-bfd-peer)# detect-multiplier 5
+            </EXAMPLE>
+        </DOCGEN> 
     </COMMAND>
 
     <COMMAND name = "echo-interval" help = "Configure peer echo interval" >
@@ -301,6 +414,20 @@ limitations under the License.
 	    fi&#xA;
         fi&#xA;
         </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure desired echo packet transmit interval for Bidirectional Forwarding detection(BFD) peer.
+            </DESCRIPTION>
+            <USAGE>
+                Default value is 50 milliseconds.
+            </USAGE>
+            <EXAMPLE summary="Configure packet echo transmit interval">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+                device(conf-bfd-peer)# echo-interval 200
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "echo-mode" help = "Configure echo mode" >
@@ -315,6 +442,20 @@ limitations under the License.
 	    fi&#xA;
         fi&#xA;
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Enable echo-mode for Bidirectional Forwarding detection(BFD) peer.
+            </DESCRIPTION>
+            <USAGE>
+                This command can be used to enable echo mode for BFD single-hop peer, echo mode is not supported for multi-hop peers.
+            </USAGE>
+            <EXAMPLE summary="Enable echo mode">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+                device(conf-bfd-peer)# echo-mode
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "no echo-mode" help = "Configure echo mode" >
@@ -329,6 +470,20 @@ limitations under the License.
 	    fi&#xA;
         fi&#xA;
         </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Disable echo-mode for Bidirectional Forwarding detection(BFD) peer.
+            </DESCRIPTION>
+            <USAGE>
+                This command can be used to disable echo mode for BFD single-hop peer.
+            </USAGE>
+            <EXAMPLE summary="Disable echo mode">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+                device(conf-bfd-peer)# no echo-mode
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "receive-interval" help = "Configure peer receive interval" >
@@ -348,6 +503,20 @@ limitations under the License.
 	    fi&#xA;
         fi&#xA;
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure packet receive interval for Bidirectional Forwarding detection(BFD) peer.
+            </DESCRIPTION>
+            <USAGE>
+                This command can be used to configure desired packet receive interval from BFD peer, default value is 300 milliseconds.
+            </USAGE>
+            <EXAMPLE summary="Configure packet receive interval">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+                device(conf-bfd-peer)# receive-interval 200
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "shutdown" help = "Disable BFD peer" >
@@ -366,6 +535,20 @@ limitations under the License.
 	    fi&#xA;
         fi&#xA;
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Shut Bidirectional Forwarding detection(BFD) peer administratively down.
+            </DESCRIPTION>
+            <USAGE>
+                This command will change the BFD session state to DOWN.
+            </USAGE>
+            <EXAMPLE summary="Shut BFD peer down">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+                device(conf-bfd-peer)# shutdown
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "no shutdown" help = "Disable BFD peer" >
@@ -384,6 +567,20 @@ limitations under the License.
 	    fi&#xA;
         fi&#xA;
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unshut Bidirectional Forwarding detection(BFD) peer administratively up.
+            </DESCRIPTION>
+            <USAGE>
+                This command can be used to make BFD peer administratively up, by default BFD peer is administratively up.
+            </USAGE>
+            <EXAMPLE summary="Unshut BFD peer">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+                device(conf-bfd-peer)# no shutdown
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "transmit-interval" help = "Configure peer transmit interval" >
@@ -403,6 +600,20 @@ limitations under the License.
 	    fi&#xA;
         fi&#xA;
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure desired packet transmit interval for Bidirectional Forwarding detection(BFD) peer.
+            </DESCRIPTION>
+            <USAGE>
+                Default value is 300 milliseconds.
+            </USAGE>
+            <EXAMPLE summary="Configure packet transmit interval">
+                device()#configure terminal
+                device(config)#bfd
+                device(conf-bfd)# peer 192.168.0.5 interface Ethernet0
+                device(conf-bfd-peer)# transmit-interval 200
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
 </VIEW> 
