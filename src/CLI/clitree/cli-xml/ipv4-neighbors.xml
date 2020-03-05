@@ -37,7 +37,7 @@ limitations under the License.
 <PTYPE
     name="VRF_NAME"
     method="regexp"
-    pattern="(Vrf_(([0-9A-Za-z]){1,28}))|(mgmt)"
+    pattern="^(mgmt|Vrf[0-9A-Za-z_-]{1,12})"
     help="vrf name"
 />
 
@@ -55,7 +55,7 @@ limitations under the License.
             optional="true">
             <PARAM
                 name="vrf-name"
-                help="mgmt or prefixed by Vrf_ (Max size 32)"
+                help="mgmt or prefixed by Vrf (Max size 15)"
                 ptype="VRF_NAME">
             </PARAM>
         </PARAM>
@@ -359,7 +359,7 @@ limitations under the License.
             optional="true">
             <PARAM
                 name="vrf-name"
-                help="mgmt or prefixed by Vrf_ (Max size 32)"
+                help="mgmt or prefixed by Vrf (Max size 15)"
                 ptype="VRF_NAME">
             </PARAM>
         </PARAM>

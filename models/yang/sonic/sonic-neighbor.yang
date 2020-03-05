@@ -49,6 +49,7 @@ module sonic-neighbor {
             }
 
             leaf family {
+                default "IPv4";
                 type enumeration {
                     enum IPv4;
                     enum IPv6;
@@ -58,7 +59,8 @@ module sonic-neighbor {
 
             leaf vrf {
                 type string {
-                    pattern "Vrf_(([0-9A-Za-z]){1,28})|mgmt" {
+                    length "3..15";
+                    pattern "mgmt|Vrf[0-9A-Za-z_-]" {
                         error-message "Invalid VRF name";
                         error-app-tag vrf-name-arp-invalid;
                     }
@@ -148,6 +150,7 @@ module sonic-neighbor {
                 }
 
                 leaf family {
+                    default "IPv4";
                     type enumeration {
                         enum IPv4;
                         enum IPv6;
