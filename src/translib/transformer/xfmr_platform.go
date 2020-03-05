@@ -34,73 +34,30 @@ import (
     log "github.com/golang/glog"
 )
 
-type PlatformApp struct {
-    path        *PathInfo
-    reqData     []byte
-    ygotRoot    *ygot.GoStruct
-    ygotTarget  *interface{}
-
-
-}
-
 func init () {
     XlateFuncBind("DbToYang_pfm_components_xfmr", DbToYang_pfm_components_xfmr)
 }
-func init() {
-    log.Info("Init called for Platform module")
-    err := register("/openconfig-platform:components",
-    &appInfo{appType: reflect.TypeOf(PlatformApp{}),
-    ygotRootType: reflect.TypeOf(ocbinds.OpenconfigPlatform_Components{}),
-    isNative:     false})
-    if err != nil {
-        log.Fatal("Register Platform app module with App Interface failed with error=", err)
-    }
 
-    err = addModel(&ModelData{Name: "openconfig-platform",
-    Org: "OpenConfig working group",
-    Ver:      "1.0.2"})
-    if err != nil {
-        log.Fatal("Adding model data to appinterface failed with error=", err)
-    }
-}
-
-func (app *PlatformApp) initialize(data appData) {
-    log.Info("initialize:if:path =", data.path)
-
-    app.path = NewPathInfo(data.path)
-    app.reqData = data.payload
-    app.ygotRoot = data.ygotRoot
-    app.ygotTarget = data.ygotTarget
-
-}
-
-func (app *PlatformApp) getAppRootObject() (*ocbinds.OpenconfigPlatform_Components) {
-    deviceObj := (*app.ygotRoot).(*ocbinds.Device)
+func getAppRootObject() (s *ygot.GoStruct) (*ocbinds.OpenconfigPlatform_Components) {
+    deviceObj := (*s).(*ocbinds.Device)
     return deviceObj.Components
 }
 
 var DbToYang_pfm_components_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams) (error) {
-    pathInfo := app.path
-    var payload []byte
+    pathInfo := NewPathInfo(inParams.uri)
     log.Infof("Received GET for PlatformApp Template: %s ,path: %s, vars: %v",
     pathInfo.Template, pathInfo.Path, pathInfo.Vars)
-    targetUriPath, perr := getYangPathFromUri(app.path.Path)
-    if perr != nil {
-        log.Infof("getYangPathFromUri failed.")
-        return GetResponse{Payload: payload}, perr
-    }
 
-    if isSubtreeRequest(targetUriPath, "/openconfig-platform:components") {
-        return app.doGetSysEeprom()
+    if strings.Contains(targetUriPath, "/openconfig-platform:components") {
+        return getSysEeprom(getAppRootObject(inParams.ygRoot),inParams.requestUri)
     }
-    err := errors.New("Not supported component")
-    return GetResponse{Payload: payload}, err
+    return errors.New("Component not supported")
 }
 
 ///////////////////////////
-func (app *PlatformApp) doGetSysEeprom() (GetResponse, error) {
+func doGetSysEeprom(pf_comps *ocbinds.OpenconfigPlatform_Components, reqUri string) (error) {
 
-    return app.getSysEepromJson()
+    return getSysEepromJson()
 }
 
 
@@ -155,7 +112,8 @@ func getSoftwareVersion() string {
     return versionString
 }
 
-func (app *PlatformApp) getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform_Components_Component_State, all bool) (error) {
+func getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform_Components_Component_State,
+				 all bool, targetUriPath string) (error) {
 
     log.Infof("getSysEepromFromFile Enter")
     jsonFile, err := os.Open("/mnt/platform/syseeprom")
@@ -237,7 +195,7 @@ func (app *PlatformApp) getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform
             eeprom.SoftwareVersion = &versionString
         }
     } else {
-        targetUriPath, _ := getYangPathFromUri(app.path.Path)
+        //targetUriPath, _ := getYangPathFromUri(app.path.Path)
         switch targetUriPath {
         case "/openconfig-platform:components/component/state/name":
             eeprom.Name = &name
@@ -349,46 +307,46 @@ func (app *PlatformApp) getPlatformEnvironment (pf_comp *ocbinds.OpenconfigPlatf
     return  err
 }
 
-func (app *PlatformApp) getSysEepromJson () (GetResponse, error) {
+func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUriPath string) (error) {
 
     log.Infof("Preparing json for system eeprom");
 
     var payload []byte
     var err error
-    pf_cpts := app.getAppRootObject()
+    //pf_cpts := app.getAppRootObject()
 
-    targetUriPath, _ := getYangPathFromUri(app.path.Path)
+    //targetUriPath, _ := getYangPathFromUri(app.path.Path)
     switch targetUriPath {
     case "/openconfig-platform:components":
         sensor_comp,_  := pf_cpts.NewComponent("Sensor")
         ygot.BuildEmptyTree(sensor_comp)
         sensor_comp.State.Type,_ = sensor_comp.State.To_OpenconfigPlatform_Components_Component_State_Type_Union(
                             ocbinds.OpenconfigPlatformTypes_OPENCONFIG_HARDWARE_COMPONENT_SENSOR)
-        err = app.getPlatformEnvironment(sensor_comp)
+        err = getPlatformEnvironment(sensor_comp)
         if err != nil {
-            return GetResponse{Payload: payload}, err
+            return err
         }
         eeprom_comp,_ := pf_cpts.NewComponent("System Eeprom")
         ygot.BuildEmptyTree(eeprom_comp)
-        err = app.getSysEepromFromFile(eeprom_comp.State, true)
+        err = getSysEepromFromFile(eeprom_comp.State, true, targetUriPath)
         if err != nil {
-            return GetResponse{Payload: payload}, err
+            return err
         }
         eeprom_comp.State.Type,_ = eeprom_comp.State.To_OpenconfigPlatform_Components_Component_State_Type_Union(
                                 ocbinds.OpenconfigPlatformTypes_OPENCONFIG_HARDWARE_COMPONENT_CHASSIS)
-        payload, err = dumpIetfJson((*app.ygotRoot).(*ocbinds.Device), true)
-        return GetResponse{Payload: payload}, err
+        //payload, err = dumpIetfJson((*app.ygotRoot).(*ocbinds.Device), true)
+        return err
     case "/openconfig-platform:components/component":
         compName := app.path.Var("name")
         log.Infof("compName: %v", compName)
         if compName == "" {
             pf_comp,_ := pf_cpts.NewComponent("System Eeprom")
             ygot.BuildEmptyTree(pf_comp)
-            err = app.getSysEepromFromFile(pf_comp.State, true)
+            err = getSysEepromFromFile(pf_comp.State, true, targetUriPath)
             if err != nil {
-                return GetResponse{Payload: payload}, err
+                return err
             }
-            payload, err = dumpIetfJson(pf_cpts, false)
+            //payload, err = dumpIetfJson(pf_cpts, false)
         } else {
             if compName == "System Eeprom" {
                 pf_comp := pf_cpts.Component[compName]
@@ -396,9 +354,9 @@ func (app *PlatformApp) getSysEepromJson () (GetResponse, error) {
                     ygot.BuildEmptyTree(pf_comp)
                     err = app.getSysEepromFromFile(pf_comp.State, true)
                     if err != nil {
-                        return GetResponse{Payload: payload}, err
+                        return err
                     }
-                    payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
+                    //payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
                 } else {
                     err = errors.New("Invalid input component name")
                 }
@@ -406,11 +364,11 @@ func (app *PlatformApp) getSysEepromJson () (GetResponse, error) {
                 pf_comp := pf_cpts.Component[compName]
                 if pf_comp != nil {
                     ygot.BuildEmptyTree(pf_comp)
-                    err = app.getPlatformEnvironment(pf_comp)
+                    err = getPlatformEnvironment(pf_comp)
                     if err != nil {
-                        return GetResponse{Payload: payload}, err
+                        return err
                     }
-                    payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
+                    //payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
                 } else {
                     err = errors.New("Invalid input component name")
                 }
@@ -424,11 +382,11 @@ func (app *PlatformApp) getSysEepromJson () (GetResponse, error) {
             pf_comp := pf_cpts.Component[compName]
             if pf_comp != nil {
                 ygot.BuildEmptyTree(pf_comp)
-                err = app.getSysEepromFromFile(pf_comp.State, true)
+                err = getSysEepromFromFile(pf_comp.State, true, targetUriPath)
                 if err != nil {
-                    return GetResponse{Payload: payload}, err
+                    return err
                 }
-                payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
+                //payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
             } else {
                 err = errors.New("Invalid input component name")
             }
@@ -436,11 +394,11 @@ func (app *PlatformApp) getSysEepromJson () (GetResponse, error) {
             pf_comp := pf_cpts.Component[compName]
             if pf_comp != nil {
                 ygot.BuildEmptyTree(pf_comp)
-                err = app.getPlatformEnvironment(pf_comp)
+                err = getPlatformEnvironment(pf_comp)
                 if err != nil {
-                    return GetResponse{Payload: payload}, err
+                    return err
                 }
-                payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
+                //payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
             } else {
                 err = errors.New("Invalid input component name")
             }
@@ -449,7 +407,7 @@ func (app *PlatformApp) getSysEepromJson () (GetResponse, error) {
         }
 
     default:
-        if isSubtreeRequest(targetUriPath, "/openconfig-platform:components/component/state") {
+        if targetUriPath == "/openconfig-platform:components/component/state") {
             compName := app.path.Var("name")
             if compName == "" || compName != "System Eeprom" {
                 err = errors.New("Invalid input component name")
@@ -457,11 +415,11 @@ func (app *PlatformApp) getSysEepromJson () (GetResponse, error) {
                 pf_comp := pf_cpts.Component[compName]
                 if pf_comp != nil {
                     ygot.BuildEmptyTree(pf_comp)
-                    err = app.getSysEepromFromFile(pf_comp.State, false)
+                    err = getSysEepromFromFile(pf_comp.State, false, targetUriPath)
                     if err != nil {
-                        return GetResponse{Payload: payload}, err
+                        return err
                     }
-                    payload, err = dumpIetfJson(pf_cpts.Component[compName].State, false)
+                    //payload, err = dumpIetfJson(pf_cpts.Component[compName].State, false)
                 } else {
                     err = errors.New("Invalid input component name")
                 }
@@ -470,6 +428,6 @@ func (app *PlatformApp) getSysEepromJson () (GetResponse, error) {
             err = errors.New("Invalid Path")
         }
     }
-    return  GetResponse{Payload: payload}, err
+    return err
 }
 
