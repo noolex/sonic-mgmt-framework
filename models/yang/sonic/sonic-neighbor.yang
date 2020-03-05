@@ -56,12 +56,21 @@ module sonic-neighbor {
                 description "Address family (IPv4/IPv6). Default: IPv4";
             }
 
+            leaf vrf {
+                type string {
+                    pattern "Vrf_(([0-9A-Za-z]){1,28})|mgmt" {
+                        error-message "Invalid VRF name";
+                        error-app-tag vrf-name-arp-invalid;
+                    }
+                }
+            }
+
             choice option {
                 leaf ip {
                     type inet:ip-prefix;
                     description
                         "Parameter for deleting ARP/NDP entries related to the given IPv4/IPv6 address.
-                         Note: If both 'ip' and 'ifname' are not provided, all dynamic enties will be cleared from the ARP/NDP table.";
+                        Note: If both 'ip' and 'ifname' are not provided, all dynamic enties will be cleared from the ARP/NDP table.";
                 }
 
                 leaf ifname {

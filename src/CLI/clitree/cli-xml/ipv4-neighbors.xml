@@ -34,6 +34,13 @@ limitations under the License.
     pattern="Ethernet Vlan PortChannel Management(eth)"
     help="Interface type"/>
 
+<PTYPE
+    name="VRF_NAME"
+    method="regexp"
+    pattern="(Vrf_(([0-9A-Za-z]){1,28}))|(mgmt)"
+    help="vrf name"
+/>
+
 <VIEW name="enable-view">
 
 <!-- show ip arp <ip-addr> commands -->
@@ -48,8 +55,8 @@ limitations under the License.
             optional="true">
             <PARAM
                 name="vrf-name"
-                help="VRF name"
-                ptype="STRING_15">
+                help="mgmt or prefixed by Vrf_ (Max size 32)"
+                ptype="VRF_NAME">
             </PARAM>
         </PARAM>
 
@@ -87,12 +94,63 @@ limitations under the License.
                 </PARAM>
         </PARAM>
         <ACTION>
-          if test "${summary}" = ""; then&#xA;
-          	python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_sonic_neigh_sonic_neigh_neigh_table script:arp_show.j2 family:IPv4 ip:${ip-addr} mac:${mac-addr} vrf:${vrf-name} summary:${summary}&#xA;
-          else&#xA;
-          	python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_sonic_neigh_sonic_neigh_neigh_table script:arp_summary_show.j2 family:IPv4 ip:${ip-addr} mac:${mac-addr} vrf:${vrf-name} summary:${summary}&#xA;
-          fi&#xA;
+          	python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_sonic_neigh_sonic_neigh_neigh_table family:IPv4 ip:${ip-addr} mac:${mac-addr} vrf:${vrf-name} summary:${summary}&#xA;
        </ACTION>
+       <DOCGEN>
+            <DESCRIPTION>
+                This command displays ARP table entries. To filter the
+                output, specify an interface, port channel, or VLAN, an IP address, a MAC
+                address, or a combination of more than one value to match.  You can also
+                display total number of ARP entries using 'summary' option.
+            </DESCRIPTION>
+
+            <USAGE>
+                sonic# show ip arp [interface { Ethernet &lt; port &gt; [summary] | PortChannel &lt; id &gt; [summary] | Vlan &lt; id &gt; [summary] }] [&lt; ipv4-address &gt;] [mac-address &lt; mac &gt;] [summary]
+            </USAGE>
+
+            <EXAMPLE summary="show ip arp information">
+                sonic# show ip arp
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
+                10.11.48.254    00:01:e8:8b:44:71   eth0              -
+                10.14.8.102     00:01:e8:8b:44:71   eth0              -
+            </EXAMPLE>
+
+             <EXAMPLE summary="show ip arp interface information">
+                sonic# show ip arp interface Vlan 100
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.3.6     00:01:02:03:04:05   Vlan100          Ethernet4
+
+                sonic# show ip arp interface Management 0
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                10.11.48.254    00:01:e8:8b:44:71   eth0              -
+                10.14.8.102     00:01:e8:8b:44:71   eth0              -
+            </EXAMPLE>
+
+            <EXAMPLE summary="show ip arp ip information">
+                sonic# show ip arp 192.168.1.4
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
+            </EXAMPLE>
+
+            <EXAMPLE summary="show ip arp mac-address information">
+                sonic# show ip arp mac-address 00:01:02:03:ab:cd
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
 
@@ -215,46 +273,24 @@ limitations under the License.
           </PARAM>
         </PARAM>
         <ACTION>
-            if test "${summary}" = ""; then&#xA;
-                if test "${iftype}" = "Ethernet"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_show.j2 intf:${iftype}${phy-if-name} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "Loopback"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_show.j2 intf:${iftype}${lo-id} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "Management"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_show.j2 intf:eth${mgmt-if-id} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "PortChannel"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_show.j2 intf:${iftype}${lag-id} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "Vlan"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_show.j2 intf:${iftype}${vlan-id} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "Vxlan"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_show.j2 intf:${iftype}${vxlan-if-name} summary:${summary}&#xA;
-                fi&#xA;
-            else&#xA;
-                if test "${iftype}" = "Ethernet"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_summary_show.j2 intf:${iftype}${phy-if-name} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "Loopback"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_summary_show.j2 intf:${iftype}${lo-id} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "Management"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_summary_show.j2 intf:eth${mgmt-if-id} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "PortChannel"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_summary_show.j2 intf:${iftype}${lag-id} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "Vlan"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_summary_show.j2 intf:${iftype}${vlan-id} summary:${summary}&#xA;
-                fi&#xA;
-                if test "${iftype}" = "Vxlan"; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors script:arp_summary_show.j2 intf:${iftype}${vxlan-if-name} summary:${summary}&#xA;
-                fi&#xA;
+            if test "${iftype}" = "Ethernet"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${phy-if-name} summary:${summary}&#xA;
             fi&#xA;
-
+            if test "${iftype}" = "Loopback"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${lo-id} summary:${summary}&#xA;
+            fi&#xA;
+            if test "${iftype}" = "Management"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:eth${mgmt-if-id} summary:${summary}&#xA;
+            fi&#xA;
+            if test "${iftype}" = "PortChannel"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${lag-id} summary:${summary}&#xA;
+            fi&#xA;
+            if test "${iftype}" = "Vlan"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${vlan-id} summary:${summary}&#xA;
+            fi&#xA;
+            if test "${iftype}" = "Vxlan"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${vxlan-if-name} summary:${summary}&#xA;
+            fi&#xA;
         </ACTION>
     </COMMAND>
 
@@ -287,11 +323,7 @@ limitations under the License.
             optional="true">
         </PARAM>
         <ACTION>
-        if test "${force}" = ""; then
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 force:false intf:${if-type}${if-id}&#xA;
-        else
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 force:true intf:${if-type}${if-id}&#xA;
-        fi
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 force:${force} intf:${if-type}${if-id}&#xA;
         </ACTION>
     </COMMAND>
 
@@ -319,13 +351,111 @@ limitations under the License.
             mode="subcommand"
             optional="true">
         </PARAM>
+        <PARAM
+            name="vrf"
+            help="ARP subcommands"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            optional="true">
+            <PARAM
+                name="vrf-name"
+                help="mgmt or prefixed by Vrf_ (Max size 32)"
+                ptype="VRF_NAME">
+            </PARAM>
+        </PARAM>
        <ACTION>
-        if test "${force}" = ""; then
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 force:false ip:${ip-addr}&#xA;
-        else
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 force:true ip:${ip-addr}&#xA;
-        fi
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 force:${force} ip:${ip-addr} vrf:${vrf-name}&#xA;
        </ACTION>
+       <DOCGEN>
+            <DESCRIPTION>
+                To delete dynamically learned IPv4 entries from the ARP table, use the clear ip
+                arp command. To specify the entries to be deleted, enter an interface, port
+                channel, or VLAN, an IPv4 address, or a combination to match. Enter force to
+                delete statically configured ARP entries. Use the show ip arp command to verify
+                that the IPv4 entries have been deleted.
+            </DESCRIPTION>
+
+            <USAGE>
+                sonic# clear ip arp [interface {Ethernet &lt; port-number &gt;| PortChannel &lt; number &gt;| Vlan &lt; vlan-id &gt;| Management &lt; port-number &gt;}] [&lt; ipv4-address &gt;] [force]
+            </USAGE>
+
+            <EXAMPLE summary="clear ip arp information">
+                sonic# show ip arp
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
+                10.11.48.254    00:01:e8:8b:44:71   eth0              -
+                10.14.8.102     00:01:e8:8b:44:71   eth0              -
+                sonic# clear ip arp
+                sonic# Permanent entry found, use 'force' to delete permanent entries
+                sonic# show ip arp
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
+                sonic# clear ip arp force
+                sonic# show ip arp
+                sonic#
+             </EXAMPLE>
+
+             <EXAMPLE summary="clear ip arp interface information">
+                sonic# show ip arp
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
+                10.11.48.254    00:01:e8:8b:44:71   eth0              -
+                10.14.8.102     00:01:e8:8b:44:71   eth0              -
+                sonic# clear ip arp interface Vlan 100 force
+                sonic# show ip arp
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+                10.11.48.254    00:01:e8:8b:44:71   eth0              -
+                10.14.8.102     00:01:e8:8b:44:71   eth0              -
+             </EXAMPLE>
+
+            <EXAMPLE summary="clear ip arp ip information">
+                sonic# show ip arp
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
+                10.11.48.254    00:01:e8:8b:44:71   eth0              -
+                10.14.8.102     00:01:e8:8b:44:71   eth0              -
+                sonic# clear ip arp 192.168.1.4
+                sonic# Permanent entry found, use 'force' to delete permanent entries
+                sonic# show ip arp
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
+                10.11.48.254    00:01:e8:8b:44:71   eth0              -
+                10.14.8.102     00:01:e8:8b:44:71   eth0              -
+                sonic# clear ip arp 192.168.1.4 force
+                sonic# show ip arp
+                ---------------------------------------------------------------------
+                Address         Hardware address    Interface        Egress Interface
+                ---------------------------------------------------------------------
+                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
+                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
+                10.11.48.254    00:01:e8:8b:44:71   eth0              -
+                10.14.8.102     00:01:e8:8b:44:71   eth0              -
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 </VIEW>
 </CLISH_MODULE>
