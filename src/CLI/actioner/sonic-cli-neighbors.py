@@ -100,7 +100,8 @@ def build_mac_list():
 
             key = "Vlan" + str(vlan) + "-" + mac
             macDict[key] = intf
-    except:
+    except Exception as e:
+        log.syslog(log.LOG_INFO, e)
         print "%Error: Internal error"
 
 def get_egress_port(ifName, macAddr):
@@ -352,9 +353,6 @@ def process_args(args):
         if tmp[1] == "":
             tmp[1] = None
         inputDict[tmp[0]] = tmp[1]
-
-  if inputDict["vrf"] == "management":
-        inputDict["vrf"] = "mgmt"
 
 def run(func, args):
     global macDict
