@@ -42,24 +42,16 @@ func init() {
 
 // Router dispatches http request to corresponding handlers.
 type Router struct {
-	// rcRoutes holds the RESTCONF routes tree. It matches paths
-	// starting with "/restconf/" only.
-	rcRoutes routeTree
-
-	// muxRoutes holds all non-RESTCONF routes; including OpenAPI
-	// defined routes and internal routes (like UI, yang download).
-	muxRoutes *mux.Router
-
-	// optionsHandler is the common handler for OPTIONS requests.
-	optionsHandler http.Handler
-
 	// config for this Router instance
 	config RouterConfig
+
+	// routes contains all registered route info
+	routes *routeStore
 }
 
 // RouterConfig holds runtime configurations for a Router instance.
 type RouterConfig struct {
-	// auth holds client authentication modes
+	// Auth holds client authentication modes
 	Auth UserAuth
 }
 
@@ -67,19 +59,19 @@ type RouterConfig struct {
 // RESTCONF paths are served from the routeTree; rest from mux router.
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := cleanPath(r.URL.EscapedPath())
-	r = setContextValue(r, routerConfigContextKey, &router.config)
+	r = setContextValue(r, routerConfigContextKey, router)
 
 	if isServeFromTree(path) {
 		router.serveFromTree(path, r, w)
 	} else {
-		router.muxRoutes.ServeHTTP(w, r)
+		router.routes.muxRoutes.ServeHTTP(w, r)
 	}
 }
 
 // serveFromTree finds and invokes the handler for a path from routeTree
 func (router *Router) serveFromTree(path string, r *http.Request, w http.ResponseWriter) {
 	var routeInfo routeMatchInfo
-	node := router.rcRoutes.match(path, &routeInfo)
+	node := router.routes.rcRoutes.match(path, &routeInfo)
 
 	// Node not found..
 	if node == nil {
@@ -89,7 +81,7 @@ func (router *Router) serveFromTree(path string, r *http.Request, w http.Respons
 
 	handler := node.handlers[r.Method]
 	if handler == nil && r.Method == "OPTIONS" {
-		handler = router.optionsHandler
+		handler = router.routes.rcOptsHandler
 	}
 
 	// Node found, but no handler for the method
@@ -99,8 +91,7 @@ func (router *Router) serveFromTree(path string, r *http.Request, w http.Respons
 	}
 
 	// Set route match info in context
-	rc, r := GetContext(r)
-	rc.route = &routeInfo
+	r = setContextValue(r, routeMatchContextKey, &routeInfo)
 
 	handler.ServeHTTP(w, r)
 }
@@ -296,7 +287,7 @@ type routeRegInfo struct {
 }
 
 // allRoutes is a collection of all routes
-var allRoutes []routeRegInfo
+var allRoutes = newRouteStore()
 
 // AddRoute appends specified routes to the routes collection.
 // Called by init functions of swagger generated router.go files.
@@ -308,89 +299,98 @@ func AddRoute(name, method, pattern string, handler http.HandlerFunc) {
 		handler: handler,
 	}
 
-	allRoutes = append(allRoutes, rr)
+	allRoutes.addRoute(&rr)
 }
 
 // NewRouter creates a new http router instance for the REST server.
 // Includes all routes registered via AddRoute API as well as few
-// in-built routes.
+// internal service API routes.
 func NewRouter(config *RouterConfig) http.Handler {
-	router := newRouter()
-	if config != nil {
-		router.config = *config
+	glog.Infof("Server has %d routes on routeTree and %d on mux router",
+		allRoutes.rcRouteCount, allRoutes.muxRouteCount)
+
+	// Add internal service API routes if not added already
+	allRoutes.addServiceRoutes()
+
+	// Create default RouterConfig if not specified
+	if config == nil {
+		config = &RouterConfig{
+			Auth: NewUserAuth(),
+		}
+	}
+
+	router := &Router{
+		config: *config,
+		routes: allRoutes,
 	}
 
 	return withStat(router)
 }
 
-// newRouter creates a new Router instance from the registered routes.
-func newRouter() *Router {
-	var mb muxBuilder
-	mb.init()
+// routeStore holds REST route information - which includes route name,
+// HTTP method, path and the handler function. All RESTCONF routes (path
+// starting with "/restconf") are maintained in a routeTree. Other routes
+// are maintained in a mux router.
+type routeStore struct {
+	rcRoutes      routeTree    // restconf routes
+	rcOptsHandler http.Handler // OPTIONS handler for restconf routes
+	rcRouteCount  uint32       // number of restconf routes
 
-	router := &Router{
-		rcRoutes:  make(routeTree),
-		muxRoutes: mb.router,
-		optionsHandler: withMiddleware(
-			http.HandlerFunc(commonOptionsHandler), "optionsHandler"),
+	muxRoutes      *mux.Router         // non-restconf and internal routes (UI, yang)
+	muxOptsRouter  *mux.Router         // subrouter for OPTIONS handlers
+	muxOptsHandler http.Handler        // OPTIONS handler for mux routes
+	muxOptsData    map[string][]string // path to operations map for mux routes
+	muxRouteCount  uint32              // number of routes in mux router
+
+	hasSrvcRoutes bool // indicates if service routes have been registered
+}
+
+// newRouteStore creates an empty routeStore instance.
+func newRouteStore() *routeStore {
+	rs := new(routeStore)
+	rs.rcRoutes = make(routeTree)
+	rs.rcOptsHandler = withMiddleware(http.HandlerFunc(rcOptions), "optionsHandler")
+
+	r := mux.NewRouter().StrictSlash(true).UseEncodedPath()
+	r.NotFoundHandler = http.HandlerFunc(notFound)
+	r.MethodNotAllowedHandler = http.HandlerFunc(notAllowed)
+
+	rs.muxRoutes = r
+	rs.muxOptsRouter = r.Methods("OPTIONS").Subrouter()
+	rs.muxOptsData = make(map[string][]string)
+	rs.muxOptsHandler = withMiddleware(http.HandlerFunc(muxOptions), "optionsHandler")
+
+	return rs
+}
+
+func (rs *routeStore) addRoute(rr *routeRegInfo) {
+	glog.V(2).Infof("Adding route %s, %s %s", rr.name, rr.method, rr.path)
+
+	if isServeFromTree(rr.path) {
+		rs.rcRoutes.add("", rr.path, rr)
+		rs.rcRouteCount++
+	} else {
+		rs.addMuxRoute(rr)
 	}
-
-	glog.Infof("Server has %d routes", len(allRoutes))
-	var rcRouteCount, muxRouteCount uint
-
-	for _, rr := range allRoutes {
-		if isServeFromTree(rr.path) {
-			router.rcRoutes.add("", rr.path, &rr)
-			rcRouteCount++
-		} else {
-			mb.add(&rr)
-			muxRouteCount++
-		}
-	}
-
-	glog.Infof("Installed %d routes on routeTree and %d on mux", rcRouteCount, muxRouteCount)
-
-	mb.finish()
-	return router
 }
 
-// muxBuilder is a utility to build a mux.Router object
-// from the registered routes.
-type muxBuilder struct {
-	router *mux.Router
-	paths  map[string]bool
-}
-
-// init initializes the mux router in muxBuilder
-func (mb *muxBuilder) init() {
-	mb.router = mux.NewRouter().StrictSlash(true).UseEncodedPath()
-	mb.router.NotFoundHandler = http.HandlerFunc(notFound)
-	mb.router.MethodNotAllowedHandler = http.HandlerFunc(notAllowed)
-
-	mb.paths = make(map[string]bool)
-}
-
-// add creates a new route in mux router
-func (mb *muxBuilder) add(rr *routeRegInfo) {
-	glog.V(2).Infof("Adding %s, %s %s", rr.name, rr.method, rr.path)
-
-	mb.paths[rr.path] = true
+func (rs *routeStore) addMuxRoute(rr *routeRegInfo) {
 	h := withMiddleware(rr.handler, rr.name)
-	mb.router.Name(rr.name).Methods(rr.method).Path(rr.path).Handler(h)
+	rs.muxRoutes.Methods(rr.method).Path(rr.path).Handler(h)
+	rs.muxOptsRouter.Path(rr.path).Handler(rs.muxOptsHandler)
+	rs.muxOptsData[rr.path] = append(rs.muxOptsData[rr.path], rr.method)
+	rs.muxRouteCount++
 }
 
 // finish creates routes for all internal service API handlers in
 // mux router. Should be called after all REST API routes are added.
-func (mb *muxBuilder) finish() {
-	router := mb.router
-
-	// Register common OPTIONS handler for every path template
-	// New sub-router is used to avoid extra match during regular APIs
-	sr := router.Methods("OPTIONS").Subrouter()
-	oh := withMiddleware(http.HandlerFunc(commonOptionsHandler), "optionsHandler")
-	for p := range mb.paths {
-		sr.Path(p).Handler(oh)
+func (rs *routeStore) addServiceRoutes() {
+	if rs.hasSrvcRoutes {
+		return
 	}
+
+	rs.hasSrvcRoutes = true
+	router := rs.muxRoutes
 
 	// Documentation and test UI
 	uiHandler := http.StripPrefix("/ui/", http.FileServer(http.Dir(swaggerUIDir)))
@@ -412,35 +412,32 @@ func (mb *muxBuilder) finish() {
 		Handler(http.StripPrefix("/models/yang/", ydirHandler))
 }
 
-// GetContextWithRouteInfo returns the RequestContext object for a
-// http request r. Uses GetContext() to resolve the context object.
-// If the request was serviced by mux router, fills the route match
-// info into the context.
-func GetContextWithRouteInfo(r *http.Request) (*RequestContext, *http.Request) {
-	rc, r := GetContext(r)
-	if rc.route != nil { // route info exists
-		return rc, r
+// getRouteMatchInfo returns routeMatchInfo from request context.
+func getRouteMatchInfo(r *http.Request) *routeMatchInfo {
+	m, _ := getContextValue(r, routeMatchContextKey).(*routeMatchInfo)
+	if m != nil {
+		return m
 	}
 
-	rc.route = new(routeMatchInfo)
+	m = new(routeMatchInfo)
 
 	// Fill route info from mux "current route"
 	if curr := mux.CurrentRoute(r); curr != nil {
-		rc.route.path, _ = curr.GetPathTemplate()
-		rc.route.vars = mux.Vars(r)
+		m.path, _ = curr.GetPathTemplate()
+		m.vars = mux.Vars(r)
 	}
-	if len(rc.route.path) == 0 {
-		rc.route.path = cleanPath(r.URL.Path)
+	if len(m.path) == 0 {
+		m.path = cleanPath(r.URL.Path)
 	}
 
-	return rc, r
+	return m
 }
 
 // getRouterConfig returns the RouterConfig from current HTTP
 // requests's context. Returns nil if the RouterConfig was not set.
 func getRouterConfig(r *http.Request) *RouterConfig {
-	config, _ := getContextValue(r, routerConfigContextKey).(*RouterConfig)
-	return config
+	rr := getContextValue(r, routerConfigContextKey).(*Router)
+	return &rr.config
 }
 
 // loggingMiddleware returns a handler which times and logs the request.
@@ -550,29 +547,19 @@ func notAllowed(w http.ResponseWriter, r *http.Request) {
 		httpError(http.StatusMethodNotAllowed, "%s Not Allowed", r.Method))
 }
 
-// writeErrorResponse writes HTTP error response for a error object
-func writeErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
-	status, data, ctype := prepareErrorResponse(err, r)
-	w.Header().Set("Content-Type", ctype)
-	w.WriteHeader(status)
-	w.Write(data)
+// rcOptions handles OPTIONS for routeTree based paths
+func rcOptions(w http.ResponseWriter, r *http.Request) {
+	match := getRouteMatchInfo(r)
+	var methods []string
+	for k := range match.node.handlers {
+		methods = append(methods, k)
+	}
+	writeOptionsResponse(w, r, match.path, methods)
 }
 
-// getAllMethodsForPath returns all registered HTTP methods for
-// the path of a routeMatchInfo. For routeTree based matches the
-// methods are readily available in matched node. For mux based
-// matches it traverses allRoutes cache to find registered methods.
-func (m *routeMatchInfo) getAllMethodsForPath() (methods []string) {
-	if m.node != nil {
-		for k := range m.node.handlers {
-			methods = append(methods, k)
-		}
-	} else {
-		for _, rr := range allRoutes {
-			if rr.path == m.path {
-				methods = append(methods, rr.method)
-			}
-		}
-	}
-	return
+// muxOptions handles OPTIONS for mux matched paths
+func muxOptions(w http.ResponseWriter, r *http.Request) {
+	match := getRouteMatchInfo(r)
+	routr := getContextValue(r, routerConfigContextKey).(*Router)
+	writeOptionsResponse(w, r, match.path, routr.routes.muxOptsData[match.path])
 }
