@@ -319,7 +319,6 @@ func getDefaultVrfInterfaces(d *db.DB)(map[string]string) {
     var defaultVrfIntfs map[string]string
     defaultVrfIntfs = make(map[string]string)
 
-
     tblList := []string{"INTERFACE", "VLAN_INTERFACE", "PORTCHANNEL_INTERFACE"}
 
     for _, tbl := range tblList {
@@ -329,21 +328,24 @@ func getDefaultVrfInterfaces(d *db.DB)(map[string]string) {
         }
 
          keys, err := tblObj.GetKeys()
-         for _, key := range keys {
+        for _, key := range keys {
             entry, err := d.GetEntry(&db.TableSpec{Name: tbl}, key)
             if(err != nil) {
                 continue
             }
+
             log.Info("Key: ", key.Get(0))
             if _, ok := entry.Field["vrf_name"]; !ok {
                 defaultVrfIntfs[key.Get(0)] = "default"
             }
         }
-     }
+    }
+
     entry, _ := d.GetEntry(&db.TableSpec{Name: "MGMT_VRF_CONFIG"}, db.Key{Comp: []string{"vrf_global"}})
     if _, ok := entry.Field["mgmtVrfEnabled"]; !ok {
         defaultVrfIntfs["eth0"] = "default"
     }
+
     return defaultVrfIntfs
 }
 
@@ -351,9 +353,7 @@ func getNonDefaultVrfInterfaces(d *db.DB)(map[string]string) {
     var nonDefaultVrfIntfs map[string]string
     nonDefaultVrfIntfs = make(map[string]string)
 
-
     tblList := []string{"INTERFACE", "VLAN_INTERFACE", "PORTCHANNEL_INTERFACE"}
-
     for _, tbl := range tblList {
         tblObj, err := d.GetTable(&db.TableSpec{Name:tbl})
         if err != nil {
@@ -366,6 +366,7 @@ func getNonDefaultVrfInterfaces(d *db.DB)(map[string]string) {
             if(err != nil) {
                 continue
             }
+
             log.Info("Key: ", key.Get(0))
             if input, ok := entry.Field["vrf_name"]; ok {
                 input_str := fmt.Sprintf("%v", input)
@@ -375,11 +376,13 @@ func getNonDefaultVrfInterfaces(d *db.DB)(map[string]string) {
                 log.Info("VRF No Found -- intf: ", key.Get(0))
             }
         }
-     }
+    }
+
     entry, _ := d.GetEntry(&db.TableSpec{Name: "MGMT_VRF_CONFIG"}, db.Key{Comp: []string{"vrf_global"}})
     if _, ok := entry.Field["mgmtVrfEnabled"]; ok {
         nonDefaultVrfIntfs["eth0"] = "mgmt"
     }
+
     return nonDefaultVrfIntfs
 }
 
@@ -410,7 +413,6 @@ func clear_all(fam_switch string, force bool, d *db.DB)  string {
     for in.Scan() {
         line := in.Text()
 
-
         if strings.Contains(line, "lladdr") {
             if strings.Contains(line, "PERMANENT") && force == false {
                 isPerm = true
@@ -420,9 +422,11 @@ func clear_all(fam_switch string, force bool, d *db.DB)  string {
             list := strings.Fields(line)
             ip := list[0]
             intf := list[2]
+
             if (vrfList[intf] != "") {
                 continue
             }
+
             _, e := exec.Command("ip", fam_switch, "neigh", "del", ip, "dev", intf).Output()
             if e != nil {
                log.Info("Eror: ", e)
@@ -434,11 +438,12 @@ func clear_all(fam_switch string, force bool, d *db.DB)  string {
             }
         }
     }
+
     if isPerm {
         return "Permanent entry found, use 'force' to delete permanent entries"
-    } else {
-        return "Success"
     }
+
+    return "Success"
 }
 
 
@@ -494,9 +499,11 @@ func clear_all_vrf(fam_switch string, force bool, vrf string) string {
             return "%Error: Internal error"
         }
     }
+
     if isPerm {
         return "Permanent entry found, use 'force' to delete permanent entries"
     }
+
     return "Success"
 }
 
