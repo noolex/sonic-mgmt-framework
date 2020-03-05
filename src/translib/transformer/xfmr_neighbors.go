@@ -414,16 +414,16 @@ func clear_all(fam_switch string, force bool, d *db.DB)  string {
         line := in.Text()
 
         if strings.Contains(line, "lladdr") {
-            if strings.Contains(line, "PERMANENT") && force == false {
-                isPerm = true
-                continue
-            }
-
             list := strings.Fields(line)
             ip := list[0]
             intf := list[2]
 
             if (vrfList[intf] != "") {
+                continue
+            }
+
+            if strings.Contains(line, "PERMANENT") && force == false {
+                isPerm = true
                 continue
             }
 
