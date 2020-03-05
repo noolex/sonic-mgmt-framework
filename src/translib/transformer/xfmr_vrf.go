@@ -764,17 +764,11 @@ var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb
                     return res_map, err
                 }
             }
-
-            /* Check if L3 configs present on given interface */
-            err = ValidateIntfNotL3ConfigedOtherThanVrf(inParams.d, intf_tbl_name, intfId)
-            if err != nil {
-                return res_map, err
-            }
-        } else if (inParams.oper == DELETE) {
-            err = ValidateIntfNotL3ConfigedOtherThanVrf(inParams.d, intf_tbl_name, intfId)
-            if err != nil {
-                return res_map, err
-            }
+        }
+        /* Check if L3 configs present on given interface */
+        err = ValidateIntfNotL3ConfigedOtherThanVrf(inParams.d, intf_tbl_name, intfId)
+        if err != nil {
+            return res_map, err
         }
 
         res_map[intf_tbl_name] = make(map[string]db.Value)
