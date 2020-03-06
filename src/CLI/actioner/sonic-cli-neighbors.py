@@ -225,8 +225,12 @@ def run(func, args):
         elif 'sonic-neighbor:output' in response.keys():
             status = response['sonic-neighbor:output']
             status = status['response']
-            if (status != "Success"):
+            if "255" in status:
+                print "Unable to clear all entries, please try again"
+            elif "force" in status:
                 print status
+            elif (status != "Success"):
+                print "%Error: Internal error"
             return
         else:
             return
