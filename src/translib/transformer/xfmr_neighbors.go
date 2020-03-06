@@ -507,10 +507,12 @@ func clear_all_vrf(fam_switch string, force bool, vrf string) string {
     return "Success"
 }
 
-func clear_ip(ip string, fam_switch string, force bool, vrf string) string {
+func clear_ip(ip string, fam_switch string, force bool, vrf string, d *db.DB) string {
     var cmd *exec.Cmd
     var isValidIp bool = false
     var isPerm bool = false
+
+    vrfList := getNonDefaultVrfInterfaces(d)
 
     //get interfaces first associated with this ip
     if (len(vrf) > 0) {
@@ -535,6 +537,12 @@ func clear_ip(ip string, fam_switch string, force bool, vrf string) string {
     in := bufio.NewScanner(out)
     for in.Scan() {
         line := in.Text()
+        list := strings.Fields(line)
+        intf := list[2]
+
+        if (vrfList[intf] != "" && len(vrf) <= 0) {
+            continue
+        }
 
         if strings.Contains(line, "PERMANENT") && force == false {
             isValidIp = true
@@ -542,8 +550,6 @@ func clear_ip(ip string, fam_switch string, force bool, vrf string) string {
             continue
         }
 
-        list := strings.Fields(line)
-        intf := list[2]
         log.Info("Executing: ip ", fam_switch, " neigh ", "del ", ip, " dev ", intf)
         _, e := exec.Command("ip", fam_switch, "neigh", "del", ip, "dev", intf).Output()
         if e != nil {
@@ -689,7 +695,7 @@ var rpc_clear_neighbors RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) (
     if len(intf) > 0 {
         status = clear_intf(intf, fam_switch, force)
     } else if len(ip) > 0 {
-        status = clear_ip(ip, fam_switch, force, vrf)
+        status = clear_ip(ip, fam_switch, force, vrf, dbs[db.ConfigDB])
     } else if len(vrf) > 0 {
         status = clear_all_vrf(fam_switch, force, vrf)
     } else {
