@@ -137,6 +137,12 @@ limitations under the License.
             mode="subcommand"
             >
           <PARAM
+             name="Ethernet"
+             help="Name of physical interface"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             >
+          <PARAM
              name="intf_name"
              help="Name of physical interface"
              ptype="STRING"
@@ -156,14 +162,16 @@ limitations under the License.
                 </PARAM>
               </PARAM>
           </PARAM>
+          </PARAM>
         </PARAM>
         <ACTION>
             if test "${queue}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-qos.py get_openconfig_qos_qos_queues_queue ${intf_name}:${queue-id} &#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-qos.py get_openconfig_qos_qos_queues_queue Ethernet${intf_name}:${queue-id} &#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-qos.py get_openconfig_qos_qos_interface_scheduler_policy_config ${intf_name} &#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-qos.py get_openconfig_qos_qos_interface_scheduler_policy_config Ethernet${intf_name} &#xA;
             fi&#xA;   
         </ACTION>
+      <xi:include href="include/pipe.xml"/>
     </COMMAND>
   </VIEW>
  </CLISH_MODULE>
