@@ -142,7 +142,7 @@ func testGetStats(reqType, rspType string) func(*testing.T) {
 			r.Header.Set("Accept", reqType)
 		}
 
-		newRouter().ServeHTTP(w, r)
+		NewRouter(nil).ServeHTTP(w, r)
 
 		if w.Code != http.StatusOK {
 			t.Fatalf("Unexpected response code %d", w.Code)
@@ -159,14 +159,15 @@ func testGetStats(reqType, rspType string) func(*testing.T) {
 
 func TestStats_del(t *testing.T) {
 	w := httptest.NewRecorder()
-	newRouter().ServeHTTP(w, httptest.NewRequest("DELETE", "/debug/stats", nil))
+	r := httptest.NewRequest("DELETE", "/debug/stats", nil)
+	NewRouter(nil).ServeHTTP(w, r)
 
 	if w.Code != http.StatusNoContent {
 		t.Fatalf("Unexpected response code %d", w.Code)
 	}
 
 	var null opStat
-	if svcRequestStat != null {
+	if svcRequestStat.Hits != 1 {
 		t.Fatalf("Unexpected svcRequestStat %v", svcRequestStat)
 	}
 	if apiRequestStat != null {
