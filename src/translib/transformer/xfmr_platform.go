@@ -49,21 +49,16 @@ var DbToYang_pfm_components_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams
     pathInfo.Template, pathInfo.Path, pathInfo.Vars)
 
     if strings.Contains(targetUriPath, "/openconfig-platform:components") {
-        return getSysEeprom(getAppRootObject(inParams.ygRoot),inParams.requestUri)
+        return getSysEeprom(getAppRootObject(inParams.ygRoot),inParams.requestUri, inParams.Uri)
     }
     return errors.New("Component not supported")
-}
-
-///////////////////////////
-func doGetSysEeprom(pf_comps *ocbinds.OpenconfigPlatform_Components, reqUri string) (error) {
-
-    return getSysEepromJson()
 }
 
 
 /**
 Structures to read syseeprom from json file
 */
+
 type JSONEeprom  struct {
     Product_Name        string `json:"Product Name"`
     Part_Number         string `json:"Part Number"`
@@ -195,7 +190,6 @@ func getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform_Components_Compone
             eeprom.SoftwareVersion = &versionString
         }
     } else {
-        //targetUriPath, _ := getYangPathFromUri(app.path.Path)
         switch targetUriPath {
         case "/openconfig-platform:components/component/state/name":
             eeprom.Name = &name
@@ -264,7 +258,7 @@ func getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform_Components_Compone
     return nil
 }
 
-func (app *PlatformApp) getPlatformEnvironment (pf_comp *ocbinds.OpenconfigPlatform_Components_Component) (error) {
+func getPlatformEnvironment (pf_comp *ocbinds.OpenconfigPlatform_Components_Component) (error) {
     var err error
     var query_result transformer.HostResult
 
@@ -307,15 +301,12 @@ func (app *PlatformApp) getPlatformEnvironment (pf_comp *ocbinds.OpenconfigPlatf
     return  err
 }
 
-func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUriPath string) (error) {
+func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUriPath string, uri string) (error) {
 
     log.Infof("Preparing json for system eeprom");
 
-    var payload []byte
     var err error
-    //pf_cpts := app.getAppRootObject()
 
-    //targetUriPath, _ := getYangPathFromUri(app.path.Path)
     switch targetUriPath {
     case "/openconfig-platform:components":
         sensor_comp,_  := pf_cpts.NewComponent("Sensor")
@@ -334,10 +325,9 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
         }
         eeprom_comp.State.Type,_ = eeprom_comp.State.To_OpenconfigPlatform_Components_Component_State_Type_Union(
                                 ocbinds.OpenconfigPlatformTypes_OPENCONFIG_HARDWARE_COMPONENT_CHASSIS)
-        //payload, err = dumpIetfJson((*app.ygotRoot).(*ocbinds.Device), true)
         return err
     case "/openconfig-platform:components/component":
-        compName := app.path.Var("name")
+        compName := NewPathInfo(uri).Var("name")
         log.Infof("compName: %v", compName)
         if compName == "" {
             pf_comp,_ := pf_cpts.NewComponent("System Eeprom")
@@ -346,7 +336,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
             if err != nil {
                 return err
             }
-            //payload, err = dumpIetfJson(pf_cpts, false)
         } else {
             if compName == "System Eeprom" {
                 pf_comp := pf_cpts.Component[compName]
@@ -356,7 +345,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
                     if err != nil {
                         return err
                     }
-                    //payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
                 } else {
                     err = errors.New("Invalid input component name")
                 }
@@ -368,7 +356,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
                     if err != nil {
                         return err
                     }
-                    //payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
                 } else {
                     err = errors.New("Invalid input component name")
                 }
@@ -377,7 +364,7 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
             }
         }
     case "/openconfig-platform:components/component/state":
-        compName := app.path.Var("name")
+        compName := NewPathInfo(uri).Var("name")
         if compName != "" && compName == "System Eeprom" {
             pf_comp := pf_cpts.Component[compName]
             if pf_comp != nil {
@@ -386,7 +373,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
                 if err != nil {
                     return err
                 }
-                //payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
             } else {
                 err = errors.New("Invalid input component name")
             }
@@ -398,7 +384,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
                 if err != nil {
                     return err
                 }
-                //payload, err = dumpIetfJson(pf_cpts.Component[compName], false)
             } else {
                 err = errors.New("Invalid input component name")
             }
@@ -408,7 +393,7 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
 
     default:
         if targetUriPath == "/openconfig-platform:components/component/state") {
-            compName := app.path.Var("name")
+            compName := NewPathInfo(uri).Var("name")
             if compName == "" || compName != "System Eeprom" {
                 err = errors.New("Invalid input component name")
             } else {
@@ -419,7 +404,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
                     if err != nil {
                         return err
                     }
-                    //payload, err = dumpIetfJson(pf_cpts.Component[compName].State, false)
                 } else {
                     err = errors.New("Invalid input component name")
                 }
