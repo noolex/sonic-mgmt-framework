@@ -299,24 +299,6 @@ Before each command articulation, a comment is shown with the desired command sy
     </DOCGEN>
   </COMMAND>
 
-<!--============= This is currently unsupported ===============================
-<COMMAND name="snmp-server trapreceiver" help="Configure SNMP Trap Receiver">
-  <PARAM name="host-addr" help="IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR">
-    <PARAM name="security-model" help="" ptype="SUBCOMMAND" mode="switch">
-      <PARAM name="v1"   help="SNMP Version 1"   ptype="SUBCOMMAND"  mode="subcommand"/>
-      <PARAM name="v2c"  help="SNMP Version 2c"  ptype="SUBCOMMAND"  mode="subcommand"/>
-    </PARAM>
-    <PARAM name="port" help="UDP Listening Port" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-      <PARAM name="udp-port" help="UDP Listening Port" ptype="LISTEN_PORT" />
-    </PARAM>
-    <PARAM name = "interface" help = "Specify an interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-      <PARAM name = "ifname" help = "Interface Name" ptype = "STRING" > </PARAM>
-    </PARAM>
-  </PARAM>
-  <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_trapreceiver  ${__params}</ACTION>
-</COMMAND>
-========================================================================= -->
-
 <!--=========================================================================
   snmp-server  community  "community name"  [groupname  "group name"]
 ========================================================================= -->
@@ -526,6 +508,12 @@ Before each command articulation, a comment is shown with the desired command sy
                 </PARAM>
               </PARAM>
             </PARAM>
+<!--============= This is for adding support for interface (vrf) ===============================
+                                    Will need to fix up snmp_host_add & snmp_host_get
+            <PARAM name = "interface" help = "Specify an interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                <PARAM name = "ifname" help = "Interface Name" ptype = "STRING_32" > </PARAM>
+            </PARAM>
+========================================================================= -->
           </PARAM>
         </PARAM>
 
@@ -685,17 +673,8 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
     </DOCGEN>
   </COMMAND>
 
-<!--============= This is currently unsupported ===============================
-<COMMAND name="no snmp-server trapreceiver" help="Configure SNMP Trap Receiver">
-  <PARAM name="security-model" help="" ptype="SUBCOMMAND" mode="switch">
-    <PARAM name="v1"   help="SNMP Version 1"   ptype="SUBCOMMAND"  mode="subcommand"/>
-    <PARAM name="v2c"  help="SNMP Version 2c"  ptype="SUBCOMMAND"  mode="subcommand"/>
-  </PARAM>
-  <ACTION builtin="clish_pyobj">sonic_cli_snmp  no_snmp_trapreceiver  ${__params}</ACTION>
-</COMMAND>
-========================================================================= -->
 <!--=========================================================================
-        no snmp-server community  "community name"
+      no snmp-server community  "community name"
 ========================================================================= -->
   <COMMAND name="no snmp-server community" help="Remove SNMP Community" ptype="SUBCOMMAND" mode="subcommand">
     <PARAM name="community-name" help="SNMP Community to remove" ptype="SNMP_IDENTIFIER"/>
