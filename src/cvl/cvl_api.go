@@ -394,8 +394,10 @@ func (c *CVL) ValidateEditConfig(cfgData []CVLEditConfigData) (cvlErr CVLErrorIn
 				for field, _ := range cfgData[i].Data {
 					if (c.checkDeleteConstraint(cfgData, tbl, key, field) != CVL_SUCCESS) {
 						cvlErrObj.ErrCode = CVL_SEMANTIC_ERROR
-						cvlErrObj.Msg = "Delete constraint failed"
+						cvlErrObj.Msg = "Validation failed for Delete operation, given instance is in use"
 						cvlErrObj.CVLErrDetails = cvlErrorMap[cvlErrObj.ErrCode]
+						cvlErrObj.ErrAppTag = "instance-in-use"
+						cvlErrObj.ConstraintErrMsg = cvlErrObj.Msg
 						return cvlErrObj, CVL_SEMANTIC_ERROR
 					}
 				}
@@ -408,8 +410,10 @@ func (c *CVL) ValidateEditConfig(cfgData []CVLEditConfigData) (cvlErr CVLErrorIn
 				//Now check delete constraints
 				if (c.checkDeleteConstraint(cfgData, tbl, key, "") != CVL_SUCCESS) {
 					cvlErrObj.ErrCode = CVL_SEMANTIC_ERROR
-					cvlErrObj.Msg = "Delete constraint failed"
+					cvlErrObj.Msg = "Validation failed for Delete operation, given instance is in use"
 					cvlErrObj.CVLErrDetails = cvlErrorMap[cvlErrObj.ErrCode]
+					cvlErrObj.ErrAppTag = "instance-in-use"
+					cvlErrObj.ConstraintErrMsg = cvlErrObj.Msg
 					return cvlErrObj, CVL_SEMANTIC_ERROR
 				}
 			}

@@ -1451,7 +1451,9 @@ func (c *CVL) checkDeleteConstraint(cfgData []CVLEditConfigData,
 		//Else, check if any referred entry is present in DB
 		var nokey []string
 		refKeyVal, err := luaScripts["find_key"].Run(redisClient, nokey, leafRef.tableName,
-		modelInfo.tableInfo[leafRef.tableName].redisKeyDelim, leafRef.field, keyVal).Result()
+		modelInfo.tableInfo[leafRef.tableName].redisKeyDelim,
+		strings.Join(modelInfo.tableInfo[leafRef.tableName].keys, "|"),
+		leafRef.field, keyVal).Result()
 		if (err == nil &&  refKeyVal != "") {
 			CVL_LOG(ERROR, "Delete will violate the constraint as entry %s is referred in %s", tableName, refKeyVal)
 
