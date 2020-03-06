@@ -29,11 +29,24 @@ func loadLuaScript(luaScripts map[string]*redis.Script) {
 	luaScripts["find_key"] = redis.NewScript(`
 	local tableName=ARGV[1]
 	local sep=ARGV[2]
-	local fieldName=ARGV[3]
-	local fieldValue=ARGV[4]
+	local keySetNames = {}
+	ARGV[3]:gsub("([^|]+)",function(c) table.insert(keySetNames, c) end)
+	local fieldName=ARGV[4]
+	local fieldValue=ARGV[5]
+
+	local entries = {}
 
 	-- Check if field value is part of key
-	local entries=redis.call('KEYS', tableName..sep.."*"..fieldValue.."*")
+	if (#keySetNames == 1) then
+		-- field is only key
+		entries=redis.call('KEYS', tableName..sep..fieldValue)
+	elseif (keySetNames[#keySetNames] == fieldName) then
+		-- field is the last key
+		entries=redis.call('KEYS', tableName..sep.."*"..sep..fieldValue)
+	else
+		-- field is not the last key
+		entries=redis.call('KEYS', tableName.."*"..sep..fieldValue..sep.."*")
+	end
 
 	if (entries[1] ~= nil)
 	then
