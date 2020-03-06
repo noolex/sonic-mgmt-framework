@@ -1167,6 +1167,11 @@ func fill_ipv6_spec_pfx_nbr_in_pre_rib_data (ipv6InPreRoute_obj *ocbinds.
         routeAttrSets.LocalPref = &_localPref
     }
 
+    if value, ok := pathData["weight"] ; ok {
+        _weight := uint32(value.(float64))
+        routeAttrSets.Weight = &_weight
+    }
+
     if value, ok := pathData["med"] ; ok {
         _med := uint32(value.(float64))
         routeAttrSets.Med = &_med

@@ -1103,6 +1103,13 @@ module openconfig-bgp-ext {
           description
               "Various PATH attributes for a given prefix.";
           config false;
+
+              leaf weight {
+                  type uint32;
+                  description
+                      "This indicates the weight value for the neighbor's routes";
+              }
+
 		  uses oc-rib-bgp:bgp-shared-common-attr-state;
 		  uses oc-rib-bgp:bgp-aggregator-attr-top;
 		  uses oc-rib-bgp:bgp-as-path-attr-top;
