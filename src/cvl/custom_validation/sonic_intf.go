@@ -36,7 +36,9 @@ func (t *CustomValidation) ValidateIpv4UnnumIntf(vc *CustValidationCtxt) CVLErro
 		return CVLErrorInfo{ErrCode: CVL_SUCCESS} //Allow empty value
 	}
 
-	tableKeys, err:= vc.RClient.Keys("LOOPBACK_INTERFACE|*").Result()
+	keys := "LOOPBACK_INTERFACE|" + vc.YNodeVal + "|*"
+	util.CVL_LEVEL_LOG(util.INFO, "Keys: %s", keys)
+	tableKeys, err:= vc.RClient.Keys(keys).Result()
 
 	if (err != nil) {
 		util.TRACE_LEVEL_LOG(util.TRACE_SEMANTIC, "LOOPBACK_INTERFACE is empty or invalid argument")
@@ -50,6 +52,7 @@ func (t *CustomValidation) ValidateIpv4UnnumIntf(vc *CustValidationCtxt) CVLErro
 		}
 	}
 
+	util.CVL_LEVEL_LOG(util.INFO, "Donor intf IP count: %d", count)
 	if (count > 1) {
 		util.TRACE_LEVEL_LOG(util.TRACE_SEMANTIC, "Donor interface has multiple IPv4 address")
 		return CVLErrorInfo{
