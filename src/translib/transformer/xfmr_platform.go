@@ -16,19 +16,16 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-package translib
+package transformer
 
 import (
-    "reflect"
     "encoding/json"
     "errors"
-    "translib/db"
     "translib/ocbinds"
     "github.com/openconfig/ygot/ygot"
     "os"
     "translib/tlerr"
     "io/ioutil"
-    "translib/transformer"
     "bufio"
     "strings"
     log "github.com/golang/glog"
@@ -38,7 +35,7 @@ func init () {
     XlateFuncBind("DbToYang_pfm_components_xfmr", DbToYang_pfm_components_xfmr)
 }
 
-func getAppRootObject() (s *ygot.GoStruct) (*ocbinds.OpenconfigPlatform_Components) {
+func getPfmRootObject (s *ygot.GoStruct) (*ocbinds.OpenconfigPlatform_Components) {
     deviceObj := (*s).(*ocbinds.Device)
     return deviceObj.Components
 }
@@ -48,8 +45,10 @@ var DbToYang_pfm_components_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams
     log.Infof("Received GET for PlatformApp Template: %s ,path: %s, vars: %v",
     pathInfo.Template, pathInfo.Path, pathInfo.Vars)
 
-    if strings.Contains(targetUriPath, "/openconfig-platform:components") {
-        return getSysEeprom(getAppRootObject(inParams.ygRoot),inParams.requestUri, inParams.Uri)
+    if strings.Contains(inParams.requestUri, "/openconfig-platform:components") {
+	log.Info("inParams.Uri:",inParams.requestUri)
+	targetUriPath, _ := getYangPathFromUri(pathInfo.Path)
+        return getSysEepromJson(getPfmRootObject(inParams.ygRoot), targetUriPath, inParams.uri)
     }
     return errors.New("Component not supported")
 }
@@ -260,9 +259,9 @@ func getSysEepromFromFile (eeprom *ocbinds.OpenconfigPlatform_Components_Compone
 
 func getPlatformEnvironment (pf_comp *ocbinds.OpenconfigPlatform_Components_Component) (error) {
     var err error
-    var query_result transformer.HostResult
+    var query_result HostResult
 
-    query_result = transformer.HostQuery("fetch_environment.action", "")
+    query_result = HostQuery("fetch_environment.action", "")
     if query_result.Err != nil {
         log.Infof("Error in Calling dbus fetch_environment %v", query_result.Err)
     }
@@ -306,11 +305,12 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
     log.Infof("Preparing json for system eeprom");
 
     var err error
-
+    log.Info("targetUriPath:", targetUriPath)
     switch targetUriPath {
     case "/openconfig-platform:components":
         sensor_comp,_  := pf_cpts.NewComponent("Sensor")
         ygot.BuildEmptyTree(sensor_comp)
+	log.Info("Switch case 1")
         sensor_comp.State.Type,_ = sensor_comp.State.To_OpenconfigPlatform_Components_Component_State_Type_Union(
                             ocbinds.OpenconfigPlatformTypes_OPENCONFIG_HARDWARE_COMPONENT_SENSOR)
         err = getPlatformEnvironment(sensor_comp)
@@ -328,6 +328,7 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
         return err
     case "/openconfig-platform:components/component":
         compName := NewPathInfo(uri).Var("name")
+	log.Info("Switch case 2")
         log.Infof("compName: %v", compName)
         if compName == "" {
             pf_comp,_ := pf_cpts.NewComponent("System Eeprom")
@@ -338,10 +339,12 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
             }
         } else {
             if compName == "System Eeprom" {
+		log.Info("Enters sys eeprom")
                 pf_comp := pf_cpts.Component[compName]
                 if pf_comp != nil {
                     ygot.BuildEmptyTree(pf_comp)
-                    err = app.getSysEepromFromFile(pf_comp.State, true)
+		    log.Info("pf_comp is not nil ")
+                    err = getSysEepromFromFile(pf_comp.State, true, targetUriPath)
                     if err != nil {
                         return err
                     }
@@ -365,6 +368,7 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
         }
     case "/openconfig-platform:components/component/state":
         compName := NewPathInfo(uri).Var("name")
+	log.Info("Switch case 3")
         if compName != "" && compName == "System Eeprom" {
             pf_comp := pf_cpts.Component[compName]
             if pf_comp != nil {
@@ -392,7 +396,8 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
         }
 
     default:
-        if targetUriPath == "/openconfig-platform:components/component/state") {
+	log.Info("Switch case DEFAULT")
+        if targetUriPath == "/openconfig-platform:components/component/state" {
             compName := NewPathInfo(uri).Var("name")
             if compName == "" || compName != "System Eeprom" {
                 err = errors.New("Invalid input component name")

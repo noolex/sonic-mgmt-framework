@@ -9,7 +9,7 @@ module openconfig-platform-annot {
 
     deviation /oc-platform:components {
         deviate add {
-            sonic-ext:subtree-transformer "ztp_status_xfmr";
+            sonic-ext:subtree-transformer "pfm_components_xfmr";
         }
     }
 }
