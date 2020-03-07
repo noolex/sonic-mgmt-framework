@@ -117,6 +117,13 @@ module openconfig-qos-annot {
     }
 
 
+    deviation /oc-qos:qos/oc-qos:queues/oc-qos:queue/oc-qos:wred/oc-qos:state/oc-qos-ext:wred-profile {
+      deviate add {
+        sonic-ext:field-name "wred_profile";
+      }
+    }
+
+
     deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler {
       deviate add {
         sonic-ext:db-name "CONFIG_DB";
