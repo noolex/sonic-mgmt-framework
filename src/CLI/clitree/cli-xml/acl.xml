@@ -95,17 +95,17 @@ limitations under the License.
         </COMMAND>
 
         <!-- no mac access-list -->
-        <COMMAND name="no mac access-list" help="Configure MAC access-list">
+        <COMMAND name="no mac access-list" help="Delete MAC access-list">
             <PARAM name="access-list-name" help="Name of the MAC access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_L2</ACTION>
         </COMMAND>
         <!-- no ip access-list -->
-        <COMMAND name="no ip access-list" help="Configure IPv4 access-list">
+        <COMMAND name="no ip access-list" help="Delete IPv4 access-list">
             <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_IPV4</ACTION>
         </COMMAND>
         <!-- no ipv6 access-list -->
-        <COMMAND name="no ipv6 access-list" help="Configure IPv6 access-list">
+        <COMMAND name="no ipv6 access-list" help="Delete IPv6 access-list">
             <PARAM name="access-list-name" help="Name of the IPv6 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_IPV6</ACTION>
         </COMMAND>
