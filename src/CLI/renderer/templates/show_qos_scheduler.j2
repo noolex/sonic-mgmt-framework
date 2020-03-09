@@ -7,11 +7,11 @@
   {% set config = scheduler['config'] %}
   {% if config %}
     {% if config['priority'] %}
-    {{'  Strict Priority scheduler '}}
+            {{'  Strict Priority scheduler '}}
     {% endif %}
 
-    {% if config['weight'] %}
-    {{'  Weight: '}}{{config['weight']}}
+    {% if config['openconfig-qos-ext:weight'] %}
+            {{'  Weight: '}}{{config['openconfig-qos-ext:weight']}}
     {% endif %}
   {% endif %}
 
@@ -20,16 +20,16 @@
     {% set rate_config = rate['config'] %}
     {% if rate_config %}
         {% if rate_config['cir'] %}
-            {{'    Cir: '}}{{rate_config['cir']}}
+            {{'  Cir: '}}{{rate_config['cir']}}
         {% endif %}
         {% if rate_config['pir'] %}
-            {{'    Pir: '}}{{rate_config['pir']}}
+            {{'  Pir: '}}{{rate_config['pir']}}
         {% endif %}
         {% if rate_config['bc'] %}
-            {{'    Min-burst: '}}{{rate_config['bc']}}
+            {{'  Min-burst: '}}{{rate_config['bc']}}
         {% endif %}
         {% if rate_config['be'] %}
-            {{'    Max-burst: '}}{{rate_config['be']}}
+            {{'  Max-burst: '}}{{rate_config['be']}}
         {% endif %}
     {% endif %}
   {% endif %}
