@@ -372,28 +372,26 @@ var DbToYang_qos_scheduler_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) 
             schedCfg, _ := inParams.dbs[db.ConfigDB].GetEntry(dbSpec, key) 
             log.Info("current entry: ", schedCfg)
 
-            var tmp_u32 uint32
-            var tmp_u8  uint8
             if val, exist := schedCfg.Field["bc"]; exist {
                 tmp,_ = strconv.ParseUint(val, 10, 32)
-                tmp_u32 = uint32(tmp)
-                schedObj.TwoRateThreeColor.Config.Bc = &tmp_u32
+                bc := uint32(tmp)
+                schedObj.TwoRateThreeColor.Config.Bc = &bc
             }
 
             if val, exist := schedCfg.Field["be"]; exist {
                 tmp,_ = strconv.ParseUint(val, 10, 32)
-                tmp_u32 = uint32(tmp)
-                schedObj.TwoRateThreeColor.Config.Be = &tmp_u32
+                be := uint32(tmp)
+                schedObj.TwoRateThreeColor.Config.Be = &be
             }
 
             if val, exist := schedCfg.Field["cir"]; exist {
-                tmp,_ = strconv.ParseUint(val, 10, 32)
-                schedObj.TwoRateThreeColor.Config.Cir = &tmp
+                cir,_ := strconv.ParseUint(val, 10, 32)
+                schedObj.TwoRateThreeColor.Config.Cir = &cir
             }
 
             if val, exist := schedCfg.Field["pir"]; exist {
-                tmp,_ = strconv.ParseUint(val, 10, 32)
-                schedObj.TwoRateThreeColor.Config.Pir = &tmp
+                pir,_ := strconv.ParseUint(val, 10, 32)
+                schedObj.TwoRateThreeColor.Config.Pir = &pir
             }
 
             if val, exist := schedCfg.Field["type"]; exist {
@@ -404,8 +402,8 @@ var DbToYang_qos_scheduler_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) 
 
             if val, exist := schedCfg.Field["weight"]; exist {
                 tmp,_ = strconv.ParseUint(val, 10, 32)
-                tmp_u8 = uint8(tmp)
-                schedObj.Config.Weight = &tmp_u8
+                weight := uint8(tmp)
+                schedObj.Config.Weight = &weight
             }
 
         }
