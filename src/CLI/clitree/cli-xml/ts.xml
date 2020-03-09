@@ -34,7 +34,7 @@
        </DOCGEN>
     </COMMAND>
     <COMMAND name="show tam int-ifa-ts flow" help="Show TAM IFA TS flow info" mode="subcommand" ptype="SUBCOMMAND">
-      <PARAM name="name" help="Name of the flow" ptype="STRING_32" optional="true"> </PARAM>
+      <PARAM name="name" help="Name of the flow" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_tam_int_ifa_ts get_sonic_tam_int_ifa_ts_sonic_tam_int_ifa_ts_tam_int_ifa_ts_flow_table show_tam_int_ifa_ts_flow.j2 ${name}</ACTION>
        <DOCGEN>
             <DESCRIPTION>
@@ -82,7 +82,7 @@
        </DOCGEN>
     </COMMAND>
     <COMMAND name="show tam int-ifa-ts statistics" help="Show TAM IFA TS Statistics" mode="subcommand" ptype="SUBCOMMAND">
-      <PARAM name="name" help="Name of the flow" ptype="STRING_32" optional="true"> </PARAM>
+      <PARAM name="name" help="Name of the flow" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_tam_int_ifa_ts get_tam_int_ifa_ts_flow_stats ${name}</ACTION>
        <DOCGEN>
             <DESCRIPTION>
@@ -126,7 +126,7 @@
            <PARAM
                name="flow-name"
                help="Name of the flow"
-               ptype="STRING"
+               ptype="STRING_63"
                optional="true">
            </PARAM>
 
@@ -194,7 +194,7 @@
          <PARAM
                    name="flow-name"
                    help="Name of the flow"
-                   ptype="STRING"
+                   ptype="STRING_63"
                    >
                </PARAM>
 
@@ -209,7 +209,7 @@
               <PARAM
                    name="acl-table-name"
                    help="ACL Table Name"
-                   ptype="STRING"
+                   ptype="STRING_63"
                    >
               </PARAM>
                <PARAM
@@ -222,7 +222,7 @@
               <PARAM
                    name="acl-rule-name"
                    help="ACL Rule Name"
-                   ptype="STRING"
+                   ptype="STRING_63"
                    >
               </PARAM>
 

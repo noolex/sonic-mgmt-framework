@@ -61,8 +61,16 @@ func getBgpRoot (inParams XfmrParams) (*ocbinds.OpenconfigNetworkInstance_Networ
     if protoInstObj == nil {
         return nil, "", errors.New("Network-instance BGP-Protocol obj missing")
     }
+
+    if protoInstObj.Bgp == nil {
+        var _bgp_obj ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp
+        protoInstObj.Bgp = &_bgp_obj
+    }
+
+    ygot.BuildEmptyTree (protoInstObj.Bgp)
     return protoInstObj.Bgp, niName, err
 }
+
 func exec_vtysh_cmd (vtysh_cmd string) (map[string]interface{}, error) {
     var err error
     oper_err := errors.New("Operational error")
@@ -289,29 +297,18 @@ var DbToYang_bgp_gbl_state_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) 
     }
     ygot.BuildEmptyTree (bgpGblState_obj)
 
-    vtysh_cmd := "show ip bgp vrf " + niName + " summary json"
-    bgpGblJson, cmd_err := exec_vtysh_cmd (vtysh_cmd)
-    if cmd_err != nil {
-        log.Errorf("Failed to fetch BGP global info for niName:%s. Err: %s", niName, cmd_err)
-        return oper_err
-    }
-
-    bgpGblDataJson, ok := bgpGblJson["ipv4Unicast"].(map[string]interface{})
-    if !ok {
-        log.Errorf("Failed to fetch BGP global info for niName:%s from JSON data", niName)
-        return oper_err
-    }
-
-    if value, ok := bgpGblDataJson["as"] ; ok {
-        _localAs := uint32(value.(float64))
-        bgpGblState_obj.As = &_localAs
-    }
-
-    if value, ok := bgpGblDataJson["routerId"].(string) ; ok {
-        bgpGblState_obj.RouterId = &value
-    }
-
     if cfgDbEntry, cfgdb_get_err := get_spec_bgp_glb_cfg_tbl_entry (inParams.dbs[db.ConfigDB], niName) ; cfgdb_get_err == nil {
+        if value, ok := cfgDbEntry["local_asn"] ; ok {
+            if _local_asn_u64, err := strconv.ParseUint(value, 10, 32) ; err == nil {
+                _local_asn_u32 := uint32(_local_asn_u64)
+                bgpGblState_obj.As = &_local_asn_u32
+            }
+        }
+
+        if value, ok := cfgDbEntry["router_id"] ; ok {
+            bgpGblState_obj.RouterId = &value
+        }
+
         if value, ok := cfgDbEntry["rr_clnt_to_clnt_reflection"] ; ok {
             _clntToClntReflection, _ := strconv.ParseBool(value)
             bgpGblState_obj.ClntToClntReflection = &_clntToClntReflection
@@ -386,7 +383,24 @@ var DbToYang_bgp_gbl_state_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) 
                 bgpGblState_obj.WriteQuanta = &_writeQuanta_u8
             }
         }
+    }
 
+    vtysh_cmd := "show ip bgp vrf " + niName + " summary json"
+    bgpGblJson, cmd_err := exec_vtysh_cmd (vtysh_cmd)
+    if cmd_err != nil {
+        log.Errorf("Failed to fetch BGP global info for niName:%s. Err: %s", niName, cmd_err)
+        return oper_err
+    }
+
+    bgpGblDataJson, ok := bgpGblJson["ipv4Unicast"].(map[string]interface{}); if ok {
+        if value, ok := bgpGblDataJson["as"] ; ok {
+            _localAs := uint32(value.(float64))
+            bgpGblState_obj.As = &_localAs
+        }
+
+        if value, ok := bgpGblDataJson["routerId"].(string) ; ok {
+            bgpGblState_obj.RouterId = &value
+        }
     }
 
     return err;

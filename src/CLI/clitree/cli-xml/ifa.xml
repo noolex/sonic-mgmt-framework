@@ -56,7 +56,7 @@ limitations under the License.
              ptype="SUBCOMMAND">
       <PARAM name="name" 
              help="Name of the flow" 
-             ptype="STRING_32" 
+             ptype="STRING_63" 
              optional="true"> 
       </PARAM>
        <ACTION builtin="clish_pyobj">sonic_cli_ifa get_sonic_ifa_sonic_ifa_tam_int_ifa_flow_table show_tam_flow.j2 ${name}</ACTION>
@@ -91,7 +91,7 @@ limitations under the License.
              ptype="SUBCOMMAND">
       <PARAM name="name"
              help="Name of the flow"
-             ptype="STRING_32"
+             ptype="STRING_63"
              optional="true">
       </PARAM>
        <ACTION builtin="clish_pyobj">sonic_cli_ifa get_tam_ifa_flow_stats ${name}</ACTION>
@@ -187,7 +187,7 @@ limitations under the License.
              mode="subcommand">
       <PARAM name="flow-name" 
              help="Flow name" 
-             ptype="STRING"> 
+             ptype="STRING_63"> 
       </PARAM>
       <PARAM name="acl-table" 
              help="ACL table name" 
@@ -195,7 +195,7 @@ limitations under the License.
              mode="subcommand">
         <PARAM name="acl-table-val" 
                help="ACL table name" 
-               ptype="STRING"> 
+               ptype="STRING_63"> 
         </PARAM>
       </PARAM>
       <PARAM name="acl-rule" 
@@ -204,7 +204,7 @@ limitations under the License.
              mode="subcommand">
         <PARAM name="acl-rule-val" 
                help="ACL rule name" 
-               ptype="STRING"> 
+               ptype="STRING_63"> 
         </PARAM>
       </PARAM>
       <PARAM name="sampling-rate" 
@@ -224,7 +224,7 @@ limitations under the License.
              optional="true">
         <PARAM name="collector-val" 
                help="Collector name" 
-               ptype="STRING"> 
+               ptype="STRING_63"> 
         </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_ifa patch_sonic_ifa_sonic_ifa_tam_int_ifa_flow_table_tam_int_ifa_flow_table_list ${flow-name} ${acl-rule-val} ${acl-table-val} sv ${sampling-rate-val} cv ${collector-val}</ACTION>
@@ -249,7 +249,7 @@ limitations under the License.
              mode="subcommand">
       <PARAM name="name" 
              help="Flow Name" 
-             ptype="STRING"> 
+             ptype="STRING_63"> 
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_ifa delete_sonic_ifa_sonic_ifa_tam_int_ifa_flow_table_tam_int_ifa_flow_table_list ${name}</ACTION>
        <DOCGEN>

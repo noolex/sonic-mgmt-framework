@@ -35,7 +35,7 @@ def run(func, args):
     if api_response.ok() and "openconfig-platform:state" in api_response.content:
         response = api_response.content
         versionResponse = response["openconfig-platform:state"]
-        responseContent = {"SONiC Software Version": versionResponse['software-version']}
+        responseContent = {"Software Version": versionResponse['software-version']}
         show_cli_output(sys.argv[3], responseContent)
     else:
         print api_response.error_message()

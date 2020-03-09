@@ -15,6 +15,10 @@ module sonic-system-radius {
     description
         "SONiC RADIUS";
 
+    revision 2020-02-17 {
+        description "Allow special characters in passkey.";
+    }
+
     revision 2019-11-14 {
         description
             "Initial revision.";
@@ -38,13 +42,13 @@ module sonic-system-radius {
 
                 leaf passkey {
                     type string {
-                        length "1..32";
-                        pattern "[0-9A-Za-z]*" {
-                            error-message "RADIUS shared secret valid chars: [0-9A-Za-z]";
+                        length "1..65";
+                        pattern "[^ #,]*" {
+                            error-message 'RADIUS shared secret (Valid chars are ASCII printable except SPACE, "#", and ",")';
                         }
                     }
                     description
-                            "RADIUS global shared secret (Valid chars: [0-9A-Za-z])";
+                            'RADIUS global shared secret (Valid chars are ASCII printable except SPACE, "#", and ",")';
                 }
 
                 leaf auth_type {
@@ -76,8 +80,8 @@ module sonic-system-radius {
                 leaf retransmit {
                     default 3;
                     type uint8 {
-                        range "1..10" {
-                            error-message "RADIUS retransmit must be 1..10";
+                        range "0..10" {
+                            error-message "RADIUS retransmit must be 0..10";
                         }
                     }
                 }
@@ -104,13 +108,13 @@ module sonic-system-radius {
 
                 leaf passkey {
                     type string {
-                        length "1..32";
-                        pattern "[0-9A-Za-z]*" {
-                            error-message "RADIUS shared secret valid chars: [0-9A-Za-z]";
+                        length "1..65";
+                        pattern "[^ #,]*" {
+                            error-message 'RADIUS shared secret (Valid chars are ASCII printable except SPACE, "#", and ",")';
                         }
                     }
                     description
-                            "RADIUS server's shared secret (Valid chars: [0-9A-Za-z])";
+                            'RADIUS servers shared secret (Valid chars are ASCII printable except SPACE, "#", and ",")';
                 }
 
                 leaf auth_type {

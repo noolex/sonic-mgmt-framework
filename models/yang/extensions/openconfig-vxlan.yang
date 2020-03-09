@@ -704,5 +704,24 @@ module openconfig-vxlan {
 
       uses neighbour-suppress-top;
   }
+    
+    deviation /oc-vxlan:vxlan/oc-vxlan:config {
+			deviate not-supported;
+		}
+		
+    deviation /oc-vxlan:vxlan/oc-vxlan:state/oc-vxlan:vxlan-tunnel-infos/oc-vxlan:vxlan-tunnel-info/oc-vxlan:up-time {
+			deviate not-supported;
+		}    
 
+    deviation /oc-vxlan:vxlan/oc-vxlan:state/oc-vxlan:vxlan-tunnel-infos/oc-vxlan:vxlan-tunnel-info/oc-vxlan:vrf-name {
+			deviate not-supported;
+		}    
+
+    deviation /oc-vxlan:vxlan/oc-vxlan:state/oc-vxlan:vxlan-tunnel-infos/oc-vxlan:vxlan-tunnel-info/oc-vxlan:tunnel-id {
+			deviate not-supported;
+		}    
+ 
+    deviation /oc-vxlan:vxlan/oc-vxlan:vxlan-vni-instances {
+			deviate not-supported;
+		}
 }

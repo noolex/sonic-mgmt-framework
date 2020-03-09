@@ -958,16 +958,6 @@ func fill_nbr_state_cmn_info (nbr_key *_xfmr_bgp_nbr_state_key, frrNbrDataValue 
             nbrState.StrictCapabilityMatch = &_strictCapabilityMatch
         }
 
-        if value, ok := cfgDbEntry["bfd"] ; ok {
-            _bfd, _ := strconv.ParseBool(value)
-            nbrState.Bfd = &_bfd
-        }
-
-        if value, ok := cfgDbEntry["bfd_check_ctrl_plane_failure"] ; ok {
-            _bfd_ctrl_plan_failure, _ := strconv.ParseBool(value)
-            nbrState.BfdCheckControlPlaneFailure = &_bfd_ctrl_plan_failure
-        }
-
         if value, ok := cfgDbEntry["local_as_no_prepend"] ; ok {
             _localAsNoPrepend, _ := strconv.ParseBool(value)
             nbrState.LocalAsNoPrepend = &_localAsNoPrepend

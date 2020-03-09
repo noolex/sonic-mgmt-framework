@@ -6,6 +6,10 @@ module sonic-system-tacacs {
         prefix inet;
     }
 
+    revision 2020-02-17 {
+        description "Allow special characters in passkey.";
+    }
+
     revision 2019-11-13 {
         description "Initial revision.";
     }
@@ -59,9 +63,9 @@ module sonic-system-tacacs {
 
                 leaf passkey {
                     type string {
-                        length "1..32";
-                        pattern "[0-9A-Za-z]*" {
-                            error-message "TACACS shared secret valid chars: [0-9A-Za-z]";
+                        length "1..65";
+                        pattern "[^ #,]*" {
+                            error-message 'TACACS shared secret (Valid chars are ASCII printable except SPACE, "#", and ",")';
                         }
                     }
                 }
@@ -96,9 +100,9 @@ module sonic-system-tacacs {
 
                 leaf passkey {
                     type string {
-                        length "1..32";
-                        pattern "[0-9A-Za-z]*" {
-                            error-message "TACACS shared secret valid chars: [0-9A-Za-z]";
+                        length "1..65";
+                        pattern "[^ #,]*" {
+                            error-message 'TACACS shared secret (Valid chars are ASCII printable except SPACE, "#", and ",")';
                         }
                     }
                 }

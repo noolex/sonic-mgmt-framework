@@ -66,6 +66,21 @@ func hostAccountUserAdd(login, role, hashed_pw string) (bool, string) {
 	return hostAccountParseCallReturn(obj.Call(dest, 0, login, roles, hashed_pw))
 }
 
+// hostAccountUserMod calls the HAM usermod function over D-Bus
+func hostAccountUserMod(login, role, hashed_pw string) (bool, string) {
+        obj, dest, err := hostAccountCallObject("usermod")
+        if err != nil {
+                return false, err.Error()
+        }
+
+        roles := roleToGroup(role)
+        if len(roles) == 0 {
+                return false, fmt.Sprintf("Invalid role %s", role)
+        }
+
+        return hostAccountParseCallReturn(obj.Call(dest, 0, login, roles, hashed_pw))
+}
+
 // hostAccountUserDel calls the HAM userdel over D-Bus
 func hostAccountUserDel(login string) (bool, string) {
 	obj, dest, err := hostAccountCallObject("userdel")

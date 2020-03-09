@@ -357,7 +357,7 @@ var YangToDb_sys_aaa_auth_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (
 	    log.Info("User:",*(value.Config.Username))
 	    temp := value.Config.Role.(*ocbinds.OpenconfigSystem_System_Aaa_Authentication_Users_User_Config_Role_Union_String)
 	    log.Info("Role:",temp.String)
-            status, err_str = hostAccountUserAdd(*(value.Config.Username), temp.String, *(value.Config.PasswordHashed))
+            status, err_str = hostAccountUserMod(*(value.Config.Username), temp.String, *(value.Config.PasswordHashed))
         }
     }
 	if (!status) {
