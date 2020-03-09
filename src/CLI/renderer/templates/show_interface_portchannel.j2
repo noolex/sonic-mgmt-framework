@@ -10,7 +10,7 @@
 {% if po_conf_intf['name'] == po_intf['lagname'] %}
 
 
-{% if po_conf_intf['name'] == po_intf['lagname'] and po_conf_intf['static'] == "true" %}
+{% if po_conf_intf['name'] == po_intf['lagname'] and po_conf_intf['static'] == True %}
 {% set mode = "Static" %}
 {% endif %}
 
@@ -25,7 +25,9 @@
 
 {{po_intf['lagname']}} is {{po_intf['admin_status']}}, line protocol is {{po_intf['oper_status']}}, mode {{mode}}
 Minimum number of links to bring PortChannel up is {{minlinks}}
+{% if mode == "LACP" %}
 Fallback: {{fallback}}
+{% endif %}
 MTU {{po_intf['mtu']}}
 
 {% endif %}

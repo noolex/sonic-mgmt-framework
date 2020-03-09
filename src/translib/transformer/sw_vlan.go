@@ -1528,8 +1528,10 @@ func getSwitchedVlanState(ifKey *string, vlanMemberMap map[string]map[string]db.
             vlanIdCast := uint16(vlanId)
             if config == true {
                 swVlan.swEthMember.Config.AccessVlan = &vlanIdCast
+                swVlan.swEthMember.Config.InterfaceMode = ocbinds.OpenconfigVlan_VlanModeType_ACCESS
              } else {
                 swVlan.swEthMember.State.AccessVlan = &vlanIdCast
+                swVlan.swEthMember.State.InterfaceMode = ocbinds.OpenconfigVlan_VlanModeType_ACCESS
              }
         }
         for _, vlanName := range trunkVlans {
@@ -1544,10 +1546,11 @@ func getSwitchedVlanState(ifKey *string, vlanMemberMap map[string]map[string]db.
             if (config == true) {
                 trunkVlan, _ := swVlan.swEthMember.Config.To_OpenconfigInterfaces_Interfaces_Interface_Ethernet_SwitchedVlan_Config_TrunkVlans_Union(vlanIdCast)
                 swVlan.swEthMember.Config.TrunkVlans = append(swVlan.swEthMember.Config.TrunkVlans, trunkVlan)
-
+                swVlan.swEthMember.Config.InterfaceMode = ocbinds.OpenconfigVlan_VlanModeType_TRUNK
             } else {
                 trunkVlan, _ := swVlan.swEthMember.State.To_OpenconfigInterfaces_Interfaces_Interface_Ethernet_SwitchedVlan_State_TrunkVlans_Union(vlanIdCast)
                 swVlan.swEthMember.State.TrunkVlans = append(swVlan.swEthMember.State.TrunkVlans, trunkVlan)
+                swVlan.swEthMember.State.InterfaceMode = ocbinds.OpenconfigVlan_VlanModeType_TRUNK
             }
         }
     case IntfTypePortChannel:
@@ -1675,6 +1678,11 @@ var DbToYang_sw_vlans_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams) (err
 
                     log.Infof("Get is for Switched Vlan State Container!")
                     switch targetUriPath {
+                    case "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/interface-mode":
+                        err = getSwitchedVlanState(&ifName, vlanMemberMap, &swVlan, intfType, true)
+                        if err != nil {
+                            return err
+                        }
                     case "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config":
                         err = getSwitchedVlanState(&ifName, vlanMemberMap, &swVlan, intfType, true)
                         if err != nil {
