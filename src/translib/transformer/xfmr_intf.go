@@ -242,9 +242,13 @@ func performIfNameKeyXfmrOp(inParams *XfmrParams, requestUriPath *string, ifName
             case IntfTypeVxlan:
                 err := deleteVxlanIntf(inParams, ifName)
                 if err != nil {
-                    log.Errorf("Deleting Vxlan: %s failed! Err:%s", *ifName, err.Error())                	
+                    log.Errorf("Deleting Vxlan: %s failed! Err:%s", *ifName, err.Error())
                     return tlerr.InvalidArgsError{Format: err.Error()}
                 }
+            case IntfTypeEthernet:
+                errStr := "Physical Interface: " + *ifName + " cannot be deleted"
+                err = tlerr.InvalidArgsError{Format:errStr}
+                return err
             default:
                 errStr := "Invalid interface for delete:"+*ifName
                 log.Error(errStr)
@@ -516,7 +520,9 @@ var intf_table_xfmr TableXfmrFunc = func (inParams XfmrParams) ([]string, error)
         tblList = append(tblList, intTbl.cfgDb.intfTN)
     } else if strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/ethernet") ||
         strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet") {
-        tblList = append(tblList, intTbl.cfgDb.portTN)
+        if inParams.oper != DELETE {
+            tblList = append(tblList, intTbl.cfgDb.portTN)
+        }
     } else if strings.HasPrefix(targetUriPath,"/openconfig-interfaces:interfaces/interface/openconfig-interfaces-ext:nat-zone") ||
         strings.HasPrefix(targetUriPath,"/openconfig-interfaces:interfaces/interface/nat-zone") {
         tblList = append(tblList, intTbl.cfgDb.intfTN)
@@ -919,23 +925,17 @@ func intf_ip_addr_del (d *db.DB , ifName string, tblName string, subIntf *ocbind
     intfIpMap := make(map[string]db.Value)
 
     // Handles the case when the delete request at subinterfaces/subinterface[index = 0]
-    if subIntf.Ipv4 == nil && subIntf.Ipv6 == nil {
-	    ipv4Map, _ := getIntfIpByName(d, tblName, ifName, true, false, "")
-	    if ipv4Map != nil && len(ipv4Map) > 0 {
-            for k, v := range ipv4Map {
-                intfIpMap[k] = v
-            }
-        }
-        ipv6Map, _ := getIntfIpByName(d, tblName, ifName, false, true, "")
-        if ipv6Map != nil && len(ipv6Map) > 0 {
-            for k, v := range ipv6Map {
+    if subIntf == nil || (subIntf.Ipv4 == nil && subIntf.Ipv6 == nil) {
+	    ipMap, _ := getIntfIpByName(d, tblName, ifName, true, true, "")
+	    if ipMap != nil && len(ipMap) > 0 {
+            for k, v := range ipMap {
                 intfIpMap[k] = v
             }
         }
     }
 
     // This handles the delete for a specific IPv4 address or a group of IPv4 addresses
-    if subIntf.Ipv4 != nil {
+    if subIntf != nil && subIntf.Ipv4 != nil {
         if subIntf.Ipv4.Addresses != nil {
             if len(subIntf.Ipv4.Addresses.Address) < 1 {
                 ipMap, _:= getIntfIpByName(d, tblName, ifName, true, false, "")
@@ -967,7 +967,7 @@ func intf_ip_addr_del (d *db.DB , ifName string, tblName string, subIntf *ocbind
     }
 
     // This handles the delete for a specific IPv6 address or a group of IPv6 addresses
-    if subIntf.Ipv6 != nil {
+    if subIntf != nil && subIntf.Ipv6 != nil {
         if subIntf.Ipv6.Addresses != nil {
             if len(subIntf.Ipv6.Addresses.Address) < 1 {
                 ipMap, _ := getIntfIpByName(d, tblName, ifName, false, true, "")
@@ -1213,23 +1213,28 @@ var YangToDb_intf_ip_addr_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (
         return subIntfmap, errors.New(errStr)
     }
 
+    intTbl := IntfTypeTblMap[intfType]
+    tblName, _ := getIntfTableNameByDBId(intTbl, inParams.curDb)
     intfObj := intfsObj.Interface[ifName]
 
     if intfObj.Subinterfaces == nil || len(intfObj.Subinterfaces.Subinterface) < 1 {
+        // Handling the scenario for Interface instance delete at interfaces/interface[name] level or subinterfaces container level
+        if inParams.oper == DELETE {
+            log.Info("Top level Interface instance delete or subinterfaces container delete for Interface: ", ifName)
+            return intf_ip_addr_del(inParams.d, ifName, tblName, nil)
+        }
         errStr := "SubInterface node doesn't exist"
         log.Info("YangToDb_intf_subintf_ip_xfmr : " + errStr)
         err = tlerr.InvalidArgsError{Format:errStr}
         return subIntfmap, err
     }
+
     if _, ok := intfObj.Subinterfaces.Subinterface[0]; !ok {
         log.Info("YangToDb_intf_subintf_ip_xfmr : No IP address handling required")
         errStr := "SubInterface index 0 doesn't exist"
         err = tlerr.InvalidArgsError{Format:errStr}
         return subIntfmap, err
     }
-
-    intTbl := IntfTypeTblMap[intfType]
-    tblName, _ := getIntfTableNameByDBId(intTbl, inParams.curDb)
 
     subIntfObj := intfObj.Subinterfaces.Subinterface[0]
     if inParams.oper == DELETE {
@@ -2263,35 +2268,91 @@ var DbToYang_intf_get_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrPara
     return err
 }
 
-/* Handle port-speed, auto-neg and aggregate-id config */
-var YangToDb_intf_eth_port_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[string]map[string]db.Value, error) {
-
-	memMap := make(map[string]map[string]db.Value)
-	
-    pathInfo := NewPathInfo(inParams.uri)
-    ifName := pathInfo.Var("name")
-    
-    intfType, _, _ := getIntfTypeByName(ifName)
-    if IntfTypeVxlan == intfType {
-	    return memMap, nil	
-    }
-    
-    intfsObj := getIntfsRoot(inParams.ygRoot)
-    intfObj := intfsObj.Interface[ifName]
-    if intfObj.Ethernet == nil  {
-        return nil, errors.New("Invalid request")
-    }
-    if intfObj.Ethernet.Config == nil {
-        return nil, errors.New("Invalid config request")
-    }
-
+func retrievePortChannelAssociatedWithIntf(inParams *XfmrParams, ifName *string) (*string, error) {
     var err error
 
-    intfType, _, ierr := getIntfTypeByName(ifName)
-    if ierr != nil {
+    if strings.HasPrefix(*ifName, ETHERNET) == true {
+        intTbl := IntfTypeTblMap[IntfTypePortChannel]
+        tblName, _ := getMemTableNameByDBId(intTbl, inParams.curDb)
+        var lagStr string
+
+        lagKeys, err := inParams.d.GetKeys(&db.TableSpec{Name:tblName})
+        /* Find the port-channel the given ifname is part of */
+        if err != nil {
+            return nil, err
+        }
+        var flag bool = false
+        for i, _ := range lagKeys {
+            if *ifName == lagKeys[i].Get(1) {
+                flag = true
+                lagStr = lagKeys[i].Get(0)
+                log.Info("Given interface part of PortChannel", lagStr)
+                break
+            }
+        }
+        if flag == false {
+            log.Info("Given Interface not part of any PortChannel")
+            return nil, err
+        }
+        return &lagStr, err
+    }
+    return nil, err
+}
+
+/* Handle port-speed, auto-neg and aggregate-id config */
+var YangToDb_intf_eth_port_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[string]map[string]db.Value, error) {
+    var err error
+    var lagStr string
+    memMap := make(map[string]map[string]db.Value)
+
+    pathInfo := NewPathInfo(inParams.uri)
+    targetUriPath, err := getYangPathFromUri(inParams.uri)
+    ifName := pathInfo.Var("name")
+
+    intfType, _, err := getIntfTypeByName(ifName)
+    if err != nil {
         errStr := "Invalid Interface"
         err = tlerr.InvalidArgsError{Format: errStr}
         return nil, err
+    }
+    if IntfTypeVxlan == intfType {
+        return memMap, nil
+    }
+
+    intfsObj := getIntfsRoot(inParams.ygRoot)
+    intfObj := intfsObj.Interface[ifName]
+    // Need to differentiate between config container delete and any attribute other than aggregate-id delete
+    if intfObj.Ethernet == nil  || intfObj.Ethernet.Config == nil || (intfObj.Ethernet.Config != nil &&
+       targetUriPath == "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet/config") {
+        // Delete entire ethernet container for Interface
+        if inParams.oper == DELETE {
+            // Delete all the Vlans for Interface and member port removal from port-channel
+            lagId, err := retrievePortChannelAssociatedWithIntf(&inParams, &ifName)
+            if lagId != nil {
+                log.Infof("Interface: %s is part of port-channel: %s", ifName, *lagId)
+            }
+            if err != nil {
+                errStr := "Retrieveing PortChannel associated with Interface: " + ifName + " failed!"
+                return nil, errors.New(errStr)
+            }
+            if lagId != nil {
+                lagStr = *lagId
+                intTbl := IntfTypeTblMap[IntfTypePortChannel]
+                tblName, _ := getMemTableNameByDBId(intTbl, inParams.curDb)
+
+                m := make(map[string]string)
+                value := db.Value{Field: m}
+                m["NULL"] = "NULL"
+                intfKey := lagStr + "|" + ifName
+                if _, ok := memMap[tblName]; !ok {
+                    memMap[tblName] = make(map[string]db.Value)
+                }
+                memMap[tblName][intfKey] = value
+            }
+            return memMap, err
+        } else {
+            return nil, errors.New("Invalid request!")
+        }
     }
 
     /* Handle AggregateId config */
@@ -2301,7 +2362,7 @@ var YangToDb_intf_eth_port_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrP
         }
         intTbl := IntfTypeTblMap[IntfTypePortChannel]
         tblName, _ := getMemTableNameByDBId(intTbl, inParams.curDb)
-        var lagStr string
+
         switch inParams.oper {
             case CREATE:
             case UPDATE:
@@ -2340,37 +2401,26 @@ var YangToDb_intf_eth_port_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrP
                 }
 
             case DELETE:
-                log.Info("Delete member port")
-                lagKeys, err := inParams.d.GetKeys(&db.TableSpec{Name:tblName})
-                /* Find the port-channel the given ifname is part of */
+                lagId, err := retrievePortChannelAssociatedWithIntf(&inParams, &ifName)
+                if lagId != nil {
+                    log.Infof("Interface: %s is part of port-channel: %s", ifName, *lagId)
+                }
                 if err != nil {
-                    log.Info("No entries in PORTCHANNEL_MEMBER TABLE")
-                    return nil, errors.New("No entries in PORTCHANNEL_MEMBER TABLE")
+                    errStr := "Retrieveing PortChannel associated with Interface: " + ifName + " failed!"
+                    return nil, errors.New(errStr)
                 }
-                var flag bool = false
-                for i, _ := range lagKeys {
-                    if ifName == lagKeys[i].Get(1) {
-                        log.Info("Found Entry in PORTCHANNEL_MEMBER TABLE")
-                        flag = true
-                        lagStr = lagKeys[i].Get(0)
-                        log.Info("Given interface part of PortChannel", lagStr)
-                        break
-                    }
-                }
-                if flag == false {
-                    log.Info("Given Interface not part of any PortChannel")
-                    err = errors.New("Given Interface not part of any PortChannel")
-                    return nil, err
-                }
-        }/* End of switch case */
-        m := make(map[string]string)
-        value := db.Value{Field: m}
-        m["NULL"] = "NULL"
-        intfKey := lagStr + "|" + ifName
-        if _, ok := memMap[tblName]; !ok {
-            memMap[tblName] = make(map[string]db.Value)
-        }
-        memMap[tblName][intfKey] = value
+                lagStr = *lagId
+       }/* End of switch case */
+       if len(lagStr) != 0 {
+            m := make(map[string]string)
+            value := db.Value{Field: m}
+            m["NULL"] = "NULL"
+            intfKey := lagStr + "|" + ifName
+            if _, ok := memMap[tblName]; !ok {
+                memMap[tblName] = make(map[string]db.Value)
+            }
+            memMap[tblName][intfKey] = value
+       }
     }
     /* Handle PortSpeed config */
     if intfObj.Ethernet.Config.PortSpeed != 0 {
@@ -2470,6 +2520,33 @@ func validateMultiIPForDonorIntf(d *db.DB, ifName *string) bool {
 	return false
 }
 
+func intf_unnumbered_del(tblName *string, subIntfObj *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface,
+                         inParams *XfmrParams, ifdb map[string]string, ifName *string) error  {
+    var err error
+    if subIntfObj.Ipv4.Unnumbered == nil || subIntfObj.Ipv4.Unnumbered.InterfaceRef == nil {
+        log.Info("DELETE Unnum Intf:=", *tblName, *ifName)
+
+        intfIPKeys, _ := inParams.d.GetKeys(&db.TableSpec{Name:*tblName})
+        if len(intfIPKeys) > 0 {
+            for i := range intfIPKeys {
+                if len(intfIPKeys[i].Comp) > 1 {
+                    ifdb[UNNUMBERED] = "NULL"
+                    break;
+                 }
+              }
+          }
+        }
+    return err
+}
+
+func validateEntryExists(d *db.DB, tblName *string, ifName *string) bool {
+    entry, err := d.GetEntry(&db.TableSpec{Name:*tblName}, db.Key{Comp: []string{*ifName}})
+    if err != nil {
+        return false
+    }
+    return entry.IsPopulated()
+}
+
 var YangToDb_unnumbered_intf_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[string]map[string]db.Value, error) {
     var err error
     subIntfmap := make(map[string]map[string]db.Value)
@@ -2496,8 +2573,27 @@ var YangToDb_unnumbered_intf_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams
     }
 
     intfObj := intfsObj.Interface[ifName]
+    intfType, _, ierr := getIntfTypeByName(ifName)
+    if intfType == IntfTypeUnset || ierr != nil {
+        errStr := "Invalid interface type IntfTypeUnset"
+        log.Info("YangToDb_unnumbered_intf_xfmr : " + errStr)
+        return subIntfmap, errors.New(errStr)
+    }
+    intTbl := IntfTypeTblMap[intfType]
+    tblName, _ := getIntfTableNameByDBId(intTbl, inParams.curDb)
 
     if intfObj.Subinterfaces == nil || len(intfObj.Subinterfaces.Subinterface) < 1 {
+        // Delete is for Interface instance / sub-interfaces container level
+        if inParams.oper == DELETE {
+            if validateEntryExists(inParams.d, &tblName, &ifName) {
+                if _, ok := subIntfmap[tblName]; !ok {
+                    subIntfmap[tblName] = make(map[string]db.Value)
+                }
+                var value db.Value
+                subIntfmap[tblName][ifName] = value
+            }
+            return subIntfmap, err
+        } 
         errStr := "SubInterface node is not set"
         log.Info("YangToDb_unnumbered_intf_xfmr : " + errStr)
         return subIntfmap, errors.New(errStr)
@@ -2507,18 +2603,24 @@ var YangToDb_unnumbered_intf_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams
         log.Info("YangToDb_unnumbered_intf_xfmr : No Unnumbered IP interface handling required")
         return subIntfmap, err
     }
+    subIntfObj := intfObj.Subinterfaces.Subinterface[0]
 
-    intfType, _, ierr := getIntfTypeByName(ifName)
-    if intfType == IntfTypeUnset || ierr != nil {
-        errStr := "Invalid interface type IntfTypeUnset"
+    if subIntfObj.Ipv4 == nil {
+        //Delete is for IPv4 container
+        if inParams.oper == DELETE {
+            if validateEntryExists(inParams.d, &tblName, &ifName) {
+                if _, ok := subIntfmap[tblName]; !ok {
+                    subIntfmap[tblName] = make(map[string]db.Value)
+                }
+                var value db.Value
+                subIntfmap[tblName][ifName] = value
+            }
+            return subIntfmap, err
+        }
+        errStr := "IPv4 ygot structure missing"
         log.Info("YangToDb_unnumbered_intf_xfmr : " + errStr)
         return subIntfmap, errors.New(errStr)
     }
-
-    intTbl := IntfTypeTblMap[intfType]
-    tblName, _ := getIntfTableNameByDBId(intTbl, inParams.curDb)
-
-    subIntfObj := intfObj.Subinterfaces.Subinterface[0]
 
     log.Info("subIntfObj:=", subIntfObj)
     if subIntfObj.Ipv4 != nil && subIntfObj.Ipv4.Unnumbered != nil && subIntfObj.Ipv4.Unnumbered.InterfaceRef != nil {
@@ -2526,35 +2628,26 @@ var YangToDb_unnumbered_intf_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams
             subIntfmap[tblName] = make(map[string]db.Value)
         }
 
-		ifdb := make(map[string]string)
-		var value db.Value
-
+        ifdb := make(map[string]string)
         if inParams.oper == DELETE {
-            log.Info("DELETE Unnum Intf:=", tblName, ifName)
-
-            intfIPKeys, _ := inParams.d.GetKeys(&db.TableSpec{Name:tblName})
-            if len(intfIPKeys) > 0 {
-                for i := range intfIPKeys {
-                    if len(intfIPKeys[i].Comp) > 1 {
-                        ifdb[UNNUMBERED] = "NULL"
-                        break;
-                    }
-                }
+            err = intf_unnumbered_del(&tblName, subIntfObj, &inParams, ifdb, &ifName)
+            if err != nil {
+                return subIntfmap, err
             }
-        } else {
-            unnumberedObj := subIntfObj.Ipv4.Unnumbered.InterfaceRef
-            if unnumberedObj.Config != nil {
-                log.Info("Unnum Intf:=", *unnumberedObj.Config.Interface)
-				ifdb[UNNUMBERED] = *unnumberedObj.Config.Interface 
-            }
+            value := db.Value{Field: ifdb}
+            subIntfmap[tblName][ifName] = value
+            return subIntfmap, err
         }
-
-		value = db.Value{Field: ifdb}
-		subIntfmap[tblName][ifName] = value
+        unnumberedObj := subIntfObj.Ipv4.Unnumbered.InterfaceRef
+        if unnumberedObj.Config != nil {
+            log.Info("Unnum Intf:=", *unnumberedObj.Config.Interface)
+            ifdb[UNNUMBERED] = *unnumberedObj.Config.Interface
+        }
+        value := db.Value{Field: ifdb}
+        subIntfmap[tblName][ifName] = value
     }
 
     log.Info("YangToDb_unnumbered_intf_xfmr : subIntfmap : ", subIntfmap)
-
     return subIntfmap, err
 }
 
@@ -2645,6 +2738,9 @@ var YangToDb_intf_sag_ip_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (m
     intfObj := intfsObj.Interface[ifName]
 
     if intfObj.Subinterfaces == nil || len(intfObj.Subinterfaces.Subinterface) < 1 {
+	    if inParams.oper == DELETE {
+	        return nil, nil
+	    }
         errStr := "SubInterface node is not set"
         log.Info("YangToDb_intf_sag_ip_xfmr: " + errStr)
         return subIntfmap, errors.New(errStr)
@@ -2694,13 +2790,11 @@ var YangToDb_intf_sag_ip_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (m
 					}
 				}
         	} else {
-				/* Update VLAN_INTERFACE entry */
 				if !vlanEntry.IsPopulated() {
 					vlanIntfMap[ifName].Field["NULL"] = "NULL"
 					subIntfmap[tblName] = vlanIntfMap
 				}
 
-				/* Update SAG Table entry */
 				if sagIPv4Entry.IsPopulated() {
 					gwIPListStr, _ = sagIPv4Entry.Field["gwip@"]
 					gwIPListStr = gwIPListStr + "," + sagIpv4Obj.Config.StaticAnycastGateway[0]
@@ -2737,13 +2831,11 @@ var YangToDb_intf_sag_ip_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (m
 					}
 				}
         	} else {
-				/* Update VLAN_INTERFACE entry */
 				if !vlanEntry.IsPopulated() {
 					vlanIntfMap[ifName].Field["NULL"] = "NULL"
 					subIntfmap[tblName] = vlanIntfMap
 				}
 
-				/* Update SAG Table entry */
 				if sagIPv6Entry.IsPopulated() {
 					gwIPListStr, _ = sagIPv6Entry.Field["gwip@"]
 					gwIPListStr = gwIPListStr + "," + sagIpv6Obj.Config.StaticAnycastGateway[0]
@@ -2762,7 +2854,7 @@ var YangToDb_intf_sag_ip_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (m
     log.Info("YangToDb_intf_sag_ip_xfmr : subIntfmap : ", subIntfmap)
 
     return subIntfmap, err
-}
+} 
 
 var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (error) {
     var err error

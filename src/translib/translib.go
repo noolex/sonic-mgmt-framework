@@ -411,14 +411,14 @@ func Delete(req SetRequest) (SetResponse, error) {
 
 	log.Info("requestUriPath : ", requestUriPath)
 
-    switch requestUriPath {
+/*    switch requestUriPath {
         case "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet": 
         {
 			log.Info("delete on this container not allowed")
 			resp.ErrSrc = AppErr
             return resp, tlerr.New("DELETE operation not supported on this container")
         }
-    }
+    } */
 
 	app, appInfo, err := getAppModule(path)
 
