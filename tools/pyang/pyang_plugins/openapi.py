@@ -21,6 +21,7 @@ import optparse
 import sys
 
 from pyang import plugin
+from pyang import util
 from pyang import statements
 import pdb
 import yaml
@@ -1170,7 +1171,7 @@ def getType(node):
         else:
             # this is a prefixed name, check the imported modules
             err = []
-            pmodule = statements.prefix_to_module(t.i_module,prefix,t.pos,err)
+            pmodule = util.prefix_to_module(t.i_module,prefix,t.pos,err)
             if pmodule is None:
                 return
             typedef = statements.search_typedef(pmodule, name)
