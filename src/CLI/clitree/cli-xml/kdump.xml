@@ -26,7 +26,6 @@
     <PTYPE
         name="KDUMP_MEMORY"
         pattern="^(((([0-9]+[MG])?(-([0-9]+[MG])?):)?[0-9]+[MG],?)+)$"
-        help="Memory reserved for kdump"
         />
 
     <PTYPE
@@ -76,7 +75,7 @@
         <COMMAND
             name="kdump memory"
             help="Set the amount of memory reserved for kdump">
-            <PARAM name="kdump_memory" help="The amount of memory reserved for kdump" ptype="KDUMP_MEMORY"/>
+            <PARAM name="kdump_memory" help="The amount of memory reserved for kdump. e.g: kdump memory 512M" ptype="KDUMP_MEMORY"/>
             <ACTION
                 builtin="clish_pyobj">sonic_cli_kdump config memory ${kdump_memory}
             </ACTION>
