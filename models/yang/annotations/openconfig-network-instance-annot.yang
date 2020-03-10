@@ -1712,7 +1712,7 @@ module openconfig-network-instance-annot {
 /* BGP NBR AFI SAFI */
     deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:neighbors/oc-netinst:neighbor/oc-netinst:afi-safis/oc-netinst:afi-safi {
       deviate add {
-        sonic-ext:table-name "BGP_NEIGHBOR_AF";
+        sonic-ext:table-transformer "bgp_af_nbr_tbl_xfmr";
         sonic-ext:key-transformer "bgp_af_nbr_tbl_key_xfmr";
       }
     }
