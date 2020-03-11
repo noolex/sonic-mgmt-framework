@@ -9,11 +9,13 @@ import swsssdk
 import cli_client as cc
 import socket
 import ipaddress
+import netifaces
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 from swsssdk import ConfigDBConnector
 from operator import itemgetter
 from collections import OrderedDict
+from socket import AF_INET,AF_INET6
 
 ALLOW_SYSNAME=False
 """
@@ -204,6 +206,7 @@ SecurityModels = { 'any' : 'any', 'v1': 'v1', 'v2c': 'v2c', 'v3': 'usm' }
 SecurityLevels = { 'noauth' : 'no-auth-no-priv', 'auth' : 'auth-no-priv', 'priv' : 'auth-priv' }
 ViewOpts       = { 'read' : 'readView', 'write' : 'writeView', 'notify' : 'notifyView'}
 SORTED_ORDER   = ['sysName', 'sysLocation','sysContact', 'engineID', 'traps']
+ipFamily       = {4: AF_INET, 6: AF_INET6}
 
 config_db = ConfigDBConnector()
 if config_db is None:
@@ -219,14 +222,16 @@ def manageGroupMasterKey(group):
   deleteGroup = True
 
   response = invoke('snmp_group_member_get', None)
-  for entry in response.content['group-member']:
-    if entry['name'] == group:
-      deleteGroup = False
+  if response.ok():
+    for entry in response.content['group-member']:
+      if entry['name'] == group:
+        deleteGroup = False
 
   response = invoke('snmp_group_access_get', None)
-  for entry in response.content['group-access']:
-    if entry['name'] == group:
-      deleteGroup = False
+  if response.ok():
+    for entry in response.content['group-access']:
+      if entry['name'] == group:
+        deleteGroup = False
 
   if deleteGroup == True:
     path = '/restconf/data/ietf-snmp:snmp/vacm/group={name}'
@@ -354,7 +359,7 @@ def set_system(row, data):
   return None
 
 def getIPType(x):
-  try: socket.inet_pton(socket.AF_INET6, x)
+  try: socket.inet_pton(AF_INET6, x)
   except socket.error:
     return False
   return True
@@ -460,6 +465,67 @@ def invoke(func, args):
     if 'interface' in args:
       index = args.index('interface')
       interface = args[index+1]
+
+    if func == 'snmp_agentaddr':    # Need to test parameters before setting
+      ipAddrValid = False
+      ifValid = True
+      if not interface == '':
+        ifValid = False
+      ip = ipaddress.ip_address(unicode(ipAddress))
+      for intf in netifaces.interfaces():
+        if intf == interface:
+          ifValid = True
+        ipaddresses = netifaces.ifaddresses(intf)
+        if ipFamily[ip.version] in ipaddresses:
+          for ipaddr in ipaddresses[ipFamily[ip.version]]:
+            testAddr = ipaddr['addr']
+            if '%' in testAddr:                 # some IPv6 addresses include an interface at the end
+              testAddr = testAddr[0:testAddr.index('%')]
+            if ipAddress == testAddr:
+              ipAddrValid = True
+              break;
+
+      portValid = True
+      if ipAddrValid == True and not port == '161':
+        reusePort = False
+        agentAddresses = getAgentAddresses()
+        for agentaddr in agentAddresses:
+          if agentaddr['udpPort'] == port:
+            reusePort = True
+        if reusePort == False:
+          if getIPType(ipAddress):
+            sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+          else:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+          try:
+            sock.bind(('', int(port)))
+            sock.close()
+          except:
+            portValid = False
+
+      if ipAddrValid == True and portValid == True:
+        # make sure ip:port combo not already in use
+        agentAddresses = getAgentAddresses()
+        for agentaddr in agentAddresses:
+          if agentaddr['ipAddr'] == ipAddress and agentaddr['udpPort'] == port:
+            ipAddrValid = False
+            portValid == False
+
+      if ipAddrValid == False or portValid == False or ifValid == False:
+        response=aa.cli_not_implemented("None")        # Just to get the proper format to return data and status
+        response.content = {}                          # This method is used extensively throughout
+        response.status_code = 409
+        if ipAddrValid == False and portValid == False:
+          message = "IP Address/port combination {}:{} is in use".format(ipAddress, port)
+        if ipAddrValid == False:
+          message = "{} in not a valid interface IP Address".format(ipAddress)
+        elif portValid == False:
+          message = "UDP port {} in not available".format(port)
+        elif ifValid == False:
+          message = "{} in not a valid interface".format(interface)
+        response.set_error_message(message)
+        return response
+
     key = (ipAddress, port, interface)
     entry = None                    # default is to delete the entry
     if func == 'snmp_agentaddr':
@@ -639,10 +705,17 @@ def invoke(func, args):
                     g['notify-view'] = entry['notify-view']
                     groups.append(g)
 
-    response=aa.cli_not_implemented("group")              # just to get the proper format
-    response.content = {}
-    response.status_code = 204
-    response.content['group-access'] = sorted(groups, key=itemgetter('name', 'model', 'security'))
+      response=aa.cli_not_implemented("group")              # just to get the proper format
+      response.content = {}
+      response.status_code = 204
+      response.content['group-access'] = sorted(groups, key=itemgetter('name', 'model', 'security'))
+    else:
+      response=aa.cli_not_implemented("None")        # Just to get the proper format to return data and status
+      response.content = {}                          # This method is used extensively throughout
+      response.status_code = 404
+      message = "Resource not found"
+      response.set_error_message(message)
+      return response
 
     return response
 
@@ -957,7 +1030,12 @@ def invoke(func, args):
                 hosts6_u.append(h)
 
     if len(hosts4_c) == 0 and len(hosts6_c) == 0 and len(hosts4_u) == 0 and len(hosts6_u) == 0:
-      return None
+      response=aa.cli_not_implemented("None")        # Just to get the proper format to return data and status
+      response.content = {}                          # This method is used extensively throughout
+      response.status_code = 404
+      message = "Resource not found"
+      response.set_error_message(message)
+      return response
     else:
       response.content = { "community" : sorted(hosts4_c, key=lambda i: ipaddress.ip_address(i['ipaddr'])) + sorted(hosts6_c, key=lambda i: ipaddress.ip_address(i['ipaddr'])),
                            "user"      : sorted(hosts4_u, key=lambda i: ipaddress.ip_address(i['ipaddr'])) + sorted(hosts6_u, key=lambda i: ipaddress.ip_address(i['ipaddr'])) }
@@ -1050,6 +1128,7 @@ def run(func, args):
       return
     elif api_response.ok():
       if func == 'snmp_get':
+        print api_response.content['system']
         show_cli_output(args[0], api_response.content['system'])
         temp = api_response.content['global']
         if len(temp)>0:
@@ -1065,10 +1144,12 @@ def run(func, args):
       elif func == 'snmp_host_get':
         show_cli_output(args[0], api_response.content['community'])
         show_cli_output('show_snmp_host_user.j2', api_response.content['user'])
-    #else:
-    #  # For some reason, the show commands return a status_code of 500
-    #   print(api_response.status_code)
-    #   print(api_response.error_message())
+    else:
+      if api_response.status_code == 404:               # Resource not found
+        return
+      else:
+        print(api_response.error_message())
+        sys.exit(-1)
 
   except:
     # system/network error
