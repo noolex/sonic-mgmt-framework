@@ -206,7 +206,7 @@ def process_oc_nbrs(response):
            continue
 
         ipAddr = state.get('ip')
-        if ipAddr is None:
+        if ipAddr is None or ipAddr == "0.0.0.0":
             continue
 
         macAddr = state.get('link-layer-address')
@@ -214,6 +214,9 @@ def process_oc_nbrs(response):
             continue
 
         egressPort = get_egress_port(rcvdIntfName, macAddr)
+
+        if rcvdIntfName == "eth0":
+            rcvdIntfName = "Management0"
 
         nbrEntry = {'ipAddr':ipAddr,
                             'macAddr':macAddr,
@@ -252,7 +255,7 @@ def process_sonic_nbrs(response):
             continue
 
         ipAddr = nbr.get('ip')
-        if ipAddr is None:
+        if ipAddr is None or ipAddr == "0.0.0.0":
             continue
 
         macAddr = nbr.get('neigh')
@@ -262,6 +265,9 @@ def process_sonic_nbrs(response):
         vrfName = vrfDict.get(ifName)
 
         egressPort = get_egress_port(ifName, macAddr)
+
+        if ifName == "eth0":
+            ifName = "Management0"
 
         nbrEntry = {'ipAddr':ipAddr,
                            'macAddr':macAddr,

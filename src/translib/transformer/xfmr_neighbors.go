@@ -315,40 +315,6 @@ var DbToYang_neigh_tbl_get_all_ipv6_xfmr SubTreeXfmrDbToYang = func (inParams Xf
     return err
 }
 
-func getDefaultVrfInterfaces(d *db.DB)(map[string]string) {
-    var defaultVrfIntfs map[string]string
-    defaultVrfIntfs = make(map[string]string)
-
-    tblList := []string{"INTERFACE", "VLAN_INTERFACE", "PORTCHANNEL_INTERFACE"}
-
-    for _, tbl := range tblList {
-        tblObj, err := d.GetTable(&db.TableSpec{Name:tbl})
-        if err != nil {
-           continue
-        }
-
-         keys, err := tblObj.GetKeys()
-        for _, key := range keys {
-            entry, err := d.GetEntry(&db.TableSpec{Name: tbl}, key)
-            if(err != nil) {
-                continue
-            }
-
-            log.Info("Key: ", key.Get(0))
-            if _, ok := entry.Field["vrf_name"]; !ok {
-                defaultVrfIntfs[key.Get(0)] = "default"
-            }
-        }
-    }
-
-    entry, _ := d.GetEntry(&db.TableSpec{Name: "MGMT_VRF_CONFIG"}, db.Key{Comp: []string{"vrf_global"}})
-    if _, ok := entry.Field["mgmtVrfEnabled"]; !ok {
-        defaultVrfIntfs["eth0"] = "default"
-    }
-
-    return defaultVrfIntfs
-}
-
 func getNonDefaultVrfInterfaces(d *db.DB)(map[string]string) {
     var nonDefaultVrfIntfs map[string]string
     nonDefaultVrfIntfs = make(map[string]string)
