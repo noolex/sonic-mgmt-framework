@@ -162,8 +162,8 @@ limitations under the License.
 
     <COMMAND name = "clear bfd peer" help = "BFD peer status" >
             <PARAM name = "address" help = "" ptype = "SUBCOMMAND" mode="switch" >
-                <PARAM name = "IPv4" help = "IPv4 Peer address" ptype = "IP_ADDR" > </PARAM>
-                <PARAM name = "IPv6" help = "IPv6 Peer address" ptype = "IPV6_ADDR"> </PARAM>
+                <PARAM name = "peer_ipv4" help = "IPv4 Peer address" ptype = "IP_ADDR" > </PARAM>
+                <PARAM name = "peer_ipv6" help = "IPv6 Peer address" ptype = "IPV6_ADDR"> </PARAM>
             </PARAM>
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "vrfname" help = "Configure vrf name" ptype = "STRING" default="default"> </PARAM>
@@ -171,15 +171,21 @@ limitations under the License.
             <PARAM name = "multihop" help = "Configure multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
             <PARAM name = "local-address" help = "Configure local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "localaddress" help = "" ptype = "SUBCOMMAND" mode="switch" >
-                    <PARAM name = "IPv4" help = "IPv4 local address" ptype = "IP_ADDR" default="null"> </PARAM>
-                    <PARAM name = "IPv6" help = "IPv6 local address" ptype = "IPV6_ADDR" default="null"> </PARAM>
+                    <PARAM name = "local_ipv4" help = "IPv4 local address" ptype = "IP_ADDR"> </PARAM>
+                    <PARAM name = "local_ipv4" help = "IPv6 local address" ptype = "IPV6_ADDR"> </PARAM>
                 </PARAM>
             </PARAM>
             <PARAM name = "interface" help = "Interface information" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null"> </PARAM>
+                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING"> </PARAM>
             </PARAM>
             <PARAM name = "counters" help = "clear BFD peer counters information" ptype="SUBCOMMAND" mode="subcommand" > </PARAM>
-        <ACTION builtin="clish_nop"/> 
+        <ACTION>
+            if test "${address}" != "peer_ipv4"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-bfd-clear.py clear_bfd remote-address=${peer_ipv4} vrf=${vrf-name} multihop=${multihop} local-address=${local_ipv4} interface=${interfacename} ${__full_line}&#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-bfd-clear.py clear_bfd remote-address=${peer_ipv6} vrf=${vrf-name} multihop=${multihop} local-address=${local_ipv6} interface=${interfacename} ${__full_line}&#xA;
+            fi&#xA;
+        </ACTION> 
         <DOCGEN>
             <DESCRIPTION>
                 Clears counters of the specific Bidirectional Forwarding detection(BFD) peer with the filters. BFD packet counters will be reset to 0.
