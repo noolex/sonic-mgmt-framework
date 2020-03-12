@@ -82,8 +82,8 @@ limitations under the License.
                 </PARAM>
               </PARAM>
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-qos.py patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile ${intf_name}:${qid} ${wred_prof_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile ${intf_name}:${qid} ${wred_prof_name}
             </ACTION>
         </COMMAND>
 
@@ -96,16 +96,16 @@ limitations under the License.
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-qos.py patch_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${intf_name} ${sp_name} 
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${intf_name} ${sp_name}
             </ACTION>
         </COMMAND>
 
 
         <COMMAND name="no" help="Negate a command"/>
         <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-qos.py delete_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${intf_name}
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/output/scheduler-policy/config/name
             </ACTION>
         </COMMAND>
 
@@ -122,8 +122,8 @@ limitations under the License.
                 ptype="SUBCOMMAND">
               </PARAM>
            </PARAM>
-           <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-qos.py delete_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile ${intf_name}:${qid}
+           <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/queues/queue=${intf_name}:${qid}/wred/config/openconfig-qos-ext:wred-profile
             </ACTION>
         </COMMAND>
 
@@ -166,9 +166,9 @@ limitations under the License.
         </PARAM>
         <ACTION>
             if test "${queue}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-qos.py get_openconfig_qos_qos_queues_queue Ethernet${intf_name}:${queue-id} &#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_queues_queue Ethernet${intf_name}:${queue-id} &#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-qos.py get_openconfig_qos_qos_interface_scheduler_policy_config Ethernet${intf_name} &#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config Ethernet${intf_name} &#xA;
             fi&#xA;   
         </ACTION>
       <xi:include href="include/pipe.xml"/>
