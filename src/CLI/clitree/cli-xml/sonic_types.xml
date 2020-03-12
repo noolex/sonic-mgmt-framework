@@ -1043,7 +1043,7 @@ limitations under the License.
     <PTYPE
         name="SAMPLE_RATE"
         method="integer"
-        pattern="1..65536"
+        pattern="1..65535"
         help="Sampling rate"
         />
     <!--=======================================================-->
