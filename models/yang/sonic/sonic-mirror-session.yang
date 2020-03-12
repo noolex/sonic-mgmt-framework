@@ -119,6 +119,7 @@ module sonic-mirror-session {
                         }
                         type enumeration {
                             enum erspan;
+                            enum CPU;
                         }
                     }
                     must "count(../../MIRROR_SESSION_LIST[src_port=current()]) = 0" {
@@ -127,7 +128,8 @@ module sonic-mirror-session {
                     }
                     description
                         "Destination port configuration for port mirroring(SPAN).
-                        For ERSPAN session this is set as erspan";
+                        For ERSPAN session set as erspan,
+                        For mirroring to CPU, set as CPU ";
                 }
 
                 leaf src_port {
