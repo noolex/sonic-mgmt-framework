@@ -39,16 +39,17 @@ limitations under the License.
            ptype="STRING_32"
            >
         </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy ${name}
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy ${name}
         </ACTION>
     </COMMAND>
 
     <!-- no scheduler policy -->
     <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
       <PARAM name="name" help="Name of the scheduler policy" ptype="STRING_32"> </PARAM>
-        <ACTION> 
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy ${name}
+        <ACTION builtin="clish_restcl">
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy=${name}
         </ACTION>
     </COMMAND>
   </VIEW>
@@ -79,16 +80,17 @@ limitations under the License.
             help="Queue id: 0, 1, .. etc"
             ptype="UINT">
         </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}
         </ACTION>
       </COMMAND>
 
       <!-- no scheduler id-->
       <COMMAND name="no scheduler" help="Unconfigure a queue scheduler ">
         <PARAM name="sequence" help="Queue id" ptype="UINT"> </PARAM>
-        <ACTION> 
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}
+        <ACTION builtin="clish_restcl">
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy=${scheduler_policy_name}/schedulers/scheduler=${sequence}
         </ACTION>
       </COMMAND>
   </VIEW>
@@ -109,15 +111,16 @@ limitations under the License.
             name="priority"
             help="scheduler is set to strict priority"
         >
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_priority ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}  
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_priority ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}  
         </ACTION>
         </COMMAND>
 
         <COMMAND name="no" help="Negate a commands"/>
         <COMMAND name="no priority" help="scheduler is set to WRR">
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_priority ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}  
+        <ACTION builtin="clish_restcl">
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy= ${top_scheduler_policy_name}/schedulers/scheduler=${scheduler_policy_per_queue_name}/config/priority
         </ACTION>
         </COMMAND>
 
@@ -131,8 +134,8 @@ limitations under the License.
             ptype="UINT"
             >
         </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_weight ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${weight}
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_weight ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${weight}
         </ACTION>
         </COMMAND>
 
@@ -147,8 +150,8 @@ limitations under the License.
             ptype="UINT"
             >
         </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
         </ACTION>
         </COMMAND>
 
@@ -163,8 +166,8 @@ limitations under the License.
             ptype="UINT"
             >
         </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_bc ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${bc}
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_bc ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${bc}
         </ACTION>
         </COMMAND>
 
@@ -179,8 +182,8 @@ limitations under the License.
             ptype="UINT"
             >
         </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
         </ACTION>
         </COMMAND>
 
@@ -195,8 +198,8 @@ limitations under the License.
             ptype="UINT"
             >
         </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_be ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${be}
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_be ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${be}
         </ACTION>
         </COMMAND>
   </VIEW>
@@ -211,8 +214,8 @@ limitations under the License.
             ptype="STRING"
             >
         </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py get_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers ${name}
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_scheduler get_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers ${name}
         </ACTION>
     </COMMAND>
   </VIEW>
