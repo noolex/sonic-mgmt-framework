@@ -344,8 +344,10 @@ def mclag_show_mclag_interface(args):
                 if len(response) != 0:
                     mclag_remote_if = response['sonic-mclag:MCLAG_REMOTE_INTF_TABLE_LIST']
             
-        count, mclag_iface_info = mclag_get_mclag_intf_dict(mclag_local_if, mclag_remote_if)
-        show_cli_output(args[0], mclag_iface_info)
+            count, mclag_iface_info = mclag_get_mclag_intf_dict(mclag_local_if, mclag_remote_if)
+            show_cli_output(args[0], mclag_iface_info)
+        else:
+            print("No MCLAG Interface " + args[1] + " in MCLAG domain " + args[2] + " or domain not found")
    
     else:
         #error response
