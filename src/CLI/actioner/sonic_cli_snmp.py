@@ -483,7 +483,7 @@ def invoke(func, args):
               testAddr = testAddr[0:testAddr.index('%')]
             if ipAddress == testAddr:
               ipAddrValid = True
-              break;
+              break
 
       portValid = True
       if ipAddrValid == True and not port == '161':
@@ -518,11 +518,11 @@ def invoke(func, args):
         if ipAddrValid == False and portValid == False:
           message = "IP Address/port combination {}:{} is in use".format(ipAddress, port)
         if ipAddrValid == False:
-          message = "{} in not a valid interface IP Address".format(ipAddress)
+          message = "{} is not a valid interface IP Address".format(ipAddress)
         elif portValid == False:
-          message = "UDP port {} in not available".format(port)
+          message = "UDP port {} is not available".format(port)
         elif ifValid == False:
-          message = "{} in not a valid interface".format(interface)
+          message = "{} is not a valid interface".format(interface)
         response.set_error_message(message)
         return response
 
@@ -986,6 +986,7 @@ def invoke(func, args):
             h['target'] = data['target-params']
             udp = data['udp']
             h['ipaddr'] = udp['ip']
+            h['port'] = udp['port']
             h['ip6'] = getIPType(h['ipaddr'])
             for key, value in data.items():
               if key == 'target-params':
@@ -1043,50 +1044,95 @@ def invoke(func, args):
 
   # Add a host.
   elif func == 'snmp_host_add':
-    key = findKeyForTargetEntry(args[0])
+    host = args[0]
+    key = findKeyForTargetEntry(host)
     if key == 'None':
-      key = findNextKeyForTargetEntry(args[0])
+      key = findNextKeyForTargetEntry(host)
 
     type = 'trapNotify'
     if 'user' == args[1]:
       secModel = SecurityModels['v3']
     else:
-      secModel = SecurityModels['v2c']                      # v1 is not supported, v2c should be default
+      secModel = SecurityModels['v2c']                   # v1 is not supported, v2c should be default
+    secName = args[2]
+    additionalArgs = args[3:]
 
-    response = invoke('snmp_host_delete', [args[0]])        # delete user config if it already exists
+    response = invoke('snmp_host_delete', [host])        # delete user config if it already exists
     secLevel = SecurityLevels['noauth']
-    params = { 'timeout': '15', 'retries': '3' }
-    if len(args) > 3:
-      type = (args[3].rstrip('s'))+'Notify'      # one of 'trapNotify' or 'informNotify'
-      index = 4
-      if secModel == SecurityModels['v3']:
-        secLevel = SecurityLevels[args[4]]
-        index = 5
-      if len(args) > index:
-        if type == 'trapNotify':
-          secModel = args[index]
-        else:
-          params[args[index]] = args[index+1]
-          if len(args) > (index+2):
-            params[args[index+2]] = args[index+3]
+    timeout = '15'
+    retries = '3'
+    udpPort = '162'
+    srcIf = None
+    ifValid = False
 
+    # parameter parsing
+    # optional arguments 'interface', 'port', and for informs, 'timeout' & 'retries'
+    # 'traps' and 'informs' are mutually exclusive but one or the other is required.
+    if 'interface' in additionalArgs:
+      # record interface and remove from optional params
+      index = additionalArgs.index('interface')
+      srcIf = additionalArgs.pop(index + 1)
+      additionalArgs.pop(index)
+    if 'port' in additionalArgs:
+      # record port and remove from optional params
+      index = additionalArgs.index('port')
+      udpPort = additionalArgs.pop(index + 1)
+      additionalArgs.pop(index)
+    if 'timeout' in additionalArgs:
+      # record timeout and remove from optional params
+        index = additionalArgs.index('timeout')
+        timeout = additionalArgs.pop(index + 1)
+        additionalArgs.pop(index)
+    if 'retries' in additionalArgs:
+      # record retires and remove from optional params
+        index = additionalArgs.index('retries')
+        retries = additionalArgs.pop(index + 1)
+        additionalArgs.pop(index)
+    #end of additional/optional paramters
+
+    type = additionalArgs.pop(0)
+    type = type.rstrip('s')+'Notify'      # one of 'trapNotify' or 'informNotify'
+    if secModel == SecurityModels['v3']:
+      secLevel = SecurityLevels[additionalArgs.pop(0)]
+    if len(additionalArgs) > 0:
+      if type == 'trapNotify':
+        secModel = additionalArgs.pop(0)
+
+    # parameter checking
     # informs can never be 'v1'
     if type == 'informNotify' and secModel == SecurityModels['v1']:
       secModel = SecurityModels['v2c']
+    if not srcIf == None:
+      for intf in netifaces.interfaces():
+        if intf == srcIf:
+          ipaddresses = netifaces.ifaddresses(intf)
+          ifValid = True
+          break
+
+    tag = [ type ]
+    if ifValid == True:
+      tag.append(srcIf)
+    elif not srcIf == None:
+      response=aa.cli_not_implemented("None")        # Just to get the proper format to return data and status
+      response.content = {}
+      response.status_code = 409
+      message = "{} is not a valid interface".format(srcIf)
+      response.set_error_message(message)
+      return response
 
     targetEntry=collections.defaultdict(dict)
     targetEntry["target"]=[{ "name": key,
-                             "timeout": 100*int(params['timeout']),
-                             "retries": int(params['retries']),
+                             "timeout": 100*int(timeout),
+                             "retries": int(retries),
                              "target-params": key,
-                             "tag": [ type ],
-                             "udp" : { "ip": args[0], "port": 162}
+                             "tag": tag,
+                             "udp" : { "ip": host, "port": int(udpPort)}
                              }]
     if secModel == 'usm':
-      security = { "user-name": args[2],
+      security = { "user-name": secName,
                    "security-level": secLevel}
     else:
-      security = { "security-name": args[2]}
+      security = { "security-name": secName}
 
     targetParams=collections.defaultdict(dict)
     targetParams["target-params"]=[{ "name": key,
