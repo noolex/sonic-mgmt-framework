@@ -13,16 +13,17 @@
 ---
 > 	/* We don't want to remove duplicates from the history,
 > 	   hence returning false immediately*/
-203a198,199
+203a198,200
 > 	char *masked_line = NULL;
 > 	mask_password(line, &masked_line);
-205c201
+> 	if (!masked_line) return;
+205c202
 < 		add_n_replace(this, line);
 ---
 > 		add_n_replace(this, (const char*)masked_line);
-207c203
+207c204
 < 		add_n_grow(this, line);
 ---
 > 		add_n_grow(this, (const char*)masked_line);
-208a205
+208a206
 > 	if(masked_line) free(masked_line);
