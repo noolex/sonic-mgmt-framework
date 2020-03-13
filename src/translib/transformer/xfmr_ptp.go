@@ -311,28 +311,35 @@ var YangToDb_ptp_clock_identity_xfmr FieldXfmrYangToDb = func(inParams XfmrParam
 	log.Info("YangToDb_ptp_clock_identity_xfmr : ", *inParams.ygRoot, " Xpath: ", inParams.uri)
 	log.Info("YangToDb_ptp_clock_identity_xfmr inParams.key: ", inParams.key)
 
+	pathInfo := NewPathInfo(inParams.uri)
+	log.Info("YangToDb_ptp_clock_identity_xfmr instance-number: ", pathInfo.Var("instance-number"))
+	instance_id, _  := strconv.ParseUint(pathInfo.Var("instance-number"), 10, 64)
+
 	ptpObj := getPtpRoot(inParams.ygRoot)
 
 	if strings.Contains(inParams.uri, "grandmaster-identity") {
-		identity = ptpObj.InstanceList[0].ParentDs.GrandmasterIdentity
+		identity = ptpObj.InstanceList[uint32(instance_id)].ParentDs.GrandmasterIdentity
 		field = "grandmaster-identity"
 	} else if strings.Contains(inParams.uri, "parent-port-identity") {
-		identity = ptpObj.InstanceList[0].ParentDs.ParentPortIdentity.ClockIdentity
+		identity = ptpObj.InstanceList[uint32(instance_id)].ParentDs.ParentPortIdentity.ClockIdentity
 		field = "clock-identity"
 	// } else if strings.Contains(inParams.uri, "transparent-clock-default-ds") {
 		// identity = ptpObj.TransparentClockDefaultDs.ClockIdentity
 		// field = "clock-identity"
 	} else if strings.Contains(inParams.uri, "default-ds") {
-		identity = ptpObj.InstanceList[0].DefaultDs.ClockIdentity
+		identity = ptpObj.InstanceList[uint32(instance_id)].DefaultDs.ClockIdentity
 		field = "clock-identity"
 	}
 
 
-	enc := fmt.Sprintf("%02x%02x%02x.%02x%02x.%02x%02x%02x",
-		identity[0], identity[1], identity[2], identity[3], identity[4], identity[5], identity[6], identity[7])
+	if (len(identity) >= 8) {
+		enc := fmt.Sprintf("%02x%02x%02x.%02x%02x.%02x%02x%02x",
+			identity[0], identity[1], identity[2], identity[3], identity[4], identity[5], identity[6], identity[7])
 
-	log.Info("YangToDb_ptp_clock_identity_xfmr enc: ", enc, " field: ", field)
-	res_map[field] = enc
+		log.Info("YangToDb_ptp_clock_identity_xfmr enc: ", enc, " field: ", field)
+		res_map[field] = enc
+	}
+
 	return res_map, err
 }
 
