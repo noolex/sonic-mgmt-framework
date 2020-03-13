@@ -37,13 +37,18 @@
                 ptype="STRING_32"
                 >
         </PARAM>
-        <ACTION>python $SONIC_CLI_ROOT/sonic_cli_wred.py patch_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list ${name}</ACTION>
+        <ACTION builtin="clish_pyobj"> 
+            sonic_cli_wred patch_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list ${name} 
+        </ACTION>
     </COMMAND>
 
     <!-- no ecn -->
     <COMMAND name="no wred" help="Unconfigure a WRED profile">
       <PARAM name="name" help="Name of the WRED profile" ptype="STRING_32"> </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list ${name} </ACTION>
+        <ACTION builtin="clish_restcl">
+            oper=DELETE
+            url=/restconf/data/sonic-wred-profile:sonic-wred-profile/WRED_PROFILE/WRED_PROFILE_LIST=${name}
+        </ACTION>
     </COMMAND>
 
   </VIEW>
@@ -177,12 +182,14 @@
                 name="ecn"
                 help="Configure ecn mode"
                 ptype="ECN_OPTION" />
-            <ACTION>python $SONIC_CLI_ROOT/sonic_cli_wred.py patch_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list_ecn ${prof_id} ${ecn}</ACTION>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_wred patch_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list_ecn ${prof_id} ${ecn}</ACTION>
         </COMMAND>
         <COMMAND
             name="no random-detect ecn"
             help="Unconfigure ecn for the profile" >
-            <ACTION>python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list_ecn ${prof_id}</ACTION>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_wred delete_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list_ecn ${prof_id}</ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>
