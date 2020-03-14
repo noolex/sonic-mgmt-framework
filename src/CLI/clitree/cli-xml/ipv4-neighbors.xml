@@ -315,15 +315,8 @@ limitations under the License.
                 ptype="UINT">
             </PARAM>
         </PARAM>
-        <PARAM
-            name="force"
-            help="Delete static or PERMENANT entries"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            optional="true">
-        </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 force:${force} intf:${if-type}${if-id}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 intf:${if-type}${if-id}&#xA;
         </ACTION>
     </COMMAND>
 
@@ -345,13 +338,6 @@ limitations under the License.
                 </PARAM>
         </PARAM>
         <PARAM
-            name="force"
-            help="Delete static or PERMENANT entries"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            optional="true">
-        </PARAM>
-        <PARAM
             name="vrf"
             help="ARP subcommands"
             ptype="SUBCOMMAND"
@@ -364,19 +350,18 @@ limitations under the License.
             </PARAM>
         </PARAM>
        <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 force:${force} ip:${ip-addr} vrf:${vrf-name}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 ip:${ip-addr} vrf:${vrf-name}&#xA;
        </ACTION>
        <DOCGEN>
             <DESCRIPTION>
                 To delete dynamically learned IPv4 entries from the ARP table, use the clear ip
                 arp command. To specify the entries to be deleted, enter an interface, port
-                channel, or VLAN, an IPv4 address, or a combination to match. Enter force to
-                delete statically configured ARP entries. Use the show ip arp command to verify
-                that the IPv4 entries have been deleted.
+                channel, or VLAN, an IPv4 address, or a combination to match.
+                Use the show ip arp command to verify that the ARP entries have been deleted.
             </DESCRIPTION>
 
             <USAGE>
-                sonic# clear ip arp [interface {Ethernet &lt; port-number &gt;| PortChannel &lt; number &gt;| Vlan &lt; vlan-id &gt;| Management &lt; port-number &gt;}] [&lt; ipv4-address &gt;] [force]
+                sonic# clear ip arp [interface {Ethernet &lt; port-number &gt;| PortChannel &lt; number &gt;| Vlan &lt; vlan-id &gt;| Management &lt; port-number &gt;}] [&lt; ipv4-address &gt;]
             </USAGE>
 
             <EXAMPLE summary="clear ip arp information">
@@ -390,15 +375,6 @@ limitations under the License.
                 10.11.48.254    00:01:e8:8b:44:71   eth0              -
                 10.14.8.102     00:01:e8:8b:44:71   eth0              -
                 sonic# clear ip arp
-                sonic# Permanent entry found, use 'force' to delete permanent entries
-                sonic# show ip arp
-                ---------------------------------------------------------------------
-                Address         Hardware address    Interface        Egress Interface
-                ---------------------------------------------------------------------
-                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
-                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
-                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
-                sonic# clear ip arp force
                 sonic# show ip arp
                 sonic#
              </EXAMPLE>
@@ -413,7 +389,7 @@ limitations under the License.
                 192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
                 10.11.48.254    00:01:e8:8b:44:71   eth0              -
                 10.14.8.102     00:01:e8:8b:44:71   eth0              -
-                sonic# clear ip arp interface Vlan 100 force
+                sonic# clear ip arp interface Vlan 100
                 sonic# show ip arp
                 ---------------------------------------------------------------------
                 Address         Hardware address    Interface        Egress Interface
@@ -435,17 +411,6 @@ limitations under the License.
                 10.11.48.254    00:01:e8:8b:44:71   eth0              -
                 10.14.8.102     00:01:e8:8b:44:71   eth0              -
                 sonic# clear ip arp 192.168.1.4
-                sonic# Permanent entry found, use 'force' to delete permanent entries
-                sonic# show ip arp
-                ---------------------------------------------------------------------
-                Address         Hardware address    Interface        Egress Interface
-                ---------------------------------------------------------------------
-                192.168.1.4     00:01:02:03:44:55   Ethernet8         -
-                192.168.2.4     00:01:02:03:ab:cd   PortChannel200    -
-                192.168.3.6     00:01:02:03:04:05   Vlan100           Ethernet4
-                10.11.48.254    00:01:e8:8b:44:71   eth0              -
-                10.14.8.102     00:01:e8:8b:44:71   eth0              -
-                sonic# clear ip arp 192.168.1.4 force
                 sonic# show ip arp
                 ---------------------------------------------------------------------
                 Address         Hardware address    Interface        Egress Interface

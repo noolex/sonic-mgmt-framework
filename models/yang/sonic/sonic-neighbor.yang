@@ -43,11 +43,6 @@ module sonic-neighbor {
 
     rpc clear-neighbors {
         input {
-            leaf force {
-                type boolean;
-                description "Set it to 'true' to delete PERMANENT/Static entries as well";
-            }
-
             leaf family {
                 default "IPv4";
                 type enumeration {

@@ -312,15 +312,8 @@ limitations under the License.
                 ptype="UINT">
             </PARAM>
         </PARAM>
-        <PARAM
-            name="force"
-            help="Delete static or PERMENANT entries"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            optional="true">
-        </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 force:${force} intf:${if-type}${if-id}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 intf:${if-type}${if-id}&#xA;
         </ACTION>
     </COMMAND>
 
@@ -342,13 +335,6 @@ limitations under the License.
                 </PARAM>
         </PARAM>
         <PARAM
-            name="force"
-            help="Delete static or PERMENANT entries"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            optional="true">
-        </PARAM>
-        <PARAM
             name="vrf"
             help="NDP subcommands"
             ptype="SUBCOMMAND"
@@ -361,17 +347,17 @@ limitations under the License.
             </PARAM>
         </PARAM>
        <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 force:${force} ip:${ip-addr} vrf:${vrf-name}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 ip:${ip-addr} vrf:${vrf-name}&#xA;
        </ACTION>
        <DOCGEN>
             <DESCRIPTION>
                 To delete dynamically learned IPv6 entries from the NDP table, use the 'clear ipv6 neighbor' command.
                 To specify the entries to be deleted, enter an interface, port channel, or VLAN, an IPv6 address, or a combination to match.
-                Enter 'force' to delete statically configured NDP entries. Use the 'show ipv6 neighbors' to verify that the IPv6 entries have been deleted.
+                Use the 'show ipv6 neighbors' to verify that the IPv6 entries have been deleted.
             </DESCRIPTION>
 
             <USAGE>
-                sonic# clear ipv6 neighbors [interface {Ethernet &lt; port-number &gt;| PortChannel &lt; number &gt;| Vlan &lt; vlan-id &gt;| Management &lt; port-number &gt;}] [&lt; ipv6-address &gt;] [force]
+                sonic# clear ipv6 neighbors [interface {Ethernet &lt; port-number &gt;| PortChannel &lt; number &gt;| Vlan &lt; vlan-id &gt;| Management &lt; port-number &gt;}] [&lt; ipv6-address &gt;]
             </USAGE>
 
             <EXAMPLE summary="clear ipv6 neighbors information">
@@ -384,14 +370,7 @@ limitations under the License.
                 20::3                       00:01:02:03:04:05   Vlan100           Ethernet4
                 fe80::e6f0:4ff:fe79:34c7    00:01:e8:8b:44:71   eth0              -
                 sonic# clear ipv6 neighbors
-                sonic# Permanent entry found, use 'force' to delete permanent entries
                 sonic# show ipv6 neighbors
-                ---------------------------------------------------------------------------------
-                Address                     Hardware address    Interface        Egress Interface
-                ---------------------------------------------------------------------------------
-                20::1                       00:01:02:03:44:55   Ethernet8         -
-                20::2                       00:01:02:03:ab:cd   PortChannel200    -
-                20::3                       00:01:02:03:04:05   Vlan100           Ethernet4
              </EXAMPLE>
 
             <EXAMPLE summary="clear ipv6 neighbors interface information">
@@ -403,7 +382,7 @@ limitations under the License.
                 20::2                       00:01:02:03:ab:cd   PortChannel200    -
                 20::3                       00:01:02:03:04:05   Vlan100           Ethernet4
                 fe80::e6f0:4ff:fe79:34c7    00:01:e8:8b:44:71   eth0              -
-                sonic# clear ipv6 neighbors interface Vlan 100 force
+                sonic# clear ipv6 neighbors interface Vlan 100
                 sonic# show ipv6 neighbors
                 ---------------------------------------------------------------------------------
                 Address                     Hardware address    Interface        Egress Interface

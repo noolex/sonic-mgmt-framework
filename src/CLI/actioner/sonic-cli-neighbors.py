@@ -53,12 +53,6 @@ def get_keypath(func,args):
     if rcvdVrf == None:
         rcvdVrf = ""
 
-    rcvdForceStatus = inputDict.get('force')
-    if rcvdForceStatus == None:
-        rcvdForceStatus = "false"
-    else:
-        rcvdForceStatus = "true"
-
     if func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors':
         keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=rcvdIntfName, index="0")
     elif func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors':
@@ -71,7 +65,7 @@ def get_keypath(func,args):
         keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_TABLE')
     elif func == 'rpc_sonic_clear_neighbors':
         keypath = cc.Path('/restconf/operations/sonic-neighbor:clear-neighbors')
-        body = {"sonic-neighbor:input":{"family": rcvdFamily, "force": rcvdForceStatus, "ip": rcvdIpAddr, "ifname": rcvdIntfName, "vrf": rcvdVrf}}
+        body = {"sonic-neighbor:input":{"family": rcvdFamily, "ip": rcvdIpAddr, "ifname": rcvdIntfName, "vrf": rcvdVrf}}
 
     return keypath, body
 
