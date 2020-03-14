@@ -294,7 +294,7 @@ Before each command articulation, a comment is shown with the desired command sy
       </EXAMPLE>
       <EXAMPLE summary="Add an SNMP agent address specifying a non-default UDP port number and a VRF interface.">
         sonic# configure terminal
-        sonic(config)# snmp-server agentaddress 1.2.3.5 port 1024 interface Ethernet10
+        sonic(config)# snmp-server agentaddress 1.2.3.5 port 1024 interface Vrf1
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
@@ -483,7 +483,7 @@ Before each command articulation, a comment is shown with the desired command sy
     <PARAM name="host-addr" help="Host address, IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR">
       <PARAM name="selector" help="" ptype="SUBCOMMAND" mode="switch">
 <!--=========================================================================
- v1&v2  snmp-server host "host-addr" community "community name" {[ traps { v2c | v1 }] | informs [timeout seconds] [retries retries]}
+ v1&v2  snmp-server host "host-addr" community "community name" {[ traps { v2c | v1 }] | informs [timeout seconds] [retries retries] [port udpPort] [interface ifaceName]}
     note: SNMPv1 support is disabled in SONiC including traps
 ========================================================================= -->
         <PARAM name="community" help="Community for v2c" ptype="SUBCOMMAND"  mode="subcommand">
@@ -508,17 +508,17 @@ Before each command articulation, a comment is shown with the desired command sy
                 </PARAM>
               </PARAM>
             </PARAM>
-<!--============= This is for adding support for interface (vrf) ===============================
-                                    Will need to fix up snmp_host_add & snmp_host_get
-            <PARAM name = "interface" help = "Specify an interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-                <PARAM name = "ifname" help = "Interface Name" ptype = "STRING_32" > </PARAM>
+            <PARAM name = "interface" help = "Specify the source interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                <PARAM name = "ifname" help = "Source Interface Name" ptype = "STRING" > </PARAM>
             </PARAM>
-========================================================================= -->
+            <PARAM name = "port" help = "Specify the UDP destination port" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                <PARAM name = "udpPort" help = "UDP destination port" ptype = "LISTEN_PORT" > </PARAM>
+            </PARAM>
           </PARAM>
         </PARAM>
 
 <!--=========================================================================
-v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | priv}] | [informs {auth | noauth | priv} [timeout seconds] [retries retries]]}
+v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | priv}] | [informs {auth | noauth | priv} [timeout seconds] [retries retries]] [port udpPort] [interface ifaceName]}
 ========================================================================= -->
         <PARAM name="user" help="User for v3" ptype="SUBCOMMAND"  mode="subcommand">
           <PARAM name="username" help="Unique SNMP User Name" ptype="SNMP_IDENTIFIER">
@@ -537,6 +537,12 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
               </PARAM>
             </PARAM>
           </PARAM>
+          <PARAM name = "interface" help = "Specify the source interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+            <PARAM name = "ifname" help = "Source Interface Name" ptype = "STRING" > </PARAM>
+          </PARAM>
+          <PARAM name = "port" help = "Specify the UDP destination port" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name = "udpPort" help = "UDP destination port" ptype = "LISTEN_PORT" > </PARAM>
+          </PARAM>
         </PARAM>
       </PARAM>
     </PARAM>
@@ -547,6 +553,9 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
         sent to by the SNMP agent. Optionally set the timeout and number of retries for the inform 
         messages sent to a host. Timeout indicates the number of seconds before the informs time out 
         when sending to a host. Retries indicate the number of times the informs are sent after timing out.
+        The default UDP destination port traps and inform messages are sent to is 162. This may be 
+        modified using the port parameter. The outging interface may also be specifed using the interface
+        parameter. A valid system interface must be specified.
       </DESCRIPTION>
       <USAGE>
         Use this command to configure an SNMP host.
@@ -566,6 +575,10 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
       <EXAMPLE summary="Add an SNMP IPv6 host user to receive SNMPv3 traps with authentication and privacy.">
         sonic# configure terminal
         sonic(config)# snmp-server host 3001::1 user u1 traps priv
+      </EXAMPLE>
+      <EXAMPLE summary="Add an SNMP IPv4 host community to receive SNMPv2c traps on UDP port 1492 sent out a VRF interface.">
+        sonic# configure terminal
+        sonic(config)# snmp-server host 2.3.4.5 community public traps v2c port 1492 interface Vrf1
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
@@ -668,7 +681,7 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
       </EXAMPLE>
       <EXAMPLE summary="Delete an SNMP agent address including the non-default UDP port and VRF interface it uses.">
         sonic# configure terminal
-        sonic(config)# no snmp-server agentaddress 1.2.3.5 port 1024 interface Ethernet10
+        sonic(config)# no snmp-server agentaddress 1.2.3.5 port 1024 interface Vrf1
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
