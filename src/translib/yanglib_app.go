@@ -21,13 +21,10 @@ package translib
 
 import (
 	"bufio"
-	"crypto/md5"
-	"fmt"
 	"net"
 	"os"
 	"path/filepath"
 	"reflect"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -353,7 +350,6 @@ func (yb *yanglibBuilder) loadYangs() error {
 // ygot IETFYangLibrary_ModulesState object.
 func (yb *yanglibBuilder) translate() error {
 	var modsWithDeviation []*yang.Module
-	var allNames []string
 
 	// First iteration -- create ygot module entry for each yang.Module
 	for _, mod := range yb.yangModules.Modules {
@@ -386,18 +382,10 @@ func (yb *yanglibBuilder) translate() error {
 		} else {
 			m.ConformanceType = ocbinds.IETFYangLibrary_ModulesState_Module_ConformanceType_import
 		}
-
-		// Collect full names of modules and submodules for module-set-id generation
-		allNames = append(allNames, fullName(*m.Name, *m.Revision))
-		for _, sm := range m.Submodule {
-			allNames = append(allNames, fullName(*sm.Name, *sm.Revision))
-		}
 	}
 
-	// Finally, generte module-set-id as a uuid prepared from all module and
-	// submodule names. Sort them to make uuid deterministic.
-	sort.Strings(allNames)
-	msetID := wordsToUuid(allNames...)
+	// Use yang bundle version as module-set-id
+	msetID := GetYangBundleVersion().String()
 	yb.ygotModules.ModuleSetId = &msetID
 
 	return nil
@@ -576,22 +564,4 @@ func readConfigLines(filepath string) ([]string, error) {
 	}
 
 	return lines, nil
-}
-
-// wordsToUuid genertes uuid from given words. Uses RFC4412
-// name based uuid generation method.
-func wordsToUuid(words ...string) string {
-	if len(words) == 0 {
-		return "00000000-0000-0000-0000-000000000000"
-	}
-
-	h := md5.New()
-	for _, w := range words {
-		h.Write([]byte(w))
-	}
-
-	u := h.Sum(nil)
-	u[8] = 0x80 | (u[8] & 0x3F) // octet8 10XX XXXX = RFC4412 variant
-	u[6] = 0x30 | (u[6] & 0x0F) // octet6 0011 XXXX = MD5 based uuid
-	return fmt.Sprintf("%x-%x-%x-%x-%x", u[0:4], u[4:6], u[6:8], u[8:10], u[10:16])
 }
