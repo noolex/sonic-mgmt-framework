@@ -87,6 +87,7 @@ module sonic-acl {
                         enum L2;
                         enum L3;
                         enum L3V6;
+                        enum TAM;
                     }
                 }
 
@@ -148,6 +149,7 @@ module sonic-acl {
                         enum REDIRECT;
                         enum INT_INSERT;
                         enum INT_DELETE;
+                        enum MONITOR_DROPS;
                     }
                 }
 
@@ -155,6 +157,13 @@ module sonic-acl {
                     when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'MIRROR'";
                     type leafref {
                         path "/sms:sonic-mirror-session/sms:MIRROR_SESSION/sms:MIRROR_SESSION_LIST/sms:name";
+                    }
+                }
+
+                leaf TAM_INT_TYPE {
+                    when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'TAM'";
+                    type enumeration {
+                        enum IFA;
                     }
                 }
 
@@ -173,7 +182,7 @@ module sonic-acl {
                 }
 
                 leaf IP_PROTOCOL {
-                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6')";
+                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'TAM') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6')";
                     type uint8;
                 }
 
