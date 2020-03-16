@@ -56,7 +56,7 @@ limitations under the License.
              ptype="SUBCOMMAND">
       <PARAM name="name" 
              help="Name of the collector" 
-             ptype="STRING_32" 
+             ptype="STRING_63" 
              optional="true"> 
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_tam get_sonic_tam_sonic_tam_tam_collector_table show_tam_collector.j2 ${name}</ACTION>
@@ -123,7 +123,7 @@ limitations under the License.
              mode="subcommand">
       <PARAM name="name" 
              help="Collector name" 
-             ptype="STRING"> 
+             ptype="STRING_63"> 
       </PARAM>
       <PARAM name="type" 
              help="Collector ip address type" 
@@ -200,7 +200,7 @@ limitations under the License.
              mode="subcommand">
       <PARAM name="name" 
              help="Collector name" 
-             ptype="STRING"> 
+             ptype="STRING_63"> 
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_tam delete_sonic_tam_sonic_tam_tam_collector_table_tam_collector_table_list ${name}</ACTION>
   	<DOCGEN>

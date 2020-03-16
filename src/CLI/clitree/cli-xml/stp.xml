@@ -129,6 +129,36 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp_vlan_interfaces_interface show_stp.j2 ${vlan-id} ${name}&#xA;
         fi&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Shows spanning-tree information
+        </DESCRIPTION>
+        <USAGE>
+            This command is useful in viewing the spanning-tree information
+        </USAGE>
+        <EXAMPLE summary="Shows spanning-tree">
+            Spanning-tree Mode: PVST
+             
+            VLAN 100 - STP instance 0
+            ------------------------------------------------------------------------------------------------------------ 
+            STP Bridge Parameters:
+             
+            Bridge            Bridge    Bridge    Bridge    Hold  LastTopology  Topology  
+            Identifier        MaxAge    Hello     FwdDly    Time  Change        Change    
+            hex               sec       sec       sec       sec   sec           cnt       
+            80643c2c99a704a0  20        2         15        1     515           4         
+             
+            RootBridge        RootPath  DesignatedBridge  Root        Max  Hel  Fwd  
+            Identifier        Cost      Identifier        Port        Age  lo   Dly  
+            hex                         hex                           sec  sec  sec  
+            00646cb9c51613ca  1600      10643c2c992d8235  PortChannel120   2    15   
+             
+            STP Port Parameters:
+            Port            Prio Path      Port Uplink BPDU   State      Designated Designated       Designated       
+            Num             rity Cost      Fast Fast   Filter            Cost       Root             bridge           
+            PortChannel1    128  800       N    N      N      FORWARDING 800        00646cb9c51613ca 10643c2c992d8235 
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -157,6 +187,30 @@ limitations under the License.
        fi&#xA;
       builtin="clish_nop"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Shows spanning-tree counters information
+        </DESCRIPTION>
+        <USAGE>
+            This command is useful in viewing the spanning-tree counters information
+        </USAGE>
+        <EXAMPLE summary="Shows spanning-tree counters">
+            sonic(config)# do show spanning-tree counters
+             
+            VLAN 100 - STP instance 0
+            ----------------------------------------------------------------------
+            PortNum         BPDU Tx   BPDU Rx   TCN Tx    TCN Rx    
+                                                                    
+            ----------------------------------------------------------------------
+            Ethernet0       0         0         0         0         
+            Ethernet48      53        7         1         0         
+            Ethernet62      0         0         0         0         
+            Ethernet64      0         0         0         0         
+            PortChannel1    0         76        1         0         
+            PortChannel2    0         0         0         0         
+            PortChannel3    0         0         0         0         
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -184,6 +238,24 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp_inconsistentports_vlan show_stp_root_guard.j2 ${vlan-id}&#xA;
         fi&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Shows spanning-tree root inconsistent information
+        </DESCRIPTION>
+        <USAGE>
+            This command is useful in viewing the spanning-tree root inconsistent ports information
+        </USAGE>
+        <EXAMPLE summary="Shows spanning-tree inconsistentports">
+            sonic# show spanning-tree inconsistentports 
+             
+            Root guard timeout: 30  secs
+             
+            ----------------------------------------------------------------------
+            PortNum          VLAN  Inconsistency State                          
+            ----------------------------------------------------------------------
+            Ethernet48       100   Root Inconsistent (29 seconds left on timer)
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -193,6 +265,21 @@ limitations under the License.
     <ACTION>
      python $SONIC_CLI_ROOT/sonic-cli-stp.py get_openconfig_spanning_tree_stp_interfaces show_stp_bpdu_guard.j2
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Shows spanning-tree BPDU guard information
+        </DESCRIPTION>
+        <USAGE>
+            This command is useful in viewing the spanning-tree BPDU guard information for the ports
+        </USAGE>
+        <EXAMPLE summary="Shows spanning-tree bpdu-guard">
+            sonic#show spanning-tree bpdu-guard 
+            PortNum         Shutdown    Port shut          
+                            Configured  due to BPDU guard  
+            Ethernet64       Y           N                  
+            PortChannel2     Y           N                  
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
 </VIEW>
@@ -207,11 +294,11 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree edge-port"
-        help="Configure spanning tree erdge port"
+        help="Configure spanning tree edge port"
         >
         <PARAM
             name="bpdufilter"
-            help="BPDUF filter"
+            help="BPDU Filter"
             ptype="SUBCOMMAND"
             mode="subcommand"
             >
@@ -225,6 +312,17 @@ limitations under the License.
         </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_global_config_bpdu_filter True&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure spanning-tree global level BPDU filter
+        </DESCRIPTION>
+        <USAGE>
+            This command allows configuring global level BPDU filter
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree edge-port bpdufilter default
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -262,6 +360,17 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-stp.py post_openconfig_spanning_tree_stp_global_config_enabled_protocol ${__params}&#xA;
         fi&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the global spanning-tree mode for the device
+        </DESCRIPTION>
+        <USAGE>
+            This command allows configuring the spanning-tree mode for the device. There are 2 modes supported - pvst and rapid-pvst.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#spanning-tree mode pvst
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -348,6 +457,21 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_config_enable ${vlan-range} True&#xA;
         fi&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure spanning-tree parameters on per VLAN basis
+        </DESCRIPTION>
+        <USAGE>
+            These commands are similar to the global level commands but allow configuring the spanning-tree parameters on per VLAN basis.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#spanning-tree vlan 100  
+            sonic(config)#spanning-tree vlan 100 forward-time 11
+            sonic(config)#spanning-tree vlan 100 hello-time 3
+            sonic(config)#spanning-tree vlan 100 max-age 22 
+            sonic(config)#spanning-tree vlan 100 priority 4096 
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -364,6 +488,17 @@ limitations under the License.
         </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_forwarding_delay ${seconds}&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the spanning-tree forward delay time.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows configuring the forward delay time in seconds (default = 15), range 4-30.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree forward-time 20
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -392,6 +527,17 @@ limitations under the License.
         </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout ${value}&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the spanning-tree root guard timeout.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows configuring a root guard timeout value. Once superior BPDUs stop coming on the port, device will wait for a period until root guard timeout before moving the port to forwarding state(default = 30 secs), range 5-600.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree guard root timeout 10
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -408,6 +554,17 @@ limitations under the License.
         </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_hello_time ${seconds}&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the spanning-tree hello time value.
+        </DESCRIPTION>
+        <USAGE>
+            This command allow configuring the hello interval in secs for transmission of bpdus (default = 2), range 1-10.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree hello-time 3
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -424,6 +581,17 @@ limitations under the License.
         </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_max_age ${seconds}&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the spanning-tree max-age time value.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows configuring the maximum time to listen for root bridge in seconds (default = 20), range 6-40.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree max-age 22
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -440,6 +608,17 @@ limitations under the License.
         </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_bridge_priority ${value}&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the global level spanning-tree bridge priority value.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows configuring the bridge priority in increments of 4096, range 0-61440
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree priority 4096
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <!-- no spanning tree -->
@@ -452,7 +631,7 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree edge-port"
-        help="Unconfigure spanning tree erdge port"
+        help="Unconfigure spanning tree edge port"
         >
         <PARAM
             name="bpdufilter"
@@ -479,6 +658,17 @@ limitations under the License.
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_global_config_enabled_protocol
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Disable global spanning-tree mode for the device
+        </DESCRIPTION>
+        <USAGE>
+            This command allows disabling the spanning-tree mode for the device.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree mode
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -542,6 +732,21 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_config_enable ${vlan-range} False&#xA;
         fi&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure spanning-tree parameters on per VLAN basis
+        </DESCRIPTION>
+        <USAGE>
+            These commands are similar to the global level commands but allow disabling the spanning-tree parameters on per VLAN basis.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree vlan 100  
+            sonic(config)#no spanning-tree vlan 100 forward-time
+            sonic(config)#no spanning-tree vlan 100 hello-time
+            sonic(config)#no spanning-tree vlan 100 max-age 
+            sonic(config)#no spanning-tree vlan 100 priority
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -552,6 +757,17 @@ limitations under the License.
         >
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_forwarding_delay&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the spanning-tree forward delay time configuration
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the forward delay time to default value
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# no spanning-tree forward-time
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -574,6 +790,17 @@ limitations under the License.
         </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the spanning-tree root guard timeout.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the root guard timeout value. 
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# no spanning-tree guard root timeout
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -584,6 +811,17 @@ limitations under the License.
         >
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_hello_time&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the spanning-tree hello time configuration.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the hello interval configuration.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree hello-time
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -594,6 +832,17 @@ limitations under the License.
         >
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_max_age&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the spanning-tree max-age time value.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the max age configuration.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree max-age
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -604,6 +853,17 @@ limitations under the License.
         >
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_bridge_priority&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the global level spanning-tree bridge priority value.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the bridge priority to default value
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree priority
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
 </VIEW>
@@ -768,6 +1028,25 @@ limitations under the License.
         fi&#xA;
         builtin="clish_nop"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            These commands allow configuring interface specific spanning-tree parameters
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# spanning-tree bpduguard port-shutdown
+            sonic(conf-if-Ethernet0)# spanning-tree cost 1000
+            sonic(conf-if-Ethernet0)# spanning-tree enable
+            sonic(conf-if-Ethernet0)# spanning-tree portfast
+            sonic(conf-if-Ethernet0)# spanning-tree port-priority 16
+            sonic(conf-if-Ethernet0)# spanning-tree uplinkfast 
+            sonic(conf-if-Ethernet0)# spanning-tree link-type point-to-point
+            sonic(conf-if-Ethernet0)# spanning-tree port type edge
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -802,6 +1081,19 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${iface} False&#xA;
         fi&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface specific bpdu-filter parameters.
+        </DESCRIPTION>
+        <USAGE>
+            These commands allow configuring interface specific bpdu-filter parameters
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# spanning-tree bpdufilter enable
+            sonic(conf-if-Ethernet0)# spanning-tree bpdufilter disable
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -818,6 +1110,18 @@ limitations under the License.
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface} "ROOT"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface specific guard root parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands allows enabling guard root on an interface
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# spanning-tree guard root 
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -873,6 +1177,19 @@ limitations under the License.
         fi&#xA;
         builtin="clish_nop"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface and vlan specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands allows configuring interface and vlan specific spanning-tree parameters. 
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# spanning-tree vlan 100 cost 1000
+            sonic(conf-if-Ethernet0)# spanning-tree vlan 100 port-priority 16
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -998,6 +1315,26 @@ limitations under the License.
         fi&#xA;
         builtin="clish_nop"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Unconfigure interface specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            These commands allow removing interface specific spanning-tree parameters
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# no spanning-tree bpdufilter
+            sonic(conf-if-Ethernet0)# no spanning-tree bpduguard port-shutdown
+            sonic(conf-if-Ethernet0)# no spanning-tree cost
+            sonic(conf-if-Ethernet0)# no spanning-tree enable
+            sonic(conf-if-Ethernet0)# no spanning-tree portfast
+            sonic(conf-if-Ethernet0)# no spanning-tree port-priority
+            sonic(conf-if-Ethernet0)# no spanning-tree uplinkfast 
+            sonic(conf-if-Ethernet0)# no spanning-tree link-type
+            sonic(conf-if-Ethernet0)# no spanning-tree port type
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1014,6 +1351,18 @@ limitations under the License.
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface} "NONE"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Unconfigure guard root on an interface.
+        </DESCRIPTION>
+        <USAGE>
+            This commands allows disabling guard root on an interface
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# no spanning-tree guard root 
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1057,6 +1406,19 @@ limitations under the License.
         fi&#xA;
         builtin="clish_nop"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Unconfigure interface and vlan specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands allows unconfiguring interface and vlan specific spanning-tree parameters. 
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# no spanning-tree vlan 100 cost
+            sonic(conf-if-Ethernet0)# no spanning-tree vlan 100 port-priority
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
 </VIEW>
@@ -1082,13 +1444,25 @@ limitations under the License.
         optional="true"> 
       </PARAM>
       <ACTION>
-        if test "${port-shutdown}" != "";then&#xA;
+          if test "${port-shutdown}" != "";then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_bpdu_guard_port_shutdown ${po_name} True&#xA;
-        else&#xA;
+          else&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_guard ${po_name} True&#xA;
-        fi&#xA;
-        builtin="clish_nop"
+          fi&#xA;
+          builtin="clish_nop"
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure interface specific bpdu-guard parameters.
+          </DESCRIPTION>
+          <USAGE>
+              This commands allows enabling bpdu-guard on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# spanning-tree bpduguard port-shutdown
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND 
@@ -1104,6 +1478,18 @@ limitations under the License.
       <ACTION> 
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name} ${value}&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree cost on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command allows to configure the port level cost value, range 1 - 200000000
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# spanning-tree cost 1000
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND 
@@ -1114,6 +1500,18 @@ limitations under the License.
       <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${po_name} True&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command allows enabling of spanning-tree on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# spanning-tree enable
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND 
@@ -1154,6 +1552,18 @@ limitations under the License.
  python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name} "SHARED"&#xA;
  fi&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree link-type on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command allows setting the link-type of spanning-tree on an interface, link-type can be set to either point-point or shared.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# spanning-tree link-type point-to-point 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND 
@@ -1164,6 +1574,18 @@ limitations under the License.
       <ACTION>
  python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${po_name} True&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree portfast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command allows enabling portfast on an interface, portfast allows edge ports to move to forwarding state quickly when the connected device is not participating in spanning-tree.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# spanning-tree portfast 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND 
@@ -1179,6 +1601,18 @@ limitations under the License.
       <ACTION>
  python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name} ${value}&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree port priority on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command allows setting port priority value on an interface, range 0 - 240 (default 128)
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# spanning-tree port-priority 16 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND 
@@ -1203,6 +1637,18 @@ limitations under the License.
  python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_edge_port ${po_name} True&#xA;
  fi&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree port type on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command allows setting edge-port type to an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# spanning-tree port type edge 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND 
@@ -1213,6 +1659,23 @@ limitations under the License.
       <ACTION>
  python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${po_name} True&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree uplink fast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              Uplink fast feature enhances STP performance for switches with redundant uplinks. Using the default value for the standard STP forward delay, 
+              convergence following a transition from an active link to a redundant link can take 30 seconds (15 seconds for listening and an 
+              additional 15 seconds for learning).
+
+              When uplink fast is configured on the redundant uplinks, it reduces the convergence time to just one second by moving to forwarding 
+              state (bypassing listening and learning modes) in just once second when the active link goes down.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# spanning-tree uplinkfast 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1247,6 +1710,19 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name} False&#xA;
         fi&#xA;
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface specific bpdu-filter parameters.
+        </DESCRIPTION>
+        <USAGE>
+            These commands allow configuring interface specific bpdu-filter parameters
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface PortChannel 1
+            sonic(conf-if-po1)# spanning-tree bpdufilter enable
+            sonic(conf-if-po1)# spanning-tree bpdufilter disable
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1263,6 +1739,18 @@ limitations under the License.
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "ROOT"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface specific guard root parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands allows enabling guard root on an interface
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface PortChannel 1
+            sonic(conf-if-po1)# spanning-tree guard root 
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1318,6 +1806,19 @@ limitations under the License.
         fi&#xA;
         builtin="clish_nop"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface and vlan specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands allows configuring interface and vlan specific spanning-tree parameters. 
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface PortChannel 1
+            sonic(conf-if-po1)# spanning-tree vlan 100 cost 1000
+            sonic(conf-if-po1)# spanning-tree vlan 100 port-priority 16
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1331,8 +1832,20 @@ limitations under the License.
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name}&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name}&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure bpdufilter on a specific interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command removes the interface specific BPDU filter configuration and applies the global BPDU filter configuration.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree bpdufilter  
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1354,6 +1867,18 @@ limitations under the License.
           python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_guard ${po_name} False&#xA;
         fi&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure bpduguard on a specific interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command removes the interface specific BPDU guard configuration.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree bpduguard 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1364,6 +1889,18 @@ limitations under the License.
       <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name}&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree cost on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command resets the port level cost value
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree cost
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1374,6 +1911,18 @@ limitations under the License.
       <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${po_name} False&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables spanning-tree on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree enable
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1384,6 +1933,18 @@ limitations under the License.
       <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name}&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree link-type on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command resets the link-type configuration on an interface.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree link-type  
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1394,6 +1955,18 @@ limitations under the License.
       <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${po_name} False&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree portfast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables portfast on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree portfast 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1404,6 +1977,18 @@ limitations under the License.
       <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name}&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree port priority on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command resets the port priority value on an interface to default value
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree port-priority
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1414,6 +1999,18 @@ limitations under the License.
       <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${po_name} False&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree uplink fast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables uplink fast feature on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree uplinkfast 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1433,6 +2030,18 @@ limitations under the License.
           python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_edge_port ${po_name} False&#xA;
         fi&#xA;
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unonfigure spanning-tree port type on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables edge-port type configuration an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree port type 
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1449,6 +2058,18 @@ limitations under the License.
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "NONE"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Unonfigure interface specific guard root parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows disabling guard root on an interface
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface PortChannel 1
+            sonic(conf-if-po1)# no spanning-tree guard root 
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1492,6 +2113,19 @@ limitations under the License.
         fi&#xA;
         builtin="clish_nop"
     </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Unconfigure interface and vlan specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands removes interface and vlan specific spanning-tree parameters and sets to default value 
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface PortChannel 1
+            sonic(conf-if-po1)# no spanning-tree vlan 100 cost 
+            sonic(conf-if-po1)# no spanning-tree vlan 100 port-priority 
+        </EXAMPLE>
+    </DOCGEN>
     </COMMAND>
 
 </VIEW>

@@ -49,8 +49,8 @@ limitations under the License.
 <!--=======================================================-->
 <PTYPE
      name="RADIUS_KEY"
-     pattern="(^(([0-9A-Za-z]){1,32})$)"
-     help="(Valid Chars: [0-9A-Za-z], Max Len: 32) shared secret"
+     pattern="(^(([^ #,]){1,65})$)"
+     help="(Valid Chars: ASCII printable except SPACE, #, and COMMA, Max Len: 65) shared secret"
 />
 <!--=======================================================-->
 <PTYPE

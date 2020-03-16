@@ -200,6 +200,29 @@ limitations under the License.
             builtin="clish_nop"&#xA;
         fi
     </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command creates BGP extended community list entries
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to create BGP extended community list entries. The command provides
+        options to create expanded or standard extended community list entries.
+        For standard extended community, user can create rt or soo type of
+        communities and command will accept communities in AA:NN or IP:NN
+        formats. For expanded extended community, the command will accept a
+        regular expression of communities, which is very flexible and powerful
+        for matching communities in routes. This command also provides option
+        for matching all or any extended communities.
+      </USAGE>
+      <EXAMPLE summary="The following command creates netries in a extended community list named
+        ExtComm_AllowInt">
+        sonic# configure terminal
+        sonic(config)# bgp extcommunity-list standard ExtComm_AllowInt rt 19.32.56.167:65011 all
+        sonic(config)# bgp extcommunity-list standard ExtComm_AllowInt rt 31.67.182.214:3001 all
+        sonic(config)# bgp extcommunity-list standard ExtComm_AllowInt soo 4001:65010 all
+        sonic(config)# bgp extcommunity-list standard ExtComm_AllowInt soo 98.13.175.21:65101 all
+      </EXAMPLE>
+     </DOCGEN>
     </COMMAND>
 
     <COMMAND

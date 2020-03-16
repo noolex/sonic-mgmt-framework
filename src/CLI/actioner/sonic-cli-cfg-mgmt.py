@@ -29,11 +29,15 @@ from scripts.render_cli import show_cli_output
 def prompt(msg):
     prompt_msg = msg + " [y/N]:";
 
-    x = raw_input(prompt_msg)
-    while x != "y" and  x != "N":
-        print ("Invalid input, expected [y/N]")
+    try:
         x = raw_input(prompt_msg)
-    if x == "N":
+        while x.lower() != "y" and x.lower() != "n":
+            print ("Invalid input, expected [y/N]")
+            x = raw_input(prompt_msg)
+        if x.lower() == "n":
+            exit(1)
+    except:
+        print("")
         exit(1)
 
 def prompt_confirm(func, args):

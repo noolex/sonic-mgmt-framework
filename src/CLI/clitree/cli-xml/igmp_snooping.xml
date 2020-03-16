@@ -60,6 +60,81 @@
 					</PARAM>					 
 			</PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_igmp_snooping get_igmp_snooping_interfaces_interface_state show_igmp_snooping.j2 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IGMP snooping configuration across all the VLANs or specified VLAN Or
+                    Show IGMP snooping groups learnt across all VLANs or specified VLAN
+                </DESCRIPTION>
+                <USAGE>
+                    sonic# show ip igmp snooping
+                    sonic# show ip igmp snooping groups
+                </USAGE>
+                <EXAMPLE summary="show IGMP Snooping information ">
+                    sonic# show ip igmp snooping
+                    Vlan ID: 100
+                    Querier: Disabled
+                    IGMP Operation mode: IGMPv1
+                    Is Fast-Leave Enabled: Disabled
+                    Query interval: 125
+                    Last Member Query Interval: 1000
+                    Max Response time: 10
+
+                    Vlan ID: 200
+                    Querier: Enabled
+                    IGMP Operation mode: IGMPv2
+                    Is Fast-Leave Enabled: Disabled
+                    Query interval: 125
+                    Last Member Query Interval: 1000
+                    Max Response time: 10
+
+                    Vlan ID: 300
+                    Querier: Enabled
+                    IGMP Operation mode: IGMPv3
+                    Is Fast-Leave Enabled: Disabled
+                    Query interval: 20
+                    Last Member Query Interval: 1000
+                    Max Response time: 10
+
+                    
+                    sonic# show ip igmp snooping vlan 200
+                    Vlan ID: 200
+                    Querier: Enabled
+                    IGMP Operation mode: IGMPv2
+                    Is Fast-Leave Enabled: Disabled
+                    Query interval: 125
+                    Last Member Query Interval: 1000
+                    Max Response time: 10
+
+                </EXAMPLE>
+                
+                <EXAMPLE summary="show IGMP Snooping group information ">
+                    sonic# show ip igmp snooping groups 
+                    Vlan ID: 100
+                    -----------
+                    1 (*, 225.1.1.1)
+                      Outgoing Ports: Ethernet4,PortChannel3
+                    2 (*, 225.1.1.2)
+                      Outgoing Ports: Ethernet8
+                    Total number of entries: 2
+
+                    Vlan ID : 300
+                    -------------
+                    1 (100.10.2.3, 226.0.0.1 )
+                      Outgoing Ports: Ethernet8,Portchannel2
+                    Total number of entries: 1
+
+
+                    sonic# show ip igmp snooping groups vlan 100
+                    Vlan ID: 100
+                    -----------
+                    1 (*, 225.1.1.1)
+                      Outgoing Ports: Ethernet4, PortChannel3
+                    2 (*, 225.1.1.2)
+                      Outgoing Ports: Ethernet8
+                    Total number of entries: 2
+
+                </EXAMPLE>
+            </DOCGEN>
     </COMMAND>
 </VIEW>
 
@@ -198,6 +273,83 @@
 							</PARAM>					
 				</PARAM>		    
                 <ACTION builtin="clish_pyobj">sonic_cli_igmp_snooping patch_igmp_snooping_interfaces_interface_config ${vlan_name} ${__params}</ACTION>
+                <DOCGEN>
+                    <DESCRIPTION>
+                        Commands to configure or unconfigure IGMP snooping parameters on a VLAN
+                    </DESCRIPTION>
+                    <EXAMPLE summary="Enable IGMP Snooping on VLAN">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping
+                    </EXAMPLE>
+                    <EXAMPLE summary="Disable IGMP Snooping on VLAN">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# no ip igmp snooping
+                    </EXAMPLE>
+                    <EXAMPLE summary="Enable IGMP querier on VLAN, by default querier is disabled">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping querier
+                    </EXAMPLE>
+                    <EXAMPLE summary="Disable IGMP querier on VLAN">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# no ip igmp snooping querier
+                    </EXAMPLE>
+                    <EXAMPLE summary="Enable IGMP fast-leave on VLAN, by default fast-leave is disabled">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping fast-leave
+                    </EXAMPLE>
+                    <EXAMPLE summary="Disable IGMP fast-leave on VLAN">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# no ip igmp snooping fast-leave
+                    </EXAMPLE>
+                    <EXAMPLE summary="Configure IGMP query-interval, default interval is 125 seconds, range is from 1 to 18000 seconds">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping query-interval 20
+                    </EXAMPLE>
+                    <EXAMPLE summary="Unconfigure non-default IGMP query-interval configured, value set to default interval 125 seconds">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# no ip igmp snooping query-interval
+                    </EXAMPLE>
+                    <EXAMPLE summary="Configure last member query interval, default is 1000ms, the valid range is from 100ms to 25500ms">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping last-member-query-interval 2000
+                    </EXAMPLE>
+                    <EXAMPLE summary="Unconfigure non-default last member query interval configured, value set to default 1s">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# no ip igmp snooping last-member-query-interval
+                    </EXAMPLE>
+                    <EXAMPLE summary="Configure max response interval, default is 10s, the valid range is from 1 to 25s">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping query-max-response-time 12
+                    </EXAMPLE>
+                    <EXAMPLE summary="Unconfigure non-default max response interval configured, value set to default 10s">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# no ip igmp snooping query-max-response-time
+                    </EXAMPLE>
+                    <EXAMPLE summary="Configure IGMP version, default is Version2, the valid range is from 1 to 3">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping version 3
+                    </EXAMPLE>
+                    <EXAMPLE summary="Unconfigure non-default IGMP version configured, value set to default Version2">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# no ip igmp snooping version
+                    </EXAMPLE>
+                    <EXAMPLE summary="Configure static multicast router(mrouter) port">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping mrouter interface Ethernet4
+                    </EXAMPLE>
+                    <EXAMPLE summary="Unconfigure static multicast router(mrouter) port">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# no ip igmp snooping mrouter interface Ethernet4
+                    </EXAMPLE>
+                    <EXAMPLE summary="Configure static multicast group">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)# ip igmp snooping static-group 225.0.0.1 interface PortChannel2
+                    </EXAMPLE>
+                    <EXAMPLE summary="Unconfigure static multicast group">
+                        sonic(config)# interface Vlan 200
+                        sonic(conf-if-Vlan200)#no ip igmp snooping static-group 225.0.0.1 interface PortChannel2
+                    </EXAMPLE>
+                </DOCGEN>
     </COMMAND>
     
     <COMMAND name = "no ip igmp"

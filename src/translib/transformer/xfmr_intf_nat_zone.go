@@ -144,6 +144,7 @@ var DbToYang_intf_nat_zone_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams)
         intfObj, _ = intfsObj.NewInterface(ifName)
     }
     ygot.BuildEmptyTree(intfObj)
+    ygot.BuildEmptyTree(intfObj.NatZone)
     if config == true {
         ygot.BuildEmptyTree(intfObj.NatZone.Config)
         entry, dbErr := inParams.dbs[db.ConfigDB].GetEntry(&db.TableSpec{Name:intTbl.cfgDb.intfTN}, db.Key{Comp: []string{ifName}})

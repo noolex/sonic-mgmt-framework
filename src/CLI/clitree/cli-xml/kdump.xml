@@ -10,23 +10,30 @@
       >
 
     <PTYPE
-        name="RANGE_1_9"
+        name="SET_RANGE_1_9"
         method="integer"
         pattern="1..9"
-        help=""
+        help="Maximum number of kernel core files stored locally"
+        />
+
+    <PTYPE
+        name="GET_RANGE_1_9"
+        method="integer"
+        pattern="1..9"
+        help="kdump dump file record number"
         />
 
     <PTYPE
         name="KDUMP_MEMORY"
         pattern="^(((([0-9]+[MG])?(-([0-9]+[MG])?):)?[0-9]+[MG],?)+)$"
-        help=""
+        help="Memory reserved for kdump"
         />
 
     <PTYPE
         name="RANGE_5_100"
         method="integer"
         pattern="5..100"
-        help=""
+        help="Number of lines retrieved from kernel log file"
         />
 
   <!--MODE : config terminal -->
@@ -36,46 +43,95 @@
         <COMMAND
             name="no kdump"
             help="Disable kdump">
-             <ACTION
-                  builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
-             </ACTION>
+            <ACTION
+                 builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+            </ACTION>
         </COMMAND>
         <COMMAND
-             name="kdump enable"
-             help="Enable kdump">
-             <ACTION
-                  builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
-             </ACTION>
+            name="kdump enable"
+            help="Enable kdump">
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+            </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Enable or disable KDUMP operation. These commands require a reboot to complete.
+                </DESCRIPTION>
+                <USAGE>
+                    Use the command "kdump enable" to enable the kdump operation.
+                    Use the command "no kdump" to disable the kdump operation.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# configure terminal
+                    sonic(config)# enable kdump
+                    KDUMP configuration has been updated in the startup configuration
+                    Kdump configuration changes will be applied after the system reboots
+                    sonic(config)# no kdump
+                    KDUMP configuration has been updated in the startup configuration
+                    ALERT! A system reboot is highly recommended.
+                    Kdump configuration changes will be applied after the system reboots
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND
             name="kdump memory"
-             help="Set the amount of memory reserved for kdump">
-             <PARAM name="kdump_memory" help="The amount of memory reserved for kdump" ptype="KDUMP_MEMORY"/>
-             <ACTION
-                  builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
-             </ACTION>
+            help="Set the amount of memory reserved for kdump">
+            <PARAM name="kdump_memory" help="The amount of memory reserved for kdump" ptype="KDUMP_MEMORY"/>
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+            </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Set or reset to default the amount of memory reserved for kdump.
+                    These commands require a reboot to complete.
+                </DESCRIPTION>
+                <USAGE>
+                    Use the commands "kdump memory &lt;X&gt;" or "no kdump memory" to set or reset to default the amount of memory reserved for kdump.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# configure terminal
+                    sonic(config)# kdump memory 512M
+                    KDUMP configuration has been updated in the startup configuration
+                    kdump updated memory will be only operational after the system reboots
+                    sonic(config)# no kdump memory 
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND
             name="kdump num_dumps"
-             help="Set the maximum number of kernel core files stored locally">
-             <PARAM name="kdump_memory" help="Maximum number of kernel core files stored locally" ptype="RANGE_1_9"/>
-             <ACTION
-                  builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
-             </ACTION>
+            help="Set the maximum number of kernel core files stored locally">
+            <PARAM name="kdump_num_dumps" help="Maximum number of kernel core files stored locally" ptype="SET_RANGE_1_9"/>
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+            </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Set or reset to default value the maximum number of kernel core files stored locally.
+                    These commands typically require a reboot to complete.
+                </DESCRIPTION>
+                <USAGE>
+                    Use the commands "kdump num_dump &lt;X&gt;" or "no kdump num_dumps" to set or reset to default the maximum number of kernel core files stored locally.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# configure terminal
+                    sonic(config)# kdump num_dump 5 
+                    sonic(config)# no kdump num_dump 5 
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND 
             name="no kdump memory" 
-            help="Reset to default the amount of memory allocated for kdump">
-             <ACTION
-                  builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
-             </ACTION>
+            help="Reset to default the amount of memory reserved for kdump">
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+            </ACTION>
         </COMMAND>
         <COMMAND 
             name="no kdump num_dumps" 
             help="Reset to default the maximum number of kernel core files stored locally">
-             <ACTION
-                  builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
-             </ACTION>
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+            </ACTION>
         </COMMAND>
    </VIEW>
 
@@ -91,20 +147,64 @@
             <ACTION
                 builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show the status of kdump operation.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to show the status of kdump operation.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# show kdump status
+                    Kdump Administrative Mode:  Enabled
+                    Kdump Operational State:    Ready
+                    Memory Reserved: 512M
+                    Maximum number of Kernel Core files Stored: 3
+                    Record Key           Filename
+                    -------------------------------------------------------------
+                         1 202002101809 /var/crash/202002101809/dmesg.202002101809
+                                        /var/crash/202002101809/kdump.202002101809
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND
             name="show kdump memory"
-            help="Show memory allocated for kdump">
+            help="Show memory reserved for kdump">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show the amount of memory reserved for kdump operation.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to show the amount of memory reserved for kdump operation.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# show kdump memory
+                    Memory Reserved: 0M-2G:256M,2G-4G:320M,4G-8G:384M,8G-:448M
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND
             name="show kdump num_dumps"
-            help="Show maximimum number of kernel core dump files which will are stored locally">
+            help="Show maximum number of kernel core dump files which can be stored locally">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show the maximum number of kernel core dump files which can be stored locally.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to show the maximum number of kernel core dump files which
+                    can be stored locally.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# show kdump num_dumps
+                    Maximum number of Kernel Core files Stored: 3
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
        <COMMAND
             name="show kdump files"
@@ -112,15 +212,54 @@
             <ACTION
                 builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show the kdump kernel core dump files which are stored locally.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to show the kdump kernel core dump files which are stored
+                    locally.
+                </USAGE>
+                <EXAMPLE>
+                    sonic# show kdump files
+                    Record Key           Filename
+                    -------------------------------------------------------------
+                         1 202002101809 /var/crash/202002101809/dmesg.202002101809
+                                        /var/crash/202002101809/kdump.202002101809
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND
             name="show kdump log"
             help="Show kdump kernel core dump file kernel log">
-            <PARAM name="record" help="kdump dump file record number" ptype="RANGE_1_9" optional="false"/>
-            <PARAM name="lines" help="number of lines retrieved from kernel log file" ptype="RANGE_5_100" optional="true"/>
+            <PARAM name="record" help="kdump dump file record number" ptype="GET_RANGE_1_9" optional="false"/>
+            <PARAM name="lines" help="Number of lines retrieved from kernel log file" ptype="RANGE_5_100" optional="true"/>
             <ACTION
                 builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show a kdump kernel core dump file kernel log from a file stored locally.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to show a kdump kernel core dump file kernel log from a file
+                    stored locally. The mandatory parameter is the number of the kernel core dump
+                    files which are stored locally. The optional parameter is the number of lines
+                    displayed (20 is the default number of lines displayed).
+                </USAGE>
+                <EXAMPLE>
+                    sonic# show kdump log 1 5
+                    File: /var/crash/202002101809/dmesg.202002101809
+                    [326785.222049]  [&lt;ffffffffa0c0484e&gt;] ? entry_SYSCALL_64_after_swapgs+0x58/0xc6
+                    [326785.229926] Code: 41 5c 41 5d 41 5e 41 5f e9 6c 2f cf ff 66 2e 0f 1f 84 00 00 00 00 00 66 90 0f 1f 44 00 00 c7 05 29 28 a8 00 01 00 00 00 0f ae f8 &lt;c6&gt; 04 25 00 00 00 00 01 c3 0f 1f 44 00 00 0f 1f 44 00 00 53 8d
+                    [326785.251451] RIP  [&lt;ffffffffa0a2a562&gt;] sysrq_handle_crash+0x12/0x20
+                    [326785.258463]  RSP &lt;ffffafd2c6523e78&gt;
+                    [326785.262453] CR2: 0000000000000000
+
+                    In this example, we show the kernel log for the first kernel core dump file
+                    stored locally. We display only the first 5 lines of the log.
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>
