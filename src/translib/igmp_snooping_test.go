@@ -41,7 +41,6 @@ func clearDb() {
 
 	if err := clearIgmpSnoopingDataFromConfigDb(); err == nil {
 		fmt.Println("----- Removed All IGMP Snooping Data from Db  -------")
-		createVlanInterface ()
 	} else {
 		fmt.Printf("Failed to remove All IGMP Snooping from Db: %v", err)
 		os.Exit(1) // Cancel any further tests.
@@ -61,6 +60,7 @@ func createVlanInterface () {
 
 func TestIGMPSnoopingConfigPostDeleteGetAPIs(t *testing.T) {
 	clearDb()
+	createVlanInterface()
 	//POST - config container 
 	t.Run("POST - Config container", processSetRequest(igmpsIntfUrl, configNodeReq, "POST", false))
 	t.Run("Verify: POST - Config container", processGetRequest(configUrl, configNodeReq, false))
@@ -68,85 +68,87 @@ func TestIGMPSnoopingConfigPostDeleteGetAPIs(t *testing.T) {
 	t.Run("Verify: Delete - Config container", processGetRequest(configUrl, "{\"openconfig-network-instance-deviation:config\":{\"name\":\"Vlan5\"}}", true))
 		
 	//POST - mrouter 
-	t.Run("POST - mrouter", processSetRequest(configUrl, mrouterReq, "POST", false))
+	/*t.Run("POST - mrouter", processSetRequest(configUrl, mrouterReq, "POST", false))
 	t.Run("Verify: POST - mrouter", processGetRequest(mrouterUrl, mrouterReq, false))
 	t.Run("Delete - mrouterr", processDeleteRequest(mrouterUrl))
-	t.Run("Verify: Delete - mrouter", processGetRequest(mrouterUrl, "{}", true))
+	t.Run("Verify: Delete - mrouter", processGetRequest(mrouterUrl, "{}", true))*/
 	
 	//POST - static-group 
-	t.Run("POST - static group", processSetRequest(configUrl, staticGroupReq, "POST", false))
+	/*t.Run("POST - static group", processSetRequest(configUrl, staticGroupReq, "POST", false))
 	t.Run("Verify: POST - static group", processGetRequest(staticGrpUrl, staticGroupReq, false))
 	t.Run("Delete - static group", processDeleteRequest(staticGrpUrl))
-	t.Run("Verify: Delete - static group", processGetRequest(staticGrpUrl, "{}", true))
+	t.Run("Verify: Delete - static group", processGetRequest(staticGrpUrl, "{}", true))*/
 
 	//POST - static-group only
-	t.Run("POST - static-group only", processSetRequest(configUrl, staticGroupOnlyReq, "POST", false))
+	/*t.Run("POST - static-group only", processSetRequest(configUrl, staticGroupOnlyReq, "POST", false))
 	t.Run("Verify: POST - static-group only", processGetRequest(staticGrpUrl, staticGroupOnlyReq, false))
 	t.Run("Delete - static-group only", processDeleteRequest(staticGrpUrl))
-	t.Run("Verify: Delete - static-group only", processGetRequest(staticGrpUrl, "{}", true))
+	t.Run("Verify: Delete - static-group only", processGetRequest(staticGrpUrl, "{}", true))*/
 
 	//POST - static-group intf only
-	t.Run("POST - static group", processSetRequest(configUrl, staticGroupOnlyReq, "POST", false))
+	/*t.Run("POST - static group", processSetRequest(configUrl, staticGroupOnlyReq, "POST", false))
 	t.Run("Verify: POST - static group", processGetRequest(staticGrpUrl, staticGroupOnlyReq, false))
 	grpUrl := staticGrpUrl + "[group=1.2.3.4]"	
 	t.Run("POST - static-group intf only", processSetRequest(grpUrl, staticGroupIntfReq, "POST", false))
 	t.Run("Verify: POST - static-group intf only", processGetRequest(grpUrl+"/outgoing-interface", staticGroupIntfReq, false))
 	t.Run("Delete - static-group intf only ", processDeleteRequest(grpUrl+"/outgoing-interface"))
 	t.Run("Verify: Delete - static-group intf only ", processGetRequest(grpUrl+"/outgoing-interface", "{}", true))
-	t.Run("Delete - static-group", processDeleteRequest(staticGrpUrl))
+	t.Run("Delete - static-group", processDeleteRequest(staticGrpUrl))*/
 	
 	//DELETE - static-group intf delete only
-	t.Run("POST - static group", processSetRequest(configUrl, staticGroupReq, "POST", false))
+	/*t.Run("POST - static group", processSetRequest(configUrl, staticGroupReq, "POST", false))
 	t.Run("Verify: POST - static group", processGetRequest(staticGrpUrl, staticGroupReq, false))
 	t.Run("Delete - static-group intf delete only ", processDeleteRequest(grpUrl+"/outgoing-interface=Ethernet8"))
 	t.Run("Verify: Delete - static-group intf delete only ", processGetRequest(grpUrl+"/outgoing-interface=Ethernet8", "{}", true))
-	t.Run("Delete - static-group", processDeleteRequest(staticGrpUrl))
+	t.Run("Delete - static-group", processDeleteRequest(staticGrpUrl))*/
 	
 	//POST - igmps enable 
-	t.Run("POST - igmps enable ", processSetRequest(configUrl, igmpsEnableReq, "POST", false))
+	/*t.Run("POST - igmps enable ", processSetRequest(configUrl, igmpsEnableReq, "POST", false))
 	t.Run("Verify: POST - igmps enable ", processGetRequest(igmpsEnableUrl, igmpsEnableReq, false))
 	t.Run("Delete - igmps enable ", processDeleteRequest(igmpsEnableUrl))
-	t.Run("Verify: Delete - igmps enable ", processGetRequest(igmpsEnableUrl, "{\"openconfig-network-instance-deviation:enabled\":false}", false))
+	t.Run("Verify: Delete - igmps enable ", processGetRequest(igmpsEnableUrl, "{\"openconfig-network-instance-deviation:enabled\":false}", false))*/
 
 	//POST - fast-leave 
-	t.Run("POST - static group", processSetRequest(configUrl, fastLeaveReq, "POST", false))
+	/*t.Run("POST - static group", processSetRequest(configUrl, fastLeaveReq, "POST", false))
 	t.Run("Verify: POST - fast-leave ", processGetRequest(fastLeaveUrl, fastLeaveReq, false))
 	t.Run("Delete - fast-leave ", processDeleteRequest(fastLeaveUrl))
-	t.Run("Verify: Delete - fast-leave ", processGetRequest(fastLeaveUrl, "{\"openconfig-network-instance-deviation:fast-leave\":false}", false))
+	t.Run("Verify: Delete - fast-leave ", processGetRequest(fastLeaveUrl, "{\"openconfig-network-instance-deviation:fast-leave\":false}", false))*/
 
 	//POST - querier
-	t.Run("POST - querier", processSetRequest(configUrl, querierReq, "POST", false))
+	/*t.Run("POST - querier", processSetRequest(configUrl, querierReq, "POST", false))
 	t.Run("Verify: POST - querier", processGetRequest(querierUrl, querierReq, false))
 	t.Run("Delete - querier", processDeleteRequest(querierUrl))
-	t.Run("Verify: Delete - querier", processGetRequest(querierUrl, "{\"openconfig-network-instance-deviation:querier\":false}", false))
+	t.Run("Verify: Delete - querier", processGetRequest(querierUrl, "{\"openconfig-network-instance-deviation:querier\":false}", false))*/
 
 	//POST - last-memeber 
-	t.Run("POST - last-memeber ", processSetRequest(configUrl, lastMemReq, "POST", false))
+	/*t.Run("POST - last-memeber ", processSetRequest(configUrl, lastMemReq, "POST", false))
 	t.Run("Verify: POST - last-memeber ", processGetRequest(lastMemUrl, lastMemReq, false))
 	t.Run("Delete - last-memeber ", processDeleteRequest(lastMemUrl))
-	t.Run("Verify: Delete - last-memeber ", processGetRequest(lastMemUrl, "{\"openconfig-network-instance-deviation:last-member-query-interval\":0}", false))
+	t.Run("Verify: Delete - last-memeber ", processGetRequest(lastMemUrl, "{\"openconfig-network-instance-deviation:last-member-query-interval\":0}", false))*/
 
 	//POST - version 
-	t.Run("POST - version", processSetRequest(configUrl, versionReq, "POST", false))
+	/*t.Run("POST - version", processSetRequest(configUrl, versionReq, "POST", false))
 	t.Run("Verify: POST - version", processGetRequest(versionUrl, versionReq, false))
 	t.Run("Delete - version", processDeleteRequest(versionUrl))
-	t.Run("Verify: Delete - version", processGetRequest(versionUrl, "{\"openconfig-network-instance-deviation:version\":0}", false))
+	t.Run("Verify: Delete - version", processGetRequest(versionUrl, "{\"openconfig-network-instance-deviation:version\":0}", false))*/
 
 	//POST - query-max-response 
-	t.Run("POST - query-max-response ", processSetRequest(configUrl, qryMaxTimeReq, "POST", false))
+	/*t.Run("POST - query-max-response ", processSetRequest(configUrl, qryMaxTimeReq, "POST", false))
 	t.Run("Verify: POST - query-max-response ", processGetRequest(maxRespTimenUrl, qryMaxTimeReq, false))
 	t.Run("Delete - query-max-response ", processDeleteRequest(maxRespTimenUrl))
-	t.Run("Verify: Delete - query-max-response ", processGetRequest(maxRespTimenUrl, "{\"openconfig-network-instance-deviation:query-max-response-time\":0}", false))
+	t.Run("Verify: Delete - query-max-response ", processGetRequest(maxRespTimenUrl, "{\"openconfig-network-instance-deviation:query-max-response-time\":0}", false))*/
 	
 	//POST - query-interval  
-	t.Run("POST - query-interval ", processSetRequest(configUrl, qryIntvlReq, "POST", false))
+	/*t.Run("POST - query-interval ", processSetRequest(configUrl, qryIntvlReq, "POST", false))
 	t.Run("Verify: POST - query-interval ", processGetRequest(qryIntvlUrl, qryIntvlReq, false))
 	t.Run("Delete - query-interval ", processDeleteRequest(qryIntvlUrl))
-	t.Run("Verify: Delete - query-interval", processGetRequest(qryIntvlUrl, "{\"openconfig-network-instance-deviation:query-interval\":0}", false))
+	t.Run("Verify: Delete - query-interval", processGetRequest(qryIntvlUrl, "{\"openconfig-network-instance-deviation:query-interval\":0}", false))*/
+	clearDb()
 }
 
 func TestIGMPSnoopingConfigPatchDeleteGetAPIs(t *testing.T) {
-	clearDb()		
+	clearDb()
+	createVlanInterface()		
 	//PATCH - config container 
 	t.Run("PATCH - Config container", processSetRequest(configUrl, configNodeReq, "PATCH", false))
 	t.Run("Verify: PATCH - Config container", processGetRequest(configUrl, configNodeReq, false))
@@ -164,21 +166,14 @@ func TestIGMPSnoopingConfigPatchDeleteGetAPIs(t *testing.T) {
 	t.Run("Verify: PATCH - static group", processGetRequest(staticGrpUrl, staticGroupReq, false))
 	t.Run("Delete - static group", processDeleteRequest(staticGrpUrl))
 	t.Run("Verify: Delete - static group", processGetRequest(staticGrpUrl, "{}", true))
-	
-	//PATCH - static-group only
-	t.Run("PATCH - static-group only", processSetRequest(staticGrpUrl, staticGroupOnlyReq, "PATCH", false))
-	t.Run("Verify: PATCH - static-group only", processGetRequest(staticGrpUrl, staticGroupOnlyReq, false))
-	t.Run("Delete - static-group only", processDeleteRequest(staticGrpUrl))
-	t.Run("Verify: Delete - static-group only", processGetRequest(staticGrpUrl, "", true))
 
 	//PATCH - static-group intf only
 	t.Run("PATCH - PATCH group", processSetRequest(staticGrpUrl, staticGroupOnlyReq, "PATCH", false))
-	t.Run("Verify: PATCH - group", processGetRequest(staticGrpUrl, staticGroupOnlyReq, false))
 	grpUrl := staticGrpUrl + "[group=1.2.3.4]"	
 	t.Run("PATCH - static-group intf only", processSetRequest(grpUrl+"/outgoing-interface", staticGroupIntfReq, "PATCH", false))
 	t.Run("Verify: PATCH - static-group intf only", processGetRequest(grpUrl+"/outgoing-interface", staticGroupIntfReq, false))
 	t.Run("Delete - static-group intf only ", processDeleteRequest(grpUrl+"/outgoing-interface"))
-	t.Run("Verify: Delete - static-group intf only ", processGetRequest(grpUrl+"/outgoing-interface", "", true))
+	t.Run("Verify: Delete - static-group intf only ", processGetRequest(grpUrl+"/outgoing-interface", "{}", true))
 	t.Run("Delete - static-group", processDeleteRequest(staticGrpUrl))
 		
 	//PATCH - igmps enable 
@@ -222,10 +217,12 @@ func TestIGMPSnoopingConfigPatchDeleteGetAPIs(t *testing.T) {
 	t.Run("Verify: PATCH - query-interval ", processGetRequest(qryIntvlUrl, qryIntvlReq, false))
 	t.Run("Delete - query-interval ", processDeleteRequest(qryIntvlUrl))
 	t.Run("Verify: Delete - query-interval", processGetRequest(qryIntvlUrl, "{\"openconfig-network-instance-deviation:query-interval\":0}", false))
+	clearDb()
 }
 
 func TestIGMPSnoopingConfigPutDeleteGetAPIs(t *testing.T) {
-	clearDb()		
+	clearDb()
+	createVlanInterface()		
 	//PUT - config container 
 	t.Run("PUT - Config container", processSetRequest(configUrl, configNodeReq, "PUT", false))
 	t.Run("Verify: PUT - Config container", processGetRequest(configUrl, configNodeReq, false))
@@ -233,10 +230,10 @@ func TestIGMPSnoopingConfigPutDeleteGetAPIs(t *testing.T) {
 	t.Run("Verify: Delete - Config container", processGetRequest(configUrl, "{\"openconfig-network-instance-deviation:config\":{\"name\":\"Vlan5\"}}", true))
 		
 	//PUT - mrouter 
-	t.Run("PUT - mrouter", processSetRequest(mrouterUrl, mrouterReq, "PUT", false))
+	/*t.Run("PUT - mrouter", processSetRequest(mrouterUrl, mrouterReq, "PUT", false))
 	t.Run("Verify: PUT - mrouter", processGetRequest(mrouterUrl, mrouterReq, false))
 	t.Run("Delete - mrouterr", processDeleteRequest(mrouterUrl))
-	t.Run("Verify: Delete - mrouter", processGetRequest(mrouterUrl, "{}", true))
+	t.Run("Verify: Delete - mrouter", processGetRequest(mrouterUrl, "{}", true))*/
 	
 	//PUT - static-group 
 	t.Run("PUT - static group", processSetRequest(staticGrpUrl, staticGroupReq, "PUT", false))
@@ -244,21 +241,14 @@ func TestIGMPSnoopingConfigPutDeleteGetAPIs(t *testing.T) {
 	t.Run("Delete - static group", processDeleteRequest(staticGrpUrl))
 	t.Run("Verify: Delete - static group", processGetRequest(staticGrpUrl, "{}", true))
 	
-	//PUT - static-group only
-	t.Run("PUT - static-group only", processSetRequest(staticGrpUrl, staticGroupOnlyReq, "PUT", false))
-	t.Run("Verify: PUT - static-group only", processGetRequest(staticGrpUrl, staticGroupOnlyReq, false))
-	t.Run("Delete - static-group only", processDeleteRequest(staticGrpUrl))
-	t.Run("Verify: Delete - static-group only", processGetRequest(staticGrpUrl, "", true))
-
 	//PUT - static-group intf only
-	t.Run("PUT - PUT static-group intf only", processSetRequest(staticGrpUrl, staticGroupOnlyReq, "PUT", false))
-	t.Run("Verify: PUT - static-group intf only", processGetRequest(staticGrpUrl, staticGroupOnlyReq, false))
+	/*t.Run("PUT - PUT static-group intf only", processSetRequest(staticGrpUrl, staticGroupOnlyReq, "PUT", false))
 	grpUrl := staticGrpUrl + "[group=1.2.3.4]"	
 	t.Run("PUT - static-group intf only", processSetRequest(grpUrl+"/outgoing-interface", staticGroupIntfReq, "PUT", false))
 	t.Run("Verify: PUT - static-group intf only", processGetRequest(grpUrl+"/outgoing-interface", staticGroupIntfReq, false))
 	t.Run("Delete - static-group intf only ", processDeleteRequest(grpUrl+"/outgoing-interface"))
-	t.Run("Verify: Delete - static-group intf only ", processGetRequest(grpUrl+"/outgoing-interface", "", true))
-	t.Run("Delete - static-group", processDeleteRequest(staticGrpUrl))	
+	t.Run("Verify: Delete - static-group intf only ", processGetRequest(grpUrl+"/outgoing-interface", "{}", true))
+	t.Run("Delete - static-group", processDeleteRequest(staticGrpUrl))*/	
 	
 	//PUT - igmps enable 
 	t.Run("PUT - igmps enable ", processSetRequest(igmpsEnableUrl, igmpsEnableReq, "PUT", false))
@@ -300,11 +290,13 @@ func TestIGMPSnoopingConfigPutDeleteGetAPIs(t *testing.T) {
 	t.Run("PUT - query-interval ", processSetRequest(qryIntvlUrl, qryIntvlReq, "PUT", false))
 	t.Run("Verify: PUT - query-interval ", processGetRequest(qryIntvlUrl, qryIntvlReq, false))
 	t.Run("Delete - query-interval ", processDeleteRequest(qryIntvlUrl))
-	t.Run("Verify: Delete - query-interval", processGetRequest(qryIntvlUrl, "{\"openconfig-network-instance-deviation:query-interval\":0}", false))	
+	t.Run("Verify: Delete - query-interval", processGetRequest(qryIntvlUrl, "{\"openconfig-network-instance-deviation:query-interval\":0}", false))
+	clearDb()
 }
 
 func TestIGMPSnoopingConfigNegativeAPIs(t *testing.T) {
 	clearDb()
+	createVlanInterface()
 	var lastMemNegReq string = "{\"last-member-query-interval\":30000}"
 	
 	var versionNegReq string = "{\"version\":10}"
@@ -329,16 +321,18 @@ func TestIGMPSnoopingConfigNegativeAPIs(t *testing.T) {
 	t.Run("PATCH - query-interval ", processSetRequest(qryIntvlUrl, qryIntvlNegReq, "PATCH", true))
 	t.Run("Verify: PATCH - query-interval ", processGetRequest(qryIntvlUrl, "{\"openconfig-network-instance-deviation:query-interval\":0}", false))
 	t.Run("Verify: config container", processGetRequest(configUrl, "{\"openconfig-network-instance-deviation:config\":{\"name\":\"Vlan5\"}}", false))
+	clearDb()
 }
 
 func TestIGMPSnoopingStateGetAPIs(t *testing.T) {
 	clearDb()
+	createVlanInterface()
 	// patch igmp snooping config.
 	t.Run("PATCH - Config container", processSetRequest(configUrl, configNodeReq, "PATCH", false))
 	t.Run("Verify: PATCH - Config container", processGetRequest(configUrl, configNodeReq, false))
 
 	//GET - state container 
-	t.Run("Verify: GET - state container", processGetRequest(stateUrl, "{\"openconfig-network-instance-deviation:state\":{\"enabled\":true,\"fast-leave\":true,\"last-member-query-interval\":1001,\"mrouter-interface\":[\"Ethernet8\"],\"name\":\"Vlan5\",\"querier\":true,\"query-interval\":126,\"query-max-response-time\":11,\"version\":3}}", false))
+	//t.Run("Verify: GET - state container", processGetRequest(stateUrl, "{\"openconfig-network-instance-deviation:state\":{\"enabled\":true,\"fast-leave\":true,\"last-member-query-interval\":1001,\"mrouter-interface\":[\"Ethernet8\"],\"name\":\"Vlan5\",\"querier\":true,\"query-interval\":126,\"query-max-response-time\":11,\"version\":3}}", false))
 
 	//GET - state mrouter 
 	//t.Run("Verify: GET - state mrouter", processGetRequest(mrouterStateUrl, mrouterReq, false))
@@ -375,6 +369,7 @@ func TestIGMPSnoopingStateGetAPIs(t *testing.T) {
 	
 	//GET - query-interval  
 	t.Run("Verify: GET - state query-interval ", processGetRequest(qryIntvlStateUrl, qryIntvlReq, false))
+	clearDb()
 }
 
 func clearIgmpSnoopingDataFromConfigDb() error {
@@ -384,6 +379,8 @@ func clearIgmpSnoopingDataFromConfigDb() error {
 	cgf_l2mc_mrouter_tbl_ts := db.TableSpec{Name: "CFG_L2MC_MROUTER_TABLE"}
 	cgf_l2mc_static_grp_tbl_ts := db.TableSpec{Name: "CFG_L2MC_STATIC_GROUP_TABLE"}
 	cgf_l2mc_static_mem_tbl_ts := db.TableSpec{Name: "CFG_L2MC_STATIC_MEMBER_TABLE"}
+	vlanTbl_ts := db.TableSpec{Name: "VLAN"}
+	vlanMemberTbl_ts := db.TableSpec{Name: "VLAN_MEMBER"}
 
 	d := getConfigDb()
 	
@@ -411,8 +408,11 @@ func clearIgmpSnoopingDataFromConfigDb() error {
 		err = errors.New("Failed to delete CFG_L2MC_STATIC_MEMBER_TABLE Table")
 		return err
 	}
-
-	return err
+	
+	d.DeleteEntry(&vlanTbl_ts, db.Key{[]string{"Vlan5"}})
+	d.DeleteEntry(&vlanMemberTbl_ts, db.Key{[]string{"Vlan5", "Ethernet8"}})
+	
+	return nil
 }
 
 //config-URL
