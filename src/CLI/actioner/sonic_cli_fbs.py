@@ -29,9 +29,12 @@ import json
 import cli_log as log
 import os
 import re
+from sonic_cli_acl import pcp_map
+from sonic_cli_acl import dscp_map
 
 
 fbs_client = cc.ApiClient()
+TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
 
 
 def create_policy(args):
@@ -114,6 +117,278 @@ def clear_classifier_match_acl(args):
     return fbs_client.delete(keypath)
 
 
+def __format_mac_addr(macaddr):
+    return "{}{}:{}{}:{}{}:{}{}:{}{}:{}{}".format(*macaddr.translate(None, ".:-"))
+
+
+def __match_mac_address(addr_type, args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
+                      classifier_name=args[0], addr_type=addr_type)
+
+    if 'mac' == args[1]:
+        value = args[2] if args[2] != 'host' else args[3]
+        value = value.split('/')
+        for idx in range(len(value)):
+            value[idx] = __format_mac_addr(value[idx])
+        value = '/'.join(value)
+    elif 'ip' == args[1]:
+        value = args[2] if args[2] != 'host' else args[3] + '/32'
+    elif 'ipv6' == args[1]:
+        value = args[2] if args[2] != 'host' else args[3] + '/128'
+    else:
+        print('%Error: Unknown address type {}'.format(args[1]))
+        return
+
+    body = {
+        addr_type: value
+    }
+    return fbs_client.patch(keypath, body)
+
+
+def set_match_source_address(args):
+    addr_type = 'SRC_{}'.format(args[1].upper())
+    return __match_mac_address(addr_type, args)
+
+
+def clear_match_source_address(args):
+    addr_type = 'SRC_{}'.format(args[1].upper())
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
+                      classifier_name=args[0], addr_type=addr_type)
+    return fbs_client.delete(keypath)
+
+
+def set_match_destination_address(args):
+    addr_type = 'DST_{}'.format(args[1].upper())
+    return __match_mac_address(addr_type, args)
+
+
+def clear_match_destination_address(args):
+    addr_type = 'DST_{}'.format(args[1].upper())
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
+                      classifier_name=args[0], addr_type=addr_type)
+    return fbs_client.delete(keypath)
+
+
+def set_match_ethertype(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ETHER_TYPE',
+                      classifier_name=args[0])
+    ether_type_map = {
+        "ip": "0x800",
+        "ipv6": "0x86dd",
+        "arp": "0x806"
+    }
+    body = {
+        "ETHER_TYPE": args[1] if args[1] not in ether_type_map else ether_type_map[args[1]]
+    }
+    return fbs_client.patch(keypath, body)
+
+
+def clear_match_ethertype(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ETHER_TYPE',
+                      classifier_name=args[0])
+    return fbs_client.delete(keypath)
+
+
+def set_match_vlan(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/VLAN',
+                      classifier_name=args[0])
+    body = {
+        "VLAN": int(args[1])
+    }
+    return fbs_client.patch(keypath, body)
+
+
+def clear_match_vlan(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/VLAN',
+                      classifier_name=args[0])
+    return fbs_client.delete(keypath)
+
+
+def set_match_pcp(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/PCP',
+                      classifier_name=args[0])
+    body = {
+        "PCP": int(args[1]) if args[1] not in pcp_map.keys() else pcp_map[args[1]]
+    }
+    return fbs_client.patch(keypath, body)
+
+
+def clear_match_pcp(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/PCP',
+                      classifier_name=args[0])
+    return fbs_client.delete(keypath)
+
+
+def set_match_dei(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DEI',
+                      classifier_name=args[0])
+    body = {
+        "DEI": int(args[1])
+    }
+    return fbs_client.patch(keypath, body)
+
+
+def clear_match_dei(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DEI',
+                      classifier_name=args[0])
+    return fbs_client.delete(keypath)
+
+
+def set_match_ip_protocol(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/IP_PROTOCOL',
+                      classifier_name=args[0])
+    protocol_map = {
+        'icmp': 1,
+        'tcp': 6,
+        'udp': 17,
+        'icmpv6': 58
+    }
+    body = {
+        "IP_PROTOCOL": int(args[1]) if args[1] not in protocol_map.keys() else protocol_map[args[1]]
+    }
+    return fbs_client.patch(keypath, body)
+
+
+def clear_match_ip_protocol(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/IP_PROTOCOL',
+                      classifier_name=args[0])
+    return fbs_client.delete(keypath)
+
+
+def set_match_dscp(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DSCP',
+                      classifier_name=args[0])
+    body = {
+        "DSCP": int(args[1]) if args[1] not in dscp_map.keys() else dscp_map[args[1]]
+    }
+    return fbs_client.patch(keypath, body)
+
+
+def clear_match_dscp(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DSCP',
+                      classifier_name=args[0])
+    return fbs_client.delete(keypath)
+
+
+def set_match_layer4_port(args):
+    if args[1] == 'source':
+        if args[2] == 'eq':
+            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_SRC_PORT',
+                              classifier_name=args[0])
+            body = {
+                'L4_SRC_PORT': int(args[3])
+            }
+        else:
+            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_SRC_PORT_RANGE',
+                              classifier_name=args[0])
+            body = {
+                'L4_SRC_PORT_RANGE': '-'.join(args[3:])
+            }
+    else:
+        if args[2] == 'eq':
+            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_DST_PORT',
+                              classifier_name=args[0])
+            body = {
+                'L4_DST_PORT': int(args[3])
+            }
+        else:
+            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_DST_PORT_RANGE',
+                              classifier_name=args[0])
+            body = {
+                'L4_DST_PORT_RANGE': '-'.join(args[3:])
+            }
+    return fbs_client.patch(keypath, body)
+
+
+def clear_match_layer4_port(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}',
+                      classifier_name=args[0])
+    response = fbs_client.get(keypath)
+    if response.ok():
+        data = response.content
+        if args[1] == 'source':
+            delete_params = ['L4_SRC_PORT', 'L4_SRC_PORT_RANGE']
+        else:
+            delete_params = ['L4_DST_PORT', 'L4_DST_PORT_RANGE']
+
+        for feat in delete_params:
+            if feat in data['sonic-flow-based-services:CLASSIFIER_TABLE_LIST'][0].keys():
+                del data['sonic-flow-based-services:CLASSIFIER_TABLE_LIST'][0][feat]
+
+        return fbs_client.put(keypath, data)
+    else:
+        print('Error:{}'.format(response.error_message()))
+
+
+def __convert_tcp_flags(flags):
+    flag_val = 0
+    flag_mask = 0
+
+    for v in flags:
+        if v.startswith('not-'):
+            x = v[4:]
+            flag_mask = flag_mask | TCP_FLAG_VALUES[x]
+        else:
+            flag_val = flag_val | TCP_FLAG_VALUES[v]
+            flag_mask = flag_mask | TCP_FLAG_VALUES[v]
+
+    return [flag_val, flag_mask]
+
+
+def __update_tcp_flags(classifier, flags, delete=False):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/TCP_FLAGS',
+                      classifier_name=classifier)
+    response = fbs_client.get(keypath)
+    data = None
+    if response.ok():
+        data = response.content
+
+    if not bool(data):
+        data = {
+            'sonic-flow-based-services:TCP_FLAGS': '0/0'
+        }
+
+    tcp_flags = data['sonic-flow-based-services:TCP_FLAGS']
+    tcp_flags = tcp_flags.split('/')
+    for idx in range(len(tcp_flags)):
+        try:
+            tcp_flags[idx] = int(tcp_flags[idx])
+        except ValueError:
+            tcp_flags[idx] = int(tcp_flags[idx], 0)
+
+    ex_tcp_flags = __convert_tcp_flags(flags)
+    for idx in range(len(tcp_flags)):
+        if delete:
+            ex_tcp_flags[idx] = ex_tcp_flags[idx] ^ tcp_flags[idx]
+        else:
+            ex_tcp_flags[idx] = ex_tcp_flags[idx] | tcp_flags[idx]
+
+    if 0 == ex_tcp_flags[1]:
+        if delete:
+            response = fbs_client.delete(keypath)
+        else:
+            print('%Error: No TCP Flags configured')
+            return None
+    else:
+        data['sonic-flow-based-services:TCP_FLAGS'] = '0x{:x}/0x{:x}'.format(ex_tcp_flags[0], ex_tcp_flags[1])
+        response = fbs_client.patch(keypath, data)
+
+    return response
+
+
+def set_match_tcp_flags(args):
+    return __update_tcp_flags(args[0], args[1:])
+
+
+def clear_match_tcp_flags(args):
+    if len(args) == 1:
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/TCP_FLAGS',
+                          classifier_name=args[0])
+        return fbs_client.delete(keypath)
+    else:
+        return __update_tcp_flags(args[0], args[1:], True)
+
+
 def create_flow(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST')
     body = dict()
@@ -173,7 +448,7 @@ def clear_dscp_remarking_action(args):
     return fbs_client.delete(keypath)
 
 
-def set_policer(args):
+def set_policer_action(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
                       policy_name=args[0], classifier_name=args[1])
     body = dict()
@@ -247,7 +522,7 @@ def set_policer(args):
     return fbs_client.patch(keypath, body)
 
 
-def clear_policer(args):
+def clear_policer_action(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
                       policy_name=args[0], classifier_name=args[1])
     response = fbs_client.get(keypath)
@@ -267,6 +542,19 @@ def clear_policer(args):
         return fbs_client.put(keypath, data)
     else:
         print('Error:{}'.format(response.error_message()))
+
+
+def set_mirror_session_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_MIRROR_SESSION',
+                      policy_name=args[0], classifier_name=args[1])
+    body = {'SET_MIRROR_SESSION': args[2]}
+    return fbs_client.patch(keypath, body)
+
+
+def clear_mirror_session_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_MIRROR_SESSION',
+                      policy_name=args[0], classifier_name=args[1])
+    return fbs_client.delete(keypath)
 
 
 def bind_policy(args):
@@ -318,7 +606,7 @@ def handle_generic_set_response(response, args):
         try:
             error_data = response.errors().get('error', list())[0]
             if 'error-app-tag' in error_data and error_data['error-app-tag'] == 'too-many-elements':
-                print('Error: Exceeds maximum number of ACL / ACL Rules')
+                print('%Error: Configuration limit reached.')
             else:
                 print(response.error_message())
         except Exception as e:
@@ -333,19 +621,12 @@ def handle_generic_delete_response(response, args):
         if resp_content is not None:
             print("%Error: {}".format(str(resp_content)))
             return -1
-
         return 0
     elif response.status_code != '404':
-        try:
-            error_data = response.errors().get('error', list())[0]
-            if 'error-app-tag' in error_data and error_data['error-app-tag'] == 'too-many-elements':
-                print('Error: Exceeds maximum number of ACL / ACL Rules')
-            else:
-                print(response.error_message())
-        except Exception as e:
-            log.log_error(str(e))
-            print(response.error_message())
+        print(response.error_message())
         return -1
+    else:
+        return 0
 
 
 def handle_show_policy_response(args):
@@ -383,6 +664,26 @@ request_handlers = {
     'clear_classifier_description': clear_classifier_description,
     'set_classifier_match_acl': set_classifier_match_acl,
     'clear_classifier_match_acl': clear_classifier_match_acl,
+    'set_match_source_address': set_match_source_address,
+    'clear_match_source_address': clear_match_source_address,
+    'set_match_destination_address': set_match_destination_address,
+    'clear_match_destination_address': clear_match_destination_address,
+    'set_match_ethertype': set_match_ethertype,
+    'clear_match_ethertype': clear_match_ethertype,
+    'set_match_vlan': set_match_vlan,
+    'clear_match_vlan': clear_match_vlan,
+    'set_match_pcp': set_match_pcp,
+    'clear_match_pcp': clear_match_pcp,
+    'set_match_dei': set_match_dei,
+    'clear_match_dei': clear_match_dei,
+    'set_match_ip_protocol': set_match_ip_protocol,
+    'clear_match_ip_protocol': clear_match_ip_protocol,
+    'set_match_dscp': set_match_dscp,
+    'clear_match_dscp': clear_match_dscp,
+    'set_match_layer4_port': set_match_layer4_port,
+    'clear_match_layer4_port': clear_match_layer4_port,
+    'set_match_tcp_flags': set_match_tcp_flags,
+    'clear_match_tcp_flags': clear_match_tcp_flags,
     'create_flow': create_flow,
     'delete_flow': delete_flow,
     'set_flow_description': set_flow_description,
@@ -391,8 +692,10 @@ request_handlers = {
     'clear_pcp_remarking_action': clear_pcp_remarking_action,
     'set_dscp_remarking_action': set_dscp_remarking_action,
     'clear_dscp_remarking_action': clear_dscp_remarking_action,
-    'set_policer': set_policer,
-    'clear_policer': clear_policer,
+    'set_policer_action': set_policer_action,
+    'clear_policer_action': clear_policer_action,
+    'set_mirror_session_action': set_mirror_session_action,
+    'clear_mirror_session_action': clear_mirror_session_action,
     'bind_policy': bind_policy,
     'unbind_policy': unbind_policy,
 
@@ -415,6 +718,26 @@ response_handlers = {
     'clear_classifier_description': handle_generic_delete_response,
     'set_classifier_match_acl': handle_generic_set_response,
     'clear_classifier_match_acl': handle_generic_delete_response,
+    'set_match_source_address': handle_generic_set_response,
+    'clear_match_source_address': handle_generic_delete_response,
+    'set_match_destination_address': handle_generic_set_response,
+    'clear_match_destination_address': handle_generic_delete_response,
+    'set_match_ethertype': handle_generic_set_response,
+    'clear_match_ethertype': handle_generic_delete_response,
+    'set_match_vlan': handle_generic_set_response,
+    'clear_match_vlan': handle_generic_delete_response,
+    'set_match_pcp': handle_generic_set_response,
+    'clear_match_pcp': handle_generic_delete_response,
+    'set_match_dei': handle_generic_set_response,
+    'clear_match_dei': handle_generic_delete_response,
+    'set_match_ip_protocol': handle_generic_set_response,
+    'clear_match_ip_protocol': handle_generic_delete_response,
+    'set_match_dscp': handle_generic_set_response,
+    'clear_match_dscp': handle_generic_delete_response,
+    'set_match_layer4_port': handle_generic_set_response,
+    'clear_match_layer4_port': handle_generic_delete_response,
+    'set_match_tcp_flags': handle_generic_set_response,
+    'clear_match_tcp_flags': handle_generic_delete_response,
     'create_flow': handle_generic_set_response,
     'delete_flow': handle_generic_delete_response,
     'set_flow_description': handle_generic_set_response,
@@ -423,8 +746,10 @@ response_handlers = {
     'clear_pcp_remarking_action': handle_generic_delete_response,
     'set_dscp_remarking_action': handle_generic_set_response,
     'clear_dscp_remarking_action': handle_generic_delete_response,
-    'set_policer': handle_generic_set_response,
-    'clear_policer': handle_generic_delete_response,
+    'set_policer_action': handle_generic_set_response,
+    'clear_policer_action': handle_generic_delete_response,
+    'set_mirror_session_action': handle_generic_set_response,
+    'clear_mirror_session_action': handle_generic_delete_response,
     'bind_policy': handle_generic_set_response,
     'unbind_policy': handle_generic_delete_response,
 
