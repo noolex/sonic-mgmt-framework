@@ -91,6 +91,11 @@ module sonic-flow-based-services {
                         pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,62})';
                         length 1..63;
                     }
+
+                    must "current() != 'default'" {
+                        error-app-tag name-not-allowed;
+                        error-message "'default' name is not allowed";
+                    }
                 }
 
                 leaf DESCRIPTION {
@@ -117,11 +122,6 @@ module sonic-flow-based-services {
                     }
                 }
 
-                leaf IP_PROTOCOL {
-                    when "current()/../MATCH_TYPE = 'FIELDS'";
-                    type uint8;
-                }
-
                 leaf ETHER_TYPE {
                     when "current()/../MATCH_TYPE = 'FIELDS'";
                     type string {
@@ -132,94 +132,17 @@ module sonic-flow-based-services {
                     }
                 }
 
-                choice src_dst_address {
-                    when "current()/MATCH_TYPE = 'FIELDS'";
-                    case l2_src_dst_address {
-                        leaf SRC_MAC {
-                            type string {
-                                pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}/[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
-                            }
-                        }
-                        leaf DST_MAC {
-                            type string {
-                                pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}/[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
-                            }
-                        }
-                    }
-                    case ipv4_src_dst_address {
-                        leaf SRC_IP {
-                            type inet:ipv4-prefix;
-                        }
-                        leaf DST_IP {
-                            type inet:ipv4-prefix;
-                        }
-                    }
-                    case ipv6_src_dst_address {
-                        leaf SRC_IPV6 {
-                            type inet:ipv6-prefix;
-                        }
-                        leaf DST_IPV6 {
-                            type inet:ipv6-prefix;
-                        }
-                    }
-                }
-
-                choice src_port {
-                    when "(current()/MATCH_TYPE = 'FIELDS') and ((IP_PROTOCOL = '6') or (IP_PROTOCOL = '17'))";
-                    case l4_src_port {
-                        leaf L4_SRC_PORT {
-                            type uint16;
-                        }
-                    }
-                    case l4_src_port_range {
-                        leaf L4_SRC_PORT_RANGE {
-                            type string {
-                                pattern "[0-9]{1,5}(-)[0-9]{1,5}";
-                            }
-                        }
-                    }
-                }
-
-                choice dst_port {
-                    when "(current()/MATCH_TYPE = 'FIELDS') and ((IP_PROTOCOL = '6') or (IP_PROTOCOL = '17'))";
-                    case l4_dst_port {
-                        leaf L4_DST_PORT {
-                            type uint16;
-                        }
-                    }
-                    case l4_dst_port_range {
-                        leaf L4_DST_PORT_RANGE {
-                            type string {
-                                pattern "[0-9]{1,5}(-)[0-9]{1,5}";
-                            }
-                        }
-                    }
-                }
-
-                leaf TCP_FLAGS {
-                    when "(current()/../MATCH_TYPE = 'FIELDS') and (current()/../IP_PROTOCOL = '17')";
-                    type string {
-                        pattern "0[xX][0-9a-fA-F]{2}[/]0[xX][0-9a-fA-F]{2}";
-                    }
-                }
-
-                leaf ICMP_TYPE {
-                    when "(current()/../MATCH_TYPE = 'FIELDS') and ((current()/../IP_PROTOCOL = '1') or (current()/../IP_PROTOCOL = '58'))";
-                    type uint8;
-                }
-
-                leaf ICMP_CODE {
-                    when "(current()/../MATCH_TYPE = 'FIELDS') and ((current()/../IP_PROTOCOL = '1') or (current()/../IP_PROTOCOL = '58'))";
-                    type uint8;
-                }
-
-                leaf DSCP {
+                leaf SRC_MAC {
                     when "current()/../MATCH_TYPE = 'FIELDS'";
-                    type uint8 {
-                        range "0..63" {
-                            error-app-tag invalid-dscp-value;
-                            error-message "Invalid DSCP Value.";
-                        }
+                    type string {
+                        pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}/[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
+                    }
+                }
+
+                leaf DST_MAC {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    type string {
+                        pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}/[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
                     }
                 }
 
@@ -252,6 +175,172 @@ module sonic-flow-based-services {
                         }
                     }
                 }
+
+                leaf IP_PROTOCOL {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x800') or ((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x86dd')) or (not(current()/../ETHER_TYPE)))" {
+                        error-app-tag ethertype-not-ipv4-ipv6;
+                        error-message "IP Protocol can be configured only when Ethertype is IPv4 or IPv6";
+                    }
+                    type uint8;
+                }
+
+                leaf SRC_IP {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "(not(current()/../SRC_IPV6)) and (not(current()/../DST_IPV6))" {
+                        error-message "Configuring IPv4 and IPv6 header fields in the same classifier is not allowed.";
+                    }
+                    must "(translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x800') or (not(current()/../ETHER_TYPE))" {
+                        error-app-tag src-ip-ethertype-not-ipv4;
+                        error-message "Source IP address can be configured only when ethertype is IPv4";
+                    }
+                    type inet:ipv4-prefix;
+                }
+
+                leaf DST_IP {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "(not(current()/../SRC_IPV6)) and (not(current()/../DST_IPV6))" {
+                        error-message "Configuring IPv4 and IPv6 header fields in the same classifier is not allowed.";
+                    }
+                    must "(translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x800') or (not(current()/../ETHER_TYPE))" {
+                        error-app-tag dst-ip-ethertype-not-ipv4;
+                        error-message "Destination IP address can be configured only when ethertype is IPv4";
+                    }
+                    type inet:ipv4-prefix;
+                }
+
+                leaf SRC_IPV6 {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "(not(current()/../SRC_IP)) and (not(current()/../DST_IP))" {
+                        error-message "Configuring IPv4 and IPv6 header fields in the same classifier is not allowed.";
+                    }
+                    must "(translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x86dd') or (not(current()/../ETHER_TYPE))" {
+                        error-app-tag src-ip-ethertype-not-ipv6;
+                        error-message "Source IPv6 address can be configured only when ethertype is IPv6";
+                    }
+                    type inet:ipv6-prefix;
+                }
+
+                leaf DST_IPV6 {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "(not(current()/../SRC_IP)) and (not(current()/../DST_IP))" {
+                        error-message "Configuring IPv4 and IPv6 header fields in the same classifier is not allowed.";
+                    }
+                    must "(translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x86dd') or (not(current()/../ETHER_TYPE))" {
+                        error-app-tag dst-ip-ethertype-not-ipv6;
+                        error-message "Destination IPv6 address can be configured only when ethertype is IPv6";
+                    }
+                    type inet:ipv6-prefix;
+                }
+
+                leaf DSCP {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x800') or ((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x86dd')) or (not(current()/../ETHER_TYPE)))" {
+                        error-app-tag ethertype-not-ipv4-ipv6;
+                        error-message "IP Protocol can be configured only when Ethertype is IPv4 or IPv6";
+                    }
+                    type uint8 {
+                        range "0..63" {
+                            error-app-tag invalid-dscp-value;
+                            error-message "Invalid DSCP Value.";
+                        }
+                    }
+                }
+
+                choice src_port {
+                    when "current()/MATCH_TYPE = 'FIELDS'";
+                    case l4_src_port {
+                        leaf L4_SRC_PORT {
+                            must "((current()/../IP_PROTOCOL = 6) or (current()/../IP_PROTOCOL = 17))" {
+                                error-app-tag ip-protocol-not-tcp-or-udp;
+                                error-message "Layer 4 source port can be configured only when IP protocol is TCP or UDP";
+                            }
+                            must "((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x800') or ((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x86dd')) or (not(current()/../ETHER_TYPE)))" {
+                                error-app-tag ethertype-not-ipv4-ipv6;
+                                error-message "TCP/UDP ports can be configured only when Ethertype is IPv4 or IPv6";
+                            }
+                            type uint16;
+                        }
+                    }
+                    case l4_src_port_range {
+                        leaf L4_SRC_PORT_RANGE {
+                            must "((current()/../IP_PROTOCOL = 6) or (current()/../IP_PROTOCOL = 17))" {
+                                error-app-tag ip-protocol-not-tcp-or-udp;
+                                error-message "Layer 4 source port can be configured only when IP protocol is TCP or UDP";
+                            }
+                            must "((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x800') or ((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x86dd')) or (not(current()/../ETHER_TYPE)))" {
+                                error-app-tag ethertype-not-ipv4-ipv6;
+                                error-message "TCP/UDP ports can be configured only when Ethertype is IPv4 or IPv6";
+                            }
+                            type string {
+                                pattern "([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])(-)([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])";
+                            }
+                        }
+                    }
+                }
+
+                choice dst_port {
+                    when "current()/MATCH_TYPE = 'FIELDS'";
+                    case l4_dst_port {
+                        leaf L4_DST_PORT {
+                            must "((current()/../IP_PROTOCOL = 6) or (current()/../IP_PROTOCOL = 17))" {
+                                error-app-tag ip-protocol-not-tcp-or-udp;
+                                error-message "Layer 4 source port can be configured only when IP protocol is TCP or UDP";
+                            }
+                            must "((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x800') or ((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x86dd')) or (not(current()/../ETHER_TYPE)))" {
+                                error-app-tag ethertype-not-ipv4-ipv6;
+                                error-message "TCP/UDP ports can be configured only when Ethertype is IPv4 or IPv6";
+                            }
+                            type uint16;
+                        }
+                    }
+                    case l4_dst_port_range {
+                        leaf L4_DST_PORT_RANGE {
+                            must "((current()/../IP_PROTOCOL = 6) or (current()/../IP_PROTOCOL = 17))" {
+                                error-app-tag ip-protocol-not-tcp-or-udp;
+                                error-message "Layer 4 source port can be configured only when IP protocol is TCP or UDP";
+                            }
+                            must "((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x800') or ((translate(current()/../ETHER_TYPE, 'ABCDEFX', 'abcdefx') = '0x86dd')) or (not(current()/../ETHER_TYPE)))" {
+                                error-app-tag ethertype-not-ipv4-ipv6;
+                                error-message "TCP/UDP ports can be configured only when Ethertype is IPv4 or IPv6";
+                            }
+                            type string {
+                                pattern "([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])(-)([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])";
+                            }
+                        }
+                    }
+                }
+
+                leaf TCP_FLAGS {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "current()/../IP_PROTOCOL = 6" {
+                        error-app-tag ip-protocol-not-tcp;
+                        error-message "TCP Flags can be configured only when IP protocol is IP protocol is TCP";
+                    }
+
+                    type string {
+                        pattern "(0[xX][1-9a-fA-F][0-9a-fA-F]?|[1-9][0-9]?|1[0-9]{2}|2[0-5]{2})/(0[xX][1-9a-fA-F][0-9a-fA-F]?|[1-9][0-9]?|1[0-9]{2}|2[0-5]{2})";
+                    }
+                }
+/*
+                leaf ICMP_TYPE {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "((current()/../IP_PROTOCOL = 1) or (current()/../IP_PROTOCOL = 58))" {
+                        error-app-tag ip-protocol-not-icmp-or-icmpv6;
+                        error-message "ICMP type can be configured only when IP protocol is ICMP or ICMPv6";
+                    }
+                    type uint8;
+                }
+
+                leaf ICMP_CODE {
+                    when "current()/../MATCH_TYPE = 'FIELDS'";
+                    must "((current()/../IP_PROTOCOL = 1) or (current()/../IP_PROTOCOL = 58))" {
+                        error-app-tag ip-protocol-not-icmp-or-icmpv6;
+                        error-message "ICMP code can be configured only when IP protocol is ICMP or ICMPv6";
+                    }
+                    type uint8;
+                }
+*/
             }
         }
 
@@ -393,7 +482,7 @@ module sonic-flow-based-services {
                     ======================================================================================================*/
                     case monitoring_actions {
                         when "/sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST[policy_name=current()/policy_name]/TYPE = 'MONITORING'";
-                        leaf MIRROR_ACTION {
+                        leaf SET_MIRROR_SESSION {
                             type leafref {
                                 path "/sms:sonic-mirror-session/sms:MIRROR_SESSION/sms:MIRROR_SESSION_LIST/sms:name";
                             }
