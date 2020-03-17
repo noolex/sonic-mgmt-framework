@@ -249,7 +249,7 @@ def __create_acl_rule_ipv4_ipv6(args):
         protocol = int(args[4])
 
     log.log_debug('Protocol is {}'.format(protocol))
-    if protocol:
+    if protocol is not None:
         body["acl-entry"][0][af]["config"]["protocol"] = protocol
 
     next_item = 6

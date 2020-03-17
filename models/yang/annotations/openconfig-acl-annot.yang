@@ -5,8 +5,9 @@ module openconfig-acl-annot {
     namespace "http://openconfig.net/yang/acl-annot";
     prefix "oc-acl-annot";
 
-    import sonic-extensions { prefix sonic-ext; }
-    import openconfig-acl { prefix oc-acl; }
+    // import sonic-extensions { prefix sonic-ext; }
+    // import openconfig-acl { prefix oc-acl; }
+
 
     // meta
     organization
@@ -23,6 +24,7 @@ module openconfig-acl-annot {
           "Initial revision.";
     }
 
+/*
     deviation /oc-acl:acl {
       deviate add {
         sonic-ext:post-transformer "acl_post_xfmr";
@@ -207,6 +209,6 @@ module openconfig-acl-annot {
         sonic-ext:subtree-transformer "acl_port_bindings_xfmr";
       }
     }
-
+*/
 }
 
