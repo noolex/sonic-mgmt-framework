@@ -14,6 +14,11 @@ module sonic-vlan-interface {
         prefix vrf;
     }
 
+   import sonic-common {
+	   prefix cmn;
+   }
+
+
     organization
         "SONiC";
 
@@ -23,41 +28,69 @@ module sonic-vlan-interface {
     description
         "SONIC VLAN INTERFACE";
 
+    revision 2020-02-28 {
+        description
+            "Add DHCP server attribute";
+    }
+    revision 2019-12-01 {
+        description
+            "Add vrf_name for VRF interface binding.";
+    }
     revision 2019-07-02 {
         description
             "Initial revision.";
     }
 
-    revision 2019-12-01 {
-        description
-            "Add vrf_name for VRF interface binding.";
-    }
 
     container sonic-vlan-interface {
 
         container VLAN_INTERFACE {
 
-            list VLAN_INTERFACE_LIST {
-                key "vlanName";
+		list VLAN_INTERFACE_LIST {
+			key "vlanName";
 
-                leaf vlanName{
-                    type leafref {
-                        path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
-                    }
-                }
+			leaf vlanName{
+				type leafref {
+					path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
+				}
+			}
 
-                leaf nat_zone {
-                    type uint8 {
-                        range "0..3";
-                    }
-                }
+			leaf nat_zone {
+				type uint8 {
+					range "0..3";
+				}
+			}
 
-                leaf vrf_name {
-                    type leafref {
-                        path "/vrf:sonic-vrf/vrf:VRF/vrf:VRF_LIST/vrf:vrf_name";
-                    }
-                } 
-            }
+			leaf vrf_name {
+				type leafref {
+					path "/vrf:sonic-vrf/vrf:VRF/vrf:VRF_LIST/vrf:vrf_name";
+				}
+			} 
+
+			leaf-list dhcp_servers{
+				max-elements 4;
+				type inet:ip-address;
+				must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+					"(count(/sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_IPADDR_LIST[vlanName=current()/../vlanName]) > 1)"
+					{
+						error-message "DHCP server can be configured on vlan routing interface only";
+						error-app-tag dhcp-server-invalid-vlan-routing-interface;
+					}
+			}
+
+			leaf-list dhcpv6_servers{
+				max-elements 4; 
+				type inet:ipv6-address;
+				must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+					"(count(/sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_IPADDR_LIST[vlanName=current()/../vlanName]) > 1)"
+					{
+						error-message "DHCP server can be configured on vlan routing interface only";
+						error-app-tag dhcp-server-invalid-vlan-routing-interface;
+					}
+			}
+
+		}
+
             list VLAN_INTERFACE_IPADDR_LIST {
                 key "vlanName ip_prefix";
 
