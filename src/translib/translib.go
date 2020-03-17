@@ -65,6 +65,7 @@ type SetRequest struct {
 	Payload []byte
 	User    UserRoles
 	AuthEnabled bool
+	ClientVersion Version
 }
 
 type SetResponse struct {
@@ -76,6 +77,8 @@ type GetRequest struct {
 	Path    string
 	User    UserRoles
 	AuthEnabled bool
+	ClientVersion Version
+
 	// Depth limits the depth of data subtree in the response
 	// payload. Default value 0 indicates there is no limit.
 	Depth   uint
@@ -91,6 +94,7 @@ type ActionRequest struct {
 	Payload []byte
 	User    UserRoles
 	AuthEnabled bool
+	ClientVersion Version
 }
 
 type ActionResponse struct {
@@ -105,6 +109,7 @@ type BulkRequest struct {
 	CreateRequest  []SetRequest
 	User           UserRoles
 	AuthEnabled    bool
+	ClientVersion  Version
 }
 
 type BulkResponse struct {
@@ -120,6 +125,7 @@ type SubscribeRequest struct {
 	Stop			chan struct{}
 	User            UserRoles
 	AuthEnabled     bool
+	ClientVersion   Version
 }
 
 type SubscribeResponse struct {
@@ -141,6 +147,7 @@ type IsSubscribeRequest struct {
 	Paths				[]string
 	User                UserRoles
 	AuthEnabled         bool
+	ClientVersion       Version
 }
 
 type IsSubscribeResponse struct {
@@ -183,7 +190,7 @@ func Create(req SetRequest) (SetResponse, error) {
 	log.Info("Create request received with path =", path)
 	log.Info("Create request received with payload =", string(payload))
 
-	app, appInfo, err := getAppModule(path)
+	app, appInfo, err := getAppModule(path, req.ClientVersion)
 
 	if err != nil {
 		resp.ErrSrc = ProtoErr
@@ -258,7 +265,7 @@ func Update(req SetRequest) (SetResponse, error) {
 	log.Info("Update request received with path =", path)
 	log.Info("Update request received with payload =", string(payload))
 
-	app, appInfo, err := getAppModule(path)
+	app, appInfo, err := getAppModule(path, req.ClientVersion)
 
 	if err != nil {
 		resp.ErrSrc = ProtoErr
@@ -333,7 +340,7 @@ func Replace(req SetRequest) (SetResponse, error) {
 	log.Info("Replace request received with path =", path)
 	log.Info("Replace request received with payload =", string(payload))
 
-	app, appInfo, err := getAppModule(path)
+	app, appInfo, err := getAppModule(path, req.ClientVersion)
 
 	if err != nil {
 		resp.ErrSrc = ProtoErr
@@ -424,7 +431,7 @@ func Delete(req SetRequest) (SetResponse, error) {
         }
     }
 
-	app, appInfo, err := getAppModule(path)
+	app, appInfo, err := getAppModule(path, req.ClientVersion)
 
 	if err != nil {
 		resp.ErrSrc = ProtoErr
@@ -496,7 +503,7 @@ func Get(req GetRequest) (GetResponse, error) {
 
 	log.Info("Received Get request for path = ", path)
 
-	app, appInfo, err := getAppModule(path)
+	app, appInfo, err := getAppModule(path, req.ClientVersion)
 
 	if err != nil {
 		resp = GetResponse{Payload: payload, ErrSrc: ProtoErr}
@@ -546,7 +553,7 @@ func Action(req ActionRequest) (ActionResponse, error) {
 
 	log.Info("Received Action request for path = ", path)
 
-	app, appInfo, err := getAppModule(path)
+	app, appInfo, err := getAppModule(path, req.ClientVersion)
 
 	if err != nil {
 		resp = ActionResponse{Payload: payload, ErrSrc: ProtoErr}
@@ -631,7 +638,7 @@ func Bulk(req BulkRequest) (BulkResponse, error) {
 
 		log.Info("Delete request received with path =", path)
 
-		app, appInfo, err := getAppModule(path)
+		app, appInfo, err := getAppModule(path, req.DeleteRequest[i].ClientVersion)
 
 		if err != nil {
 			errSrc = ProtoErr
@@ -681,7 +688,7 @@ func Bulk(req BulkRequest) (BulkResponse, error) {
 
         log.Info("Replace request received with path =", path)
 
-        app, appInfo, err := getAppModule(path)
+        app, appInfo, err := getAppModule(path, req.ReplaceRequest[i].ClientVersion)
 
         if err != nil {
             errSrc = ProtoErr
@@ -734,7 +741,7 @@ func Bulk(req BulkRequest) (BulkResponse, error) {
 
 		log.Info("Update request received with path =", path)
 
-		app, appInfo, err := getAppModule(path)
+		app, appInfo, err := getAppModule(path, req.UpdateRequest[i].ClientVersion)
 
 		if err != nil {
 			errSrc = ProtoErr
@@ -784,7 +791,7 @@ func Bulk(req BulkRequest) (BulkResponse, error) {
 
 		log.Info("Create request received with path =", path)
 
-		app, appInfo, err := getAppModule(path)
+		app, appInfo, err := getAppModule(path, req.CreateRequest[i].ClientVersion)
 
 		if err != nil {
 			errSrc = ProtoErr
@@ -871,7 +878,7 @@ func Subscribe(req SubscribeRequest) ([]*IsSubscribeResponse, error) {
 
 	for i, path := range paths {
 
-		app, appInfo, err := getAppModule(path)
+		app, appInfo, err := getAppModule(path, req.ClientVersion)
 
 		if err != nil {
 
@@ -978,7 +985,7 @@ func IsSubscribeSupported(req IsSubscribeRequest) ([]*IsSubscribeResponse, error
 
 	for i, path := range paths {
 
-		app, _, err := getAppModule(path)
+		app, _, err := getAppModule(path, req.ClientVersion)
 
 		if err != nil {
 			resp[i].Err = err
@@ -1154,12 +1161,16 @@ func getDBOptionsWithSeparator(dbNo db.DBNum, initIndicator string, tableSeparat
 	})
 }
 
-func getAppModule(path string) (*appInterface, *appInfo, error) {
+func getAppModule(path string, clientVer Version) (*appInterface, *appInfo, error) {
 	var app appInterface
 
 	aInfo, err := getAppModuleInfo(path)
 
 	if err != nil {
+		return nil, aInfo, err
+	}
+
+	if err := validateClientVersion(clientVer, path, aInfo); err != nil {
 		return nil, aInfo, err
 	}
 

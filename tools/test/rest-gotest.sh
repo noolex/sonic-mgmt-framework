@@ -73,6 +73,7 @@ if [ -z $YANG_MODELS_PATH ]; then
     pushd $YANG_MODELS_PATH > /dev/null
     rm -f *
     find $TOPDIR/models/yang -name "ietf-*.yang" -not -path "*/annotations/*" -exec ln -sf {} \;
+    ln -sf $TOPDIR/models/yang/version.xml
     popd > /dev/null
 fi
 
