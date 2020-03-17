@@ -1619,31 +1619,28 @@ def seconds_to_dhms_str(seconds):
     sec %= 60
     return "%02i:%02i:%02i" % (hours, minutes, sec)
 
-def get_bgp_nbr_iptype(nbr, iptype):
+def get_bgp_nbr_iptype(nbr, afisafiname):
     unnumbered = False
-    is_ipt = False
-    ipt = 4
+    is_afmatch = False
+    nbr_afisafiname = "openconfig-bgp-types:IPV4_UNICAST"
     if 'afi-safis' in nbr:
        afisafis = nbr['afi-safis']['afi-safi']
        for afisafi in afisafis:
            if 'state' in afisafi:
-               if afisafi['state']['afi-safi-name'] == "openconfig-bgp-types:IPV4_UNICAST":
-                  ipt = 4
-               elif afisafi['state']['afi-safi-name'] == "openconfig-bgp-types:IPV6_UNICAST":
-                  ipt = 6
-	       else:
-                  ipt = 4
-           if ipt == iptype:
+               nbr_afisafiname = afisafi['state']['afi-safi-name']
+           else:
+               nbr_afisafiname = "openconfig-bgp-types:IPV4_UNICAST"
+           if nbr_afisafiname == afisafiname:
               break
     try:
         ipaddr = netaddr.IPAddress(nbr['neighbor-address'])
     except:
         unnumbered = True
-    if iptype == ipt:
-       is_ipt = True
-    return is_ipt, unnumbered
+    if nbr_afisafiname == afisafiname:
+       is_afmatch = True
+    return is_afmatch, unnumbered
 
-def preprocess_bgp_nbrs(iptype, nbrs):
+def preprocess_bgp_nbrs(afisafiname, nbrs):
     new_nbrs = []
     un_enbrs = []
     un_pnbrs = []
@@ -1651,11 +1648,11 @@ def preprocess_bgp_nbrs(iptype, nbrs):
     un_lnbrs = []
     un_nbrs = []
     for nbr in nbrs:
-        is_ipt = False
+        is_afmatch = False
         unnumbered = False
-        is_ipt, unnumbered = get_bgp_nbr_iptype(nbr, iptype)
+        is_afmatch, unnumbered = get_bgp_nbr_iptype(nbr, afisafiname)
  
-        if is_ipt:
+        if is_afmatch:
             if 'state' in nbr:
                 if 'session-state' in nbr['state'] and 'last-established' in nbr['state']:
                    if nbr['state']['session-state'] == 'ESTABLISHED':
@@ -1729,14 +1726,16 @@ def invoke_show_api(func, args=[]):
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors', name=args[1], identifier=IDENTIFIER, name1=NAME1)
             response = api.get(keypath)
             if response.ok():
-                iptype = 4
-                d['afisafiname'] = 'openconfig-bgp-types:IPV4_UNICAST'
                 if args[2] == 'ipv6':
-                    iptype = 6
-                    d['afisafiname'] = 'openconfig-bgp-types:IPV6_UNICAST'
+                    afisafiname = 'openconfig-bgp-types:IPV6_UNICAST'
+                elif args[2] == 'evpn':
+                    afisafiname = 'openconfig-bgp-types:L2VPN_EVPN'
+                else:
+                    afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
+                d['afisafiname'] = afisafiname
 
                 if 'openconfig-network-instance:neighbors' in response.content:
-                    tmp['neighbor'] = preprocess_bgp_nbrs(iptype, response.content['openconfig-network-instance:neighbors']['neighbor'])
+                    tmp['neighbor'] = preprocess_bgp_nbrs(afisafiname, response.content['openconfig-network-instance:neighbors']['neighbor'])
                     d['openconfig-network-instance:neighbors'] = tmp
                 return d
             else:
@@ -1748,9 +1747,12 @@ def invoke_show_api(func, args=[]):
 
     elif func == 'get_ip_bgp_neighbors_neighborip':
         d = {}
-        iptype = 4
         if args[2] == 'ipv6':
-            iptype = 6
+            afisafiname = 'openconfig-bgp-types:IPV6_UNICAST'
+        elif args[2] == 'evpn':
+            afisafiname = 'openconfig-bgp-types:L2VPN_EVPN'
+        else:
+            afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
         if response.ok():
@@ -1760,7 +1762,7 @@ def invoke_show_api(func, args=[]):
             response = api.get(keypath)
             if response.ok():
                if 'openconfig-network-instance:neighbor' in response.content:
-                  tmp['neighbor'] = preprocess_bgp_nbrs(iptype, response.content['openconfig-network-instance:neighbor'])
+                  tmp['neighbor'] = preprocess_bgp_nbrs(afisafiname, response.content['openconfig-network-instance:neighbor'])
                   d['openconfig-network-instance:neighbors'] = tmp
                return d
             else:
@@ -1770,9 +1772,12 @@ def invoke_show_api(func, args=[]):
         return d
     elif func == 'get_ip_bgp_neighbors':
         d = {}
-        iptype = 4
         if args[2] == 'ipv6':
-            iptype = 6
+            afisafiname = 'openconfig-bgp-types:IPV6_UNICAST'
+        elif args[2] == 'evpn':
+            afisafiname = 'openconfig-bgp-types:L2VPN_EVPN'
+        else:
+            afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
         if response.ok():
@@ -1781,7 +1786,7 @@ def invoke_show_api(func, args=[]):
             response = api.get(keypath)
             if response.ok():
                if 'openconfig-network-instance:neighbors' in response.content:
-                   tmp['neighbor'] = preprocess_bgp_nbrs(iptype, response.content['openconfig-network-instance:neighbors']['neighbor'])
+                   tmp['neighbor'] = preprocess_bgp_nbrs(afisafiname, response.content['openconfig-network-instance:neighbors']['neighbor'])
                    d['openconfig-network-instance:neighbors'] = tmp
                return d
             else:
