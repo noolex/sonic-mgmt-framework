@@ -552,12 +552,41 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 						if err != nil {
 							return err
 						}
+					} else if (spec.hasChildSubTree == true) {
+						xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
+						curResult, cerr := allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+						if cerr != nil {
+							err = cerr
+						} else {
+							mapCopy(result, curResult)
+						}
+					}
+				} else if (spec.hasChildSubTree == true) {
+					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
+					curResult, cerr := allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+					if cerr != nil {
+						err = cerr
+					} else {
+						mapCopy(result, curResult)
 					}
 				}
 			} else if len(spec.childTable) > 0 {
+				if (spec.hasChildSubTree == true) {
+					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
+					result, err = allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+				} else {
 				for _, child := range spec.childTable {
 					result[child] = make(map[string]db.Value)
 				}
+				}
+			} else {
+				if (spec.hasChildSubTree == true) {
+					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
+					result, err = allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+				}
+			}
+			if err != nil {
+				return err
 			}
 
 			_, ok := xYangSpecMap[moduleNm]

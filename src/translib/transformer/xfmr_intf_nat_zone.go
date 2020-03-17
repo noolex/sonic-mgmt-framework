@@ -59,8 +59,10 @@ var YangToDb_intf_nat_zone_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) 
     intfObj := intfsObj.Interface[ifName]
 
     if intfObj.NatZone == nil || intfObj.NatZone.Config == nil || intfObj.NatZone.Config.NatZone == nil {
-        log.Info("YangToDb Interface nat zone config is not valid - ", ifName)
-        return natZoneMap, errors.New("YangToDb Interface nat zone config is not valid - " + ifName)
+	    if inParams.oper != DELETE {
+            log.Info("YangToDb Interface nat zone config is not valid - ", ifName)
+            return natZoneMap, errors.New("YangToDb Interface nat zone config is not valid - " + ifName)
+        }
     }
     intfType, _, ierr := getIntfTypeByName(ifName)
     if intfType == IntfTypeUnset || ierr != nil {
