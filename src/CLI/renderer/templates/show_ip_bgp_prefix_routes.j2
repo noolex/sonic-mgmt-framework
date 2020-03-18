@@ -34,6 +34,7 @@
         {% if routeList %}
          {% for route in routeList %}
          {% if vars.update({'prefix':route["prefix"]}) %}{% endif %}
+         {% if not "loc-rib-prefix-paths" in route %} {% break %} {% endif %}
          {% set prefixPathsList = route["loc-rib-prefix-paths"] %}
          {% set pathsList = prefixPathsList["paths"] %}
          {% if pathsList %}
@@ -66,10 +67,12 @@
          {% if vars.update({'vrf':json_output["vrf"]}) %}{% endif %}
       {% endif %}
    {% endfor %}
+  {% if vars.numpaths %}
 BGP routing table entry for {{ vars.prefix }}
 Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default)
+  {% endif %}
 {% endif %}
-{% if json_output -%}
+{% if json_output and vars.numpaths -%}
   {% for key in json_output %}
      {% if "openconfig-rib-bgp-ext:route" in key %}
          {% set routeList = json_output["openconfig-rib-bgp-ext:route"] %}
