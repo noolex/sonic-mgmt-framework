@@ -43,12 +43,8 @@ module sonic-neighbor {
 
     rpc clear-neighbors {
         input {
-            leaf force {
-                type boolean;
-                description "Set it to 'true' to delete PERMANENT/Static entries as well";
-            }
-
             leaf family {
+                default "IPv4";
                 type enumeration {
                     enum IPv4;
                     enum IPv6;
@@ -56,12 +52,22 @@ module sonic-neighbor {
                 description "Address family (IPv4/IPv6). Default: IPv4";
             }
 
+            leaf vrf {
+                type string {
+                    length "3..15";
+                    pattern "mgmt|Vrf[0-9A-Za-z_-]" {
+                        error-message "Invalid VRF name";
+                        error-app-tag vrf-name-arp-invalid;
+                    }
+                }
+            }
+
             choice option {
                 leaf ip {
                     type inet:ip-prefix;
                     description
                         "Parameter for deleting ARP/NDP entries related to the given IPv4/IPv6 address.
-                         Note: If both 'ip' and 'ifname' are not provided, all dynamic enties will be cleared from the ARP/NDP table.";
+                        Note: If both 'ip' and 'ifname' are not provided, all dynamic enties will be cleared from the ARP/NDP table.";
                 }
 
                 leaf ifname {
@@ -139,6 +145,7 @@ module sonic-neighbor {
                 }
 
                 leaf family {
+                    default "IPv4";
                     type enumeration {
                         enum IPv4;
                         enum IPv6;
