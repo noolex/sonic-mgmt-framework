@@ -1174,7 +1174,6 @@ def run(func, args):
       return
     elif api_response.ok():
       if func == 'snmp_get':
-        print api_response.content['system']
         show_cli_output(args[0], api_response.content['system'])
         temp = api_response.content['global']
         if len(temp)>0:
