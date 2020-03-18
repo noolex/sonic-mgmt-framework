@@ -95,7 +95,7 @@ def build_mac_list():
             key = "Vlan" + str(vlan) + "-" + mac
             macDict[key] = intf
     except Exception as e:
-        log.syslog(log.LOG_INFO, e)
+        log.syslog(log.LOG_INFO, str(e))
         print "%Error: Internal error"
 
 def get_egress_port(ifName, macAddr):
@@ -124,7 +124,7 @@ def isMgmtVrfEnabled():
             return False
 
     except Exception as e:
-        log.syslog(log.LOG_INFO, e)
+        log.syslog(log.LOG_INFO, str(e))
         print "%Error: Internal error"
 
     return False
@@ -166,15 +166,17 @@ def build_vrf_list():
 
             for intf in intfsList:
                 portName = intf.get(request[3])
+                if portName is None:
+                    continue
+
                 vrfName = intf.get('vrf_name')
-                if len(portName) > 0:
-                    if len(vrfName) > 0:
-                        vrfDict[portName] = vrfName
-                    else:
-                        vrfDict[portName] = ""
+                if vrfName is None:
+                    vrfName = ""
+
+                vrfDict[portName] = vrfName
 
         except Exception as e:
-            log.syslog(log.LOG_INFO, e)
+            log.syslog(log.LOG_INFO, str(e))
             print "%Error: Internal error"
 
     if isMgmtVrfEnabled():
