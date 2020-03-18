@@ -268,19 +268,6 @@ module openconfig-interfaces-annot {
             sonic-ext:subtree-transformer "unnumbered_intf_xfmr";
         }
     }
-	
-
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-intf-ext:sag-ipv4 {
-      deviate add {
-        sonic-ext:table-name "SAG";
-        sonic-ext:key-transformer "sag_ipv4_if_key_xfmr";
-      }
-    }
-
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-intf-ext:sag-ipv4/oc-intf-ext:config {
-      deviate add {
-      }
-    }
 
     deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-intf-ext:sag-ipv4/oc-intf-ext:config/oc-intf-ext:static-anycast-gateway {
       deviate add {
@@ -288,45 +275,11 @@ module openconfig-interfaces-annot {
 	  }
     }
 
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-intf-ext:sag-ipv4/oc-intf-ext:state {
-      deviate add {
-      }
-    }
-
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-intf-ext:sag-ipv4/oc-intf-ext:state/oc-intf-ext:static-anycast-gateway {
-      deviate add {
-        sonic-ext:field-name "gwip";
-      }
-    }
-
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-intf-ext:sag-ipv6 {
-      deviate add {
-        sonic-ext:table-name "SAG";
-        sonic-ext:key-transformer "sag_ipv6_if_key_xfmr";
-      }
-    }
-
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-intf-ext:sag-ipv6/oc-intf-ext:config {
-      deviate add {
-      }
-    }
-
     deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-intf-ext:sag-ipv6/oc-intf-ext:config/oc-intf-ext:static-anycast-gateway {
       deviate add {
 		sonic-ext:subtree-transformer "intf_sag_ip_xfmr";
       }
     }
-
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-intf-ext:sag-ipv6/oc-intf-ext:state {
-      deviate add {
-      }
-    }
-
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-intf-ext:sag-ipv6/oc-intf-ext:state/oc-intf-ext:static-anycast-gateway {
-      deviate add {
-        sonic-ext:field-name "gwip";
-      }
-    }	
 
     deviation /oc-intf:interfaces/oc-intf:interface/oc-vxlan:vxlan-if/oc-vxlan:config {
         deviate add {
