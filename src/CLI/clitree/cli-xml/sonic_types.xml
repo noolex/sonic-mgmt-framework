@@ -1099,5 +1099,11 @@ limitations under the License.
         help="Drop Monitor flowgroup ID range "
         />
     <!--=======================================================-->
-
+    <PTYPE
+        name="RL_RATE_TYPE"
+        method="unsignedInteger"
+        pattern="0..100000000"
+        help="kbps"
+        />
+    <!--=======================================================-->
 </CLISH_MODULE>

@@ -59,3 +59,4 @@ sonic-ip-show-annot.yang
 openconfig-relay-agent.yang
 openconfig-relay-agent-annot.yang
 openconfig-relay-agent-ext.yang
+sonic-storm-control.yang
