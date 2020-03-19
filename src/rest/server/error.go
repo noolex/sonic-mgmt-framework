@@ -142,7 +142,7 @@ func toErrorEntry(err error, r *http.Request) (status int, errInfo errorEntry) {
 	case tlerr.TranslibUnsupportedClientVersion:
 		status = http.StatusBadRequest
 		errInfo.Type = errtypeProtocol
-		errInfo.Tag = errtagInvalidValue
+		errInfo.Tag = errtagOperationNotSupported
 		errInfo.Message = e.Error()
 
 	case tlerr.TranslibRedisClientEntryNotExist:

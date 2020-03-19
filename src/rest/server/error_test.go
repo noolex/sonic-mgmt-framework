@@ -164,7 +164,7 @@ func TestErrorEntry(t *testing.T) {
 	t.Run("Version_err", testErrorEntry(
 		tlerr.TranslibUnsupportedClientVersion{
 			ClientVersion: "1.2.3", ServerVersion: "1.2.0", ServerBaseVersion: "1.0.0"},
-		400, "protocol", "invalid-value", "", "Unsupported client version 1.2.3"))
+		400, "protocol", "operation-not-supported", "", "Unsupported client version 1.2.3"))
 
 }
 
