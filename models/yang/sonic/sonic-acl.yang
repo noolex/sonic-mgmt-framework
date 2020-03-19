@@ -168,7 +168,8 @@ module sonic-acl {
                 }
 
                 leaf IP_TYPE {
-                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6')";
+                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'TAM') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6')";
+
                     sonic-ext:custom-validation ValidateAclRuleIPAddress;
                     type enumeration {
                         enum ANY;
@@ -202,7 +203,7 @@ module sonic-acl {
 
                 choice src_dst_address {
                     case l2_src_dst_address {
-                        when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L2'";
+                        when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L2') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'TAM')";
                         leaf SRC_MAC {
                             type string {
                                 pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}/[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
@@ -215,7 +216,7 @@ module sonic-acl {
                         }
                     }
                     case ipv4_src_dst_address {
-                        when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L3'";
+                        when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'TAM')";
                         leaf SRC_IP {
                             type inet:ipv4-prefix;
                         }
@@ -224,7 +225,7 @@ module sonic-acl {
                         }
                     }
                     case ipv6_src_dst_address {
-                        when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L3V6'";
+                        when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L3V6') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'TAM')";
                         leaf SRC_IPV6 {
                             type inet:ipv6-prefix;    
                         }
@@ -284,7 +285,7 @@ module sonic-acl {
                 }
 
                 leaf DSCP {
-                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6')";
+                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'TAM')";
                     type uint8 {
                         range "0..63"{
                             error-message "Invalid DSCP Value.";
@@ -302,7 +303,7 @@ module sonic-acl {
                 }
 
                 leaf PCP {
-                    when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L2'";
+                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L2') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'TAM')";
                     type string {
                         pattern "[0-7]|[0-7]/[0-7]" {
                             error-message "Invalid PCP Value.";
@@ -311,7 +312,7 @@ module sonic-acl {
                 }
 
                 leaf DEI {
-                    when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L2'";
+                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L2') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'TAM')";
                     type uint8 {
                         range "0..1" {
                             error-message "Invalid DEI Value.";
