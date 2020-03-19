@@ -1307,7 +1307,7 @@ limitations under the License.
   </DOCGEN>
   </COMMAND>
   <COMMAND name="show bgp l2vpn evpn summary" help="Summary of BGP neighbor status">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_summary show_evpn_summary.j2 default L2VPN_EVPN ${__full_line}</ACTION>
+    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_bgp.py get_ip_bgp_summary show_ip_bgp_summary.j2 default evpn</ACTION>
     <DOCGEN>
     <DESCRIPTION>
       This command displays BGP summarized information for BGP L2VPN EVPN address family including neghbors 
