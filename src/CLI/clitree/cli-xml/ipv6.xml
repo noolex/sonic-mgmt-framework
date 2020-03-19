@@ -293,7 +293,11 @@ limitations under the License.
         help="Show IPV6 DHCP relay information"
         name="show ipv6 dhcp-relay">
         <MACRO name="DHCP-RELAY-SHOW-OPTIONS" arg=""/>
-        <ACTION  builtin="clish_pyobj">sonic_cli_if get_openconfig_relay_agent_relay_agent_dhcpv6 show_ipv6_dhcp_relay_brief.j2 ${__full_line}
+        <ACTION> if test -n "${ifName}"; then
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_state show_ipv6_dhcp_relay_statistics.j2 ${ifName} ${__full_line}
+                 else
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcpv6 show_ipv6_dhcp_relay_brief.j2 ${__full_line}
+                 fi
         </ACTION>
     </COMMAND>
 </VIEW>

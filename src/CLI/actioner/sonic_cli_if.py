@@ -388,6 +388,14 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6')
         return api.get(path)
 
+    elif func == 'get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state':
+        path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/state', id=args[1])
+        return api.get(path)
+
+    elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_state':
+        path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/state', id=args[1])
+        return api.get(path)
+
     return api.cli_not_implemented(func)
 
 
@@ -448,6 +456,10 @@ def run(func, args):
                 elif func == 'get_openconfig_relay_agent_relay_agent':
                     show_cli_output(args[0], api_response)
                 elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6':
+                    show_cli_output(args[0], api_response)
+                elif func == 'get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state':
+                    show_cli_output(args[0], api_response)
+                elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_state':
                     show_cli_output(args[0], api_response)
 
         else:
