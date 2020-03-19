@@ -772,7 +772,11 @@ func getModelChildInfo(l *YParserListInfo, node *C.struct_lys_node,
 				&csWhenExp)
 				getModelChildInfo(l, sChild, true, &csWhenExp)
 			} else {
-				getModelChildInfo(l, sChild, false, nil)
+				if (underWhen == true) {
+					getModelChildInfo(l, sChild, underWhen, whenExpr)
+				} else {
+					getModelChildInfo(l, sChild, false, nil)
+				}
 			}
 		case C.LYS_LEAF, C.LYS_LEAFLIST:
 			sleaf := (*C.struct_lys_node_leaf)(unsafe.Pointer(sChild))

@@ -742,7 +742,7 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]string, []string) {
 			if (modelInfo.tableInfo[refTbl.tableName].keys[idx] == refTbl.field) {
 				//field is key comp
 				mCmd[refTbl.tableName] = pipe.Keys(fmt.Sprintf("%s|*%s*",
-				refTbl.tableName, key)) //write into pipeline}
+				refTbl.tableName, key)) //write into pipeline
 				break
 			}
 		}
@@ -753,9 +753,9 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]string, []string) {
 			// ex: (h.members: == 'Ethernet4,' or (string.find(h['members@'], 'Ethernet4') != nil)
 			//',' to include leaf-list case
 			mFilterScripts[refTbl.tableName] =
-			fmt.Sprintf("return (h.%s == '%s') or " +
-			"h['ports@'] ~= nil and (string.find(h['%s@'], '%s') ~= nil)",
-			refTbl.field, key, refTbl.field, key)
+			fmt.Sprintf("return (h['%s'] == '%s') or " +
+			"h['%s@'] ~= nil and (string.find(h['%s@'], '%s') ~= nil)",
+			refTbl.field, key, refTbl.field, refTbl.field, key)
 		}
 	}
 
