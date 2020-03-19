@@ -39,10 +39,10 @@ func Process(w http.ResponseWriter, r *http.Request) {
 	rc, r := GetContext(r)
 	reqID := rc.ID
 	args := translibArgs{
-		reqID: reqID,
-		method: r.Method,
+		reqID:       reqID,
+		method:      r.Method,
 		AuthEnabled: rc.ClientAuth.Any(),
-		User: translib.UserRoles{Name: rc.Auth.User, Roles: rc.Auth.Roles},
+		User:        translib.UserRoles{Name: rc.Auth.User, Roles: rc.Auth.Roles},
 	}
 
 	var err error
@@ -52,6 +52,13 @@ func Process(w http.ResponseWriter, r *http.Request) {
 
 	glog.Infof("[%s] %s %s; content-len=%d", reqID, r.Method, r.URL.Path, r.ContentLength)
 	_, args.data, err = getRequestBody(r, rc)
+
+	if err == nil {
+		err = parseQueryParams(&args, r)
+	}
+	if err == nil {
+		err = parseClientVersion(&args, r)
+	}
 	if err != nil {
 		status, data, rtype = prepareErrorResponse(err, r)
 		goto write_resp
@@ -59,12 +66,6 @@ func Process(w http.ResponseWriter, r *http.Request) {
 
 	args.path = getPathForTranslib(r)
 	glog.V(1).Infof("[%s] Translated path = %s", reqID, args.path)
-
-	err = parseQueryParams(&args, r)
-	if err != nil {
-		status, data, rtype = prepareErrorResponse(err, r)
-		goto write_resp
-	}
 
 	status, data, err = invokeTranslib(&args, r, rc)
 	if err != nil {
@@ -256,15 +257,28 @@ func parseQueryParams(args *translibArgs, r *http.Request) error {
 	return nil
 }
 
+// parseClientVersion parses the Accept-Version request header value
+func parseClientVersion(args *translibArgs, r *http.Request) error {
+	if v := r.Header.Get("Accept-Version"); len(v) != 0 {
+		if err := args.version.Set(v); err != nil {
+			return httpBadRequest("Invalid Accept-Version \"%s\"", v)
+		}
+	}
+
+	glog.V(1).Infof("[%s] Client version = \"%s\"", args.reqID, args.version)
+	return nil
+}
+
 // translibArgs holds arguments for invoking translib APIs.
 type translibArgs struct {
-	reqID  string // request id
-	method string // method name
-	path   string // Translib path
-	data   []byte // payload
-	depth uint // RESTCONF depth, for Get API only
-	AuthEnabled bool //Enable Authorization
-	User translib.UserRoles // User and role info for RBAC
+	reqID       string             // request id
+	method      string             // method name
+	path        string             // Translib path
+	data        []byte             // payload
+	version     translib.Version   // client version
+	depth       uint               // RESTCONF depth, for Get API only
+	AuthEnabled bool               // Enable Authorization
+	User        translib.UserRoles // User and role info for RBAC
 }
 
 // invokeTranslib calls appropriate TransLib API for the given HTTP
@@ -273,17 +287,18 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 	var status = 400
 	var content []byte
 	var err error
-	
+
 	ts := time.Now()
 
 	switch r.Method {
 	case "GET", "HEAD":
 
 		req := translib.GetRequest{
-			Path:  args.path,
-			Depth: args.depth,
-			AuthEnabled: args.AuthEnabled,
-			User: args.User,
+			Path:          args.path,
+			Depth:         args.depth,
+			ClientVersion: args.version,
+			AuthEnabled:   args.AuthEnabled,
+			User:          args.User,
 		}
 
 		resp, err1 := translib.Get(req)
@@ -298,10 +313,11 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		if isOperationsRequest(r) {
 
 			req := translib.ActionRequest{
-				Path:    args.path,
-				Payload: args.data,
-				AuthEnabled: args.AuthEnabled,
-				User: args.User,
+				Path:          args.path,
+				Payload:       args.data,
+				ClientVersion: args.version,
+				AuthEnabled:   args.AuthEnabled,
+				User:          args.User,
 			}
 			res, err1 := translib.Action(req)
 			if err1 == nil {
@@ -314,10 +330,11 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 			status = 201
 
 			req := translib.SetRequest{
-				Path:    args.path,
-				Payload: args.data,
-				AuthEnabled: args.AuthEnabled,
-				User: args.User,
+				Path:          args.path,
+				Payload:       args.data,
+				ClientVersion: args.version,
+				AuthEnabled:   args.AuthEnabled,
+				User:          args.User,
 			}
 
 			_, err = translib.Create(req)
@@ -328,10 +345,11 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		status = 204
 
 		req := translib.SetRequest{
-			Path:    args.path,
-			Payload: args.data,
-			AuthEnabled: args.AuthEnabled,
-			User: args.User,
+			Path:          args.path,
+			Payload:       args.data,
+			ClientVersion: args.version,
+			AuthEnabled:   args.AuthEnabled,
+			User:          args.User,
 		}
 		_, err = translib.Replace(req)
 
@@ -339,10 +357,11 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		status = 204
 
 		req := translib.SetRequest{
-			Path:    args.path,
-			Payload: args.data,
-			AuthEnabled: args.AuthEnabled,
-			User: args.User,
+			Path:          args.path,
+			Payload:       args.data,
+			ClientVersion: args.version,
+			AuthEnabled:   args.AuthEnabled,
+			User:          args.User,
 		}
 		_, err = translib.Update(req)
 
@@ -350,9 +369,10 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		status = 204
 
 		req := translib.SetRequest{
-			Path:  args.path,
-			AuthEnabled: args.AuthEnabled,
-			User: args.User,
+			Path:          args.path,
+			ClientVersion: args.version,
+			AuthEnabled:   args.AuthEnabled,
+			User:          args.User,
 		}
 		_, err = translib.Delete(req)
 

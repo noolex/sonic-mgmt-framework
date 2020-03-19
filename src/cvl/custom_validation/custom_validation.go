@@ -262,30 +262,22 @@ func (t *CustomValidation) ValidatePtp(
 	log.Info("ValidatePtp operation: ", vc.CurCfg.VOp)
 
 	/* validate software build version */
-	file, err := os.Open("/etc/sonic/sonic_version.yml")
-	if err != nil {
-		errStr := "Error opening sonic_version.yml"
-		return CVLErrorInfo{
-			ErrCode: CVL_SEMANTIC_ERROR,
-			TableName: "PTP_CLOCK",
-			CVLErrDetails : errStr,
-			ConstraintErrMsg : errStr,
-		}
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		if strings.Contains(scanner.Text(), "build_version") {
-			log.Info("ValidatePtp : ", scanner.Text())
-			if !strings.Contains(scanner.Text(), "Enterprise_Advanced") &&
-			   !strings.Contains(scanner.Text(), "Cloud_Advanced") {
-				errStr := "This object is not supported in this build"
-				return CVLErrorInfo{
-					ErrCode: CVL_SEMANTIC_ERROR,
-					TableName: "PTP_CLOCK",
-					CVLErrDetails : errStr,
-					ConstraintErrMsg : errStr,
+	file, err := os.Open("/etc/sonic/sonic_branding.yml")
+	if err == nil {
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			if strings.Contains(scanner.Text(), "product_name") {
+				log.Info("ValidatePtp : ", scanner.Text())
+				if !strings.Contains(scanner.Text(), "Enterprise Advanced") &&
+					!strings.Contains(scanner.Text(), "Cloud Advanced") {
+					errStr := "This object is not supported in this build"
+					return CVLErrorInfo{
+						ErrCode: CVL_SEMANTIC_ERROR,
+						TableName: "PTP_CLOCK",
+						CVLErrDetails : errStr,
+						ConstraintErrMsg : errStr,
+					}
 				}
 			}
 		}
@@ -294,7 +286,8 @@ func (t *CustomValidation) ValidatePtp(
 	/* validate platform */
 	ls := redis.NewScript(`return redis.call('HGETALL', "DEVICE_METADATA|localhost")`)
 
-	redisEntries, err := ls.Run(vc.RClient, []string{"platform"}).Result()
+	var nokey []string
+	redisEntries, err := ls.Run(vc.RClient, nokey).Result()
 	if err != nil {
 		errStr := "Cannot retrieve platform information"
 		return CVLErrorInfo{
@@ -306,25 +299,24 @@ func (t *CustomValidation) ValidatePtp(
 	}
 
 	s := reflect.ValueOf(redisEntries)
-	var platform string
-	if (s.Len() >= 2) {
-		platform = s.Index(1).Interface().(string)
-	}
-	log.Info("ValidatePtp platform : ", platform)
+	log.Info("ValidatePtp length(redisEntries) : ", s.Len())
+	for i := 0; i < s.Len(); i+=2 {
+		log.Info("ValidatePtp index(", i, ") : ", s.Index(i).Interface().(string))
+		if "platform" == s.Index(i).Interface().(string) {
+			platform := s.Index(i+1).Interface().(string)
+			log.Info("ValidatePtp platform : ", platform)
 
-	/* SONIC-16692. For some reason, with the addition of docker_routing_config_mode = split
-	in DEVICE_METADATA|localhost, redis returns the hwsku. So adding hwsku in list of strings
-	*/
-	if !strings.Contains(platform, "x86_64-accton_as7712_32x") && 
-		!strings.Contains(platform, "x86_64-accton_as5712_54x") &&
-		!strings.Contains(platform, "Accton-AS7712-32X") &&
-		!strings.Contains(platform, "Accton-AS5712-54X") {
-		errStr := "This object is not supported in this platform"
-		return CVLErrorInfo{
-			ErrCode: CVL_SEMANTIC_ERROR,
-			TableName: "PTP_CLOCK",
-			CVLErrDetails : errStr,
-			ConstraintErrMsg : errStr,
+			if !strings.Contains(platform, "x86_64-accton_as7712_32x") &&
+				!strings.Contains(platform, "x86_64-accton_as5712_54x") {
+				errStr := "This object is not supported in this platform"
+				return CVLErrorInfo{
+					ErrCode: CVL_SEMANTIC_ERROR,
+					TableName: "PTP_CLOCK",
+					CVLErrDetails : errStr,
+					ConstraintErrMsg : errStr,
+				}
+			}
+			break
 		}
 	}
 

@@ -56,6 +56,18 @@ limitations under the License.
             ptype="IPV6_ADDR" />
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
     </COMMAND>
+    <COMMAND
+        name="ipv6 dhcp-relay"
+        help="Add DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${iface} ${__full_line}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ipv6 dhcp-relay"
+        help="Remove DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${iface} ${__full_line}</ACTION>
+    </COMMAND>
   </VIEW>
 
 <VIEW name="configure-if-mgmt-view">
@@ -120,6 +132,19 @@ limitations under the License.
             ptype="IPV6_ADDR" />
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
     </COMMAND>
+
+    <COMMAND
+        name="ipv6 dhcp-relay"
+        help="Add DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${po_name} ${__full_line}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ipv6 dhcp-relay"
+        help="Remove DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address  ${po_name} ${__full_line}</ACTION>
+    </COMMAND>
 </VIEW>
 
 <!-- VLAN VIEW -->
@@ -154,6 +179,19 @@ limitations under the License.
               ptype="IPV6_ADDR" />
          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
       </COMMAND>
+      <COMMAND
+        name="ipv6 dhcp-relay"
+        help="Add DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${vlan_name} ${__full_line}</ACTION>
+      </COMMAND>
+      <COMMAND
+        name="no ipv6 dhcp-relay"
+        help="Remove DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${vlan_name} ${__full_line}</ACTION>
+      </COMMAND>
+
 </VIEW>
 
 <VIEW
@@ -248,6 +286,14 @@ limitations under the License.
             else&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 ${__full_line}&#xA;
             fi&#xA;
+        </ACTION>
+    </COMMAND>
+    <!-- show ipv6 dhcp-relay -->
+    <COMMAND
+        help="Show IPV6 DHCP relay information"
+        name="show ipv6 dhcp-relay">
+        <MACRO name="DHCP-RELAY-SHOW-OPTIONS" arg=""/>
+        <ACTION  builtin="clish_pyobj">sonic_cli_if get_openconfig_relay_agent_relay_agent_dhcpv6 show_ipv6_dhcp_relay_brief.j2 ${__full_line}
         </ACTION>
     </COMMAND>
 </VIEW>
