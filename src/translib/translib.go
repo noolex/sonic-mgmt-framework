@@ -418,24 +418,6 @@ func Delete(req SetRequest) (SetResponse, error) {
 
 	log.Info("requestUriPath : ", requestUriPath)
 
-<<<<<<< HEAD
-	app, appInfo, err := getAppModule(path)
-||||||| merged common ancestors
-    switch requestUriPath {
-        case "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet": fallthrough
-        case "/openconfig-interfaces:interfaces/interface/subinterfaces": fallthrough
-        case "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface": fallthrough
-        case "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv4": fallthrough
-        case "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv6": 
-        {
-			log.Info("delete on this container not allowed")
-			resp.ErrSrc = AppErr
-            return resp, tlerr.New("DELETE operation not supported on this container")
-        }
-    }
-
-	app, appInfo, err := getAppModule(path)
-=======
     switch requestUriPath {
         case "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet": fallthrough
         case "/openconfig-interfaces:interfaces/interface/subinterfaces": fallthrough
@@ -450,7 +432,6 @@ func Delete(req SetRequest) (SetResponse, error) {
     }
 
 	app, appInfo, err := getAppModule(path, req.ClientVersion)
->>>>>>> broadcom_sonic_3.0.x_share
 
 	if err != nil {
 		resp.ErrSrc = ProtoErr
