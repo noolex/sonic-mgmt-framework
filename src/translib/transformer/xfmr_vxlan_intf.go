@@ -751,6 +751,10 @@ var YangToDb_intf_vxlan_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrPara
 	if log.V(3) {
 		log.Info("YangToDb_intf_vxlan_config_xfmr entering => inParams.uri => ", inParams.uri)
 	}
+    // Temporary fix - Needs to be taken off once parent handle delete is handled for SAG and Vxlan.
+    if inParams.oper == DELETE {
+        return nil, nil
+    }
 
 	path, err := getIntfUriPath(inParams.uri)
 
