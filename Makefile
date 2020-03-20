@@ -40,8 +40,6 @@ MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
 
 GO_DEPS_LIST = github.com/gorilla/mux \
                github.com/Workiva/go-datastructures/queue \
-               github.com/openconfig/goyang \
-               github.com/openconfig/ygot/ygot \
                github.com/go-redis/redis \
                github.com/golang/glog \
                github.com/pkg/profile \
@@ -55,6 +53,11 @@ GO_DEPS_LIST = github.com/gorilla/mux \
                gopkg.in/godbus/dbus.v5 \
                github.com/dgrijalva/jwt-go \
                github.com/msteinert/pam
+
+# GO_DEPS_LIST_2 includes "download only" dependencies.
+# They are patched, compiled and installed explicitly later.
+GO_DEPS_LIST_2 = github.com/openconfig/goyang \
+                 github.com/openconfig/ygot/ygot
 
 
 REST_BIN = $(BUILD_DIR)/rest_server/main
@@ -71,6 +74,7 @@ build-deps:
 
 $(BUILD_DIR)/gopkgs/.done: $(MAKEFILE_LIST)
 	$(GO) get -v $(GO_DEPS_LIST)
+	$(GO) get -v -d $(GO_DEPS_LIST_2)
 	touch  $@
 
 $(go-redis-patch): $(go-deps)
