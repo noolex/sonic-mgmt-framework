@@ -1,54 +1,22 @@
-{% set vars = {'dhcpv6DecRec':"0"} %}
-{% set vars = {'dhcpv6ReqRec':"0"} %}
-{% set vars = {'InvalidOpcode':"0"} %}
-{% set vars = {'InvalidOptions':"0"} %}
-{% set vars = {'TotalDropped':"0"} %}
-{% set vars = {'dhcpv6SolRec':"0"} %}
-{% set vars = {'dhcpv6ReleaseRec':"0"} %}
-{% set vars = {'dhcpv6ConfirmRec':"0"} %}
-{% set vars = {'dhcpv6RebindRec':"0"} %}
-{% set vars = {'dhcpv6InfoReqRec':"0"} %}
-{% set vars = {'dhcpv6RelayRepRec':"0"} %}
-{% set vars = {'dhcpv6AdvSent':"0"} %}
-{% set vars = {'dhcpv6ReplySent':"0"} %}
-{% set vars = {'dhcpv6ReConfigureSent':"0"} %}
-{% set vars = {'dhcpv6relayForwardSent':"0"} %}
-
 {% if 'openconfig-relay-agent:state' in json_output %}
     {% set counters = json_output['openconfig-relay-agent:state'] %}
     {% for key in counters %}
         {% set counter = counters[key] %}
-        {% if vars.update({'TotalDropped':counter['total-dropped']}) %}{% endif %}
-        {% if vars.update({'InvalidOpcode':counter['invalid-opcode']}) %}{% endif %}
-        {% if vars.update({'InvalidOptions':counter['invalid-options']}) %}{% endif %}
-        {% if vars.update({'dhcpv6SolRec':counter['dhcpv6-solicit-received']}) %}{% endif %}
-        {% if vars.update({'dhcpv6DecRec':counter['dhcpv6-decline-received']}) %}{% endif %}
-        {% if vars.update({'dhcpv6ReqRec':counter['dhcpv6-request-received']}) %}{% endif %}
-        {% if vars.update({'dhcpv6ReleaseRec':counter['dhcpv6-release-received']}) %}{% endif %}
-        {% if vars.update({'dhcpv6ConfirmRec':counter['dhcpv6-confirm-received']}) %}{% endif %}
-        {% if vars.update({'dhcpv6RebindRec':counter['dhcpv6-rebind-received]}) %}{% endif %}
-        {% if vars.update({'dhcpv6InfoReqRec':counter['dhcpv6-info-request-received']}) %}{% endif %}
-        {% if vars.update({'dhcpv6RelayRepRec':counter['dhcpv6-relay-reply-received']}) %}{% endif %}
-        {% if vars.update({'dhcpv6AdvSent':counter['dhcpv6-adverstise-sent']}) %}{% endif %}
-        {% if vars.update({'dhcpv6ReplySent':counter['dhcpv6-reply-sent']}) %}{% endif %}
-        {% if vars.update({'dhcpv6ReConfigureSent':counter['dhcpv6-reconfigure-sent']}) %}{% endif %}
-        {% if vars.update({'dhcpv6relayForwardSent':counter['dhcpv6-relay-forw-sent']}) %}{% endif %}
-{{ "DHCPv6 SOLICIT messages received by the relay agent :" }} {{ vars.dhcpv6SolRec }}
-{{ "DHCPv6 DECLINE messages received by the relay agent :" }} {{ vars.dhcpv6DecRec }}
-{{ "DHCPv6 REQUEST messages received by the relay agent :" }} {{ vars.dhcpv6ReqRec }}
-{{ "DHCPv6 RELEASE messages received by the relay agent :" }} {{ vars.dhcpv6ReleaseRec }}
-{{ "DHCPv6 CONFIRM messages received by the relay agent :" }} {{ vars.dhcpv6ConfirmRec }}
-{{ "DHCPv6 REBIND messages received by the relay agent :" }} {{ vars.dhcpv6RebindRec }}
-{{ "DHCPv6 INFO-REQUEST messages received by the relay agent :" }} {{ vars.dhcpv6InfoReqRec }}
-{{ "DHCPv6 RELAY-REPLY messages received by the relay agent :" }} {{ vars.dhcpv6RelayRepRec }}
-{{ "DHCPv6 ADVERTISEMENT messages sent by the relay agent :" }} {{ vars.dhcpv6AdvSent }}
-{{ "DHCPv6 REPLY messages sent by the relay agent :" }} {{ vars.dhcpv6ReplySent }}
-{{ "DHCPv6 RECONFIGURE messages sent by the relay agent :" }} {{ vars.dhcpv6ReConfigureSent }}
-{{ "DHCPv6 RELAY-FORWARD messages sent by the relay agent :" }} {{ vars.dhcpv6relayForwardSent }}
-{{ "Number of DHCPv6 packets dropped due to an invalid opcode :" }} {{ vars.InvalidOpcode }}
-{{ "Number of DHCPv6 packets dropped due to an invalid option :" }} {{ vars.InvalidOptions }}
-{{ "Total number of DHCPv6 packets dropped by the relay agent :" }} {{ vars.TotalDropped }}
+{{ "DHCPv6 SOLICIT messages received by the relay agent :" }} {{ counter['dhcpv6-solicit-received'] }}
+{{ "DHCPv6 DECLINE messages received by the relay agent :" }} {{ counter['dhcpv6-decline-received'] }}
+{{ "DHCPv6 REQUEST messages received by the relay agent :" }} {{ counter['dhcpv6-request-received'] }}
+{{ "DHCPv6 RELEASE messages received by the relay agent :" }} {{ counter['dhcpv6-release-received'] }}
+{{ "DHCPv6 CONFIRM messages received by the relay agent :" }} {{ counter['dhcpv6-confirm-received'] }}
+{{ "DHCPv6 REBIND messages received by the relay agent :" }} {{ counter['dhcpv6-rebind-received'] }}
+{{ "DHCPv6 INFO-REQUEST messages received by the relay agent :" }} {{ counter['dhcpv6-info-request-received'] }}
+{{ "DHCPv6 RELAY-REPLY messages received by the relay agent :" }} {{ counter['dhcpv6-relay-reply-received'] }}
+{{ "DHCPv6 ADVERTISEMENT messages sent by the relay agent :" }} {{ counter['dhcpv6-adverstise-sent'] }}
+{{ "DHCPv6 REPLY messages sent by the relay agent :" }} {{ counter['dhcpv6-reply-sent'] }}
+{{ "DHCPv6 RECONFIGURE messages sent by the relay agent :" }} {{ counter['dhcpv6-reconfigure-sent'] }}
+{{ "DHCPv6 RELAY-FORWARD messages sent by the relay agent :" }} {{ counter['dhcpv6-relay-forw-sent'] }}
+{{ "Number of DHCPv6 packets dropped due to an invalid opcode :" }} {{ counter['invalid-opcode'] }}
+{{ "Number of DHCPv6 packets dropped due to an invalid option :" }} {{ counter['invalid-options'] }}
+{{ "Total number of DHCPv6 packets dropped by the relay agent :" }} {{ counter['total-dropped'] }}
     {% endfor %}
 {% endif %}
-
 
