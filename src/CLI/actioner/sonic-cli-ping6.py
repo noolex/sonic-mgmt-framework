@@ -45,7 +45,6 @@ def run_vrf(args):
         sys.exit(1)
     try:
         cmd = "ping -6 " + args + " -I " + vrfName
-        print cmd
         subprocess.call(cmd, shell=True)
 
     except KeyboardInterrupt:
