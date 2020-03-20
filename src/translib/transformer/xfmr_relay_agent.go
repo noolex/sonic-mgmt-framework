@@ -75,6 +75,9 @@ type JSONDhcpv6Counters  struct {
     Dhcpv6RelayForwSent         CounterObj  `json:"dhcpv6-relay-forw-sent, omitempty"`
 }
 
+//globals
+const PATH_PREFIX = "/mnt/tmp/"
+
 func init () {
     XlateFuncBind("relay_agent_table_xfmr", relay_agent_table_xfmr)
     XlateFuncBind("YangToDb_relay_agent_intf_tbl_key_xfmr", YangToDb_relay_agent_intf_tbl_key_xfmr)
@@ -176,25 +179,22 @@ var DbToYang_relay_agent_intf_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrP
 }
 
 // Helper function to read the DHCP counters from the file mounted in /mnt/tmp folder
-func getDhcpRelayCountersFromFile (fileName string) (JSONDhcpCounters, error) {
+func getRelayCountersFromFile (fileName string, counterObj interface{}) error {
    
     if log.V(7) {
     //If verbose logging is enabled, log info 
-    log.Infof("getDhcpRelayCountersFromFile Enter")
+    log.Infof("getRelayCountersFromFile Enter")
     }
 
-    var jsoncounters JSONDhcpCounters
+    tmpFileName := PATH_PREFIX + fileName
+    log.Info(tmpFileName) 
 
-    tmpFileName := "/mnt/tmp/" + fileName
-    if log.V(7) {
-    log.Info(tmpFileName)}   
- 
     jsonFile, err := os.Open(tmpFileName)
     if err != nil {
         log.Warningf("opening of dhcp counters json file failed")
         errStr := "Information not available"
         terr := tlerr.NotFoundError{Format: errStr}
-        return jsoncounters, terr
+        return terr
     }
     syscall.Flock(int(jsonFile.Fd()),syscall.LOCK_EX)
     log.Infof("syscall.Flock done")
@@ -205,51 +205,14 @@ func getDhcpRelayCountersFromFile (fileName string) (JSONDhcpCounters, error) {
     defer log.Infof("syscall.Flock unlock  called")
 
     byteValue, _ := ioutil.ReadAll(jsonFile)
-    err = json.Unmarshal(byteValue, &jsoncounters)
+    err = json.Unmarshal(byteValue, counterObj)
     if err != nil {
         log.Warningf("unmarshal of the json counters failed")
         errStr := "json.Unmarshal failed"
         terr := tlerr.InternalError{Format: errStr}
-        return jsoncounters, terr
+        return terr
     }
-    return jsoncounters, nil
-}
-
-// Helper function to read the DHCPv6 counters from the file mounted in /mnt/tmp folder
-// These counters are populated by the dhcp_relay docker
-func getDhcpv6RelayCountersFromFile (fileName string) (JSONDhcpv6Counters, error) {
-    log.Infof("getDhcpv6RelayCountersFromFile Enter")
-
-    var jsonv6counters JSONDhcpv6Counters
-
-    tmpFileName := "/mnt/tmp/" + fileName
-    log.Info(tmpFileName)   
- 
-    jsonFile, err := os.Open(tmpFileName)
-    if err != nil {
-        log.Infof("dhcp v6 counters json open failed")
-        errStr := "Information not available"
-        terr := tlerr.NotFoundError{Format: errStr}
-        return jsonv6counters, terr
-    }
-    syscall.Flock(int(jsonFile.Fd()),syscall.LOCK_EX)
-    log.Infof("syscall.Flock done")
-
-    defer jsonFile.Close()
-    defer log.Infof("jsonFile.Close called")
-    defer syscall.Flock(int(jsonFile.Fd()), syscall.LOCK_UN);
-    defer log.Infof("syscall.Flock unlock  called")
-
-    byteValue, _ := ioutil.ReadAll(jsonFile)
-    log.Info (byteValue) 
-    err = json.Unmarshal(byteValue, &jsonv6counters)
-    if err != nil {
-        log.Info("unmarshal failed")
-        errStr := "json.Unmarshal failed"
-        terr := tlerr.InternalError{Format: errStr}
-        return jsonv6counters, terr
-    }
-    return jsonv6counters, nil
+    return nil
 }
 
 // Helper function to get the root object
@@ -258,11 +221,19 @@ func getRelayAgentRoot(s *ygot.GoStruct) *ocbinds.OpenconfigRelayAgent_RelayAgen
     return deviceObj.RelayAgent
 }
 
+// Helper function to convert Value from string to uint64
+func getCounterValue(valStr string) *uint64 {
+    if val, err := strconv.ParseUint(valStr, 10, 64); err == nil {
+        return &val
+    }
+   return nil
+}
 
 //sub tree transformer - that will read the appropriate file and populate the DHCP counters
 var DbToYang_relay_agent_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) error {
     var err error
     var raObj *ocbinds.OpenconfigRelayAgent_RelayAgent_Dhcp_Interfaces_Interface 
+    var jsonRelayAgentCounter JSONDhcpCounters
 
     log.Info("In DbToYang_relay_agent_counters_xfmr")
     if log.V(7) {
@@ -282,10 +253,10 @@ var DbToYang_relay_agent_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrP
     
     fileName := "dhcp-relay-ipv4-stats-"+ ifName + ".json"
  
-    jsonRelayAgentCounter, err := getDhcpRelayCountersFromFile(fileName)
+    err = getRelayCountersFromFile(fileName, &jsonRelayAgentCounter)
     log.Info(jsonRelayAgentCounter)
     if err != nil {
-        log.Infof("getDhcpRelayCountersFromFile failed")
+        log.Infof("getRelayCountersFromFile failed")
         return err
     }
 
@@ -306,63 +277,40 @@ var DbToYang_relay_agent_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrP
             raObj, _ = relayAgentObj.Dhcp.Interfaces.NewInterface(ifName)
             ygot.BuildEmptyTree(raObj)
         }
-
+        ygot.BuildEmptyTree(raObj.State)
+        ygot.BuildEmptyTree(raObj.State.Counters)
     } else {
         err = errors.New("Invalid URI : " + targetUriPath)
 
     }
 
-    dbValue, _ := strconv.Atoi(jsonRelayAgentCounter.TotalDropped.Value)
-    TotalDropped := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.TotalDropped          = &TotalDropped 
+    counterObj := relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters
+
+    counterObj.TotalDropped = getCounterValue(jsonRelayAgentCounter.TotalDropped.Value)
     
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.InvalidOpcode.Value)
-    InvalidOpcode := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.InvalidOpcode         = &InvalidOpcode 
+    counterObj.InvalidOpcode = getCounterValue(jsonRelayAgentCounter.InvalidOpcode.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.InvalidOptions.Value)
-    InvalidOptions := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.InvalidOptions        = &InvalidOptions 
+    counterObj.InvalidOptions = getCounterValue(jsonRelayAgentCounter.InvalidOptions.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.BootrequestReceived.Value)
-    BootrequestReceived := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.BootrequestReceived   = &BootrequestReceived
+    counterObj.BootrequestReceived = getCounterValue(jsonRelayAgentCounter.BootrequestReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.DhcpDeclineReceived.Value)
-    DhcpDeclineReceived := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.DhcpDeclineReceived   = &DhcpDeclineReceived    
+    counterObj.DhcpDeclineReceived = getCounterValue(jsonRelayAgentCounter.DhcpDeclineReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.DhcpDiscoverReceived.Value)
-    DhcpDiscoverReceived := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.DhcpDiscoverReceived  = &DhcpDiscoverReceived    
+    counterObj.DhcpDiscoverReceived = getCounterValue(jsonRelayAgentCounter.DhcpDiscoverReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.DhcpInformReceived.Value)
-    DhcpInformReceived := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.DhcpInformReceived    = &DhcpInformReceived    
+    counterObj.DhcpInformReceived = getCounterValue(jsonRelayAgentCounter.DhcpInformReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.DhcpRequestReceived.Value)
-    DhcpRequestReceived := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.DhcpRequestReceived   = &DhcpRequestReceived      
+    counterObj.DhcpRequestReceived = getCounterValue(jsonRelayAgentCounter.DhcpRequestReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.BootrequestSent.Value)
-    BootrequestSent := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.BootrequestSent       = &BootrequestSent  
+    counterObj.BootrequestSent = getCounterValue(jsonRelayAgentCounter.BootrequestSent.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.BootreplySent.Value)
-    BootreplySent := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.BootreplySent         = &BootreplySent
+    counterObj.BootreplySent = getCounterValue(jsonRelayAgentCounter.BootreplySent.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.DhcpOfferSent.Value)
-    DhcpOfferSent := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.DhcpOfferSent         = &DhcpOfferSent  
+    counterObj.DhcpOfferSent = getCounterValue(jsonRelayAgentCounter.DhcpOfferSent.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.DhcpAckSent.Value)
-    DhcpAckSent := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.DhcpAckSent           = &DhcpAckSent
+    counterObj.DhcpAckSent = getCounterValue(jsonRelayAgentCounter.DhcpAckSent.Value)
 
-    dbValue, _ = strconv.Atoi(jsonRelayAgentCounter.DhcpNackSent.Value)
-    DhcpNackSent := uint64(dbValue)
-    relayAgentObj.Dhcp.Interfaces.Interface[ifName].State.Counters.DhcpNackSent          = &DhcpNackSent  
+    counterObj.DhcpNackSent = getCounterValue(jsonRelayAgentCounter.DhcpNackSent.Value)
 
     return err
 }
@@ -372,6 +320,7 @@ var DbToYang_relay_agent_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrP
 var DbToYang_relay_agent_v6_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) error {
     var err error
     var raObj *ocbinds.OpenconfigRelayAgent_RelayAgent_Dhcpv6_Interfaces_Interface 
+    var jsonV6RelayAgentCounter JSONDhcpv6Counters
 
     log.Info("In DbToYang_relay_agent_v6_counters_xfmr")
     if log.V(7) {
@@ -391,10 +340,10 @@ var DbToYang_relay_agent_v6_counters_xfmr SubTreeXfmrDbToYang = func(inParams Xf
 
     fileName := "dhcp-relay-ipv6-stats-"+ ifName + ".json"
  
-    jsonV6RelayAgentCounter, err := getDhcpv6RelayCountersFromFile(fileName)
+    err = getRelayCountersFromFile(fileName, &jsonV6RelayAgentCounter)
     log.Info(jsonV6RelayAgentCounter)
     if err != nil {
-        log.Infof("getDhcpv6RelayCountersFromFile failed")
+        log.Infof("getRelayCountersFromFile failed")
         return err
     }
 
@@ -414,72 +363,44 @@ var DbToYang_relay_agent_v6_counters_xfmr SubTreeXfmrDbToYang = func(inParams Xf
             raObj, _ = relayAgentObj.Dhcpv6.Interfaces.NewInterface(ifName)
             ygot.BuildEmptyTree(raObj)
         }
-
+        ygot.BuildEmptyTree(raObj.State)
+        ygot.BuildEmptyTree(raObj.State.Counters)
     } else {
         err = errors.New("Invalid URI : " + targetUriPath)
 
     }
 
-    dbValue, _ := strconv.Atoi(jsonV6RelayAgentCounter.TotalDropped.Value)
-    TotalDropped := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.TotalDropped          = &TotalDropped 
-    
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.InvalidOpcode.Value)
-    InvalidOpcode := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.InvalidOpcode         = &InvalidOpcode 
+    counterObj := relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.InvalidOptions.Value)
-    InvalidOptions := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.InvalidOptions        = &InvalidOptions 
+    counterObj.TotalDropped = getCounterValue(jsonV6RelayAgentCounter.TotalDropped.Value)    
+
+    counterObj.InvalidOpcode = getCounterValue(jsonV6RelayAgentCounter.InvalidOpcode.Value)
+
+    counterObj.InvalidOptions = getCounterValue(jsonV6RelayAgentCounter.InvalidOptions.Value)
           
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6SolicitReceived.Value)
-    Dhcpv6SolicitReceived := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6SolicitReceived   = &Dhcpv6SolicitReceived
+    counterObj.Dhcpv6SolicitReceived = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6SolicitReceived.Value)
+              
+    counterObj.Dhcpv6DeclineReceived = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6DeclineReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6DeclineReceived.Value)
-    Dhcpv6DeclineReceived := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6DeclineReceived   = &Dhcpv6DeclineReceived    
+    counterObj.Dhcpv6RequestReceived = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6RequestReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6RequestReceived.Value)
-    Dhcpv6RequestReceived := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6RequestReceived  = &Dhcpv6RequestReceived    
+    counterObj.Dhcpv6ReleaseReceived = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6ReleaseReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6ReleaseReceived.Value)
-    Dhcpv6ReleaseReceived := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6ReleaseReceived  = &Dhcpv6ReleaseReceived     
+    counterObj.Dhcpv6ConfirmReceived = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6ConfirmReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6ConfirmReceived.Value)
-    Dhcpv6ConfirmReceived := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6ConfirmReceived   = &Dhcpv6ConfirmReceived      
+    counterObj.Dhcpv6RebindReceived = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6RebindReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6RebindReceived.Value)
-    Dhcpv6RebindReceived  := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6RebindReceived    = &Dhcpv6RebindReceived   
+    counterObj.Dhcpv6InfoRequestReceived = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6InfoRequestReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6InfoRequestReceived.Value)
-    Dhcpv6InfoRequestReceived := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6InfoRequestReceived= &Dhcpv6InfoRequestReceived
+    counterObj.Dhcpv6RelayReplyReceived = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6RelayReplyReceived.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6RelayReplyReceived.Value)
-    Dhcpv6RelayReplyReceived := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6RelayReplyReceived = &Dhcpv6RelayReplyReceived  
+    counterObj.Dhcpv6AdverstiseSent = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6AdvertiseSent.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6AdvertiseSent.Value)
-    Dhcpv6AdvertiseSent := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6AdverstiseSent      = &Dhcpv6AdvertiseSent
+    counterObj.Dhcpv6ReplySent = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6ReplySent.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6ReplySent.Value)
-    Dhcpv6ReplySent := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6ReplySent          = &Dhcpv6ReplySent  
+    counterObj.Dhcpv6ReconfigureSent = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6ReconfigureSent.Value)
 
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6ReconfigureSent.Value)
-    Dhcpv6ReconfigureSent := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6ReconfigureSent      = &Dhcpv6ReconfigureSent
-
-    dbValue, _ = strconv.Atoi(jsonV6RelayAgentCounter.Dhcpv6RelayForwSent.Value)
-    Dhcpv6RelayForwSent := uint64(dbValue)
-    relayAgentObj.Dhcpv6.Interfaces.Interface[ifName].State.Counters.Dhcpv6RelayForwSent        = &Dhcpv6RelayForwSent  
+    counterObj.Dhcpv6RelayForwSent = getCounterValue(jsonV6RelayAgentCounter.Dhcpv6RelayForwSent.Value)
 
     return err
 }
-
