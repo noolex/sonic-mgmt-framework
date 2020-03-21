@@ -19,18 +19,14 @@
 ###########################################################################
 
 import sys
-import collections
 from collections import OrderedDict
 import cli_client as cc
 from scripts.render_cli import show_cli_output
-import ipaddress
 import traceback
-import json
 import cli_log as log
-import os
-import re
 from sonic_cli_acl import pcp_map
 from sonic_cli_acl import dscp_map
+from natsort import natsorted
 
 
 fbs_client = cc.ApiClient()
@@ -41,9 +37,12 @@ def create_policy(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST')
     body = dict()
     body["POLICY_TABLE_LIST"] = [{
-        "policy_name": args[0],
-        "TYPE": args[1].upper(),
+        "POLICY_NAME": args[0]
     }]
+
+    if len(args) == 2:
+        body["POLICY_TABLE_LIST"][0]["TYPE"] = args[1].upper()
+
     return fbs_client.patch(keypath, body)
 
 
@@ -70,9 +69,12 @@ def create_classifier(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST')
     body = dict()
     body["CLASSIFIER_TABLE_LIST"] = [{
-        "classifier_name": args[0],
-        "MATCH_TYPE": args[1].upper(),
+        "CLASSIFIER_NAME": args[0]
     }]
+
+    if len(args) == 2:
+        body["CLASSIFIER_TABLE_LIST"][0]["MATCH_TYPE"] = args[1].upper()
+
     return fbs_client.patch(keypath, body)
 
 
@@ -87,6 +89,7 @@ def set_classifier_description(args):
         body = {'DESCRIPTION': '"{}"'.format(" ".join(args[1:]))}
     else:
         body = {'DESCRIPTION': args[1]}
+
     return fbs_client.patch(keypath, body)
 
 
@@ -393,10 +396,13 @@ def create_flow(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST')
     body = dict()
     body["POLICY_SECTIONS_TABLE_LIST"] = [{
-        "policy_name": args[0],
-        "classifier_name": args[1],
-        "PRIORITY": int(args[2]),
+        "POLICY_NAME": args[0],
+        "CLASSIFIER_NAME": args[1]
     }]
+
+    if len(args) == 3:
+        body["POLICY_SECTIONS_TABLE_LIST"][0]["PRIORITY"] = int(args[2])
+
     return fbs_client.patch(keypath, body)
 
 
@@ -453,8 +459,8 @@ def set_policer_action(args):
                       policy_name=args[0], classifier_name=args[1])
     body = dict()
     data = {
-        "policy_name": args[0],
-        "classifier_name": args[1]
+        "POLICY_NAME": args[0],
+        "CLASSIFIER_NAME": args[1]
     }
 
     index = 2
@@ -557,11 +563,85 @@ def clear_mirror_session_action(args):
     return fbs_client.delete(keypath)
 
 
+def set_next_hop_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_{ip_type}_NEXTHOP',
+                      policy_name=args[0], classifier_name=args[1], ip_type=args[2].upper())
+    vrf = ''
+    pri = ''
+
+    for idx in range(5, len(args), 2):
+        if args[idx] == 'vrf':
+            vrf = args[idx+1]
+        elif args[idx] == 'priority':
+            pri = args[idx+1]
+
+    body = {
+        "sonic-flow-based-services:SET_{}_NEXTHOP".format(args[2].upper()): ['{}|{}|{}'.format(args[4], vrf, pri)]
+    }
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_next_hop_action(args):
+    vrf = ''
+    pri = ''
+
+    for idx in range(5, len(args), 2):
+        if args[idx] == 'vrf':
+            vrf = args[idx+1]
+        elif args[idx] == 'priority':
+            pri = args[idx+1]
+
+    next_hop = '{}|{}|{}'.format(args[4], vrf, pri)
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_{ip_type}_NEXTHOP={next_hop}',
+                      policy_name=args[0], classifier_name=args[1], ip_type=args[2].upper(), next_hop=next_hop)
+
+    return fbs_client.delete(keypath)
+
+
+def set_egress_interface_action(args):
+    if args[2] == 'null':
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/DEFAULT_PACKET_ACTION',
+                          policy_name=args[0], classifier_name=args[1])
+        data = {
+            "sonic-flow-based-services:DEFAULT_PACKET_ACTION": "DROP"
+        }
+        return fbs_client.patch(keypath, data)
+    else:
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_INTERFACE',
+                          policy_name=args[0], classifier_name=args[1])
+        pri = ''
+        if len(args) == 6:
+            pri = args[5]
+
+        data = {
+            "sonic-flow-based-services:SET_INTERFACE": ["{}{}|{}".format(args[2], args[3], pri)]
+        }
+        return fbs_client.patch(keypath, data)
+
+
+def clear_egress_interface_action(args):
+    if args[2] == 'null':
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/DEFAULT_PACKET_ACTION',
+                          policy_name=args[0], classifier_name=args[1])
+        return fbs_client.delete(keypath)
+    else:
+        pri = ''
+        if len(args) == 6:
+            pri = args[5]
+
+        egr_if = "{}{}|{}".format(args[2], args[3], pri)
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_INTERFACE={egr_if}',
+                          policy_name=args[0], classifier_name=args[1], egr_if=egr_if)
+        return fbs_client.delete(keypath)
+
+
 def bind_policy(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
-                      interface_name=args[3] if len(args) == 4 else "Switch")
-    body = {'{}_{}_POLICY'.format('INGRESS' if args[2] =='in' else "EGRESS", args[1].upper()): args[0]}
-    return fbs_client.post(keypath, body)
+    binding_type = '{}_{}_POLICY'.format('INGRESS' if args[2] =='in' else "EGRESS", args[1].upper())
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}/{binding_type}',
+                      interface_name=args[3] if len(args) == 4 else "Switch", binding_type=binding_type)
+    body = {binding_type: args[0]}
+    return fbs_client.patch(keypath, body)
 
 
 def unbind_policy(args):
@@ -570,7 +650,15 @@ def unbind_policy(args):
     return fbs_client.delete(keypath)
 
 
+def show_policy_summary(args):
+    if len(args) > 4 and args[3] == 'interface':
+        interface_name = args[4] + args[5]
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
+                          interface_name=interface_name)
+    else:
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST')
 
+    return fbs_client.get(keypath)
 
 
 def show_policy(args):
@@ -578,10 +666,6 @@ def show_policy(args):
 
 
 def show_classifier(args):
-    print('Not implemented')
-
-
-def show_policy_summary(args):
     print('Not implemented')
 
 
@@ -596,7 +680,7 @@ def show_details_by_interface(args):
 ########################################################################################################################
 #                                                  Response handlers                                                   #
 ########################################################################################################################
-def handle_generic_set_response(response, args):
+def handle_generic_set_response(response, args, op_str):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
@@ -615,7 +699,7 @@ def handle_generic_set_response(response, args):
         return -1
 
 
-def handle_generic_delete_response(response, args):
+def handle_generic_delete_response(response, args, op_str):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
@@ -628,24 +712,75 @@ def handle_generic_delete_response(response, args):
     else:
         return 0
 
+def __natsort_intf_prio(ifname):
+    if ifname[0].startswith('Ethernet'):
+        prio = 10000 + int(ifname[0].replace('Ethernet', ''), 0)
+    elif ifname[0].startswith('PortChannel'):
+        prio = 20000 + int(ifname[0].replace('PortChannel', ''), 0)
+    elif ifname[0].startswith('Vlan'):
+        prio = 30000 + int(ifname[0].replace('Vlan', ''), 0)
+    else:
+        prio = 40000
 
-def handle_show_policy_response(args):
+    return prio
+
+
+def handle_show_policy_summary_response(response, args, op_str):
+    if response.ok():
+        filter_type = ['qos', 'monitoring', 'forwarding']
+        directions = ['ingress', 'egress']
+        if_filter = None
+        next = 0
+
+        while len(args) > next+1:
+            if args[next] == 'type':
+                filter_type = [args[next + 1]]
+                next = next + 2
+            elif args[next] == 'interface':
+                if args[next + 1] != 'Switch':
+                    if_filter = args[next + 1] + args[next + 2]
+                    next = next + 3
+                else:
+                    if_filter = args[next + 1]
+                    next = next + 2
+
+        render_data = OrderedDict()
+        for binding in response.content['sonic-flow-based-services:POLICY_BINDING_TABLE_LIST']:
+            if if_filter and if_filter != binding['INTERFACE_NAME']:
+                continue
+
+            if_data = []
+            for dir in directions:
+                for ft in filter_type:
+
+                    key = '{}_{}_POLICY'.format(dir.upper(), ft.upper())
+                    if key in binding:
+                        if_data.append(tuple([ft, binding[key], dir]))
+
+            if len(if_data):
+                render_data[binding['INTERFACE_NAME']] = if_data
+
+        sorted_data = OrderedDict(natsorted(render_data.items(), key=__natsort_intf_prio))
+        log.log_debug(str(sorted_data))
+        show_cli_output('show_service_policy_summary.j2', sorted_data)
+    else:
+        if response.status_code != 404:
+            print(response.error_message())
+
+
+def handle_show_policy_response(response, args, op_str):
     pass
 
 
-def handle_show_classifier_response(args):
+def handle_show_classifier_response(response, args, op_str):
     pass
 
 
-def handle_show_policy_summary_response(args):
+def handle_show_details_by_policy_response(response, args, op_str):
     pass
 
 
-def handle_show_details_by_policy_response(args):
-    pass
-
-
-def handle_show_details_by_interface_response(args):
+def handle_show_details_by_interface_response(response, args, op_str):
     pass
 
 
@@ -696,9 +831,12 @@ request_handlers = {
     'clear_policer_action': clear_policer_action,
     'set_mirror_session_action': set_mirror_session_action,
     'clear_mirror_session_action': clear_mirror_session_action,
+    'set_next_hop_action': set_next_hop_action,
+    'clear_next_hop_action': clear_next_hop_action,
+    'set_egress_interface_action': set_egress_interface_action,
+    'clear_egress_interface_action': clear_egress_interface_action,
     'bind_policy': bind_policy,
     'unbind_policy': unbind_policy,
-
     'show_policy': show_policy,
     'show_classifier': show_classifier,
     'show_policy_summary': show_policy_summary,
@@ -750,9 +888,12 @@ response_handlers = {
     'clear_policer_action': handle_generic_delete_response,
     'set_mirror_session_action': handle_generic_set_response,
     'clear_mirror_session_action': handle_generic_delete_response,
+    'set_next_hop_action': handle_generic_set_response,
+    'clear_next_hop_action': handle_generic_delete_response,
+    'set_egress_interface_action': handle_generic_set_response,
+    'clear_egress_interface_action': handle_generic_delete_response,
     'bind_policy': handle_generic_set_response,
     'unbind_policy': handle_generic_delete_response,
-
     'show_policy': handle_show_policy_response,
     'show_classifier': handle_show_classifier_response,
     'show_policy_summary': handle_show_policy_summary_response,
@@ -766,7 +907,7 @@ def run(op_str, args):
         log.log_debug(str(args))
         resp = request_handlers[op_str](args)
         if resp:
-            return response_handlers[op_str](resp, args)
+            return response_handlers[op_str](resp, args, op_str)
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))

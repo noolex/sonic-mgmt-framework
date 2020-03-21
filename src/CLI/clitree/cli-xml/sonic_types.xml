@@ -349,13 +349,13 @@ limitations under the License.
         name="UINT16"
         method="integer"
         pattern="0..65535"
-        help=""
+        help="&lt;0-65535&gt;"
         />
     <!--=======================================================-->
     <PTYPE
         name="UINT"
         pattern="[0-9]+"
-        help="Unsigned integer"
+        help="&lt;0-255&gt;"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1065,7 +1065,7 @@ limitations under the License.
         method="regexp_select"
         ext_pattern="Ethernet(port)"
         pattern="&ETH_ALL_INTF;"
-        help=""
+        help="EthernetNUM"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1073,7 +1073,7 @@ limitations under the License.
         method="regexp_select"
         ext_pattern="Vlan(1-4094)"
         pattern="&VLAN_ALL_INTF;"
-        help=""
+        help="VlanNUM"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1081,7 +1081,7 @@ limitations under the License.
         method="regexp_select"
         ext_pattern="PortChannel(1-128)"
         pattern="&PO_ALL_INTF;"
-        help=""
+        help="PortChannelNUM"
          />
     <!--=======================================================-->
     <PTYPE
@@ -1106,4 +1106,10 @@ limitations under the License.
         help="kbps"
         />
     <!--=======================================================-->
+    <PTYPE
+        name="VRF_NAME"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$"
+        ext_pattern="Vrf(string)"
+        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        />
 </CLISH_MODULE>
