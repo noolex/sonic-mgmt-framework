@@ -1,0 +1,2247 @@
+module openconfig-ospfv2-ext {
+
+  yang-version "1";
+
+  // namespace
+  namespace "http://openconfig.net/yang/ospfv2/extension";
+
+  prefix "oc-ospfv2-ext";
+
+  // import some basic types
+  import ietf-yang-types { prefix "yang"; }
+  import ietf-inet-types { prefix "inet"; }
+  import openconfig-types { prefix "oc-types"; }
+  import openconfig-ospf-types { prefix "oc-ospf-types"; }
+  import openconfig-network-instance { prefix oc-netinst; }
+  import openconfig-interfaces { prefix "oc-if"; }
+  import openconfig-routing-policy { prefix "oc-rpol"; }
+
+  // import ospfv2 module
+  import openconfig-ospfv2 { prefix "oc-ospfv2"; }
+
+
+  description
+    "An OpenConfig model for Open Shortest Path First (OSPF)
+    version 2 extensions ";
+
+  revision "2020-03-21" {
+    description
+      "Add OSPFv2 yang extensions for FRR config and show";
+  }
+
+
+  identity OSPF_METRIC_TYPE {
+    description
+      "OSPF Metric Types";
+  }
+
+  identity TYPE_1 {
+    base "OSPF_METRIC_TYPE";
+    description
+      "When the metric of a prefix is specified as Type 1
+      then it is considered to be expressed in the same units as
+      the link-state metrics carried in OSPF. That is to say
+      that the metric advertised is directly compared to the
+      internal cost";
+  }
+
+  identity TYPE_2 {
+    base "OSPF_METRIC_TYPE";
+    description
+      "When the metric of a prefix is specified as Type 2 then
+      it is considered to be expressed as a cost in addition to
+      that of the link-state metric to the advertising router.
+      That is to say that the metric is considered to be the
+      cost to the advertising router plus the advertised metric
+      for the external entity";
+  }
+
+  identity OSPF_POLICY_DIRECTION {
+    description
+      "OSPF Policy direction";
+  }
+
+  identity IMPORT {
+    base "OSPF_POLICY_DIRECTION";
+    description
+      "Policy direction in or import";
+  }
+
+  identity EXPORT {
+    base "OSPF_POLICY_DIRECTION";
+    description
+      "Policy direction out or export";
+  }
+
+  identity OSPF_POLICY_PROTOCOL {
+    description
+      "OSPF Policy protocol";
+  }
+
+  identity OSPF {
+    base "OSPF_POLICY_PROTOCOL";
+    description
+      "Policy protocol OSPF";
+  }
+
+  identity BGP {
+    base "OSPF_POLICY_PROTOCOL";
+    description
+      "Policy protocol BGP";
+  }
+
+  identity KERNEL {
+    base "OSPF_POLICY_PROTOCOL";
+    description
+      "Policy protocol Kernel Route";
+  }
+
+  identity STATIC {
+    base "OSPF_POLICY_PROTOCOL";
+    description
+      "Policy protocol Static Route";
+  }
+
+  identity CONNECTED {
+    base "OSPF_POLICY_PROTOCOL";
+    description
+      "Policy protocol connected interface";
+  }
+
+  identity DEFAULT_ROUTE {
+    base "OSPF_POLICY_PROTOCOL";
+    description
+      "Policy default route originate";
+  }
+
+
+  identity OSPF_AUTHENTICATION_TYPE {
+    description
+      "OSPF message authentication type";
+  }
+
+  identity AUTH_NONE {
+    base "OSPF_AUTHENTICATION_TYPE";
+    description
+      "OSPF message authentication null";
+  }
+
+  identity TEXT {
+    base "OSPF_AUTHENTICATION_TYPE";
+    description
+      "OSPF message authentication plain text";
+  }
+
+  identity MD5HMAC {
+    base "OSPF_AUTHENTICATION_TYPE";
+    description
+      "OSPF message authentication MD5 HMAC";
+  }
+
+  identity OSPF_ROUTER_TYPE {
+    description
+      "OSPF router type or role";
+  }
+
+  identity ABR {
+    base "OSPF_ROUTER_TYPE";
+    description
+      "OSPF router is an ABR";
+  }
+
+  identity ASBR {
+    base "OSPF_ROUTER_TYPE";
+    description
+      "OSPF router is an ASBR";
+  }
+
+  identity INTERNAL {
+    base "OSPF_ROUTER_TYPE";
+    description
+      "OSPF router is an Internal Router";
+  }
+
+  identity BACKBONE {
+    base "OSPF_ROUTER_TYPE";
+    description
+      "OSPF router is an Internal Router";
+  }
+
+  identity OSPF_ABR_TYPE {
+    description
+      "OSPF ABR type";
+  }
+
+  identity CISCO {
+    base "OSPF_ABR_TYPE";
+    description
+      "CISCO ABR Type";
+  }
+
+  identity IBM {
+    base "OSPF_ABR_TYPE";
+    description
+      "IBM ABR Type";
+  }
+
+  identity STANDARD {
+    base "OSPF_ABR_TYPE";
+    description
+      "STANDARD ABR Type";
+  }
+
+  identity OSPF_LOG_TYPE {
+    description
+      "OSPF Metric Types";
+  }
+
+  identity LOG_NONE {
+    base "OSPF_LOG_TYPE";
+    description
+      "OSPF Log or show type none";
+  }
+
+  identity BRIEF {
+    base "OSPF_LOG_TYPE";
+    description
+      "OSPF Log or show type brief";
+  }
+
+  identity DETAIL {
+    base "OSPF_LOG_TYPE";
+    description
+      "OSPF Log or show type detail";
+  }
+
+  identity OSPF_NSSA_TRANSLATE_TYPE {
+    description
+      "OSPF NSSA Translate type";
+  }
+
+  identity ALWAYS {
+    base "OSPF_NSSA_TRANSLATE_TYPE";
+    description
+      "OSPF Translate type always";
+  }
+
+  identity CANDIDATE {
+    base "OSPF_NSSA_TRANSLATE_TYPE";
+    description
+      "OSPF Translate type candidate election";
+  }
+
+  identity NEVER {
+    base "OSPF_NSSA_TRANSLATE_TYPE";
+    description
+      "OSPF Translate type never";
+  }
+
+  identity OSPF_ROUTE_TOS {
+    description 
+      "OSPF route Type of Service";
+  }
+
+  identity TOS0 {
+    base OSPF_ROUTE_TOS;
+    description 
+      "normal service";
+  }
+
+  identity OSPF_ROUTE_TABLE {
+    description
+      "OSPF Route type";
+  }
+
+  identity NETWORK_ROUTE_TABLE {
+    base "OSPF_ROUTE_TABLE";
+    description
+      "OSPF network route";
+  }
+
+  identity ROUTER_ROUTE_TABLE {
+    base "OSPF_ROUTE_TABLE";
+    description
+      "OSPF router route";
+  }
+
+  identity EXTERNAL_ROUTE_TABLE {
+    base "OSPF_ROUTE_TABLE";
+    description
+      "OSPF router route";
+  }
+
+
+  identity OSPF_ROUTE_TYPE {
+    description
+      "OSPF Route type";
+  }
+
+  identity NETWORK_ROUTE {
+    base "OSPF_ROUTE_TYPE";
+    description
+      "OSPF network route";
+  }
+
+  identity ROUTER_ROUTE {
+    base "OSPF_ROUTE_TYPE";
+    description
+      "OSPF router route";
+  }
+
+  identity OSPF_ROUTE_SUB_TYPE {
+    description
+      "OSPF Route type";
+  }
+
+  identity IA_ROUTE {
+    base "OSPF_ROUTE_SUB_TYPE";
+    description
+      "OSPF inter area route";
+  }
+
+  identity EXTERNAL_ROUTE {
+    base "OSPF_ROUTE_SUB_TYPE";
+    description
+      "OSPF external router route";
+  }
+
+  typedef ospf-cost-metric {
+    type uint32 {
+      range "0..16777215";
+    }
+    description "OSPF Interface metric (cost) value";
+  }
+
+  typedef ospf-routing-distance {
+    type uint8 {
+      range "1..255";
+    }
+    description "OSPF distance value";
+  }
+
+  grouping ospfv2-global-config-ext {
+    description
+      "Global configuration for OSPFv2 extended";
+
+    leaf auto-cost-reference-bandwidth {
+      type uint32 {
+        range "1..4294967";
+      }
+      description
+        "Refrence Bandwidth for auto calculating OSPFv2 interface cost.";
+    }
+
+    leaf write-multiplier {
+      type uint8 {
+         range "0..100";
+      }
+      description
+        "OSPFv2 write multiplier";
+    }
+
+    leaf abr-type {
+      type identityref {
+        base "OSPF_ABR_TYPE";
+      }
+      description
+        "OSPFv2 ABR type";
+    }
+
+    leaf opaque-lsa-capability {
+      type boolean;
+      description
+        "When the value of this leaf is set to true, opaque LSA
+         capability is enabled.";
+    }
+
+    leaf ospf-rfc1583-compatible {
+      type boolean;
+      description
+        "OSPF RFC1538 comaptible";
+      default false;
+    }
+
+    leaf passive-interface-default {
+      type boolean;
+      description
+        "OSPF configuration for default passive interface";
+      default false;
+    }
+  }
+
+  grouping ospfv2-policy-distance-config-ext {
+    description
+      "Global distance configuration for OSPFv2";
+
+    leaf all {
+      type uint8 {
+        range "1..255";
+      }
+      description
+         "OSPF distance for all intra inter and external routes.";
+    }  
+
+    leaf intra-area {
+      type uint8 {
+        range "1..255";
+      }
+      description
+        "OSPF distance for intra area routes.";
+    }
+
+    leaf inter-area {
+      type uint8 {
+        range "1..255";
+      }
+      description
+        "OSPF distance for intra area routes.";
+    }
+
+    leaf external {
+      type uint8 {
+        range "1..255";
+      }
+      description
+        "OSPF distance for intra area routes.";
+    }
+  } 
+
+  grouping ospfv2-policy-distance-ext {
+    description
+      "Global distance configuration for OSPFv2";
+    
+    container distance {
+      description
+        "Global distance configuration for OSPFv2";
+
+      container config {
+        uses ospfv2-policy-distance-config-ext;
+      }
+
+      container state {
+        config false;
+        uses ospfv2-policy-distance-config-ext;
+      }
+    }
+  } 
+
+
+  grouping ospfv2-global-timers-spf-config-ext {
+    description
+      "Configuration parameters relating to global SPF timer
+      parameters for OSPFv2";
+
+    leaf throttle-delay {
+      type uint32 {
+        range "0..600000";
+      }
+      units msec;
+      description
+        "SPF throttle Delay";
+    }
+
+    /* throttle initial-delay -> minimum-hold first-delay firstchange-to-first-spf
+       throttle maximum-delay -> max-hold throttle-hold  
+       throttle throttle-delay -> intital hold bw spfs */
+  }
+
+
+  grouping ospfv2-global-max-metric-router-lsa-config-ext {
+    description
+      "Global max-metric configuration for OSPFv2";
+
+    leaf administrative {
+      type boolean;
+      description
+        "OSPF Max-metric is administrative configuration";
+      default false;
+    }
+  
+    leaf on-startup {
+      type uint32 {
+        range "5..86400";
+      }
+      units seconds;
+      description
+        "Max metric startup timeout in seconds";
+    }
+
+    leaf on-shutdown {
+      type uint32 {
+        range "5..500";
+      }
+      units seconds;
+      description
+        "Max metric shutdown timeout in seconds";
+    }
+  } 
+
+  grouping ospfv2-global-timers-max-metric-ext {
+    container max-metric {
+      description
+        "Configuration and operational state parameters relating
+        to setting the OSPFv2 maximum metric.";
+
+      container config {
+        description
+          "Configuration parameters relating to setting the OSPFv2
+          maximum metric for a set of advertised entities.";
+        uses ospfv2-global-max-metric-router-lsa-config-ext;
+      }
+
+      container state {
+        config false;
+        description
+          "Operational state parameters relating to setting the
+          OSPFv2 maximum metric for a set of advertised entities.";
+        uses ospfv2-global-max-metric-router-lsa-config-ext;
+      }
+    }
+  }
+
+
+  grouping ospfv2-global-lsa-generation-timers-config-ext {
+    description
+      "Configuration parameters relating LSA generation timer
+      parameters for OSPFv2";
+
+    leaf refresh-timer {
+      type uint32 {
+        range "10..1800";
+      }
+      units seconds;
+      description
+        "LSA Refresh Timer configuration";
+    }
+  }
+
+  grouping ospfv2-message-authentication-config-ext {
+    description
+      "OSPFv2 Message authentication configarations";
+
+    container authentication { 
+      description
+        "OSPFv2 Message authentication configarations";
+
+      leaf authentication-type {
+        type identityref {
+          base "OSPF_AUTHENTICATION_TYPE";
+        }
+        default AUTH_NONE;
+        description
+           "OSPF autentication type";
+      }  
+
+      leaf authentication-key {
+        type string;
+        description
+          "OSPF authentication password string.";
+      }
+
+      leaf authentication-key-id {
+        when "../authentication-type = 'MD5HMAC'"; 
+        type uint8;
+        description
+          "Authentication key Id";
+      }
+    }
+  } 
+
+  grouping ospfv2-global-state-ext {
+    description "Global state information for ospf enabled router";
+
+    leaf router-type {
+      type identityref {
+        base "OSPF_ROUTER_TYPE";
+      }
+      description
+        "OSPF Router type or role (ABR, ASBR)";
+    }
+
+    leaf area-count {
+      type uint32;
+      description
+        "How many areas this router is connected to";
+    }
+
+    leaf hold-time-multiplier {
+      type uint32;
+      description
+        "Current hold time multiplier";
+    }
+
+    leaf last-spf-execution-time {
+      type uint32;
+      description
+        "Time elapsed since last SPF algorithm run";
+    }
+
+    leaf external-lsa-count {
+      type uint32;
+      description 
+         "Total count of external LSA for this ospf enabled router";
+    }
+
+    leaf external-lsa-checksum {
+      type yang:hex-string;
+      description 
+        "Checksum of external LSA for this ospf enabled router";
+    }
+
+    leaf opaque-lsa-count {
+      type uint32 ;
+      description 
+        "Total count of opaque LSA for this ospf enabled router";
+    }
+
+    leaf opaque-lsa-checksum {
+      type yang:hex-string;
+      description 
+        "Checksum of opaque LSA for this ospf enabled router";
+    }
+  }
+
+  grouping ospfv2-area-config-ext {
+    description
+      "Configuration parameters relating to an OSPF area";
+
+    leaf authentication-type {
+      type identityref {
+        base "OSPF_AUTHENTICATION_TYPE";
+      }
+      default AUTH_NONE;
+      description
+         "OSPF autentication type";
+    } 
+  }  
+
+  grouping ospfv2-area-stub-config-ext {
+    description
+      "Area stub configuration for OSPFv2";
+
+    leaf enable {
+      type boolean;
+      description
+         "OSPF area stub configuration.";
+    }
+
+    leaf no-summary {
+      type ospf-routing-distance;
+      description
+        "OSPF area stub no summary configuration.";
+    }
+
+    leaf default-cost {
+      type ospf-cost-metric ;
+      description
+        "OSPFv2 summary-default cost for stub area";
+    }
+  }
+
+  grouping ospfv2-area-stub-ext {
+    description
+      "Stub area configuration for OSPFv2";
+
+    container stub {
+      description
+        "Stub Area configuration for OSPFv2";
+
+      container config {
+        uses ospfv2-area-stub-config-ext;
+      }
+
+      container state {
+        config false;
+        uses ospfv2-area-stub-config-ext;
+      }
+    }
+  }
+
+  grouping ospfv2-area-nssa-config-ext {
+    description
+      "Area NSSA configuration for OSPFv2";
+
+    leaf enable {
+      type boolean;
+      description
+         "OSPF area NSSA configuration.";
+    }
+
+    leaf no-summary {
+      type boolean;
+      description
+        "OSPF area NSSA no summary configuration.";
+    }
+
+    leaf translate {
+      type identityref {
+        base "OSPF_NSSA_TRANSLATE_TYPE";
+      }
+      description
+        "OSPF area NSSA translate type configuration.";
+      default CANDIDATE;
+    }
+  }
+
+  grouping ospfv2-area-nssa-ext {
+    description
+      "Area NSSA configuration for OSPFv2";
+
+    container nssa {
+      description
+        "Area NSSA configuration for OSPFv2";
+
+      container config {
+        uses ospfv2-area-nssa-config-ext;
+      }
+
+      container state {
+        config false;
+        uses ospfv2-area-nssa-config-ext;
+      }
+    }
+  }
+
+  grouping ospfv2-area-network-config-ext {
+    description
+      "Configuration parameters relating to a network within
+      the OSPF area";
+
+    leaf address-prefix {
+      type inet:ipv4-prefix;
+      description
+        "Network address prefix of the OSPF interface
+         Interface with IPv4 address matching the network 
+         prefix is considered to be part of current area";
+    }
+  }
+
+  grouping ospfv2-area-networks-ext {
+    description
+      "Configuration parameters relating to a network-addresses within
+      the OSPF area";
+
+    container networks {
+      description
+        "Configuration and state parameters relating network prefixes";
+
+      list network {
+        key "address-prefix";
+
+        description
+          "Configuration and state parameters relating to a
+          network address prefix";
+
+        leaf address-prefix {
+          type leafref {
+            path "../config/address-prefix";
+          }
+          description
+            "Reference to the network prefix";
+        }
+
+        container config {
+          description
+            "Configuration parameters relating to the OSPF network address";
+          uses ospfv2-area-network-config-ext;
+        }
+
+        container state {
+          config false;
+          description
+            "State parameters relating to the OSPF network address";
+          uses ospfv2-area-network-config-ext;
+        }
+      }
+    }
+  }
+
+  grouping ospfv2-area-state-ext {
+    description 
+      "OSPF area state information";
+
+    leaf interface-count {
+      type uint32;
+      description 
+        "Total Number of interfaces in this area";
+    }
+
+    leaf active-interface-count {
+      type uint32;
+      description 
+        "Total Number of active interfaces in this area";
+    }
+
+    leaf adjacency-count {
+      type uint32;
+      description 
+        "Total Number of fully adjacent neighbors in this area";
+    }
+
+    leaf virtual-link-adjacency-count {
+      type uint32;
+      description 
+        "Total Number of virtual link adjacent neighbors in this area";
+    }
+
+    leaf spf-execution-count {
+      type uint32;
+      description 
+        "Total Number of times spf algorithms executed in this area";
+    }
+
+    leaf lsa-count {
+      type uint32;
+      description 
+        "Total count of all types of LSA in this area";
+    }
+
+    leaf router-lsa-count {
+      type uint32;
+      description 
+        "Total count of router LSA in this area";
+    }
+
+    leaf network-lsa-count {
+      type uint32;
+      description 
+        "Total count of network LSA in this area";
+    }
+
+    leaf summary-lsa-count {
+      type uint32;
+      description 
+        "Total count of summary LSA in this area";
+    }
+
+    leaf asbr-summary-lsa-count {
+      type uint32;
+      description 
+        "Total count of asbr summary LSA in this area";
+    }
+
+    leaf nssa-lsa-count {
+      type uint32;
+      description 
+        "Total count of nssa LSA in this area";
+    }
+
+    leaf opaque-link-lsa-count {
+      type uint32;
+      description 
+        "Total count of opaque link LSA in this area";
+    }
+
+    leaf opaque-area-lsa-count {
+      type uint32;
+      description 
+        "Total count of opaque area LSA in this area";
+    }
+
+    leaf router-lsa-checksum {
+      type yang:hex-string;
+      description
+        "Router LSA checksum";
+    }
+
+    leaf network-lsa-checksum {
+      type yang:hex-string;
+      description
+        "Network LSA checksum";
+    }
+
+    leaf summary-lsa-checksum {
+      type yang:hex-string;
+      description
+        "Summary LSA checksum";
+    }
+
+    leaf asbr-summary-lsa-checksum {
+      type yang:hex-string;
+      description
+        "ASBR summary LSA checksum";
+    }
+
+    leaf nssa-lsa-checksum {
+      type yang:hex-string;
+      description
+        "NSSA LSA checksum";
+    }
+
+    leaf opaque-link-lsa-checksum {
+      type yang:hex-string;
+      description
+        "Opaque link LSA checksum";
+    }
+
+    leaf opaque-area-lsa-checksum {
+      type yang:hex-string;
+      description
+        "Opaque area LSA checksum";
+    }
+  }
+
+  grouping ospfv2-policy-area-address-range-config-ext {
+    description
+      "Configuration parameters relating to a address-range within
+      the OSPF area";
+
+    leaf address-prefix {
+      type inet:ipv4-prefix;
+      description
+        "Address prefix for the OSPF address";
+    }
+
+    leaf advertise {
+      type boolean;
+      description
+        "Advertise or no-adverise configuration for prefix";
+      default true;
+    }
+
+    leaf metric {
+      type ospf-cost-metric;
+      description
+        "Metric value for the prefix";
+    }
+
+    leaf substitute {
+      type boolean;
+      description
+        "Substitute Address prefix for the OSPF address";
+      default false;
+    }
+
+    leaf substitue-prefix {
+      type inet:ipv4-prefix;
+      description
+        "Substitute Address prefix for the OSPF address";
+    }
+  }
+
+  grouping ospfv2-policy-address-range-ext {
+    description
+      "Configuration parameters relating to a address-range within
+      the OSPF area";
+
+    container ranges {
+      description
+        "Configuration and state parameters relating address-range prefixes";
+
+      list range {
+        key "address-prefix";
+
+        description
+          "Configuration and state parameters relating to a
+          address-range address prefix";
+
+        leaf address-prefix {
+          type leafref {
+            path "../config/address-prefix";
+          }
+          description
+            "Reference to the address-range prefix";
+        }
+
+        container config {
+          description
+            "Configuration parameters relating to the OSPF address-range address";
+          uses ospfv2-policy-area-address-range-config-ext;
+        }
+
+        container state {
+          config false;
+          description
+            "State parameters relating to the OSPF address-range address";
+          uses ospfv2-policy-area-address-range-config-ext;
+        }
+      }
+    }
+  }
+
+
+  grouping ospfv2-policy-area-route-map-config-ext {
+    description
+      "Configuration parameters relating route map within the OSPF area";
+
+    leaf name {
+      type leafref {
+              path "/oc-rpol:routing-policy/oc-rpol:policy-definitions" +
+                   "/oc-rpol:policy-definition/oc-rpol:name";
+      }
+      description
+        "Route map name for export prefixes";
+    }
+  }
+
+  grouping ospfv2-policy-area-filter-prefix-config-ext {
+    description
+      "Configuration parameters relating to filter prefix within the OSPF area";
+
+    leaf name {
+      type leafref {
+              path "/oc-rpol:routing-policy/oc-rpol:defined-sets/" +
+                   "oc-rpol:prefix-sets/oc-rpol:prefix-set/oc-rpol:name";
+      }
+      description
+        "Filter prefix config";
+    }
+  }
+
+
+  grouping ospfv2-policy-export-list-ext {
+    description
+      "Configuration parameters relating to a export list within
+      the OSPF area";
+
+    container export-list {
+      container config {
+        description
+          "Configuration parameters relating to the OSPF area export list";
+        uses ospfv2-policy-area-route-map-config-ext;
+      }
+
+      container state {
+        config false;
+        description
+          "State parameters relating to the OSPF area export list";
+        uses ospfv2-policy-area-route-map-config-ext;
+      }
+    }
+  }
+
+  grouping ospfv2-policy-import-list-ext {
+    description
+      "Configuration parameters relating to a import list within
+      the OSPF area";
+
+    container import-list {
+
+      container config {
+        description
+          "Configuration parameters relating to the OSPF area import list";
+        uses ospfv2-policy-area-route-map-config-ext;
+      }
+
+      container state {
+        config false;
+        description
+          "State parameters relating to the OSPF area import list";
+        uses ospfv2-policy-area-route-map-config-ext;
+      }
+    }
+  }
+
+  grouping ospfv2-policy-filter-list-ext {
+    description
+      "Configuration parameters relating to a filter list within
+      the OSPF area";
+
+    container filter-list-in {
+      description
+        "Configuration and state parameters relating in filter list";
+
+      container config {
+        description
+          "Configuration parameters relating to the OSPF area filter list";
+        uses ospfv2-policy-area-filter-prefix-config-ext;
+      }
+
+      container state {
+        config false;
+        description
+          "State parameters relating to the OSPF area filter list";
+        uses ospfv2-policy-area-filter-prefix-config-ext;
+      }
+    }
+
+    container filter-list-out {
+      description
+        "Configuration and state parameters relating out filter list";
+
+      container config {
+        description
+          "Configuration parameters relating to the OSPF area filter list";
+        uses ospfv2-policy-area-filter-prefix-config-ext;
+      }
+
+      container state {
+        config false;
+        description
+          "State parameters relating to the OSPF area filter list";
+        uses ospfv2-policy-area-filter-prefix-config-ext;
+      }
+    }
+  }
+
+
+  grouping ospfv2-policy-inter-area-config-ext {
+    description
+      "Configuration parameters for OSPFv2 policies which propagate
+      prefixes between areas";
+
+    leaf src-area {
+      type oc-ospf-types:ospf-area-identifier;
+      description
+        "The area from which prefixes are to be applied.";
+    }
+  }
+
+  grouping inter-area-propagation-policy-ext {
+    description
+       "Policies defining how inter-area propagation should be performed
+       by the OSPF instance";
+
+    list inter-area-propagation-policy {
+       key "src-area";
+       description
+         "A list of connections between pairs of areas - routes are
+         propagated from the source (src) area to the destination (dst)
+         area according to the policy specified";
+
+      leaf src-area {
+        type leafref {
+          path "../config/src-area";
+        }
+        description
+          "Reference to the source area";
+      }
+
+      container config {
+        description
+          "Configuration parameters relating to the inter-area
+          propagation policy";
+        uses ospfv2-policy-inter-area-config-ext;
+      }
+
+      container state {
+        config false;
+        description
+          "Operational state parameters relating to the inter-area
+           propagation policy";
+          uses ospfv2-policy-inter-area-config-ext;
+      }
+
+      uses ospfv2-policy-address-range-ext;
+      uses ospfv2-policy-export-list-ext;
+      uses ospfv2-policy-import-list-ext;
+      uses ospfv2-policy-filter-list-ext;
+    }
+  }
+ 
+  grouping ospfv2-policy-default-route-originate-config-ext {
+    description
+      "Distribute a default route configuration for OSPFv2
+      Originate an AS-External (type-5) LSA describing a default
+      route into all external-routing capable areas, of the
+      specified metric and metric type. If the 'always' field is
+      enabled then the default is always advertised, even when
+      there is no default present in the routing table.";
+
+    leaf always {
+      type boolean;
+      description
+         "Always advertise default route";
+    }
+
+    leaf metric {
+      type ospf-cost-metric;
+      description
+        "OSPF default route metric.";
+    }
+
+    leaf metric-type {
+      type identityref {
+        base "OSPF_METRIC_TYPE";
+      }
+      description
+        "OSPF External Type 1/2 metrics";
+    }
+
+    leaf route-map {
+      type leafref {
+        path "/oc-rpol:routing-policy/oc-rpol:policy-definitions" +
+             "/oc-rpol:policy-definition/oc-rpol:name";
+      }
+      description
+        "Distribute a default route using Route map";
+    }
+  }
+
+  grouping ospfv2-policy-default-route-originate-ext {
+    description
+      "Distribute a default route configuration for OSPFv2";
+
+    container default-originate {
+      description
+        "Distribute a default route configuration for OSPFv2";
+
+      container config {
+        uses ospfv2-policy-default-route-originate-config-ext;
+      }
+
+      container state {
+        config false;
+        uses ospfv2-policy-default-route-originate-config-ext;
+      }
+    }
+  }
+
+  grouping ospfv2-policy-route-distribute-list-config-ext {
+    description
+      "Configuration parameters relating to route distribution";
+
+    leaf protocol {
+      type identityref {
+        base "OSPF_POLICY_PROTOCOL";
+      }
+      description
+        "Access-list map name for filter prefixes";
+    }
+
+    leaf direction {
+      type identityref {
+        base "OSPF_POLICY_DIRECTION";
+      }
+      description
+        "Access-list name for filter prefixes";
+      default EXPORT;
+    }
+
+    leaf table-id {
+      when "../direction = 'IMPORT' and ../protocol = 'OSPF'";
+      type uint32;
+      description
+        "OSPFv2 instance id for route distribution";
+      default 0;
+    }
+
+    leaf always {
+      when "../direction = 'IMPORT' and ../protocol = 'DEFAULT_ROUTE'";
+      type boolean;
+      description
+         "Always distribute default route";
+      default false;
+    }
+
+    leaf metric {
+      when "../direction = 'IMPORT'";
+      type ospf-cost-metric;
+      description
+        "OSPFv2 metric for route distribution";
+      default 0;
+    }
+
+    leaf metric-type {
+      when "../direction = 'IMPORT'";
+      type identityref {
+        base "OSPF_METRIC_TYPE";
+      }
+      description
+        "OSPF metrics type for route distribution";
+      default TYPE_1;
+    }
+
+    leaf route-map {
+      when "../direction = 'IMPORT'";
+      type leafref {
+        path "/oc-rpol:routing-policy/oc-rpol:policy-definitions" +
+             "/oc-rpol:policy-definition/oc-rpol:name";
+      }
+      description
+        "Route map name for route distribution";
+    }
+  }
+
+
+  grouping ospfv2-policy-route-distibute-list-ext {
+    description
+      "Configuration parameters relating to a route distibute list";
+
+    list distribute-list {
+      key "protocol direction";
+
+      description
+        "Configuration and state parameters relating to a distibute list";
+
+      leaf protocol {
+        type leafref {
+          path "../config/protocol";
+        }
+        description
+          "Reference to the distribute protocol type";
+      }
+
+      leaf direction {
+        type leafref {
+          path "../config/direction";
+        }
+        description
+          "Reference to the distribute direction";
+      }
+
+      container config {
+        description
+          "Configuration parameters relating to the OSPF distibute list";
+        uses ospfv2-policy-route-distribute-list-config-ext;
+      }
+
+      container state {
+        config false;
+        description
+          "State parameters relating to the OSPF distibute list";
+        uses ospfv2-policy-route-distribute-list-config-ext;
+      }
+    }
+  }
+
+  grouping ospfv2-policy-route-distibution-ext {
+    description
+      "Configuration parameters relating to a route distibute list";
+  
+    container route-distribution-policies {
+      description
+        "Configuration and state parameters relating route distibution";
+
+      uses ospfv2-policy-route-distibute-list-ext;
+      uses ospfv2-policy-distance-ext;
+    }
+  }
+
+
+  grouping ospfv2-route-state-ext {
+    description
+      "Operational state parameters relating OSPFV2 routes";
+
+    leaf prefix {
+      type inet:ipv4-prefix;
+      description
+        "IPv4 route prefix";
+    }
+
+    leaf type {
+      type identityref {
+         base "OSPF_ROUTE_TYPE";
+      }
+      description
+        "OSPF Route type - Network, Router";
+    }
+
+    leaf sub-type {
+      type identityref {
+         base "OSPF_ROUTE_SUB_TYPE";
+      }
+      description
+        "OSPF Route subtype - Inter Area, External";
+    }
+
+    leaf area-id {
+      type yang:dotted-quad;
+      description
+        "Route area id";
+    }
+
+    leaf cost {
+      type ospf-cost-metric;
+      description
+        "The metric/cost for the route";
+    }
+
+    leaf inter-area {
+      type boolean;
+      description
+        "Inter area route";
+    }
+
+    leaf next-hop-router-type {
+      type identityref {
+        base "OSPF_ROUTER_TYPE";
+      }
+      description
+        "Route nexthop type(ABR, ASBR)";
+    } 
+
+    list next-hops {
+      description
+        "List of OSPFv2 nexthops with ecmp legs";
+
+      key "next-hop out-interface";   
+
+      leaf next-hop {
+        type inet:ipv4-address-no-zone;
+        description
+          "Next hop address";
+      }
+
+      leaf out-interface {
+        type string;
+        description
+          "Outgoing interface name";
+      }
+    }
+  }
+
+  grouping ospfv2-route-tables-state-ext {
+    description
+      "Enclosing container for the list of OSPFv2 routes";
+
+    container route-tables {
+      description
+        "Enclosing container for the list of OSPFv2 routes";
+
+      config false;
+
+      list route-table {
+        key "type";
+
+        leaf type {
+          type identityref {
+             base "OSPF_ROUTE_TABLE";
+          }
+          description
+            "OSPF Route table type";
+        }
+
+        list routes {
+          description
+            "List of OSPFv2 routes";
+
+          key "prefix";
+
+          uses ospfv2-route-state-ext;
+        }
+      }
+    }
+  }
+
+  grouping ospfv2-area-interface-config-ext {
+    description
+      "Configuration parameters for an OSPF interface";
+
+    leaf instance-id {
+      type uint32;
+      description
+        "OSPFv2 instance id for the interace";
+      default 0;
+    }
+
+    leaf area-id {
+      type oc-ospf-types:ospf-area-identifier;
+      description
+        "An identifier for the OSPFv2 area - described as either a
+        32-bit unsigned integer, or a dotted-quad";
+    }
+
+    leaf address {
+      type inet:ipv4-address-no-zone;
+      description
+        "The Interface address";
+    }
+
+    leaf cost {
+      type ospf-cost-metric;
+      description
+        "The metric for the interface";
+    }
+
+    leaf passive-interface-address {
+      type inet:ipv4-address-no-zone;
+      description
+        "The Interface address";
+    }
+
+    leaf mtu-ignore {
+      type boolean;
+      description
+         "OSPF interface MTU ignore configuration.";
+    }
+
+    leaf bfd-enable {
+      type boolean;
+      description
+         "OSPF interface BFD configuration.";
+    }
+
+    uses ospfv2-message-authentication-config-ext;
+  }
+
+
+  grouping interface-phys-ospfv2-config-ext {
+    description
+      "Enclosing container for the OSPFv2 configurations";
+
+    container ospfv2 {
+      description
+        "Enclosing container for the OSPFv2 configurations";
+
+      container config {
+        uses oc-ospfv2:ospfv2-area-interface-config;
+        uses ospfv2-area-interface-config-ext;
+        uses oc-ospfv2:ospfv2-area-interface-timers-config;
+        uses ospfv2-area-interface-timers-config-ext;
+      }
+    }
+  }
+
+  grouping ospfv2-area-interface-state-ext {
+    description
+      "State parameters for an OSPF interface";
+ 
+    leaf index {
+      type uint32;
+      description
+        "Interface index";
+    }
+
+    leaf bandwidth {
+      type uint32;
+      description
+        "Interface bandwidth in Megabits";
+    }
+
+    leaf operational-state {
+      type string;
+      description
+        "Interface combined operational state";
+    }
+
+    leaf broadcast-address {
+      type inet:ipv4-address-no-zone;
+      description
+        "Broadcast address address";
+    }
+
+    leaf dr-interface-address {
+      type inet:ipv4-address-no-zone;
+      description
+        "DR Interface IP address address";
+    }
+
+    leaf mtu {
+      type uint32;
+      description
+        "Interface MTU";
+    }
+
+    leaf router-id {
+      type yang:dotted-quad;
+      description
+        "Current router Id";
+    }
+
+    leaf adjacency-state {
+      type identityref {
+        base "oc-ospf-types:OSPF_NEIGHBOR_STATE";
+      }
+      description
+        "The state of the adjacency with the neighbor.";
+    }
+
+    leaf designated-router {
+      type yang:dotted-quad;
+      description
+        "Designated router";
+    }
+
+    leaf backup-designated-router {
+      type yang:dotted-quad;
+      description
+        "Designated router";
+    }
+
+    leaf designated-router-other {
+      type yang:dotted-quad;
+      description
+        "DR Other router";
+    }
+
+    leaf  member-of-ospf-all-routers {
+      type boolean;
+      description
+        "Member of OSPF All router multicast group";
+    }
+
+    leaf member-of-ospf-designated-routers {
+      type boolean;
+      description
+        "Member of OSPF Designated router multicast group";
+    }
+
+    leaf neighbor-count {
+      type uint32;
+      description
+        "Neighbor count";
+    }
+
+    leaf adjacency-count {
+      type uint32;
+      description
+        "Adjacency count";
+    }
+
+    leaf bfd-state {
+      type boolean;
+      description
+        "BFD State";
+    }
+  }
+
+  grouping ospfv2-area-interface-message-stats-state-ext {
+    description
+      "State parameters for an OSPF interface message stats";
+
+    container message-statistics {
+      description
+        "OSPF message statistics";
+
+      config false;
+
+      leaf hello-recieve {
+        type uint32;
+        description
+          "Hello receive count";
+        }
+
+      leaf hello-transmit {
+        type uint32;
+        description
+          "Hello transmit count";
+      }
+
+      leaf db-description-receive {
+        type uint32;
+        description
+          "Database description receive count";
+      }
+
+      leaf db-description-transmit {
+        type uint32;
+        description
+          "Database description transmit count";
+      }
+
+      leaf ls-request-receive {
+        type uint32;
+        description
+          "Link State request receive count";
+      }
+
+      leaf ls-request-transmit {
+        type uint32;
+        description
+          "Link State request transmit count";
+      }
+
+      leaf ls-update-receive {
+        type uint32;
+        description
+          "Link State update receive count";
+      }
+
+      leaf ls-update-transmit {
+        type uint32;
+        description
+          "Link State update transmit count";
+      }
+
+      leaf ls-acknowledge-receive {
+        type uint32;
+        description
+          "Link State update receive count";
+      }
+
+      leaf ls-acknowledge-transmit {
+        type uint32;
+        description
+          "Link State acknowlege transmit count";
+      }
+    }
+  }
+
+
+  grouping ospfv2-area-interface-timers-config-ext {
+    description
+      "Configuration parameters relating to per-interface OSPFv2
+      timers";
+
+    leaf transmit-delay {
+      type uint32;
+      units seconds;
+      description
+        "Set number of seconds for InfTransDelay value. LSAs' age
+         should be incremented by this value while transmitting";
+      default 1;
+    }
+  }
+
+  grouping ospfv2-area-interface-timers-state-ext {
+    description
+      "Configuration parameters relating to per-interface OSPFv2
+      timers";
+
+    leaf wait-time {
+      type uint32;
+      description
+        "Interface index";
+    }
+
+    leaf hello-due {
+      type oc-types:timeticks64;
+      units seconds;
+      description
+        "Hello due";
+    }
+  }
+
+  grouping ospfv2-area-virtual-link-config-ext {
+    description
+      "Configuration parameters relating to a virtual-link within
+      the OSPF area";
+
+    uses oc-ospfv2:ospfv2-area-interface-timers-config;
+    uses ospfv2-area-interface-timers-config-ext;
+    uses ospfv2-message-authentication-config-ext;
+  }
+
+
+  grouping ospfv2-area-interface-neighbor-state-ext {
+    description
+      "Operational state parameters relating an individual neighbor
+      system on an interface within an OSPF area";
+
+    leaf neighbor-id {
+      type yang:dotted-quad;
+      description
+        "Neighbor router Id";
+    }
+
+    leaf neighbor-address {
+      type inet:ipv4-address-no-zone;
+      description
+        "Neighbor Ip address address";
+    }
+
+    leaf area-id {
+      type oc-ospf-types:ospf-area-identifier;
+      description
+        "Aread id of this neighborship.";
+    }
+
+    leaf interface-name {
+      type string;
+      description
+        "Interface on which this neighborship is present";
+    }
+
+    leaf interface-address {
+      type inet:ipv4-address-no-zone;
+      description
+        "Address of Local Interface on which this neighborship is present";
+    }
+
+    leaf designated-router-other {
+      type yang:dotted-quad;
+      description
+        "The designated router other for the adjacency. This device
+        advertises the Network LSA for broadcast and NBMA networks.";
+    }
+
+    leaf option-value {
+      type uint8;
+      description
+        "OSPFv2 optional capability byte value";
+      default 0;
+    }
+
+    leaf option-byte {
+      type bits {
+        bit T-bit {
+          position 0;
+          description
+            "This describes the router's TOS capability. If the T-bit is reset, 
+             then the router supports only a single TOS (TOS 0).";
+        }
+        bit E-bit {
+          position 1;
+          description
+            "Support for Type-5 AS-External-LSAs (ExternalRoutingCapability).";
+        }
+        bit MC-bit {
+          position 2;
+          description
+            "Support for Multicast extensions to OSPF (MOSPF).";
+        }
+        bit NP-bit {
+          position 3;
+          description
+            "Support for handling Type-7 LSAs (NSSA).";
+        }
+        bit EA-bit {
+          position 4;
+          description
+            "Support for External-Attributes-LSAs.";
+        }
+        bit DC-bit {
+          position 5;
+          description
+            "Support for demand circuits.";
+        }
+        bit O-bit {
+          position 6;
+          description
+            "Support for Opaque-LSAs.";
+        }
+        bit bit7 {
+          position 7;
+          description
+            "Unused zero.";
+        }
+      }      
+      description
+        "OSPFv2 neighborship options";
+    }
+
+    leaf database-summary-queue-length {
+      type uint32;
+      description
+        "The number of LSAs that are currently in the queue to be
+        retransmitted to the neighbor";
+    }
+
+    leaf link-state-request-queue-length {
+      type uint32;
+      description
+        "The number of LSAs that are currently in the queue to be
+        retransmitted to the neighbor";
+    }
+
+    leaf thread-inactivity-timer {
+      type boolean;
+      description
+        "Thread Inactivity Timer.";
+    }
+
+    leaf thread-db-description-retransmission {
+      type boolean;
+      description
+        "Thread Database Description Retransmision.";
+    }
+
+    leaf thread-ls-request-retransmission {
+      type boolean;
+      description
+        "Thread Link State Request Retransmission";
+    }
+
+    leaf thread-ls-update-retransmission {
+      type boolean;
+      description
+        "Thread Link State Update Retransmission.";
+    }
+  }
+
+
+  grouping ospfv2-area-interface-neighbors-ext {
+    description
+      "Enclosing container for the list of neighbors that
+      an adjacency has been established with on the interface";
+
+    container neighbors-list {
+      description
+        "Enclosing container for the list of neighbors that
+        an adjacency has been established with on the interface";
+
+      config false;
+
+      list neighbor {
+        key "neighbor-id";
+ 
+        description
+          "A neighbor with which an OSPFv2 adjacency has been
+          established within this area";
+
+        uses oc-ospfv2:ospfv2-area-interface-neighbor-state;
+        uses ospfv2-area-interface-neighbor-state-ext;
+      }
+    }
+  }
+
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+            "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+            "/oc-netinst:global/oc-netinst:config" +
+            "/oc-netinst:summary-route-cost-mode" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+            "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+            "/oc-netinst:global/oc-netinst:state" +
+            "/oc-netinst:summary-route-cost-mode" {
+    deviate not-supported;
+  }
+
+  
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+            "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+            "/oc-netinst:global/oc-netinst:config" +
+            "/oc-netinst:igp-shortcuts" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+            "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+            "/oc-netinst:global/oc-netinst:state" +
+            "/oc-netinst:igp-shortcuts" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+            "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+            "/oc-netinst:global/oc-netinst:config" +
+            "/oc-netinst:hide-transit-only-networks" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+            "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+            "/oc-netinst:global/oc-netinst:state" +
+            "/oc-netinst:hide-transit-only-networks" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+            "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+            "/oc-netinst:global/oc-netinst:config" +
+            "/oc-netinst:log-adjacency-changes" {
+    deviate replace {
+      type identityref {
+        base "OSPF_LOG_TYPE";
+      }
+    }
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+            "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+            "/oc-netinst:global/oc-netinst:state" +
+            "/oc-netinst:log-adjacency-changes" {
+    deviate replace {
+      type identityref {
+        base "OSPF_LOG_TYPE";
+      }
+    }
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:config" +
+          "/oc-netinst:set" {
+        deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:config" +
+          "/oc-netinst:timeout" {
+        deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:config" +
+          "/oc-netinst:include" {
+        deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:config" +
+          "/oc-netinst:trigger" {
+        deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:state" +
+          "/oc-netinst:set" {
+        deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:state" +
+          "/oc-netinst:timeout" {
+        deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:state" +
+          "/oc-netinst:include" {
+        deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:state" +
+          "/oc-netinst:trigger" {
+        deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:graceful-restart" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:mpls" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:inter-area-propagation-policies" +
+          "/oc-netinst:inter-area-propagation-policy" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:mpls" {
+    deviate not-supported;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:config" {
+    uses ospfv2-global-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:state" {
+    uses ospfv2-global-config-ext;
+    uses ospfv2-global-state-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers/oc-netinst:spf" +
+          "/oc-netinst:config" {
+    uses ospfv2-global-timers-spf-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers/oc-netinst:spf" +
+          "/oc-netinst:state" {
+    uses ospfv2-global-timers-spf-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:config" {
+        uses ospfv2-global-max-metric-router-lsa-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:max-metric/oc-netinst:state" {
+        uses ospfv2-global-max-metric-router-lsa-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:lsa-generation/oc-netinst:config" {
+    uses ospfv2-global-lsa-generation-timers-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers" +
+          "/oc-netinst:lsa-generation/oc-netinst:state" {
+    uses ospfv2-global-lsa-generation-timers-config-ext;
+  }
+
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:inter-area-propagation-policies" {
+        uses inter-area-propagation-policy-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global" {
+    uses ospfv2-policy-route-distibution-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:config" {
+    uses ospfv2-area-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:state" {
+    uses ospfv2-area-config-ext;
+    uses ospfv2-area-state-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area" {
+    uses ospfv2-area-stub-ext;
+    uses ospfv2-area-networks-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:virtual-links" +
+          "/oc-netinst:virtual-link/oc-netinst:config" {
+    uses ospfv2-area-virtual-link-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:virtual-links" +
+          "/oc-netinst:virtual-link/oc-netinst:state" {
+    uses ospfv2-area-virtual-link-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" {
+    uses ospfv2-route-tables-state-ext;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:id"  {
+    deviate replace {
+      type leafref {
+        path "/oc-if:interfaces/oc-if:interface/oc-if:name";
+      }
+    }
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:config" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:timers/oc-netinst:config" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:mpls" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:lsa-filter" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:state" +
+          "/oc-netinst:authentication-type" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:state/oc-netinst:hide-network" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:state" +
+          "/oc-netinst:multi-area-adjacency-primary" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:state" +
+          "/oc-netinst:metric" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:neighbors" {
+    deviate not-supported;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:state" {
+    uses ospfv2-area-interface-config-ext;
+    uses ospfv2-area-interface-state-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:timers/oc-netinst:state" {
+    uses ospfv2-area-interface-timers-config-ext;
+  }
+
+  augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface" {
+    uses ospfv2-area-interface-neighbors-ext;
+    uses ospfv2-area-interface-message-stats-state-ext;
+  }
+
+  augment "/oc-if:interfaces/oc-if:interface" {
+    uses interface-phys-ospfv2-config-ext;
+  }
+}
+  
+  
+
+
+
+
+
+
+
+
+
+
+
