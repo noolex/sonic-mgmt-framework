@@ -71,4 +71,7 @@ def run(args):
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
-
+    if len(sys.argv) > 1 and sys.argv[1] == "vrf":
+        run_vrf(sys.argv[2:])
+    else:
+        run(sys.argv)
