@@ -61,6 +61,8 @@ import (
 var CVL_SCHEMA string = "schema/"
 var CVL_CFG_FILE string = "/usr/sbin/cvl_cfg.json"
 const CVL_LOG_FILE = "/tmp/cvl.log"
+const SONIC_DB_CONFIG_FILE string = "/var/run/redis/sonic-db/database_config.json"
+var sonic_db_config = make(map[string]interface{})
 
 //package init function 
 func init() {
@@ -74,6 +76,9 @@ func init() {
 
 	//Initialize mutex
 	logFileMutex = &sync.Mutex{}
+
+	//Initialize DB settings
+	dbCfgInit()
 }
 
 var cvlCfgMap map[string]string
@@ -428,3 +433,116 @@ func SkipSemanticValidation() bool {
 
 	return false
 }
+
+//Function to read Redis DB configuration from file.
+//In absence of the file, it uses default config for CONFIG_DB
+//so that CVL UT will pass in development environment.
+func dbCfgInit() {
+	defaultDBConfig := `{
+		"INSTANCES": {
+			"redis":{
+				"hostname" : "127.0.0.1",
+				"port" : 6379
+			}
+		},
+		"DATABASES" : {
+			"CONFIG_DB" : {
+				"id" : 4,
+				"separator": "|",
+				"instance" : "redis"
+			}
+		}
+	}`
+
+	//If multidb config file is not present, have default config DB support,
+	//at least for developement environment
+	if _, errF := os.Stat(SONIC_DB_CONFIG_FILE); os.IsNotExist(errF) {
+		err := json.Unmarshal([]byte(defaultDBConfig), &sonic_db_config)
+		if err != nil {
+			panic(err)
+		}
+		return
+	}
+
+	//Read from Redis configuration file
+	data, err := ioutil.ReadFile(SONIC_DB_CONFIG_FILE)
+	if err != nil {
+		panic(err)
+	} else {
+		err = json.Unmarshal([]byte(data), &sonic_db_config)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+//Get list of DB
+func getDbList()(map[string]interface{}) {
+	db_list, ok := sonic_db_config["DATABASES"].(map[string]interface{})
+	if !ok {
+		panic(fmt.Errorf("DATABASES' is not valid key in %s!",
+		SONIC_DB_CONFIG_FILE))
+	}
+	return db_list
+}
+
+//Get DB instance based on given DB name
+func getDbInst(db_name string)(map[string]interface{}) {
+	db, ok := sonic_db_config["DATABASES"].(map[string]interface{})[db_name]
+	if !ok {
+		panic(fmt.Errorf("database name '%v' is not valid in %s !",
+		db_name, SONIC_DB_CONFIG_FILE))
+	}
+	inst_name, ok := db.(map[string]interface{})["instance"]
+	if !ok {
+		panic(fmt.Errorf("'instance' is not a valid field in %s !",
+		SONIC_DB_CONFIG_FILE))
+	}
+	inst, ok := sonic_db_config["INSTANCES"].(map[string]interface{})[inst_name.(string)]
+	if !ok {
+		panic(fmt.Errorf("instance name '%v' is not valid in %s !",
+		inst_name, SONIC_DB_CONFIG_FILE))
+	}
+	return inst.(map[string]interface{})
+}
+
+//Get DB separator based on given DB name
+func GetDbSeparator(db_name string)(string) {
+	db_list := getDbList()
+	separator, ok := db_list[db_name].(map[string]interface{})["separator"]
+	if !ok {
+		panic(fmt.Errorf("'separator' is not a valid field in %s !",
+		SONIC_DB_CONFIG_FILE))
+	}
+	return separator.(string)
+}
+
+//Get DB id on given db name
+func GetDbId(db_name string)(int) {
+	db_list := getDbList()
+	id, ok := db_list[db_name].(map[string]interface{})["id"]
+	if !ok {
+		panic(fmt.Errorf("'id' is not a valid field in %s !",
+		SONIC_DB_CONFIG_FILE))
+	}
+	return int(id.(float64))
+}
+
+//Get DB TCP endpoint
+func GetDbTcpAddr(db_name string)(string) {
+	inst := getDbInst(db_name)
+	hostname, ok := inst["hostname"]
+	if !ok {
+		panic(fmt.Errorf("'hostname' is not a valid field in %s !",
+		SONIC_DB_CONFIG_FILE))
+	}
+
+	port, ok1 := inst["port"]
+	if !ok1 {
+		panic(fmt.Errorf("'port' is not a valid field in %s !",
+		SONIC_DB_CONFIG_FILE))
+	}
+
+	return fmt.Sprintf("%v:%v", hostname, port)
+}
+

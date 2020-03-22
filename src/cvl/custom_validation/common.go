@@ -113,9 +113,9 @@ type CustValidationCtxt struct {
 func getAppDbClient() *redis.Client {
         rclient := redis.NewClient(&redis.Options{
                 Network:     "tcp",
-                Addr:        "localhost:6379",
+                Addr:        GetDbTcpAddr("APPL_DB"),
                 Password:    "", // no password set
-                DB:          0,
+                DB:          GetDbId("APPL_DB"),
                 DialTimeout: 0,
         })
         _, err := rclient.Ping().Result()

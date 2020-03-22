@@ -212,9 +212,9 @@ func compareErrorDetails(cvlErr cvl.CVLErrorInfo, expCode cvl.CVLRetCode, errApp
 func getConfigDbClient() *redis.Client {
 	rclient := redis.NewClient(&redis.Options{
 		Network:     "tcp",
-		Addr:        "localhost:6379",
+		Addr:        GetDbTcpAddr("CONFIG_DB"),
 		Password:    "", // no password set
-		DB:          4,
+		DB:           GetDbId("CONFIG_DB"),
 		DialTimeout: 0,
 	})
 	_, err := rclient.Ping().Result()

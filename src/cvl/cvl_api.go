@@ -139,9 +139,9 @@ func Initialize() CVLRetCode {
 
 	//Initialize redis Client 
 	redisClient = redis.NewClient(&redis.Options{
-		Addr:     ":6379",
-		Password: "", // no password set
-		DB:       int(CONFIG_DB),  // use APP DB
+		Addr:     GetDbTcpAddr("CONFIG_DB"),
+		Password: "",
+		DB:       GetDbId("CONFIG_DB"),
 	})
 
 	if (redisClient == nil) {
