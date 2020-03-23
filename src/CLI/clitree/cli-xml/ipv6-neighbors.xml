@@ -182,4 +182,50 @@ limitations under the License.
        </ACTION>
     </COMMAND>
 </VIEW>
+
+<VIEW name="configure-view">
+	<!-- ipv6 nd cache expire -->
+	<COMMAND name="ipv6 nd" help="Configure IPv6 ND" ptype="SUBCOMMAND" mode="subcommand">
+		<PARAM name="cache" help="Set IPv6 ND cache entry" ptype="SUBCOMMAND" mode="subcommand">
+			<PARAM name="expire" help="Set IPv6 ND cache entry expiry time" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="value" help="Expiry time in seconds" ptype="NEIGH_TIMEOUT"> </PARAM>
+			</PARAM>
+		</PARAM>
+
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-neighbors.py set_ipv6_nd_cache_expiry ${value}&#xA; </ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configures time in seconds for IPv6 ND cache entry to expire.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure IPv6 ND cache entry timeout.
+			</USAGE>
+			<EXAMPLE summary="Configure IPv6 ND timeout">
+				sonic-cli(config)# ipv6 nd cache expire 500 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<!-- no ipv6 nd cache expire -->
+	<COMMAND name="no ipv6 nd" help="Unconfigure IPv6 ND" ptype="SUBCOMMAND" mode="subcommand">
+		<PARAM name="cache" help="Unset IPv6 ND cache entry" ptype="SUBCOMMAND" mode="subcommand">
+			<PARAM name="expire" help="Unset IPv6 ND cache entry expiry time" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+		</PARAM>
+
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-neighbors.py del_ipv6_nd_cache_expiry &#xA; </ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigures IPv6 ND cache entry expiry time and sets it to Default Value.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to Unconfigure IPv6 ND cache entry timeout.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure IPv6 ND timeout">
+				sonic-cli(config)# no ipv6 nd cache expire
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+</VIEW>
 </CLISH_MODULE>
