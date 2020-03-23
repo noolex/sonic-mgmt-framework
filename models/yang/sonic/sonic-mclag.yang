@@ -97,7 +97,7 @@ module sonic-mclag {
                             error-app-tag session_timeout-invalid;
                         }
                     }
-                    default 15;
+                    default 30;
                 }
                 must "(keepalive_interval * 3) <= session_timeout" {
                         error-message "(keepalive interval * 3) <= session_timeout value";
