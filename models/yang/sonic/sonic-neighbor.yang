@@ -100,6 +100,41 @@ module sonic-neighbor {
 
     container sonic-neighbor {
 
+		container NEIGH_GLOBAL {
+			list NEIGH_GLOBAL_LIST {
+				key "name";
+
+				leaf name {
+					type enumeration {
+						enum Values;
+					}
+					description "Key node identifier";
+				}
+
+				leaf ipv4_arp_timeout {
+					type uint16 {
+						range "60..14400" {
+							error-message "Invalid ARP timeout value";
+						}
+					}
+					default 1800;
+					
+					description "ARP timeout value";
+				}
+
+				leaf ipv6_nd_cache_expiry {
+					type uint16 {
+						range "60..14400" {
+							error-message "Invalid ND cache expiry value";
+						}
+					}
+					default 1800;
+					
+					description "ND cache expiry value";
+				}
+			}
+		}
+
         container NEIGH_TABLE {
             config false;
 
