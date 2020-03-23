@@ -184,6 +184,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_5_100"
+        method="integer"
+        pattern="5..100"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_0_65535"
         method="integer"
         pattern="0..65535"
@@ -205,6 +212,13 @@ limitations under the License.
     />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_2_65535"
+        method="integer"
+        pattern="2..65535"
+        help=""
+    />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_1_4294967295"
         method="unsignedInteger"
         pattern="1..4294967295"
@@ -212,9 +226,23 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_1_4294967"
+        method="unsignedInteger"
+        pattern="1..4294967"
+        help="1-4294967"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_1_16777215"
         method="unsignedInteger"
         pattern="1..16777215"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_1_16777214"
+        method="unsignedInteger"
+        pattern="1..16777214"
         help=""
         />
     <!--=======================================================-->
@@ -263,6 +291,12 @@ limitations under the License.
         name="INT_OR_IP_ADDR"
         pattern="(&IPV4_ADDRESS;|&UINT_16_RANGE;)"
         help="A.B.C.D or [0..65535]"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="OSPF_INT_OR_IP_ADDR"
+        pattern="(&IPV4_ADDRESS;|&UINT_32_RANGE;)"
+        help="A.B.C.D or [0..4294967295]"
         />
     <!--=======================================================-->
     <PTYPE
@@ -738,6 +772,34 @@ limitations under the License.
         pattern="1..256"
         help=""
         />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_1_2"
+        method="integer"
+        pattern="1..2"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_10_1800"
+        method="integer"
+        pattern="10..1800"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_0_600000"
+        method="integer"
+        pattern="0..600000"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_0_5000"
+        method="integer"
+        pattern="0..5000"
+        help=""
+        />
     <PTYPE
         name="INT8_RANGE"
         method="integer"
@@ -763,6 +825,7 @@ limitations under the License.
         pattern="1..3600"
         help=""
     />
+    <!--=======================================================-->
      <PTYPE
         name="FILE_TYPE"
         pattern="file:\/\/[^|]+"
@@ -907,6 +970,13 @@ limitations under the License.
         name="RANGE_0_4294967295"
         method="unsignedInteger"
         pattern="0..4294967295"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_1_100"
+        method="integer"
+        pattern="1..100"
         help=""
         />
     <!--=======================================================-->

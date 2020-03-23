@@ -185,12 +185,13 @@ limitations under the License.
 </VIEW>
 
 <VIEW name="configure-view">
-  <COMMAND name="router" help="Router mode" view="configure-router-bgp-view" viewid="instance=${as-num-dot};vrf-name=${vrf-name}">
-    <PARAM name="bgp" help="Border Gateway protocol (BGP)" mode="subcommand" ptype="SUBCOMMAND">
-      <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295">
-        <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-          <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
-        </PARAM>
+  <COMMAND name="router" help="Router mode" >
+  </COMMAND>
+
+  <COMMAND name="router bgp" help="Border Gateway protocol (BGP)" view="configure-router-bgp-view" viewid="instance=${as-num-dot};vrf-name=${vrf-name}">
+    <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295">
+      <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_config_as ${vrf-name} ${as-num-dot}</ACTION>
@@ -214,11 +215,11 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="no router" help="Border Gateway protocol (BGP)">
-    <PARAM name="bgp" help="Border Gateway protocol (BGP)" mode="subcommand" ptype="SUBCOMMAND">
-      <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="vrf-name" help="VRF Name" ptype="STRING_15" default="default"/>
-      </PARAM>
+  <COMMAND name="no router" help="Disable a routing process" >
+  </COMMAND>
+  <COMMAND name="no router bgp" help="Border Gateway protocol (BGP)">
+    <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="vrf-name" help="VRF Name" ptype="STRING_15" default="default"/>
     </PARAM>
     <ACTION> for aft in IPV4_UNICAST IPV6_UNICAST ; do for proto in connected static ospf ; do&#xA;
                  if test "$aft" = "IPV6_UNICAST" -a "$proto" = "ospf" ; then&#xA;

@@ -1,0 +1,738 @@
+<?xml version="1.0"?>                                                               
+<!--                                                                                
+Copyright 2019 Dell, Inc.                                                           
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at                         
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,  
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and     
+limitations under the License.                                          
+-->                                                                                          
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+<VIEW name="configure-view">
+  <COMMAND name="router ospf" help="Start OSPF configuration" view="configure-router-ospf-view" viewid="instance=${instance-id};vrf-name=${vrf-name}">
+    <PARAM name="instance-id" help="Instance ID" ptype="RANGE_1_65535">
+      <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+  <COMMAND name="no router ospf" help="Disable OSPF routing process">
+    <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="vrf-name" help="VRF Name" ptype="STRING_15" default="default"/>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+</VIEW>
+
+<VIEW name="configure-router-ospf-view" prompt="${SYSTEM_NAME}(config-router-ospf)# " depth="2">
+  <NAMESPACE ref="configure-view" help="false" completion="false" />
+
+  <COMMAND name="area" help="OSPF area parameters" >
+      <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" /> 
+      <PARAM name="authentication" help="Enable authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+      <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="defaultcost" help="Stub's advertised default summary cost" ptype="RANGE_1_16777215" />
+      </PARAM>
+      <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="exportlistname" help="Name of the access-list" ptype="STRING" />
+      </PARAM>
+      <PARAM name="filter-list" help="Filter networks between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="prefix" help="Filter prefixes between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name="prefixlistname" help="Name of an IP prefix-list" ptype="STRING" >
+            <PARAM name = "filterdirection" help = "" ptype = "SUBCOMMAND" mode="switch" >
+              <PARAM name="in" help="Filter networks sent to this area" ptype="SUBCOMMAND" mode="subcommand" />
+              <PARAM name="out" help="Filter networks sent from this area" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM> 
+          </PARAM> 
+        </PARAM>   
+      </PARAM>
+      <PARAM name="import-list" help="Set the filter for networks from other areas announced to the specified one" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="importlistname" help="Name of the access-list" ptype="STRING" />
+      </PARAM>
+      <PARAM name="nssa" help="Configure OSPF area as nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="no-summary" help="Do not inject inter-area routes into nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="translate-always" help="Configure NSSA-ABR to always translate" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="translate-candidate" help="Configure NSSA-ABR for translate election (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="translate-never" help="Configure NSSA-ABR to never translate" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+      <PARAM name="range" help="Summarize routes matching address/mask (border routers only)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "rangeprefix" help = "Area range prefix" ptype = "IP_ADDR" > 
+          <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name = "rangemetric" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
+          </PARAM>
+          <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name = "rangenetworkprefix" help = "Network prefix to be announced instead of range" ptype = "IP_ADDR" /> 
+          </PARAM>
+        </PARAM>
+      </PARAM>
+      <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no area" help="OSPF area parameters" >
+      <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" /> 
+      <PARAM name="authentication" help="Enable authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+      <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="defaultcost" help="Stub's advertised default summary cost" ptype="RANGE_1_16777215" />
+      </PARAM>
+      <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="exportlistname" help="Name of the access-list" ptype="STRING" />
+      </PARAM>
+      <PARAM name="filter-list" help="Filter networks between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="prefix" help="Filter prefixes between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name="prefixlistname" help="Name of an IP prefix-list" ptype="STRING" >
+            <PARAM name = "filterdirection" help = "" ptype = "SUBCOMMAND" mode="switch" >
+              <PARAM name="in" help="Filter networks sent to this area" ptype="SUBCOMMAND" mode="subcommand" />
+              <PARAM name="out" help="Filter networks sent from this area" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM> 
+          </PARAM> 
+        </PARAM>   
+      </PARAM>
+      <PARAM name="import-list" help="Set the filter for networks from other areas announced to the specified one" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="importlistname" help="Name of the access-list" ptype="STRING" />
+      </PARAM>
+      <PARAM name="nssa" help="Configure OSPF area as nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="no-summary" help="Do not inject inter-area routes into nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="translate-always" help="Configure NSSA-ABR to always translate" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="translate-candidate" help="Configure NSSA-ABR for translate election (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="translate-never" help="Configure NSSA-ABR to never translate" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+      <PARAM name="range" help="Summarize routes matching address/mask (border routers only)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "rangeprefix" help = "Area range prefix" ptype = "IP_ADDR" > 
+          <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name = "rangemetric" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
+          </PARAM>
+          <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name = "rangenetworkprefix" help = "Network prefix to be announced instead of range" ptype = "IP_ADDR" /> 
+          </PARAM>
+        </PARAM>
+      </PARAM>
+      <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="auto-cost" help="Calculate OSPF interface cost according to bandwidth" >
+    <PARAM name="reference-bandwidth" help="Use reference bandwidth method to assign OSPF cost" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="ref-bandwidth" help="The reference bandwidth in terms of Mbits per second" ptype="RANGE_1_4294967" />
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no auto-cost" help="Calculate OSPF interface cost according to bandwidth" >
+    <PARAM name="reference-bandwidth" help="Use reference bandwidth method to assign OSPF cost" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="ref-bandwidth" help="The reference bandwidth in terms of Mbits per second" ptype="RANGE_1_4294967" />
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="capability" help="Enable specific OSPF feature" >
+    <PARAM name="opaque" help="Opaque LSA" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no capability" help="Enable specific OSPF feature" >
+    <PARAM name="opaque" help="Opaque LSA" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="compatible" help="OSPF compatibility list" >
+    <PARAM name="rfc1583" help="compatible with RFC 1583" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no compatible" help="OSPF compatibility list" >
+    <PARAM name="rfc1583" help="compatible with RFC 1583" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="default-information" help="Control distribution of default information" >
+    <PARAM name="originate" help="Distribute a default route" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="always" help="Always advertise default route" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+      <PARAM name="metric" help="OSPF default metric" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="Always advertise default route" ptype="RANGE_1_16777214" />
+      </PARAM>
+      <PARAM name="metric-type" help="OSPF metric type for default routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
+      </PARAM>
+      <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Pointer to route-map entries" ptype="STRING_15" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no default-information" help="Control distribution of default information" >
+    <PARAM name="originate" help="Distribute a default route" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="always" help="Always advertise default route" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+      <PARAM name="metric" help="OSPF default metric" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="Always advertise default route" ptype="RANGE_1_16777214" />
+      </PARAM>
+      <PARAM name="metric-type" help="OSPF metric type for default routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
+      </PARAM>
+      <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Pointer to route-map entries" ptype="STRING_15" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="default-metric" help="Set metric of redistributed routes" >
+    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_1_16777214" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no default-metric" help="Set metric of redistributed routes" >
+    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_1_16777214" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="distance" help="Administrative distance" >
+      <PARAM name="admindistance" help="OSPF Administrative distance" ptype="RANGE_1_255" mode="subcommand" optional="true">
+        <PARAM name="ospf" help="" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name = "distancetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+            <PARAM name="external" help="External routes" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name="extdistance" help="Distance for external routes" ptype="RANGE_1_255" />
+            </PARAM>
+            <PARAM name="inter-area" help="Inter-area routes" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name="interdistance" help="Distance for inter-area routes" ptype="RANGE_1_255" />
+            </PARAM>
+            <PARAM name="intra-area" help="Intra-area routes" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name="intradistance" help="Distance for intra-area routes" ptype="RANGE_1_255" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no distance" help="Administrative distance" >
+      <PARAM name="admindistance" help="OSPF Administrative distance" ptype="RANGE_1_255" mode="subcommand" optional="true">
+        <PARAM name="ospf" help="" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name = "distancetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+            <PARAM name="external" help="External routes" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name="extdistance" help="Distance for external routes" ptype="RANGE_1_255" />
+            </PARAM>
+            <PARAM name="inter-area" help="Inter-area routes" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name="interdistance" help="Distance for inter-area routes" ptype="RANGE_1_255" />
+            </PARAM>
+            <PARAM name="intra-area" help="Intra-area routes" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name="intradistance" help="Distance for intra-area routes" ptype="RANGE_1_255" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="distribute-list" help="Filter networks in routing updates" >
+    <PARAM name="opaque" help="Access-list name" ptype="STRING_15" mode="subcommand" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no distribute-list" help="Filter networks in routing updates" >
+    <PARAM name="opaque" help="Access-list name" ptype="STRING_15" mode="subcommand" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="log-adjacency-changes" help="Log changes in adjacency state" >
+    <PARAM name="detail" help="Log all state changes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no log-adjacency-changes" help="Log changes in adjacency state" >
+    <PARAM name="detail" help="Log all state changes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="max-metric" help="OSPF maximum / infinite-distance metric" >
+    <PARAM name="router-lsa" help="Advertise own Router-LSA with infinite distance (stub router)" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="on-shutdown" help="Advertise stub-router prior to full shutdown of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="extdistance" help="Time (seconds) to wait till full shutdown" ptype="RANGE_5_100" />
+        </PARAM>
+        <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="interdistance" help="Time (seconds) to advertise self as stub-router" ptype="RANGE_5_100" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no max-metric" help="OSPF maximum / infinite-distance metric" >
+    <PARAM name="router-lsa" help="Advertise own Router-LSA with infinite distance (stub router)" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="on-shutdown" help="Advertise stub-router prior to full shutdown of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="extdistance" help="Time (seconds) to wait till full shutdown" ptype="RANGE_5_100" />
+        </PARAM>
+        <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="interdistance" help="Time (seconds) to advertise self as stub-router" ptype="RANGE_5_100" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="neighbor" help="Specify neighbor router" >
+    <PARAM name="ipaddr" help="Neighbor IP address" ptype="IP_ADDR" mode="subcommand" >
+      <PARAM name="poll-interval" help="Dead Neighbor Polling interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name="pollinterval" help="Time (seconds)" ptype="RANGE_1_65535" />
+      </PARAM>
+      <PARAM name="priority" help="OSPF priority of non-broadcast neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name="priorityval" help="Priority" ptype="RANGE_0_255" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no neighbor" help="Specify neighbor router" >
+    <PARAM name="ipaddr" help="Neighbor IP address" ptype="IP_ADDR" mode="subcommand" >
+      <PARAM name="poll-interval" help="Dead Neighbor Polling interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name="pollinterval" help="Time (seconds)" ptype="RANGE_1_65535" />
+      </PARAM>
+      <PARAM name="priority" help="OSPF priority of non-broadcast neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name="priorityval" help="Priority" ptype="RANGE_0_255" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="network" help="Enable routing on an IP network" >
+    <PARAM name="ipaddrmask" help="OSPF network prefix" ptype="IP_ADDR" mode="subcommand" >
+      <PARAM name="area" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "area-id" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name = "areaiddecimal" help = "OSPF area ID as a decimal value" ptype = "RANGE_0_4294967295" /> 
+          <PARAM name = "areaidip" help = "OSPF area ID in IP address format" ptype = "IP_ADDR" /> 
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no network" help="Enable routing on an IP network" >
+    <PARAM name="ipaddrmask" help="OSPF network prefix" ptype="IP_ADDR" mode="subcommand" >
+      <PARAM name="area" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "area-id" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name = "areaiddecimal" help = "OSPF area ID as a decimal value" ptype = "RANGE_0_4294967295" /> 
+          <PARAM name = "areaidip" help = "OSPF area ID in IP address format" ptype = "IP_ADDR" /> 
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="ospf" help="OSPF specific commands" >
+    <PARAM name = "ospf_cmd" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="abr-type" help="OSPF network prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "abrtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="cisco" help="Alternative ABR,  cisco implementation" ptype="SUBCOMMAND" mode="subcommand" />
+          <PARAM name="shortcut" help="Shortcut ABR" ptype="SUBCOMMAND" mode="subcommand" />
+          <PARAM name="standard" help="Standard behavior (RFC2328)" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="opaque-lsa" help="Enable the Opaque-LSA capability (rfc2370)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "routerid" help = "OSPF router-id in IP address format" ptype = "IP_ADDR" /> 
+      </PARAM>
+      <PARAM name="write-multiplier" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "writemaxinterface" help = "Maximum number of interface serviced per write" ptype = "RANGE_1_100" /> 
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no ospf" help="OSPF specific commands" >
+    <PARAM name = "ospf_cmd" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="abr-type" help="OSPF network prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "abrtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="cisco" help="Alternative ABR,  cisco implementation" ptype="SUBCOMMAND" mode="subcommand" />
+          <PARAM name="shortcut" help="Shortcut ABR" ptype="SUBCOMMAND" mode="subcommand" />
+          <PARAM name="standard" help="Standard behavior (RFC2328)" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="opaque-lsa" help="Enable the Opaque-LSA capability (rfc2370)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "routerid" help = "OSPF router-id in IP address format" ptype = "IP_ADDR" /> 
+      </PARAM>
+      <PARAM name="write-multiplier" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "writemaxinterface" help = "Maximum number of interface serviced per write" ptype = "RANGE_1_100" /> 
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="passive-interface" help="Suppress routing updates on an interface" >
+    <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" />
+      <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" optional="true" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no passive-interface" help="Suppress routing updates on an interface" >
+    <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" />
+      <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" optional="true" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="redistribute" help="Redistribute information from another routing protocol" >
+    <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="bgp" help="Border Gateway Protocol (BGP)" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Pointer to route-map entries" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="connected" help="Connected routes (directly attached subnet or host)" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Pointer to route-map entries" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Pointer to route-map entries" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no redistribute" help="Redistribute information from another routing protocol" >
+    <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="bgp" help="Border Gateway Protocol (BGP)" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Pointer to route-map entries" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="connected" help="Connected routes (directly attached subnet or host)" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Pointer to route-map entries" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Pointer to route-map entries" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="refresh" help="Adjust refresh parameters" >
+    <PARAM name="timer" help="Set refresh timer" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="refreshtimer" help="Timer value in seconds" ptype="RANGE_10_1800" />
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no refresh" help="Adjust refresh parameters" >
+    <PARAM name="timer" help="Set refresh timer" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="refreshtimer" help="Timer value in seconds" ptype="RANGE_10_1800" />
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+<!--
+  <COMMAND name="router-info" help="OSPF Router Information specific commands" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+    <PARAM name = "floodingscope" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="area" help="Enable the Router Information functionality with Area flooding scope" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="floodingscopeareaid" help="OSPF area ID in IP format (deprecated)" ptype="IP_ADDR" optional="true" optional="true"/>
+      </PARAM>
+      <PARAM name="as" help="Enable the Router Information functionality with AS flooding scope" ptype="SUBCOMMAND" mode="subcommand"/>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+-->
+
+  <COMMAND name="timers" help="Adjust routing timers" >
+    <PARAM name = "timertype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="lsa" help="OSPF LSA timers" ptype="SUBCOMMAND" mode="subcommand"  >
+        <PARAM name="min-arrival" help="Minimum delay in receiving new version of a LSA" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name="minarrivaltimer" help="Delay in milliseconds" ptype="RANGE_0_600000" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="throttle" help="Throttling adaptive timer" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "throttletype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="lsa" help="LSA delay between transmissions" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name="all" help="All LSA types" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name="lsadelaytimer" help="Delay (msec) between sending LSAs" ptype="RANGE_0_5000" />
+            </PARAM>
+          </PARAM>
+          <PARAM name="spf" help="OSPF SPF timers" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name="spfdelaytime" help="Delay (msec) from first change received till SPF calculation" ptype="RANGE_0_600000" />
+            <PARAM name="spfinitialholdtime" help="Initial hold time (msec) between consecutive SPF calculations" ptype="RANGE_0_600000" />
+            <PARAM name="spfmaxholdtime" help="Maximum hold time (msec)" ptype="RANGE_0_600000" />
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no timers" help="Adjust routing timers" >
+    <PARAM name = "timertype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="lsa" help="OSPF LSA timers" ptype="SUBCOMMAND" mode="subcommand"  >
+        <PARAM name="min-arrival" help="Minimum delay in receiving new version of a LSA" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name="minarrivaltimer" help="Delay in milliseconds" ptype="RANGE_0_600000" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="throttle" help="Throttling adaptive timer" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "throttletype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="lsa" help="LSA delay between transmissions" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name="all" help="All LSA types" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name="lsadelaytimer" help="Delay (msec) between sending LSAs" ptype="RANGE_0_5000" />
+            </PARAM>
+          </PARAM>
+          <PARAM name="spf" help="OSPF SPF timers" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name="spfdelaytime" help="Delay (msec) from first change received till SPF calculation" ptype="RANGE_0_600000" />
+            <PARAM name="spfinitialholdtime" help="Initial hold time (msec) between consecutive SPF calculations" ptype="RANGE_0_600000" />
+            <PARAM name="spfmaxholdtime" help="Maximum hold time (msec)" ptype="RANGE_0_600000" />
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="write-multiplier" help="Write multiplier" >
+      <PARAM name="maxinterfacewrite" help="Maximum number of interface serviced per write" ptype="RANGE_1_100" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no write-multiplier" help="Write multiplier" >
+      <PARAM name="maxinterfacewrite" help="Maximum number of interface serviced per write" ptype="RANGE_1_100" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+</VIEW>
+
+<VIEW name="enable-view">   
+
+    <COMMAND name = "show ip ospf" help = "OSPF information" >
+      <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+          <PARAM name = "all" help = "All VRFs" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+      </PARAM>
+
+      <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="border-routers" help="Show all the ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
+        </PARAM>
+
+        <PARAM name="database" help="Database summary" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+            <PARAM name="asbr-summary" help="ASBR summary link states" ptype="SUBCOMMAND" mode="subcommand">
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="external" help="External link states" ptype="SUBCOMMAND" mode="subcommand">
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="max-age" help="LSAs in MaxAge list" ptype="SUBCOMMAND" mode="subcommand" >
+            </PARAM>
+
+            <PARAM name="network" help="Network link states" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM> 
+
+            <PARAM name="nssa-external" help="NSSA external link state" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM> 
+
+            <PARAM name="opaque-area" help="Link area Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM> 
+
+            <PARAM name="opaque-as" help="Link AS Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="opaque-link" help="Link local Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM> 
+
+            <PARAM name="router" help="Router link states" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" >
+            </PARAM> 
+
+            <PARAM name="summary" help="Network summary link states" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+          </PARAM>
+        </PARAM>
+
+        <PARAM name="interface" help="Interface information" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name="traffic" help="Protocol Packet counters" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+          <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="true"/>
+        </PARAM>
+
+        <PARAM name="neighbor" help="Neighbor list" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="all" help="include down status neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+          <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="true"/>
+          <PARAM name="detail" help="detail of all neighbors" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+            <PARAM name="all" help="include down status neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+
+      <ACTION builtin="clish_nop"></ACTION>
+     </COMMAND>
+
+     <COMMAND name="show ip ospf route" help="OSPF routing table" >
+        <ACTION builtin="clish_nop"></ACTION>
+     </COMMAND>
+
+     <COMMAND name="show ip ospf vrfs" help="Show OSPF VRFs" >
+        <ACTION builtin="clish_nop"></ACTION>
+     </COMMAND>
+
+     <COMMAND name="show ip ospf router-info" help="Router Information" >
+        <ACTION builtin="clish_nop"></ACTION>
+     </COMMAND>
+</VIEW>
+
+<!--=======================================================-->
+<!--                Config Interface PHY-MODE              -->
+<!--=======================================================-->
+
+<VIEW name="configure-if-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${iface}"></MACRO>
+</VIEW>
+
+<VIEW name="configure-lag-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${po_name}"></MACRO>
+</VIEW>
+
+<VIEW name="configure-vlan-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${vlan_name}"></MACRO>
+</VIEW>
+
+<VIEW name="configure-lo-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${lo_name}"></MACRO>
+</VIEW>
+
+</CLISH_MODULE>
