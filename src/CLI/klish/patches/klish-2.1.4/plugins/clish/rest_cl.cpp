@@ -155,36 +155,6 @@ static int rest_set_curl_headers(bool use_token) {
     return 0;
 }
 
-std::string user_cert, user_key;
-
-void rest_update_user_info() {
-    char *cli_user = getenv("CLI_USER");
-    if (cli_user) {
-        struct passwd *p;
-        p=getpwnam(cli_user);
-        if (p) {
-            user_cert = p->pw_dir;
-            user_cert.append("/.cert/certificate.pem");
-
-            user_key = p->pw_dir;
-            user_key.append("/.cert/key.pem");
-            
-            setenv("USER_CERT_PATH", user_cert.c_str(), 1);
-            setenv("USER_KEY_PATH", user_key.c_str(), 1);
-            
-            syslog(LOG_DEBUG, "clish_restcl: [key:%s][cert:%s]\r\n",
-                    user_key.c_str(), user_cert.c_str());
-        }
-    }
-}
-
-static void rest_set_curl_cert_key() {
-    if (user_cert.size() && user_key.size()){
-        curl_easy_setopt(curl, CURLOPT_SSLCERT, user_cert.c_str());
-        curl_easy_setopt(curl, CURLOPT_SSLKEY, user_key.c_str());
-    }
-}
-
 static int _init_curl() {
 
     curl_global_init(CURL_GLOBAL_ALL);
@@ -194,31 +164,23 @@ static int _init_curl() {
         return 1;
     }
     
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "CLI");
 
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
 
+    curl_easy_setopt(curl, CURLOPT_UNIX_SOCKET_PATH, "/var/run/rest-local.sock");
+
     return 0;
 }
 
 void rest_client_init() {
-    int auth_ena = (getenv("CLISH_NOAUTH") == NULL);
-
-    if (auth_ena){
-        rest_update_user_info();
-    }
-
     char *root = getenv("REST_API_ROOT");
 
-    REST_API_ROOT.assign(root ? root : "https://localhost:8443");
+    REST_API_ROOT.assign(root ? root : "http://localhost");
 
     _init_curl();
 
-    rest_set_curl_cert_key();
     rest_set_curl_headers(true);
 }
 
