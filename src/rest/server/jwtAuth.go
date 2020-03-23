@@ -3,12 +3,12 @@ package server
 import (
 	"crypto/rand"
 	"encoding/json"
-	"net/http"
-	"strings"
-	"time"
-	"os/user"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/golang/glog"
+	"net/http"
+	"os/user"
+	"strings"
+	"time"
 )
 
 var (
@@ -23,8 +23,8 @@ type Credentials struct {
 }
 
 type Claims struct {
-	Username string `json:"username"`
-	Roles []string `json:"roles"`
+	Username string   `json:"username"`
+	Roles    []string `json:"roles"`
 	jwt.StandardClaims
 }
 
@@ -39,7 +39,7 @@ func generateJWT(username string, roles []string, expire_dt time.Time) string {
 	// you would like it to contain.
 	claims := &Claims{
 		Username: username,
-		Roles: roles,
+		Roles:    roles,
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: expire_dt.Unix(),
@@ -76,7 +76,16 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	var creds Credentials
 	rc, r := GetContext(r)
 	auth_success := false
-	if rc.ClientAuth.Enabled("cert") && r.TLS != nil && len(r.TLS.PeerCertificates) > 0 {
+	if rc.ClientAuth.Enabled("clisock") {
+		// Check if they are connected using the Unix socket
+		if err := CliUserAuthenAndAuthor(r, rc); err == nil {
+			auth_success = true
+			tokenResp(w, r, rc.Auth.User, rc.Auth.Roles)
+			return
+		}
+	}
+
+	if !auth_success && rc.ClientAuth.Enabled("cert") && r.TLS != nil && len(r.TLS.PeerCertificates) > 0 {
 		//Check if they are using certificate based auth
 		username := strings.ToLower(r.TLS.PeerCertificates[0].Subject.CommonName)
 		if len(username) > 0 {
@@ -110,8 +119,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(data)
 	return
-	
-	
+
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
