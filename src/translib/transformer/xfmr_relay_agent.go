@@ -82,6 +82,7 @@ func init () {
     XlateFuncBind("relay_agent_table_xfmr", relay_agent_table_xfmr)
     XlateFuncBind("YangToDb_relay_agent_intf_tbl_key_xfmr", YangToDb_relay_agent_intf_tbl_key_xfmr)
     XlateFuncBind("DbToYang_relay_agent_intf_tbl_key_xfmr", DbToYang_relay_agent_intf_tbl_key_xfmr)
+    XlateFuncBind("YangToDb_relay_agent_id_field_xfmr", YangToDb_relay_agent_id_field_xfmr)
     XlateFuncBind("DbToYang_relay_agent_counters_xfmr", DbToYang_relay_agent_counters_xfmr)
     XlateFuncBind("DbToYang_relay_agent_v6_counters_xfmr", DbToYang_relay_agent_v6_counters_xfmr)
 }
@@ -123,11 +124,12 @@ var relay_agent_table_xfmr TableXfmrFunc = func (inParams XfmrParams) ([]string,
     log.Info(intTbl)
 
 
-    if (intfType == IntfTypeEthernet)  || intfType == IntfTypeVlan || 
-       intfType == IntfTypePortChannel {
+    if (intfType == IntfTypeEthernet) || intfType == IntfTypePortChannel {
             tblList = append(tblList, intTbl.cfgDb.intfTN)
-            log.Info(tblList)
+    } else if intfType == IntfTypeVlan {
+            tblList = append(tblList, intTbl.cfgDb.portTN)
     }
+    log.Info(tblList)
     return tblList, err
 
 }
@@ -139,12 +141,12 @@ var YangToDb_relay_agent_intf_tbl_key_xfmr KeyXfmrYangToDb = func(inParams XfmrP
     pathInfo := NewPathInfo(inParams.uri)
     ifName := pathInfo.Var("id")
 
-
     return ifName, err
 }
 //Function to fetch the helper address from the appropriate interface table
 var DbToYang_relay_agent_intf_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrParams) (map[string]interface{}, error) {
     var err error
+    var tblList string
     res_map := make(map[string]interface{})
     log.Info("DbToYang_relay_agent_intf_tbl_key_xfmr: ", inParams.key)
 
@@ -155,11 +157,16 @@ var DbToYang_relay_agent_intf_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrP
 
         intTbl := IntfTypeTblMap[intfType]
 
-        //tblList, intTbl.cfgDb.intfTN
-        entry, dbErr := configDb.GetEntry(&db.TableSpec{Name:intTbl.cfgDb.intfTN}, db.Key{Comp: []string{inParams.key}})
+    if (intfType == IntfTypeEthernet) || intfType == IntfTypePortChannel {
+            tblList = intTbl.cfgDb.intfTN
+        } else if intfType == IntfTypeVlan {
+            tblList = intTbl.cfgDb.portTN
+        }
+
+        entry, dbErr := configDb.GetEntry(&db.TableSpec{Name:tblList}, db.Key{Comp: []string{inParams.key}})
         configDb.DeleteDB()
         if dbErr != nil {
-            log.Info("Failed to read mgmt port status from config DB, " + intTbl.cfgDb.intfTN + " " + inParams.key)
+            log.Info("Failed to read mgmt port status from config DB, " + tblList + " " + inParams.key)
             return res_map, dbErr
         }
 
@@ -175,6 +182,24 @@ var DbToYang_relay_agent_intf_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrP
         }
     }
 
+    return res_map, err
+}
+
+// Function to transform id coming from Yang to vlaind in the vlan table, Ethernet and Portchannel have the field "id"
+var YangToDb_relay_agent_id_field_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
+    res_map := make(map[string]string)
+    var err error
+
+    pathInfo := NewPathInfo(inParams.uri)
+    ifName := pathInfo.Var("id")
+
+    if strings.HasPrefix(ifName, VLAN) == true {
+        vlanId := ifName[len("Vlan"):len(ifName)]
+        res_map["vlanid"] = vlanId
+    } else {
+        res_map["id"] = inParams.key
+    }
+    log.Info("YangToDb_relay_agent_id_field_xfmr: res_map:", res_map)
     return res_map, err
 }
 
@@ -244,11 +269,12 @@ var DbToYang_relay_agent_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrP
 
     pathInfo := NewPathInfo(inParams.uri)
     ifName := pathInfo.Var("id")
-
+    log.Info(ifName)
+    
     if ifName == "" { 
        return err 
     }
-
+    
     targetUriPath, err := getYangPathFromUri(pathInfo.Path)
     
     fileName := "dhcp-relay-ipv4-stats-"+ ifName + ".json"

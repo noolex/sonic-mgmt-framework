@@ -21,15 +21,22 @@ module openconfig-relay-agent-annot {
       }
     }
 
-    deviation /oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:state/oc-relay:counters {
-      deviate add {
-         sonic-ext:subtree-transformer "relay_agent_counters_xfmr";
-      }
-    }
-
     deviation /oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config/oc-relay:helper-address {
       deviate add {
          sonic-ext:field-name "dhcp_servers";
+      }
+    }
+
+    deviation /oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config/oc-relay:id {
+      deviate add {
+         sonic-ext:field-transformer "relay_agent_id_field_xfmr";
+      }
+    }
+
+
+    deviation /oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:state/oc-relay:counters {
+      deviate add {
+         sonic-ext:subtree-transformer "relay_agent_counters_xfmr";
       }
     }
 
@@ -40,17 +47,24 @@ module openconfig-relay-agent-annot {
       }
     }
 
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:config/oc-relay:helper-address {
+      deviate add {
+         sonic-ext:field-name "dhcpv6_servers";
+      }
+    }
+
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:config/oc-relay:id {
+      deviate add {
+         sonic-ext:field-transformer "relay_agent_id_field_xfmr";
+      }
+    }
+
     deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:state/oc-relay:counters {
       deviate add {
          sonic-ext:subtree-transformer "relay_agent_v6_counters_xfmr";
       }
     }
 
-    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:config/oc-relay:helper-address {
-      deviate add {
-         sonic-ext:field-name "dhcpv6_servers";
-      }
-    }
 
 }
 
