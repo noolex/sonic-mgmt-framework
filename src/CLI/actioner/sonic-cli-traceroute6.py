@@ -20,22 +20,16 @@ from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 import urllib3
 urllib3.disable_warnings()
-
 import subprocess
-import sys
-import re
-from ctypes import *
 
 #Invalid chars
 blocked_chars = frozenset(['&', ';', '<', '>', '|', '`', '\''])
 
-#Logging
-def err_log(msg):
-    log.logging("TRACEROUTE",log.ERR,"TRACEROUTEv4","","",0,msg)
-def dbg_log(msg):
-    log.logging("TRACEROUTE",log.DEBUG,"TRACEROUTEv4","","",0,msg)
-def error_log(msg):
-    log.logging("TRACEROUTE", log.ERR, "TRACEROUTEv4", "", "", 0, msg)
+def print_and_log(inMsg):
+    msg = "Error: traceroute6 unsuccessful"
+    logMsg = msg + " : " + inMsg
+    print msg
+    log.syslog(log.LOG_ERR, logMsg)
 
 def run_vrf(args):
     vrfName = args[0]
@@ -44,14 +38,14 @@ def run_vrf(args):
         print "%Error: Invalid argument."
         sys.exit(1)
     try:
-        cmd = "traceroute -6 " + args + " -i " + vrfName
+        cmd = "traceroute 6" + args + " -i " + vrfName
         subprocess.call(cmd, shell=True)
 
     except KeyboardInterrupt:
         # May be triggered when Ctrl + C is used to stop script execution
         return
-    except Exception:
-        dbg_log("Traceroute unsuccessful")
+    except Exception as e:
+        print_and_log(str(e))
         return
 
 def run(args):
@@ -60,13 +54,13 @@ def run(args):
         print "%Error: Invalid argument."
         sys.exit(1)
     try:
-        subprocess.call("traceroute -6 " + args,shell=True)
+        subprocess.call("traceroute -6" + args,shell=True)
 
     except KeyboardInterrupt:
         # May be triggered when Ctrl + C is used to stop script execution
         return
-    except Exception:
-        dbg_log("Traceroute unsuccessful")
+    except Exception as e:
+        print_and_log(str(e))
         return
 
 if __name__ == '__main__':
