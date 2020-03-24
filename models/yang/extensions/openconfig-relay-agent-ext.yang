@@ -15,6 +15,50 @@ module openconfig-relay-agent-ext {
 
     import openconfig-relay-agent { prefix oc-relay; }
 
+    augment "/oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf src-intf {
+                        type string;
+                        description
+                                "Configure the src-intf from which the packet should
+                                 be relayed.";
+                }
+        }
+
+     augment "/oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf max-hop-count {
+                        type uint32;
+                        description
+                                "Configure the max hops the packet could be forwarded.";
+                }
+        }
+
+
+     augment "/oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf link-select {
+                        type boolean;
+                        description
+                                "Enables link-selection on the referenced interface.
+                                 src-intf must be configured.";
+                }
+        }
+
+     augment "/oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf src-intf {
+                        type string;
+                        description
+                                "Configure the src-intf from which the packet should
+                                 be relayed.";
+                }
+        }
+
+     augment "/oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf max-hop-count {
+                        type uint32;
+                        description
+                                "Configure the max hops the packet could be forwarded.";
+                }
+        }
+
     deviation /oc-relay:relay-agent/oc-relay:dhcp/oc-relay:config/oc-relay:enable-relay-agent {
       deviate not-supported;
     }

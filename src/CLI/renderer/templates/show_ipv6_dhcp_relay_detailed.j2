@@ -1,0 +1,65 @@
+{% set vars = {'id': ""} %}
+{% set vars = {'helperAddress': ""} %}
+
+{% if 'openconfig-relay-agent:dhcpv6' in json_output %}
+    {% set interfaces_list = json_output['openconfig-relay-agent:dhcpv6'] %}
+    {% for key in interfaces_list %}
+        {% set interfaces = interfaces_list[key] %}
+            {% for interface in interfaces %}
+               {% set interfaceConfig = interfaces[interface] %}
+               {% for field in interfaceConfig %}
+                  {% if "id" in field %}
+                  {{ '\n' }}
+                     {% if vars.update({'id':field['id']}) %}{% endif %}
+{{"Relay Interface: "}}{{vars.id}}
+                  {% endif %}
+                  {% if "config" in field %}
+                     {% set RelayConfig = field['config'] %}
+                     {% set ips = RelayConfig['helper-address'] %}
+                     {% for ip in ips %}
+                     {% if vars.update({'helperAddress':ip}) %}{% endif %}
+{{"Server Address: "}}{{ vars.helperAddress }}
+                     {% endfor %}
+                     {% if 'openconfig-relay-agent-ext:src-intf' in RelayConfig %}
+{{"Source Interface: "}}{{ RelayConfig['openconfig-relay-agent-ext:src-intf']}}
+                     {% endif %}
+                     {% if 'openconfig-relay-agent-ext:link-select' in RelayConfig %}
+{{"Link Select: "}}{{ RelayConfig['openconfig-relay-agent-ext:link-select']}}
+                     {% endif %}
+                     {% if 'openconfig-relay-agent-ext:max-hop-count' in RelayConfig %}
+{{"Max Hop Count: "}}{{ RelayConfig['openconfig-relay-agent-ext:max-hop-count']}}
+                     {% endif %}
+                  {% endif %}
+               {% endfor %}
+            {% endfor %}
+    {% endfor %}
+{% endif %}
+{% if 'openconfig-relay-agent:interface' in json_output %}
+   {% set interface =json_output['openconfig-relay-agent:interface'] %}
+   {% for field in interface %}
+      {% if "id" in field %}
+      {{ '\n' }}
+         {% if vars.update({'id':field['id']}) %}{% endif %}
+{{"Relay Interface: "}}{{vars.id}}
+      {% endif %}
+      {% if "config" in field %}
+         {% set RelayConfig = field['config'] %}
+         {% set ips = RelayConfig['helper-address'] %}
+         {% for ip in ips %}
+         {% if vars.update({'helperAddress':ip}) %}{% endif %}
+{{"Server Address: "}}{{ vars.helperAddress }}
+         {% endfor %}
+         {% if 'openconfig-relay-agent-ext:src-intf' in RelayConfig %}
+{{"Source Interface: "}}{{ RelayConfig['openconfig-relay-agent-ext:src-intf']}}
+         {% endif %}
+         {% if 'openconfig-relay-agent-ext:link-select' in RelayConfig %}
+{{"Link Select: "}}{{ RelayConfig['openconfig-relay-agent-ext:link-select']}}
+         {% endif %}
+         {% if 'openconfig-relay-agent-ext:max-hop-count' in RelayConfig %}
+{{"Max Hop Count: "}}{{ RelayConfig['openconfig-relay-agent-ext:max-hop-count']}}
+         {% endif %}
+      {% endif %}
+   {% endfor %}
+{% endif %}
+
+

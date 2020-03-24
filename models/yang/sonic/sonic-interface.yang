@@ -135,6 +135,27 @@ module sonic-interface {
 						}
 				}
 
+                                leaf dhcp_relay_link_select {
+                                        type boolean;
+                                }
+
+                                leaf dhcp_relay_src_intf {
+                                        type string;
+                                }
+
+                                leaf dhcp_relay_max_hop_count {
+                                        type uint32;
+                                }
+
+                                leaf dhcpv6_relay_src_intf {
+                                        type string;
+                                }
+
+                                leaf dhcpv6_relay_max_hop_count {
+                                        type uint32;
+                                }
+
+
                 leaf unnumbered {
                     must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
                          "not(contains(/sonic-interface/INTERFACE/INTERFACE_IPADDR_LIST[portname=current()/../portname]/ip_prefix, '.'))"
