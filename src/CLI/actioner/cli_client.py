@@ -25,6 +25,8 @@ from six.moves.urllib.parse import quote
 import syslog
 import requests
 import requests_unixsocket
+import signal
+import sys
 
 urllib3.disable_warnings()
 
@@ -39,6 +41,7 @@ class ApiClient(object):
         """
         Create a RESTful API client.
         """
+        signal.signal(signal.SIGINT, self.sig_handler)
 
         uri_root = 'http+unix://%2Fvar%2Frun%2Frest-local.sock'
         self.api_uri = os.getenv('REST_API_ROOT', uri_root)
@@ -52,6 +55,10 @@ class ApiClient(object):
         return CaseInsensitiveDict({
             'User-Agent': "CLI"
         })
+
+    def sig_handler(self, signum, frame):
+        # got interrupt, perform graceful termination
+        sys.exit(0)
 
     def request(self, method, path, data=None, headers={}, query=None):
         from requests import request, RequestException
