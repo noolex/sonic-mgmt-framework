@@ -24,6 +24,7 @@ import ast
 from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+import traceback
 
 import urllib3
 urllib3.disable_warnings()
@@ -47,60 +48,56 @@ def invoke_api(func, args=[]):
            body = { "openconfig-nat:enable": False }
         return api.patch(path,body)
 
-    # Config NAT Timeout
-    elif func == 'patch_openconfig_nat_nat_instances_instance_config_timeout':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/config/timeout', id=args[0])
-        body = { "openconfig-nat:timeout":  int(args[1]) }
+
+    # Config NAT/NAPT Static translation entry
+    elif func == 'patch_nat_napt_mapping_table':
+        nat_id = args[0]
+        global_ip = args[1].split("=")[1]
+        port_type = args[2].split("=")[1]
+        global_port = args[3].split("=")[1]
+        local_ip = args[4].split("=")[1]
+        local_port = args[5].split("=")[1]
+        nat_type = args[6].split("=")[1]
+        twice_nat_id = args[7].split("=")[1]
+
+        if port_type == "":
+            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/nat-mapping-table/nat-mapping-entry={externaladdress}/config', natid=nat_id, externaladdress=global_ip)
+        else:
+            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/napt-mapping-table/napt-mapping-entry={externaladdress},{protocol},{externalport}/config', natid=nat_id,externaladdress=global_ip,protocol=nat_protocol_map[port_type],externalport=global_port)
+
+        body = { "openconfig-nat:config" : { "internal-address": local_ip} }
+        if local_port != "" :
+            body["openconfig-nat:config"].update( {"internal-port": int(local_port) } )
+        if nat_type != "" :
+            body["openconfig-nat:config"].update( {"type": nat_type_map[nat_type] } )
+        if twice_nat_id != "" :
+            body["openconfig-nat:config"].update( {"twice-nat-id": int(twice_nat_id) } )
+
         return api.patch(path, body)
 
-    # Config NAT TCP Timeout
-    elif func == 'patch_openconfig_nat_nat_instances_instance_config_tcp_timeout':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/config/tcp-timeout', id=args[0])
-        body = { "openconfig-nat:tcp-timeout":  int(args[1]) }
-        return api.patch(path, body)
+    # Remove NAT/NAPT Static translation entry
+    elif func == 'delete_nat_napt_mapping_table':
+        nat_id = args[0]
+        global_ip = args[1].split("=")[1]
+        port_type = args[2].split("=")[1]
+        global_port = args[3].split("=")[1]
 
-    # Config NAT UDP Timeout
-    elif func == 'patch_openconfig_nat_nat_instances_instance_config_udp_timeout':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/config/udp-timeout', id=args[0])
-        body = { "openconfig-nat:udp-timeout":  int(args[1]) }
-        return api.patch(path, body)
+        if global_ip == "":
+            # Remove all static entries
+            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/nat-mapping-table', natid=nat_id)
+            api.delete(path)
+            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/napt-mapping-table', natid=nat_id)
+            return api.delete(path)
 
-    # Config NAT Static basic translation entry
-    elif func == 'patch_openconfig_nat_nat_instances_instance_nat_mapping_table_nat_mapping_entry_config':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-mapping-table/nat-mapping-entry={externaladdress}/config', id=args[0], externaladdress=args[1])
-        body = { "openconfig-nat:config" : { "internal-address": args[2]} }
-        l = len(args)
-        if l >= 4:
-            body["openconfig-nat:config"].update( {"type": nat_type_map[args[3]] } )
-        if l == 5:
-            body["openconfig-nat:config"].update( {"twice-nat-id": int(args[4])} )
-        return api.patch(path, body)
+        if port_type == "":
+            # Remove specific NAT entry
+            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/nat-mapping-table/nat-mapping-entry={externaladdress}', natid=nat_id, externaladdress=global_ip)
+        else:
+            # Remove specific NAPT entry
+            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/napt-mapping-table/napt-mapping-entry={externaladdress},{protocol},{externalport}', natid=nat_id,externaladdress=global_ip,protocol=nat_protocol_map[port_type],externalport=global_port) 
 
-    # Remove NAT Static basic translation entry
-    elif func == 'delete_openconfig_nat_nat_instances_instance_nat_mapping_table_nat_mapping_entry':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-mapping-table/nat-mapping-entry={externaladdress}', id=args[0], externaladdress=args[1])
         return api.delete(path)
 
-    # Remove all NAT Static basic translation entries
-    elif func == 'delete_openconfig_nat_nat_instances_instance_nat_mapping_table':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-mapping-table', id=args[0])
-        return api.delete(path)
-
-    # Config NAPT Static translation entry
-    elif func == 'patch_openconfig_nat_nat_instances_instance_napt_mapping_table_napt_mapping_entry_config':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/napt-mapping-table/napt-mapping-entry={externaladdress},{protocol},{externalport}/config', id=args[0],externaladdress=args[1],protocol=nat_protocol_map[args[2]],externalport=args[3])
-        body = { "openconfig-nat:config" : {"internal-address": args[4], "internal-port": int(args[5])} }
-        l = len(args)
-        if l >= 7:
-            body["openconfig-nat:config"].update( {"type": nat_type_map[args[6]] } )
-        if l == 8:
-            body["openconfig-nat:config"].update( {"twice-nat-id": int(args[7])} )
-        return api.patch(path, body)
-
-    # Remove NAPT Static translation entry
-    elif func == 'delete_openconfig_nat_nat_instances_instance_napt_mapping_table_napt_mapping_entry':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/napt-mapping-table/napt-mapping-entry={externaladdress},{protocol},{externalport}', id=args[0],externaladdress=args[1],protocol=nat_protocol_map[args[2]],externalport=args[3])
-        return api.delete(path)
 
     # Config NAT Pool
     elif func == 'patch_openconfig_nat_nat_instances_instance_nat_pool_nat_pool_entry_config':
@@ -114,21 +111,6 @@ def invoke_api(func, args=[]):
         if len(args) > 3:
             body["openconfig-nat:config"].update( {"nat-port": args[3] } )
         return api.patch(path, body)
-
-    # Remove all NAPT Static basic translation entries
-    elif func == 'delete_openconfig_nat_nat_instances_instance_napt_mapping_table':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/napt-mapping-table', id=args[0])
-        return api.delete(path)
-
-    # Remove NAT Pool
-    elif func == 'delete_openconfig_nat_nat_instances_instance_nat_pool_nat_pool_entry':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-pool/nat-pool-entry={poolname}',id=args[0],poolname=args[1])
-        return api.delete(path)
-
-    # Remove all NAT Pools
-    elif func == 'delete_openconfig_nat_nat_instances_instance_nat_pool':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-pool', id=args[0])
-        return api.delete(path)
 
     # Config NAT Binding
     elif func == 'patch_openconfig_nat_nat_instances_instance_nat_acl_pool_binding_nat_acl_pool_binding_entry_config':
@@ -152,16 +134,6 @@ def invoke_api(func, args=[]):
             body["openconfig-nat:config"].update( {"twice-nat-id": int(twice_nat_id)} )
 
         return api.patch(path, body)
-
-    # Remove NAT Binding
-    elif func == 'delete_openconfig_nat_nat_instances_instance_nat_acl_pool_binding_nat_acl_pool_binding_entry_config':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-acl-pool-binding/nat-acl-pool-binding-entry={name}/config', id=args[0],name=args[1])
-        return api.delete(path)
-
-    # Remove all NAT Bindings
-    elif func == 'delete_openconfig_nat_nat_instances_instance_nat_acl_pool_binding':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-acl-pool-binding', id=args[0])
-        return api.delete(path)
 
     # Config NAT Zone
     elif func == 'patch_openconfig_interfaces_ext_interfaces_interface_nat_zone_config_nat_zone':
@@ -531,33 +503,68 @@ def get_nat_configs(func, args):
 
     return api_response
     
+def get_nat_output(func, args):
+    nat_subcommand = args[1].split("=")[1]
+    config_subcommand = args[2].split("=")[1]
+    count = args[3].split("=")[1]
+
+    api_response = {}
+    file_template = ''
+
+    if nat_subcommand == 'statistics':
+        api_response = get_nat_statistics(func,args)
+        file_template = 'show_nat_statistics.j2' 
+    elif nat_subcommand == 'translations':
+        if count == '':
+            api_response = get_nat_translations(func,args)
+            file_template = 'show_nat_translations.j2'
+        else:
+            api_response = get_nat_translations_count(func,args)
+            file_template = 'show_nat_translations_count.j2'
+    else:
+        if config_subcommand == '':
+            api_response = get_nat_configs(func,args)
+            file_template = 'show_nat_configs.j2'
+        elif config_subcommand == 'static':
+            api_response = get_nat_static_configs(func,args)
+            file_template = 'show_nat_static_configs.j2'
+        elif config_subcommand == 'zones':
+            api_response = get_nat_zones(func,args)
+            file_template = 'show_nat_zones.j2'
+        elif config_subcommand == 'pool':
+            response = invoke_api('get_openconfig_nat_nat_instances_instance_nat_pool', args)
+            api_response = get_response_dict(response)
+            file_template = 'show_nat_pool.j2'
+        elif config_subcommand == 'bindings':
+            response = invoke_api('get_openconfig_nat_nat_instances_instance_nat_acl_pool_binding', args)
+            api_response = get_response_dict(response)
+            file_template = 'show_nat_bindings.j2'
+        elif config_subcommand == 'globalvalues':
+            response = invoke_api('get_openconfig_nat_nat_instances_instance_config', args)
+            api_response = get_response_dict(response)
+            file_template = 'show_nat_global_config.j2'
+
+    return api_response, file_template
 
 def run(func, args):
     global config
 
     try:
        args.insert(0,"0")  # NAT instance 0
+       api_response = {}
+       file_template = ''
 
-       if func == 'get_nat_translations':
-           api_response = get_nat_translations(func,args)
-       elif func == 'get_nat_zones':
-           api_response = get_nat_zones(func,args)
-       elif func == 'get_nat_statistics':
-           api_response = get_nat_statistics(func,args)
-       elif func == 'get_nat_translations_count':
-           api_response = get_nat_translations_count(func,args)
-       elif func == 'get_nat_static_configs':
-           api_response = get_nat_static_configs(func,args)
-       elif func == 'get_nat_configs':
-           api_response = get_nat_configs(func,args)
+       if func == 'show_nat_commands':
+           api_response,file_template = get_nat_output(func, args)
        else:
            response = invoke_api(func, args)
            api_response = get_response_dict(response)
 
        if config == False:
-           show_cli_output(args[1], api_response)
+           show_cli_output(file_template, api_response)
  
     except Exception as e:
+	traceback.print_exc()
         print("Failure: %s\n" %(e))
 
 
