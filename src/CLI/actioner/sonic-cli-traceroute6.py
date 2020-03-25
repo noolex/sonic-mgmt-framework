@@ -38,8 +38,9 @@ def run_vrf(args):
         print "%Error: Invalid argument."
         sys.exit(1)
     try:
-        cmd = "traceroute 6" + args + " -i " + vrfName
-        subprocess.call(cmd, shell=True)
+        cmd = "traceroute -6 " + args + " -i " + vrfName
+        cmdList = cmd.split(' ')
+        subprocess.call(cmdList, shell=False)
 
     except KeyboardInterrupt:
         # May be triggered when Ctrl + C is used to stop script execution
@@ -54,7 +55,9 @@ def run(args):
         print "%Error: Invalid argument."
         sys.exit(1)
     try:
-        subprocess.call("traceroute -6" + args,shell=True)
+        cmd = "traceroute -6 " + args
+        cmdList = cmd.split(' ')
+        subprocess.call(cmdList, shell=False)
 
     except KeyboardInterrupt:
         # May be triggered when Ctrl + C is used to stop script execution
