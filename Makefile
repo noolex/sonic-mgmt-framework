@@ -40,8 +40,6 @@ MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
 
 GO_DEPS_LIST = github.com/gorilla/mux \
                github.com/Workiva/go-datastructures/queue \
-               github.com/openconfig/goyang \
-               github.com/openconfig/ygot/ygot \
                github.com/go-redis/redis \
                github.com/golang/glog \
                github.com/pkg/profile \
@@ -55,6 +53,12 @@ GO_DEPS_LIST = github.com/gorilla/mux \
                gopkg.in/godbus/dbus.v5 \
                github.com/dgrijalva/jwt-go \
                github.com/msteinert/pam
+
+# GO_DEPS_LIST_2 includes "download only" dependencies.
+# They are patched, compiled and installed explicitly later.
+GO_DEPS_LIST_2 = github.com/openconfig/gnmi/proto/gnmi \
+                 github.com/openconfig/goyang \
+                 github.com/openconfig/ygot/ygot
 
 
 REST_BIN = $(BUILD_DIR)/rest_server/main
@@ -71,6 +75,7 @@ build-deps:
 
 $(BUILD_DIR)/gopkgs/.done: $(MAKEFILE_LIST)
 	$(GO) get -v $(GO_DEPS_LIST)
+	$(GO) get -v -d $(GO_DEPS_LIST_2)
 	touch  $@
 
 $(go-redis-patch): $(go-deps)
@@ -119,6 +124,8 @@ ham:
 	(cd src/ham; ./build.sh)
 
 $(go-patch): $(go-deps)
+	cd $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi; git reset --hard HEAD;git clean -f -d;git checkout e7106f7f5493a9fa152d28ab314f2cc734244ed8 >/dev/null ; true; \
+$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi; \
 	cd $(BUILD_GOPATH)/src/github.com/openconfig/goyang/; git reset --hard HEAD;git clean -f -d;git checkout 064f9690516f4f72db189f4690b84622c13b7296 >/dev/null ; true; \
 cp $(TOPDIR)/goyang-modified-files/goyang.patch .; \
 patch -p1 < goyang.patch; rm -f goyang.patch; \
