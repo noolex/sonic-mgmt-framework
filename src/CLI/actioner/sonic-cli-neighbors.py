@@ -77,18 +77,38 @@ def build_mac_list():
         response = apiClient.get(keypath)
         response = response.content
 
+        if response is None:
+            return
+
         macContainer = response.get('openconfig-network-instance:entries')
+        if macContainer is None:
+            return
         macList = macContainer.get('entry')
+        if macList is None:
+            return
 
         for macEntry in macList:
             vlan = macEntry.get('vlan')
             if vlan is None:
                 continue
+
             mac = macEntry.get('mac-address')
             if mac is None:
                 continue
 
-            intf = macEntry.get('interface').get('interface-ref').get('state').get('interface')
+            macIntf = macEntry.get('interface')
+            if macIntf is None:
+                continue
+
+            intfRef = macIntf.get('interface-ref')
+            if intfRef is None:
+                continue
+
+            state = intfRef.get('state')
+            if state is None:
+                continue
+
+            intf = state.get('interface')
             if intf is None:
                 continue
 
