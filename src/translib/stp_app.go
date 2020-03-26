@@ -290,11 +290,15 @@ func (app *StpApp) processCommon(d *db.DB, opcode int) error {
 	targetUriPath, _ := getYangPathFromUri(app.pathInfo.Path)
 	log.Infof("processCommon -- isTopmostPath: %t and Uri: %s", topmostPath, targetUriPath)
 	if isSubtreeRequest(app.pathInfo.Template, "/openconfig-spanning-tree:stp/global") {
+		mode, _ := app.getStpModeFromConfigDB(d)
 		switch opcode {
 		case CREATE:
-			err = app.enableStpMode(d)
+			if len(mode) == 0 {
+				err = app.enableStpMode(d)
+			} else {
+				return tlerr.InvalidArgs("STP mode is configured as %s", mode)
+			}
 		case REPLACE, UPDATE:
-			mode, _ := app.getStpModeFromConfigDB(d)
 			if *app.ygotTarget == stp.Global || *app.ygotTarget == stp.Global.Config || targetUriPath == "/openconfig-spanning-tree:stp/global/config/enabled-protocol" {
 				if len(mode) == 0 {
 					err = app.enableStpMode(d)
