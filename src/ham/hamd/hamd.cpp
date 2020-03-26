@@ -343,7 +343,7 @@ static struct passwd * fgetpwnam(const char * user)
  */
 ::DBus::Struct< bool, std::string > hamd_c::passwd(const std::string& login, const std::string& hashed_pw)
 {
-    std::string  cmd = "/usr/sbin/usermod --password " + hashed_pw + ' ' + login;
+    std::string  cmd = "/usr/sbin/usermod --password '" + hashed_pw + "' " + login;
 
     LOG_CONDITIONAL(is_tron(), LOG_DEBUG, "hamd_c::passwd() - executing command \"%s\"", cmd.c_str());
 
