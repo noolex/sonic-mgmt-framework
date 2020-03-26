@@ -185,7 +185,7 @@ var DbToYang_relay_agent_intf_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrP
     return res_map, err
 }
 
-// Function to transform id coming from Yang to vlaind in the vlan table, Ethernet and Portchannel have the field "id"
+// Function to transform id coming from Yang to vlan-id in the vlan table, Ethernet and Portchannel don't need special handling
 var YangToDb_relay_agent_id_field_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
     res_map := make(map[string]string)
     var err error
@@ -196,8 +196,6 @@ var YangToDb_relay_agent_id_field_xfmr FieldXfmrYangToDb = func(inParams XfmrPar
     if strings.HasPrefix(ifName, VLAN) == true {
         vlanId := ifName[len("Vlan"):len(ifName)]
         res_map["vlanid"] = vlanId
-    } else {
-        res_map["id"] = inParams.key
     }
     log.Info("YangToDb_relay_agent_id_field_xfmr: res_map:", res_map)
     return res_map, err
