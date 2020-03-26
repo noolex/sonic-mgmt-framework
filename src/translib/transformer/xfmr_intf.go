@@ -185,6 +185,16 @@ const (
     InterfaceSubTypeVlanL3  E_InterfaceSubType = 2
 )
 
+var IF_TYPE_MAP = map[E_InterfaceType]ocbinds.E_IETFInterfaces_InterfaceType {
+    IntfTypeUnset:  ocbinds.IETFInterfaces_InterfaceType_UNSET,
+    IntfTypeEthernet:  ocbinds.IETFInterfaces_InterfaceType_ethernetCsmacd,
+    IntfTypeMgmt:  ocbinds.IETFInterfaces_InterfaceType_ethernetCsmacd,
+    IntfTypeVlan:  ocbinds.IETFInterfaces_InterfaceType_l2vlan,
+    IntfTypePortChannel:  ocbinds.IETFInterfaces_InterfaceType_ieee8023adLag,
+    IntfTypeLoopback:  ocbinds.IETFInterfaces_InterfaceType_softwareLoopback,
+    IntfTypeVxlan:  ocbinds.IETFInterfaces_InterfaceType_IF_NVE,
+}
+
 func getIntfTypeByName (name string) (E_InterfaceType, E_InterfaceSubType, error) {
 
     var err error
@@ -582,45 +592,68 @@ var YangToDb_intf_name_empty_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) 
 }
 
 var YangToDb_intf_type_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
-	res_map := make(map[string]string)
-	var ifName string
+    res_map := make(map[string]string)
     intfsObj := getIntfsRoot(inParams.ygRoot)
     if intfsObj == nil || len(intfsObj.Interface) < 1 {
-        return res_map, nil
-    } else {
-    	for infK, _ := range intfsObj.Interface {
-    		ifName = infK
-    	}
+        log.Info("YangToDb_intf_type_xfmr: IntfsObj/interface list is empty.")
+        return res_map, errors.New("IntfsObj/Interface is not specified")
     }
-    intfType, _, _ := getIntfTypeByName(ifName)
-    if IntfTypeVxlan == intfType {
-	    return res_map, nil	
-    } else {
-    	intfTypeVal, _ := inParams.param.(int64)
-		intTypeValStr := strconv.FormatInt(intfTypeVal, 10)
-    	res_map["type"] = intTypeValStr
-    	return res_map, nil
-    }	
+    if (inParams.oper == DELETE) {
+        return res_map, tlerr.NotSupported("Operation Not Supported")
+    }
+    if inParams.param == nil {
+        return res_map, nil
+    }
+    pathInfo := NewPathInfo(inParams.uri)
+    ifName := pathInfo.Var("name");
+    if ifName == "" {
+        errStr := "YangToDb_intf_type_xfmr: Interface KEY not present"
+        log.Info(errStr)
+        return res_map, errors.New(errStr)
+    }
+
+    errStr := "YangToDb_intf_type_xfmr: Interface type not found, ifname: " + ifName
+    intfType, _, ierr := getIntfTypeByName(ifName)
+    if ierr != nil {
+        return res_map, tlerr.InvalidArgsError{Format: errStr}
+    }
+
+    intfTypeVal, _ := inParams.param.(ocbinds.E_IETFInterfaces_InterfaceType)
+    if val, ok := IF_TYPE_MAP[intfType]; ok {
+        //Check if intfTypeVal valid for given interface
+        if intfTypeVal == val {
+            return res_map, nil
+        }
+    }
+    errStr = "YangToDb_intf_type_xfmr: Invalid Interface type provided for ifname: " + ifName
+    return res_map, tlerr.InvalidArgsError{Format: errStr}
 }
 
 var DbToYang_intf_type_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams) (map[string]interface{}, error) {
-	res_map := make(map[string]interface{})
-	var ifName string
+    res_map := make(map[string]interface{})
     intfsObj := getIntfsRoot(inParams.ygRoot)
     if intfsObj == nil || len(intfsObj.Interface) < 1 {
+        return res_map, errors.New("IntfsObj/Interface is not specified")
+    }
+    pathInfo := NewPathInfo(inParams.uri)
+    ifName := pathInfo.Var("name");
+    if ifName == "" {
+        errStr := "Interface KEY not present"
+        log.Info("DbToYang_intf_type_xfmr : " + errStr)
+        return res_map, errors.New(errStr)
+    }
+    errStr := "DbToYang_intf_type_xfmr: Interface type not found, ifname: " + ifName
+    intfType, _, ierr := getIntfTypeByName(ifName)
+    if ierr != nil {
+        return res_map, errors.New(errStr);
+    }
+    if val, ok := IF_TYPE_MAP[intfType]; ok {
+        intfTypeStr := ocbinds.E_IETFInterfaces_InterfaceType.ΛMap(val)["E_IETFInterfaces_InterfaceType"][int64(val)].Name
+        log.Infof("DbToYang_intf_type_xfmr, Interface: %s type:%s.",ifName, intfTypeStr)
+        res_map["type"] = intfTypeStr
         return res_map, nil
-    } else {
-    	for infK, _ := range intfsObj.Interface {
-    		ifName = infK
-    	}
     }
-    intfType, _, _ := getIntfTypeByName(ifName)
-    if IntfTypeVxlan == intfType {
-		res_map["type"] = "IF_NVE"
-	    return res_map, nil	
-    } else {
-        return res_map, nil    	
-    }
+    return res_map, errors.New(errStr)
 }
 
 var YangToDb_intf_enabled_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
