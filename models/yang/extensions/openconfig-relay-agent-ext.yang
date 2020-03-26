@@ -168,7 +168,19 @@ module openconfig-relay-agent-ext {
         deviate not-supported;
     }
 
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:interface-ref/oc-relay:state/oc-relay:interface {
+      deviate not-supported;
+    }
+
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:interface-ref/oc-relay:config/oc-relay:interface {
+      deviate not-supported;
+    }
+
     deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:interface-ref/oc-relay:config/oc-relay:subinterface {
+        deviate not-supported;
+    }
+
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:options/oc-relay:config/oc-relay:interface-id {
         deviate not-supported;
     }
 
@@ -192,6 +204,10 @@ module openconfig-relay-agent-ext {
         deviate not-supported;
     }
 
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:options/oc-relay:state/oc-relay:interface-id {
+        deviate not-supported;
+    }
+
     deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:options/oc-relay:state/oc-relay:enable-interface-id {
         deviate not-supported;
     }
@@ -205,3 +221,5 @@ module openconfig-relay-agent-ext {
     }
 
 }
+
+
