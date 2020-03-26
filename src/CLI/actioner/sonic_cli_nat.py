@@ -564,7 +564,6 @@ def run(func, args):
            show_cli_output(file_template, api_response)
  
     except Exception as e:
-	traceback.print_exc()
         print("Failure: %s\n" %(e))
 
 
