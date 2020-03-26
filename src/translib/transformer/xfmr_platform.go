@@ -310,7 +310,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
     case "/openconfig-platform:components":
         sensor_comp,_  := pf_cpts.NewComponent("Sensor")
         ygot.BuildEmptyTree(sensor_comp)
-	log.Info("Switch case 1")
         sensor_comp.State.Type,_ = sensor_comp.State.To_OpenconfigPlatform_Components_Component_State_Type_Union(
                             ocbinds.OpenconfigPlatformTypes_OPENCONFIG_HARDWARE_COMPONENT_SENSOR)
         err = getPlatformEnvironment(sensor_comp)
@@ -328,7 +327,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
         return err
     case "/openconfig-platform:components/component":
         compName := NewPathInfo(uri).Var("name")
-	log.Info("Switch case 2")
         log.Infof("compName: %v", compName)
         if compName == "" {
             pf_comp,_ := pf_cpts.NewComponent("System Eeprom")
@@ -339,11 +337,9 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
             }
         } else {
             if compName == "System Eeprom" {
-		log.Info("Enters sys eeprom")
                 pf_comp := pf_cpts.Component[compName]
                 if pf_comp != nil {
                     ygot.BuildEmptyTree(pf_comp)
-		    log.Info("pf_comp is not nil ")
                     err = getSysEepromFromFile(pf_comp.State, true, targetUriPath)
                     if err != nil {
                         return err
@@ -368,7 +364,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
         }
     case "/openconfig-platform:components/component/state":
         compName := NewPathInfo(uri).Var("name")
-	log.Info("Switch case 3")
         if compName != "" && compName == "System Eeprom" {
             pf_comp := pf_cpts.Component[compName]
             if pf_comp != nil {
@@ -396,7 +391,6 @@ func getSysEepromJson (pf_cpts *ocbinds.OpenconfigPlatform_Components, targetUri
         }
 
     default:
-	log.Info("Switch case DEFAULT")
         if targetUriPath == "/openconfig-platform:components/component/state" {
             compName := NewPathInfo(uri).Var("name")
             if compName == "" || compName != "System Eeprom" {
