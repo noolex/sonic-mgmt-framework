@@ -76,26 +76,46 @@ def build_mac_list():
     try:
         response = apiClient.get(keypath)
         response = response.content
+        if response is None:
+            return
 
         macContainer = response.get('openconfig-network-instance:entries')
+        if macContainer is None:
+            return
+
         macList = macContainer.get('entry')
+        if macList is None:
+            return
 
         for macEntry in macList:
             vlan = macEntry.get('vlan')
             if vlan is None:
                 continue
+
             mac = macEntry.get('mac-address')
             if mac is None:
                 continue
 
-            intf = macEntry.get('interface').get('interface-ref').get('state').get('interface')
+            macIntf = macEntry.get('interface')
+            if macIntf is None:
+                continue
+
+            intfRef = macIntf.get('interface-ref')
+            if intfRef is None:
+                continue
+
+            state = intfRef.get('state')
+            if state is None:
+                continue
+
+            intf = state.get('interface')
             if intf is None:
                 continue
 
             key = "Vlan" + str(vlan) + "-" + mac
             macDict[key] = intf
     except Exception as e:
-        log.syslog(log.LOG_INFO, str(e))
+        log.syslog(log.LOG_ERR, str(e))
         print "%Error: Internal error"
 
 def get_egress_port(ifName, macAddr):
@@ -118,13 +138,13 @@ def isMgmtVrfEnabled():
         response = apiClient.get(request)
         response = response.content
         response = response.get('openconfig-network-instance:enabled')
-        if response == True:
-            return True
-        else:
+        if response is None:
             return False
+        else:
+            return response
 
     except Exception as e:
-        log.syslog(log.LOG_INFO, str(e))
+        log.syslog(log.LOG_ERR, str(e))
         print "%Error: Internal error"
 
     return False
@@ -155,6 +175,8 @@ def build_vrf_list():
         try:
             response = apiClient.get(keypath)
             response = response.content
+            if response is None:
+                continue
 
             intfsContainer = response.get(request[1])
             if intfsContainer is None:
@@ -176,7 +198,7 @@ def build_vrf_list():
                 vrfDict[portName] = vrfName
 
         except Exception as e:
-            log.syslog(log.LOG_INFO, str(e))
+            log.syslog(log.LOG_ERR, str(e))
             print "%Error: Internal error"
 
     if isMgmtVrfEnabled():
@@ -185,6 +207,8 @@ def build_vrf_list():
 def process_oc_nbrs(response):
     outputList = []
     rcvdIntfName = inputDict.get('intf')
+    if rcvdIntfName is None:
+        return
 
     nbrsContainer = response.get('openconfig-if-ip:neighbors')
     if nbrsContainer is None:
@@ -215,10 +239,10 @@ def process_oc_nbrs(response):
             rcvdIntfName = "Management0"
 
         nbrEntry = {'ipAddr':ipAddr,
-                            'macAddr':macAddr,
-                            'intfName':rcvdIntfName,
-                            'egressPort':egressPort
-                          }
+                    'macAddr':macAddr,
+                    'intfName':rcvdIntfName,
+                    'egressPort':egressPort
+                    }
         outputList.append(nbrEntry)
 
     return outputList
