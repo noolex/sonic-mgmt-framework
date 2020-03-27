@@ -60,22 +60,13 @@ limitations under the License.
         name="ipv6 dhcp-relay"
         help="Add DHCP relay on an interface" >
         <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
-        <ACTION> if test -n "${ipaddr1}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py  patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address${iface}  ${__full_line}&#xA;
- elif test -n "${hop-count}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_max_hop_count ${iface}  ${hop-count}&#xA;
- elif test -n "${link-select}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_link_select ${iface}  True&#xA;
- elif test -n "${ifName}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_src_intf ${iface}  ${ifName}&#xA;
- fi&#xA;
- </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${ifName} ${hop-count} ${__full_line}</ACTION>  
     </COMMAND>
     <COMMAND
         name="no ipv6 dhcp-relay"
         help="Remove DHCP relay on an interface" >
         <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${iface} ${__full_line}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${__full_line}</ACTION>
     </COMMAND>
   </VIEW>
 
@@ -146,22 +137,13 @@ limitations under the License.
         name="ipv6 dhcp-relay"
         help="Add DHCP relay on an interface" >
         <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
-        <ACTION> if test -n "${ipaddr1}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py  patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${po_name} ${__full_line}&#xA;
- elif test -n "${hop-count}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_max_hop_count ${po_name}  ${hop-count}&#xA;
- elif test -n "${link-select}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_link_select ${po_name} True&#xA;
- elif test -n "${ifName}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_src_intf ${po_name} ${ifName}&#xA;
- fi&#xA;
- </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${po_name} ${ifName} ${hop-count} ${__full_line}</ACTION>
     </COMMAND>
     <COMMAND
         name="no ipv6 dhcp-relay"
         help="Remove DHCP relay on an interface" >
         <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address  ${po_name} ${__full_line}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config  ${po_name} ${__full_line}</ACTION>
     </COMMAND>
 </VIEW>
 
@@ -201,22 +183,13 @@ limitations under the License.
         name="ipv6 dhcp-relay"
         help="Add DHCP relay on an interface" >
         <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
-        <ACTION> if test -n "${ipaddr1}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py  patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${vlan_name} ${__full_line}&#xA;
- elif test -n "${hop-count}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_max_hop_count ${vlan_name} ${hop-count}&#xA;
- elif test -n "${link-select}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_link_select ${vlan_name} True&#xA;
- elif test -n "${ifName}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py patch_openconfig_relay_agent_ext_relay_agent_dhcpv6_interfaces_interface_config_src_intf ${vlan_name} ${ifName}&#xA;
- fi&#xA;
- </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${vlan_name} ${ifName} ${hop-count} ${__full_line}</ACTION>
       </COMMAND>
       <COMMAND
         name="no ipv6 dhcp-relay"
         help="Remove DHCP relay on an interface" >
         <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address ${vlan_name} ${__full_line}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${vlan_name} ${__full_line}</ACTION>
       </COMMAND>
 
 </VIEW>
