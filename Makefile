@@ -57,6 +57,7 @@ GO_DEPS_LIST = github.com/gorilla/mux \
 # GO_DEPS_LIST_2 includes "download only" dependencies.
 # They are patched, compiled and installed explicitly later.
 GO_DEPS_LIST_2 = github.com/openconfig/goyang \
+                 github.com/openconfig/gnmi/proto/gnmi_ext \
                  github.com/openconfig/ygot/ygot
 
 
@@ -130,7 +131,9 @@ $(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/goya
 cd $(BUILD_GOPATH)/src/github.com/openconfig/ygot/; git reset --hard HEAD;git clean -f -d;git checkout 724a6b18a9224343ef04fe49199dfb6020ce132a 2>/dev/null ; true; \
 cd ../; cp $(TOPDIR)/ygot-modified-files/ygot.patch .; \
 patch -p1 < ygot.patch; rm -f ygot.patch; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot/ygot
+$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot/ygot; \
+cd $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi_ext; git checkout e7106f7f5493a9fa152d28ab314f2cc734244ed8 2>/dev/null ; true; \
+$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi_ext
 
 #Apply CVL related patches
 	$(apply_cvl_dep_patches)
