@@ -344,9 +344,6 @@ module sonic-ptp {
 						"The comma-separated list of ip addresses to use for
 						master";
 				}
-				must "count(underlying-interface) != 0" {
-					error-message "underlying-interface needed";
-				}
 			}
 		}
 		container PTP_CLOCK {
