@@ -1,6 +1,7 @@
 {% if 'openconfig-relay-agent:state' in json_output %}
     {% set counters = json_output['openconfig-relay-agent:state'] %}
     {% for key in counters %}
+      {% if 'counters' in  key %}
         {% set counter = counters[key] %}
 {{ "DHCPv6 SOLICIT messages received by the relay agent :" }} {{ counter['dhcpv6-solicit-received'] }}
 {{ "DHCPv6 DECLINE messages received by the relay agent :" }} {{ counter['dhcpv6-decline-received'] }}
@@ -17,6 +18,7 @@
 {{ "Number of DHCPv6 packets dropped due to an invalid opcode :" }} {{ counter['invalid-opcode'] }}
 {{ "Number of DHCPv6 packets dropped due to an invalid option :" }} {{ counter['invalid-options'] }}
 {{ "Total number of DHCPv6 packets dropped by the relay agent :" }} {{ counter['total-dropped'] }}
+{% endif %}
     {% endfor %}
 {% endif %}
 
