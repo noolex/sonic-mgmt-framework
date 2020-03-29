@@ -105,7 +105,7 @@ module sonic-vlan {
                 }
 
                 leaf dhcp_relay_link_select {
-                     type boolean;
+                     type scommon:mode;
                 }
 
                 leaf dhcp_relay_src_intf {

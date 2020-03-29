@@ -87,6 +87,7 @@ func init () {
     XlateFuncBind("DbToYang_relay_agent_v6_counters_xfmr", DbToYang_relay_agent_v6_counters_xfmr)
 }
 
+
 // Transformer function to loop over multiple interfaces
 var relay_agent_table_xfmr TableXfmrFunc = func (inParams XfmrParams) ([]string, error) {
     var tblList []string
@@ -428,3 +429,4 @@ var DbToYang_relay_agent_v6_counters_xfmr SubTreeXfmrDbToYang = func(inParams Xf
 
     return err
 }
+

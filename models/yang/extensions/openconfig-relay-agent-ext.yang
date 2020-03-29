@@ -35,7 +35,10 @@ module openconfig-relay-agent-ext {
 
      augment "/oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
                 leaf link-select {
-                        type boolean;
+                        type enumeration {
+                              enum enable;
+                              enum disable;
+                        }
                         description
                                 "Enables link-selection on the referenced interface.
                                  src-intf must be configured.";

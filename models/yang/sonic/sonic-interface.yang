@@ -136,7 +136,7 @@ module sonic-interface {
 				}
 
                                 leaf dhcp_relay_link_select {
-                                        type boolean;
+                                        type cmn:mode;
                                 }
 
                                 leaf dhcp_relay_src_intf {

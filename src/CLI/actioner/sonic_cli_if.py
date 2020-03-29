@@ -347,7 +347,7 @@ def invoke_api(func, args=[]):
                    api.patch(path, body)
                 elif ( i == "link-select" ):
                    path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:link-select', id=args[0])
-                   body = { "openconfig-relay-agent-ext:link-select": True }
+                   body = { "openconfig-relay-agent-ext:link-select": "enable" }
                    api.patch(path, body)
                 elif ( i == "max-hop-count" ):
                    path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
