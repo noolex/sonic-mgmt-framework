@@ -748,11 +748,14 @@ func getVxlanNiUriPath(uri string) (*gnmipb.Path, error) {
 
 var YangToDb_intf_vxlan_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[string]map[string]db.Value, error) {
 	var err error
-
 	if log.V(3) {
 		log.Info("YangToDb_intf_vxlan_config_xfmr entering => inParams.uri => ", inParams.uri)
 	}
-
+    // Note: Temporary fix needs to be taken off once parent level delete
+    // is handled for sag and vxlan subtree transformers.
+    if inParams.oper == DELETE {
+        return nil, nil
+    }
 	path, err := getIntfUriPath(inParams.uri)
 
 	if err != nil {
