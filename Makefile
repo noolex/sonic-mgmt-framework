@@ -54,12 +54,21 @@ GO_DEPS_LIST = github.com/gorilla/mux \
                github.com/dgrijalva/jwt-go \
                github.com/msteinert/pam
 
+<<<<<<< HEAD
 # GO_DEPS_LIST_2 includes "download only" dependencies.
 # They are patched, compiled and installed explicitly later.
 GO_DEPS_LIST_2 = github.com/openconfig/goyang \
                  github.com/openconfig/gnmi/proto/gnmi_ext \
                  github.com/openconfig/ygot/ygot
 
+||||||| merged common ancestors
+=======
+# GO_DEPS_LIST_2 includes "download only" dependencies.
+# They are patched, compiled and installed explicitly later.
+GO_DEPS_LIST_2 = github.com/openconfig/goyang \
+                 github.com/openconfig/ygot/ygot
+
+>>>>>>> broadcom_sonic_3.0.x_share
 
 REST_BIN = $(BUILD_DIR)/rest_server/main
 CERTGEN_BIN = $(BUILD_DIR)/rest_server/generate_cert

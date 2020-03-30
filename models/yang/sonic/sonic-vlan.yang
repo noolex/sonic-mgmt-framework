@@ -3,6 +3,10 @@ module sonic-vlan {
     prefix svlan;
     yang-version 1.1;
 
+    import ietf-inet-types {
+        prefix inet;
+    }
+
     import sonic-common {
         prefix scommon;
     }
@@ -88,6 +92,16 @@ module sonic-vlan {
 
                 leaf admin_status {
                     type scommon:admin-status;
+                }
+
+                leaf-list dhcp_servers{
+                     max-elements 4;
+                     type inet:ip-address;
+                }
+
+                leaf-list dhcpv6_servers{
+                     max-elements 4; 
+                     type inet:ipv6-address;
                 }
             }
         }
