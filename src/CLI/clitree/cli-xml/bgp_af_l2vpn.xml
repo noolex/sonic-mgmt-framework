@@ -161,8 +161,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="rd" help="Route distinguisher" >
-    <!--PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD"/-->
-    <PARAM name="rdvalue" help="Route Distinguisher value" ptype="STRING"/>
+    <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD"/>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_rd ${vrf-name} L2VPN_EVPN ${rdvalue}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -182,8 +181,7 @@ limitations under the License.
 
   <COMMAND name="route-target" help="Route target">
     <PARAM name="rttype" help="advertise options" ptype="ADVERTISE_OPTIONS">
-      <!--PARAM name="rt" help="Route target value" ptype="RT"/-->
-      <PARAM name="rt" help="Route target value" ptype="STRING"/>
+      <PARAM name="rt" help="Route target value" ptype="RT"/>
     </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_rt ${vrf-name} L2VPN_EVPN ${rt} ${rttype}</ACTION>
     <DOCGEN>
@@ -327,15 +325,13 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="no rd" help="Route distinguisher" >
-    <!--PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD"/-->
-    <PARAM name="rdvalue" help="Route Distinguisher value" ptype="STRING"/>
+    <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD"/>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_rd ${vrf-name} L2VPN_EVPN ${rdvalue}</ACTION>
   </COMMAND>
 
   <COMMAND name="no route-target" help="Route target">
     <PARAM name="rttype" help="advertise options" ptype="ADVERTISE_OPTIONS">
-      <!--PARAM name="rt" help="Route target value" ptype="RT"/-->
-      <PARAM name="rt" help="Route target value" ptype="STRING"/>
+      <PARAM name="rt" help="Route target value" ptype="RT"/>
     </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_rt ${vrf-name} L2VPN_EVPN ${rt} ${rttype}</ACTION>
   </COMMAND>
