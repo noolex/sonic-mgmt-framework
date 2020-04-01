@@ -137,22 +137,56 @@ module sonic-interface {
 
                                 leaf dhcp_relay_link_select {
                                         type cmn:mode;
+                                        must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+                                               "(current()/../dhcp_servers and current()/../dhcp_relay_src_intf)"   
+                                              {
+                                                       error-message "DHCP server or src-intf not configured";
+                                                       error-app-tag dhcp-server-invalid-link-select-config;
+                                               }
                                 }
 
                                 leaf dhcp_relay_src_intf {
                                         type string;
+                                        must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+                                                "(current()/../dhcp_servers)"
+                                             {
+                                                       error-message "DHCP relay address not configured";
+                                                       error-app-tag dhcp-server-adress-config;
+                                             }
+                                        
                                 }
 
                                 leaf dhcp_relay_max_hop_count {
                                         type uint32;
+                                        must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+                                                "(current()/../dhcp_servers)"
+                                           {
+                                                       error-message "DHCP relay address not configured";
+                                                       error-app-tag dhcp-server-adress-config;
+                                             }
+
                                 }
 
                                 leaf dhcpv6_relay_src_intf {
                                         type string;
+                                        must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+                                                "(current()/../dhcpv6_servers) "
+                                             {
+                                                       error-message "DHCP relay address not configured";
+                                                       error-app-tag dhcp-server-adress-config;
+                                             }
+
                                 }
 
                                 leaf dhcpv6_relay_max_hop_count {
                                         type uint32;
+                                        must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+                                                "(current()/../dhcpv6_servers) "
+                                             {
+                                                       error-message "DHCP relay address not configured";
+                                                       error-app-tag dhcp-server-adress-config;
+                                             }
+
                                 }
 
 

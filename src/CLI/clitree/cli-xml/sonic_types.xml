@@ -94,6 +94,13 @@ limitations under the License.
         help="PortChannel Mode"/>
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_16"
+        method="integer"
+        pattern="0..16"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="UNIT_ID"
         method="integer"
         pattern="1..99"

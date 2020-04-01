@@ -1,5 +1,8 @@
 {% set vars = {'id': ""} %}
 {% set vars = {'helperAddress': ""} %}
+{% set vars = {'srcIntf': "Not Configured"} %}
+{% set vars = {'linkSelect': "disable"} %}
+{% set vars = {'maxHopCount': "10"} %}
 
 {% if 'openconfig-relay-agent:dhcp' in json_output %}
     {% set interfaces_list = json_output['openconfig-relay-agent:dhcp'] %}
@@ -16,19 +19,26 @@
                   {% if "config" in field %}
                      {% set RelayConfig = field['config'] %}
                      {% set ips = RelayConfig['helper-address'] %}
-                     {% for ip in ips %}
-                     {% if vars.update({'helperAddress':ip}) %}{% endif %}
-{{"Server Address: "}}{{ vars.helperAddress }}
-                     {% endfor %}
+                     {% set ip_all = ips|join(", ")  %}
+{{"Server Address: "}}{{ ip_all }}
                      {% if 'openconfig-relay-agent-ext:src-intf' in RelayConfig %}
-{{"Source Interface: "}}{{ RelayConfig['openconfig-relay-agent-ext:src-intf']}}
+                        {% if vars.update({'srcIntf':RelayConfig['openconfig-relay-agent-ext:src-intf']}) %}{% endif %}
+                     {% else %}
+                        {% if vars.update({'srcIntf':"Not Configured"}) %}{% endif %}
                      {% endif %}
+{{"Source Interface: "}}{{ vars.srcIntf }}
                      {% if 'openconfig-relay-agent-ext:link-select' in RelayConfig %}
-{{"Link Select: "}}{{ RelayConfig['openconfig-relay-agent-ext:link-select']}}
+                         {% if vars.update({'linkSelect':RelayConfig['openconfig-relay-agent-ext:link-select']}) %}{% endif %}
+                     {% else %}
+                         {% if vars.update({'linkSelect':"disable"})  %}{% endif %}
                      {% endif %}
+{{"Link Select: "}}{{ vars.linkSelect }}
                      {% if 'openconfig-relay-agent-ext:max-hop-count' in RelayConfig %}
-{{"Max Hop Count: "}}{{ RelayConfig['openconfig-relay-agent-ext:max-hop-count']}}
+                         {% if vars.update({'maxHopCount':RelayConfig['openconfig-relay-agent-ext:max-hop-count']}) %}{% endif %}
+                     {% else %}
+                         {% if vars.update({'maxHopCount':"10"}) %}{% endif %}
                      {% endif %}
+{{"Max Hop Count: "}}{{ vars.maxHopCount}}
                   {% endif %}
                {% endfor %}
             {% endfor %}
@@ -45,19 +55,26 @@
       {% if "config" in field %}
          {% set RelayConfig = field['config'] %}
          {% set ips = RelayConfig['helper-address'] %}
-         {% for ip in ips %}
-         {% if vars.update({'helperAddress':ip}) %}{% endif %}
-{{"Server Address: "}}{{ vars.helperAddress }}
-         {% endfor %}
+         {% set ip_all = ips|join(", ")  %}
+{{"Server Address: "}}{{ ip_all }}
          {% if 'openconfig-relay-agent-ext:src-intf' in RelayConfig %}
-{{"Source Interface: "}}{{ RelayConfig['openconfig-relay-agent-ext:src-intf']}}
+            {% if vars.update({'srcIntf':RelayConfig['openconfig-relay-agent-ext:src-intf']}) %}{% endif %}
+         {% else %}
+            {% if vars.update({'srcIntf':"Not Configured"}) %}{% endif %}
          {% endif %}
+{{"Source Interface: "}}{{ vars.srcIntf }}
          {% if 'openconfig-relay-agent-ext:link-select' in RelayConfig %}
-{{"Link Select: "}}{{ RelayConfig['openconfig-relay-agent-ext:link-select']}}
+            {% if vars.update({'linkSelect':RelayConfig['openconfig-relay-agent-ext:link-select']}) %}{% endif %}
+         {% else %}
+            {% if vars.update({'linkSelect':"disable"})  %}{% endif %}
          {% endif %}
+{{"Link Select: "}}{{ vars.linkSelect }}
          {% if 'openconfig-relay-agent-ext:max-hop-count' in RelayConfig %}
-{{"Max Hop Count: "}}{{ RelayConfig['openconfig-relay-agent-ext:max-hop-count']}}
+            {% if vars.update({'maxHopCount':RelayConfig['openconfig-relay-agent-ext:max-hop-count']}) %}{% endif %}
+         {% else %}
+            {% if vars.update({'maxHopCount':"10"}) %}{% endif %}
          {% endif %}
+{{"Max Hop Count: "}}{{ vars.maxHopCount}}
       {% endif %}
    {% endfor %}
 {% endif %}

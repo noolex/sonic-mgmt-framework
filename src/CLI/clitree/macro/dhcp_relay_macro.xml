@@ -29,7 +29,7 @@ limitations under the License.
       </PARAM>
       <PARAM help="Enable link selection suboption" name="link-select" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
       <PARAM help="Set max hop count for DHCP Relay packets" name="max-hop-count" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-        <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="UINT16"/>
+        <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="RANGE_16"/>
       </PARAM>
     </MACRODEF>
     <MACRODEF name="DHCPV6-RELAY-CONFIG-OPTIONS">
@@ -44,7 +44,7 @@ limitations under the License.
           <PARAM  help="Interface name" name="ifName" optional = "false" ptype="STRING_32" />
        </PARAM>
        <PARAM  help="Set max hop count for DHCPv6 Relay packets" name="max-hop-count" mode="subcommand" optional = "true" ptype="SUBCOMMAND" >
-          <PARAM  help="Number of max hops"  name="hop-count" optional = "false" ptype="UINT16" />
+          <PARAM  help="Number of max hops"  name="hop-count" optional = "false" ptype="RANGE_16" />
        </PARAM>
     </MACRODEF>
     <MACRODEF name="DHCP-RELAY-NO-CONFIG-OPTIONS">
