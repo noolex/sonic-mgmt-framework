@@ -191,6 +191,8 @@ var radiusHCVrfUrl string = radiusHCUrl + "openconfig-system-ext:vrf"
 
 //JSON data
 
+/*
+
 // Global JSON data
 
 var radiusGCSourceAddressReq string = "{\"source-address\":\"1.1.1.1\"}"
@@ -230,4 +232,46 @@ var radiusHCPriorityEmptyReq string = "{\"openconfig-system-ext:priority\":0}"
 
 var radiusHCVrfReq string = "{\"vrf\":\"mgmt\"}"
 var radiusHCVrfEmptyReq string = "{\"openconfig-system-ext:vrf\":\"\"}"
+
+*/
+
+// Global JSON data
+
+var radiusGCSourceAddressReq string = "{\"openconfig-system-ext:source-address\":\"1.1.1.1\"}"
+var radiusGCSourceAddressEmptyReq string = "{}"
+
+var radiusGCTimeoutReq string = "{\"openconfig-system-ext:timeout\":6}"
+var radiusGCTimeoutEmptyReq string = "{}"
+
+var radiusGCRetransmitReq string = "{\"openconfig-system-ext:retransmit-attempts\":7}"
+var radiusGCRetransmitEmptyReq string = "{}"
+
+var radiusGCSecretReq string = "{\"openconfig-system-ext:secret-key\":\"sharedsecret\"}"
+var radiusGCSecretEmptyReq string = "{}"
+
+var radiusGCAuthTypeReq string = "{\"openconfig-system-ext:auth-type\":\"mschapv2\"}"
+var radiusGCAuthTypeEmptyReq string = "{}"
+
+// Host JSON data
+
+var radiusHRCAuthPortReq string = "{\"openconfig-system:auth-port\":1912}"
+var radiusHRCAuthPortEmptyReq string = "{\"openconfig-system:auth-port\":1812}"
+
+var radiusHRCSecretReq string = "{\"openconfig-system:secret-key\":\"sharedsecret\"}"
+var radiusHRCSecretEmptyReq string = "{}"
+
+var radiusHRCRetransmitReq string = "{\"openconfig-system:retransmit-attempts\":8}"
+var radiusHRCRetransmitEmptyReq string = "{}"
+
+var radiusHCTimeoutReq string = "{\"openconfig-system:timeout\":9}"
+var radiusHCTimeoutEmptyReq string = "{}"
+
+var radiusHCAuthTypeReq string = "{\"openconfig-system-ext:auth-type\":\"chap\"}"
+var radiusHCAuthTypeEmptyReq string = "{}"
+
+var radiusHCPriorityReq string = "{\"openconfig-system-ext:priority\":2}"
+var radiusHCPriorityEmptyReq string = "{}"
+
+var radiusHCVrfReq string = "{\"openconfig-system-ext:vrf\":\"mgmt\"}"
+var radiusHCVrfEmptyReq string = "{}"
 
