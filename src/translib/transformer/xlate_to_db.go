@@ -312,7 +312,7 @@ func mapFillDataUtil(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requ
 			}
 
                         // SNC-3626 - string conversion based on the primitive type
-                        fVal, err := unmarshalJsonToDbData(xDbSpecMap[fieldXpath].dbEntry, fieldName, valData.Index(fidx).Interface())
+                        fVal, err := unmarshalJsonToDbData(xDbSpecMap[fieldXpath].dbEntry, fieldXpath, fieldName, valData.Index(fidx).Interface())
                         if err == nil {
 			      if ((strings.Contains(fVal, ":")) && (strings.HasPrefix(fVal, OC_MDL_PFX) || strings.HasPrefix(fVal, IETF_MDL_PFX) || strings.HasPrefix(fVal, IANA_MDL_PFX))) {
 				      // identity-ref/enum has module prefix
@@ -330,7 +330,7 @@ func mapFillDataUtil(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requ
 	} else { // xpath is a leaf
 
                 // SNC-3626 - string conversion based on the primitive type
-                fVal, err := unmarshalJsonToDbData(xDbSpecMap[fieldXpath].dbEntry, fieldName, value)
+                fVal, err := unmarshalJsonToDbData(xDbSpecMap[fieldXpath].dbEntry, fieldXpath, fieldName, value)
                 if err == nil {
                       valueStr = fVal
                 } else {
@@ -381,8 +381,12 @@ func dbMapDataFill(uri string, tableName string, keyName string, d map[string]in
 					if fidx > 0 {
 						fieldValue += ","
 					}
-					fVal := fmt.Sprintf("%v", fieldDt.Index(fidx).Interface())
-					fieldValue = fieldValue + fVal
+					fVal, err := unmarshalJsonToDbData(xDbSpecMap[fieldXpath].dbEntry, fieldXpath, field, fieldDt.Index(fidx).Interface())
+					if err != nil {
+						log.Errorf("Failed to unmashal Json to DbData: path(\"%v\") error (\"%v\").", fieldXpath, err)
+					} else {
+						fieldValue = fieldValue + fVal
+					}
 				}
 				result[tableName][keyName].Field[field] = fieldValue
 				continue
@@ -391,7 +395,7 @@ func dbMapDataFill(uri string, tableName string, keyName string, d map[string]in
 			// should ideally never happen , just adding for safety
 			xfmrLogInfoAll("Did not find entry in xDbSpecMap for field xpath = %v", fieldXpath)
 		}
-		dbval, err := unmarshalJsonToDbData(xDbSpecMap[fieldXpath].dbEntry, field, value)
+		dbval, err := unmarshalJsonToDbData(xDbSpecMap[fieldXpath].dbEntry, fieldXpath, field, value)
 		if err != nil {
 			log.Errorf("Failed to unmashal Json to DbData: path(\"%v\") error (\"%v\").", fieldXpath, err)
 		} else {
@@ -411,7 +415,13 @@ func dbMapListDataFill(uri string, tableName string, dbEntry *yang.Entry, jsonDa
 			if i > 0 {
 				keyName += "|"
 			}
-			keyName += fmt.Sprintf("%v", d[k])
+			fieldXpath := tableName + "/" + k
+			val, err := unmarshalJsonToDbData(dbEntry.Dir[k], fieldXpath, k, d[k])
+			if err != nil {
+				log.Errorf("Failed to unmashal Json to DbData: path(\"%v\") error (\"%v\").", fieldXpath, err)
+			} else {
+				keyName += val
+			}
 			delete(d, k)
 		}
 		dbMapDataFill(uri, tableName, keyName, d, result)
@@ -552,12 +562,41 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 						if err != nil {
 							return err
 						}
+					} else if (spec.hasChildSubTree == true) {
+						xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
+						curResult, cerr := allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+						if cerr != nil {
+							err = cerr
+						} else {
+							mapCopy(result, curResult)
+						}
+					}
+				} else if (spec.hasChildSubTree == true) {
+					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
+					curResult, cerr := allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+					if cerr != nil {
+						err = cerr
+					} else {
+						mapCopy(result, curResult)
 					}
 				}
 			} else if len(spec.childTable) > 0 {
+				if (spec.hasChildSubTree == true) {
+					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
+					result, err = allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+				} else {
 				for _, child := range spec.childTable {
 					result[child] = make(map[string]db.Value)
 				}
+				}
+			} else {
+				if (spec.hasChildSubTree == true) {
+					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
+					result, err = allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+				}
+			}
+			if err != nil {
+				return err
 			}
 
 			_, ok := xYangSpecMap[moduleNm]
@@ -639,7 +678,7 @@ func sonicYangReqToDbMapDelete(requestUri string, xpathPrefix string, tableName 
 							     terminalNodeData := strings.TrimSuffix(strings.SplitN(terminalNode, "[", 2)[1], "]")
 							     terminalNodeDataLst := strings.SplitN(terminalNodeData, "=", 2)
 							     terminalNodeVal := terminalNodeDataLst[1]
-							     dbFldVal, err = unmarshalJsonToDbData(xDbSpecMap[dbSpecField].dbEntry, fieldName, terminalNodeVal)
+							     dbFldVal, err = unmarshalJsonToDbData(xDbSpecMap[dbSpecField].dbEntry, dbSpecField, fieldName, terminalNodeVal)
 							     if err != nil {
 								     log.Errorf("Failed to unmashal Json to DbData: path(\"%v\") error (\"%v\").", dbSpecField, err)
 								     return err

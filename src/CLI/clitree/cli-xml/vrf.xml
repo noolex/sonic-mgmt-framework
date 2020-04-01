@@ -30,21 +30,18 @@ limitations under the License.
             name = "vrf-name"
             help = "Name of VRF"
             ptype = "STRING_15"
+            default="all"
             optional = "true"
             >
         </PARAM>
-        <ACTION> 
-            if test "${vrf-name}" = ""; then
-                python $SONIC_CLI_ROOT/sonic-cli-vrf.py get_openconfig_network_instance_network_instances_network_instances show_vrf.j2;
-            else
-                python $SONIC_CLI_ROOT/sonic-cli-vrf.py get_openconfig_network_instance_network_instances_network_instance show_vrf.j2 ${vrf-name};
-            fi
+        <ACTION 
+            builtin="clish_pyobj">sonic_cli_vrf get_openconfig_network_instance_network_instances_network_instances show_vrf.j2 ${vrf-name}
         </ACTION>
       </COMMAND>
 
       <COMMAND name="show ip vrf management" help="Show management VRF information">
-        <ACTION> 
-          python $SONIC_CLI_ROOT/sonic-cli-vrf.py get_openconfig_network_instance_network_instances_network_instance show_vrf.j2 "mgmt"
+        <ACTION 
+          builtin="clish_pyobj">sonic_cli_vrf get_openconfig_network_instance_network_instances_network_instances show_vrf.j2 mgmt
         </ACTION>
       </COMMAND>
     </VIEW>
@@ -52,8 +49,8 @@ limitations under the License.
     <VIEW name="configure-view">
     <!-- vrf configuration commands -->
     <COMMAND name="ip vrf management" help="Management VRF configuration" mode="subcommand" ptype="SUBCOMMAND">
-      <ACTION> 
-        python $SONIC_CLI_ROOT/sonic-cli-vrf.py patch_openconfig_network_instance_network_instances_network_instance "mgmt" "L3VRF" "True" 
+      <ACTION 
+        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=mgmt body={ "openconfig-network-instance:network-instance": [ { "name": "mgmt", "config" : { "name": "mgmt", "type": "L3VRF", "enabled": true } } ] }
       </ACTION> 
     </COMMAND>
     
@@ -69,15 +66,16 @@ limitations under the License.
         ptype="STRING_15"
         >
       </PARAM>
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-vrf.py patch_openconfig_network_instance_network_instances_network_instance ${vrf-name} "L3VRF" "True"
+      <ACTION
+        builtin="clish_restcl">oper=PATCH
+url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name} body={ "openconfig-network-instance:network-instance": [ { "name": "${vrf-name}", "config" : { "name": "${vrf-name}", "type": "L3VRF", "enabled": true } } ] }
       </ACTION>
     </COMMAND>
 
     <!-- no vrf commands -->
     <COMMAND name="no ip vrf management" help="Delete management VRF" mode="subcommand" ptype="SUBCOMMAND">
-      <ACTION> 
-        python $SONIC_CLI_ROOT/sonic-cli-vrf.py delete_openconfig_network_instance_network_instances_network_instance "mgmt" "L3VRF" "False"  
+      <ACTION 
+        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=mgmt
       </ACTION>
     </COMMAND>
 
@@ -93,8 +91,8 @@ limitations under the License.
         ptype="STRING_15"
         >
       </PARAM>
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-vrf.py delete_openconfig_network_instance_network_instances_network_instance ${vrf-name} "L3VRF" "False"
+      <ACTION
+        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}
       </ACTION>
     </COMMAND>
 

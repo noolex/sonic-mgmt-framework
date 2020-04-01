@@ -24,14 +24,19 @@ import pwd
 from six.moves.urllib.parse import quote
 import syslog
 import requests
+<<<<<<< HEAD
 from requests.structures import CaseInsensitiveDict
 from requests import request, RequestException
 from collections import OrderedDict
 
+||||||| merged common ancestors
+=======
+import requests_unixsocket
+>>>>>>> dell_sonic
 
 urllib3.disable_warnings()
 
-sess = requests.Session()
+sess = requests_unixsocket.Session()
 
 class ApiClient(object):
     """
@@ -43,25 +48,12 @@ class ApiClient(object):
         Create a RESTful API client.
         """
 
-        uri_root = 'https://localhost:8443'
+        uri_root = 'http+unix://%2Fvar%2Frun%2Frest-local.sock'
         self.api_uri = os.getenv('REST_API_ROOT', uri_root)
 
         self.checkCertificate = False
 
         self.version = "0.0.1"
-
-        if sess.cert is None:
-            cert = os.getenv('USER_CERT_PATH', None)
-            key = os.getenv('USER_KEY_PATH', None)
-            if cert and key:
-                sess.cert = (cert, key)
-            else:
-                username = os.getenv('CLI_USER', None)
-                if username is not None:
-                    certdir = os.path.join(pwd.getpwnam(username)[5], ".cert")
-                    cert = os.path.join(certdir, "certificate.pem")
-                    key = os.path.join(certdir, "key.pem")
-                    sess.cert = (cert, key)
 
     def set_headers(self):
         return CaseInsensitiveDict({

@@ -20,6 +20,7 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"flag"
@@ -139,9 +140,7 @@ func main() {
 		TLSConfig: &tlsConfig,
 	}
 
-	if cliCAFile != "" {
-		spawnUnixListener()
-	}
+	spawnUnixListener()
 
 	glog.Infof("**** Server started on %v", address)
 
@@ -153,6 +152,7 @@ func main() {
 // unix socket. This is used for authentication of the CLI client to the REST
 // server, and will not be used for any other client.
 func spawnUnixListener() {
+<<<<<<< HEAD
 	var CLIAuth = server.UserAuth{"password": false, "cert": true, "jwt": true}
 	rtrConfig := server.RouterConfig{
 		Auth: CLIAuth,
@@ -165,21 +165,86 @@ func spawnUnixListener() {
 		MinVersion:               tls.VersionTLS12,
 		PreferServerCipherSuites: true,
 		CipherSuites:             getPreferredCipherSuites(),
+||||||| merged common ancestors
+	var CLIAuth = server.UserAuth{"password": false, "cert": true, "jwt": true}
+	tlsConfig := tls.Config{
+		ClientAuth:               tls.RequireAnyClientCert,
+		Certificates:             prepareServerCertificate(),
+		ClientCAs:                prepareCACertificates(cliCAFile),
+		MinVersion:               tls.VersionTLS12,
+		PreferServerCipherSuites: true,
+		CipherSuites:             getPreferredCipherSuites(),
+=======
+	// Reuse the handler between the two listeners. This avoids creating an
+	// extra identical handler for the TLS listener on TCP port 8443.
+	CLIAuth := server.UserAuth{"clisock": true, "jwt": true, "cert": true}
+	handler := server.NewRouter(CLIAuth)
+
+	if cliCAFile != "" {
+		// This block spawns an additional listener listening to localhost:8443
+		// This is for use by the CLI, but only for those actioners using the
+		// generated Swagger Python client, since they don't yet support
+		// connections over the Unix domain sockets.
+		cliListener, err := net.Listen("tcp", "127.0.0.1:8443")
+		if err != nil {
+			glog.Fatal(err)
+		}
+
+		// Prepare TLSConfig from the parameters
+		tlsConfig := &tls.Config{
+			ClientAuth:               tls.RequireAnyClientCert,
+			Certificates:             prepareServerCertificate(),
+			ClientCAs:                prepareCACertificates(cliCAFile),
+			MinVersion:               tls.VersionTLS12,
+			PreferServerCipherSuites: true,
+			CipherSuites:             getPreferredCipherSuites(),
+		}
+
+		cliServer := &http.Server{
+			Handler: handler,
+			TLSConfig: tlsConfig,
+		}
+
+		go func() {
+			if err := cliServer.ServeTLS(cliListener, "", ""); err != nil && err != http.ErrServerClosed {
+				glog.Fatal(err)
+			}
+		}()
+>>>>>>> dell_sonic
 	}
 
-	// localListener, err := net.Listen("unix", "/var/run/rest-local.sock")
-	localListener, err := net.Listen("tcp", "127.0.0.1:8443")
+	const UDSock = "/var/run/rest-local.sock"
+	os.Remove(UDSock)
+	localListener, err := net.Listen("unix", UDSock)
+	if err != nil {
+		glog.Fatal(err)
+	}
+
+	// Allow all users to access the socket
+	err = os.Chmod(UDSock, os.ModePerm)
 	if err != nil {
 		glog.Fatal(err)
 	}
 
 	localServer := &http.Server{
+<<<<<<< HEAD
 		Handler:   server.NewRouter(&rtrConfig),
 		TLSConfig: &tlsConfig,
+||||||| merged common ancestors
+		Handler:   server.NewRouter(CLIAuth),
+		TLSConfig: &tlsConfig,
+=======
+		Handler: handler,
+		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
+			// Save the connection in the request context for use
+			// in the CLI user authentication flow
+			return context.WithValue(ctx, "http-conn", c)
+		},
+>>>>>>> dell_sonic
 	}
 
 	go func() {
-		if err := localServer.ServeTLS(localListener, "", ""); err != nil && err != http.ErrServerClosed {
+		if err := localServer.Serve(localListener); err != nil && err != http.ErrServerClosed {
 			glog.Fatal(err)
 		}
 	}()

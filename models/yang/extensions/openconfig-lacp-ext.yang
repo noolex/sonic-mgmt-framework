@@ -1,0 +1,37 @@
+module openconfig-lacp-ext {
+
+    yang-version "1";
+
+    namespace "http://openconfig.net/yang/lacp/extention";
+    prefix "oc-lacp-ext";
+
+    import openconfig-lacp { prefix oc-lacp; }
+
+
+    deviation /oc-lacp:lacp/oc-lacp:config {
+        deviate not-supported;
+    }
+
+
+    deviation /oc-lacp:lacp/oc-lacp:interfaces/oc-lacp:interface/oc-lacp:config/oc-lacp:interval {
+        deviate not-supported;
+    }
+
+    deviation /oc-lacp:lacp/oc-lacp:interfaces/oc-lacp:interface/oc-lacp:config/oc-lacp:lacp-mode {
+        deviate not-supported;
+    }
+
+    deviation /oc-lacp:lacp/oc-lacp:interfaces/oc-lacp:interface/oc-lacp:config/oc-lacp:system-id-mac {
+        deviate not-supported;
+    }
+
+    deviation /oc-lacp:lacp/oc-lacp:interfaces/oc-lacp:interface/oc-lacp:config/oc-lacp:system-priority {
+        deviate not-supported;
+    }
+
+    deviation /oc-lacp:lacp/oc-lacp:interfaces/oc-lacp:interface/oc-lacp:members/oc-lacp:member/oc-lacp:state/oc-lacp:counters {
+        deviate not-supported;
+    }
+
+}
+

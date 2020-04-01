@@ -1,0 +1,66 @@
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                                  http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+
+    <!-- **************************************************** -->
+    <!-- *  Traceroute Options                              * -->
+    <!-- **************************************************** -->
+    <PTYPE
+        name="VRF_NAME"
+        method="regexp"
+        pattern="^(Vrf[0-9A-Za-z_-]{1,12})"
+        help="vrf name"
+    />
+    <VIEW name="enable-view">
+        <COMMAND name="traceroute"
+                 help="traceroute --help shows help"
+                 args="traceroute-option"
+                 args_help="traceroute options(--help for help)">
+                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute.py ${traceroute-option}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="traceroute vrf mgmt"
+                 help="Management vrf name"
+                 args="traceroute-option"
+                 args_help="traceroute options(--help for help)">
+                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute.py vrf mgmt ${traceroute-option}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="traceroute vrf"
+                 help="traceroute vrf --help shows help"
+                 args="traceroute-option"
+                 args_help="traceroute options(--help for help)">
+                 <PARAM name="vrf-name"
+                        help="VRF name (max 15 char)"
+                        ptype="VRF_NAME" />
+                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute.py vrf ${vrf-name} ${traceroute-option}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="traceroute6"
+                 help="traceroute6 --help shows help"
+                 args="traceroute6-option"
+                 args_help="traceroute6 options(--help for help)">
+                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute6.py ${traceroute6-option}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="traceroute6 vrf mgmt"
+                 help="Management vrf name"
+                 args="traceroute6-option"
+                 args_help="traceroute6 options(--help for help)">
+                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute6.py vrf mgmt ${traceroute6-option}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="traceroute6 vrf"
+                 help="traceroute6 vrf --help shows help"
+                 args="traceroute6-option"
+                 args_help="traceroute6 options(--help for help)">
+                 <PARAM name="vrf-name"
+                        help="VRF name (max 15 char)"
+                        ptype="VRF_NAME" />
+                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute6.py vrf ${vrf-name} ${traceroute6-option}</ACTION>
+        </COMMAND>
+
+    </VIEW>
+</CLISH_MODULE>

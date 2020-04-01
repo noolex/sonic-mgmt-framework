@@ -633,16 +633,28 @@ def invoke_api(func, args=[]):
                 name=args[0], identifier=IDENTIFIER, name1=NAME1, neighbor_address=args[1])
         body = { "openconfig-network-instance:peer-group": args[2] }
         return api.patch(keypath, body)
+
+
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_as':
+
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors/neighbor={neighbor_address}/config/peer-type',
+                name=args[0], identifier=IDENTIFIER, name1=NAME1, neighbor_address=args[1])
+        api.delete(keypath)
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors/neighbor={neighbor_address}/config/peer-as',
                 name=args[0], identifier=IDENTIFIER, name1=NAME1, neighbor_address=args[1])
         body = { "openconfig-network-instance:peer-as": int(args[2]) }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_type':
+
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors/neighbor={neighbor_address}/config/peer-as',
+                name=args[0], identifier=IDENTIFIER, name1=NAME1, neighbor_address=args[1])
+        api.delete(keypath)
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors/neighbor={neighbor_address}/config/peer-type',
                 name=args[0], identifier=IDENTIFIER, name1=NAME1, neighbor_address=args[1])
         body = { "openconfig-network-instance:peer-type": args[2].upper() }
         return api.patch(keypath, body)
+
+
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_connect_retry':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors/neighbor={neighbor_address}/timers/config/connect-retry',
                 name=args[0], identifier=IDENTIFIER, name1=NAME1, neighbor_address=args[1])

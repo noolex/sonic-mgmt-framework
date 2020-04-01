@@ -9,6 +9,7 @@
 {% set vars = {'validRoute': False} %}
 {% set vars = {'bestRoute': False} %}
 {% set vars = {'asPath': ""} %}
+{% set vars = {'weight': ""} %}
 {% if json_output %}
 {% if json_output is iterable %}
 {% set globalConfig = json_output %}
@@ -19,7 +20,7 @@ BGP routing table information for VRF {{vars.vrfName}}
 Router identifier {{ vars.routerId }}, local AS number {{ vars.asNum }}
 Route status codes: * - valid, > - best
 Origin codes: i - IGP, e - EGP, ? - incomplete
-     {{'%-20s'|format("Network")}}{{'%-20s'|format("Next Hop")}}{{'%-15s'|format("Metric")}}{{'%-15s'|format("LocPref")}}{{'%s'|format("Path")}}
+     {{'%-20s'|format("Network")}}{{'%-20s'|format("Next Hop")}}{{'%-12s'|format("Metric")}}{{'%-12s'|format("LocPref")}}{{'%-7s'|format("Weight")}}{{'%s'|format("Path")}}
 {% set routeList = json_output["routes"] %}
 {% if routeList %}
 {% for key in routeList %}
@@ -28,6 +29,7 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
   {% if vars.update({'asPath':''}) %} {% endif %}
     {% for path in route %}
        {% if vars.update({'locPref':path["localpref"]}) %}{% endif %}
+       {% if vars.update({'weight':path["weight"]}) %}{% endif %}
        {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
        {% if vars.update({'origin':path["origin"]}) %}{% endif %}
        {% if vars.update({'bestRoute':path["bestpath"]}) %}{% endif %}
@@ -55,9 +57,9 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 {% if vars.update({'bestRoute':""}) %}{% endif %}
 {% endif %}
 {% if loop.index == 1 %}
-{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(vars.prefix)}}{{'%-20s'|format(vars.nxtHop)}}{{'%-15s'|format(vars.med)}}{{'%-15s'|format(vars.locPref)}}{{'%s'|format(vars.asPath)}} {{vars.origin}}
+{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(vars.prefix)}}{{'%-20s'|format(vars.nxtHop)}}{{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%s'|format(vars.asPath)}} {{vars.origin}}
 {% else %}
-{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(" ")}}{{'%-20s'|format(vars.nxtHop)}}{{'%-15s'|format(vars.med)}}{{'%-15s'|format(vars.locPref)}}{{'%s'|format(vars.asPath)}} {{vars.origin}}
+{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(" ")}}{{'%-20s'|format(vars.nxtHop)}}{{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%s'|format(vars.asPath)}} {{vars.origin}}
 {% endif %}
 {% endfor %}
 {% endfor %}
