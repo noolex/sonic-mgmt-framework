@@ -200,7 +200,9 @@ func isIntfBindToOtherVrf(intf_tbl_name string, intf_name string, nwInst_name st
 
 func ValidateIntfNotL3ConfigedOtherThanVrf(d *db.DB, tblName string, intfName string) error {
         var err error
-        log.Info ("ValidateIntfNotL3ConfigedOtherThanVrf: table %v, intf %v", tblName, intfName)
+        if log.V(3) {
+            log.Infof("ValidateIntfNotL3ConfigedOtherThanVrf: table %v, intf %v", tblName, intfName)
+        }
 
         ipKeys, err := doGetIntfIpKeys(d, tblName, intfName)
         if (err == nil && len(ipKeys) > 0) {

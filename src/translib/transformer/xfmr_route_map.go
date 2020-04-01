@@ -363,7 +363,7 @@ var YangToDb_route_map_bgp_action_set_community SubTreeXfmrYangToDb = func(inPar
     res_map := make(map[string]map[string]db.Value)
     stmtmap := make(map[string]db.Value)
 
-    log.Info("YangToDb_route_map_bgp_action_set_community: ", inParams.ygRoot, inParams.uri)
+    log.Info("YangToDb_route_map_bgp_action_set_community: ", inParams.ygRoot, inParams.uri, inParams.requestUri)
     rtPolDefsObj := getRoutingPolicyRoot(inParams.ygRoot)
     if rtPolDefsObj == nil || rtPolDefsObj.PolicyDefinitions == nil || len (rtPolDefsObj.PolicyDefinitions.PolicyDefinition) < 1 {
         log.Info("YangToDb_route_map_bgp_action_set_community : Routing policy definitions list is empty.")
@@ -379,9 +379,23 @@ var YangToDb_route_map_bgp_action_set_community SubTreeXfmrYangToDb = func(inPar
 
     rtPolDefObj := rtPolDefsObj.PolicyDefinitions.PolicyDefinition[rtPolicyName]
 
+    if rtPolDefObj.Statements == nil {
+        if inParams.oper == DELETE {
+            /* If parent level delete has triggered 
+             * this child sub tree transfomer return success*/
+            return res_map, nil
+        }
+        return res_map, errors.New("Routing policy statement config is not present ")
+    }
+
     rtStmtObj := rtPolDefObj.Statements.Statement[rtStmtName]
 
     if rtStmtObj.Actions == nil || rtStmtObj.Actions.BgpActions == nil || rtStmtObj.Actions.BgpActions.SetCommunity == nil {
+        if inParams.oper == DELETE {
+            /* If parent level delete has triggered 
+             * this child sub tree transfomer return success*/
+            return res_map, nil
+        }
         return res_map, errors.New("Routing policy invalid action parameters")
     }
 
@@ -602,7 +616,7 @@ var YangToDb_route_map_bgp_action_set_ext_community SubTreeXfmrYangToDb = func(i
     res_map := make(map[string]map[string]db.Value)
     stmtmap := make(map[string]db.Value)
 
-    log.Info("YangToDb_route_map_bgp_action_set_community: ", inParams.ygRoot, inParams.uri)
+    log.Info("YangToDb_route_map_bgp_action_set_ext_community: ", inParams.ygRoot, inParams.uri)
     rtPolDefsObj := getRoutingPolicyRoot(inParams.ygRoot)
     if rtPolDefsObj == nil || rtPolDefsObj.PolicyDefinitions == nil || len (rtPolDefsObj.PolicyDefinitions.PolicyDefinition) < 1 {
         log.Info("YangToDb_route_map_bgp_action_set_community : Routing policy definitions list is empty.")
@@ -617,10 +631,24 @@ var YangToDb_route_map_bgp_action_set_ext_community SubTreeXfmrYangToDb = func(i
     }
 
     rtPolDefObj := rtPolDefsObj.PolicyDefinitions.PolicyDefinition[rtPolicyName]
+    if rtPolDefObj.Statements == nil {
+        if inParams.oper == DELETE {
+            /* If parent level delete has triggered 
+             * this child sub tree transfomer return success*/
+            return res_map, nil
+        }
+        return res_map, errors.New("Routing policy statement config is not present ")
+    }
 
     rtStmtObj := rtPolDefObj.Statements.Statement[rtStmtName]
 
     if rtStmtObj.Actions == nil || rtStmtObj.Actions.BgpActions == nil || rtStmtObj.Actions.BgpActions.SetExtCommunity == nil {
+        if inParams.oper == DELETE {
+            /* If parent level delete has triggered 
+             * this child sub tree transfomer return success*/
+            return res_map, nil
+        }
+
         return res_map, errors.New("Routing policy invalid action parameters")
     }
 
