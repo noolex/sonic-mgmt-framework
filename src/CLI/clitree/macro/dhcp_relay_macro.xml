@@ -55,7 +55,9 @@ limitations under the License.
     <MACRODEF name="DHCP-RELAY-SHOW-OPTIONS">
        <PARAM   help="Show IP DHCP relay information" name="relay-cmd"  mode="switch"  ptype="SUBCOMMAND"  optional="false">
            <PARAM  help="Show IP DHCP relay information"  name="brief"  optional = "true"  mode="subcommand"  ptype="SUBCOMMAND" />
-           <PARAM  help="Show IP DHCP relay statistics"  optional="true"  name="statistics"  mode="subcommand"  ptype="SUBCOMMAND" />
+           <PARAM  help="Show IP DHCP relay statistics"  optional="true"  name="statistics"  mode="subcommand"  ptype="SUBCOMMAND" >
+              <PARAM help="Interface Name" optional="false" name="ifName"  ptype="STRING_32" />
+           </PARAM>
         </PARAM>
     </MACRODEF>
 </ROOT>

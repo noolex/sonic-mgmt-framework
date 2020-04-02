@@ -3,7 +3,7 @@ module openconfig-mclag {
   yang-version "1";
 
   // namespace
-  namespace "http://openconfig.net/yang/mclag";
+  namespace "http://openconfig.net/yang/mclag/extension";
 
   prefix "oc-mclag";
 
