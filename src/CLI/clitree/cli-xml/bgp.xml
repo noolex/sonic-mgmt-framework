@@ -36,7 +36,7 @@ limitations under the License.
          </PARAM>
        </PARAM>
     </PARAM>
-    <ACTION>
+    <ACTION>  
         if test -n "${ipv6}"; then&#xA;
            iptype=${ipv6}&#xA;
         else&#xA;
@@ -220,14 +220,7 @@ limitations under the License.
         <PARAM name="vrf-name" help="VRF Name" ptype="STRING_15" default="default"/>
       </PARAM>
     </PARAM>
-    <ACTION> for aft in IPV4_UNICAST IPV6_UNICAST ; do for proto in connected static ospf ; do&#xA;
-                 if test "$aft" = "IPV6_UNICAST" -a "$proto" = "ospf" ; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection ${vrf-name} $aft ospf3&#xA;
-                 fi&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection ${vrf-name} $aft $proto&#xA;
-             done ; done&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_config ${vrf-name}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd}</ACTION>
   </COMMAND>
 </VIEW>
 
@@ -553,15 +546,7 @@ limitations under the License.
       <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand"/>
     </PARAM>
     <PARAM name="maxmedval" help="Max MED value to be used" ptype="RANGE_0_4294967295" optional="true"/>
-    <ACTION> if test -z "${maxmedval}" ; then&#xA;
-                 if test "${maxmedopts}" = "on-startup" ; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_max_med_val ${vrf-name}&#xA;
-                 else&#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_admin_max_med_val ${vrf-name}&#xA;
-                 fi&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config ${vrf-name} ${maxmedopts} ${stime} ${maxmedval}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; maxmedopts:${maxmedopts} stime:${stime} maxmedval:${maxmedval}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command instructs BGP to advertise routes with max MED value under
@@ -767,11 +752,7 @@ limitations under the License.
     <PARAM name="time" help="Maximum delay for best path calculation (Seconds)" ptype="RANGE_0_3600">
        <PARAM name="maxmedval" help="Maximum delay for updates (Seconds)" ptype="RANGE_1_3600" optional="true"/>
     </PARAM>
-    <ACTION> if test -z "${maxmedval}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_update_delay_config_establish_wait ${vrf-name}&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_update_delay_config ${vrf-name} ${time} ${maxmedval}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; time:${time} maxmedval:${maxmedval}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command allows user to set update delay. This parameter control how
@@ -876,9 +857,7 @@ limitations under the License.
          <PARAM name="missing-as-worst" mode="subcommand" ptype="SUBCOMMAND" help="Treat missing MED as the least preferred one" optional="true"/>
       </PARAM>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_missing_as_worst ${vrf-name} ${missing-as-worst}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_confed ${vrf-name} ${confed}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; missing-as-worst:${missing-as-worst} confed:${confed}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command influences best-path selection algorithm by how missing
@@ -1028,7 +1007,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="address-family l2vpn" help="Enter Address Family command mode" view="configure-router-bgp-l2vpn-view" viewid="vrf-name=${vrf-name};family=l2vpn">
     <PARAM name="evpn" help="Address Family" mode="subcommand" ptype="SUBCOMMAND"/>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_config ${vrf-name} L2VPN_EVPN</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_config ${vrf-name} L2VPN_EVPN</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command execution enters into l2vpn evpn address-family configure CLI
@@ -1061,13 +1040,7 @@ limitations under the License.
        <PARAM name="lmt-val" help="Limit value" ptype="RANGE_1_5000"/>
      </PARAM>
     </PARAM>
-    <ACTION> 
-             if test "${listen-opt}" = "range" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance1717438887 ${vrf-name} ${addr} ${pgname}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_max_dynamic_neighbors ${vrf-name} ${lmt-val}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; listen-opt:${listen-opt} addr:${addr} pgname:${pgname} lmt-val:${lmt-val}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command create a listen range for BGP for dynamic BGP neighbors.
@@ -1094,13 +1067,7 @@ limitations under the License.
         <PARAM name="peer-as" help="Autonomous system number" ptype="RANGE_1_4294967295"/>
       </PARAM>
     </PARAM>
-    <ACTION>
-             if test "${conf-opt}" = "identifier" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_identifier ${vrf-name} ${id-as}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_member_as ${vrf-name} ${peer-as}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; conf-opt:${conf-opt} id-as:${id-as} peer-as:${peer-as}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures the list of AS numbers that are part of the
@@ -1126,11 +1093,7 @@ limitations under the License.
     <PARAM name="keepalive-intvl" help="Keepalive interval (default=60)" ptype="RANGE_1_3600">
       <PARAM name="hold-time" help="Holdtime (default=180)" ptype="RANGE_1_3600"/>
     </PARAM>
-    <ACTION>
-              python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_keepalive_interval ${vrf-name} ${keepalive-intvl}&#xA;
-
-              python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_hold_time ${vrf-name} ${hold-time}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; keepalive-intvl:${keepalive-intvl} hold-time:${hold-time}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures keelapive and hold timer interval (in seconds)
@@ -1206,14 +1169,7 @@ limitations under the License.
       <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand"/>
     </PARAM>
     <PARAM name="maxmedval" help="Max MED value to be used" ptype="RANGE_0_4294967295" optional="true"/>
-    <ACTION> if test "${maxmedopts}" = "on-startup" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_time ${vrf-name}&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_max_med_val ${vrf-name}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_administrative ${vrf-name}&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_admin_max_med_val ${vrf-name}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; maxmedopts:${maxmedopts}</ACTION>
   </COMMAND>
   <COMMAND name="no default" help="Configure BGP defaults"/>
   <COMMAND name="no default ipv4-unicast" help="Activate ipv4-unicast for a peer by default">
@@ -1247,23 +1203,14 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_bgp_ext_route_reflector_config_allow_outbound_policy ${vrf-name}</ACTION>
   </COMMAND>
   <COMMAND name="no update-delay" help="Force initial delay for best-path and updates">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_update_delay_config_max_delay ${vrf-name}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_update_delay_config_establish_wait ${vrf-name}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd}</ACTION>
   </COMMAND>
 
   <COMMAND name="no bestpath" help="Change the default bestpath selection"/>
   <COMMAND name="no bestpath as-path" help="AS-path for best path computation"/>
   <COMMAND name="no bestpath as-path multipath-relax" help="Include prefixes received from different AS path during multipath calculation">
     <PARAM name="as-set" help="Generate AS set path information" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <ACTION> 
-             if test -n "${as-set}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_use_multiple_paths_ebgp_config_as_set ${vrf-name}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_use_multiple_paths_ebgp_config_allow_multiple_as ${vrf-name}&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_use_multiple_paths_ebgp_config_as_set ${vrf-name}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; as-set:${as-set}</ACTION>
   </COMMAND>
   <COMMAND name="no bestpath as-path ignore" help="Ignore AS path for best path computation">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_ignore_as_path_length ${vrf-name}</ACTION>
@@ -1280,9 +1227,7 @@ limitations under the License.
          <PARAM name="missing-as-worst" mode="subcommand" ptype="SUBCOMMAND" help="Treat missing MED as the least preferred one" optional="true"/>
       </PARAM>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_missing_as_worst ${vrf-name} ${missing-as-worst}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_confed ${vrf-name} ${confed}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; missing-as-worst:${missing-as-worst} confed:${confed}</ACTION>
   </COMMAND>
   <COMMAND name="no bestpath compare-routerid" help="Compare router-id for identical EBGP paths">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_external_compare_router_id ${vrf-name} True</ACTION>
@@ -1308,23 +1253,15 @@ limitations under the License.
   <COMMAND name="no address-family" help="Enter Address Family command mode"/>
   <COMMAND name="no address-family ipv4" help="Enter Address Family command mode">
     <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND"/>
-    <ACTION> for proto in connected static ospf ; do&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection ${vrf-name} IPV4_UNICAST $proto&#xA;
-             done&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi ${vrf-name} IPV4_UNICAST&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no address-family ipv6" help="Enter Address Family command mode">
     <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND"/>
-    <ACTION> for proto in connected static ospf ospf3 ; do&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection ${vrf-name} IPV6_UNICAST $proto&#xA;
-             done&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi ${vrf-name} IPV6_UNICAST&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no address-family l2vpn" help="Enter Address Family command mode">
     <PARAM name="evpn" help="Address Family" mode="subcommand" ptype="SUBCOMMAND"/>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi ${vrf-name} L2VPN_EVPN</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi ${vrf-name} L2VPN_EVPN</ACTION>
   </COMMAND>
 
   <COMMAND name="no listen" help="Set the prefix range for dynamic peers">
@@ -1340,13 +1277,7 @@ limitations under the License.
        <PARAM name="lmt-val" help="Limit value" ptype="RANGE_1_5000"/>
      </PARAM>
     </PARAM>
-    <ACTION>
-             if test "${listen-opt}" = "range" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance1717438887 ${vrf-name} ${addr} ${pgname}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_max_dynamic_neighbors ${vrf-name} ${lmt-val}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; listen-opt:${listen-opt} addr:${addr} pgname:${pgname} lmt-val:${lmt-val}</ACTION>
   </COMMAND>
   <COMMAND name="no confederation" help="AS confederation parameters">
     <PARAM name="conf-opt" help="Listen options" mode="switch" ptype="SUBCOMMAND">
@@ -1355,24 +1286,13 @@ limitations under the License.
       </PARAM>
       <PARAM name="peers" help="Peer ASs in BGP confederation" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
-    <ACTION>
-             if test "${conf-opt}" = "identifier" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_identifier ${vrf-name} ${id-as}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_member_as ${vrf-name}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; conf-opt:${conf-opt} id-as:${id-as}</ACTION>
   </COMMAND>
   <COMMAND name="no timers" help="Adjust routing timers">
     <PARAM name="keepalive-intvl" help="Keepalive interval (default=60)" ptype="RANGE_1_3600">
       <PARAM name="hold-time" help="Holdtime (default=180)" ptype="RANGE_1_3600"/>
     </PARAM>
-    <ACTION>
-              python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_keepalive_interval ${vrf-name} ${keepalive-intvl}&#xA;
-
-              python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_hold_time ${vrf-name} ${hold-time}&#xA;
-
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; keepalive-intvl:${keepalive-intvl} hold-time:${hold-time}</ACTION>
   </COMMAND>
 </VIEW>
 
@@ -1402,12 +1322,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks">
     <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true"/>
-    <ACTION> if test -n "${hop-count}" ; then&#xA; 
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_ebgp_multihop_config ${vrf-name} ${nbr-addr} True ${hop-count}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_ebgp_multihop_config ${vrf-name} ${nbr-addr} True 255&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; hop-count:${hop-count}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enable multihop attribute for EBGP neighbors
@@ -1452,13 +1367,7 @@ limitations under the License.
       <PARAM name="external" help="External BGP peer" mode="subcommand" ptype="SUBCOMMAND"/>
       <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295"/>
     </PARAM>
-    <ACTION>
-             if test "${remtype}" = "internal" -o "${remtype}" = "external" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_type ${vrf-name} ${nbr-addr} ${remtype}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_as ${vrf-name} ${nbr-addr} ${as-num-dot}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; remtype:${remtype} as-num-dot:${as-num-dot}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configure the remote-as number for a BGP neighbor. This
@@ -1488,14 +1397,7 @@ limitations under the License.
         <PARAM name="connect-time" help="Connect timer" ptype="RANGE_1_65535"/>
       </PARAM>
     </PARAM>
-    <ACTION> 
-             if test "${timertype}" = "connect" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_connect_retry ${vrf-name} ${nbr-addr} ${connect-time}&#xA;
-             else&#xA;
-python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_keepalive_interval ${vrf-name} ${nbr-addr} ${keepalive-intvl}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_hold_time ${vrf-name} ${nbr-addr} ${hold-time}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; timertype:${timertype} connect-time:${connect-time} keepalive-intvl:${keepalive-intvl} hold-time:${hold-time}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables user to configure keepalive, hold and connect timer
@@ -1553,11 +1455,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
     <PARAM name="message" help="Add a shutdown message (draft-ietf-idr-shutdown-06)" mode="subcommand" ptype="SUBCOMMAND" optional="true">
        <PARAM name="MSG" help="Shutdown message" ptype="STRING"/>  
     </PARAM>
-    <ACTION> if test -n "${message}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_shutdown_message ${vrf-name} ${nbr-addr} ${MSG}&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_enabled ${vrf-name} ${nbr-addr} False&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; message:${message} MSG:${MSG}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command administratively shutsdown a BGP neighbor. The CLI allows
@@ -1599,11 +1497,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
   </COMMAND>
   <COMMAND name="bfd" help="Enables BFD support">
     <PARAM name="check-control-plane-failure" help="Link dataplane status with BGP controlplane" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <ACTION> if test -n "${check-control-plane-failure}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_bfd_check_control_plane_failure ${vrf-name} ${nbr-addr} True&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bfd_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_enabled ${vrf-name} ${nbr-addr} True&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; check-control-plane-failure:${check-control-plane-failure}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables BFD liveliness check for a BGP neighbor
@@ -1762,18 +1656,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
         <PARAM name="replace-as" help="Do not prepend local-as to updates from ibgp peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
       </PARAM>
     </PARAM>
-    <ACTION> if test -n "${no-prepend}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_no_prepend ${vrf-name} ${nbr-addr} True&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_no_prepend ${vrf-name} ${nbr-addr} False&#xA;
-             fi&#xA;
-             if test -n "${replace-as}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_replace_as ${vrf-name} ${nbr-addr} True&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_replace_as ${vrf-name} ${nbr-addr} False&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as ${vrf-name} ${nbr-addr} ${asnum}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; no-prepend:${no-prepend} replace-as:${replace-as} asnum:${asnum}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command specifies an alternate AS for this BGP process when
@@ -1852,7 +1735,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
     <PARAM name="String" help="Password" ptype="STRING">
       <PARAM name="encrypted" help="The password is stored in an encrypted format" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_auth_password ${vrf-name} ${nbr-addr} ${String} ${encrypted}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_auth_password ${vrf-name} ${nbr-addr} ${String} ${encrypted}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command sets a MD5 password to be used with the tcp socket that is
@@ -2046,9 +1929,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
   </COMMAND>
   <COMMAND name="no ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks">
     <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true"/>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_ebgp_multihop_config_enabled ${vrf-name} ${nbr-addr}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_ebgp_multihop_config_multihop_ttl ${vrf-name} ${nbr-addr}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no peer-group" help="Inherit configuration of peer-group" mode="subcommand" ptype="SUBCOMMAND">
     <PARAM name="template-name" help="Name of peer-group from which to inherit" ptype="STRING" optional="true"/>
@@ -2060,9 +1941,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
       <PARAM name="external" help="External BGP peer" mode="subcommand" ptype="SUBCOMMAND"/>
       <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295"/>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_as ${vrf-name} ${nbr-addr} ${as-num-dot}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_type ${vrf-name} ${nbr-addr} ${internal} ${external}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; as-num-dot:${as-num-dot} internal:${internal} external:${external}</ACTION>
   </COMMAND>
   <COMMAND name="no timers" help="Adjust routing timers">
     <PARAM name="timertype" help="Timer type" mode="switch" ptype="SUBCOMMAND">
@@ -2073,14 +1952,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
         <PARAM name="connect-time" help="Connect timer" ptype="RANGE_1_65535"/>
       </PARAM>
     </PARAM>
-    <ACTION>
-             if test "${timertype}" = "connect" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_connect_retry ${vrf-name} ${nbr-addr} ${connect-time}&#xA;
-             else&#xA;
-python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_keepalive_interval ${vrf-name} ${nbr-addr} ${keepalive-intvl}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_hold_time ${vrf-name} ${nbr-addr} ${hold-time}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; timertype:${timertype} connect-time:${connect-time} keepalive-intvl:${keepalive-intvl} hold-time:${hold-time}</ACTION>
   </COMMAND>
   <COMMAND name="no update-source" help="Source of routing updates">
     <PARAM name="source_param" help="update-source param"  mode="switch" ptype="SUBCOMMAND">
@@ -2100,22 +1972,14 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_netwo
     <PARAM name="message" help="Add a shutdown message (draft-ietf-idr-shutdown-06)" mode="subcommand" ptype="SUBCOMMAND" optional="true">
        <PARAM name="MSG" help="Shutdown message" ptype="STRING"/>  
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_enabled ${vrf-name} ${nbr-addr} True&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_shutdown_message ${vrf-name} ${nbr-addr} ${MSG}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; MSG:${MSG}</ACTION>
   </COMMAND>
   <COMMAND name="no advertisement-interval" help="Minimum interval between sending BGP routing updates">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_minimum_advertisement_interval ${vrf-name} ${nbr-addr}</ACTION>
   </COMMAND>
   <COMMAND name="no bfd" help="Enables BFD support">
     <PARAM name="check-control-plane-failure" help="Link dataplane status with BGP controlplane" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <ACTION> if test -n "${check-control-plane-failure}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_bfd_check_control_plane_failure ${vrf-name} ${nbr-addr}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_bfd_check_control_plane_failure ${vrf-name} ${nbr-addr}&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bfd_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_enabled ${vrf-name} ${nbr-addr}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; check-control-plane-failure:${check-control-plane-failure}</ACTION>
   </COMMAND>
   <COMMAND name="no capability" help="Advertise capability to the peer"/>
   <COMMAND name="no capability extended-nexthop" help="Advertise extended next-hop capability to the peer">
@@ -2137,10 +2001,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_netwo
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_enforce_multihop ${vrf-name} ${nbr-addr} False</ACTION>
   </COMMAND>
   <COMMAND name="no local-as" help="Specify a local-as number">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as ${vrf-name} ${nbr-addr}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_no_prepend ${vrf-name} ${nbr-addr}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_replace_as ${vrf-name} ${nbr-addr}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no override-capability" help="Override capability negotiation result">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_override_capability ${vrf-name} ${nbr-addr} False</ACTION>
@@ -2190,12 +2051,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_netwo
   </COMMAND>
   <COMMAND name="ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks">
     <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true"/>
-    <ACTION> if test -n "${hop-count}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_ebgp_multihop_config ${vrf-name} ${template-name} True ${hop-count}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_ebgp_multihop_config ${vrf-name} ${template-name} True 255&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; hop-count:${hop-count}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables multihop for EBGP peer-group
@@ -2220,13 +2076,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_netwo
       <PARAM name="external" help="External BGP peer" mode="subcommand" ptype="SUBCOMMAND"/>
       <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295"/>
     </PARAM>
-    <ACTION>
-             if test "${remtype}" = "internal" -o "${remtype}" = "external" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_peer_type ${vrf-name} ${template-name} ${remtype}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_peer_as ${vrf-name} ${template-name} ${as-num-dot}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; remtype:${remtype} as-num-dot:${as-num-dot}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configure the remote-as number for a BGP peer-group. This
@@ -2255,14 +2105,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_netwo
         <PARAM name="connect-time" help="Connect timer" ptype="RANGE_1_65535"/>
       </PARAM>
     </PARAM>
-    <ACTION>
-             if test "${timertype}" = "connect" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_connect_retry ${vrf-name} ${template-name} ${connect-time}&#xA;
-             else&#xA;
-python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_keepalive_interval ${vrf-name} ${template-name} ${keepalive-intvl}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_hold_time ${vrf-name} ${template-name} ${hold-time}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; timertype:${timertype} connect-time:${connect-time} keepalive-intvl:${keepalive-intvl} hold-time:${hold-time}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables user to configure keepalive, hold and connect timer
@@ -2319,11 +2162,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
     <PARAM name="message" help="Add a shutdown message (draft-ietf-idr-shutdown-06)" mode="subcommand" ptype="SUBCOMMAND" optional="true">
        <PARAM name="MSG" help="Shutdown message" ptype="STRING"/>
     </PARAM>
-    <ACTION> if test -n "${message}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_shutdown_message ${vrf-name} ${template-name} ${MSG}&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_enabled ${vrf-name} ${template-name} False&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; message:${message} MSG:${MSG}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command administratively shutsdown a BGP peer-group. The CLI allows
@@ -2365,11 +2204,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
   </COMMAND>
   <COMMAND name="bfd" help="Enables BFD support">
     <PARAM name="check-control-plane-failure" help="Link dataplane status with BGP controlplane" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <ACTION> if test -n "${check-control-plane-failure}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_bfd_check_control_plane_failure ${vrf-name} ${template-name} True&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bfd_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_enabled ${vrf-name} ${template-name} True&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; check-control-plane-failure:${check-control-plane-failure}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables BFD liveliness check for BGP neighbors in a
@@ -2531,18 +2366,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
         <PARAM name="replace-as" help="Do not prepend local-as to updates from ibgp peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
       </PARAM>
     </PARAM>
-    <ACTION> if test -n "${no-prepend}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_no_prepend ${vrf-name} ${template-name} True&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_no_prepend ${vrf-name} ${template-name} False&#xA;
-             fi&#xA;
-             if test -n "${replace-as}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_replace_as ${vrf-name} ${template-name} True&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_replace_as ${vrf-name} ${template-name} False&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as ${vrf-name} ${template-name} ${asnum}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; no-prepend:${no-prepend} replace-as:${replace-as} asnum:${asnum}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command specifies an alternate AS for this BGP process when
@@ -2622,7 +2446,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
     <PARAM name="String" help="Password" ptype="STRING">
       <PARAM name="encrypted" help="The password is stored in an encrypted format" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_auth_password ${vrf-name} ${template-name} ${String} ${encrypted}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_auth_password ${vrf-name} ${template-name} ${String} ${encrypted}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command sets a MD5 password to be used with the tcp socket that is
@@ -2815,9 +2639,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
   </COMMAND>
   <COMMAND name="no ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks">
     <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true"/>
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_ebgp_multihop_config_enabled ${vrf-name} ${template-name}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_ebgp_multihop_config_multihop_ttl ${vrf-name} ${template-name}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no remote-as" help="Specify a BGP neighbor AS">
     <PARAM name="remtype" help="Remote type" mode="switch" ptype="SUBCOMMAND" optional="true">
@@ -2825,9 +2647,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
       <PARAM name="external" help="External BGP peer" mode="subcommand" ptype="SUBCOMMAND"/>
       <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295"/>
     </PARAM>
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_peer_as ${vrf-name} ${template-name} ${as-num-dot}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_peer_type ${vrf-name} ${template-name} ${internal} ${external}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; as-num-dot:${as-num-dot} internal:${internal} external:${external}</ACTION>
   </COMMAND>
   <COMMAND name="no timers" help="Adjust routing timers">
     <PARAM name="timertype" help="Timer type" mode="switch" ptype="SUBCOMMAND">
@@ -2838,14 +2658,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_networ
         <PARAM name="connect-time" help="Connect timer" ptype="RANGE_1_65535"/>
       </PARAM>
     </PARAM>
-    <ACTION>
-             if test "${timertype}" = "connect" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_connect_retry ${vrf-name} ${template-name} ${connect-time}&#xA;
-             else&#xA;
-python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_keepalive_interval ${vrf-name} ${template-name} ${keepalive-intvl}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_hold_time ${vrf-name} ${template-name} ${hold-time}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; timertype:${timertype} connect-time:${connect-time} keepalive-intvl:${keepalive-intvl} hold-time:${hold-time}</ACTION>
   </COMMAND>
   <COMMAND name="no update-source" help="Source of routing updates">
     <PARAM name="source_param" help="update-source param"  mode="switch" ptype="SUBCOMMAND">
@@ -2865,22 +2678,14 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_netwo
     <PARAM name="message" help="Add a shutdown message (draft-ietf-idr-shutdown-06)" mode="subcommand" ptype="SUBCOMMAND" optional="true">
        <PARAM name="MSG" help="Shutdown message" ptype="STRING"/>
     </PARAM>
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_enabled ${vrf-name} ${template-name} True&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_shutdown_message ${vrf-name} ${template-name} ${MSG}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; MSG:${MSG}</ACTION>
   </COMMAND>
   <COMMAND name="no advertisement-interval" help="Minimum interval between sending BGP routing updates">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_minimum_advertisement_interval ${vrf-name} ${template-name}</ACTION>
   </COMMAND>
   <COMMAND name="no bfd" help="Enables BFD support">
     <PARAM name="check-control-plane-failure" help="Link dataplane status with BGP controlplane" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <ACTION> if test -n "${check-control-plane-failure}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_bfd_check_control_plane_failure ${vrf-name} ${template-name}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_bfd_check_control_plane_failure ${vrf-name} ${template-name}&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bfd_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_enabled ${vrf-name} ${template-name}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; check-control-plane-failure:${check-control-plane-failure}</ACTION>
   </COMMAND>
   <COMMAND name="no capability" help="Advertise capability to the peer"/>
   <COMMAND name="no capability extended-nexthop" help="Advertise extended next-hop capability to the peer">
@@ -2902,10 +2707,7 @@ python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_netwo
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_enforce_multihop ${vrf-name} ${template-name} False</ACTION>
   </COMMAND>
   <COMMAND name="no local-as" help="Specify a local-as number">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as ${vrf-name} ${template-name}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_no_prepend ${vrf-name} ${template-name}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_replace_as ${vrf-name} ${template-name}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no override-capability" help="Override capability negotiation result">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_override_capability ${vrf-name} ${template-name} False</ACTION>
