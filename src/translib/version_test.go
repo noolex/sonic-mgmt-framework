@@ -30,8 +30,8 @@ func ver(major, minor, patch uint32) Version {
 }
 
 func TestVersionParseStr(t *testing.T) {
-	t.Run("empty", testVerSet("", ver(0, 0, 0), true))
-	t.Run("0.0.0", testVerSet("0.0.0", ver(0, 0, 0), true))
+	t.Run("empty", testVerSet("", ver(0, 0, 0), false))
+	t.Run("0.0.0", testVerSet("0.0.0", ver(0, 0, 0), false))
 	t.Run("1.0.0", testVerSet("1.0.0", ver(1, 0, 0), true))
 	t.Run("1.2.3", testVerSet("1.2.3", ver(1, 2, 3), true))
 	t.Run("1.-.-", testVerSet("1", Version{}, false))
@@ -99,7 +99,7 @@ func TestVersionCheck(t *testing.T) {
 	setYangBundleVersion(testVer)
 	defer setYangBundleVersion(origVer) // restore original version
 
-	testVCheck(t, "0.0.0", true)
+	testVCheck(t, "", true)
 	testVCheck(t, "0.0.9", false)
 	testVCheck(t, "0.9.9", false)
 	testVCheck(t, "1.0.0", true)
@@ -115,7 +115,7 @@ func TestVersionCheck(t *testing.T) {
 
 func testVCheck(t *testing.T, ver string, expSuccess bool) {
 	v, err := NewVersion(ver)
-	if err != nil {
+	if ver != "" && err != nil {
 		t.Fatalf("Bad version \"%s\"", ver)
 	}
 
