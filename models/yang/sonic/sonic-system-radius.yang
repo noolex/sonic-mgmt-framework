@@ -15,6 +15,10 @@ module sonic-system-radius {
     description
         "SONiC RADIUS";
 
+    revision 2020-03-30 {
+        description "NAS-IP|IPV4-Address attribute.";
+    }
+
     revision 2020-02-17 {
         description "Allow special characters in passkey.";
     }
@@ -66,6 +70,12 @@ module sonic-system-radius {
                     type inet:ip-address;
                     description
                             "source IP address (IPv4 or IPv6) for the outgoing RADIUS pkts.";
+                }
+
+                leaf nas_ip {
+                    type inet:ip-address;
+                    description
+                            "NAS-IP|IPV6-Address attribute for the outgoing RADIUS pkts.";
                 }
 
                 leaf timeout {

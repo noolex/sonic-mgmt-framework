@@ -19,6 +19,11 @@ module openconfig-system-ext {
     description
         "Model for managing TACACS+ configurations .";
 
+    revision 2020-03-30 {
+        description
+            "Added NAS-IP|IPV6-Address attribute for RADIUS.";
+    }
+
     revision 2019-11-05 {
         description
             "Initial augment file.";
@@ -52,6 +57,10 @@ module openconfig-system-ext {
         leaf  source-address {
             type inet:ip-address;
             description "The global source ip";
+        }
+        leaf  nas-ip-address {
+            type inet:ip-address;
+            description "The global nas ip|ipv6 address attribute";
         }
         leaf  auth-type {
             type string;

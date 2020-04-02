@@ -41,6 +41,11 @@ def invoke_api(func, args=[]):
             'config/openconfig-system-ext:source-address')
         body = { "openconfig-system-ext:source-address": args[0] }
         return api.patch(keypath, body)
+    elif func == 'patch_openconfig_radius_global_config_nas_ip_address':
+        keypath = cc.Path(RADIUS_SERVER_GROUP +
+            'config/openconfig-system-ext:nas-ip-address')
+        body = { "openconfig-system-ext:nas-ip-address": args[0] }
+        return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_timeout':
         keypath = cc.Path(RADIUS_SERVER_GROUP +
             'config/openconfig-system-ext:timeout')
@@ -131,6 +136,10 @@ def invoke_api(func, args=[]):
     elif func == 'delete_openconfig_radius_global_config_source_address':
         keypath = cc.Path(RADIUS_SERVER_GROUP +
             'config/openconfig-system-ext:source-address')
+        return api.delete(keypath)
+    elif func == 'delete_openconfig_radius_global_config_nas_ip_address':
+        keypath = cc.Path(RADIUS_SERVER_GROUP +
+            'config/openconfig-system-ext:nas-ip-address')
         return api.delete(keypath)
     elif func == 'delete_openconfig_radius_global_config_retransmit':
         keypath = cc.Path(RADIUS_SERVER_GROUP +
