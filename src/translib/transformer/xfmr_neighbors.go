@@ -177,7 +177,6 @@ var DbToYang_neigh_tbl_get_all_ipv4_xfmr SubTreeXfmrDbToYang = func (inParams Xf
             ygot.BuildEmptyTree(neighObj)
             neighObj.State.Ip = &ipAddr
             neighObj.State.LinkLayerAddress = &linkAddr
-            neighObj.State.Origin = 0
             break
         } else if strings.HasPrefix(targetUriPath, NEIGH_IPv4_PREFIX) {
             if neighObj, ok = subIntfObj.Ipv4.Neighbors.Neighbor[ipAddr]; !ok {
@@ -190,7 +189,6 @@ var DbToYang_neigh_tbl_get_all_ipv4_xfmr SubTreeXfmrDbToYang = func (inParams Xf
             ygot.BuildEmptyTree(neighObj)
             neighObj.State.Ip = &ipAddr
             neighObj.State.LinkLayerAddress = &linkAddr
-            neighObj.State.Origin = 0
         }
     }
     return err
@@ -292,9 +290,6 @@ var DbToYang_neigh_tbl_get_all_ipv6_xfmr SubTreeXfmrDbToYang = func (inParams Xf
             ygot.BuildEmptyTree(neighObj)
             neighObj.State.Ip = &ipAddr
             neighObj.State.LinkLayerAddress = &linkAddr
-            neighObj.State.IsRouter = true
-            neighObj.State.NeighborState = 0
-            neighObj.State.Origin = 0
             break
         } else if strings.HasPrefix(targetUriPath, NEIGH_IPv6_PREFIX) {
             if neighObj, ok = subIntfObj.Ipv6.Neighbors.Neighbor[ipAddr]; !ok {
@@ -307,9 +302,6 @@ var DbToYang_neigh_tbl_get_all_ipv6_xfmr SubTreeXfmrDbToYang = func (inParams Xf
             ygot.BuildEmptyTree(neighObj)
             neighObj.State.Ip = &ipAddr
             neighObj.State.LinkLayerAddress = &linkAddr
-            neighObj.State.IsRouter = true
-            neighObj.State.NeighborState = 0
-            neighObj.State.Origin = 0
         }
     }
     return err

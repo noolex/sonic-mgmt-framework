@@ -415,9 +415,17 @@ func Delete(req SetRequest) (SetResponse, error) {
 
 	requestPathInfo := NewPathInfo(path)
     requestUriPath, err := getYangPathFromUri(requestPathInfo.Path)
-
 	log.Info("requestUriPath : ", requestUriPath)
+    ifName := requestPathInfo.Var("name")
+    log.Info("If Name = ", ifName)
 
+    if requestUriPath == "/openconfig-interfaces:interfaces" {
+        return resp, tlerr.New("Delete operation not supported!")
+    }
+    // Differentiate the same uri based on ifName key
+    if requestUriPath == "/openconfig-interfaces:interfaces/interface" && len(ifName) == 0 {
+        return resp, tlerr.New("Delete operation not supported!")
+    }
 	app, appInfo, err := getAppModule(path, req.ClientVersion)
 
 	if err != nil {
