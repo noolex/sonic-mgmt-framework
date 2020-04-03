@@ -10,14 +10,17 @@ module sonic-vlan-interface {
         prefix svlan;
     }
 
-   import sonic-vrf {
+    import sonic-vrf {
         prefix vrf;
     }
 
-   import sonic-common {
-	   prefix cmn;
-   }
+    import sonic-common {
+        prefix cmn;
+    }
 
+    import sonic-interface-common {
+        prefix sonic-if-cmn;
+    }
 
     organization
         "SONiC";
@@ -28,6 +31,10 @@ module sonic-vlan-interface {
     description
         "SONIC VLAN INTERFACE";
 
+    revision 2020-04-07 {
+        description
+            "Add VRF and IP address attribute";
+    }
     revision 2020-02-28 {
         description
             "Add DHCP server attribute";
@@ -89,7 +96,12 @@ module sonic-vlan-interface {
 					}
 			}
 
-		}
+            leaf-list helper_address {
+                type sonic-if-cmn:vrf-ip;
+                description
+                    "List of destination addresses with each being a combination of Vrf and IP address";
+            }
+        }
 
             list VLAN_INTERFACE_IPADDR_LIST {
                 key "vlanName ip_prefix";

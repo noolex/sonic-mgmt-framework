@@ -22,6 +22,10 @@ module sonic-portchannel-interface {
         prefix cmn;
     }
 
+    import sonic-interface-common {
+        prefix sonic-if-cmn;
+    }
+
     organization
         "SONiC";
 
@@ -31,10 +35,14 @@ module sonic-portchannel-interface {
     description
         "SONIC PORTCHANNEL INTERFACE";
 
+    revision 2020-04-07 {
+        description
+            "Add VRF and IP address attribute";
+    }
     revision 2020-02-28 {
         description
             "Add DHCP server attribute";
-       }
+    }
     revision 2019-12-01 {
         description
             "Add vrf_name for VRF interface binding.";
@@ -123,7 +131,15 @@ module sonic-portchannel-interface {
                         path "/lointf:sonic-loopback-interface/lointf:LOOPBACK_INTERFACE/lointf:LOOPBACK_INTERFACE_LIST/lointf:loIfName";
                     }
                 }
+
+                leaf-list helper_address {
+                    type sonic-if-cmn:vrf-ip;
+                    description
+                        "List of destination addresses with each being a combination of Vrf and IP address";
+                }
+
             }
+
             list PORTCHANNEL_INTERFACE_IPADDR_LIST {
                 key "pch_name ip_prefix";
 
