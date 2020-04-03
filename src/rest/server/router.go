@@ -27,16 +27,10 @@ import (
 	"strings"
 	"time"
 
-<<<<<<< HEAD
 	"translib"
 
-||||||| merged common ancestors
-	"translib"
-=======
->>>>>>> dell_sonic
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
-	"translib"
 )
 
 // Root directory for UI files
@@ -407,22 +401,10 @@ func (rs *routeStore) addServiceRoutes() {
 		Handler(http.RedirectHandler("/ui/index.html", 301))
 
 	//Allow POST for user/pass auth and or GET for cert auth.
-<<<<<<< HEAD
 	router.Methods("POST", "GET").Path("/authenticate").Handler(
 		withAuthContextMiddleware(http.HandlerFunc(Authenticate), "jwtAuthHandler"))
 	router.Methods("POST", "GET").Path("/refresh").Handler(
 		withAuthContextMiddleware(http.HandlerFunc(Refresh), "jwtRefreshHandler"))
-||||||| merged common ancestors
-	router.Methods("POST","GET").Path("/authenticate").Handler(
-		withAuthContextMiddleware(http.HandlerFunc(Authenticate), "jwtAuthHandler", auth))
-	router.Methods("POST","GET").Path("/refresh").Handler(
-		withAuthContextMiddleware(http.HandlerFunc(Refresh), "jwtRefreshHandler", auth))	
-=======
-	router.Methods("POST", "GET").Path("/authenticate").Handler(
-		withAuthContextMiddleware(http.HandlerFunc(Authenticate), "jwtAuthHandler", auth))
-	router.Methods("POST", "GET").Path("/refresh").Handler(
-		withAuthContextMiddleware(http.HandlerFunc(Refresh), "jwtRefreshHandler", auth))
->>>>>>> dell_sonic
 
 	// To download yang models
 	ydirHandler := http.FileServer(http.Dir(translib.GetYangPath()))
@@ -482,21 +464,8 @@ func loggingMiddleware(inner http.Handler, name string) http.Handler {
 
 // withMiddleware function prepares the default middleware chain for
 // REST APIs.
-<<<<<<< HEAD
 func withMiddleware(h http.Handler, name string) http.Handler {
 	h = authMiddleware(h)
-||||||| merged common ancestors
-func withMiddleware(h http.Handler, name string, auth UserAuth) http.Handler {
-	
-	h = authMiddleware(h, auth)
-	
-
-=======
-func withMiddleware(h http.Handler, name string, auth UserAuth) http.Handler {
-
-	h = authMiddleware(h, auth)
-
->>>>>>> dell_sonic
 	return loggingMiddleware(h, name)
 }
 

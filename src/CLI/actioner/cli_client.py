@@ -24,15 +24,10 @@ import pwd
 from six.moves.urllib.parse import quote
 import syslog
 import requests
-<<<<<<< HEAD
 from requests.structures import CaseInsensitiveDict
 from requests import request, RequestException
 from collections import OrderedDict
-
-||||||| merged common ancestors
-=======
 import requests_unixsocket
->>>>>>> dell_sonic
 
 urllib3.disable_warnings()
 

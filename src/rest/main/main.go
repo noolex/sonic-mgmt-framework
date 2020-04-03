@@ -152,33 +152,14 @@ func main() {
 // unix socket. This is used for authentication of the CLI client to the REST
 // server, and will not be used for any other client.
 func spawnUnixListener() {
-<<<<<<< HEAD
-	var CLIAuth = server.UserAuth{"password": false, "cert": true, "jwt": true}
+	var CLIAuth = server.UserAuth{"clisock": true, "cert": true, "jwt": true}
 	rtrConfig := server.RouterConfig{
 		Auth: CLIAuth,
 	}
 
-	tlsConfig := tls.Config{
-		ClientAuth:               tls.RequireAnyClientCert,
-		Certificates:             prepareServerCertificate(),
-		ClientCAs:                prepareCACertificates(cliCAFile),
-		MinVersion:               tls.VersionTLS12,
-		PreferServerCipherSuites: true,
-		CipherSuites:             getPreferredCipherSuites(),
-||||||| merged common ancestors
-	var CLIAuth = server.UserAuth{"password": false, "cert": true, "jwt": true}
-	tlsConfig := tls.Config{
-		ClientAuth:               tls.RequireAnyClientCert,
-		Certificates:             prepareServerCertificate(),
-		ClientCAs:                prepareCACertificates(cliCAFile),
-		MinVersion:               tls.VersionTLS12,
-		PreferServerCipherSuites: true,
-		CipherSuites:             getPreferredCipherSuites(),
-=======
 	// Reuse the handler between the two listeners. This avoids creating an
 	// extra identical handler for the TLS listener on TCP port 8443.
-	CLIAuth := server.UserAuth{"clisock": true, "jwt": true, "cert": true}
-	handler := server.NewRouter(CLIAuth)
+	handler := server.NewRouter(&rtrConfig)
 
 	if cliCAFile != "" {
 		// This block spawns an additional listener listening to localhost:8443
@@ -201,7 +182,7 @@ func spawnUnixListener() {
 		}
 
 		cliServer := &http.Server{
-			Handler: handler,
+			Handler:   handler,
 			TLSConfig: tlsConfig,
 		}
 
@@ -210,7 +191,6 @@ func spawnUnixListener() {
 				glog.Fatal(err)
 			}
 		}()
->>>>>>> dell_sonic
 	}
 
 	const UDSock = "/var/run/rest-local.sock"
@@ -227,20 +207,12 @@ func spawnUnixListener() {
 	}
 
 	localServer := &http.Server{
-<<<<<<< HEAD
-		Handler:   server.NewRouter(&rtrConfig),
-		TLSConfig: &tlsConfig,
-||||||| merged common ancestors
-		Handler:   server.NewRouter(CLIAuth),
-		TLSConfig: &tlsConfig,
-=======
 		Handler: handler,
 		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
 			// Save the connection in the request context for use
 			// in the CLI user authentication flow
 			return context.WithValue(ctx, "http-conn", c)
 		},
->>>>>>> dell_sonic
 	}
 
 	go func() {
