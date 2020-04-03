@@ -1,0 +1,10 @@
+{
+    "SNMP_SERVER_VIEW": {
+        "TestVacmView1": {
+            "exclude@": [ 
+                "1.2.3.4.*",
+                "1.4.6.*"
+            ]
+        }
+    }
+}

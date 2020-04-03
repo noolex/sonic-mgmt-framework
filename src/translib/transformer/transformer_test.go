@@ -182,7 +182,7 @@ func closeAllDbs(dbs []*db.DB) {
 
 
 func TestMain(t *testing.M) {
-	fmt.Println("+++++ Setting up transformer tests +++++")
+	fmt.Println("----- Setting up transformer tests -----")
         if err := setup(); err != nil {
                 fmt.Fprintf(os.Stderr, "Error setting up transformer testing state: %v.\n", err)
                 os.Exit(1)
@@ -194,7 +194,7 @@ func TestMain(t *testing.M) {
 
 // setups state each of the tests uses
 func setup() error {
-	fmt.Println("+++++ performing setup +++++")
+	fmt.Println("----- Performing setup -----")
 	var err error
         if ygSchema, err = ocbinds.Schema(); err != nil {
                 panic("Error in getting the schema: " + err.Error())
@@ -211,7 +211,7 @@ func setup() error {
 }
 
 func teardown() error {
-	fmt.Println("+++++ performing teardown +++++")
+	fmt.Println("----- Performing teardown -----")
         unloadConfigDB(rclient, port_map)
         if (loadDeviceDataMap == true) {
                 unloadConfigDB(rclient, deviceDataMap)

@@ -20,15 +20,12 @@ package transformer_test
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 	"time"
 	db "translib/db"
 )
 
 func Test_sFlowOperations(t *testing.T) {
-
-	fmt.Println("+++++  Start sFlow testing  +++++")
 
 	url := "/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST[sflow_key=global]"
 
