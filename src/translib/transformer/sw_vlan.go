@@ -36,6 +36,7 @@ const (
     MODE_UNSET intfModeType = iota
     ACCESS
     TRUNK
+    ALL
 )
 
 type intfModeReq struct {
@@ -469,7 +470,7 @@ func fillTrunkVlansForInterface(d *db.DB, ifName *string, ifVlanInfo *ifVlan) (e
     }
 
     for _, vlanKey := range vlanKeys {
-        if len(vlanKeys) < 2 {
+        if len(vlanKey.Comp) < 2 {
             continue
         }
         if vlanKey.Get(1) == *ifName {
@@ -709,7 +710,7 @@ func processIntfVlanMemberAdd(d *db.DB, vlanMembersMap map[string]map[string]db.
         log.Info("Processing VLAN: ", vlanName)
         var memberPortsListStrB strings.Builder
         var memberPortsList []string
-    var stpInterfacesList []string
+        var stpInterfacesList []string
         isMembersListUpdate = false
 
         vlanEntry, _ := d.GetEntry(&db.TableSpec{Name:VLAN_TN}, db.Key{Comp: []string{vlanName}})
@@ -762,7 +763,7 @@ func processIntfVlanMemberAdd(d *db.DB, vlanMembersMap map[string]map[string]db.
             stpInterfacesList = append(stpInterfacesList, ifName)
             vlanMemberKey := vlanName + "|" + ifName
             vlanMemberMap[vlanMemberKey] = db.Value{Field:make(map[string]string)}
-            vlanMemberMap[vlanMemberKey].Field["tagging_mode"] = ifEntry.Field["tagging_mode"] 
+            vlanMemberMap[vlanMemberKey].Field["tagging_mode"] = ifEntry.Field["tagging_mode"]
             log.Infof("Updated Vlan Member Map with vlan member key: %s and tagging-mode: %s", vlanMemberKey, ifEntry.Field["tagging_mode"])
 
             if len(memberPortsList) == 0 && len(ifEntries) == 1 {
@@ -784,7 +785,7 @@ func processIntfVlanMemberAdd(d *db.DB, vlanMembersMap map[string]map[string]db.
     return err
 }
 
-func processIntfVlanMemberRemoval(d *db.DB, ifVlanInfoList []*ifVlan, vlanMap map[string]db.Value, 
+func processIntfVlanMemberRemoval(d *db.DB, ifVlanInfoList []*ifVlan, vlanMap map[string]db.Value,
                                   vlanMemberMap map[string]db.Value, stpVlanPortMap map[string]db.Value,
                                   stpPortMap map[string]db.Value) error {
     var err error
@@ -827,12 +828,35 @@ func processIntfVlanMemberRemoval(d *db.DB, ifVlanInfoList []*ifVlan, vlanMap ma
                     removeFromMembersListForVlan(d, &trunkVlan, ifName, vlanMap)
                 }
             }
+        // Mode set to ALL, if you want to delete both access and trunk
+        case ALL:
+            log.Info("Handling Access and Trunk VLAN delete!")
+            //Access Vlan Delete
+            untagdVlan, _ := removeUntaggedVlanAndUpdateVlanMembTbl(d, ifName, vlanMemberMap, stpVlanPortMap, stpPortMap)
+            if untagdVlan != nil {
+                removeFromMembersListForVlan(d, untagdVlan, ifName, vlanMap)
+            }
+            //Trunk Vlan Delete
+            if trunkVlans != nil {
+                for _, trunkVlan := range trunkVlans {
+                    err = removeTaggedVlanAndUpdateVlanMembTbl(d, &trunkVlan, ifName, vlanMemberMap, stpVlanPortMap, stpPortMap)
+                    if err != nil {
+                        return err
+                    }
+                    removeFromMembersListForVlan(d, &trunkVlan, ifName, vlanMap)
+                }
+            }
         }
     }
     return err
 }
 
 /* Function performs VLAN Member removal from Interface */
+/* Handles 4 cases
+   case 1: Deletion of top-level container / list
+   case 2: Deletion of entire leaf-list trunk-vlans
+   case 3: Deletion of access-vlan leaf
+   case 4: Deletion of trunk-vlan (leaf-list with instance)  */
 func intfVlanMemberRemoval(swVlanConfig *swVlanMemberPort_t,
                            inParams *XfmrParams, ifName *string,
                            vlanMap map[string]db.Value,
@@ -847,18 +871,41 @@ func intfVlanMemberRemoval(swVlanConfig *swVlanMemberPort_t,
     log.Info("Target URI Path = ", targetUriPath)
     switch intfType {
     case IntfTypeEthernet:
-        /* Handling the deletion of trunk-vlans leaf-list. YGOT target for leaf-list is nil,
-           This is the reason why we do string comparison of targetUri */
-        if swVlanConfig.swEthMember.Config.TrunkVlans == nil && targetUriPath == "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans" {
-            ifVlanInfo.mode = TRUNK
+        if swVlanConfig.swPortChannelMember != nil {
+            errStr := "Wrong yang path is used for member " + *ifName + " disassociation from vlan"
+            log.Errorf(errStr)
+            return errors.New(errStr)
+        }
+        //case 1
+        if swVlanConfig.swEthMember == nil || swVlanConfig.swEthMember.Config == nil ||
+           (swVlanConfig.swEthMember.Config.AccessVlan == nil && swVlanConfig.swEthMember.Config.TrunkVlans == nil) {
+
+            log.Info("Container/list level delete for Interface: ", *ifName)
+            ifVlanInfo.mode = ALL
+            //case 2
+            if targetUriPath == "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans" {
+                ifVlanInfo.mode = TRUNK
+            }
             err = fillTrunkVlansForInterface(inParams.d, ifName, &ifVlanInfo)
             if err != nil {
                 return err
             }
+
+            ifVlanInfo.ifName = ifName
+            ifVlanInfoList = append(ifVlanInfoList, &ifVlanInfo)
+
+            err = processIntfVlanMemberRemoval(inParams.d, ifVlanInfoList, vlanMap, vlanMemberMap, stpVlanPortMap, stpPortMap)
+            if(err != nil) {
+                log.Errorf("Interface VLAN member removal for Interface: %s failed!", *ifName)
+                return err
+            }
+            return err
         }
+        //case 3
         if swVlanConfig.swEthMember.Config.AccessVlan != nil {
             ifVlanInfo.mode = ACCESS
         }
+        //case 4
         if swVlanConfig.swEthMember.Config.TrunkVlans != nil {
             trunkVlansUnionList := swVlanConfig.swEthMember.Config.TrunkVlans
             ifVlanInfo.mode = TRUNK
@@ -896,18 +943,41 @@ func intfVlanMemberRemoval(swVlanConfig *swVlanMemberPort_t,
             }
         }
     case IntfTypePortChannel:
-        /* Handling the deletion of trunk-vlans leaf-list. YGOT target for leaf-list is nil,
-           This is the reason why we do string comparison of targetUri */
-        if swVlanConfig.swPortChannelMember.Config.TrunkVlans == nil && targetUriPath == "/openconfig-interfaces:interfaces/interface/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans" {
-            ifVlanInfo.mode = TRUNK
+        if swVlanConfig.swEthMember != nil {
+            errStr := "Wrong yang path is used for Interface " + *ifName + " disassociation from Port-Channel Interface"
+            log.Error(errStr)
+            return errors.New(errStr)
+        }
+        //case 1
+        if swVlanConfig.swPortChannelMember == nil || swVlanConfig.swPortChannelMember.Config == nil ||
+           (swVlanConfig.swPortChannelMember.Config.AccessVlan == nil && swVlanConfig.swPortChannelMember.Config.TrunkVlans == nil) {
+
+            log.Info("Container/list level delete for Interface: ", ifName)
+            ifVlanInfo.mode = ALL
+            //case 2
+            if targetUriPath == "/openconfig-interfaces:interfaces/interface/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans" {
+                ifVlanInfo.mode = TRUNK
+            }
             err = fillTrunkVlansForInterface(inParams.d, ifName, &ifVlanInfo)
             if err != nil {
                 return err
             }
+
+            ifVlanInfo.ifName = ifName
+            ifVlanInfoList = append(ifVlanInfoList, &ifVlanInfo)
+
+            err = processIntfVlanMemberRemoval(inParams.d, ifVlanInfoList, vlanMap, vlanMemberMap, stpVlanPortMap, stpPortMap)
+            if(err != nil) {
+                log.Errorf("Interface VLAN member removal for Interface: %s failed!", *ifName)
+                return err
+            }
+            return err
         }
+        //case 3
         if swVlanConfig.swPortChannelMember.Config.AccessVlan != nil {
             ifVlanInfo.mode = ACCESS
         }
+        // case 4: Note:- Deletion request is for trunk-vlans with an instance
         if swVlanConfig.swPortChannelMember.Config.TrunkVlans != nil {
             trunkVlansUnionList := swVlanConfig.swPortChannelMember.Config.TrunkVlans
             ifVlanInfo.mode = TRUNK
@@ -1184,10 +1254,12 @@ func deleteVlanIntfAndMembers(inParams *XfmrParams, vlanName *string) error {
         log.Error(errStr)
         return errors.New(errStr)
     }
-    /* Handle VLAN_INTERFACE TABLE */
-    err = validateL3ConfigExists(inParams.d, vlanName)
-    if err != nil {
-        return err
+    /* Validation is needed, if oper is not DELETE. Cleanup for sub-interfaces is done as part of Delete. */
+    if inParams.oper != DELETE {
+	    err = validateL3ConfigExists(inParams.d, vlanName)
+	    if err != nil {
+	        return err
+        }
     }
 
     memberPortsVal, ok := vlanEntry.Field["members@"]
@@ -1210,15 +1282,17 @@ func deleteVlanIntfAndMembers(inParams *XfmrParams, vlanName *string) error {
                 return err
             }
         }
-      resMap[VLAN_MEMBER_TN] = vlanMemberMap
-    removeStpConfigOnVlanDeletion(inParams, vlanName, memberPorts, resMap)
+        if len(vlanMemberMap) != 0 {
+            resMap[VLAN_MEMBER_TN] = vlanMemberMap
+        }
+        removeStpConfigOnVlanDeletion(inParams, vlanName, memberPorts, resMap)
     } else {
         /* need to check STP_VLAN table */
         removeStpConfigOnVlanDeletion(inParams, vlanName, nil, resMap)
     }
-
-    resMap[VLAN_TN] = vlanMap
-
+    if len(vlanMap) != 0 {
+        resMap[VLAN_TN] = vlanMap
+    }
     subOpMap[db.ConfigDB] = resMap
     inParams.subOpDataMap[DELETE] = &subOpMap
     return err
@@ -1244,6 +1318,38 @@ var YangToDb_sw_vlans_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[
     log.Info("Switched vlans request for ", ifName)
     intf := intfObj.Interface[ifName]
 
+    intfType, _, err := getIntfTypeByName(ifName)
+    if err != nil {
+        errStr := "Extraction of Interface type from Interface: " + ifName + " failed!"
+        return nil, errors.New(errStr)
+    }
+    if intfType != IntfTypeEthernet && intfType != IntfTypePortChannel {
+        return nil, nil
+    }
+    if ((inParams.oper == DELETE) && ((intf.Ethernet == nil || intf.Ethernet.SwitchedVlan == nil ||
+       intf.Ethernet.SwitchedVlan.Config == nil) && (intf.Aggregation == nil || intf.Aggregation.SwitchedVlan == nil ||
+       intf.Aggregation.SwitchedVlan.Config == nil))) {
+        err = intfVlanMemberRemoval(&swVlanConfig, &inParams, &ifName, vlanMap, vlanMemberMap, stpVlanPortMap, stpPortMap, intfType)
+        if err != nil {
+            log.Errorf("Interface VLAN member port removal failed for Interface: %s!", ifName)
+            return nil, err
+        }
+        if len(vlanMemberMap) != 0 {
+            res_map[VLAN_MEMBER_TN] = vlanMemberMap
+        }
+        if len(vlanMap) != 0 {
+            res_map[VLAN_TN] = vlanMap
+        }
+        if len(stpVlanPortMap) != 0 {
+            res_map[STP_VLAN_PORT_TABLE] = stpVlanPortMap
+        }
+        /* only delete STP_PORT if stpPortMap is not empty */
+        if (len(stpPortMap) != 0) {
+            res_map[STP_PORT_TABLE] = stpPortMap
+        }
+        return res_map, err
+    }
+
     if intf.Ethernet == nil && intf.Aggregation == nil {
         return nil, errors.New("Wrong Config Request")
     }
@@ -1260,11 +1366,6 @@ var YangToDb_sw_vlans_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[
         swVlanConfig.swPortChannelMember = intf.Aggregation.SwitchedVlan
     }
 
-    intfType, _, err := getIntfTypeByName(ifName)
-    if err != nil {
-        errStr := "Extraction of Interface type from Interface: " + ifName + " failed!"
-        return nil, errors.New(errStr)
-    }
     /* Restrict configuring member-port if Interface(Physical/port-channel) is in L3 mode */
     err = validateL3ConfigExists(inParams.d, &ifName)
     if err != nil {
@@ -1286,20 +1387,33 @@ var YangToDb_sw_vlans_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[
             log.Errorf("Interface VLAN member port addition failed for Interface: %s!", ifName)
             return nil, err
         }
-        res_map[VLAN_TN] = vlanMap
-        res_map[VLAN_MEMBER_TN] = vlanMemberMap
-        res_map[STP_VLAN_PORT_TABLE] = stpVlanPortMap
-        res_map[STP_PORT_TABLE] = stpPortMap
+        if len(vlanMap) != 0 {
+            res_map[VLAN_TN] = vlanMap
+        }
+        if len(vlanMemberMap) != 0 {
+            res_map[VLAN_MEMBER_TN] = vlanMemberMap
+        }
+        if len(stpVlanPortMap) != 0 {
+            res_map[STP_VLAN_PORT_TABLE] = stpVlanPortMap
+        }
+        if len(stpPortMap) != 0 {
+            res_map[STP_PORT_TABLE] = stpPortMap
+        }
     case DELETE:
         err = intfVlanMemberRemoval(&swVlanConfig, &inParams, &ifName, vlanMap, vlanMemberMap, stpVlanPortMap, stpPortMap, intfType)
         if err != nil {
             log.Errorf("Interface VLAN member port removal failed for Interface: %s!", ifName)
             return nil, err
         }
-        res_map[VLAN_MEMBER_TN] = vlanMemberMap
-        res_map[VLAN_TN] = vlanMap
-        res_map[STP_VLAN_PORT_TABLE] = stpVlanPortMap
-
+        if len(vlanMemberMap) != 0 {
+            res_map[VLAN_MEMBER_TN] = vlanMemberMap
+        }
+        if len(vlanMap) != 0 {
+            res_map[VLAN_TN] = vlanMap
+        }
+        if len(stpVlanPortMap) != 0 {
+            res_map[STP_VLAN_PORT_TABLE] = stpVlanPortMap
+        }
         /* only delete STP_PORT if stpPortMap is not empty */
         if (len(stpPortMap) != 0) {
             res_map[STP_PORT_TABLE] = stpPortMap
@@ -1528,8 +1642,10 @@ func getSwitchedVlanState(ifKey *string, vlanMemberMap map[string]map[string]db.
             vlanIdCast := uint16(vlanId)
             if config == true {
                 swVlan.swEthMember.Config.AccessVlan = &vlanIdCast
+                swVlan.swEthMember.Config.InterfaceMode = ocbinds.OpenconfigVlan_VlanModeType_ACCESS
              } else {
                 swVlan.swEthMember.State.AccessVlan = &vlanIdCast
+                swVlan.swEthMember.State.InterfaceMode = ocbinds.OpenconfigVlan_VlanModeType_ACCESS
              }
         }
         for _, vlanName := range trunkVlans {
@@ -1544,10 +1660,11 @@ func getSwitchedVlanState(ifKey *string, vlanMemberMap map[string]map[string]db.
             if (config == true) {
                 trunkVlan, _ := swVlan.swEthMember.Config.To_OpenconfigInterfaces_Interfaces_Interface_Ethernet_SwitchedVlan_Config_TrunkVlans_Union(vlanIdCast)
                 swVlan.swEthMember.Config.TrunkVlans = append(swVlan.swEthMember.Config.TrunkVlans, trunkVlan)
-
+                swVlan.swEthMember.Config.InterfaceMode = ocbinds.OpenconfigVlan_VlanModeType_TRUNK
             } else {
                 trunkVlan, _ := swVlan.swEthMember.State.To_OpenconfigInterfaces_Interfaces_Interface_Ethernet_SwitchedVlan_State_TrunkVlans_Union(vlanIdCast)
                 swVlan.swEthMember.State.TrunkVlans = append(swVlan.swEthMember.State.TrunkVlans, trunkVlan)
+                swVlan.swEthMember.State.InterfaceMode = ocbinds.OpenconfigVlan_VlanModeType_TRUNK
             }
         }
     case IntfTypePortChannel:
@@ -1675,6 +1792,11 @@ var DbToYang_sw_vlans_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams) (err
 
                     log.Infof("Get is for Switched Vlan State Container!")
                     switch targetUriPath {
+                    case "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/interface-mode":
+                        err = getSwitchedVlanState(&ifName, vlanMemberMap, &swVlan, intfType, true)
+                        if err != nil {
+                            return err
+                        }
                     case "/openconfig-interfaces:interfaces/interface/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config":
                         err = getSwitchedVlanState(&ifName, vlanMemberMap, &swVlan, intfType, true)
                         if err != nil {

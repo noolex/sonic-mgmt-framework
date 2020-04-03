@@ -27,9 +27,9 @@ import (
 	"strings"
 	"time"
 
-	"translib"
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
+	"translib"
 )
 
 // Root directory for UI files
@@ -385,10 +385,10 @@ func (mb *muxBuilder) finish(auth UserAuth) {
 		Handler(http.RedirectHandler("/ui/index.html", 301))
 
 	//Allow POST for user/pass auth and or GET for cert auth.
-	router.Methods("POST","GET").Path("/authenticate").Handler(
+	router.Methods("POST", "GET").Path("/authenticate").Handler(
 		withAuthContextMiddleware(http.HandlerFunc(Authenticate), "jwtAuthHandler", auth))
-	router.Methods("POST","GET").Path("/refresh").Handler(
-		withAuthContextMiddleware(http.HandlerFunc(Refresh), "jwtRefreshHandler", auth))	
+	router.Methods("POST", "GET").Path("/refresh").Handler(
+		withAuthContextMiddleware(http.HandlerFunc(Refresh), "jwtRefreshHandler", auth))
 
 	// To download yang models
 	ydirHandler := http.FileServer(http.Dir(translib.GetYangPath()))
@@ -445,9 +445,8 @@ func loggingMiddleware(inner http.Handler, name string) http.Handler {
 // withMiddleware function prepares the default middleware chain for
 // REST APIs.
 func withMiddleware(h http.Handler, name string, auth UserAuth) http.Handler {
-	
+
 	h = authMiddleware(h, auth)
-	
 
 	return loggingMiddleware(h, name)
 }
@@ -483,6 +482,12 @@ func authMiddleware(inner http.Handler, auth UserAuth) http.Handler {
 		}
 		if !success && rc.ClientAuth.Enabled("cert") {
 			err = ClientCertAuthenAndAuthor(r, rc)
+			if err == nil {
+				success = true
+			}
+		}
+		if !success && rc.ClientAuth.Enabled("clisock") {
+			err = CliUserAuthenAndAuthor(r, rc)
 			if err == nil {
 				success = true
 			}

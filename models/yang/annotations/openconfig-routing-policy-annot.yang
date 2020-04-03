@@ -268,7 +268,7 @@ module openconfig-routing-policy-annot {
 
     deviation /oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:statements/oc-rpol:statement/oc-rpol:actions/oc-bgp-pol:bgp-actions/oc-bgp-pol:config/oc-bgp-pol:set-next-hop {
       deviate add {
-            sonic-ext:field-name "set_next_hop";
+            sonic-ext:field-transformer "route_map_set_next_hop_xfmr";
       }
     }
 

@@ -558,29 +558,6 @@ limitations under the License.
                     help="Regular expression"
                     ptype="STRING"
                     >
-                    <PARAM
-                        name="any-all subcommands"
-                        help="Any/all command"
-                        ptype="SUBCOMMAND"
-                        mode="switch"
-                        order="true"
-                        optional="true"
-                        >
-                        <PARAM
-                            name="any"
-                            help="Any command"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            >
-                        </PARAM>
-                        <PARAM
-                            name="all"
-                            help="All command"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            >
-                        </PARAM>
-                    </PARAM>
                 </PARAM>
             </PARAM>
         </PARAM>

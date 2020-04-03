@@ -127,14 +127,18 @@ var DbToYang_nat_global_key_xfmr KeyXfmrDbToYang = func(inParams XfmrParams) (ma
 var YangToDb_nat_enable_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
     res_map := make(map[string]string)
 
-    enabled, _ := inParams.param.(*bool)
-    var enStr string
-    if *enabled == true {
-        enStr = ENABLED
+    if inParams.oper == DELETE {
+        res_map[ADMIN_MODE] = ""
     } else {
-        enStr = DISABLED
+        enabled, _ := inParams.param.(*bool)
+        var enStr string
+        if *enabled == true {
+            enStr = ENABLED
+        } else {
+            enStr = DISABLED
+        }
+        res_map[ADMIN_MODE] = enStr
     }
-    res_map[ADMIN_MODE] = enStr
 
     return res_map, nil
 }
@@ -296,6 +300,11 @@ var YangToDb_nat_mapping_subtree_xfmr SubTreeXfmrYangToDb = func(inParams XfmrPa
         }
     }
 
+    if natTblObj == nil {
+        errStr := "NAT [container/list] not populated."
+        log.Info("YangToDb_nat_mapping_subtree_xfmr: " + errStr)
+        return natMap, errors.New(errStr)
+    }
 
     for key, data := range natTblObj.NatMappingEntry {
         if data.Config == nil && inParams.oper != DELETE {
@@ -687,6 +696,12 @@ var YangToDb_napt_mapping_subtree_xfmr SubTreeXfmrYangToDb = func(inParams XfmrP
         }
     }
 
+
+    if naptTblObj == nil {
+        errStr := "NAPT [container/list] not populated."
+        log.Info("YangToDb_napt_mapping_subtree_xfmr: " + errStr)
+        return naptMap, errors.New(errStr)
+    }
 
     for key, data := range naptTblObj.NaptMappingEntry {
         if data.Config == nil && inParams.oper != DELETE {
@@ -1224,8 +1239,12 @@ var DbToYang_nat_pool_key_xfmr KeyXfmrDbToYang = func(inParams XfmrParams) (map[
 var YangToDb_nat_ip_field_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
     res_map := make(map[string]string)
 
-    ipPtr, _ := inParams.param.(*string)
-    res_map["nat_ip"] = *ipPtr;
+    if inParams.oper == DELETE {
+        res_map["nat_ip"] = "";
+    } else {
+        ipPtr, _ := inParams.param.(*string)
+        res_map["nat_ip"] = *ipPtr;
+    }
     return res_map, nil
 }
 

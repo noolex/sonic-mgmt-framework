@@ -40,8 +40,6 @@ MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
 
 GO_DEPS_LIST = github.com/gorilla/mux \
                github.com/Workiva/go-datastructures/queue \
-               github.com/openconfig/goyang \
-               github.com/openconfig/ygot/ygot \
                github.com/go-redis/redis \
                github.com/golang/glog \
                github.com/pkg/profile \
@@ -55,6 +53,12 @@ GO_DEPS_LIST = github.com/gorilla/mux \
                gopkg.in/godbus/dbus.v5 \
                github.com/dgrijalva/jwt-go \
                github.com/msteinert/pam
+
+# GO_DEPS_LIST_2 includes "download only" dependencies.
+# They are patched, compiled and installed explicitly later.
+GO_DEPS_LIST_2 = github.com/openconfig/goyang \
+                 github.com/openconfig/gnmi/proto/gnmi_ext \
+                 github.com/openconfig/ygot/ygot
 
 
 REST_BIN = $(BUILD_DIR)/rest_server/main
@@ -71,6 +75,7 @@ build-deps:
 
 $(BUILD_DIR)/gopkgs/.done: $(MAKEFILE_LIST)
 	$(GO) get -v $(GO_DEPS_LIST)
+	$(GO) get -v -d $(GO_DEPS_LIST_2)
 	touch  $@
 
 $(go-redis-patch): $(go-deps)
@@ -126,7 +131,9 @@ $(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/goya
 cd $(BUILD_GOPATH)/src/github.com/openconfig/ygot/; git reset --hard HEAD;git clean -f -d;git checkout 724a6b18a9224343ef04fe49199dfb6020ce132a 2>/dev/null ; true; \
 cd ../; cp $(TOPDIR)/ygot-modified-files/ygot.patch .; \
 patch -p1 < ygot.patch; rm -f ygot.patch; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot/ygot
+$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot/ygot; \
+cd $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi_ext; git checkout e7106f7f5493a9fa152d28ab314f2cc734244ed8 2>/dev/null ; true; \
+$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi_ext
 
 #Apply CVL related patches
 	$(apply_cvl_dep_patches)

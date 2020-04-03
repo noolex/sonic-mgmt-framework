@@ -6,7 +6,7 @@
 {% set vars = {'med': ""} %}
 {% set vars = {'locPref': ""} %}
 {% set vars = {'origin': "IGP"} %}
-{% set vars = {'weight': "0"} %}
+{% set vars = {'weight': ""} %}
 {% set vars = {'validRoute': False} %}
 {% set vars = {'bestRoute': False} %}
 {% set vars = {'members': ""} %}
@@ -28,7 +28,7 @@ BGP routing table information for VRF default
 Router identifier {{ vars.routerId }}, local AS number {{ vars.asNum }} 
 Route status codes: * - valid, > - best
 Origin codes: i - IGP, e - EGP, ? - incomplete
-     {{'%-20s'|format("Network")}}{{'%-20s'|format("Next Hop")}}{{'%-15s'|format("Metric")}}{{'%-15s'|format("LocPref")}}{{'%s'|format("Path")}}
+     {{'%-20s'|format("Network")}}{{'%-20s'|format("Next Hop")}}{{'%-12s'|format("Metric")}}{{'%-12s'|format("LocPref")}}{{'%-7s'|format("Weight")}}{{'%s'|format("Path")}}
 {% for key in json_output %}
 {% if "openconfig-network-instance:adj-rib-in-pre" in key %}
 {% set routeList = json_output["openconfig-network-instance:adj-rib-in-pre"]["routes"]["route"] %}
@@ -47,7 +47,6 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 {% for key in route %}
   {% if vars.update({'members':''}) %} {% endif %}
   {% if vars.update({'prefix':route["prefix"]}) %}{% endif %}
-  {% if vars.update({'weight':"0"}) %}{% endif %}
   {% if "state" in key %}
     {% if vars.update({'validRoute':route["state"]["valid-route"]}) %}{% endif %}
     {% if vars.update({'bestRoute':route["state"]["best-path"]}) %}{% endif %}
@@ -59,6 +58,7 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
     {% if vars.update({'nxtHop':attr_sets["next-hop"]}) %}{% endif %}
     {% if vars.update({'med':attr_sets["med"]}) %}{% endif %}
     {% if vars.update({'locPref':attr_sets["local-pref"]}) %}{% endif %}
+    {% if vars.update({'weight':attr_sets["weight"]}) %}{% endif %}
     {% if "as-path" in attr_sets %}
       {% set as_path = attr_sets['as-path'] %}
       {% if "as-segment" in as_path %}
@@ -94,7 +94,7 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 {% else %}
 {% if vars.update({'bestRoute':""}) %}{% endif %}
 {% endif %}
-{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(vars.prefix)}}{{'%-20s'|format(vars.nxtHop)}}{{'%-15s'|format(vars.med)}}{{'%-15s'|format(vars.locPref)}}{{'%s'|format(vars.members)}} {{vars.origin}}
+{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(vars.prefix)}}{{'%-20s'|format(vars.nxtHop)}}{{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%s'|format(vars.members)}} {{vars.origin}}
 {% endfor %}
 {% endif %}
 {% endfor %}
