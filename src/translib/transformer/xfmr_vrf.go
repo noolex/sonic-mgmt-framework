@@ -51,6 +51,8 @@ var NwInstTblNameMapWithName = map[string]string {
     "Vlan": "VLAN",
 }
 
+var intf_tbl_name_list = [4]string{"INTERFACE", "LOOPBACK_INTERFACE", "VLAN_INTERFACE", "PORTCHANNEL_INTERFACE"}
+
 /*
  * Get internal network instance name based on the incoming network instance name
  * and use it for top level table map lookup
@@ -689,6 +691,7 @@ var DbToYang_network_instance_route_distinguisher_field_xfmr KeyXfmrDbToYang = f
 /* YangToDb subtree transformer for network instance interface binding */
 var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[string]map[string]db.Value, error) {
         var err error
+        var errStr string
         res_map := make(map[string]map[string]db.Value)
 
         log.Infof("YangToDb_network_instance_interface_binding_subtree_xfmr: ygRoot %v uri %v", inParams.ygRoot, inParams.uri)
@@ -710,6 +713,62 @@ var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb
 
         if intfId == "" {
                 log.Info("YangToDb_network_instance_interface_binding_subtree_xfmr: empty interface id for VRF ", keyName)
+
+                /* Process empty intfId only for delete operation */
+                if (inParams.oper != DELETE) {
+                        log.Info("YangToDb_network_instance_interface_binding_subtree_xfmr: empty intfid for non-del op")
+                        return res_map, err
+                }
+
+                /* Check if any intf bound to this vrf has L3 configuration, if so, delete at network instance level should be rejected */
+                for _, tblName := range intf_tbl_name_list {
+                        intfTable := &db.TableSpec{Name: tblName}
+
+                        intfKeys, err := inParams.d.GetKeys(intfTable)
+
+                        if err != nil {
+                                errStr = "Unable to get interface keys from " + tblName
+                                log.Info("YangToDb_network_instance_interface_binding_subtree_xfmr: ", errStr)
+                                err = tlerr.InvalidArgsError{Format: errStr}
+                                return res_map, err
+                        }
+
+                        for i, _ := range intfKeys {
+                                /* vrf_name is only in the entry with intf name alone as the key */
+                                if (len(intfKeys[i].Comp)) >1 {
+                                        continue
+                                }
+
+                                intfEntry,_ := inParams.d.GetEntry(intfTable, intfKeys[i])
+
+                                vrfName_str := (&intfEntry).Get("vrf_name")
+
+                                if (vrfName_str != keyName) {
+                                        continue
+                                }
+
+                                intfName := intfKeys[i].Comp
+
+                                err = ValidateIntfNotL3ConfigedOtherThanVrf(inParams.d, tblName, intfName[0])
+                                if err != nil {
+                                        errStr = "Interface " + intfName[0] + " has L3 configuration"
+                                        log.Info("YangToDb_network_instance_interface_binding_subtree_xfmr: ", errStr)
+                                        err = tlerr.InvalidArgsError{Format: errStr}
+                                        return res_map, err
+                                }
+
+                                /* Now add this interface to res_map */
+                                _, ok := res_map[tblName]
+                                if !ok {
+                                        res_map[tblName] = make(map[string]db.Value)
+                                }
+
+                                res_map[tblName][intfName[0]] = db.Value{Field: map[string]string{}}
+                                dbVal := res_map[tblName][intfName[0]]
+                                (&dbVal).Set("vrf_name", keyName)
+                        }
+                }
+                log.Infof("YangToDb_network_instance_interface_binding_subtree_xfmr: delete VRF %v res_map %v", keyName, res_map)
                 return res_map, err
         }
 
@@ -791,7 +850,6 @@ var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb
 /* DbtoYang subtree transformer for network instance interface binding */
 var DbToYang_network_instance_interface_binding_subtree_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) error {
         var err error
-        intf_tbl_name_list := [4]string{"INTERFACE", "LOOPBACK_INTERFACE", "VLAN_INTERFACE", "PORTCHANNEL_INTERFACE"}
 
         log.Info("DbToYang_network_instance_interface_binding_subtree_xfmr:")
 
