@@ -2928,26 +2928,30 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 	ipv6_req := false
 	var sagIPKey string
 
-    if strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway") {
+	if (strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/ipv4/sag-ipv4/config") || 
+		strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv4/sag-ipv4/config") || 
+		strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config")) {
 		ipv4_req = true
 		sagIPKey = ifName + "|IPv4"
-	} else if strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway") {
+	} else if (strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/ipv6/sag-ipv6/config") || 
+		strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv6/sag-ipv6/config") ||
+		strings.HasPrefix(targetUriPath, "/openconfig-interfaces:interfaces/interface/subinterfaces/subinterface/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config")) {
 		ipv6_req = true
 		sagIPKey = ifName + "|IPv6"
-    }
+	}
 
 	if ipv4_req || ipv6_req {
 		if intfsObj != nil && intfsObj.Interface != nil && len(intfsObj.Interface) > 0 {
 			var ok bool = false
 			if intfObj, ok = intfsObj.Interface[ifName]; !ok {
 				intfObj, _ = intfsObj.NewInterface(ifName)
-    }
-    } else {
+				ygot.BuildEmptyTree(intfObj)
+			}
+		} else {
 			ygot.BuildEmptyTree(intfsObj)
 			intfObj, _ = intfsObj.NewInterface(ifName)
-    }
-
-		ygot.BuildEmptyTree(intfObj)
+			ygot.BuildEmptyTree(intfObj)
+		}
 
 		var subIntf *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface
 		if _, ok := intfObj.Subinterfaces.Subinterface[0]; !ok {
@@ -2956,19 +2960,43 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 				log.Error("Creation of subinterface subtree failed!")
 				return err
 			}
+			ygot.BuildEmptyTree(subIntf)
 		}
 
 		subIntf = intfObj.Subinterfaces.Subinterface[0]
-		ygot.BuildEmptyTree(subIntf)
 
 		sagIPEntry, _ := inParams.d.GetEntry(&db.TableSpec{Name:"SAG"}, db.Key{Comp: []string{sagIPKey}})
 		sagGwIPList := sagIPEntry.Get("gwip@")
 		sagGwIPMap := strings.Split(sagGwIPList, ",")
 
 		if ipv4_req {
-			subIntf.Ipv4.SagIpv4.Config.StaticAnycastGateway = sagGwIPMap
+			var sagIpv4 *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv4_SagIpv4
+			var sagIpv4Config *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv4_SagIpv4_Config			
+			if sagIpv4 = subIntf.Ipv4.SagIpv4 ; sagIpv4 == nil {
+				var _sagIpv4 ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv4_SagIpv4
+				subIntf.Ipv4.SagIpv4 = &_sagIpv4
+				sagIpv4 = subIntf.Ipv4.SagIpv4
+			}
+			if sagIpv4Config = sagIpv4.Config ; sagIpv4Config == nil {
+				var _sagIpv4Config ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv4_SagIpv4_Config
+				subIntf.Ipv4.SagIpv4.Config = &_sagIpv4Config
+				sagIpv4Config = subIntf.Ipv4.SagIpv4.Config
+			}
+			sagIpv4Config.StaticAnycastGateway = sagGwIPMap
 		} else if ipv6_req {
-			subIntf.Ipv6.SagIpv6.Config.StaticAnycastGateway = sagGwIPMap
+			var sagIpv6 *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv6_SagIpv6
+			var sagIpv6Config *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv6_SagIpv6_Config			
+			if sagIpv6 = subIntf.Ipv6.SagIpv6 ; sagIpv6 == nil {
+				var _sagIpv6 ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv6_SagIpv6
+				subIntf.Ipv6.SagIpv6 = &_sagIpv6
+				sagIpv6 = subIntf.Ipv6.SagIpv6
+			}
+			if sagIpv6Config = sagIpv6.Config ; sagIpv6Config == nil {
+				var _sagIpv6Config ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv6_SagIpv6_Config
+				subIntf.Ipv6.SagIpv6.Config = &_sagIpv6Config
+				sagIpv6Config = subIntf.Ipv6.SagIpv6.Config
+			}
+			sagIpv6Config.StaticAnycastGateway = sagGwIPMap
 		}
 	}
 
