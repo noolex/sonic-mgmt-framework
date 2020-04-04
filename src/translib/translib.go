@@ -419,9 +419,21 @@ func Delete(req SetRequest) (SetResponse, error) {
     ifName := requestPathInfo.Var("name")
     log.Info("If Name = ", ifName)
 
-    if requestUriPath == "/openconfig-interfaces:interfaces" {
-        return resp, tlerr.New("Delete operation not supported!")
+    switch requestUriPath {
+        case "/openconfig-interfaces:interfaces": fallthrough
+        case "/openconfig-relay-agent:relay-agent/dhcp":fallthrough
+        case "/openconfig-relay-agent:relay-agent/dhcp/interfaces": fallthrough
+        case "/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface": fallthrough
+        case "/openconfig-relay-agent:relay-agent/dhcpv6":fallthrough
+        case "/openconfig-relay-agent:relay-agent/dhcpv6/interfaces": fallthrough
+        case "/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface":
+        {
+            log.Info("delete on this container not allowed")
+            resp.ErrSrc = AppErr
+            return resp, tlerr.New("DELETE operation not supported on this container")
+        }
     }
+
     // Differentiate the same uri based on ifName key
     if requestUriPath == "/openconfig-interfaces:interfaces/interface" && len(ifName) == 0 {
         return resp, tlerr.New("Delete operation not supported!")
