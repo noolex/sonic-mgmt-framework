@@ -417,7 +417,6 @@ func Delete(req SetRequest) (SetResponse, error) {
     requestUriPath, err := getYangPathFromUri(requestPathInfo.Path)
 	log.Info("requestUriPath : ", requestUriPath)
     ifName := requestPathInfo.Var("name")
-    log.Info("If Name = ", ifName)
 
     switch requestUriPath {
         case "/openconfig-interfaces:interfaces": fallthrough
