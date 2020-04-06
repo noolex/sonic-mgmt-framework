@@ -88,6 +88,34 @@ func mapCopy(destnMap map[string]map[string]db.Value, srcMap map[string]map[stri
    }
    mapCopyMutex.Unlock()
 }
+var mapMergeMutex = &sync.Mutex{}
+/* Merge redis-db source to destn map */
+func mapMerge(destnMap map[string]map[string]db.Value, srcMap map[string]map[string]db.Value) {
+	mapMergeMutex.Lock()
+   for table, tableData := range srcMap {
+        _, ok := destnMap[table]
+        if !ok {
+            destnMap[table] = make(map[string]db.Value)
+        }
+        for rule, ruleData := range tableData {
+            _, ok = destnMap[table][rule]
+            if !ok {
+                 destnMap[table][rule] = db.Value{Field: make(map[string]string)}
+            }
+            for field, value := range ruleData.Field {
+                dval := destnMap[table][rule]
+                if dval.IsPopulated() && dval.Has(field) && strings.HasSuffix(field, "@") {
+                    attrList := dval.GetList(field)
+                    attrList = append(attrList, value)
+                    dval.SetList(field, attrList)
+                } else {
+                    destnMap[table][rule].Field[field] = value
+                }
+            }
+        }
+   }
+   mapMergeMutex.Unlock()
+}
 
 func parentXpathGet(xpath string) string {
     path := ""
