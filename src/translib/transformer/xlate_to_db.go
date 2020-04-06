@@ -469,6 +469,7 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 	subOpDataMap := make(map[int]*RedisDbMap)
 	var xfmrErr error
 	*skipOrdTbl = false
+        var cascadeDelTbl []string
 
     for i := 0; i < MAXOPER; i++ {
         resultMap[i] = make(map[db.DBNum]map[string]map[string]db.Value)
@@ -490,6 +491,11 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 			specYangType := yangTypeGet(spec.yangEntry)
 			moduleNm := "/" + strings.Split(uri, "/")[1]
 			xfmrLogInfo("Module name for uri %s is %s", uri, moduleNm)
+                        if spec.cascadeDel == true && tableName != "" && tableName != XFMR_NONE_STRING {
+                            if !contains(cascadeDelTbl, tableName) {
+                                cascadeDelTbl = append(cascadeDelTbl, tableName)
+                            }
+                        }
 			if len(spec.xfmrFunc) > 0 {
 				var dbs [db.MaxDB]*db.DB
 				cdb := spec.dbIndex
@@ -500,6 +506,13 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 				} else {
 					return err
 				}
+                                if len(*inParams.pCascadeDelTbl) > 0 {
+                                    for _, tblNm :=  range *inParams.pCascadeDelTbl {
+                                        if !contains(cascadeDelTbl, tblNm) {
+                                            cascadeDelTbl = append(cascadeDelTbl, tblNm)
+                                        }
+                                    }
+                                }
 			} else if len(tableName) > 0 {
 				result[tableName] = make(map[string]db.Value)
 				if len(keyName) > 0 {
@@ -564,7 +577,7 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 						}
 					} else if (spec.hasChildSubTree == true) {
 						xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
-						curResult, cerr := allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+						curResult, cerr := allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache, &cascadeDelTbl)
 						if cerr != nil {
 							err = cerr
 						} else {
@@ -573,7 +586,7 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 					}
 				} else if (spec.hasChildSubTree == true) {
 					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
-					curResult, cerr := allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+					curResult, cerr := allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache, &cascadeDelTbl)
 					if cerr != nil {
 						err = cerr
 					} else {
@@ -583,7 +596,7 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 			} else if len(spec.childTable) > 0 {
 				if (spec.hasChildSubTree == true) {
 					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
-					result, err = allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+					result, err = allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache, &cascadeDelTbl)
 				} else {
 				for _, child := range spec.childTable {
 					result[child] = make(map[string]db.Value)
@@ -592,7 +605,7 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 			} else {
 				if (spec.hasChildSubTree == true) {
 					xfmrLogInfoAll("Uri(\"%v\") has child subtree-xfmr", uri)
-					result, err = allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache)
+					result, err = allChildTblGetToDelete(d, ygRoot, oper, requestUri, resultMap, subOpDataMap, txCache, &cascadeDelTbl)
 				}
 			}
 			if err != nil {
@@ -638,6 +651,11 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 			/* for container/list delete req , it should go through, even if there are any leaf default-yang-values */
 		}
 	}
+
+        cdErr := handleCascadeDelete(d, resultMap, cascadeDelTbl)
+        if cdErr != nil {
+            xfmrLogInfo("Cascade Delete Failed for cascadeDelTbl (%v).", cascadeDelTbl)
+        }
 
     printDbData(resultMap, "/tmp/yangToDbDataDel.txt")
 	xfmrLogInfo("Delete req: uri(\"%v\") resultMap(\"%v\").", uri, resultMap)

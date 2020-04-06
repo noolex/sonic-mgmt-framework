@@ -51,7 +51,8 @@ type yangXpathInfo  struct {
     keyLevel       int
     isKey          bool
     defVal         string
-	hasChildSubTree bool
+    hasChildSubTree bool
+    cascadeDel     bool
 }
 
 type dbInfo  struct {
