@@ -23,13 +23,18 @@ import (
 	"encoding/json"
 	"fmt"
 	io "io/ioutil"
+	"os"
 	"strconv"
 )
 
 var dbConfigMap = make(map[string]interface{})
 
 func dbConfigInit() {
-	data, err := io.ReadFile("/var/run/redis/sonic-db/database_config.json")
+	dbConfigPath := "/var/run/redis/sonic-db/database_config.json"
+	if path, ok := os.LookupEnv("DB_CONFIG_PATH"); ok {
+		dbConfigPath = path
+	}
+	data, err := io.ReadFile(dbConfigPath)
 	if err != nil {
 		assert(err)
 	} else {
