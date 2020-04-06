@@ -583,7 +583,7 @@ func NewDbClient(dbName string) *redis.Client {
 	//Try unix domain socket first
 	if dbSock := GetDbSock(dbName); dbSock != "" {
 		redisClient = redis.NewClient(&redis.Options{
-			Network:     "unix",
+			Network:  "unix",
 			Addr:     dbSock,
 			Password: "",
 			DB:       GetDbId(dbName),
@@ -591,7 +591,7 @@ func NewDbClient(dbName string) *redis.Client {
 	} else {
 	//Otherwise, use TCP socket
 		redisClient = redis.NewClient(&redis.Options{
-			Network:     "tcp",
+			Network:  "tcp",
 			Addr:     GetDbTcpAddr(dbName),
 			Password: "",
 			DB:       GetDbId(dbName),
