@@ -138,14 +138,10 @@ func Initialize() CVLRetCode {
 	}
 
 	//Initialize redis Client 
-	redisClient = redis.NewClient(&redis.Options{
-		Addr:     GetDbTcpAddr("CONFIG_DB"),
-		Password: "",
-		DB:       GetDbId("CONFIG_DB"),
-	})
+	redisClient = NewDbClient("CONFIG_DB")
 
 	if (redisClient == nil) {
-		CVL_LOG(FATAL, "Unable to connect with Redis Config DB")
+		CVL_LOG(FATAL, "Unable to connect to Redis Config DB Server")
 		return CVL_ERROR
 	}
 
