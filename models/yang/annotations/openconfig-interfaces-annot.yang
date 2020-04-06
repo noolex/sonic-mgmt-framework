@@ -347,7 +347,8 @@ module openconfig-interfaces-annot {
         }    
     }
 
-    deviation  "/oc-intf:interfaces/oc-intf:interface/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config"  {
+    //deviation  "/oc-intf:interfaces/oc-intf:interface/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config"  {
+    deviation  "/oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config"  {
         deviate add {
             sonic-ext:db-name "CONFIG_DB";
             sonic-ext:table-name "OSPFV2_INTERFACE";
@@ -355,7 +356,8 @@ module openconfig-interfaces-annot {
         }
     }
 
-    deviation "/oc-intf:interfaces/oc-intf:interface/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config/oc-ospfv2-ext:id" {
+    //deviation "/oc-intf:interfaces/oc-intf:interface/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config/oc-ospfv2-ext:id" {
+    deviation "/oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config/oc-ospfv2-ext:id" {
         deviate add {
             sonic-ext:field-name "name";
         }

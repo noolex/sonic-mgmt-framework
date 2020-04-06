@@ -64,6 +64,19 @@ module sonic-ospfv2 {
           }
         }
 
+        leaf enable {
+          type boolean;
+          description
+            "OSPFv2 router is enabled in thsi VRF";
+        }
+
+        leaf description {
+          type string;
+           description
+             "String description for the configured router";
+           default "OSPFv2 Router";
+        }
+
         leaf router-id {
           type ietf-yang:dotted-quad;
           description
@@ -89,6 +102,12 @@ module sonic-ospfv2 {
           description
             "OPSF adjacency event logging";
           default LOG_NONE;
+        }
+
+        leaf default-metric {
+          type uint32;
+          description
+            "Default metric value for routes";
         }
 
         leaf opaque-lsa-capability {
@@ -240,6 +259,13 @@ module sonic-ospfv2 {
           type sonic-ospf-cmn:ospf-area-identifier;
         }
 
+        leaf description {
+          type string;
+           description
+             "String description for the configured area";
+           default "OSPFv2 Area";
+        }
+
         leaf authentication {
           type string;
           description
@@ -325,7 +351,7 @@ module sonic-ospfv2 {
 
         leaf area-id {
           type leafref {
-            path "../../../OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST/area-id";
+            path "../../../OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST[vrf_name=current()/../vrf_name]/area-id";
           }
         }
 
@@ -337,6 +363,12 @@ module sonic-ospfv2 {
               prefix is considered to be part of current area";
         }
 
+        leaf description {
+          type string;
+           description
+             "String description for the configured prefix";
+           default "Network address";
+        }
 
       } //OSPFV2_ROUTER_AREA_NETWORK_LIST
     } //OSPFV2_ROUTER_AREA_NETWORK
@@ -358,8 +390,15 @@ module sonic-ospfv2 {
 
         leaf area-id {
           type leafref {
-            path "../../../OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST/area-id";
+            path "../../../OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST[vrf_name=current()/../vrf_name]/area-id";
           }
+        }
+
+        leaf description {
+          type string;
+           description
+             "String description for the configured virtual link";
+           default "Virtual Link";
         }
 
         leaf remote-router-id {
@@ -382,7 +421,7 @@ module sonic-ospfv2 {
         }
 
         leaf authentication-key-id {
-          when "../authentication-type = 'sonic-ospf-cmn:md5hmac'";
+          when "../authentication-type = 'sonic-ospf-cmn:MD5HMAC'";
           type uint8;
           description
             "Authentication key Id";
@@ -444,15 +483,25 @@ module sonic-ospfv2 {
         }
 
         leaf area-id {
+          type sonic-ospf-cmn:ospf-area-identifier;
+          /*
           type leafref {
-            path "../../../OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST/area-id";
+            path "../../../OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST[vrf_name=current()/../vrf_name]/area-id";
           }
+          */
         }
 
         leaf prefix {
           type ietf-inet:ipv4-prefix;
           description
             "Address prefix for the OSPF address";
+        }
+
+        leaf description {
+          type string;
+           description
+             "String description for the configured address range";
+           default "Address range";
         }
 
         leaf advertise {
@@ -486,70 +535,74 @@ module sonic-ospfv2 {
 
 
     container OSPFV2_ROUTER_DISTRIBUTE_ROUTE {
-       description
-         "OSPFv2 policy route distribution Table.";
+      description
+        "OSPFv2 policy route distribution Table.";
 
-       list OSPFV2_ROUTER_DISTRIBUTE_ROUTE_LIST {
+      list OSPFV2_ROUTER_DISTRIBUTE_ROUTE_LIST {
 
-         key "vrf_name protocol direction";
+        key "vrf_name protocol direction";
 
-         leaf vrf_name {
-           type leafref {
-             path "../../../OSPFV2_ROUTER/OSPFV2_ROUTER_LIST/vrf_name";
-           }
-         }
+        leaf vrf_name {
+          type leafref {
+            path "../../../OSPFV2_ROUTER/OSPFV2_ROUTER_LIST/vrf_name";
+          }
+        }
 
-         leaf protocol {
-           type sonic-ospf-cmn:ospf-policy-protocol;
+        leaf protocol {
+          type sonic-ospf-cmn:ospf-policy-protocol;
+          description
+            "Distribute routes to or from protocol";
+        }
+
+        leaf direction {
+          type sonic-ospf-cmn:ospf-policy-direction;
+          description
+            "Ditribute type or direction IMPORT or EXPORT";
+        }
+
+        leaf description {
+          type string;
            description
-             "Distribute routes to or from protocol";
-         }
+             "String description for the configured policy";
+           default "Route distribution policy";
+        }
 
-         leaf direction {
-           type sonic-ospf-cmn:ospf-policy-direction;
-           description
-             "Ditribute type or direction IMPORT or EXPORT";
-         }
+        leaf metric {
+          type sonic-ospf-cmn:ospf-metric;
+          description
+            "Metric for route distribution";
+        }
 
-         leaf metric {
-           type sonic-ospf-cmn:ospf-metric;
-           description
-             "Metric for route distribution";
-         }
+        leaf metric-type {
+          type sonic-ospf-cmn:ospf-metric-type;
+          description
+            "Metric type for route distribution";
+        }
 
-         leaf metric-type {
-           type sonic-ospf-cmn:ospf-metric-type;
-           description
-             "Metric type for route distribution";
-         }
+        leaf table-id {
+          when "../protocol = 'sonic-ospf-cmn:OSPF'" ;
+          type uint32;
+          description
+            "Distribute OSPF protocol routing table instance id";
+        }
 
-         leaf table-id {
-           when "../protocol = 'sonic-ospf-cmn:ospf'" ;
-           type uint32;
-           description
-             "Distribute OSPF protocol routing table instance id";
-           default 0;
-         }
+        leaf always {
+          when "../protocol = 'sonic-ospf-cmn:DEFAULT_ROUTE'" ;
+          type boolean ;
+          description
+            "Distribute default-route is always or not";
+        }
 
-         leaf always {
-           when "../protocol = 'sonic-ospf-cmn:default-route'" ;
-           type boolean ;
-           description
-             "Distribute default-route is always or not";
-           default false;
-         }
-
-         leaf route-map {
-           type leafref {
-             path "/sonic-rmap:sonic-route-map/sonic-rmap:ROUTE_MAP_SET" +
-                  "/sonic-rmap:ROUTE_MAP_SET_LIST/sonic-rmap:name";
-           }
-           description
-             "Route map for default route originate or distribution";
-         }
-
-       } //OSPFV2_ROUTER_DISTRIBUTE_ROUTE_LIST
-     } //OSPFV2_ROUTER_DISTRIBUTE_ROUTE
+        leaf route-map {
+          type leafref {
+            path "/sonic-rmap:sonic-route-map/sonic-rmap:ROUTE_MAP_SET" +
+                 "/sonic-rmap:ROUTE_MAP_SET_LIST/sonic-rmap:name";
+          }
+          description
+            "Route map for default route originate or distribution";
+        }
+      } //OSPFV2_ROUTER_DISTRIBUTE_ROUTE_LIST
+    } //OSPFV2_ROUTER_DISTRIBUTE_ROUTE
 
 
     container OSPFV2_INTERFACE {
@@ -558,18 +611,18 @@ module sonic-ospfv2 {
 
        list OSPFV2_INTERFACE_LIST {
 
-         key "vrf_name name";
-
-         leaf vrf_name {
-           type leafref {
-             path "../../../OSPFV2_ROUTER/OSPFV2_ROUTER_LIST/vrf_name";
-           }
-         }
+         key "name";
 
          leaf name {
            type sonic-ospf-cmn:ospf-interface;
            description
              "OPSF interface";
+         }
+
+         leaf vrf_name {
+           type leafref {
+             path "/sonic-vrf:sonic-vrf/sonic-vrf:VRF/sonic-vrf:VRF_LIST/sonic-vrf:vrf_name";
+           }
          }
 
          leaf area-id {
@@ -650,7 +703,7 @@ module sonic-ospfv2 {
          }
 
          leaf authentication-key-id {
-           when "../authentication-type = 'sonic-ospf-cmn:md5hmac'";
+           when "../authentication-type = 'sonic-ospf-cmn:MD5HMAC'";
            type uint8;
            description
              "Authentication key Id";
