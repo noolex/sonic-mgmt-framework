@@ -263,5 +263,49 @@ module openconfig-qos-ext {
       deviate not-supported;
     }
 
+
+	typedef classifier-type-ext {
+      type enumeration {
+        enum IPV4 {
+          description
+            "Classifier matches and operates
+            on packets with IPv4 headers.";
+        }
+        enum IPV6 {
+          description
+            "Classifier matches and operates
+            on packets with IPv6 headers.";
+        }
+        enum MPLS {
+          description
+            "Classifier matches and operates
+            on packets with MPLS headers.";
+        }
+        enum ETHERNET {
+          description
+            "Classifier matches and operates
+            on fields within the L2 ETHERNET
+            headers.";
+        }
+        enum DSCP-TRUST {
+          description
+            "Classifier matches and operates
+             only on matched DSCP value.";
+        }
+      }
+      description
+        "Type of classifier with extensions.";
+	}
+
+    deviation "/oc-qos:qos/oc-qos:classifiers/oc-qos:classifier/oc-qos:config/oc-qos:type" {
+      deviate replace {
+        type classifier-type-ext;
+      }
+    }
+    deviation "/oc-qos:qos/oc-qos:classifiers/oc-qos:classifier/oc-qos:state/oc-qos:type" {
+      deviate replace {
+        type classifier-type-ext;
+      }
+    }
 }
 
