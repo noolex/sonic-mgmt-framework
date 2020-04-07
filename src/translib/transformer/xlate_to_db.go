@@ -491,7 +491,7 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 			specYangType := yangTypeGet(spec.yangEntry)
 			moduleNm := "/" + strings.Split(uri, "/")[1]
 			xfmrLogInfo("Module name for uri %s is %s", uri, moduleNm)
-                        if spec.cascadeDel == true && tableName != "" && tableName != XFMR_NONE_STRING {
+                        if spec.cascadeDel == XFMR_ENABLE && tableName != "" && tableName != XFMR_NONE_STRING {
                             if !contains(cascadeDelTbl, tableName) {
                                 cascadeDelTbl = append(cascadeDelTbl, tableName)
                             }

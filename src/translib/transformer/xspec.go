@@ -25,6 +25,7 @@ import (
     log "github.com/golang/glog"
     "cvl"
     "translib/db"
+	"strconv"
 
     "github.com/openconfig/goyang/pkg/yang"
 )
@@ -52,7 +53,7 @@ type yangXpathInfo  struct {
     isKey          bool
     defVal         string
     hasChildSubTree bool
-    cascadeDel     bool
+    cascadeDel     int
 }
 
 type dbInfo  struct {
@@ -163,6 +164,7 @@ func yangToDbMapFill (keyLevel int, xYangSpecMap map[string]*yangXpathInfo, entr
 		}
 		curXpathData.yangDataType = strings.ToLower(yang.EntryKindToName[entry.Kind])
 		curXpathData.yangEntry    = entry
+		curXpathData.cascadeDel   = xYangSpecMap[xpathPrefix].cascadeDel
 		xpath = xpathPrefix
 	} else {
 	/* create the yang xpath */
@@ -189,7 +191,8 @@ func yangToDbMapFill (keyLevel int, xYangSpecMap map[string]*yangXpathInfo, entr
 	if !ok {
 		xpathData = new(yangXpathInfo)
 		xYangSpecMap[xpath] = xpathData
-		xpathData.dbIndex = db.ConfigDB // default value
+		xpathData.dbIndex   = db.ConfigDB // default value
+		xpathData.cascadeDel = XFMR_INVALID
 	} else {
 		xpathData = xYangSpecMap[xpath]
 		if len(xpathData.xfmrFunc) > 0 {
@@ -223,6 +226,18 @@ func yangToDbMapFill (keyLevel int, xYangSpecMap map[string]*yangXpathInfo, entr
 
 	if ok && len(parentXpathData.xfmrFunc) > 0 && len(xpathData.xfmrFunc) == 0 {
 		xpathData.xfmrFunc = parentXpathData.xfmrFunc
+	}
+
+	if ok {
+		if parentXpathData.cascadeDel == XFMR_INVALID {
+			/* should not hit this case */
+			log.Errorf("Cascade-delete flag is set to invalid for(%v) \r\n", xpathPrefix)
+			return
+		}
+
+		if xpathData.cascadeDel == XFMR_INVALID && xpathData.dbIndex == db.ConfigDB{
+			xpathData.cascadeDel = parentXpathData.cascadeDel
+		}
 	}
 
 	if ((xpathData.yangDataType ==  YANG_LEAF || xpathData.yangDataType == YANG_LEAF_LIST) && (len(xpathData.fieldName) == 0)) {
@@ -286,6 +301,12 @@ func yangToDbMapFill (keyLevel int, xYangSpecMap map[string]*yangXpathInfo, entr
 		xpathData.keyXpath = parentXpathData.keyXpath
 	}
 	xpathData.yangEntry = entry
+
+	if xpathData.cascadeDel == XFMR_INVALID {
+		/* set to  default value */
+		xpathData.cascadeDel = XFMR_DISABLE
+	}
+
 	if updateChoiceCaseXpath == true {
 		copyYangXpathSpecData(xYangSpecMap[curXpathFull], xYangSpecMap[xpath])
 	}
@@ -506,6 +527,7 @@ func annotEntryFill(xYangSpecMap map[string]*yangXpathInfo, xpath string, entry 
 	xpathData := new(yangXpathInfo)
 
 	xpathData.dbIndex = db.ConfigDB // default value
+	xpathData.cascadeDel = XFMR_INVALID
 	/* fill table with yang extension data. */
 	if entry != nil && len(entry.Exts) > 0 {
 		for _, ext := range entry.Exts {
@@ -548,6 +570,12 @@ func annotEntryFill(xYangSpecMap map[string]*yangXpathInfo, xpath string, entry 
 				xpathData.keyXpath  = nil
 			case "db-name" :
 				xpathData.dbIndex = dbNameToIndex(ext.NName())
+			case "cascade-delete" :
+				if ext.NName() == "ENABLE" {
+					xpathData.cascadeDel = XFMR_ENABLE
+				} else {
+					xpathData.cascadeDel = XFMR_DISABLE
+				}
 			}
 		}
 	}
@@ -688,6 +716,7 @@ func mapPrint(inMap map[string]*yangXpathInfo, fileName string) {
         fmt.Fprintf (fp, "-----------------------------------------------------------------\r\n")
         fmt.Fprintf(fp, "%v:\r\n", k)
         fmt.Fprintf(fp, "    yangDataType: %v\r\n", d.yangDataType)
+		fmt.Fprintf(fp, "    cascadeDel  : %v\r\n", d.cascadeDel)
         fmt.Fprintf(fp, "    hasChildSubTree: %v\r\n", d.hasChildSubTree)
         fmt.Fprintf(fp, "    tableName: ")
         if d.tableName != nil {
