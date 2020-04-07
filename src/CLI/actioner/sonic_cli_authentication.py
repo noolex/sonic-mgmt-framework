@@ -18,12 +18,60 @@
 ###########################################################################
 
 import sys
+import time
+import json
+import ast
 import cli_client as cc
+import collections
 from rpipe_utils import pipestr
-from render_cli import show_cli_output
+from scripts.render_cli import show_cli_output
+
+def invoke_api(func, args):
+    api = cc.ApiClient()
+    body = None
+
+    # Set/Get the rules of all IFA table entries.
+    if func == 'get_sonic_client_auth_rest':
+       path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/REST_SERVER/REST_SERVER_LIST=default/client_auth')
+       return api.get(path)
+    elif func == 'get_sonic_client_auth_telemetry':
+       path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/TELEMETRY/TELEMETRY_LIST=gnmi/client_auth')
+       return api.get(path)
+    elif func == 'set_sonic_client_auth_rest':
+       path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/REST_SERVER/REST_SERVER_LIST=default/client_auth')
+       body = { "sonic-client-auth:client_auth": args[0] }
+       return api.patch(path, body)
+    elif func == 'set_sonic_client_auth_telemetry':
+       path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/TELEMETRY/TELEMETRY_LIST=gnmi/client_auth')
+       body = { "sonic-client-auth:client_auth": args[0] }
+       return api.patch(path, body)
+    else:
+       body = {}
+
+    return api.cli_not_implemented(func)
+
+def run(func, args):
+
+    response = invoke_api(func, args)
+    if response.ok():
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+
+            if api_response is None:
+                print("api_response is None")
+            elif func == 'get_sonic_client_auth_rest':
+                show_cli_output(args[0], api_response)
+            elif func == 'get_sonic_client_auth_telemetry':
+                show_cli_output(args[0], api_response)
+            else:
+                return
+    else:
+        print "invoke_api failed"
 
 if __name__ == '__main__':
+
     pipestr().write(sys.argv)
     func = sys.argv[1]
 
-    print func
+    run(func, sys.argv[2:])

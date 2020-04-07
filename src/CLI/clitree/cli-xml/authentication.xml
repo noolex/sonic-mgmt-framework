@@ -29,11 +29,30 @@ limitations under the License.
    <COMMAND name="show authentication" help="Show authentication modes">
         <ACTION> python $SONIC_CLI_ROOT/sonic_cli_authentication.py show_authentication </ACTION>
    </COMMAND>
-   <COMMAND name="show authentication gnmi" help="Show gnmi authentication modes">
-        <ACTION> python $SONIC_CLI_ROOT/sonic_cli_authentication.py show_authentication_gnmi </ACTION>
+   <COMMAND name="show authentication telemetry" help="Show telemetry authentication modes">
+        <ACTION builtin="clish_pyobj">sonic_cli_authentication get_sonic_client_auth_telemetry show_client_auth_telemetry.j2</ACTION>
    </COMMAND>
    <COMMAND name="show authentication rest" help="Show rest authentication modes">
-        <ACTION> python $SONIC_CLI_ROOT/sonic_cli_authentication.py show_authentication_rest </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_authentication get_sonic_client_auth_rest show_client_auth_rest.j2</ACTION>
+   </COMMAND>
+</VIEW>
+<VIEW name="configure-view">
+   <COMMAND name="authentication" help="authentication modes">
+        <ACTION> python $SONIC_CLI_ROOT/sonic_cli_authentication.py set_authentication </ACTION>
+   </COMMAND>
+   <COMMAND name="authentication telemetry" help="telemetry authentication modes">
+      <PARAM name="client-auth" 
+             help="Client Auth" 
+             ptype="STRING"> 
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_authentication set_sonic_client_auth_telemetry ${client-auth}</ACTION>
+   </COMMAND>
+   <COMMAND name="authentication rest" help="rest authentication modes">
+      <PARAM name="client-auth" 
+             help="Client Auth" 
+             ptype="STRING"> 
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_authentication set_sonic_client_auth_rest ${client-auth}</ACTION>
    </COMMAND>
 </VIEW>
 </CLISH_MODULE>
