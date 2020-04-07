@@ -2523,19 +2523,19 @@ func validateMultiIPForDonorIntf(d *db.DB, ifName *string) bool {
 func intf_unnumbered_del(tblName *string, subIntfObj *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface,
                          inParams *XfmrParams, ifdb map[string]string, ifName *string) error  {
     var err error
-    if subIntfObj.Ipv4.Unnumbered == nil || subIntfObj.Ipv4.Unnumbered.InterfaceRef == nil {
-        log.Info("DELETE Unnum Intf:=", *tblName, *ifName)
 
-        intfIPKeys, _ := inParams.d.GetKeys(&db.TableSpec{Name:*tblName})
-        if len(intfIPKeys) > 0 {
-            for i := range intfIPKeys {
-                if len(intfIPKeys[i].Comp) > 1 {
-                    ifdb[UNNUMBERED] = "NULL"
-                    break;
-                 }
-              }
-          }
-        }
+	log.Info("DELETE Unnum Intf:=", *tblName, *ifName)
+
+	intfIPKeys, _ := inParams.d.GetKeys(&db.TableSpec{Name:*tblName})
+	if len(intfIPKeys) > 0 {
+		for i := range intfIPKeys {
+			if len(intfIPKeys[i].Comp) > 1 {
+				ifdb[UNNUMBERED] = ""
+				break;
+			}
+		}
+	}
+
     return err
 }
 
@@ -2622,6 +2622,7 @@ var YangToDb_unnumbered_intf_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams
         return subIntfmap, errors.New(errStr)
     }
 
+    log.Info("Oper:= ", inParams.oper)
     log.Info("subIntfObj:=", subIntfObj)
     if subIntfObj.Ipv4 != nil && subIntfObj.Ipv4.Unnumbered != nil && subIntfObj.Ipv4.Unnumbered.InterfaceRef != nil {
         if _, ok := subIntfmap[tblName]; !ok {
@@ -2644,7 +2645,18 @@ var YangToDb_unnumbered_intf_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams
             ifdb[UNNUMBERED] = *unnumberedObj.Config.Interface
         }
         value := db.Value{Field: ifdb}
-        subIntfmap[tblName][ifName] = value
+
+		if inParams.oper == REPLACE || inParams.oper == CREATE {
+			subOpMap := make(map[db.DBNum]map[string]map[string]db.Value)
+			resMap := make(map[string]map[string]db.Value)
+			resMap[tblName] = make(map[string]db.Value)
+			resMap[tblName][ifName] = value
+			subOpMap[db.ConfigDB] = resMap
+			log.Info("subOpMap: ", subOpMap)
+			inParams.subOpDataMap[UPDATE] = &subOpMap
+		} else {
+        	subIntfmap[tblName][ifName] = value
+		}
     }
 
     log.Info("YangToDb_unnumbered_intf_xfmr : subIntfmap : ", subIntfmap)
