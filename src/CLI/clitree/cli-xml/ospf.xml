@@ -581,7 +581,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
         <PARAM name="border-routers" help="Show all the ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
         </PARAM>
 
@@ -699,7 +699,61 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION builtin="clish_nop"></ACTION>
+      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2</ACTION>
+        <DOCGEN>
+    <DESCRIPTION>
+      Display ospf global information
+    </DESCRIPTION>
+    <EXAMPLE summary="Display ospf information for all vrf">
+      device# show ip ospf
+ OSPF Routing Process, Router ID: 1.1.1.1
+ Supports only single TOS (TOS0) routes
+ This implementation conforms to RFC2328
+ RFC1583Compatibility flag is enabled
+ OpaqueCapability flag is disabled
+ Initial SPF scheduling delay 0 millisec(s) 
+ Minimum hold time between consecutive SPFs 50 millisec(s) 
+ Maximum hold time between consecutive SPFs 5000 millisec(s)
+ Hold time multiplier is currently 1
+ time is 92031756
+ SPF algorithm last executed 1065d4h22m ago
+ Last SPF duration 0.0s 
+ SPF timer is inactive
+ LSA minimum interval 5000 msecs  
+ LSA minimum arrival 1000 msecs
+ Write Multiplier set to 20 
+ Refresh timer 10 secs
+ Number of external LSA 0. Checksum Sum 0x0
+ Number of opaque AS LSA 0. Checksum Sum 0x0
+ Number of areas attached to this router: 2
+ Area ID: 0.0.0.0 (Backbone)
+   Number of interfaces in this area: Total: 1 , Active: 1
+   Number of fully adjacent neighbors in this area: 1
+   Area has no authentication
+   SPF algorithm executed 8 times
+   Number of LSA 3
+   Number of router LSA 2. Checksum Sum 0x40f64b4000000000
+   Number of network LSA 1. Checksum Sum 0x40d5adc000000000
+   Number of summary LSA 0. Checksum Sum 0x0
+   Number of ASBR summary LSA 0. Checksum Sum 0x0
+   Number of NSSA LSA 0. Checksum Sum 0x0
+   Number of opaque link LSA . Checksum Sum 0x
+   Number of opaque area LSA 0. Checksum Sum 0x0
+ Area ID: 0.0.0.1  
+   Number of interfaces in this area: Total: 1 , Active: 1
+   Number of fully adjacent neighbors in this area: 0
+   Area has no authentication
+   SPF algorithm executed 1 times
+   Number of LSA 2
+   Number of router LSA 0. Checksum Sum 0x0
+   Number of network LSA 0. Checksum Sum 0x0
+   Number of summary LSA 2. Checksum Sum 0x40f1f61000000000
+   Number of ASBR summary LSA 0. Checksum Sum 0x0
+   Number of NSSA LSA 0. Checksum Sum 0x0
+   Number of opaque link LSA . Checksum Sum 0x
+   Number of opaque area LSA 0. Checksum Sum 0x0
+    </EXAMPLE>
+  </DOCGEN>
      </COMMAND>
 
      <COMMAND name="show ip ospf route" help="OSPF routing table" >

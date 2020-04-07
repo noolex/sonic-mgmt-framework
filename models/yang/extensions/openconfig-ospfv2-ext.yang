@@ -431,6 +431,19 @@ module openconfig-ospfv2-ext {
        throttle throttle-delay -> intital hold bw spfs */
   }
 
+  grouping ospfv2-global-timers-spf-state-ext {
+    description
+      "State parameters relating to global SPF timer
+      parameters for OSPFv2";
+
+    leaf spf-timer-due {
+      type uint32;
+      units seconds;
+      description
+        "spf timer due in seconds. If the value of spf-timer-due is 0, it means spf timer is inactive.";
+    }
+    /* if the value of spf-timer-due is 0, it means spf timer is inactive. */
+  }
 
   grouping ospfv2-global-max-metric-router-lsa-config-ext {
     description
@@ -501,6 +514,26 @@ module openconfig-ospfv2-ext {
     }
   }
 
+  grouping ospfv2-global-lsa-generation-timers-state-ext {
+    description
+      "State parameters relating LSA generation timer
+      parameters for OSPFv2";
+
+    leaf lsa-min-interval-timer {
+      type uint32;
+      units msec;
+      description
+        "LSA minimum interval timer";
+    }
+
+    leaf lsa-min-arrival-timer {
+      type uint32;
+      units msec;
+      description
+        "LSA minimum arrival timer";
+    }
+  }
+
   grouping ospfv2-message-authentication-config-ext {
     description
       "OSPFv2 Message authentication configarations";
@@ -564,9 +597,15 @@ module openconfig-ospfv2-ext {
     }
 
     leaf last-spf-execution-time {
-      type uint32;
+      type uint64;
       description
         "Time elapsed since last SPF algorithm run";
+    }
+
+    leaf last-spf-duration {
+      type uint32;
+      description
+        "Duration of last SPF algorithm run";
     }
 
     leaf external-lsa-count {
@@ -2136,6 +2175,7 @@ module openconfig-ospfv2-ext {
           "/oc-netinst:global/oc-netinst:timers/oc-netinst:spf" +
           "/oc-netinst:state" {
     uses ospfv2-global-timers-spf-config-ext;
+    uses ospfv2-global-timers-spf-state-ext;
   }
 
   augment "/oc-netinst:network-instances/oc-netinst:network-instance" +
@@ -2164,6 +2204,7 @@ module openconfig-ospfv2-ext {
           "/oc-netinst:global/oc-netinst:timers" +
           "/oc-netinst:lsa-generation/oc-netinst:state" {
     uses ospfv2-global-lsa-generation-timers-config-ext;
+    uses ospfv2-global-lsa-generation-timers-state-ext;
   }
 
 

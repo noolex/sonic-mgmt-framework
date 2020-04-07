@@ -3382,6 +3382,14 @@ module openconfig-network-instance-annot {
     }
   }
 
+  /*--------------------------------OSPFV2_ROUTER SHOW COMMANDS-----------------------------------------*/
+  deviation  "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
+             "/oc-netinst:protocol/oc-netinst:ospfv2" {
+    deviate add {
+      sonic-ext:subtree-transformer "ospfv2_state_xfmr";
+    }
+  }
+   
 
   /*-------- OSPFV2_INTERFACE placed in /oc-intf:interfaces/oc-intf:interface */
             
