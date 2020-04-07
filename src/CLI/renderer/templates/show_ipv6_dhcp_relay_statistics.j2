@@ -3,35 +3,35 @@
     {% if 'counters' in data %}
     {% set counter =  data['counters'] %}
 {{ "DHCPv6 SOLICIT messages received by the relay agent       :" }} {{ counter['dhcpv6-solicit-received'] }}
-{{ "DHCPv6 DECLINE messages received by the relay agent       :" }} {{ counter['dhcpv6-decline-received'] }}
+{{ "DHCPv6 ADVERTISEMENT messages sent by the relay agent     :" }} {{ counter['dhcpv6-adverstise-sent'] }}
 {{ "DHCPv6 REQUEST messages received by the relay agent       :" }} {{ counter['dhcpv6-request-received'] }}
-{{ "DHCPv6 RELEASE messages received by the relay agent       :" }} {{ counter['dhcpv6-release-received'] }}
+{{ "DHCPv6 REPLY messages sent by the relay agent             :" }} {{ counter['dhcpv6-reply-sent'] }}
 {{ "DHCPv6 CONFIRM messages received by the relay agent       :" }} {{ counter['dhcpv6-confirm-received'] }}
+{{ "DHCPv6 RELEASE messages received by the relay agent       :" }} {{ counter['dhcpv6-release-received'] }}
+{{ "DHCPv6 DECLINE messages received by the relay agent       :" }} {{ counter['dhcpv6-decline-received'] }}
 {{ "DHCPv6 REBIND messages received by the relay agent        :" }} {{ counter['dhcpv6-rebind-received'] }}
+{{ "DHCPv6 RECONFIGURE messages sent by the relay agent       :" }} {{ counter['dhcpv6-reconfigure-sent'] }}
 {{ "DHCPv6 INFO-REQUEST messages received by the relay agent  :" }} {{ counter['dhcpv6-info-request-received'] }}
 {{ "DHCPv6 RELAY-REPLY messages received by the relay agent   :" }} {{ counter['dhcpv6-relay-reply-received'] }}
-{{ "DHCPv6 ADVERTISEMENT messages sent by the relay agent     :" }} {{ counter['dhcpv6-adverstise-sent'] }}
-{{ "DHCPv6 REPLY messages sent by the relay agent             :" }} {{ counter['dhcpv6-reply-sent'] }}
-{{ "DHCPv6 RECONFIGURE messages sent by the relay agent       :" }} {{ counter['dhcpv6-reconfigure-sent'] }}
 {{ "DHCPv6 RELAY-FORWARD messages sent by the relay agent     :" }} {{ counter['dhcpv6-relay-forw-sent'] }}
+{{ "Total number of DHCPv6 packets dropped by the relay agent :" }} {{ counter['total-dropped'] }}
 {{ "Number of DHCPv6 packets dropped due to an invalid opcode :" }} {{ counter['invalid-opcode'] }}
 {{ "Number of DHCPv6 packets dropped due to an invalid option :" }} {{ counter['invalid-options'] }}
-{{ "Total number of DHCPv6 packets dropped by the relay agent :" }} {{ counter['total-dropped'] }}
 {% else %}
-{{ "DHCPv6 SOLICIT messages received by the relay agent       : 0" }} 
-{{ "DHCPv6 DECLINE messages received by the relay agent       : 0" }} 
-{{ "DHCPv6 REQUEST messages received by the relay agent       : 0" }} 
-{{ "DHCPv6 RELEASE messages received by the relay agent       : 0" }} 
-{{ "DHCPv6 CONFIRM messages received by the relay agent       : 0" }} 
-{{ "DHCPv6 REBIND messages received by the relay agent        : 0" }} 
-{{ "DHCPv6 INFO-REQUEST messages received by the relay agent  : 0" }} 
-{{ "DHCPv6 RELAY-REPLY messages received by the relay agent   : 0" }} 
-{{ "DHCPv6 ADVERTISEMENT messages sent by the relay agent     : 0" }} 
-{{ "DHCPv6 REPLY messages sent by the relay agent             : 0" }} 
-{{ "DHCPv6 RECONFIGURE messages sent by the relay agent       : 0" }} 
-{{ "DHCPv6 RELAY-FORWARD messages sent by the relay agent     : 0" }} 
-{{ "Number of DHCPv6 packets dropped due to an invalid opcode : 0" }} 
-{{ "Number of DHCPv6 packets dropped due to an invalid option : 0" }} 
-{{ "Total number of DHCPv6 packets dropped by the relay agent : 0" }} 
+{{ "DHCPv6 SOLICIT messages received by the relay agent       : 0" }}
+{{ "DHCPv6 ADVERTISEMENT messages sent by the relay agent     : 0" }}
+{{ "DHCPv6 REQUEST messages received by the relay agent       : 0" }}
+{{ "DHCPv6 REPLY messages sent by the relay agent             : 0" }}
+{{ "DHCPv6 CONFIRM messages received by the relay agent       : 0" }}
+{{ "DHCPv6 RELEASE messages received by the relay agent       : 0" }}
+{{ "DHCPv6 DECLINE messages received by the relay agent       : 0" }}
+{{ "DHCPv6 REBIND messages received by the relay agent        : 0" }}
+{{ "DHCPv6 RECONFIGURE messages sent by the relay agent       : 0" }}
+{{ "DHCPv6 INFO-REQUEST messages received by the relay agent  : 0" }}
+{{ "DHCPv6 RELAY-REPLY messages received by the relay agent   : 0" }}
+{{ "DHCPv6 RELAY-FORWARD messages sent by the relay agent     : 0" }}
+{{ "Total number of DHCPv6 packets dropped by the relay agent : 0" }}
+{{ "Number of DHCPv6 packets dropped due to an invalid opcode : 0" }}
+{{ "Number of DHCPv6 packets dropped due to an invalid option : 0" }}
     {% endif %}
 {% endif %}
