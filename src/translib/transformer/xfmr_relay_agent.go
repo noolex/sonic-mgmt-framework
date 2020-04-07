@@ -51,6 +51,7 @@ type JSONDhcpCounters  struct {
     DhcpDiscoverReceived   CounterObj  `json:"dhcp-discover-received, omitempty"`
     DhcpInformReceived     CounterObj  `json:"dhcp-inform-received, omitempty"`
     DhcpRequestReceived    CounterObj  `json:"dhcp-request-received, omitempty"`
+    DhcpReleaseReceived    CounterObj  `json:"dhcp-release-received, omitempty"`
     DhcpOfferSent          CounterObj  `json:"dhcp-offer-sent, omitempty"`
     DhcpAckSent            CounterObj  `json:"dhcp-ack-sent, omitempty"`
     DhcpNackSent           CounterObj  `json:"dhcp-nack-sent, omitempty"`
@@ -326,6 +327,8 @@ var DbToYang_relay_agent_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrP
     counterObj.DhcpInformReceived = getCounterValue(jsonRelayAgentCounter.DhcpInformReceived.Value)
 
     counterObj.DhcpRequestReceived = getCounterValue(jsonRelayAgentCounter.DhcpRequestReceived.Value)
+
+    counterObj.DhcpReleaseReceived = getCounterValue(jsonRelayAgentCounter.DhcpReleaseReceived.Value)
 
     counterObj.BootrequestSent = getCounterValue(jsonRelayAgentCounter.BootrequestSent.Value)
 
