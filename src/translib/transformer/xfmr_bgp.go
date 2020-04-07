@@ -177,7 +177,6 @@ func init () {
 	XlateFuncBind("DbToYang_bgp_gbl_afi_safi_addr_field_xfmr", DbToYang_bgp_gbl_afi_safi_addr_field_xfmr) 
     XlateFuncBind("YangToDb_bgp_global_subtree_xfmr", YangToDb_bgp_global_subtree_xfmr)
     XlateFuncBind("rpc_clear_bgp", rpc_clear_bgp)
-    XlateFuncBind("rpc_show_bgp", rpc_show_bgp)
 }
 
 func bgp_global_get_local_asn(d *db.DB , niName string, tblName string) (string, error) {
@@ -976,50 +975,3 @@ var rpc_clear_bgp RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) ([]byte
     result.Output.Status = status
     return json.Marshal(&result)
 }
-
-var rpc_show_bgp RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) ([]byte, error) {
-    log.Info("In rpc_show_bgp")
-    var cmd, vrf_name, af_str string
-    var err error
-    var mapData map[string]interface{}
-    err = json.Unmarshal(body, &mapData)
-    if err != nil {
-        log.Info("Failed to unmarshall given input data")
-        return nil,  errors.New("RPC show ip bgp, invalid input")
-    }
-
-    var result struct {
-        Output struct {
-              Status string `json:"response"`
-        } `json:"sonic-bgp-show:output"`
-    }
-
-    log.Info("In rpc_show_bgp, RPC data:", mapData)
-
-    input, _ := mapData["sonic-bgp-show:input"]
-    mapData = input.(map[string]interface{})
-
-    log.Info("In rpc_show_bgp, RPC Input data:", mapData)
-
-
-    if value, ok := mapData["vrf-name"].(string) ; ok {
-        vrf_name = " vrf " + value
-    }
-
-    if value, ok := mapData["address-family"].(string) ; ok {
-	if value == "IPV4_UNICAST" {
-            af_str = " ipv4 "
-        }else if value == "IPV6_UNICAST" {
-            af_str = " ipv6 "
-	}
-    }
-
-    cmd = "show ip bgp" + vrf_name + af_str + " json"
-
-    cmd = strings.TrimSuffix(cmd, " ")
-
-    bgpOutput, err := exec_raw_vtysh_cmd(cmd)
-    result.Output.Status = bgpOutput
-    return json.Marshal(&result)
-}
-
