@@ -89,7 +89,7 @@ module sonic-portchannel-interface {
                 }
 
                 leaf-list dhcpv6_servers{
-                      max-elements 4; 
+                      max-elements 4;
                       type inet:ipv6-address;
 		      must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
 			      "(count(/sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST[pch_name=current()/../pch_name]) > 1)"
@@ -130,6 +130,13 @@ module sonic-portchannel-interface {
                     type leafref {
                         path "/lointf:sonic-loopback-interface/lointf:LOOPBACK_INTERFACE/lointf:LOOPBACK_INTERFACE_LIST/lointf:loIfName";
                     }
+                }
+
+                leaf ipv6_use_link_local_only {
+                    type cmn:mode-enable;
+                    default disable;
+                    description
+                        "Enable IPv6 link local address on interface";
                 }
 
                 leaf-list helper_address {

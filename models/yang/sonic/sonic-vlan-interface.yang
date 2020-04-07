@@ -62,11 +62,11 @@ module sonic-vlan-interface {
 				}
 			}
 
-			leaf nat_zone {
-				type uint8 {
-					range "0..3";
-				}
-			}
+            leaf nat_zone {
+                type uint8 {
+                    range "0..3";
+                }
+            }
 
 			leaf vrf_name {
 				type leafref {
@@ -86,7 +86,7 @@ module sonic-vlan-interface {
 			}
 
 			leaf-list dhcpv6_servers{
-				max-elements 4; 
+				max-elements 4;
 				type inet:ipv6-address;
 				must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
 					"(count(/sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_IPADDR_LIST[vlanName=current()/../vlanName]) > 1)"
@@ -95,6 +95,13 @@ module sonic-vlan-interface {
 						error-app-tag dhcp-server-invalid-vlan-routing-interface;
 					}
 			}
+
+            leaf ipv6_use_link_local_only {
+                type cmn:mode-enable;
+                default disable;
+                description
+                    "Enable IPv6 link local address on interface";
+            }
 
             leaf-list helper_address {
                 type sonic-if-cmn:vrf-ip;
