@@ -52,7 +52,9 @@ GO_DEPS_LIST = github.com/gorilla/mux \
                github.com/philopon/go-toposort \
                gopkg.in/godbus/dbus.v5 \
                github.com/dgrijalva/jwt-go \
-               github.com/msteinert/pam
+               github.com/msteinert/pam \
+               github.com/docker/docker/client \
+               github.com/docker/docker/api/types
 
 # GO_DEPS_LIST_2 includes "download only" dependencies.
 # They are patched, compiled and installed explicitly later.
