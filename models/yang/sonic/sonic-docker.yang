@@ -35,6 +35,9 @@ module sonic-docker {
                 description
                     "Success / failure in running command";
             }
+            leaf code {
+                type int32;
+            }
         }
     }
 }
