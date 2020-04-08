@@ -25,7 +25,6 @@ import (
     log "github.com/golang/glog"
     "cvl"
     "translib/db"
-	"strconv"
 
     "github.com/openconfig/goyang/pkg/yang"
 )
