@@ -1,18 +1,23 @@
 package transformer
 
 import (
-    "encoding/json"
     "translib/ocbinds"
-    "translib/tlerr"
     "translib/db"
     "time"
-    "io/ioutil"
     "syscall"
     "strconv"
-    "os"
     "fmt"
     log "github.com/golang/glog"
     ygot "github.com/openconfig/ygot/ygot"
+)
+
+const (
+    HOST_TBL = "HOST_STATS"
+    MEM_TBL = "MEM_STATS"
+    CPU_TBL = "CPU_STATS"
+    PROC_TBL = "PROCESS_STATS"
+    SYSMEM_KEY = "SYS_MEM"
+    HOSTNAME_KEY = "HOSTNAME"
 )
 
 func init () {
@@ -26,21 +31,16 @@ func init () {
 
 }
 
-type JSONSystem  struct {
-    Hostname       string  `json:"hostname"`
-    Total          uint64  `json:"total"`
-    Used           uint64  `json:"used"`
-    Free           uint64  `json:"free"`
-
-    Cpus  []Cpu            `json:"cpus"`
-    Procs map[string]Proc  `json:"procs"`
-
+type SysMem struct {
+    Total          uint64
+    Used           uint64
+    Free           uint64
 }
 
 type Cpu struct {
-    User     int64   `json:"user"`
-    System   int64   `json:"system"`
-    Idle     int64   `json:"idle"`
+    User     int64
+    System   int64
+    Idle     int64
 }
 
 type Proc struct {
@@ -77,42 +77,12 @@ func getAppRootObject(inParams XfmrParams) (*ocbinds.OpenconfigSystem_System) {
     return deviceObj.System
 }
 
-func getSystemInfoFromFile () (JSONSystem, error) {
-    log.Infof("getSystemInfoFromFile Enter")
-
-    var jsonsystem JSONSystem
-    jsonFile, err := os.Open("/mnt/platform/system")
-    if err != nil {
-        log.Infof("system json open failed")
-        errStr := "Information not available or Platform support not added"
-        terr := tlerr.NotFoundError{Format: errStr}
-        return jsonsystem, terr
-    }
-    syscall.Flock(int(jsonFile.Fd()),syscall.LOCK_EX)
-    log.Infof("syscall.Flock done")
-
-    defer jsonFile.Close()
-    defer log.Infof("jsonFile.Close called")
-    defer syscall.Flock(int(jsonFile.Fd()), syscall.LOCK_UN);
-    defer log.Infof("syscall.Flock unlock  called")
-
-    byteValue, _ := ioutil.ReadAll(jsonFile)
-    err = json.Unmarshal(byteValue, &jsonsystem)
-	if err != nil {
-        errStr := "json.Unmarshal failed"
-        terr := tlerr.InternalError{Format: errStr}
-        return jsonsystem, terr
-
-	}
-    return jsonsystem, nil
-}
-
-func getSystemState (sys *JSONSystem, sysstate *ocbinds.OpenconfigSystem_System_State) () {
+func getSystemState (hostname *string, sysstate *ocbinds.OpenconfigSystem_System_State) () {
     log.Infof("getSystemState Entry")
 
     crtime := time.Now().Format(time.RFC3339) + "+00:00"
 
-    sysstate.Hostname = &sys.Hostname
+    sysstate.Hostname = hostname
     sysstate.CurrentDatetime = &crtime;
     sysinfo := syscall.Sysinfo_t{}
 
@@ -121,6 +91,25 @@ func getSystemState (sys *JSONSystem, sysstate *ocbinds.OpenconfigSystem_System_
         boot_time := uint64 (time.Now().Unix() - sysinfo.Uptime)
         sysstate.BootTime = &boot_time
     }
+}
+
+func getHostnameFromDb (d *db.DB) (*string, error) {
+    var err error
+    var hostname string
+
+    hostTbl, err := d.GetTable(&db.TableSpec{Name: HOST_TBL})
+    if err != nil {
+        log.Info("Can't get table: ", HOST_TBL)
+        return &hostname, err
+    }
+
+    nameEntry, err := hostTbl.GetEntry(db.Key{Comp: []string{HOSTNAME_KEY}})
+    if err != nil {
+        log.Info("Can't get entry with key: ", HOSTNAME_KEY)
+        return &hostname, err
+    }
+    hostname = nameEntry.Get("name")
+    return &hostname, err
 }
 
 var YangToDb_sys_config_key_xfmr KeyXfmrYangToDb = func(inParams XfmrParams) (string, error) {
@@ -140,21 +129,44 @@ var DbToYang_sys_state_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) erro
 
     sysObj := getAppRootObject(inParams)
 
-    jsonsystem, err := getSystemInfoFromFile()
+    hostname, err := getHostnameFromDb(inParams.dbs[db.StateDB])
     if err != nil {
-        log.Infof("getSystemInfoFromFile failed")
+        log.Infof("getHostnameFromDb failed")
         return err
     }
     ygot.BuildEmptyTree(sysObj)
-    getSystemState(&jsonsystem, sysObj.State)
+    getSystemState(hostname, sysObj.State)
     return err;
 }
 
-func getSystemMemory (sys *JSONSystem, sysmem *ocbinds.OpenconfigSystem_System_Memory_State) () {
+func getSysMemFromDb (d *db.DB) (*SysMem, error) {
+    var err error
+    var memInfo SysMem
+
+    memTbl, err := d.GetTable(&db.TableSpec{Name: MEM_TBL})
+    if err != nil {
+        log.Info("Can't get table: ", MEM_TBL)
+        return &memInfo, err
+    }
+
+    memEntry, err := memTbl.GetEntry(db.Key{Comp: []string{SYSMEM_KEY}})
+    if err != nil {
+        log.Info("Can't get entry with key: ", SYSMEM_KEY)
+        return &memInfo, err
+    }
+
+    memInfo.Total, _ = strconv.ParseUint(memEntry.Get("total"), 10, 64)
+    memInfo.Used, _ = strconv.ParseUint(memEntry.Get("used"), 10, 64)
+    memInfo.Free, _ = strconv.ParseUint(memEntry.Get("free"), 10, 64)
+
+    return &memInfo, err
+}
+
+func getSystemMemory (meminfo *SysMem, sysmem *ocbinds.OpenconfigSystem_System_Memory_State) () {
     log.Infof("getSystemMemory Entry")
 
-    sysmem.Physical = &sys.Total
-    sysmem.Reserved = &sys.Used
+    sysmem.Physical = &meminfo.Total
+    sysmem.Reserved = &meminfo.Used
 }
 
 var DbToYang_sys_memory_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) error {
@@ -162,18 +174,20 @@ var DbToYang_sys_memory_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) err
 
     sysObj := getAppRootObject(inParams)
 
-    jsonsystem, err := getSystemInfoFromFile()
+    meminfo, err := getSysMemFromDb(inParams.dbs[db.StateDB])
     if err != nil {
-        log.Infof("getSystemInfoFromFile failed")
+        log.Infof("getSysMemFromDb failed")
         return err
     }
     ygot.BuildEmptyTree(sysObj)
 
     sysObj.Memory.State = &ocbinds.OpenconfigSystem_System_Memory_State{}
-    getSystemMemory(&jsonsystem, sysObj.Memory.State)
+
+    getSystemMemory(meminfo, sysObj.Memory.State)
     return err;
 }
-func getSystemCpu (idx int, cpu Cpu, syscpu *ocbinds.OpenconfigSystem_System_Cpus_Cpu) {
+
+func getSystemCpu (idx int, cpuCnt int, cpu Cpu, syscpu *ocbinds.OpenconfigSystem_System_Cpus_Cpu) {
     log.Infof("getSystemCpu Entry idx ", idx)
 
     sysinfo := syscall.Sysinfo_t{}
@@ -183,30 +197,32 @@ func getSystemCpu (idx int, cpu Cpu, syscpu *ocbinds.OpenconfigSystem_System_Cpu
     }
     var cpucur CpuState
     if idx == 0 {
-        cpucur.user = uint8((cpu.User/4)/sysinfo.Uptime)
-        cpucur.system = uint8((cpu.System/4)/sysinfo.Uptime)
-        cpucur.idle = uint8((cpu.Idle/4)/sysinfo.Uptime)
+        cpucur.user = uint8((cpu.User/int64(cpuCnt))/sysinfo.Uptime)
+        cpucur.system = uint8((cpu.System/int64(cpuCnt))/sysinfo.Uptime)
+        cpucur.idle = uint8((cpu.Idle/int64(cpuCnt))/sysinfo.Uptime)
     } else {
         cpucur.user = uint8(cpu.User/sysinfo.Uptime)
         cpucur.system = uint8(cpu.System/sysinfo.Uptime)
         cpucur.idle = uint8(cpu.Idle/sysinfo.Uptime)
     }
+
     ygot.BuildEmptyTree(syscpu.State)
     syscpu.State.User.Instant = &cpucur.user
     syscpu.State.Kernel.Instant = &cpucur.system
     syscpu.State.Idle.Instant = &cpucur.idle
 }
 
-func getSystemCpus (sys *JSONSystem, syscpus *ocbinds.OpenconfigSystem_System_Cpus) {
+func getSystemCpus (cpuLst []Cpu, syscpus *ocbinds.OpenconfigSystem_System_Cpus) {
     log.Infof("getSystemCpus Entry")
 
     sysinfo := syscall.Sysinfo_t{}
     sys_err := syscall.Sysinfo(&sysinfo)
+    cpuCnt := len(cpuLst) - 1
     if sys_err != nil {
         log.Infof("syscall.Sysinfo failed.")
     }
 
-    for  idx, cpu := range sys.Cpus {
+    for idx, cpu := range cpuLst {
         var index  ocbinds.OpenconfigSystem_System_Cpus_Cpu_State_Index_Union_Uint32
         index.Uint32 = uint32(idx)
         syscpu, err := syscpus.NewCpu(&index)
@@ -216,8 +232,41 @@ func getSystemCpus (sys *JSONSystem, syscpus *ocbinds.OpenconfigSystem_System_Cp
         }
         ygot.BuildEmptyTree(syscpu)
         syscpu.Index = &index
-       getSystemCpu(idx, cpu, syscpu)
+        getSystemCpu(idx, cpuCnt, cpu, syscpu)
     }
+}
+
+func getCpusFromDb (d *db.DB) ([]Cpu, error) {
+    var err error
+    var cpus []Cpu
+
+    cpuTbl, err := d.GetTable(&db.TableSpec{Name: CPU_TBL})
+    if err != nil {
+        log.Info("Can't get table: ", CPU_TBL)
+        return cpus, err
+    }
+
+    keys, err := cpuTbl.GetKeys()
+    if err != nil {
+        log.Info("Can't get CPU keys from table")
+        return cpus, err
+    }
+
+    cpus = make([]Cpu, len(keys))
+    for idx, _ := range keys {
+        key := "CPU" + strconv.Itoa(idx)
+        cpuEntry, err := cpuTbl.GetEntry(db.Key{Comp: []string{key}})
+        if err != nil {
+            log.Info("Can't get entry with key: ", key)
+            return cpus, err
+        }
+
+        cpus[idx].User, _ = strconv.ParseInt(cpuEntry.Get("user"), 10, 64)
+        cpus[idx].System, _ = strconv.ParseInt(cpuEntry.Get("sys"), 10, 64)
+        cpus[idx].Idle, _ = strconv.ParseInt(cpuEntry.Get("idle"), 10, 64)
+    }
+
+    return cpus, err
 }
 
 var DbToYang_sys_cpus_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) error {
@@ -225,31 +274,32 @@ var DbToYang_sys_cpus_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) error
 
     sysObj := getAppRootObject(inParams)
 
-    jsonsystem, err := getSystemInfoFromFile()
+    cpuLst, err := getCpusFromDb(inParams.dbs[db.StateDB])
     if err != nil {
-        log.Infof("getSystemInfoFromFile failed")
+        log.Infof("getCpusFromDb failed")
         return err
     }
     if sysObj.Cpus == nil {
         ygot.BuildEmptyTree(sysObj)
     }
 
-    path := NewPathInfo(inParams.uri) 
+    path := NewPathInfo(inParams.uri)
     val := path.Vars["index"]
+    totalCpu := len(cpuLst)
     if len(val) != 0 {
         cpu, _ := strconv.Atoi(val)
-        log.Info("Cpu id: ", cpu, ", max is ", len(jsonsystem.Cpus))
-        if cpu >=0 && cpu < len(jsonsystem.Cpus) {
+        log.Info("Cpu id: ", cpu, ", max is ", totalCpu)
+        if cpu >=0 && cpu < totalCpu {
 	//Since key(a pointer) is unknown, there is no way to do a lookup. So looping through a map with only one entry
 	    for _, value := range sysObj.Cpus.Cpu {
 		ygot.BuildEmptyTree(value)
-	        getSystemCpu(cpu, jsonsystem.Cpus[cpu], value)
+	        getSystemCpu(cpu, totalCpu - 1, cpuLst[cpu], value)
 	    }
         } else {
-            log.Info("Cpu id: ", cpu, "is invalid, max is ", len(jsonsystem.Cpus))
+            log.Info("Cpu id: ", cpu, "is invalid, max is ", totalCpu)
         }
     } else {
-        getSystemCpus(&jsonsystem, sysObj.Cpus)
+        getSystemCpus(cpuLst, sysObj.Cpus)
     }
     return err;
 }
@@ -269,7 +319,7 @@ func getSystemProcess (proc *Proc, sysproc *ocbinds.OpenconfigSystem_System_Proc
     procstate.StartTime = proc.Start * 1000000000  // ns
     procstate.Uptime = uint64(time.Now().Unix()) - proc.Start
 
-    sysproc.Pid = &procstate.Pid 
+    sysproc.Pid = &procstate.Pid
     sysproc.State.CpuUsageSystem = &procstate.CpuUsageSystem
     sysproc.State.CpuUsageUser = &procstate.CpuUsageUser
     sysproc.State.CpuUtilization =  &procstate.CpuUtilization
@@ -281,19 +331,18 @@ func getSystemProcess (proc *Proc, sysproc *ocbinds.OpenconfigSystem_System_Proc
     sysproc.State.Uptime = &procstate.Uptime
 }
 
-func getSystemProcesses (sys *JSONSystem, sysprocs *ocbinds.OpenconfigSystem_System_Processes, pid uint64) {
+func getSystemProcesses (procs *map[string]Proc, sysprocs *ocbinds.OpenconfigSystem_System_Processes, pid uint64) {
     log.Infof("getSystemProcesses Entry")
 
     if pid != 0 {
-        proc := sys.Procs[strconv.Itoa(int(pid))]
+        proc := (*procs)[strconv.Itoa(int(pid))]
         sysproc := sysprocs.Process[pid]
 
         getSystemProcess(&proc, sysproc, pid)
     } else {
 
-        for  pidstr,  proc := range sys.Procs {
+        for pidstr,  proc := range *procs {
             idx, _:= strconv.Atoi(pidstr)
-
             sysproc, err := sysprocs.NewProcess(uint64 (idx))
             if err != nil {
                 log.Infof("sysprocs.NewProcess failed")
@@ -305,25 +354,72 @@ func getSystemProcesses (sys *JSONSystem, sysprocs *ocbinds.OpenconfigSystem_Sys
     }
     return
 }
+
+func getProcsFromDb (d *db.DB) (map[string]Proc, error) {
+    var err error
+    var procs map[string]Proc
+    var ftmp float64
+    var curProc Proc
+
+    procTbl, err := d.GetTable(&db.TableSpec{Name: PROC_TBL})
+    if err != nil {
+        log.Info("Can't get table: ", PROC_TBL)
+        return procs, err
+    }
+
+    keys, err := procTbl.GetKeys()
+    if err != nil {
+        log.Info("Can't get proc keys from table")
+        return procs, err
+    }
+
+    procs = make(map[string]Proc)
+    for _, key := range keys {
+        pidstr := key.Get(0)
+        procEntry, err := procTbl.GetEntry(db.Key{Comp: []string{pidstr}})
+        if err != nil {
+            log.Info("Can't get entry with key: ", pidstr)
+            return procs, err
+        }
+
+        curProc.Cmd = procEntry.Get("CMD")
+        curProc.Start, _ = strconv.ParseUint(procEntry.Get("START"), 10, 64)
+        curProc.User, _ = strconv.ParseUint(procEntry.Get("USER_TIME"), 10, 64)
+        curProc.System, _ = strconv.ParseUint(procEntry.Get("SYS_TIME"), 10, 64)
+        curProc.Mem, _ = strconv.ParseUint(procEntry.Get("VSZ"), 10, 64)
+        ftmp, _ = strconv.ParseFloat(procEntry.Get("%CPU"), 32)
+        curProc.Cputil = float32(ftmp)
+        ftmp, _ = strconv.ParseFloat(procEntry.Get("%MEM"), 32)
+        curProc.Memutil = float32(ftmp)
+        procs[pidstr] = curProc
+    }
+
+    /* Delete the one non-pid key procdockerstatsd deamon uses to store the last
+     * update time in the PROCCESSSTATS table */
+    delete(procs, "LastUpdateTime")
+
+    return procs, err
+}
+
 var DbToYang_sys_procs_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) error {
     var err error
 
     sysObj := getAppRootObject(inParams)
 
-    jsonsystem, err := getSystemInfoFromFile()
+    procs, err := getProcsFromDb(inParams.dbs[db.StateDB])
     if err != nil {
-        log.Infof("getSystemInfoFromFile failed")
+        log.Infof("getProcsFromDb failed")
         return err
     }
 
     ygot.BuildEmptyTree(sysObj)
-    path := NewPathInfo(inParams.uri) 
+    path := NewPathInfo(inParams.uri)
     val := path.Vars["pid"]
     pid := 0
     if len(val) != 0 {
         pid, _ = strconv.Atoi(val)
     }
-    getSystemProcesses(&jsonsystem, sysObj.Processes, uint64(pid))
+    getSystemProcesses(&procs, sysObj.Processes, uint64(pid))
     return err;
 }
 
@@ -363,7 +459,7 @@ var YangToDb_sys_aaa_auth_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (
 	if (!status) {
 		if _,present := inParams.txCache.Load("tx_err"); !present {
 		    log.Info("Error in operation:",err_str)
-	            inParams.txCache.Store("tx_err",err_str) 
+	            inParams.txCache.Store("tx_err",err_str)
 	            return nil, fmt.Errorf("%s", err_str)
 	        }
 	} else {

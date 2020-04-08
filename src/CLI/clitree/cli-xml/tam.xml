@@ -179,7 +179,7 @@ limitations under the License.
              help="Clear TAM device ID" 
              ptype="SUBCOMMAND" 
              mode="subcommand">
-      <ACTION builtin="clish_pyobj">sonic_cli_tam patch_sonic_tam_sonic_tam_tam_device_table_tam_device_table_list_deviceid device 0</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tam delete_sonic_tam_sonic_tam_tam_device_table_tam_device_table_list_deviceid</ACTION>
   	<DOCGEN>
 	   <DESCRIPTION>
 		   This command is used to remove the configured device-id.

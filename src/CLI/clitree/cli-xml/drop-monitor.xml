@@ -245,7 +245,7 @@
       <PARAM name="sample" help="Configure Sampling Name" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       <PARAM name="sampling-name" help="Sampling Name" ptype="STRING_63"> </PARAM>
       <PARAM name="flowgroup-id" help="Configure Flow Group ID" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-      <PARAM name="flowgroup_id" help="Flow group id number" ptype="UINT16"> </PARAM>
+      <PARAM name="flowgroup_id" help="Flow group id number" ptype="FLOWGROUP_ID"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_drop_monitor patch_sonic_tam_drop_monitor_sonic_tam_drop_monitor_tam_drop_monitor_flow_table_tam_drop_monitor_flow_table_list ${flow-name} ${acl-table-name} ${acl-rule-name} ${collector-name} ${sampling-name} ${flowgroup_id}</ACTION>
   	<DOCGEN>
 	   <DESCRIPTION>

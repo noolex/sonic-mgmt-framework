@@ -1,230 +1,315 @@
 module sonic-acl {
-	namespace "http://github.com/Azure/sonic-acl";
-	prefix sacl;
-	yang-version 1.1;
+    namespace "http://github.com/Azure/sonic-acl";
+    prefix sacl;
+    yang-version 1.1;
 
-	import ietf-inet-types {
-		prefix inet;
-	}
+    import ietf-inet-types {
+        prefix inet;
+    }
 
-	import sonic-common {
-		prefix cmn;
-	}
+    import sonic-common {
+        prefix cmn;
+    }
 
-	import sonic-extension {
-		prefix sonic-ext;
-	}
+    import sonic-extension {
+        prefix sonic-ext;
+    }
 
-	import sonic-port {
-		prefix prt;
-	}
+    import sonic-port {
+        prefix sprt;
+    }
 
-	import sonic-mirror-session {
-		prefix sms;
-	}
+    import sonic-portchannel {
+        prefix spc;
+    }
 
-	organization
-		"SONiC";
+    import sonic-vlan {
+        prefix svlan;
+    }
 
-	contact
-		"SONiC";
+    import sonic-mirror-session {
+        prefix sms;
+    }
 
-	description
-		"SONIC ACL";
+    organization
+        "SONiC";
 
-	revision 2019-05-15 {
-		description
-			"Initial revision.";
-	}
+    contact
+        "SONiC";
 
-	container sonic-acl {
+    description
+        "SONIC ACL";
 
-		container ACL_TABLE {
+    revision 2020-02-20 {
+        description
+            "L2 ACL support and update must and when expressions.";
+    }
 
-			list ACL_TABLE_LIST {
-				key "aclname";
-				max-elements 1024; // Max 1K ACL tables for all platforms
+    revision 2019-05-15 {
+        description
+            "Initial revision.";
+    }
 
-				leaf aclname {
-					type string {
-						pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,71})';
-						length 1..72;
-					}
-				}
+    container sonic-acl {
 
-				leaf policy_desc {
-					type string {
-						length 1..255 {
-							error-app-tag policy-desc-invalid-length;
-						}
-					}
-				}
+        container ACL_TABLE {
 
-				leaf stage {
-					type enumeration {
-						enum INGRESS;
-						enum EGRESS;
-					}
-				}
+            list ACL_TABLE_LIST {
+                key "aclname";
+                max-elements 1024; // Max 1K ACL tables for all platforms
 
-				leaf type {
-					type enumeration {
-						enum MIRROR;
-						enum L2;
-						enum L3;
-						enum L3V6;
-					}
-				}
+                leaf aclname {
+                    type string {
+                        pattern '[a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,71})';
+                        length 1..72;
+                    }
+                }
 
-				leaf-list ports {
-					type leafref {
-						path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
-					}
-				}
-			}
-		}
+                leaf policy_desc {
+                    type string {
+                        length 1..255 {
+                            error-app-tag policy-desc-invalid-length;
+                        }
+                    }
+                }
 
-		container ACL_RULE {
+                leaf stage {
+                    type enumeration {
+                        enum INGRESS;
+                        enum EGRESS;
+                    }
+                }
 
-			list ACL_RULE_LIST { 
-				key "aclname rulename";
-				max-elements 65536; // Max 64K ACL rules for all platforms
+                leaf type {
+                    sonic-ext:custom-validation ValidateLeafConstant;
+                    type enumeration {
+                        enum MIRROR;
+                        enum L2;
+                        enum L3;
+                        enum L3V6;
+                    }
+                }
 
-				leaf aclname {
-					type leafref {
-						path "../../../ACL_TABLE/ACL_TABLE_LIST/aclname";
-					}
-					must "(/cmn:operation/cmn:operation != 'DELETE') or " +
-						"count(current()/../../../ACL_TABLE/ACL_TABLE_LIST[aclname=current()]/ports) = 0" {
-							error-message "Ports are already bound to this rule.";
-						}
-				} 
+                leaf-list ports {
+                    type union {
+                        type leafref {
+                            path "/sprt:sonic-port/sprt:PORT/sprt:PORT_LIST/sprt:ifname";
+                        }
+                        type leafref {
+                            path "/spc:sonic-portchannel/spc:PORTCHANNEL/spc:PORTCHANNEL_LIST/spc:name";
+                        }
+                        type leafref {
+                            path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
+                        }
+                        type string {
+                            pattern "Switch";
+                        }
+                    }
+                }
 
-				leaf rulename {
-					type string;
-				}
+                must "((/cmn:operation/cmn:operation = 'DELETE') and (count(ports) = 0)) or ((/cmn:operation/cmn:operation != 'DELETE'))" {
+                    error-message "ACL actively applied to ports.";
+                }
+            }
+        }
 
-				leaf PRIORITY {
-					type uint16 {
-						range "1..65535"{
-							error-message "Invalid ACL rule priority.";
-					}
-					}
-				}
+        container ACL_RULE {
 
-				leaf RULE_DESCRIPTION {
-					type string;
-				}
+            list ACL_RULE_LIST { 
+                key "aclname rulename";
+                max-elements 65536; // Max 64K ACL rules for all platforms
 
-				leaf PACKET_ACTION {
-					type enumeration {
-						enum FORWARD;
-						enum DROP;
-						enum REDIRECT;
-						enum INT_INSERT;
-						enum INT_DELETE;
-					}
-				}
+                leaf aclname {
+                    type leafref {
+                        path "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST/aclname";
+                    }
+                } 
 
-				leaf MIRROR_ACTION {
-					type leafref {
-						path "/sms:sonic-mirror-session/sms:MIRROR_SESSION/sms:MIRROR_SESSION_LIST/sms:name";
-					}
-				}
+                leaf rulename {
+                    type string;
+                }
 
-				leaf IP_TYPE {
-					sonic-ext:custom-validation ValidateAclRuleIPAddress;
-					type enumeration {
-						enum ANY;
-						enum IP;
-						enum IPV4;
-						enum IPV4ANY;
-						enum NON_IPV4;
-						enum IPV6ANY;
-						enum NON_IPV6;
-					}
-				}
+                leaf PRIORITY {
+                    type uint16 {
+                        range "1..65535"{
+                            error-message "Invalid ACL rule priority.";
+                        }
+                    }
+                }
 
-				leaf IP_PROTOCOL {
-					type uint8 {
-						range "1|2|6|17|46|47|51|103|115";
-					}
-				}
+                leaf DESCRIPTION {
+                    type string;
+                }
 
-				leaf ETHER_TYPE {
-					type string {
-						pattern "(0x88CC)|(0x8100)|(0x8915)|(0x0806)|(0x0800)|(0x86DD)|(0x8847)" {
-							error-message "Invalid ACL Rule Ether Type";
-							error-app-tag ether-type-invalid;
-						}
-					}
-				}
+                leaf PACKET_ACTION {
+                    type enumeration {
+                        enum FORWARD;
+                        enum DROP;
+                        enum REDIRECT;
+                        enum INT_INSERT;
+                        enum INT_DELETE;
+                    }
+                }
 
-				choice ip_src_dst {
-					case ipv4_src_dst {
-						//when "boolean(IP_TYPE[.='ANY' or .='IP' or .='IPV4' or .='IPV4ANY'])";
-						leaf SRC_IP {
-							mandatory true;
-							type inet:ipv4-prefix;
-						}
-						leaf DST_IP {
-							mandatory true;
-							type inet:ipv4-prefix;
-						}
-					}
-					case ipv6_src_dst {
-						//when "boolean(IP_TYPE[.='ANY' or .='IP' or .='IPV6' or .='IPV6ANY'])";
-						leaf SRC_IPV6 {
-							mandatory true;
-							type inet:ipv6-prefix;    
-						}
-						leaf DST_IPV6 {
-							mandatory true;
-							type inet:ipv6-prefix;    
-						}
-					}
-				}
+                leaf MIRROR_ACTION {
+                    when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'MIRROR'";
+                    type leafref {
+                        path "/sms:sonic-mirror-session/sms:MIRROR_SESSION/sms:MIRROR_SESSION_LIST/sms:name";
+                    }
+                }
 
-				choice src_port {
-					case l4_src_port {
-						leaf L4_SRC_PORT {
-							type uint16;
-						}
-					}
-					case l4_src_port_range {
-						leaf L4_SRC_PORT_RANGE {
-							type string {
-								pattern "[0-9]{1,5}(-)[0-9]{1,5}";
-							}
-						}
-					}
-				}
+                leaf IP_TYPE {
+                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6')";
+                    sonic-ext:custom-validation ValidateAclRuleIPAddress;
+                    type enumeration {
+                        enum ANY;
+                        enum IP;
+                        enum IPV4;
+                        enum IPV4ANY;
+                        enum NON_IPV4;
+                        enum IPV6ANY;
+                        enum NON_IPV6;
+                    }
+                }
 
-				choice dst_port {
-					case l4_dst_port {
-						leaf L4_DST_PORT {
-							type uint16;
-						}
-					}
-					case l4_dst_port_range {
-						leaf L4_DST_PORT_RANGE {
-							type string {
-								pattern "[0-9]{1,5}(-)[0-9]{1,5}";
-							}
-						}
-					}
-				}
+                leaf IP_PROTOCOL {
+                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6')";
+                    type uint8;
+                }
 
-				leaf TCP_FLAGS { 
-					type string {
-						pattern "0[xX][0-9a-fA-F]{2}[/]0[xX][0-9a-fA-F]{2}";
-					}
-				}
+                leaf ETHER_TYPE {
+                    must "(((/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') and (current() = '0x800')) or " +
+                          "((/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6') and ((current() = '0x86DD') or (current() = '0x86dd'))) or " +
+                          "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L2'))" {
+                          error-message "Ethertype value invalid or not supported for this table type";
+                    }
+                    type string {
+                        pattern "0[xX][6-9a-fA-F][0-9a-fA-F]{2,3}|0[xX][1-9a-fA-F][0-9a-fA-F]{3,4}" {
+                            error-message "Invalid Ether Type";
+                            error-app-tag ether-type-invalid;
+                        }
+                    }
+                }
 
-				leaf DSCP { 
-					type uint8;
-				}
-			}
-		}
-	}
+                choice src_dst_address {
+                    case l2_src_dst_address {
+                        when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L2'";
+                        leaf SRC_MAC {
+                            type string {
+                                pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}/[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
+                            }
+                        }
+                        leaf DST_MAC {
+                            type string {
+                                pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}/[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
+                            }
+                        }
+                    }
+                    case ipv4_src_dst_address {
+                        when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L3'";
+                        leaf SRC_IP {
+                            type inet:ipv4-prefix;
+                        }
+                        leaf DST_IP {
+                            type inet:ipv4-prefix;
+                        }
+                    }
+                    case ipv6_src_dst_address {
+                        when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/aclname]/type = 'L3V6'";
+                        leaf SRC_IPV6 {
+                            type inet:ipv6-prefix;    
+                        }
+                        leaf DST_IPV6 {
+                            type inet:ipv6-prefix;    
+                        }
+                    }
+                }
+
+                choice src_port {
+                    when "(IP_PROTOCOL = '6') or (IP_PROTOCOL = '17')";
+                    case l4_src_port {
+                        leaf L4_SRC_PORT {
+                            type uint16;
+                        }
+                    }
+                    case l4_src_port_range {
+                        leaf L4_SRC_PORT_RANGE {
+                            type string {
+                                pattern "[0-9]{1,5}(-)[0-9]{1,5}";
+                            }
+                        }
+                    }
+                }
+
+                choice dst_port {
+                    when "(IP_PROTOCOL = '6') or (IP_PROTOCOL = '17')";
+                    case l4_dst_port {
+                        leaf L4_DST_PORT {
+                            type uint16;
+                        }
+                    }
+                    case l4_dst_port_range {
+                        leaf L4_DST_PORT_RANGE {
+                            type string {
+                                pattern "[0-9]{1,5}(-)[0-9]{1,5}";
+                            }
+                        }
+                    }
+                }
+
+                leaf TCP_FLAGS {
+                    when "current()/../IP_PROTOCOL = '6'";
+                    type string {
+                        pattern "0[xX][0-9a-fA-F]{2}[/]0[xX][0-9a-fA-F]{2}";
+                    }
+                }
+
+                leaf ICMP_TYPE {
+                    when "(current()/../IP_PROTOCOL = '1') or ((current()/../IP_PROTOCOL = '58'))";
+                    type uint8;
+                }
+
+                leaf ICMP_CODE {
+                    when "(current()/../IP_PROTOCOL = '1') or ((current()/../IP_PROTOCOL = '58'))";
+                    type uint8;
+                }
+
+                leaf DSCP {
+                    when "(/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3') or (/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L3V6')";
+                    type uint8 {
+                        range "0..63"{
+                            error-message "Invalid DSCP Value.";
+                        }
+                    }
+                }
+                
+                leaf VLAN {
+                    type uint16 {
+                        range "1..4094" {
+                            error-message "Vlan ID out of range";
+                            error-app-tag vlanid-invalid;
+                        }
+                    }
+                }
+
+                leaf PCP {
+                    when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L2'";
+                    type string {
+                        pattern "[0-7]|[0-7]/[0-7]" {
+                            error-message "Invalid PCP Value.";
+                        }
+                    }
+                }
+
+                leaf DEI {
+                    when "/sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=current()/../aclname]/type = 'L2'";
+                    type uint8 {
+                        range "0..1" {
+                            error-message "Invalid DEI Value.";
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -63,10 +63,8 @@ var tusrName = flag.String("tusrname", "tactestuser", "TACACS+ non-admin usernam
 var tusrPass = flag.String("tusrpass", "password", "TACACS+ non-admin password")
 var tadmName = flag.String("tadmname", "tactestadmin", "TACACS+ admin username")
 var tadmPass = flag.String("tadmpass", "password", "TACACS+ admin password")
-var defaultAuth = UserAuth{"password": true, "cert": false, "jwt": false}
-func init() {
-	fmt.Println("+++++ pamAuth_test +++++")
-}
+
+var authTestRouter *Router
 
 func TestMain(m *testing.M) {
 
@@ -90,19 +88,31 @@ func TestMain(m *testing.M) {
 
 	fmt.Println("+++++ Enabled auth test types", tlist)
 
+	if len(tlist) != 0 {
+		authTestRouter = newRouter()
+		authTestRouter.config.Auth = NewUserAuth("password")
+
+		authTestRouter.addRoute("test_auth_get", "GET", "/api-tests:auth", authTestHandler)
+		authTestRouter.addRoute("test_auth_head", "HEAD", "/api-tests:auth", authTestHandler)
+		authTestRouter.addRoute("test_auth_options", "OPTIONS", "/api-tests:auth", authTestHandler)
+		authTestRouter.addRoute("test_auth_post", "POST", "/api-tests:auth", authTestHandler)
+		authTestRouter.addRoute("test_auth_patch", "PATCH", "/api-tests:auth", authTestHandler)
+		authTestRouter.addRoute("test_auth_put", "PUT", "/api-tests:auth", authTestHandler)
+		authTestRouter.addRoute("test_auth_delete", "DELETE", "/api-tests:auth", authTestHandler)
+	}
+
 	os.Exit(m.Run())
 }
 
 // Dummy test handler which returns 200 on success; 401 on
 // authentication failure and 403 on authorization failure
-var authTestHandler = authMiddleware(http.HandlerFunc(
-	func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(200)
-		} else {
-			Process(w, r)
-		}
-	}), defaultAuth)
+func authTestHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(200)
+	} else {
+		Process(w, r)
+	}
+}
 
 func TestAuthLocalUser_Get(t *testing.T) {
 	ensureAuthTestEnabled(t, "local")
@@ -183,19 +193,14 @@ func testAuthSet(t *testing.T, username, password string, expStatus int) {
 
 func testAuth(method, username, password string, expStatus int) func(*testing.T) {
 	return func(t *testing.T) {
-		// Temporariliy enable password auth if not enabled already
-		
-
 		r := httptest.NewRequest(method, "/api-tests:auth", nil)
-		rc, r := GetContext(r)
-		rc.ClientAuth.Set("password")
 		w := httptest.NewRecorder()
 
 		if username != "" {
 			r.SetBasicAuth(username, password)
 		}
 
-		authTestHandler.ServeHTTP(w, r)
+		authTestRouter.ServeHTTP(w, r)
 
 		if w.Code != expStatus {
 			t.Fatalf("Expected response %d; got %d", expStatus, w.Code)

@@ -26,7 +26,6 @@
     <PTYPE
         name="KDUMP_MEMORY"
         pattern="^(((([0-9]+[MG])?(-([0-9]+[MG])?):)?[0-9]+[MG],?)+)$"
-        help="Memory reserved for kdump"
         />
 
     <PTYPE
@@ -44,14 +43,14 @@
             name="no kdump"
             help="Disable kdump">
             <ACTION
-                 builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                 builtin="clish_pyobj">sonic_cli_kdump disable
             </ACTION>
         </COMMAND>
         <COMMAND
             name="kdump enable"
             help="Enable kdump">
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump enable
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -76,9 +75,9 @@
         <COMMAND
             name="kdump memory"
             help="Set the amount of memory reserved for kdump">
-            <PARAM name="kdump_memory" help="The amount of memory reserved for kdump" ptype="KDUMP_MEMORY"/>
+            <PARAM name="kdump_memory" help="The amount of memory reserved for kdump. e.g: kdump memory 512M" ptype="KDUMP_MEMORY"/>
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump config memory ${kdump_memory}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -102,7 +101,7 @@
             help="Set the maximum number of kernel core files stored locally">
             <PARAM name="kdump_num_dumps" help="Maximum number of kernel core files stored locally" ptype="SET_RANGE_1_9"/>
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump config num_dumps ${kdump_num_dumps}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -123,14 +122,14 @@
             name="no kdump memory" 
             help="Reset to default the amount of memory reserved for kdump">
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump reset memory
             </ACTION>
         </COMMAND>
         <COMMAND 
             name="no kdump num_dumps" 
             help="Reset to default the maximum number of kernel core files stored locally">
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump reset num_dumps
             </ACTION>
         </COMMAND>
    </VIEW>
@@ -145,7 +144,7 @@
             name="show kdump status"
             help="Show kdump status">
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump show status
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -171,7 +170,7 @@
             name="show kdump memory"
             help="Show memory reserved for kdump">
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump show memory
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -190,7 +189,7 @@
             name="show kdump num_dumps"
             help="Show maximum number of kernel core dump files which can be stored locally">
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump show num_dumps
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -210,7 +209,7 @@
             name="show kdump files"
             help="Show kdump kernel core dump files">
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump show files
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -235,7 +234,7 @@
             <PARAM name="record" help="kdump dump file record number" ptype="GET_RANGE_1_9" optional="false"/>
             <PARAM name="lines" help="Number of lines retrieved from kernel log file" ptype="RANGE_5_100" optional="true"/>
             <ACTION
-                builtin="clish_pyobj">sonic_cli_kdump ${__full_line}
+                builtin="clish_pyobj">sonic_cli_kdump show log ${record} ${lines}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
