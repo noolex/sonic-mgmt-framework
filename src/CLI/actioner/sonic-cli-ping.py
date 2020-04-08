@@ -21,6 +21,7 @@ from scripts.render_cli import show_cli_output
 import urllib3
 urllib3.disable_warnings()
 import subprocess
+import re
 
 #Invalid chars
 blocked_chars = frozenset(['&', ';', '<', '>', '|', '`', '\''])
@@ -38,7 +39,10 @@ def run_vrf(args):
         print "%Error: Invalid argument."
         sys.exit(1)
     try:
+        if len(args) == 0:
+            args = "-h"
         cmd = "ping " + args + " -I " + vrfName
+        cmd = re.sub('-I\s*Management', '-I eth', cmd)
         cmdList = cmd.split(' ')
         subprocess.call(cmdList, shell=False)
 
@@ -55,7 +59,10 @@ def run(args):
         print "%Error: Invalid argument."
         sys.exit(1)
     try:
+        if len(args) == 0:
+            args = "-h"
         cmd = "ping " + args
+        cmd = re.sub('-I\s*Management', '-I eth', cmd)
         cmdList = cmd.split(' ')
         subprocess.call(cmdList, shell=False)
 
@@ -72,3 +79,4 @@ if __name__ == '__main__':
         run_vrf(sys.argv[2:])
     else:
         run(sys.argv)
+
