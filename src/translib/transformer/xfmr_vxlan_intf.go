@@ -753,9 +753,9 @@ var YangToDb_intf_vxlan_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrPara
 	}
     // Note: Temporary fix needs to be taken off once parent level delete
     // is handled for sag and vxlan subtree transformers.
-    if inParams.oper == DELETE {
-        return nil, nil
-    }
+    //if inParams.oper == DELETE {
+    //    return nil, nil
+    //}
 	path, err := getIntfUriPath(inParams.uri)
 
 	if err != nil {
