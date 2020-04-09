@@ -101,6 +101,16 @@ limitations under the License.
  fi&#xA;
         </ACTION>
     </COMMAND>
+    <!--====================clear <ip> dhcp-relay statistics======================-->
+    <COMMAND name="clear ip dhcp-relay" help="Clear ipv4 dhcp-relay statistics">
+      <PARAM name="clear-subcommands" help="Clear subcommands" mode="switch" ptype="SUBCOMMAND">
+      <PARAM help="clear ip dhcp-relay statistics" name="statistics" optional="false" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32"/>
+      </PARAM>
+      </PARAM>
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_relay_clear  ${ifName}  ${__full_line}
+ </ACTION>
+    </COMMAND>
 </VIEW>
 
 <!--=======================================================-->

@@ -19,6 +19,10 @@ module sonic-vlan {
         prefix spc;
     }
 
+    import sonic-extension {
+                prefix sonic-ext;
+    }
+
     organization
         "SONiC";
 
@@ -97,31 +101,83 @@ module sonic-vlan {
                 leaf-list dhcp_servers{
                      max-elements 4;
                      type inet:ip-address;
+                      must "((/scommon:operation/scommon:operation != 'CREATE') and (/scommon:operation/scommon:operation != 'UPDATE')) or " +
+                          "count(/sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_IPADDR_LIST[vlanName=current()/../name]) > 1"
+                           {
+                                    error-message "DHCP server can be configured on Vlan routing interface only";
+                                    error-app-tag dhcp-server-invalid-portchannel-routing-interface;
+                            }
+
                 }
 
                 leaf-list dhcpv6_servers{
                      max-elements 4; 
                      type inet:ipv6-address;
+            
                 }
 
                 leaf dhcp_relay_link_select {
-                     type scommon:mode;
-                }
+                      type scommon:mode;
+                      must "((/scommon:operation/scommon:operation != 'CREATE') and (/scommon:operation/scommon:operation != 'UPDATE')) or " +
+                            "(current()/../dhcp_servers and current()/../dhcp_relay_src_intf)"
+                             {
+                                      error-message "DHCP server or src-intf not configured";
+                                      error-app-tag dhcp-server-invalid-link-select-config;
+                              }
+                 }
 
-                leaf dhcp_relay_src_intf {
-                     type string;
-                }
+                 leaf dhcp_relay_src_intf {
+                       must "((/scommon:operation/scommon:operation != 'CREATE') and (/scommon:operation/scommon:operation != 'UPDATE')) or " +
+                                             "(current()/../dhcp_servers)"
+                                             {
+                                                       error-message "DHCP relay address not configured or invalid operation";
+                                                       error-app-tag dhcp-server-adress-config;
+                                             }
+                                        must "((/scommon:operation/scommon:operation != 'CREATE') and (/scommon:operation/scommon:operation != 'UPDATE')) or " +
+                                             "(contains(current()/../dhcp_relay_src_intf, 'Ethernet') or contains(current()/../dhcp_relay_src_intf, 'PortChannel') or contains(current()/../dhcp_relay_src_intf, 'Vlan') or contains(current()/../dhcp_relay_src_intf, 'Loopback'))"
+                                             {
+                                                       error-message "Provide a valid src_intf";
+                                                       error-app-tag dhcp-server-adress-config;
+                                             }
+                                        must "((/scommon:operation/scommon:operation != 'DELETE') or (current()/../dhcp_relay_link_select = 'enable'))"
+                                             {
+                                                       error-message "Disable link-select before deleting src-intf";
+                                                       error-app-tag dhcp-server-adress-config;
+                                             }
+                       type string;
+                      }
 
-                leaf dhcp_relay_max_hop_count {
-                      type uint32;
-                }
+                 leaf dhcp_relay_max_hop_count {
+                        type uint32;
+                        must "((/scommon:operation/scommon:operation != 'CREATE') and (/scommon:operation/scommon:operation != 'UPDATE')) or " +
+                               "(current()/../dhcp_servers)"
+                                {
+                                        error-message "DHCP relay address not configured";
+                                        error-app-tag dhcp-server-adress-config;
+                                }
+
+                 }
 
                 leaf dhcpv6_relay_src_intf {
-                      type string;
+                         type string;
+                         must "((/scommon:operation/scommon:operation != 'CREATE') and (/scommon:operation/scommon:operation != 'UPDATE')) or " +
+                                "(current()/../dhcpv6_servers) "
+                               {
+                                         error-message "DHCP relay address not configured";
+                                         error-app-tag dhcp-server-adress-config;
+                               }
+
                 }
 
                 leaf dhcpv6_relay_max_hop_count {
-                      type uint32;
+                         type uint32;
+                         must "((/scommon:operation/scommon:operation != 'CREATE') and (/scommon:operation/scommon:operation != 'UPDATE')) or " +
+                               "(current()/../dhcpv6_servers) "
+                               {
+                                         error-message "DHCP relay address not configured";
+                                         error-app-tag dhcp-server-adress-config;
+                               }
+
                 }
 
             }
