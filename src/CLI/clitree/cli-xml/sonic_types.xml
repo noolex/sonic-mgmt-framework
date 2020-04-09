@@ -1190,5 +1190,11 @@ limitations under the License.
         help=""
         />
     <!--=======================================================-->
-
+        <PTYPE
+        name="DPB_MODE"
+        method="select"
+        pattern="1x400G 1x100G 2x100G 2x50G 4x25G 4x10G"
+        help="port breakout mode"
+        />
+     <!--=======================================================-->
 </CLISH_MODULE>
