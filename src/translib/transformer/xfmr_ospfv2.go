@@ -1153,6 +1153,7 @@ var DbToYang_ospfv2_state_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) e
     var cmd_err error
     oper_err := errors.New("Operational error")
     cmn_log := "GET: xfmr for OSPF-Global State"
+    var vtysh_cmd string
 
     log.Info("DbToYang_ospfv2_state_xfmr ***", inParams.uri)
     var ospfv2_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Ospfv2
@@ -1168,7 +1169,7 @@ var DbToYang_ospfv2_state_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) e
 
     targetUriPath, err := getYangPathFromUri(pathInfo.Path)
     log.Info(targetUriPath)
-    vtysh_cmd := "show ip ospf json"
+    vtysh_cmd = "show ip ospf vrf " + vrfName + " json"
     output_state, cmd_err := exec_vtysh_cmd (vtysh_cmd)
     if cmd_err != nil {
       log.Errorf("Failed to fetch ospf global state:, err=%s", cmd_err)
@@ -1178,9 +1179,12 @@ var DbToYang_ospfv2_state_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) e
     log.Info(output_state)
     log.Info(vrfName)
     
-    if vrfName == "default" {
-        err = ospfv2_fill_global_state (output_state, ospfv2_obj)
-        err = ospfv2_fill_area_state (output_state, ospfv2_obj)
+    for key,value := range output_state {
+        ospf_info := value.(map[string]interface{})
+        log.Info(key)
+        log.Info(ospf_info)
+        err = ospfv2_fill_global_state (ospf_info, ospfv2_obj)
+        err = ospfv2_fill_area_state (ospf_info, ospfv2_obj)
     }
     
     return  err;
