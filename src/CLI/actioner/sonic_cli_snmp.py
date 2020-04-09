@@ -1090,22 +1090,26 @@ def invoke(func, args):
         additionalArgs.pop(index)
     #end of additional/optional paramters
 
-    type = additionalArgs.pop(0)
-    type = type.rstrip('s')+'Notify'      # one of 'trapNotify' or 'informNotify'
-    if secModel == SecurityModels['v3']:
-      secLevel = SecurityLevels[additionalArgs.pop(0)]
-    if len(additionalArgs) > 0:
-      if type == 'trapNotify':
-        secModel = additionalArgs.pop(0)
+    if len(additionalArgs)>0:
+      type = additionalArgs.pop(0)
+      type = type.rstrip('s')+'Notify'      # one of 'trapNotify' or 'informNotify'
+      if secModel == SecurityModels['v3']:
+        secLevel = SecurityLevels[additionalArgs.pop(0)]
+      if len(additionalArgs) > 0:
+        if type == 'trapNotify':
+          secModel = additionalArgs.pop(0)
+    else:
+      type = 'trapNotify'
 
     # parameter checking
     # informs can never be 'v1'
     if type == 'informNotify' and secModel == SecurityModels['v1']:
       secModel = SecurityModels['v2c']
-    if not srcIf == None:
+    if srcIf == 'mgmt' :
+      ifValid = True
+    elif not srcIf == None:
       for intf in netifaces.interfaces():
         if intf == srcIf:
-          ipaddresses = netifaces.ifaddresses(intf)
           ifValid = True
           break
 

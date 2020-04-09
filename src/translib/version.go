@@ -60,11 +60,9 @@ func (v Version) String() string {
 
 // Set parses a version string in X.Y.Z into a Version object v.
 func (v *Version) Set(s string) error {
-	var err error
-	if len(s) != 0 {
-		_, err = fmt.Sscanf(s, "%d.%d.%d", &v.Major, &v.Minor, &v.Patch)
-	} else {
-		*v = Version{}
+	_, err := fmt.Sscanf(s, "%d.%d.%d", &v.Major, &v.Minor, &v.Patch)
+	if err == nil && v.IsNull() {
+		err = fmt.Errorf("Invalid version \"%s\"", s)
 	}
 
 	return err

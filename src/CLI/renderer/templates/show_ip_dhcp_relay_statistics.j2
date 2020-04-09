@@ -1,47 +1,35 @@
-{% set vars = {'bootReplySent':"0"} %}
-{% set vars = {'bootRequestSent':"0"} %}
-{% set vars = {'bootRequestRec':"0"} %}
-{% set vars = {'dhcpAckSent':"0"} %}
-{% set vars = {'dhcpDecRec':"0"} %}
-{% set vars = {'dhcpDisRec':"0"} %}
-{% set vars = {'dhcpInformRec':"0"} %}
-{% set vars = {'dhcpNackSent':"0"} %}
-{% set vars = {'dhcpOfferSent':"0"} %}
-{% set vars = {'dhcpReqRec':"0"} %}
-{% set vars = {'InvalidOpcode':"0"} %}
-{% set vars = {'InvalidOptions':"0"} %}
-{% set vars = {'TotalDropped':"0"} %}
-
-
 {% if 'openconfig-relay-agent:state' in json_output %}
-    {% set counters = json_output['openconfig-relay-agent:state'] %}
-    {% for key in counters %}
-        {% set counter = counters[key] %}
-        {% if vars.update({'bootReplySent':counter['bootreply-sent']}) %}{% endif %}
-        {% if vars.update({'bootRequestSent':counter['bootrequest-sent']}) %}{% endif %}
-        {% if vars.update({'bootRequestRec':counter['bootrequest-received']}) %}{% endif %}
-        {% if vars.update({'dhcpAckSent':counter['dhcp-ack-sent']}) %}{% endif %}
-        {% if vars.update({'dhcpDecRec':counter['dhcp-decline-received']}) %}{% endif %}
-        {% if vars.update({'dhcpDisRec':counter['dhcp-discover-received']}) %}{% endif %}
-        {% if vars.update({'dhcpInformRec':counter['dhcp-inform-received']}) %}{% endif %}
-        {% if vars.update({'dhcpNackSent':counter['dhcp-nack-sent']}) %}{% endif %}
-        {% if vars.update({'dhcpOfferSent':counter['dhcp-offer-sent']}) %}{% endif %}
-        {% if vars.update({'dhcpReqRec':counter['dhcp-request-received']}) %}{% endif %}
-        {% if vars.update({'InvalidOpcode':counter['invalid-opcode']}) %}{% endif %}
-        {% if vars.update({'InvalidOptions':counter['invalid-options']}) %}{% endif %}
-        {% if vars.update({'TotalDropped':counter['total-dropped']}) %}{% endif %}
-{{ "BOOTREPLY messages forwarded by the relay agent :" }} {{ vars.bootReplySent }}
-{{ "BOOTREQUEST messages forwarded by the relay agent :" }} {{ vars.bootRequestSent }}
-{{ "BOOTREQUEST messages received by the relay agent :" }} {{ vars.bootRequestRec }}
-{{ "DHCP ACK messages sent by the relay agent :" }} {{ vars.dhcpAckSent }}
-{{ "DHCP DECLINE messages received by the relay agent :" }} {{ vars.dhcpDecRec }}
-{{ "DHCP DISCOVER messages received by the relay agent :" }} {{ vars.dhcpDisRec }}
-{{ "DHCP INFORM messages received by the relay agent :" }} {{ vars.dhcpInformRec }}
-{{ "DHCP NACK messages sent by the relay agent :" }} {{ vars.dhcpNackSent }}
-{{ "DHCP OFFER messages sent by the relay agent :" }} {{ vars.dhcpOfferSent }}
-{{ "DHCP REQUEST messages received by the relay agent :" }} {{ vars.dhcpReqRec }}
-{{ "Number of DHCP packets dropped due to an invalid opcode :" }} {{ vars.InvalidOpcode }}
-{{ "Number of DHCP packets dropped due to an invalid option :" }} {{ vars.InvalidOptions }}
-{{ "Total number of DHCP packets dropped by the relay agent :" }} {{ vars.TotalDropped }}         
-    {% endfor %}  
+    {% set data = json_output['openconfig-relay-agent:state'] %}
+        {% if 'counters' in  data%}
+         {% set counter = data['counters'] %}
+{{ "BOOTREQUEST messages received by the relay agent        :" }} {{ counter['bootrequest-received'] }}
+{{ "BOOTREQUEST messages forwarded by the relay agent       :" }} {{ counter['bootrequest-sent'] }}
+{{ "BOOTREPLY messages forwarded by the relay agent         :" }} {{ counter['bootreply-sent'] }}
+{{ "DHCP DISCOVER messages received by the relay agent      :" }} {{ counter['dhcp-discover-received'] }}
+{{ "DHCP OFFER messages sent by the relay agent             :" }} {{ counter['dhcp-offer-sent'] }}
+{{ "DHCP REQUEST messages received by the relay agent       :" }} {{ counter['dhcp-request-received'] }}
+{{ "DHCP ACK messages sent by the relay agent               :" }} {{ counter['dhcp-ack-sent'] }}
+{{ "DHCP RELEASE messages received by the relay agent       :" }} {{ counter['dhcp-release-received'] }}
+{{ "DHCP DECLINE messages received by the relay agent       :" }} {{ counter['dhcp-decline-received'] }}
+{{ "DHCP INFORM messages received by the relay agent        :" }} {{ counter['dhcp-inform-received'] }}
+{{ "DHCP NACK messages sent by the relay agent              :" }} {{ counter['dhcp-nack-sent'] }}
+{{ "Total number of DHCP packets dropped by the relay agent :" }} {{ counter['total-dropped'] }}
+{{ "Number of DHCP packets dropped due to an invalid opcode :" }} {{ counter['invalid-opcode'] }}
+{{ "Number of DHCP packets dropped due to an invalid option :" }} {{ counter['invalid-options'] }}
+       {% else %}
+{{ "BOOTREQUEST messages received by the relay agent        : 0" }}
+{{ "BOOTREQUEST messages forwarded by the relay agent       : 0" }}
+{{ "BOOTREPLY messages forwarded by the relay agent         : 0" }}
+{{ "DHCP DISCOVER messages received by the relay agent      : 0" }}
+{{ "DHCP OFFER messages sent by the relay agent             : 0" }}
+{{ "DHCP REQUEST messages received by the relay agent       : 0" }}
+{{ "DHCP ACK messages sent by the relay agent               : 0" }}
+{{ "DHCP RELEASE messages received by the relay agent       : 0" }}
+{{ "DHCP DECLINE messages received by the relay agent       : 0" }}
+{{ "DHCP INFORM messages received by the relay agent        : 0" }}
+{{ "DHCP NACK messages sent by the relay agent              : 0" }}
+{{ "Total number of DHCP packets dropped by the relay agent : 0" }}
+{{ "Number of DHCP packets dropped due to an invalid opcode : 0" }}
+{{ "Number of DHCP packets dropped due to an invalid option : 0" }}
+       {% endif %}
 {% endif %}

@@ -51,6 +51,7 @@ type JSONDhcpCounters  struct {
     DhcpDiscoverReceived   CounterObj  `json:"dhcp-discover-received, omitempty"`
     DhcpInformReceived     CounterObj  `json:"dhcp-inform-received, omitempty"`
     DhcpRequestReceived    CounterObj  `json:"dhcp-request-received, omitempty"`
+    DhcpReleaseReceived    CounterObj  `json:"dhcp-release-received, omitempty"`
     DhcpOfferSent          CounterObj  `json:"dhcp-offer-sent, omitempty"`
     DhcpAckSent            CounterObj  `json:"dhcp-ack-sent, omitempty"`
     DhcpNackSent           CounterObj  `json:"dhcp-nack-sent, omitempty"`
@@ -86,6 +87,7 @@ func init () {
     XlateFuncBind("DbToYang_relay_agent_counters_xfmr", DbToYang_relay_agent_counters_xfmr)
     XlateFuncBind("DbToYang_relay_agent_v6_counters_xfmr", DbToYang_relay_agent_v6_counters_xfmr)
 }
+
 
 // Transformer function to loop over multiple interfaces
 var relay_agent_table_xfmr TableXfmrFunc = func (inParams XfmrParams) ([]string, error) {
@@ -185,7 +187,7 @@ var DbToYang_relay_agent_intf_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrP
     return res_map, err
 }
 
-// Function to transform id coming from Yang to vlaind in the vlan table, Ethernet and Portchannel have the field "id"
+// Function to transform id coming from Yang to vlan-id in the vlan table, Ethernet and Portchannel don't need special handling
 var YangToDb_relay_agent_id_field_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
     res_map := make(map[string]string)
     var err error
@@ -196,8 +198,6 @@ var YangToDb_relay_agent_id_field_xfmr FieldXfmrYangToDb = func(inParams XfmrPar
     if strings.HasPrefix(ifName, VLAN) == true {
         vlanId := ifName[len("Vlan"):len(ifName)]
         res_map["vlanid"] = vlanId
-    } else {
-        res_map["id"] = inParams.key
     }
     log.Info("YangToDb_relay_agent_id_field_xfmr: res_map:", res_map)
     return res_map, err
@@ -328,6 +328,8 @@ var DbToYang_relay_agent_counters_xfmr SubTreeXfmrDbToYang = func(inParams XfmrP
 
     counterObj.DhcpRequestReceived = getCounterValue(jsonRelayAgentCounter.DhcpRequestReceived.Value)
 
+    counterObj.DhcpReleaseReceived = getCounterValue(jsonRelayAgentCounter.DhcpReleaseReceived.Value)
+
     counterObj.BootrequestSent = getCounterValue(jsonRelayAgentCounter.BootrequestSent.Value)
 
     counterObj.BootreplySent = getCounterValue(jsonRelayAgentCounter.BootreplySent.Value)
@@ -430,3 +432,4 @@ var DbToYang_relay_agent_v6_counters_xfmr SubTreeXfmrDbToYang = func(inParams Xf
 
     return err
 }
+

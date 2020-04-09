@@ -17,21 +17,34 @@ limitations under the License.
 
 <ROOT>
     <MACRODEF name="DHCP-RELAY-CONFIG-OPTIONS">
-       <PARAM  help="IP address"  name="ipaddr1" optional = "false" ptype="IP_ADDR" >
-          <PARAM  help="IP address"  name="ipaddr2"  optional = "true"  ptype="IP_ADDR" >
-             <PARAM  help="IP address"  name="ipaddr3"  optional = "true"  ptype="IP_ADDR" >
-                <PARAM  help="IP address"  name="ipaddr4"  optional = "true"  ptype="IP_ADDR" />
-             </PARAM>
+      <PARAM help="IP address" name="ipaddr1" optional="true" ptype="IP_ADDR">
+        <PARAM help="IP address" name="ipaddr2" optional="true" ptype="IP_ADDR">
+          <PARAM help="IP address" name="ipaddr3" optional="true" ptype="IP_ADDR">
+            <PARAM help="IP address" name="ipaddr4" optional="true" ptype="IP_ADDR"/>
           </PARAM>
-       </PARAM>
+        </PARAM>
+      </PARAM>
+      <PARAM help="Add DHCP relay source interface" name="src-intf" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32"/>
+      </PARAM>
+      <PARAM help="Enable link selection suboption" name="link-select" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
+      <PARAM help="Set max hop count for DHCP Relay packets" name="max-hop-count" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="RANGE_16"/>
+      </PARAM>
     </MACRODEF>
     <MACRODEF name="DHCPV6-RELAY-CONFIG-OPTIONS">
-       <PARAM  help="IP address"  name="ipaddr1" optional = "false" ptype="IPV6_ADDR" >
+       <PARAM  help="IP address"  name="ipaddr1" optional = "true" ptype="IPV6_ADDR" >
           <PARAM  help="IP address"  name="ipaddr2"  optional = "true"  ptype="IPV6_ADDR" >
              <PARAM  help="IP address"  name="ipaddr3"  optional = "true"  ptype="IPV6_ADDR" >
                 <PARAM  help="IP address"  name="ipaddr4"  optional = "true"  ptype="IPV6_ADDR" />
              </PARAM>
           </PARAM>
+       </PARAM>
+       <PARAM  help="Add DHCPv6 relay source interface" name="src-intf" optional = "true" mode="subcommand" ptype="SUBCOMMAND" >
+          <PARAM  help="Interface name" name="ifName" optional = "false" ptype="STRING_32" />
+       </PARAM>
+       <PARAM  help="Set max hop count for DHCPv6 Relay packets" name="max-hop-count" mode="subcommand" optional = "true" ptype="SUBCOMMAND" >
+          <PARAM  help="Number of max hops"  name="hop-count" optional = "false" ptype="RANGE_16" />
        </PARAM>
     </MACRODEF>
     <MACRODEF name="DHCP-RELAY-NO-CONFIG-OPTIONS">
@@ -42,6 +55,9 @@ limitations under the License.
              </PARAM>
           </PARAM>
        </PARAM>
+       <PARAM help="Remove DHCP relay source interface" name="src-intf" mode="subcommand" optional="true" ptype="SUBCOMMAND"/>
+       <PARAM help="Disable link selection suboption" name="link-select" mode="subcommand" optional="true" ptype="SUBCOMMAND"/>
+       <PARAM help="Remove max hop count for DHCP Relay packets" name="max-hop-count" mode="subcommand" optional="true" ptype="SUBCOMMAND"/>
     </MACRODEF>
     <MACRODEF name="DHCPV6-RELAY-NO-CONFIG-OPTIONS">
        <PARAM  help="IP address"  name="ipaddr1" optional = "true" ptype="IPV6_ADDR" >
@@ -51,12 +67,17 @@ limitations under the License.
              </PARAM>
           </PARAM>
        </PARAM>
+       <PARAM help="Remove DHCPv6 relay source interface" name="src-intf" mode="subcommand" optional="true" ptype="SUBCOMMAND"/>
+       <PARAM help="Remove max hop count for DHCPv6 Relay packets" name="max-hop-count" mode="subcommand" optional="true" ptype="SUBCOMMAND"/>
     </MACRODEF>
     <MACRODEF name="DHCP-RELAY-SHOW-OPTIONS">
        <PARAM   help="Show IP DHCP relay information" name="relay-cmd"  mode="switch"  ptype="SUBCOMMAND"  optional="false">
-           <PARAM  help="Show IP DHCP relay information"  name="brief"  optional = "true"  mode="subcommand"  ptype="SUBCOMMAND" />
-           <PARAM  help="Show IP DHCP relay statistics"  optional="true"  name="statistics"  mode="subcommand"  ptype="SUBCOMMAND" >
-              <PARAM help="Interface Name" optional="false" name="ifName"  ptype="STRING_32" />
+           <PARAM help="Show IP DHCP relay information" name="brief" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
+           <PARAM help="Show IP DHCP relay information" name="detailed" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+                 <PARAM help="Interface Name" optional="true" name="ifName1"  ptype="STRING_32"/>
+           </PARAM>
+           <PARAM help="Show IP DHCP relay statistics" name="statistics" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+                 <PARAM help="Interface Name" optional="false" name="ifName" ptype="STRING_32"/>
            </PARAM>
         </PARAM>
     </MACRODEF>

@@ -72,15 +72,13 @@ def get_helper_adr_str(args):
         if (args[2] == 'ip'):
            if not ((i.find(".") == -1)):
               ipAdrStr += i
-              if not (index == (len(args)-1)):
-                 ipAdrStr += ","
+              ipAdrStr += ","
         elif (args[2] == 'ipv6'):
            if not ((i.find("::") == -1)):
               ipAdrStr += i
-              if not (index == (len(args)-1)):
-                 ipAdrStr += ","
+              ipAdrStr += ","
 
-    return ipAdrStr
+    return ipAdrStr[:-1];
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
@@ -331,54 +329,169 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0], index="0")
         return api.delete(path)    
      
-    elif func == 'patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_config_helper_address':
-        path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/helper-address', id=args[0])
-        body = {"openconfig-relay-agent:helper-address": [] }
+    elif func == 'patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config':
+        path1 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/helper-address', id=args[0])
+        body1 = {"openconfig-relay-agent:helper-address": [] }
         j=0
+        helperConfig = ""
+        srcIntf = ""
+        linkSelect = ""
+        MaxHopCount = ""
         for index,i in  enumerate(args):
                 #Find the ipv4 address from the list of args
                 if not ((i.find(".") == -1)):
                    #Insert the found v4 address in the body
-                   body["openconfig-relay-agent:helper-address"].insert(j,args[index])
+                   body1["openconfig-relay-agent:helper-address"].insert(j,args[index])
                    j += 1
+                   helperConfig = "True"
+                if ( i == "src-intf" ):
+                   srcIntf = "True"
+                   path2 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
+                   body2 = {"openconfig-relay-agent-ext:src-intf":  args[index+1] }
+                elif ( i == "link-select" ):
+                   linkSelect = "True"
+                   path3 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:link-select', id=args[0])
+                   body3 = { "openconfig-relay-agent-ext:link-select": "enable" }
+                elif ( i == "max-hop-count" ):
+                   MaxHopCount = "True"
+                   path4 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
+                   body4 = {"openconfig-relay-agent-ext:max-hop-count": int(args[index+1]) }
+        if (helperConfig == "True"):
+           api.patch(path1, body1)
+        if ( srcIntf == "True" ):
+           api.patch(path2, body2)
+        if ( linkSelect == "True"):
+           api.patch(path3, body3)
+        if (MaxHopCount ==  "True"):
+           api.patch(path4, body4)
+        if (helperConfig == "True"):
+           return  api.patch(path1, body1)
+        elif ( srcIntf == "True" ):
+           return  api.patch(path2, body2)
+        elif ( linkSelect == "True"):
+           return  api.patch(path3, body3)
+        elif (MaxHopCount ==  "True"):
+           return api.patch(path4, body4)
 
-        return api.patch(path, body)
-    elif func == 'patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address':
-        path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/helper-address', id=args[0])
-        body = {"openconfig-relay-agent:helper-address": [] }
+    elif func == 'patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config':
+        path1 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/helper-address', id=args[0])
+        body1 = {"openconfig-relay-agent:helper-address": [] }
         j=0
+        helperConfig = ""
+        srcIntf = ""
+        linkSelect = ""
+        MaxHopCount = ""
         for index,i in  enumerate(args):
                 #Find the ipv6 address from the list of args
                 if not ((i.find("::") == -1)):
-                   #Insert the found v6 address in the body
-                   body["openconfig-relay-agent:helper-address"].insert(j,args[index])
+                   #Insert the found v4 address in the body
+                   body1["openconfig-relay-agent:helper-address"].insert(j,args[index])
                    j += 1
+                   helperConfig = "True"
+                if ( i == "src-intf" ):
+                   srcIntf = "True"
+                   path2 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
+                   body2 = {"openconfig-relay-agent-ext:src-intf":  args[index+1] }
+                elif ( i == "link-select" ):
+                   linkSelect = "True"
+                   path3 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:link-select', id=args[0])
+                   body3 = { "openconfig-relay-agent-ext:link-select": "enable" }
+                elif ( i == "max-hop-count" ):
+                   MaxHopCount = "True"
+                   path4 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
+                   body4 = {"openconfig-relay-agent-ext:max-hop-count": int(args[index+1]) }
+        if (helperConfig == "True"):
+           api.patch(path1, body1)
+        if ( srcIntf == "True" ):
+           api.patch(path2, body2)
+        if ( linkSelect == "True"):
+           api.patch(path3, body3)
+        if (MaxHopCount ==  "True"):
+           api.patch(path4, body4)
+        if (helperConfig == "True"):
+           return  api.patch(path1, body1)
+        elif ( srcIntf == "True" ):
+           return  api.patch(path2, body2)
+        elif ( linkSelect == "True"):
+           return  api.patch(path3, body3)
+        elif (MaxHopCount ==  "True"):
+           return api.patch(path4, body4)
 
-        return api.patch(path, body)
-
-    elif func == 'del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_config_helper_address':
+    elif func == 'del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config':
         ipAdrStr = ""
         ipAdrStr = get_helper_adr_str(args)
         helperAddress=ipAdrStr
+        path1 = ""
+        path = ""
         if len(helperAddress):
            #Delete specified ipv4 adresses
-           path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/helper-address={helperAddress}', id=args[0], helperAddress=ipAdrStr)
-        else:
+           path1 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/helper-address={helperAddress}', id=args[0], helperAddress=ipAdrStr)
+        elif len(args) == 4:
            #No adress specified so delete all the configured relay adressess
-           path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/helper-address', id=args[0])
-        return api.delete(path)
+           path1 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/helper-address', id=args[0])
 
-    elif func == 'del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_config_helper_address':
+        if (path1 != ""):
+           api.delete(path1)
+           path2 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/helper-address', id=args[0])
+           resp = api.get(path2)
+           if  resp.ok():
+              if not 'openconfig-relay-agent:helper-address' in resp.content:
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
+                 api.delete(path)
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:link-select', id=args[0])
+                 api.delete(path)
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
+                 api.delete(path)
+        for i in args:
+           if ( i == "src-intf" ):
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
+             api.delete(path)
+           elif ( i == "link-select" ):
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:link-select', id=args[0])
+             api.delete(path)
+           elif ( i == "max-hop-count") :
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
+             api.delete(path)
+        if (path1 != ""):
+           return api.delete(path1)
+        if (path != ""):
+           return api.delete(path)
+
+    elif func == 'del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config':
         ipAdrStr = ""
         ipAdrStr = get_helper_adr_str(args)
         helperAddress=ipAdrStr
+        path1 = ""
+        path = ""
         if len(helperAddress):
            #Delete specified ipv6 adresses
-           path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/helper-address={helperAddress}', id=args[0], helperAddress=ipAdrStr)
-        else:
+           path1 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/helper-address={helperAddress}', id=args[0], helperAddress=ipAdrStr)
+        elif len(args) == 4:
            #No adress specified so delete all the configured relay adressess
-           path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/helper-address', id=args[0])
-        return api.delete(path)
+           path1 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/helper-address', id=args[0])
+
+        if (path1 != ""):
+           api.delete(path1)
+           path2 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/helper-address', id=args[0])
+           resp = api.get(path2)
+           if  resp.ok():
+              if not 'openconfig-relay-agent:helper-address' in resp.content:
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
+                 api.delete(path)
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
+                 api.delete(path)
+
+        for i in args:
+           if ( i == "src-intf" ):
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
+             api.delete(path)
+           elif ( i == "max-hop-count") :
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
+             api.delete(path)
+        if (path1 != ""):
+           return api.delete(path1)
+        if (path != ""):
+           return api.delete(path)
 
     elif func == 'get_openconfig_relay_agent_relay_agent':
         path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp')
@@ -396,8 +509,22 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/state', id=args[1])
         return api.get(path)
 
-    return api.cli_not_implemented(func)
+    elif func == 'get_openconfig_relay_agent_relay_agent_detail':
+        if not len(args) > 1:
+           path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp')
+        else:
+           path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}', id=args[1])
+        return api.get(path)
 
+    elif func == 'get_openconfig_relay_agent_relay_agent_detail_dhcpv6':
+        if not len(args) > 1:
+           path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6')
+        else:
+           path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}', id=args[1])
+        return api.get(path)
+
+    return api.cli_not_implemented(func)
+ 
 
 
 
@@ -461,6 +588,11 @@ def run(func, args):
                     show_cli_output(args[0], api_response)
                 elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_state':
                     show_cli_output(args[0], api_response)
+                elif func == 'get_openconfig_relay_agent_relay_agent_detail':
+                    show_cli_output(args[0], api_response)
+                elif func == 'get_openconfig_relay_agent_relay_agent_detail_dhcpv6':
+                    show_cli_output(args[0], api_response)
+
 
         else:
             print response.error_message()
