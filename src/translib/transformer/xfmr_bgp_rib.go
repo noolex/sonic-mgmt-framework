@@ -2472,6 +2472,112 @@ var DbToYang_bgp_routes_get_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams)
     return err;
 }
 
+func get_rpc_show_bgp_sub_cmd_for_ipaddr_ (mapData map[string]interface{}) (bool, string, string) {
+    ip, ok := mapData["ip-addr"].(string) ; if !ok {
+        return false, "ip-addr attribute missing for option IP-ADDR", ""
+    }
+    subCmd := ip
+
+    pathType, ok := mapData["path-type"].(string) ; if ok {
+        switch pathType {
+            case "BEST_PATH":
+                subCmd = subCmd + " bestpath"
+            case "MULTI_PATH":
+                subCmd = subCmd + " multipath"
+            default :
+                return false, "Invalid value in path-type attribute for option IP-ADDR", ""
+        }
+    }
+
+    subCmd = subCmd + " json"
+    return true, "", subCmd
+}
+
+func get_rpc_show_bgp_sub_cmd_for_community_string_ (mapData map[string]interface{}) (bool, string, string) {
+    communityStr, ok := mapData["community-string"].(string) ; if !ok {
+        return false, "community-string attribute missing for option COMMUNITY-STRING", ""
+    }
+    subCmd := "community " + communityStr
+
+    exactMatch, ok := mapData["community-str-exact-match"].(bool) ; if ok && exactMatch == true {
+        subCmd = subCmd + " exact-match"
+    }
+
+    subCmd = subCmd + " json"
+    return true, "", subCmd
+}
+
+func get_rpc_show_bgp_sub_cmd_for_community_local_as_ (mapData map[string]interface{}) (bool, string, string) {
+    exactMatch, ok := mapData["community-local-as-exact-match"].(bool) ; if ok && exactMatch == true {
+        return true, "", "community local-AS exact-match json"
+    }
+    return true, "", "community local-AS json"
+}
+
+func get_rpc_show_bgp_sub_cmd_for_community_no_advertise_ (mapData map[string]interface{}) (bool, string, string) {
+    exactMatch, ok := mapData["community-no-advertise-exact-match"].(bool) ; if ok && exactMatch == true {
+        return true, "", "community no-advertise exact-match json"
+    }
+    return true, "", "community no-advertise json"
+}
+
+func get_rpc_show_bgp_sub_cmd_for_community_no_export_ (mapData map[string]interface{}) (bool, string, string) {
+    exactMatch, ok := mapData["community-no-export-exact-match"].(bool) ; if ok && exactMatch == true {
+        return true, "", "community no-export exact-match json"
+    }
+    return true, "", "community no-export json"
+}
+
+func get_rpc_show_bgp_sub_cmd_for_community_no_peer_ (mapData map[string]interface{}) (bool, string, string) {
+    exactMatch, ok := mapData["community-no-peer-exact-match"].(bool) ; if ok && exactMatch == true {
+        return true, "", "community no-peer exact-match json"
+    }
+    return true, "", "community no-peer json"
+}
+
+func get_rpc_show_bgp_sub_cmd_for_route_map_ (mapData map[string]interface{}) (bool, string, string) {
+    routeMapName, ok := mapData["route-map-name"].(string) ; if !ok {
+        return false, "route-map-name attribute missing for option ROUTE-MAP", ""
+    }
+
+    subCmd := "route-map " + routeMapName + " json"
+    return true, "", subCmd
+}
+
+func get_rpc_show_bgp_sub_cmd_ (mapData map[string]interface{}) (bool, string, string) {
+    subCmd := "json" /* default value for "ALL" option as well" */
+
+    /* if query-type not present, treat it as ALL option */
+    queryType, ok := mapData["query-type"].(string) ; if !ok {
+        log.Info ("In get_rpc_show_bgp_sub_cmd_ : query-type not present. Using Default-op:\"ALL\"")
+        return true, "", subCmd
+    }
+
+    log.Info("In get_rpc_show_bgp_sub_cmd_ ==> queryType : ", queryType)
+    switch queryType {
+        case "ALL":
+            return true, "", subCmd
+        case "IP-ADDR":
+            return get_rpc_show_bgp_sub_cmd_for_ipaddr_ (mapData)
+        case "COMMUNITY-STRING":
+            return get_rpc_show_bgp_sub_cmd_for_community_string_ (mapData)
+        case "COMMUNITY-LOCAL-AS":
+            return get_rpc_show_bgp_sub_cmd_for_community_local_as_ (mapData)
+        case "COMMUNITY-NO-ADVERTISE":
+            return get_rpc_show_bgp_sub_cmd_for_community_no_advertise_ (mapData)
+        case "COMMUNITY-NO-EXPORT":
+            return get_rpc_show_bgp_sub_cmd_for_community_no_export_ (mapData)
+        case "COMMUNITY-NO-PEER":
+            return get_rpc_show_bgp_sub_cmd_for_community_no_peer_ (mapData)
+        case "ROUTE-MAP":
+            return get_rpc_show_bgp_sub_cmd_for_route_map_ (mapData)
+        default:
+            err := "Invalid value in query-type attribute : " + queryType
+            log.Info ("In get_rpc_show_bgp_sub_cmd_ : ", err)
+            return false, err, ""
+    }
+}
+
 var rpc_show_bgp RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) ([]byte, error) {
     log.Info("In rpc_show_bgp")
     var cmd, vrf_name, af_str string
@@ -2480,7 +2586,7 @@ var rpc_show_bgp RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) ([]byte,
     err = json.Unmarshal(body, &mapData)
     if err != nil {
         log.Info("Failed to unmarshall given input data")
-        return nil,  errors.New("RPC show ip bgp, invalid input")
+        return nil, errors.New("RPC show ip bgp, invalid input")
     }
 
     var result struct {
@@ -2502,14 +2608,20 @@ var rpc_show_bgp RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) ([]byte,
     }
 
     if value, ok := mapData["address-family"].(string) ; ok {
-	if value == "IPV4_UNICAST" {
+        if value == "IPV4_UNICAST" {
             af_str = " ipv4 "
         }else if value == "IPV6_UNICAST" {
             af_str = " ipv6 "
-	}
+        }
     }
 
-    cmd = "show ip bgp" + vrf_name + af_str + " json"
+    ok, err_str, subCmd := get_rpc_show_bgp_sub_cmd_ (mapData) ; if !ok {
+        dbg_err_str := "show ip bgp RPC execution failed ==> " + err_str
+        log.Info("In rpc_show_bgp, ", dbg_err_str)
+        return nil, errors.New(dbg_err_str)
+    }
+
+    cmd = "show ip bgp" + vrf_name + af_str + subCmd
 
     cmd = strings.TrimSuffix(cmd, " ")
 

@@ -75,7 +75,7 @@ module sonic-bgp-show {
                     "Fetches BGP routes for given VRF name. If VRF name is not present, the default VRF is used";
             }
 
-            leaf family {
+            leaf address-family {
                 type enumeration {
                     enum IPV4_UNICAST;
                     enum IPV6_UNICAST;
@@ -201,7 +201,7 @@ module sonic-bgp-show {
                     "Fetches BGP statistics for given VRF name. if VRF name is not present, the default VRF is used";
             }
 
-            leaf family {
+            leaf address-family {
                 type enumeration {
                     enum IPV4_UNICAST;
                     enum IPV6_UNICAST;
