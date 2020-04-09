@@ -56,13 +56,9 @@ GO_DEPS_LIST = github.com/gorilla/mux \
 
 # GO_DEPS_LIST_2 includes "download only" dependencies.
 # They are patched, compiled and installed explicitly later.
-<<<<<<< HEAD
-GO_DEPS_LIST_2 = github.com/openconfig/goyang \
-                 github.com/openconfig/gnmi/proto/gnmi_ext \
-=======
 GO_DEPS_LIST_2 = github.com/openconfig/gnmi/proto/gnmi \
+                 github.com/openconfig/gnmi/proto/gnmi_ext \
                  github.com/openconfig/goyang \
->>>>>>> broadcom_sonic_3.0.x_share
                  github.com/openconfig/ygot/ygot
 
 
