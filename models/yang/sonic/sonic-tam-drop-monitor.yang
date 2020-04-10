@@ -185,8 +185,8 @@ module sonic-tam-drop-monitor {
 		}
 
 		leaf flowgroup-id {
-			type uint32 {
-				range "1..655356"{
+			type uint16 {
+				range "1..254"{
 					error-app-tag "Invalid Flow Group Identifier.";
 			}
 			}

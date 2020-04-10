@@ -20,7 +20,7 @@
 package server
 
 import (
-	"context"
+	"cvl"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -28,7 +28,6 @@ import (
 	"sync"
 	"text/tabwriter"
 	"time"
-	"cvl"
 )
 
 func init() {
@@ -107,7 +106,7 @@ type apiStats struct {
 // getApiStats returns the apiStats from a request's contxt.
 // Returns nil if stat object not found in the context.
 func getApiStats(r *http.Request) *apiStats {
-	s, _ := r.Context().Value(statsContextKey).(*apiStats)
+	s, _ := getContextValue(r, statsContextKey).(*apiStats)
 	return s
 }
 
@@ -123,7 +122,7 @@ func markInternal(r *http.Request) {
 func withStat(router http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var stats apiStats
-		r = r.WithContext(context.WithValue(r.Context(), statsContextKey, &stats))
+		r = setContextValue(r, statsContextKey, &stats)
 
 		ts := time.Now()
 

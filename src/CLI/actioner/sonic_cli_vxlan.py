@@ -81,6 +81,10 @@ def config_response_handler(api_response, func, args):
             elif err_tag is not 'NOERROR': 
                 if (func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list'):
                     print("Error: Please delete EVPN NVO and VLAN VNI mappings.")
+                elif (func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list'):
+                    vidstr = args[0]
+                    vnid = args[1]
+                    print("Error: Please check VLAN {}, VNI {} mapping is configured".format(vidstr, vnid))
                 else:
                     print("Error: {}".format(err_tag))
             else:
