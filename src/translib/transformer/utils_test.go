@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"testing"
 	"reflect"
-	"strings"
 	db "translib/db"
 	. "translib"
 )
