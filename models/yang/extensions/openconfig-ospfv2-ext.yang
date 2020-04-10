@@ -504,6 +504,20 @@ module openconfig-ospfv2-ext {
       "Configuration parameters relating LSA generation timer
       parameters for OSPFv2";
 
+    leaf minimum-interval{
+      type uint32;
+      units msec;
+      description
+        "LSA minimum interval timer";
+    }
+
+    leaf minimum-arrival {
+      type uint32;
+      units msec;
+      description
+        "LSA minimum arrival timer";
+    }
+
     leaf refresh-timer {
       type uint32 {
         range "10..1800";
@@ -658,7 +672,7 @@ module openconfig-ospfv2-ext {
     }
 
     leaf no-summary {
-      type ospf-routing-distance;
+      type boolean; 
       description
         "OSPF area stub no summary configuration.";
     }
@@ -2127,6 +2141,20 @@ module openconfig-ospfv2-ext {
 
   deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
           "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers/oc-netinst:lsa-generation" +
+          "/oc-netinst:state/oc-netinst:initial-delay" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers/oc-netinst:lsa-generation" +
+          "/oc-netinst:state/oc-netinst:maximum-delay" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
           "/oc-netinst:global/oc-netinst:graceful-restart" {
     deviate not-supported;
   }
@@ -2329,6 +2357,13 @@ module openconfig-ospfv2-ext {
           "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
           "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
           "/oc-netinst:interface/oc-netinst:config" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:areas/oc-netinst:area/oc-netinst:interfaces" +
+          "/oc-netinst:interface/oc-netinst:interface-ref" {
     deviate not-supported;
   }
 
