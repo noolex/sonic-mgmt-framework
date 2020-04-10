@@ -6,34 +6,49 @@ import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 
-PARAM_PATCH_PREFIX='patch_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list_'
+PARAM_PATCH_PREFIX='patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_'
 PARAM_PATCH_PREFIX_LEN=len(PARAM_PATCH_PREFIX)
-PARAM_DELETE_PREFIX='delete_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list_'
+PARAM_DELETE_PREFIX='delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_'
 PARAM_DELETE_PREFIX_LEN=len(PARAM_DELETE_PREFIX)
 
 def invoke(func, args=[]):
     api = cc.ApiClient()
 
     # Get the rules of all ECN table entries.
-    if func == 'get_sonic_wred_profile_sonic_wred_profile_wred_profile':
-        path = cc.Path('/restconf/data/sonic-wred-profile:sonic-wred-profile/WRED_PROFILE')
+    if func == 'get_openconfig_qos_ext_qos_wred_profiles':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles')
         return api.get(path)
-    elif func == 'get_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list':
-        path = cc.Path('/restconf/data/sonic-wred-profile:sonic-wred-profile/WRED_PROFILE/WRED_PROFILE_LIST={name}', name=args[0])
+    elif func == 'get_openconfig_qos_ext_qos_wred_profiles_wred_profile':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}', name=args[0])
         return api.get(path)
-    elif func == 'patch_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list':
-        path = cc.Path('/restconf/data/sonic-wred-profile:sonic-wred-profile/WRED_PROFILE/WRED_PROFILE_LIST={name}', name=args[0])
-        body = {"sonic-wred-profile:WRED_PROFILE_LIST" : [{"name" : args[0]}]}
+    elif func == 'patch_list_openconfig_qos_ext_qos_wred_profiles_wred_profile':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}', name=args[0])
+        body = {"openconfig-qos-ext:wred-profile" : [{"name" : args[0]}]}
         return api.patch(path, body)
-    elif func == 'delete_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list':
-        path = cc.Path('/restconf/data/sonic-wred-profile:sonic-wred-profile/WRED_PROFILE/WRED_PROFILE_LIST={name}', name=args[0])
-        return api.delete(path)
+    elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
+        body = {"openconfig-qos-ext:config" : {"green_min_threshold" : args[1],
+                                               "green_max_threshold" : args[2],
+                                               "green_drop_rate" : args[3]} }
+        return api.patch(path, body)
+    elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
+        body = {"openconfig-qos-ext:config" : {"yellow_min_threshold" : args[1],
+                                               "yellow_max_threshold" : args[2],
+                                               "yellow_drop_rate" : args[3]} }
+        return api.patch(path, body)
+    elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
+        body = {"openconfig-qos-ext:config" : {"red_min_threshold" : args[1],
+                                               "red_max_threshold" : args[2],
+                                               "red_drop_rate" : args[3]} }
+        return api.patch(path, body)
     elif func[0:PARAM_PATCH_PREFIX_LEN] == PARAM_PATCH_PREFIX:
-        path = cc.Path('/restconf/data/sonic-wred-profile:sonic-wred-profile/WRED_PROFILE/WRED_PROFILE_LIST={name}/'+func[PARAM_PATCH_PREFIX_LEN:], name=args[0])
-        body = { "sonic-wred-profile:"+func[PARAM_PATCH_PREFIX_LEN:] :  (args[1]) }
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config/'+func[PARAM_PATCH_PREFIX_LEN:], name=args[0])
+        body = { "openconfig-qos-ext:"+func[PARAM_PATCH_PREFIX_LEN:] :  (args[1]) }
         return api.patch(path, body)
     elif func[0:PARAM_DELETE_PREFIX_LEN] == PARAM_DELETE_PREFIX:
-        path = cc.Path('/restconf/data/sonic-wred-profile:sonic-wred-profile/WRED_PROFILE/WRED_PROFILE_LIST={name}/'+func[PARAM_DELETE_PREFIX_LEN:], name=args[0])
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config/'+func[PARAM_DELETE_PREFIX_LEN:], name=args[0])
         return api.delete(path)
 
     return api.cli_not_implemented(func)
@@ -50,17 +65,12 @@ def run(func, args):
             #print api_response
             #print sys.argv[2:]
 
-            if 'sonic-wred-profile:WRED_PROFILE' in api_response:
-                value = api_response['sonic-wred-profile:WRED_PROFILE']
-                if 'WRED_PROFILE_LIST' in value:
-                    tup = value['WRED_PROFILE_LIST']
-
             if api_response is None:
                 print("Failed")
             else:
-                if func == 'get_sonic_wred_profile_sonic_wred_profile_wred_profile_wred_profile_list':
+                if func == 'get_openconfig_qos_ext_qos_wred_profiles_wred_profile':
                      show_cli_output(args[1], api_response)
-                elif func == 'get_sonic_wred_profile_sonic_wred_profile_wred_profile':
+                elif func == 'get_openconfig_qos_ext_qos_wred_profiles':
                      show_cli_output(args[0], api_response)
                 else:
                      return

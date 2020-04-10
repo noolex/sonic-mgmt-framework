@@ -11,27 +11,26 @@
 {% set vars = {'red_drop_rate': ""} %}
 {% if json_output -%}
 {% for key_json in json_output %}
-    {% if key_json == "sonic-wred-profile:sonic-wred-profile" %}
-        {% set ecn_list = json_output[key_json]["WRED_PROFILE"]["WRED_PROFILE_LIST"] %}
+    {% if key_json == "openconfig-qos-ext:wred-profiles" %}
+        {% set wred_profs = json_output[key_json]["wred-profile"] %}
     {% else %}
-      {% if key_json == "sonic-wred-profile:WRED_PROFILE" %}
-        {% set ecn_list = json_output[key_json]["WRED_PROFILE_LIST"] %}
-      {% else %}
-        {% set ecn_list = json_output[key_json] %}
+      {% if key_json == "openconfig-qos-ext:wred-profile" %}
+        {% set wred_profs = json_output[key_json] %}
       {% endif %}
     {% endif %}
-{% for ecn in ecn_list %}
-    {% if vars.update({'name':ecn["name"]}) %}{% endif %}
-    {% if vars.update({'ecn':ecn["ecn"]}) %}{% endif %}
-    {% if vars.update({'green_min_threshold':ecn["green_min_threshold"]}) %}{% endif %}
-    {% if vars.update({'yellow_min_threshold':ecn["yellow_min_threshold"]}) %}{% endif %}
-    {% if vars.update({'red_min_threshold':ecn["red_min_threshold"]}) %}{% endif %}
-    {% if vars.update({'green_max_threshold':ecn["green_max_threshold"]}) %}{% endif %}
-    {% if vars.update({'yellow_max_threshold':ecn["yellow_max_threshold"]}) %}{% endif %}
-    {% if vars.update({'red_max_threshold':ecn["red_max_threshold"]}) %}{% endif %}
-    {% if vars.update({'green_drop_rate':ecn["green_drop_rate"]}) %}{% endif %}
-    {% if vars.update({'yellow_drop_rate':ecn["yellow_drop_rate"]}) %}{% endif %}
-    {% if vars.update({'red_drop_rate':ecn["red_drop_rate"]}) %}{% endif %}
+{% for wred_prof in wred_profs %}
+    {% set wred_cfg = wred_prof["config"] %}
+    {% if vars.update({'name':wred_prof["name"]}) %}{% endif %}
+    {% if vars.update({'ecn':wred_cfg["ecn"]}) %}{% endif %}
+    {% if vars.update({'green_min_threshold':wred_cfg["green_min_threshold"]}) %}{% endif %}
+    {% if vars.update({'yellow_min_threshold':wred_cfg["yellow_min_threshold"]}) %}{% endif %}
+    {% if vars.update({'red_min_threshold':wred_cfg["red_min_threshold"]}) %}{% endif %}
+    {% if vars.update({'green_max_threshold':wred_cfg["green_max_threshold"]}) %}{% endif %}
+    {% if vars.update({'yellow_max_threshold':wred_cfg["yellow_max_threshold"]}) %}{% endif %}
+    {% if vars.update({'red_max_threshold':wred_cfg["red_max_threshold"]}) %}{% endif %}
+    {% if vars.update({'green_drop_rate':wred_cfg["green_drop_rate"]}) %}{% endif %}
+    {% if vars.update({'yellow_drop_rate':wred_cfg["yellow_drop_rate"]}) %}{% endif %}
+    {% if vars.update({'red_drop_rate':wred_cfg["red_drop_rate"]}) %}{% endif %}
 ---------------------------------------------------
 Profile                : {{ vars.name }}
 {% if vars.ecn %}
