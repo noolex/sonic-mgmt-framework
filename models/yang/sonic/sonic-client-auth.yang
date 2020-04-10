@@ -22,10 +22,17 @@ module sonic-client-auth {
             list REST_SERVER_LIST {
                 key "server";
                 leaf server {
-                    type string;
+                    type string {
+                        pattern "default";
+                    }
                 }
                 leaf client_auth {
-                    type string;
+                    type string {
+                        pattern "((password|cert|jwt|none),?)*" {
+                            error-message "Invalid Rest client_auth pattern";
+                            error-app-tag client-auth-invalid;
+                        }
+                    }
                 }
             }
         }
@@ -33,10 +40,17 @@ module sonic-client-auth {
             list TELEMETRY_LIST {
                 key "server";
                 leaf server {
-                    type string;
+                    type string {
+                        pattern "gnmi";
+                    }
                 }
                 leaf client_auth {
-                    type string;
+                    type string {
+                        pattern "((password|cert|jwt|none),?)*" {
+                            error-message "Invalid GNMI client_auth pattern";
+                            error-app-tag client-auth-invalid;
+                        }
+                    }
                 }
             }
         }

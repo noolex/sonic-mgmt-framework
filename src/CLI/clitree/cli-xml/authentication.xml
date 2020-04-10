@@ -42,15 +42,15 @@ limitations under the License.
    </COMMAND>
    <COMMAND name="authentication telemetry" help="telemetry authentication modes">
       <PARAM name="client-auth" 
-             help="Client Auth" 
-             ptype="STRING"> 
+             help="Client Auth: password,jwt,cert,none" 
+             ptype="AUTH_TYPES"> 
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_authentication set_sonic_client_auth_telemetry ${client-auth}</ACTION>
    </COMMAND>
    <COMMAND name="authentication rest" help="rest authentication modes">
       <PARAM name="client-auth" 
-             help="Client Auth" 
-             ptype="STRING"> 
+             help="Client Auth: password,jwt,cert,none" 
+             ptype="AUTH_TYPES"> 
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_authentication set_sonic_client_auth_rest ${client-auth}</ACTION>
    </COMMAND>

@@ -1099,5 +1099,10 @@ limitations under the License.
         help="Drop Monitor flowgroup ID range "
         />
     <!--=======================================================-->
-
+    <PTYPE
+        name="AUTH_TYPES"
+        pattern="((password|cert|jwt|none),?)*"
+        help="Authentication Types"
+        />
+    <!--=======================================================-->
 </CLISH_MODULE>
