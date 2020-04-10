@@ -140,7 +140,12 @@ module openconfig-qos-annot {
       }
     }
 
-
+    deviation /oc-qos:qos/oc-qos-ext:wred-profiles/oc-qos-ext:wred-profile {
+      deviate add {
+        sonic-ext:db-name "CONFIG_DB";
+        sonic-ext:table-name "WRED_PROFILE";
+      }
+    }
 
 }
 

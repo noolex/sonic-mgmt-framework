@@ -220,6 +220,7 @@ module openconfig-qos-ext {
 
     augment /oc-qos:qos {
         uses qos-threshold-breach-top;
+        uses qos-wred-profile-top;
     }
 
 
@@ -264,7 +265,7 @@ module openconfig-qos-ext {
     }
 
 
-	typedef classifier-type-ext {
+    typedef classifier-type-ext {
       type enumeration {
         enum IPV4 {
           description
@@ -295,7 +296,7 @@ module openconfig-qos-ext {
       }
       description
         "Type of classifier with extensions.";
-	}
+    }
 
     deviation "/oc-qos:qos/oc-qos:classifiers/oc-qos:classifier/oc-qos:config/oc-qos:type" {
       deviate replace {
@@ -306,6 +307,139 @@ module openconfig-qos-ext {
       deviate replace {
         type classifier-type-ext;
       }
+    }
+
+    grouping qos-wred-profile-config {
+        description
+          "Configuration parameters relating to a WRED profile";
+
+        leaf name{
+            type string;
+            description
+                "Name of the WRED profile.";
+        }
+
+        leaf green_min_threshold {
+            type uint64;
+            description
+                "Mininum threshold set for green packets.";
+        }
+
+        leaf yellow_min_threshold {
+            type uint64;
+            description
+                "Mininum threshold set for yellow packets.";
+        }
+
+        leaf red_min_threshold {
+            type uint64;
+            description
+                "Mininum threshold set for red packets.";
+        }
+
+        leaf green_max_threshold {
+            type uint64;
+            description
+                "Maximum threshold set for green packets.";
+        }
+
+        leaf yellow_max_threshold {
+            type uint64;
+            description
+                "Maximum threshold set for yellow packets.";
+        }
+
+        leaf red_max_threshold {
+            type uint64;
+            description
+                "Maximum threshold set for red packets.";
+        }
+
+        leaf ecn {
+            type enumeration {
+                enum ecn_none;
+                enum ecn_green;
+                enum ecn_yellow;
+                enum ecn_red;
+                enum ecn_green_yellow;
+                enum ecn_green_red;
+                enum ecn_yellow_red; 
+                enum ecn_all;
+            }
+            description
+                "ECN setting for colored packets";
+        }
+
+        leaf wred_green_enable {
+            type boolean;
+            description
+                "WRED enabled/disabled for green packets";
+        }
+
+        leaf wred_yellow_enable {
+            type boolean;
+            description
+                "WRED enabled/disabled for yellow packets";
+        }
+
+        leaf wred_red_enable {
+            type boolean;
+            description
+                "WRED enabled/disabled for red packets";
+        }
+
+        leaf green_drop_rate {
+            type uint64;
+            description
+                "Drop rate for green packets";
+        }
+
+        leaf yellow_drop_rate {
+            type uint64;
+            description
+                "Drop rate for yellow packets";
+        }
+
+        leaf red_drop_rate {
+            type uint64;
+            description
+                "Drop rate for red packets";
+        }
+    }
+
+
+    grouping qos-wred-profile-top {
+        description
+          "Top-level grouping for QoS WRED profile";
+
+        container wred-profiles {
+
+            list wred-profile {
+                key "name";
+               
+                leaf name {
+                  type leafref {
+                    path "../config/name";
+                  }
+                  description
+                    "Reference to the name of the WRED profile";
+                }
+                
+                container config {
+                  description
+                    "Configuration parameters relating to a WRED profile.";
+                  uses qos-wred-profile-config;
+                }
+
+                container state {
+                  config false;
+                  description
+                    "Operational state parameters relating to a WRED profile.";
+                  uses qos-wred-profile-config;
+                }
+
+            }
+        }
     }
 }
 
