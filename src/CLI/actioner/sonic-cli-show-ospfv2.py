@@ -20,6 +20,7 @@
 import sys
 import time
 import json
+import pdb
 import ast
 from rpipe_utils import pipestr
 import cli_client as cc
@@ -32,7 +33,7 @@ def invoke_show_api(func, args=[]):
     body = None
 
     if func == 'show_ip_ospf':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/ospfv2', name='default', identifier='OSPF', name1='ospfv2')
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2', name=args[1])
         return api.get(keypath)
     else:
         return api.cli_not_implemented(func)
@@ -42,13 +43,16 @@ def run(func, args):
     if func == 'show_ip_ospf':
         response = invoke_show_api(func, args)
         if response.ok():
+            if (args[1]):
+                d = { 'vrfName': args[1] }
             if response.content is not None:
                 # Get Command Output
                 api_response = response.content
                 if api_response is None:
                     print("Failed")
                     return
-        show_cli_output(args[0], api_response)
+            d.update(api_response)
+        show_cli_output(args[0], d)
     else:
         print(response.error_message())
 

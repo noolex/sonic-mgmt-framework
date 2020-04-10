@@ -699,7 +699,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2</ACTION>
+      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2 ${vrf-name}</ACTION>
         <DOCGEN>
     <DESCRIPTION>
       Display ospf global information
