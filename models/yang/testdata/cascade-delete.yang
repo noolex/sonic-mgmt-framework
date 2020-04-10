@@ -1,0 +1,28 @@
+module cascade-delete {
+    yang-version "1";
+
+    namespace "http://openconfig.net/yang/cascade-delete";
+
+    prefix "cas-del";
+
+    organization "OpenConfig working group";
+
+
+    import openconfig-yang-types { prefix oc-yang; }
+    import openconfig-types { prefix oc-types; }
+    import openconfig-extensions { prefix oc-ext; }
+
+    container fp-ports {
+        list fp-port {
+            key "fp-id";
+
+            leaf fp-id {
+                type uint32;
+            }
+
+            leaf brk-out {
+                type boolean;
+            }
+        }
+    }
+}

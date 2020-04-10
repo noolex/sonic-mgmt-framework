@@ -82,17 +82,16 @@ func handleCascadeDelete(d *db.DB, dbDataMap map[int]map[db.DBNum]map[string]map
                         // need to generate key based on the db type as of now just considering configdb
                         // and using "|" as tablename and key seperator
                         depKey := tblIndex + "|" + key
-                        //depList, _ := cvlSess.GetDepDataForDelete(depKey)
-                        depList := TestGetDepDataForDelete(depKey)
+                        depList := cvlSess.GetDepDataForDelete(depKey)
+                        xfmrLogInfo("handleCascadeDelete : depKey : %v, depList- %v, entry : %v", depKey, depList, entry)
                         for depIndex, depEntry := range depList {
-                            xfmrLogInfo("handleCascadeDelete : %v - %v -- entry %v.", depIndex, depEntry, entry)
                             for depEntkey, depEntkeyInst := range depEntry.Entry {
                                 depEntkeyList := strings.SplitN(depEntkey, "|", 2)
-
-                                if IsXlateFuncBinded(depEntkeyList[0]) == true {
+                                cbkHdlName := depEntkeyList[0] + "_cascade_cfg_hdl"
+                                if IsXlateFuncBinded(cbkHdlName) == true {
                                     //handle callback for table call Table Call back method and consolidate the data
                                     inParams := formXfmrDbTblCbkParams(d, DELETE, depEntry.RefKey, depEntkeyList[0], depEntkeyList[1], depEntkeyInst, dbDataMap[DELETE])
-                                    xfmrLogInfo("handleCascadeDelete inParams : %v ", inParams)
+                                    xfmrLogInfo("handleCascadeDelete CBKHDL present depIndex %v, inParams : %v ", depIndex, inParams)
                                     err = xfmrDbTblCbkHandler(inParams, depEntkeyList[0])
                                     if err == nil {
                                         for operIdx, operMap := range inParams.delDepDataMap {
@@ -159,7 +158,6 @@ func handleCascadeDelete(d *db.DB, dbDataMap map[int]map[db.DBNum]map[string]map
 
 /*****
 Test code once cvl api is ready we can drop it.
-*****/
 
 
 type CVLDepDataForDelete struct {
@@ -183,4 +181,5 @@ func TestGetDepDataForDelete(redisKey string) ([]CVLDepDataForDelete)  { //Retur
     depList= append(depList, lentry)
     return depList
 }
+*****/
 
