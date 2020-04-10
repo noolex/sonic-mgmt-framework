@@ -43,11 +43,15 @@ def get_netdev_all_sag_ifa(afi):
                     result[iface].append(address)
                 else:
                     result[iface].append(address)
-        else:
-            if len(row.split(" ")) != 5:
+	elif row.split(" ")[0] == "inet":
+	    address = row.split(" ")[1]
+	    if (len(row.split(" ")) == 5):
+		iface = row.split(" ")[4]
+	    elif (len(row.split(" ")) == 6):
+		iface = row.split(" ")[5]
+	    else:
                 continue
-            address = row.split(" ")[1]
-            iface = row.split(" ")[4]
+
             if iface.startswith('sag'):
                 if iface not in result:
                     result[iface] = []
