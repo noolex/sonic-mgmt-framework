@@ -150,14 +150,6 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
-        name="ipv6"
-        help="ipv6 prefix-list">
-    <ACTION>
-        builtin="clish_nop"
-    </ACTION>
-    </COMMAND>
-
-    <COMMAND
         name="ipv6 prefix-list"
         help="Build a prefix list"
         >
@@ -362,14 +354,6 @@ limitations under the License.
         </PARAM>
     <ACTION>
     python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ip_prefix_delete ${__full_line}
-    </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ipv6"
-        help="Delete ipv6 prefix-list">
-    <ACTION>
-        builtin="clish_nop"
     </ACTION>
     </COMMAND>
 

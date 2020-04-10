@@ -28,8 +28,8 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	"golang.org/x/crypto/ssh"
 	"github.com/msteinert/pam"
+	"golang.org/x/crypto/ssh"
 )
 
 type UserCredential struct {
@@ -102,6 +102,16 @@ func (i UserAuth) Unset(mode string) error {
 	return nil
 }
 
+// NewUserAuth creates an UserAuth object with specified modes enabled.
+func NewUserAuth(enabledModes ...string) UserAuth {
+	auth := UserAuth{"password": false, "user": false, "cert": false, "jwt": false}
+	for _, mode := range enabledModes {
+		auth.Set(mode)
+	}
+
+	return auth
+}
+
 //PAM conversation handler.
 func (u UserCredential) PAMConvHandler(s pam.Style, msg string) (string, error) {
 
@@ -162,10 +172,7 @@ func PopulateAuthStruct(username string, auth *AuthInfo) error {
 		return err
 	}
 	auth.Roles = roles
-	
 
-
-	
 	return nil
 }
 
@@ -180,11 +187,11 @@ func UserPwAuth(username string, passwd string) (bool, error) {
 
 	//Use ssh for authentication.
 	config := &ssh.ClientConfig{
-	        User: username,
-	        Auth: []ssh.AuthMethod{
-	                ssh.Password(passwd),
-	        },
-	        HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		User: username,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(passwd),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 	_, err := ssh.Dial("tcp", "127.0.0.1:22", config)
 	if err != nil {
@@ -200,4 +207,3 @@ func isWriteOperation(r *http.Request) bool {
 	m := r.Method
 	return m == "POST" || m == "PUT" || m == "PATCH" || m == "DELETE"
 }
-

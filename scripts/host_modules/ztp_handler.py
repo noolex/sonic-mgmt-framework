@@ -231,8 +231,8 @@ def ztp_status():
     ztp_cfg=ZTPCfg()
     statusdict['admin_mode'] = getCfg('admin-mode', ztp_cfg=ztp_cfg)
 
-    if os.path.isfile(getCfg('ztp-json', ztp_cfg=ztp_cfg)):
-        objJson, jsonDict = JsonReader(getCfg('ztp-json', ztp_cfg=ztp_cfg), indent=4)
+    if os.path.isfile(getCfg('ztp-json-shadow', ztp_cfg=ztp_cfg)):
+        objJson, jsonDict = JsonReader(getCfg('ztp-json-shadow', ztp_cfg=ztp_cfg), indent=4)
         ztpDict = jsonDict.get('ztp')
         if ztp_active() != 0:
             statusdict['service'] = 'Inactive'

@@ -1,6 +1,8 @@
 #List yang models transformer need to load
 openconfig-acl.yang
 openconfig-acl-annot.yang
+openconfig-platform.yang
+openconfig-platform-annot.yang
 openconfig-interfaces.yang
 openconfig-if-ip.yang
 openconfig-if-ethernet.yang
@@ -45,6 +47,8 @@ ietf-snmp-ext.yang
 openconfig-bfd.yang
 openconfig-bfd-ext.yang
 openconfig-bfd-annot.yang
+sonic-bfd-clear.yang
+sonic-bfd-clear-annot.yang
 openconfig-rib-bgp-ext.yang
 openconfig-mclag.yang
 openconfig-mclag-annot.yang
