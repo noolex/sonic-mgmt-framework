@@ -45,13 +45,19 @@ type PlatformApp struct {
 
 func init() {
     log.Info("Init called for Platform module")
-    err := register("/openconfig-platform:components",
+    //err := register("/openconfig-platform:components",
+    err := register("/openconfig-platform:components/component[name=System Eeprom]",
     &appInfo{appType: reflect.TypeOf(PlatformApp{}),
     ygotRootType: reflect.TypeOf(ocbinds.OpenconfigPlatform_Components{}),
     isNative:     false})
     if err != nil {
         log.Fatal("Register Platform app module with App Interface failed with error=", err)
     }
+
+    register("/openconfig-platform:components/component[name=Sensor]",
+    &appInfo{appType: reflect.TypeOf(PlatformApp{}),
+    ygotRootType: reflect.TypeOf(ocbinds.OpenconfigPlatform_Components{}),
+    isNative:     false})
 
     err = addModel(&ModelData{Name: "openconfig-platform",
     Org: "OpenConfig working group",
