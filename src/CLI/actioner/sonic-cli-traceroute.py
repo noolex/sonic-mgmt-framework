@@ -58,7 +58,7 @@ def run_vrf(args):
         sys.exit(1)
     try:
         if len(args) == 0:
-            args = "-h"
+            args = "--help"
         cmd = "traceroute " + args + " -i " + vrfName
         cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
@@ -78,7 +78,7 @@ def run(args):
         sys.exit(1)
     try:
         if len(args) == 0:
-            args = "-h"
+            args = "--help"
         cmd = "traceroute " + args
         cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
