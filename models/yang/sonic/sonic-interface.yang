@@ -1,6 +1,5 @@
 module sonic-interface {
 	namespace "http://github.com/Azure/sonic-interface";
-        yang-version 1.1;
 	prefix sint;
 
 	import ietf-inet-types {
@@ -26,12 +25,10 @@ module sonic-interface {
     import sonic-common {
         prefix cmn;
     }
-    
 
-	import sonic-extension {
+    import sonic-extension {
 		prefix sonic-ext;
-	}
-
+	}    
 
 	organization
 		"SONiC";
@@ -144,28 +141,17 @@ module sonic-interface {
                                               {
                                                        error-message "DHCP server or src-intf not configured";
                                                        error-app-tag dhcp-server-invalid-link-select-config;
-                                               }
+                                              }
                                 }
 
                                 leaf dhcp_relay_src_intf {
+                                        type string;
                                         must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
                                              "(current()/../dhcp_servers)"  
                                              {
                                                        error-message "DHCP relay address not configured or invalid operation";
                                                        error-app-tag dhcp-server-adress-config;
                                              }
-                                        must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
-                                             "(contains(current()/../dhcp_relay_src_intf, 'Ethernet') or contains(current()/../dhcp_relay_src_intf, 'PortChannel') or contains(current()/../dhcp_relay_src_intf, 'Vlan') or contains(current()/../dhcp_relay_src_intf, 'Loopback'))" 
-                                             {
-                                                       error-message "Provide a valid src_intf";
-                                                       error-app-tag dhcp-server-adress-config;
-                                             }
-                                        must "((/cmn:operation/cmn:operation != 'DELETE') or (current()/../dhcp_relay_link_select = 'enable'))"
-                                             {
-                                                       error-message "Disable link-select before deleting src-intf";
-                                                       error-app-tag dhcp-server-adress-config;
-                                             }
-                                        type string;
 
                                 }
 
