@@ -560,6 +560,12 @@ def run(func, args):
         elif (args[2] == "ipv6"):
             prog_name = "isc-dhcp-relay:isc-dhcp-relay-v6-" + args[0]
 
+	docker_stat_cmd = "docker inspect -f '{{.State.Running}}' dhcp_relay"
+	stat = subprocess.Popen(docker_stat_cmd, shell=True, stdout=subprocess.PIPE)
+	status = stat.stdout.readline()
+	if status.rstrip() != 'true':
+	    return
+
         docker_exec_cmd = "docker exec -i dhcp_relay "
         cmd = docker_exec_cmd + "supervisorctl pid " + prog_name
         proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
