@@ -28,6 +28,7 @@
 {% set vars = {'out_oversize':""} %}
 {% set vars = {'in_frames_128_255':""} %}
 {% set vars = {'last_clear':""} %}
+{% set vars = {'found_counters': False} %}
 {% if json_output -%}
 {% for interfaces in json_output %}
 {% set interface_list = json_output[interfaces] %}
@@ -50,21 +51,22 @@
         {% if vars.update({'description':interface[key]["description"]}) %}{% endif %}
         {% if vars.update({'mtu':interface[key]["mtu"]}) %}{% endif %}
         {% if "counters" in interface[key] %}
-        {% if vars.update({'in_pkts':interface[key]["counters"]["in-pkts"]}) %}{% endif %}
-        {% if vars.update({'in_octets':interface[key]["counters"]["in-octets"]}) %}{% endif %}
-        {% if vars.update({'in_multi':interface[key]["counters"]["in-multicast-pkts"]}) %}{% endif %}
-        {% if vars.update({'in_broad':interface[key]["counters"]["in-broadcast-pkts"]}) %}{% endif %}
-        {% if vars.update({'in_uni':interface[key]["counters"]["in-unicast-pkts"]}) %}{% endif %}
-        {% if vars.update({'in_errors':interface[key]["counters"]["in-errors"]}) %}{% endif %}
-        {% if vars.update({'in_discards':interface[key]["counters"]["in-discards"]}) %}{% endif %}
-        {% if vars.update({'out_pkts':interface[key]["counters"]["out-pkts"]}) %}{% endif %}
-        {% if vars.update({'out_octets':interface[key]["counters"]["out-octets"]}) %}{% endif %}
-        {% if vars.update({'out_multi':interface[key]["counters"]["out-multicast-pkts"]}) %}{% endif %}
-        {% if vars.update({'out_broad':interface[key]["counters"]["out-broadcast-pkts"]}) %}{% endif %}
-        {% if vars.update({'out_uni':interface[key]["counters"]["out-unicast-pkts"]}) %}{% endif %}
-        {% if vars.update({'out_errors':interface[key]["counters"]["in-errors"]}) %}{% endif %}
-        {% if vars.update({'out_discards':interface[key]["counters"]["out-discards"]}) %}{% endif %}
-        {% if vars.update({'last_clear':interface[key]["counters"]["last-clear"]}) %}{% endif %}
+          {% if vars.update({'found_counters':True}) %} {% endif %}
+          {% if vars.update({'in_pkts':interface[key]["counters"]["in-pkts"]}) %}{% endif %}
+          {% if vars.update({'in_octets':interface[key]["counters"]["in-octets"]}) %}{% endif %}
+          {% if vars.update({'in_multi':interface[key]["counters"]["in-multicast-pkts"]}) %}{% endif %}
+          {% if vars.update({'in_broad':interface[key]["counters"]["in-broadcast-pkts"]}) %}{% endif %}
+          {% if vars.update({'in_uni':interface[key]["counters"]["in-unicast-pkts"]}) %}{% endif %}
+          {% if vars.update({'in_errors':interface[key]["counters"]["in-errors"]}) %}{% endif %}
+          {% if vars.update({'in_discards':interface[key]["counters"]["in-discards"]}) %}{% endif %}
+          {% if vars.update({'out_pkts':interface[key]["counters"]["out-pkts"]}) %}{% endif %}
+          {% if vars.update({'out_octets':interface[key]["counters"]["out-octets"]}) %}{% endif %}
+          {% if vars.update({'out_multi':interface[key]["counters"]["out-multicast-pkts"]}) %}{% endif %}
+          {% if vars.update({'out_broad':interface[key]["counters"]["out-broadcast-pkts"]}) %}{% endif %}
+          {% if vars.update({'out_uni':interface[key]["counters"]["out-unicast-pkts"]}) %}{% endif %}
+          {% if vars.update({'out_errors':interface[key]["counters"]["in-errors"]}) %}{% endif %}
+          {% if vars.update({'out_discards':interface[key]["counters"]["out-discards"]}) %}{% endif %}
+          {% if vars.update({'last_clear':interface[key]["counters"]["last-clear"]}) %}{% endif %}
         {% endif %}
       {% endif %}
       {% if "subinterfaces" in key  %}
@@ -73,7 +75,8 @@
           {% for subif in subif_list %}
             {% if vars.update({'ipv4':"IPV4"}) %}{% endif %}
             {% if vars.update({'ipv6':"IPV6"}) %}{% endif %}
-            {% if subif["openconfig-if-ip:ipv4"] %}
+            {% if subif["openconfig-if-ip:ipv4"] and "addresses" in subif["openconfig-if-ip:ipv4"] and "address" in
+               subif["openconfig-if-ip:ipv4"]["addresses"] and subif["openconfig-if-ip:ipv4"]["addresses"]["address"] is not none %}
               {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
               {% set ip_all = [] %}
               {% for ip in ip_list %}
@@ -85,7 +88,8 @@
             {% else %}
               {% if vars.update({'mode4':"not-set"}) %}{% endif %}
             {% endif %}
-            {% if subif["openconfig-if-ip:ipv6"] %}
+            {% if subif["openconfig-if-ip:ipv6"] and "addresses" in subif["openconfig-if-ip:ipv6"] and "address" in
+               subif["openconfig-if-ip:ipv6"]["addresses"] and subif["openconfig-if-ip:ipv6"]["addresses"]["address"] is not none %}
               {% set ip_list = subif["openconfig-if-ip:ipv6"]["addresses"]["address"] %}
               {% set ipv6_all = [] %}
               {% for ip in ip_list %}
@@ -118,6 +122,7 @@ Mode of {{ vars.ipv4 }} address assignment: {{ vars.mode4 }}
 Mode of {{ vars.ipv6 }} address assignment: {{ vars.mode6 }}
 IP MTU {{ vars.mtu }} bytes
 LineSpeed {{ vars.speed }}, Auto-negotiation off
+{% if vars.found_counters == True %}
 {% set datetime = datetimeformat(vars.last_clear) %}
 Last clearing of "show interface" counters: {{ datetime }} 
 Input statistics:
@@ -130,6 +135,7 @@ Output statistics:
         {{vars.out_multi}} Multicasts, {{vars.out_broad}} Broadcasts, {{vars.out_uni}} Unicasts
         {{vars.out_errors}} error, {{vars.out_discards}} discarded, {{vars.out_oversize}} Oversize
 {%- endif %}
+{% endif %}
 {% endfor %}
 {% endfor %}
 {% endif %}
