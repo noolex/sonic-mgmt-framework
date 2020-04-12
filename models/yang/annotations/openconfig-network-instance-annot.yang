@@ -3120,21 +3120,21 @@ module openconfig-network-instance-annot {
   }
 
 
-  deviation "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
-            "/oc-netinst:protocol/oc-netinst:ospfv2/oc-netinst:global/oc-netinst:timers" +
-            "/oc-netinst:lsa-generation/oc-netinst:config" +
-            "/oc-netinst:initial-delay" {
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers/oc-netinst:lsa-generation" +
+          "/oc-netinst:state/oc-ospfv2-ext:minimum-interval"  {
     deviate add {
-      sonic-ext:field-name "lsa-initial-delay";
+      sonic-ext:field-name "lsa-min-interval-timer";
     }
   }
 
-  deviation "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
-            "/oc-netinst:protocol/oc-netinst:ospfv2/oc-netinst:global/oc-netinst:timers" +
-            "/oc-netinst:lsa-generation/oc-netinst:config" +
-            "/oc-netinst:maximum-delay" {
+  deviation "/oc-netinst:network-instances/oc-netinst:network-instance" +
+          "/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:ospfv2" +
+          "/oc-netinst:global/oc-netinst:timers/oc-netinst:lsa-generation" +
+          "/oc-netinst:state/oc-ospfv2-ext:minimum-arrival"  {
     deviate add {
-      sonic-ext:field-name "lsa-maximum-delay";
+      sonic-ext:field-name "lsa-min-arrival-timer";
     }
   }
 
@@ -3382,7 +3382,9 @@ module openconfig-network-instance-annot {
     }
   }
 
-  /*--------------------------------OSPFV2_ROUTER SHOW COMMANDS-----------------------------------------*/
+  /*-------- OSPFV2_INTERFACE placed in /oc-intf:interfaces/oc-intf:interface ---------- */
+
+  /*----------------OSPFV2_ROUTER SHOW COMMANDS-------------------------*/
   deviation  "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
              "/oc-netinst:protocol/oc-netinst:ospfv2" {
     deviate add {
@@ -3390,9 +3392,6 @@ module openconfig-network-instance-annot {
     }
   }
    
-
-  /*-------- OSPFV2_INTERFACE placed in /oc-intf:interfaces/oc-intf:interface */
-            
 
 }
 

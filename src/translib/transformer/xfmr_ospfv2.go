@@ -837,12 +837,36 @@ var DbToYang_ospfv2_interface_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrP
     interfaceTableKeys := strings.Split(entry_key, "|")
     ospfv2InterfaceName := interfaceTableKeys[1]
     //ospfv2InterfaceId:= interfaceTableKeys[2]
+    ospfv2InterfaceId := "0"
 
     res_map["name"] = ospfv2InterfaceName
-    //res_map["index"] = ospfv2InterfaceId
+    res_map["index"] = ospfv2InterfaceId
 
     log.Info("DbToYang_ospfv2_interface_tbl_key: res_map - ", res_map)
     return res_map, nil
+}
+
+
+var YangToDb_ospfv2_interface_name_fld_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
+
+    res_map := make(map[string]string)
+
+    res_map["NULL"] = "NULL"
+    return res_map, nil
+}
+
+var DbToYang_ospfv2_interface_name_fld_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams) (map[string]interface{}, error) {
+
+    var err error
+    res_map := make(map[string]interface{})
+
+    entry_key := inParams.key
+    interfaceTableKeys := strings.Split(entry_key, "|")
+    interfaceName:= interfaceTableKeys[1]
+
+    res_map["name"] = interfaceName
+    res_map["index"] = "0"
+    return res_map, err
 }
 
 
@@ -1229,6 +1253,10 @@ func init () {
 
     XlateFuncBind("YangToDb_ospfv2_interface_tbl_key_xfmr", YangToDb_ospfv2_interface_tbl_key_xfmr)
     XlateFuncBind("DbToYang_ospfv2_interface_tbl_key_xfmr", DbToYang_ospfv2_interface_tbl_key_xfmr)
+    XlateFuncBind("YangToDb_ospfv2_interface_name_fld_xfmr", YangToDb_ospfv2_interface_name_fld_xfmr)
+    XlateFuncBind("DbToYang_ospfv2_interface_name_fld_xfmr", DbToYang_ospfv2_interface_name_fld_xfmr)
+
+
     XlateFuncBind("DbToYang_ospfv2_state_xfmr", DbToYang_ospfv2_state_xfmr)
 }
 

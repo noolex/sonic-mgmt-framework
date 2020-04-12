@@ -163,20 +163,20 @@ module sonic-ospfv2 {
             "SPF throttle Delay";
         }
 
-        leaf lsa-initial-delay {
+        leaf lsa-min-interval-timer {
           type uint32 {
             range "0..50000";
           }
           description
-            "LSA initial delay or minimal delay";
+            "SA minimum interval timer";
         }
 
-        leaf lsa-maximum-delay {
+        leaf lsa-min-arrival-timer {
           type uint32 {
             range "0..50000";
           }
           description
-            "LSA maximum Delay";
+            "LSA minimum arrival timer";
         }
 
         leaf lsa-refresh-timer {
@@ -620,9 +620,15 @@ module sonic-ospfv2 {
          }
 
          leaf vrf_name {
-           type leafref {
-             path "/sonic-vrf:sonic-vrf/sonic-vrf:VRF/sonic-vrf:VRF_LIST/sonic-vrf:vrf_name";
+           type union {
+             type string {
+               pattern "default";
+             }
+             type leafref {
+               path "/sonic-vrf:sonic-vrf/sonic-vrf:VRF/sonic-vrf:VRF_LIST/sonic-vrf:vrf_name";
+             }
            }
+           //default "default";
          }
 
          leaf area-id {

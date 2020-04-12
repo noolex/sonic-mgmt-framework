@@ -360,6 +360,7 @@ module openconfig-interfaces-annot {
     deviation "/oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config/oc-ospfv2-ext:id" {
         deviate add {
             sonic-ext:field-name "name";
+            sonic-ext:field-transformer  "ospfv2_interface_name_fld_xfmr";
         }
     }
 
