@@ -344,4 +344,22 @@ module openconfig-system-annot {
     }
 
 /*********************************************************/
+    deviation /oc-sys:system/oc-sys:ssh-server/oc-sys-ext:ssh-server-vrfs/oc-sys-ext:ssh-server-vrf {
+      deviate add {
+        sonic-ext:table-name "SSH_SERVER_VRF";
+      }
+    }
+
+    deviation /oc-sys:system/oc-sys:ssh-server/oc-sys-ext:ssh-server-vrfs/oc-sys-ext:ssh-server-vrf/oc-sys-ext:config/oc-sys-ext:vrf-name {
+      deviate add {
+            sonic-ext:field-transformer "ssh_server_vrf_name";
+      }
+    }
+
+    deviation
+    /oc-sys:system/oc-sys:ssh-server/oc-sys-ext:ssh-server-vrfs/oc-sys-ext:ssh-server-vrf/oc-sys-ext:state/oc-sys-ext:vrf-name {
+      deviate add {
+            sonic-ext:field-transformer "ssh_server_vrf_name";
+      }
+    }
 }

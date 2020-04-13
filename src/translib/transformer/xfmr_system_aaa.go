@@ -38,6 +38,8 @@ func init () {
     XlateFuncBind("YangToDb_server_name_xfmr", YangToDb_server_name_xfmr)
     XlateFuncBind("YangToDb_auth_method_xfmr", YangToDb_auth_method_xfmr)
     XlateFuncBind("DbToYang_auth_method_xfmr", DbToYang_auth_method_xfmr)
+	XlateFuncBind("YangToDb_ssh_server_vrf_name", YangToDb_ssh_server_vrf_name)
+	XlateFuncBind("DbToYang_ssh_server_vrf_name", DbToYang_ssh_server_vrf_name)
 }
 
 var YangToDb_auth_method_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
@@ -143,6 +145,17 @@ var YangToDb_server_name_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map
     res_map :=  make(map[string]string)
     res_map["NULL"] = "NULL"
     return res_map, nil
+}
+
+func YangToDb_ssh_server_vrf_name(inParams XfmrParams) (map[string]string, error) {
+	return make(map[string]string), nil
+}
+
+func DbToYang_ssh_server_vrf_name(inParams XfmrParams) (map[string]interface{}, error) {
+	log.V(1).Infof("DbToYang_ssh_server_vrf_name: key=\"%s\"", inParams.key)
+	result := make(map[string]interface{})
+	result["vrf-name"] = inParams.key
+	return result, nil
 }
 
 var YangToDb_global_sg_name_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
