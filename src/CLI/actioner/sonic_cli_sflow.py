@@ -22,12 +22,9 @@ import json
 from rpipe_utils import pipestr
 from render_cli import show_cli_output
 import cli_client as cc
+
 import urllib3
-
-SFLOW_DEFAULT_PORT = 6343
-
 urllib3.disable_warnings()
-
 
 def get_session_list(resp, table_name):
     if ('sonic-sflow:sonic-sflow' in resp and
@@ -61,7 +58,6 @@ def print_exception(e):
         print("% Error: Transaction failure.")
     return
 
-
 def getId(item):
     prfx = "Ethernet"
     ifname = item['ifname']
@@ -69,99 +65,90 @@ def getId(item):
         return int(ifname[len(prfx):])
     return ifname
 
-
-def invoke_api(fn, args=None):
-    if args is None:
-        args = []
+def invoke_api(func, args=[]):
     api = cc.ApiClient()
-    port = SFLOW_DEFAULT_PORT
 
-    if fn == 'put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
+    if func == 'put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
         path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST={collector_name}',
                        collector_name=args[0])
         body = {"sonic-sflow:SFLOW_COLLECTOR_LIST": [
             {
                 "collector_name": args[0],
-                "collector_ip": args[1],
-                "collector_port": port
+                "collector_ip": args[1]
             }]}
         if len(args) == 3:
             body["sonic-sflow:SFLOW_COLLECTOR_LIST"][0].update({"collector_port": int(args[2])})
         return api.put(path, body)
 
-    elif fn == 'delete_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
+    elif func == 'delete_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
         path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST={collector_name}',
                        collector_name=args[0])
         return api.delete(path)
-    elif fn == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
+    elif func == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
         path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST={ifname}/sample_rate',
                        ifname=args[0])
         body = {
             "sonic-sflow:sample_rate": int(args[1])
         }
         return api.patch(path, body)
-    elif fn == 'delete_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
+    elif func == 'delete_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
         path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST={ifname}/sample_rate',
                        ifname=args[0])
         return api.delete(path)
-    elif fn == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_admin_state':
+    elif func == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_admin_state':
         path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST={ifname}/admin_state',
                        ifname=args[0])
         body = {
             "sonic-sflow:admin_state": args[1]
         }
         return api.patch(path, body)
-    elif fn == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state':
+    elif func == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state':
         path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/admin_state',
                        sflow_key='global')
         body = {"sonic-sflow:admin_state": args[0]}
         return api.patch(path, body)
-    elif fn == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id':
-        path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/agent_id',
-                       sflow_key='global')
+    elif func == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id':
+        path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/agent_id', sflow_key='global')
         body = {
             "sonic-sflow:agent_id": args[0]
         }
         return api.patch(path, body)
-    elif fn == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_polling_interval':
-        path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/polling_interval',
-                       sflow_key='global')
+    elif func == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_polling_interval':
+        path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/polling_interval', sflow_key='global')
         body = {
             "sonic-sflow:polling_interval": int(args[0])
         }
         return api.patch(path, body)
-    elif fn == 'delete_sonic_sflow_sonic_sflow_sflow_sflow_list_polling_interval':
-        path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/polling_interval',
-                       sflow_key='global')
+    elif func == 'delete_sonic_sflow_sonic_sflow_sflow_sflow_list_polling_interval':
+        path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/polling_interval', sflow_key='global')
         return api.delete(path)
-    elif fn == 'delete_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id':
-        path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/agent_id',
-                       sflow_key='global')
+    elif func == 'delete_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id':
+        path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST={sflow_key}/agent_id', sflow_key='global')
         return api.delete(path)
-    elif fn == 'get_sonic_sflow_sonic_sflow_sflow_session_table':
+    elif func == 'get_sonic_sflow_sonic_sflow_sflow_session_table':
         path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow')
         return api.get(path)
-    elif fn == 'get_sonic_sflow_sonic_sflow':
+    elif func == 'get_sonic_sflow_sonic_sflow':
         path = cc.Path('/restconf/data/sonic-sflow:sonic-sflow')
         return api.get(path)
 
     return api.cli_not_implemented(fn)
 
 
-def run(fn, args):
+def run(func, args):
     try:
-        response = invoke_api(fn, args)
+        response = invoke_api(func, args)
 
         if response.ok() is False:
             print response.error_message()
             return
 
-        if fn == 'get_sonic_sflow_sonic_sflow_sflow_session_table':
+        if func == 'get_sonic_sflow_sonic_sflow_sflow_session_table':
             sess_lst = get_session_list(response.content, 'SFLOW_SESSION_TABLE')
             sess_lst = sorted(sess_lst, key=getId)
             show_cli_output(args[0], sess_lst)
 
-        elif fn == 'get_sonic_sflow_sonic_sflow':
+        elif func == 'get_sonic_sflow_sonic_sflow':
             resp = get_sflow_info(response.content)
             show_cli_output(args[0], resp)
 
@@ -169,7 +156,6 @@ def run(fn, args):
         print("% Error: Internal error: " + str(e))
 
     return
-
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

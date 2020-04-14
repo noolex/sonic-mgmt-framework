@@ -54,7 +54,9 @@ module sonic-sflow {
                     key "ifname";
 
                     leaf ifname {
-                        type string;
+                        type leafref {
+                            path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+                        }
                     }
 
                     leaf admin_state {
@@ -105,7 +107,9 @@ module sonic-sflow {
                    key "ifname";
 
                    leaf ifname {
-                       type string;
+                       type leafref {
+                           path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+                       }
                    }
 
                    leaf admin_state {

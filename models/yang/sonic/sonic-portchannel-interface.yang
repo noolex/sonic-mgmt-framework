@@ -22,6 +22,10 @@ module sonic-portchannel-interface {
         prefix cmn;
     }
 
+    import sonic-interface-common {
+        prefix sonic-if-cmn;
+    }
+
     organization
         "SONiC";
 
@@ -31,15 +35,23 @@ module sonic-portchannel-interface {
     description
         "SONIC PORTCHANNEL INTERFACE";
 
+    revision 2020-04-07 {
+        description
+            "Add VRF and IP address attribute";
+    }
+    revision 2020-02-28 {
+        description
+            "Add DHCP server attribute";
+    }
+    revision 2019-12-01 {
+        description
+            "Add vrf_name for VRF interface binding.";
+    }
     revision 2019-07-02 {
         description
             "Initial revision.";
     }
 
-    revision 2019-12-01 {
-        description
-            "Add vrf_name for VRF interface binding.";
-    }
 
     container sonic-portchannel-interface {
 
@@ -64,6 +76,29 @@ module sonic-portchannel-interface {
                                 path "/vrf:sonic-vrf/vrf:VRF/vrf:VRF_LIST/vrf:vrf_name";
                         }
                 }
+
+                leaf-list dhcp_servers{
+                    max-elements 4;
+                    type inet:ip-address;
+		    must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+			    "(count(/sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST[pch_name=current()/../pch_name]) > 1)"
+			    {
+				    error-message "DHCP server can be configured on portchannel routing interface only";
+				    error-app-tag dhcp-server-invalid-portchannel-routing-interface;
+			    }
+                }
+
+                leaf-list dhcpv6_servers{
+                      max-elements 4;
+                      type inet:ipv6-address;
+		      must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
+			      "(count(/sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST[pch_name=current()/../pch_name]) > 1)"
+			      {
+				      error-message "DHCP server can be configured on portchannel routing interface only";
+				      error-app-tag dhcp-server-invalid-portchannel-routing-interface;
+			      }
+		}
+
 
                 leaf unnumbered {
 					must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
@@ -96,7 +131,22 @@ module sonic-portchannel-interface {
                         path "/lointf:sonic-loopback-interface/lointf:LOOPBACK_INTERFACE/lointf:LOOPBACK_INTERFACE_LIST/lointf:loIfName";
                     }
                 }
+
+                leaf ipv6_use_link_local_only {
+                    type cmn:mode-enable;
+                    default disable;
+                    description
+                        "Enable IPv6 link local address on interface";
+                }
+
+                leaf-list helper_address {
+                    type sonic-if-cmn:vrf-ip;
+                    description
+                        "List of destination addresses with each being a combination of Vrf and IP address";
+                }
+
             }
+
             list PORTCHANNEL_INTERFACE_IPADDR_LIST {
                 key "pch_name ip_prefix";
 

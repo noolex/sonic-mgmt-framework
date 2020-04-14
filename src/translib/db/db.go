@@ -125,6 +125,7 @@ const (
 )
 
 func init() {
+	dbConfigInit()
 }
 
 // DBNum type indicates the type of DB (Eg: ConfigDB, ApplDB, ...).
@@ -295,6 +296,32 @@ func (d DB) String() string {
 		d.client, d.Opts, d.txState, d.txCmds)
 }
 
+func getDBInstName (dbNo DBNum) string {
+	switch dbNo {
+	case ApplDB:
+		return "APPL_DB"
+	case AsicDB:
+		return "ASIC_DB"
+	case CountersDB:
+		return "COUNTERS_DB"
+	case LogLevelDB:
+		return "LOGLEVEL_DB"
+	case ConfigDB:
+		return "CONFIG_DB"
+	case FlexCounterDB:
+		return "FLEX_COUNTER_DB"
+	case StateDB:
+		return "STATE_DB"
+	case SnmpDB:
+		return "SNMP_OVERLAY_DB"
+	case ErrorDB:
+		return "ERROR_DB"
+	case UserDB:
+		return "USER_DB"
+	}
+	return ""
+}
+
 // NewDB is the factory method to create new DB's.
 func NewDB(opt Options) (*DB, error) {
 
@@ -304,13 +331,26 @@ func NewDB(opt Options) (*DB, error) {
 		glog.Info("NewDB: Begin: opt: ", opt)
 	}
 
+	ipAddr := DefaultRedisLocalTCPEP
+	dbId := int(opt.DBNo)
+	if dbInstName := getDBInstName(opt.DBNo); dbInstName != "" {
+		if isDbInstPresent(dbInstName) {
+			ipAddr = getDbTcpAddr(dbInstName)
+			dbId = getDbId(dbInstName)
+		} else {
+			glog.Warning("Database instance not present for the Db name: ", dbInstName)
+		}
+	} else {
+		glog.Error(fmt.Errorf("Invalid database number %d", dbId))
+	}
+	
 	d := DB{client: redis.NewClient(&redis.Options{
 		Network: "tcp",
-		Addr:    DefaultRedisLocalTCPEP,
+		Addr:    ipAddr,
 		//Addr:     DefaultRedisRemoteTCPEP,
 		Password: "", /* TBD */
 		// DB:       int(4), /* CONFIG_DB DB No. */
-		DB:          int(opt.DBNo),
+		DB:          dbId,
 		DialTimeout: 0,
 		// For Transactions, limit the pool
 		PoolSize: 1,
@@ -970,7 +1010,7 @@ func (d *DB) DeleteTable(ts *TableSpec) error {
 	// For each key in Keys
 	// 	Delete the entry
 	for i := 0; i < len(keys); i++ {
-		// Don't define/declare a nested scope ``e''
+    // Don't define/declare a nested scope ``e''
 		e = d.DeleteEntry(ts, keys[i])
 		if e != nil {
 			glog.Warning("DeleteTable: DeleteEntry: " + e.Error())

@@ -127,6 +127,12 @@ type ValidationTimeStats struct {
 	Peak time.Duration
 }
 
+//Structure for dependent entry to be deleted
+type CVLDepDataForDelete struct {
+	RefKey string //Ref Key which is getting deleted
+	Entry  map[string]map[string]string //Entry or field which should be deleted as a result
+}
+
 //Global data structure for maintaining validation stats
 var cfgValidationStats ValidationTimeStats
 var statsMutex *sync.Mutex
@@ -138,14 +144,10 @@ func Initialize() CVLRetCode {
 	}
 
 	//Initialize redis Client 
-	redisClient = redis.NewClient(&redis.Options{
-		Addr:     ":6379",
-		Password: "", // no password set
-		DB:       int(CONFIG_DB),  // use APP DB
-	})
+	redisClient = NewDbClient("CONFIG_DB")
 
 	if (redisClient == nil) {
-		CVL_LOG(FATAL, "Unable to connect with Redis Config DB")
+		CVL_LOG(FATAL, "Unable to connect to Redis Config DB Server")
 		return CVL_ERROR
 	}
 
@@ -713,9 +715,58 @@ func (c *CVL) GetDepTables(yangModule string, tableName string) ([]string, CVLRe
 	return result, CVL_SUCCESS
 }
 
+//Parses the JSON string buffer and returns
+//array of dependent fields to be deleted
+func getDepDeleteField(refKey, hField, hValue, jsonBuf string) ([]CVLDepDataForDelete) {
+	//Parse the JSON map received from lua script
+	var v interface{}
+	b := []byte(jsonBuf)
+	if err := json.Unmarshal(b, &v); err != nil {
+		return []CVLDepDataForDelete{}
+	}
+
+	depEntries := []CVLDepDataForDelete{}
+
+	var dataMap map[string]interface{} = v.(map[string]interface{})
+
+	for tbl, keys := range dataMap {
+		for key, fields := range keys.(map[string]interface{}) {
+			tblKey := tbl + modelInfo.tableInfo[getRedisTblToYangList(tbl, key)].redisKeyDelim + key
+			entryMap := make(map[string]map[string]string)
+			entryMap[tblKey] = make(map[string]string)
+
+			for field, _ := range fields.(map[string]interface{}) {
+				if ((field != hField) && (field != (hField + "@"))){
+					continue
+				}
+
+				if (field == (hField + "@")) {
+					//leaf-list - specific value to be deleted
+					entryMap[tblKey][field]= hValue
+				} else {
+					//leaf - specific field to be deleted
+					entryMap[tblKey][field]= ""
+				}
+			}
+			depEntries = append(depEntries, CVLDepDataForDelete{
+				RefKey: refKey,
+				Entry: entryMap,
+			})
+		}
+	}
+
+	return depEntries
+}
+
 //Get the dependent (Redis keys) to be deleted or modified
 //for a given entry getting deleted
-func (c *CVL) GetDepDataForDelete(redisKey string) ([]string, []string) {
+func (c *CVL) GetDepDataForDelete(redisKey string) ([]CVLDepDataForDelete) {
+
+	type filterScript struct {
+		script string
+		field string
+		value string
+	}
 
 	tableName, key := splitRedisKey(redisKey)
 
@@ -726,11 +777,11 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]string, []string) {
 
 	if _, exists := modelInfo.tableInfo[tableName]; exists == false {
 		CVL_LOG(INFO_DEBUG, "GetDepDataForDelete(): Unknown table %s\n", tableName)
-		return []string{}, []string{} 
+		return []CVLDepDataForDelete{}
 	}
 
 	mCmd := map[string]*redis.StringSliceCmd{}
-	mFilterScripts := map[string]string{}
+	mFilterScripts := map[string]filterScript{}
 	pipe := redisClient.Pipeline()
 
 	for _, refTbl := range modelInfo.tableInfo[tableName].refFromTables {
@@ -740,9 +791,9 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]string, []string) {
 		idx := 0
 		for ; idx < numKeys; idx++ {
 			if (modelInfo.tableInfo[refTbl.tableName].keys[idx] == refTbl.field) {
-				//field is key comp
+				//field is a key component
 				mCmd[refTbl.tableName] = pipe.Keys(fmt.Sprintf("%s|*%s*",
-				refTbl.tableName, key)) //write into pipeline}
+				refTbl.tableName, key)) //write into pipeline
 				break
 			}
 		}
@@ -750,12 +801,19 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]string, []string) {
 		if (idx == numKeys) {
 			//field is hash-set field, not a key, match with hash-set field
 			//prepare the lua filter script
-			// ex: (h.members: == 'Ethernet4,' or (string.find(h['members@'], 'Ethernet4') != nil)
+			// ex: (h['members'] == 'Ethernet4' or h['members@'] == 'Ethernet4' or
+			//(string.find(h['members@'], 'Ethernet4,') != nil)
 			//',' to include leaf-list case
-			mFilterScripts[refTbl.tableName] =
-			fmt.Sprintf("return (h.%s == '%s') or " +
-			"h['ports@'] ~= nil and (string.find(h['%s@'], '%s') ~= nil)",
-			refTbl.field, key, refTbl.field, key)
+			mFilterScripts[refTbl.tableName] = filterScript{
+				script: fmt.Sprintf("return (h['%s'] ~= nil and h['%s'] == '%s') or " +
+				"(h['%s@'] ~= nil and ((h['%s@'] == '%s') or " +
+				"(string.find(h['%s@'], '%s,') ~= nil)))",
+				refTbl.field, refTbl.field, key,
+				refTbl.field, refTbl.field, key,
+				refTbl.field, key),
+				field: refTbl.field,
+				value: key,
+			}
 		}
 	}
 
@@ -765,30 +823,32 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]string, []string) {
 	}
 	pipe.Close()
 
+	depEntries := []CVLDepDataForDelete{}
+
 	//Add dependent keys which should be modified
-	depKeysForMod := []string{}
 	for tableName, mFilterScript := range mFilterScripts {
-		refKeys, err := luaScripts["filter_keys"].Run(redisClient, []string{},
-		tableName + "|*", "", mFilterScript).Result()
+		refEntries, err := luaScripts["filter_entries"].Run(redisClient, []string{},
+		tableName + "|*", strings.Join(modelInfo.tableInfo[tableName].keys, "|"),
+		mFilterScript.script, mFilterScript.field).Result()
 
 		if (err != nil) {
 			CVL_LOG(ERROR, "Lua script error (%v)", err)
 		}
-		if (refKeys == nil) {
+		if (refEntries == nil) {
 			//No reference field found
 			continue
 		}
 
-		refKeysStr := string(refKeys.(string))
+		refEntriesJson := string(refEntries.(string))
 
-		if (refKeysStr != "") {
-			//Add all keys whose fields to be updated
-			depKeysForMod = append(depKeysForMod,
-			strings.Split(refKeysStr, ",")...)
+		if (refEntriesJson != "") {
+			//Add all keys whose fields to be deleted 
+			depEntries = append(depEntries, getDepDeleteField(redisKey,
+			mFilterScript.field, mFilterScript.value, refEntriesJson)...)
 		}
 	}
 
-	depKeys := []string{}
+	keysArr := []string{}
 	for tblName, keys := range mCmd {
 		res, err := keys.Result()
 		if (err != nil) {
@@ -797,17 +857,28 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]string, []string) {
 		}
 
 		//Add keys found
-		depKeys = append(depKeys, res...)
-
-		//For each key, find dependent data for delete recursively
-		for i :=0; i< len(res); i++ {
-			retDepKeys, retDepKeysForMod := c.GetDepDataForDelete(res[i])
-			depKeys = append(depKeys, retDepKeys...)
-			depKeysForMod = append(depKeysForMod, retDepKeysForMod...)
+		for _, k := range res {
+			entryMap := make(map[string]map[string]string)
+			entryMap[k] = make(map[string]string)
+			depEntries = append(depEntries, CVLDepDataForDelete{
+				RefKey: redisKey,
+				Entry: entryMap,
+			})
 		}
+
+		keysArr  = append(keysArr, res...)
 	}
 
-	return depKeys, depKeysForMod
+	TRACE_LOG(INFO_TRACE, "GetDepDataForDelete() : input key %s, " +
+	"entries to be deleted : %v", redisKey, depEntries)
+
+	//For each key, find dependent data for delete recursively
+	for i :=0; i< len(keysArr); i++ {
+		retDepEntries := c.GetDepDataForDelete(keysArr[i])
+		depEntries = append(depEntries, retDepEntries...)
+	}
+
+	return depEntries
 }
 
 //Update global stats for all sessions
