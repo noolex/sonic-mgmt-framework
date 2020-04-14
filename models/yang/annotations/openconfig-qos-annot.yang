@@ -23,15 +23,6 @@ module openconfig-qos-annot {
       }
     }
 
-    /*  Use parent tree xfmr
-    deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:output/oc-qos:queues/oc-qos:queue/oc-qos:state {
-      deviate add {
-        sonic-ext:subtree-transformer "qos_get_one_intf_one_q_counters_xfmr";
-        sonic-ext:db-name "COUNTERS_DB";
-      }
-    }
-    */
-
     deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:output/oc-qos:scheduler-policy/oc-qos:config {
       deviate add {
         sonic-ext:subtree-transformer "qos_intf_sched_policy_xfmr";
@@ -103,7 +94,6 @@ module openconfig-qos-annot {
 
     deviation /oc-qos:qos/oc-qos:queues/oc-qos:queue {
       deviate add {
-        sonic-ext:db-name "CONFIG_DB";
         sonic-ext:table-name "QUEUE";
         sonic-ext:key-transformer "qos_queue_key_xfmr";
         sonic-ext:key-delim "|";
@@ -126,9 +116,7 @@ module openconfig-qos-annot {
 
     deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler {
       deviate add {
-        sonic-ext:db-name "CONFIG_DB";
         sonic-ext:table-name "SCHEDULER";
-        /*sonic-ext:key-transformer "qos_scheduler_policy_key_xfmr";*/
         sonic-ext:subtree-transformer "qos_scheduler_xfmr";
       }
     }
@@ -142,7 +130,6 @@ module openconfig-qos-annot {
 
     deviation /oc-qos:qos/oc-qos-ext:wred-profiles/oc-qos-ext:wred-profile {
       deviate add {
-        sonic-ext:db-name "CONFIG_DB";
         sonic-ext:table-name "WRED_PROFILE";
       }
     }
