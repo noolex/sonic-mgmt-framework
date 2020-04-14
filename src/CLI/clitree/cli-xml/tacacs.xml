@@ -76,10 +76,9 @@ limitations under the License.
       <PARAM name="address" 
              help="IP address of the tacacs server" 
              ptype="IP_ADDR"
-             default=" "
              optional="true"> 
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_tacacs get_sonic_tacacs_server ${address} show_tacacs_server.j2</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs get_sonic_tacacs_server address=${address} show_tacacs_server.j2</ACTION>
     </COMMAND>
   </VIEW>
 

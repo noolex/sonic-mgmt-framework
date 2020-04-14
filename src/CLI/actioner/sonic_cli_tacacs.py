@@ -109,6 +109,11 @@ def get_sonic_tacacs_server_api(args):
     return api_response
 
 def get_sonic_tacacs_server(args):
+    address_arg = args.pop(0)
+    address = address_arg.split("=")[1]
+    if address != "":
+        args.insert(0, address)
+
     api_response = get_sonic_tacacs_server_api(args)
     show_cli_output("show_tacacs_server.j2", api_response)
 
