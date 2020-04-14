@@ -45,7 +45,9 @@ func Test_sFlowOperations(t *testing.T) {
 	time.Sleep(1 * time.Second)
 
         // Verify global configurations
-	t.Run("Verify global configurations", processGetRequest(url, globalConfigGetJsonResp, false))
+	t.Run("Verify global configurations -1", processGetRequest(url, globalConfigGetJsonResp, false))
+	// Verify the same using File (showcase)
+	t.Run("Verify global configurations -2", processGetRequestWithFile(url, "testdata/global_sflow_config.json", false))
 
         //Add collector
         url = "/sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST[collector_name=col1]"
