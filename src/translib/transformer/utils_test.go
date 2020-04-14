@@ -26,7 +26,6 @@ import (
 	"fmt"
 	"testing"
 	"reflect"
-	"strings"
 	db "translib/db"
 	. "translib"
 )
@@ -189,19 +188,7 @@ func verifyDbResult(client *redis.Client, key string, expectedResult map[string]
 				for f,v := range k.(map[string]interface{}) {
 					strKey := fmt.Sprintf("%v", f)
 					var strVal string
-					if strings.Contains(strKey, "@") == true {
-						elems := make([]string, len(v.([]interface{})))
-						for i, e := range v.([]interface{}) {
-							elems[i] = e.(string)
-						}
-						if len(elems) > 1 {
-							strVal = strings.Join(elems, ",")
-						} else {
-							strVal = fmt.Sprintf("%v", v)
-						}
-					} else {
-						strVal = fmt.Sprintf("%v", v)
-					}
+					strVal = fmt.Sprintf("%v", v)
 					expect[strKey] = strVal
 				}
 			}
