@@ -3350,9 +3350,15 @@ func TestGetDepDataForDelete(t *testing.T) {
 			"Vlan22|Ethernet7": map[string] interface{} {
 				"tagging_mode":   "tagged",
 			},
+			"Vlan22|Ethernet72": map[string] interface{} {
+				"tagging_mode":   "tagged",
+			},
 		},
 		"PORTCHANNEL_MEMBER" : map[string]interface{} {
 			"Ch47|Ethernet7": map[string] interface{} {
+				"NULL": "NULL",
+			},
+			"Ch47|Ethernet75": map[string] interface{} {
 				"NULL": "NULL",
 			},
 		},
@@ -3360,7 +3366,15 @@ func TestGetDepDataForDelete(t *testing.T) {
 			"TestACL1": map[string] interface{} {
 				"stage": "INGRESS",
 				"type": "L3",
-				"ports@": "Ethernet7,Ethernet9",
+				"ports@": "Ethernet3,Ethernet76,Ethernet7",
+			},
+		},
+		"CFG_L2MC_STATIC_MEMBER_TABLE" : map[string]interface{} {
+			"Vlan24|10.1.1.1|Ethernet7": map[string] interface{} {
+				"NULL": "NULL",
+			},
+			"Vlan25|10.1.1.2|Ethernet78": map[string] interface{} {
+				"NULL": "NULL",
 			},
 		},
 		"MIRROR_SESSION": map[string]interface{}{
@@ -3383,7 +3397,7 @@ func TestGetDepDataForDelete(t *testing.T) {
 
 	depEntries := cvSess.GetDepDataForDelete("PORT|Ethernet7")
 
-        if (len(depEntries) != 4) { //4 entries to be deleted
+        if (len(depEntries) != 5) { //5 entries to be deleted
                 t.Errorf("GetDepDataForDelete() failed")
         }
 
