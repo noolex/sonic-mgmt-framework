@@ -538,6 +538,27 @@ module openconfig-bgp-ext {
       }
   }
 
+  grouping bgp-ext-import-network-instance {
+      leaf name {
+          type leafref {
+              path "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:config/oc-netinst:name";
+          }
+          description
+              "An operator-assigned unique name for the forwarding
+              instance";
+      }
+
+      leaf policy-name {
+          type leafref {
+              path "/oc-rpol:routing-policy/oc-rpol:policy-definitions/" +
+                  "oc-rpol:policy-definition/oc-rpol:name";
+          }
+          description
+              "A reference to a routing policy which can be used to
+              restrict the prefixes import from particular network-instance.";
+      }
+  }
+
   grouping bgp-ext-global-afi-safi {
         container aggregate-address-config {
           description
@@ -620,6 +641,21 @@ module openconfig-bgp-ext {
                   "State information relating to the default route distance";
               uses oc-bgp:bgp-global-default-route-distance-config;
               uses bgp-ext-default-route-distance;
+          }
+      }
+
+      container import-network-instance {
+          description
+              "Import routes to this address-family from network-instance.";
+
+          container config {
+              description
+                  "Configuration parameters relating to route importing from network instance.";
+              uses bgp-ext-import-network-instance;
+          }
+          container state {
+              config false;
+              uses bgp-ext-import-network-instance;
           }
       }
   }

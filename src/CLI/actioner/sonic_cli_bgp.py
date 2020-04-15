@@ -1182,7 +1182,22 @@ def invoke_api(func, args=[]):
             return api.patch(keypath, body)
         else:
             return api.delete(keypath)
-
+    elif attr == 'openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_import_vrf':
+        if args[2] == 'import-vrf-name':
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/afi-safis/afi-safi={afi_safi_name}/openconfig-bgp-ext:import-network-instance/config/name',
+                name=args[0], identifier=IDENTIFIER, name1=NAME1, afi_safi_name=args[1])
+            if op == OCEXTPREFIX_PATCH:
+                body = { "openconfig-bgp-ext:name": args[3] }
+        elif args[2] == 'route-map':
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/afi-safis/afi-safi={afi_safi_name}/openconfig-bgp-ext:import-network-instance/config/policy-name',
+                name=args[0], identifier=IDENTIFIER, name1=NAME1, afi_safi_name=args[1])
+            if op == OCEXTPREFIX_PATCH:
+                body = { "openconfig-bgp-ext:policy-name": args[3] }
+        
+        if op == OCEXTPREFIX_PATCH:
+            return api.patch(keypath, body)
+        else:
+            return api.delete(keypath)
     elif op == OCEXTPREFIX_DELETE or op == OCEXTPREFIX_PATCH:
         # PATCH_ and DELETE_ prefixes (all caps) means no swaggar-api string
         if attr == 'openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config':

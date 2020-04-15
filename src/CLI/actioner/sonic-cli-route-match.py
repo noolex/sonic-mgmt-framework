@@ -160,7 +160,6 @@ def invoke_api(func, args=[]):
              name=args[0], name1= args[1])
         return api.delete(keypath)
 
-
     elif func == 'patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_install_protocol_eq':
         proto_number = {"bgp":"BGP","ospf":"OSPF","ospf3":"OSPF3","static":"STATIC","connected":"DIRECTLY_CONNECTED"}
         if args[2] not in proto_number.keys():
@@ -176,6 +175,16 @@ def invoke_api(func, args=[]):
         keypath  = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/config/install-protocol-eq',
              name=args[0], name1= args[1])
     
+        return api.delete(keypath)
+
+    elif func == 'patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_src_network_instance_config_name':
+        keypath  = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-routing-policy-ext:match-src-network-instance/config/name',
+            name=args[0], name1= args[1])
+        body = {"openconfig-routing-policy-ext:name": args[2]}
+        return api.patch(keypath, body)
+    elif func == 'delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_src_network_instance_config_name':
+        keypath  = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-routing-policy-ext:match-src-network-instance/config/name',
+             name=args[0], name1= args[1])
         return api.delete(keypath)
 
     else:
