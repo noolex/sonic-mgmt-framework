@@ -788,14 +788,25 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]CVLDepDataForDelete) {
 
 		//check if ref field is a key
 		numKeys := len(modelInfo.tableInfo[refTbl.tableName].keys)
+		sep  := modelInfo.tableInfo[refTbl.tableName].redisKeyDelim
 		idx := 0
 		for ; idx < numKeys; idx++ {
-			if (modelInfo.tableInfo[refTbl.tableName].keys[idx] == refTbl.field) {
-				//field is a key component
-				mCmd[refTbl.tableName] = pipe.Keys(fmt.Sprintf("%s|*%s*",
-				refTbl.tableName, key)) //write into pipeline
-				break
+			if (modelInfo.tableInfo[refTbl.tableName].keys[idx] != refTbl.field) {
+				continue
 			}
+
+			//field is a key component, write into pipeline
+			if (numKeys == 1) { //Only key
+				mCmd[refTbl.tableName] = pipe.Keys(fmt.Sprintf("%s%s%s",
+				refTbl.tableName, sep, key))
+			} else if (idx == (numKeys - 1)) { //Last key
+				mCmd[refTbl.tableName] = pipe.Keys(fmt.Sprintf("%s%s*%s%s",
+				refTbl.tableName, sep, sep, key))
+			} else { //Middle key
+				mCmd[refTbl.tableName] = pipe.Keys(fmt.Sprintf("%s%s*%s%s%s*",
+				refTbl.tableName, sep, sep, key, sep))
+			}
+			break
 		}
 
 		if (idx == numKeys) {
@@ -807,7 +818,7 @@ func (c *CVL) GetDepDataForDelete(redisKey string) ([]CVLDepDataForDelete) {
 			mFilterScripts[refTbl.tableName] = filterScript{
 				script: fmt.Sprintf("return (h['%s'] ~= nil and h['%s'] == '%s') or " +
 				"(h['%s@'] ~= nil and ((h['%s@'] == '%s') or " +
-				"(string.find(h['%s@'], '%s,') ~= nil)))",
+				"(string.find(h['%s@']..',', '%s,') ~= nil)))",
 				refTbl.field, refTbl.field, key,
 				refTbl.field, refTbl.field, key,
 				refTbl.field, key),
