@@ -10,33 +10,33 @@ module sonic-interface {
 		prefix prt;
 	}
 
-    import sonic-vrf {
-        prefix vrf;
-    }
+        import sonic-vrf {
+            prefix vrf;
+        }
 
-    import sonic-loopback-interface {
-        prefix lointf;
-    }
+        import sonic-loopback-interface {
+            prefix lointf;
+        }
 
-    import sonic-portchannel {
-        prefix spc;
-    }
+        import sonic-portchannel {
+            prefix spc;
+        }
 
-    import sonic-vlan {
-        prefix svlan;
-    }
+        import sonic-vlan {
+            prefix svlan;
+        }
 
-    import sonic-common {
-        prefix cmn;
-    }
+        import sonic-common {
+            prefix cmn;
+        }
 
-	import sonic-extension {
-		prefix sonic-ext;
-	}
+        import sonic-extension {
+                prefix sonic-ext;
+        }
 
-    import sonic-interface-common {
-        prefix sonic-if-cmn;
-    }
+        import sonic-interface-common {
+            prefix sonic-if-cmn;
+        }
 
 	organization
 		"SONiC";
@@ -47,7 +47,7 @@ module sonic-interface {
 	description
 		"SONIC INTERFACE";
 
-<<<<<<< HEAD
+
     revision 2020-04-07 {
         description
             "Add VRF and IP address attribute";
@@ -55,6 +55,10 @@ module sonic-interface {
     revision 2020-02-28 {
         description
             "Add DHCP server attribute";
+    }
+    revision 2020-02-15 {
+        description
+            "Add ipv6_use_link_local_only attribute to interface object";
     }
     revision 2019-12-01 {
         description
@@ -67,25 +71,7 @@ module sonic-interface {
     revision 2019-07-02 {
         description
 	        "Initial revision.";
-=======
-
-        revision 2020-02-15 {
-                description
-                        "Add ipv6_use_link_local_only attribute to interface object";
-        }
-        revision 2019-12-01 {
-                description
-                        "Add leafref for vrf_name.";
-        }
-        revision 2019-11-20 {
-            description
-                "Adding RPC for clear counters.";
-        }
-	revision 2019-07-02 {
-		description
-			"Initial revision.";
->>>>>>> gitlab/dell_sonic_3.x_share
-	}
+    }
 
 
 /*
@@ -166,10 +152,10 @@ module sonic-interface {
 				}
 
 				leaf ipv6_use_link_local_only {
-                                    type cmn:ipv6_mode;
+                                    type cmn:mode-enable;
                                     default disable; 
                                     description
-                                        "Enable/Disable IPv6 on interface";
+                                        "Enable IPv6 link local address on interface";
                                     must "count(/spc:sonic-portchannel/spc:PORTCHANNEL_MEMBER/spc:PORTCHANNEL_MEMBER_LIST[spc:ifname=current()/../portname]) = 0"
                                     {
                                         error-message "Interface configured as a member of PortChannel. Cannot enable IPv6";
@@ -222,12 +208,6 @@ module sonic-interface {
                     }
                 }
 
-                leaf ipv6_use_link_local_only {
-                    type cmn:mode-enable;
-                    default disable;
-                    description
-                        "Enable IPv6 link local address on interface";
-                }
 
                 leaf-list helper_address {
                     type sonic-if-cmn:vrf-ip;
@@ -276,7 +256,7 @@ module sonic-interface {
 
                 leaf ipv6_use_link_local_only {
                     default disable;
-                    type cmn:ipv6_mode;
+                    type cmn:mode-enable;
                 }
             }
 

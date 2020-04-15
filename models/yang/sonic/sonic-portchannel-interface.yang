@@ -39,7 +39,6 @@ module sonic-portchannel-interface {
     description
         "SONIC PORTCHANNEL INTERFACE";
 
-<<<<<<< HEAD
     revision 2020-04-07 {
         description
             "Add VRF and IP address attribute";
@@ -47,11 +46,10 @@ module sonic-portchannel-interface {
     revision 2020-02-28 {
         description
             "Add DHCP server attribute";
-=======
+    }
     revision 2020-02-15 {
-            description
-                    "Add ipv6_use_link_local_only attribute to interface object.";
->>>>>>> gitlab/dell_sonic_3.x_share
+        description
+            "Add ipv6_use_link_local_only attribute to interface object.";
     }
     revision 2019-12-01 {
         description
@@ -62,11 +60,6 @@ module sonic-portchannel-interface {
             "Initial revision.";
     }
 
-
-    revision 2019-07-02 {
-        description
-            "Initial revision.";
-    }
 
     container sonic-portchannel-interface {
 
@@ -92,7 +85,6 @@ module sonic-portchannel-interface {
                         }
                 }
 
-<<<<<<< HEAD
                 leaf-list dhcp_servers{
                     max-elements 4;
                     type inet:ip-address;
@@ -115,12 +107,11 @@ module sonic-portchannel-interface {
 			      }
 		}
 
-=======
                 leaf ipv6_use_link_local_only {
-                    type cmn:ipv6_mode;
+                    type cmn:mode-enable;
                     default disable; 
                     description
-                        "Enable/Disable IPv6 on interface";
+                        "Enable IPv6 link local address on interface";
                     must "count(/svlan:sonic-vlan/svlan:VLAN_MEMBER/svlan:VLAN_MEMBER_LIST[svlan:ifname=current()/../pch_name]) = 0"
                     {
                         error-message "Interface configured as a member of Vlan. Cannot enable IPv6";
@@ -128,7 +119,6 @@ module sonic-portchannel-interface {
                     }
 
                 }
->>>>>>> gitlab/dell_sonic_3.x_share
 
                 leaf unnumbered {
 					must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
@@ -160,13 +150,6 @@ module sonic-portchannel-interface {
                     type leafref {
                         path "/lointf:sonic-loopback-interface/lointf:LOOPBACK_INTERFACE/lointf:LOOPBACK_INTERFACE_LIST/lointf:loIfName";
                     }
-                }
-
-                leaf ipv6_use_link_local_only {
-                    type cmn:mode-enable;
-                    default disable;
-                    description
-                        "Enable IPv6 link local address on interface";
                 }
 
                 leaf-list helper_address {

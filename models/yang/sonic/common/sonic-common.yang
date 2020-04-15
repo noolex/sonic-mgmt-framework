@@ -38,11 +38,7 @@ module sonic-common {
         }
     }
 
-<<<<<<< HEAD
     typedef mode-enable {
-=======
-    typedef ipv6_mode {
->>>>>>> gitlab/dell_sonic_3.x_share
         type enumeration {
             enum enable;
             enum disable;
