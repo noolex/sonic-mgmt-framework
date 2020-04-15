@@ -1,0 +1,445 @@
+module openconfig-qos-ext {
+
+    yang-version "1";
+
+    // namespace
+    namespace "http://openconfig.net/yang/qos/extension";
+
+    prefix "oc-qos-ext";
+
+    import openconfig-qos { prefix oc-qos; }
+    import openconfig-qos-types { prefix oc-qos-types; }
+    import openconfig-yang-types { prefix oc-yang; }
+
+    grouping qos-queue-state-ext {
+        leaf traffic-type {
+            type string;
+            description
+               "Type of traffic (Unicast/Multicast/Anycast) to be queued";
+        }
+            
+        leaf dropped-octets {
+            type oc-yang:counter64;
+            description
+                "Number of octets dropped by the queue due to overrun";
+        }
+    
+        leaf watermark {
+            type oc-yang:counter64;
+            description
+                "occupancy watermark in bytes since last watermark clearance";
+        }
+
+        leaf persistent-watermark {
+            type oc-yang:counter64;
+            description
+                "occupancy watermark in bytes since system up";
+        }
+
+    }
+
+    augment /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:output/oc-qos:queues/oc-qos:queue/oc-qos:state {
+        uses qos-queue-state-ext;
+    }
+
+
+    augment /oc-qos:qos/oc-qos:queues/oc-qos:queue/oc-qos:wred/oc-qos:config {
+        leaf wred-profile {
+            type string;
+            description
+                "Name of the WRED profile";
+        }
+    }
+
+    augment /oc-qos:qos/oc-qos:queues/oc-qos:queue/oc-qos:wred/oc-qos:state {
+        leaf wred-profile {
+            type string;
+            description
+                "Name of the WRED profile";
+        }
+    }
+
+    grouping qos-interface-priority-group-config {
+        description
+            "Configuration data for the priority group associated with the 
+            interface";
+    
+        leaf name {
+            type string;
+            description 
+                "Name of the priority group";
+        }
+    }
+
+    grouping qos-interface-priority-group-state {
+        description
+            "Operational state data for the priority group associated with the
+            interface";
+
+        leaf headroom-watermark {
+            type oc-yang:counter64;
+            description
+                "occupancy watermark in the headroom in bytes since last watermark clearance";
+        }
+
+        leaf headroom-persistent-watermark {
+            type oc-yang:counter64;
+            description
+                "occupancy watermark in bytes since system up";
+        }
+
+        leaf shared-watermark {
+            type oc-yang:counter64;
+            description
+                "occupancy watermark in shared buffer in bytes since last watermark clearance";
+        }
+
+        leaf shared-persistent-watermark {
+            type oc-yang:counter64;
+            description
+                "occupancy watermark in shared buffer in bytes since system up";
+        }
+    }
+    
+    grouping qos-interface-priority-group-top {
+        description
+        "Top-level grouping for the priority group associated with the
+        interface";
+
+        container priority-groups {
+            description
+            "Surrounding container for a list of priority groups that are
+            instantiated on an interface.";
+
+            list priority-group {
+                key "name";
+
+                description
+                  "Top-level container for the priority group associated with this
+                  interface";
+
+                leaf name {
+                  type leafref {
+                    path "../config/name";
+                  }
+                  description
+                    "Reference to the name of the priority group
+                    instantiated on the interface.";
+                }
+
+                container config {
+                  description
+                    "Configuration data for the priority group associated with the
+                    interface";
+
+                  uses qos-interface-priority-group-config;
+                }
+
+                container state {
+                  config false;
+                  description
+                    "Operational state data for the priority group associated with the
+                    interface";
+
+                  uses qos-interface-priority-group-config;
+                  uses qos-interface-priority-group-state;
+                }
+            }
+        }
+    }
+        
+    augment /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:input {
+        uses qos-interface-priority-group-top;
+    }
+    
+    grouping qos-threshold-breach-top {
+        description 
+            "Top-level grouping for QoS threshold breach information";
+
+        container threshold-breaches {
+            description
+                "Enclosing container for the list of threshold breaches";
+
+            list breach {
+                key "id";
+
+                description
+                    "List of threshold breaches";
+
+                leaf id {
+                    type string;
+                    description
+                        "Index uniquely identifying a breach entry";
+                }
+
+                leaf buffer {
+                    type string;
+                    description
+                        "Queue buffer breach or Priority Group buffer breach";
+                }
+
+                leaf type {
+                    type string;
+                    description
+                        "For Queue breach, the type of queue: unicast or multicast;
+                         for Priority Group breach, the shared buffer or headroom buffer";
+                } 
+
+                leaf port {
+                    type string;
+                    description
+                        "The name of the port whose buffer is breached";
+                }
+
+                leaf index {
+                    type uint32;
+                    description
+                        "Queue index or Priority Group index within a port";
+                }
+
+                leaf breach-value {
+                    type uint32;
+                    description
+                        "Counter value in term of percentage at breach";
+                }
+
+                leaf counter {
+                    type oc-yang:counter64;
+                    description
+                        "Counter value at breach";
+                }
+
+                leaf time-stamp {
+                    type string;
+                    description
+                        "Time-stamp (%y-%m-%d - %H:%M:%S) when the threshold breach occurred";
+                }
+            }
+        }
+    }
+
+    augment /oc-qos:qos {
+        uses qos-threshold-breach-top;
+        uses qos-wred-profile-top;
+    }
+
+
+    augment /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:config {
+        leaf weight {
+            type uint8 {
+                range "0..255";
+            }
+        }
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:config/oc-qos:type{
+      deviate not-supported;
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:state/oc-qos:type{
+      deviate not-supported;
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:one-rate-two-color {
+      deviate not-supported;
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:two-rate-three-color/oc-qos:conform-action {
+      deviate not-supported;
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:two-rate-three-color/oc-qos:exceed-action {
+      deviate not-supported;
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:two-rate-three-color/oc-qos:violate-action {
+      deviate not-supported;
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:inputs {
+      deviate not-supported;
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:output {
+      deviate not-supported;
+    }
+
+
+    typedef classifier-type-ext {
+      type enumeration {
+        enum IPV4 {
+          description
+            "Classifier matches and operates
+            on packets with IPv4 headers.";
+        }
+        enum IPV6 {
+          description
+            "Classifier matches and operates
+            on packets with IPv6 headers.";
+        }
+        enum MPLS {
+          description
+            "Classifier matches and operates
+            on packets with MPLS headers.";
+        }
+        enum ETHERNET {
+          description
+            "Classifier matches and operates
+            on fields within the L2 ETHERNET
+            headers.";
+        }
+        enum DSCP-TRUST {
+          description
+            "Classifier matches and operates
+             only on matched DSCP value.";
+        }
+      }
+      description
+        "Type of classifier with extensions.";
+    }
+
+    deviation "/oc-qos:qos/oc-qos:classifiers/oc-qos:classifier/oc-qos:config/oc-qos:type" {
+      deviate replace {
+        type classifier-type-ext;
+      }
+    }
+    deviation "/oc-qos:qos/oc-qos:classifiers/oc-qos:classifier/oc-qos:state/oc-qos:type" {
+      deviate replace {
+        type classifier-type-ext;
+      }
+    }
+
+    grouping qos-wred-profile-config {
+        description
+          "Configuration parameters relating to a WRED profile";
+
+        leaf name{
+            type string;
+            description
+                "Name of the WRED profile.";
+        }
+
+        leaf green_min_threshold {
+            type uint64;
+            description
+                "Mininum threshold set for green packets.";
+        }
+
+        leaf yellow_min_threshold {
+            type uint64;
+            description
+                "Mininum threshold set for yellow packets.";
+        }
+
+        leaf red_min_threshold {
+            type uint64;
+            description
+                "Mininum threshold set for red packets.";
+        }
+
+        leaf green_max_threshold {
+            type uint64;
+            description
+                "Maximum threshold set for green packets.";
+        }
+
+        leaf yellow_max_threshold {
+            type uint64;
+            description
+                "Maximum threshold set for yellow packets.";
+        }
+
+        leaf red_max_threshold {
+            type uint64;
+            description
+                "Maximum threshold set for red packets.";
+        }
+
+        leaf ecn {
+            type enumeration {
+                enum ecn_none;
+                enum ecn_green;
+                enum ecn_yellow;
+                enum ecn_red;
+                enum ecn_green_yellow;
+                enum ecn_green_red;
+                enum ecn_yellow_red; 
+                enum ecn_all;
+            }
+            description
+                "ECN setting for colored packets";
+        }
+
+        leaf wred_green_enable {
+            type boolean;
+            description
+                "WRED enabled/disabled for green packets";
+        }
+
+        leaf wred_yellow_enable {
+            type boolean;
+            description
+                "WRED enabled/disabled for yellow packets";
+        }
+
+        leaf wred_red_enable {
+            type boolean;
+            description
+                "WRED enabled/disabled for red packets";
+        }
+
+        leaf green_drop_rate {
+            type uint64;
+            description
+                "Drop rate for green packets";
+        }
+
+        leaf yellow_drop_rate {
+            type uint64;
+            description
+                "Drop rate for yellow packets";
+        }
+
+        leaf red_drop_rate {
+            type uint64;
+            description
+                "Drop rate for red packets";
+        }
+    }
+
+
+    grouping qos-wred-profile-top {
+        description
+          "Top-level grouping for QoS WRED profile";
+
+        container wred-profiles {
+
+            list wred-profile {
+                key "name";
+               
+                leaf name {
+                  type leafref {
+                    path "../config/name";
+                  }
+                  description
+                    "Reference to the name of the WRED profile";
+                }
+                
+                container config {
+                  description
+                    "Configuration parameters relating to a WRED profile.";
+                  uses qos-wred-profile-config;
+                }
+
+                container state {
+                  config false;
+                  description
+                    "Operational state parameters relating to a WRED profile.";
+                  uses qos-wred-profile-config;
+                }
+
+            }
+        }
+    }
+}
+

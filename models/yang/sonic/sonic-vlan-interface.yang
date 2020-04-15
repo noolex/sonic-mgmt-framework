@@ -18,10 +18,13 @@ module sonic-vlan-interface {
         prefix cmn;
     }
 
+<<<<<<< HEAD
     import sonic-interface-common {
         prefix sonic-if-cmn;
     }
 
+=======
+>>>>>>> gitlab/dell_sonic_3.x_share
     organization
         "SONiC";
 
@@ -31,6 +34,7 @@ module sonic-vlan-interface {
     description
         "SONIC VLAN INTERFACE";
 
+<<<<<<< HEAD
     revision 2020-04-07 {
         description
             "Add VRF and IP address attribute";
@@ -38,6 +42,11 @@ module sonic-vlan-interface {
     revision 2020-02-28 {
         description
             "Add DHCP server attribute";
+=======
+    revision 2020-02-15 {
+            description
+                    "Add ipv6_use_link_local_only attribute to interface object.";
+>>>>>>> gitlab/dell_sonic_3.x_share
     }
     revision 2019-12-01 {
         description
@@ -48,6 +57,11 @@ module sonic-vlan-interface {
             "Initial revision.";
     }
 
+
+    revision 2019-07-02 {
+        description
+            "Initial revision.";
+    }
 
     container sonic-vlan-interface {
 
@@ -68,6 +82,7 @@ module sonic-vlan-interface {
                 }
             }
 
+<<<<<<< HEAD
 			leaf vrf_name {
 				type leafref {
 					path "/vrf:sonic-vrf/vrf:VRF/vrf:VRF_LIST/vrf:vrf_name";
@@ -107,6 +122,20 @@ module sonic-vlan-interface {
                 type sonic-if-cmn:vrf-ip;
                 description
                     "List of destination addresses with each being a combination of Vrf and IP address";
+=======
+                leaf vrf_name {
+                    type leafref {
+                        path "/vrf:sonic-vrf/vrf:VRF/vrf:VRF_LIST/vrf:vrf_name";
+                    }
+                }
+ 
+                leaf ipv6_use_link_local_only {
+                    type cmn:ipv6_mode;
+                    default disable; 
+                    description
+                        "Enable/Disable IPv6 on interface";
+                }
+>>>>>>> gitlab/dell_sonic_3.x_share
             }
         }
 

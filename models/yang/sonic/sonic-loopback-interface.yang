@@ -9,6 +9,9 @@ module sonic-loopback-interface {
     import sonic-vrf {
         prefix vrf;
     }
+   import sonic-common {
+        prefix cmn;
+    }
 
     import sonic-common {
         prefix cmn;
@@ -23,14 +26,19 @@ module sonic-loopback-interface {
     description
         "SONIC LOOPBACK INTERFACE";
 
-    revision 2019-07-02 {
-        description
-            "Initial revision.";
+    revision 2020-02-15 {
+            description
+                        "Add ipv6_use_link_local_only attribute to interface object";
     }
 
     revision 2019-12-01 {
         description
             "Add vrf_name for VRF interface binding.";
+    }
+
+    revision 2019-07-02 {
+        description
+            "Initial revision.";
     }
 
     container sonic-loopback-interface {
@@ -61,10 +69,17 @@ module sonic-loopback-interface {
                 }
 
                 leaf ipv6_use_link_local_only {
+<<<<<<< HEAD
                     type cmn:mode-enable;
                     default disable;
                     description
                         "Enable IPv6 link local address on interface";
+=======
+                    type cmn:ipv6_mode;
+                    default disable; 
+                    description
+                        "Enable/Disable IPv6 on interface";
+>>>>>>> gitlab/dell_sonic_3.x_share
                 }
             }
 
