@@ -25,6 +25,7 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from netaddr import *
 from scripts.render_cli import show_cli_output
+import subprocess
 
 import urllib3
 urllib3.disable_warnings()
@@ -522,7 +523,7 @@ def invoke_api(func, args=[]):
         else:
            path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}', id=args[1])
         return api.get(path)
-
+        
     return api.cli_not_implemented(func)
  
 
@@ -549,6 +550,36 @@ def getSonicId(item):
     return ifName
 
 def run(func, args):
+   
+    if func == 'rpc_relay_clear':
+        if not (args[0].startswith("Ethernet") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
+           print("%Error: Invalid Interface")
+           return 1
+        if (args[2] == "ip"):
+            prog_name = "isc-dhcp-relay:isc-dhcp-relay-" + args[0]
+        elif (args[2] == "ipv6"):
+            prog_name = "isc-dhcp-relay:isc-dhcp-relay-v6-" + args[0]
+
+	docker_stat_cmd = "docker inspect -f '{{.State.Running}}' dhcp_relay"
+	stat = subprocess.Popen(docker_stat_cmd, shell=True, stdout=subprocess.PIPE)
+	status = stat.stdout.readline()
+	if status.rstrip() != 'true':
+	    return
+
+        docker_exec_cmd = "docker exec -i dhcp_relay "
+        cmd = docker_exec_cmd + "supervisorctl pid " + prog_name
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        pid = proc.stdout.readline()
+        alnum = ""
+        for char in pid:
+           if char.isalnum():
+              alnum += char
+        if not (alnum.isdigit()):
+           print("%Error: Could not clear stats")
+           return 1
+        exec_cmd = docker_exec_cmd + "kill -SIGUSR2 " + pid
+        proc = subprocess.Popen(exec_cmd, shell=True, stdout=subprocess.PIPE)
+        return 1
 
     try:
         response = invoke_api(func, args)

@@ -26,10 +26,9 @@ module sonic-interface {
         prefix cmn;
     }
 
-	import sonic-extension {
+    import sonic-extension {
 		prefix sonic-ext;
-	}
-
+	}    
 
 	organization
 		"SONiC";
@@ -142,18 +141,18 @@ module sonic-interface {
                                               {
                                                        error-message "DHCP server or src-intf not configured";
                                                        error-app-tag dhcp-server-invalid-link-select-config;
-                                               }
+                                              }
                                 }
 
                                 leaf dhcp_relay_src_intf {
                                         type string;
                                         must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
-                                                "(current()/../dhcp_servers)"
+                                             "(current()/../dhcp_servers)"  
                                              {
-                                                       error-message "DHCP relay address not configured";
+                                                       error-message "DHCP relay address not configured or invalid operation";
                                                        error-app-tag dhcp-server-adress-config;
                                              }
-                                        
+
                                 }
 
                                 leaf dhcp_relay_max_hop_count {
@@ -163,7 +162,7 @@ module sonic-interface {
                                            {
                                                        error-message "DHCP relay address not configured";
                                                        error-app-tag dhcp-server-adress-config;
-                                             }
+                                           }
 
                                 }
 

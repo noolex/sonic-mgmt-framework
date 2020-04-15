@@ -6,6 +6,10 @@ module sonic-portchannel {
         prefix scommon;
     }
 
+    import sonic-extension {
+        prefix sonic-ext;
+    }
+
     import sonic-port {
         prefix prt;
     }
@@ -52,6 +56,7 @@ module sonic-portchannel {
                             error-app-tag mtu-invalid;
                         }
                     }
+                    sonic-ext:custom-validation ValidateMtuForPOMemberCount;
                 }
                 
                 leaf static {
@@ -77,6 +82,7 @@ module sonic-portchannel {
 
             list PORTCHANNEL_MEMBER_LIST {
                 key "name ifname";
+                sonic-ext:custom-validation ValidateMtuForPOMemberCount;
 
                 leaf name {
                     type leafref {
