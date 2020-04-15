@@ -22,11 +22,17 @@
                 </PARAM>
             </PARAM>
             <PARAM name="Ethernet" help="Ethernet IEEE 802.3" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="phy-if-id" help="Physical interface" ptype="UINT">
+                <PARAM name="phy-if-id" help="Physical interface" optional="true" ptype="UINT">
                 </PARAM>
             </PARAM>
         </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_breakout get_openconfig_platform_port_components_component_port_breakout_mode_config show_interface_breakout.j2 ${phy-if-id} </ACTION>
+        <ACTION>
+            if test "${dpb-subcommands}" = "dependencies"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_dependencies show_interface_breakout.j2 ${phy-if-id}&#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_breakout.py get_openconfig_platform_port_components_component_port_breakout_mode_config show_interface_breakout.j2 ${phy-if-id}&#xA;
+            fi&#xA;
+        </ACTION>
       <xi:include href="include/pipe.xml"/>
       <DOCGEN>
           <DESCRIPTION>

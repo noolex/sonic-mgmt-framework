@@ -2,7 +2,7 @@ package transformer
 
 import (
     "strconv"
-//    "reflect"
+    "cvl"
     "translib/db"
     "errors"
     "strings"
@@ -10,7 +10,7 @@ import (
     log "github.com/golang/glog"
     "translib/ocbinds"
    // "io/ioutil"
-   // "encoding/json"
+    "encoding/json"
     "fmt"
 	//"github.com/golang/glog"
     //"translib/tlerr"
@@ -33,6 +33,7 @@ func init () {
     XlateFuncBind("YangToDb_port_breakout_config_xfmr", YangToDb_port_breakout_config_xfmr)
     XlateFuncBind("DbToYang_port_breakout_config_xfmr", DbToYang_port_breakout_config_xfmr)
     XlateFuncBind("DbToYang_port_breakout_state_xfmr", DbToYang_port_breakout_state_xfmr)
+    XlateFuncBind("rpc_breakout_dependencies", rpc_breakout_dependencies)
     parsePlatformJsonFile()
 }
 
@@ -74,12 +75,15 @@ var DbToYang_port_breakout_config_xfmr SubTreeXfmrDbToYang = func (inParams Xfmr
             return errors.New("No port breakout configured")
     }
     splitted_mode := strings.Split(entry.Get("brkout_mode"), "x")
-    log.Info(" SPLITTED BKO MODE: ", splitted_mode)
+    log.Info(" Splitted breakout mode: ", splitted_mode)
     channels, err := strconv.ParseUint(splitted_mode[0], 10, 8)
     if err != nil {
         return err
     }
     dpb_channels := uint8(channels)
+    if _, ok := platObj[ifName]; !ok {
+        return errors.New("Request not supported")
+    }
     platObj[ifName].Port.BreakoutMode.Config.NumChannels = &dpb_channels
 
     for oc_speed, speed := range ocSpeedMap {
@@ -95,7 +99,7 @@ var DbToYang_port_breakout_config_xfmr SubTreeXfmrDbToYang = func (inParams Xfmr
 
 }
 /* Breakout action, shutdown, remove dependent configs , remove ports, add ports */
-func breakout_action (ifName string, from_mode string, to_mode string, d *db.DB) error {
+func breakout_action (ifName string, from_mode string, to_mode string, inParams XfmrParams) error {
         var err error
         if to_mode == from_mode {
             log.Info("DPB no config change")
@@ -114,7 +118,7 @@ func breakout_action (ifName string, from_mode string, to_mode string, d *db.DB)
                          return nil
                     } else {
                         //1. shutdown ports.
-                        err = shutdownPorts(d, curr_ports)
+                        err = shutdownPorts(inParams.d, curr_ports)
                     }
                 }
                 if err == nil {
@@ -122,12 +126,16 @@ func breakout_action (ifName string, from_mode string, to_mode string, d *db.DB)
                 } 
                 if err == nil {
                     //3. Remove ports
-                    err = removePorts(d, curr_ports)
-                    log.Info("PORTS DELETED: ", curr_ports)
+                    err = removePorts(inParams.d, curr_ports)
                 } 
+
                 if err == nil {
+                     isPortRemoveCompleted(curr_ports)
+                }
+                if err == nil {
+                    log.Info("PORTS DELETED: ", curr_ports)
                     //4. Add ports
-                    err = addPorts(d, ports)
+                    err = addPorts(inParams.d, ports)
                 }
             }
         }
@@ -195,7 +203,7 @@ var YangToDb_port_breakout_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrP
             if err == nil {
                 log.Info("PORTS TO BE DELETED: ", ports)
             }
-            err = breakout_action(ifName, dpb_entry.Get("brkout_mode"), "", inParams.d)
+            err = breakout_action(ifName, dpb_entry.Get("brkout_mode"), "", inParams)
         }   else    {
             log.Info("DPB no config change")
             err = errors.New("No change in port breakout mode")
@@ -218,7 +226,7 @@ var YangToDb_port_breakout_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrP
         
         dpb_entry, _ := inParams.d.GetEntry(&db.TableSpec{Name:tblName}, db.Key{Comp: []string{ifName}})
         log.Info("CURRENT: ", dpb_entry)
-        err = breakout_action(ifName, dpb_entry.Get("brkout_mode"), brkout_mode, inParams.d)
+        err = breakout_action(ifName, dpb_entry.Get("brkout_mode"), brkout_mode, inParams)
         if err == nil {
             dpbMap[tblName][ifName] = data
             log.Info("Breakout success for  ", ifName)
@@ -229,5 +237,34 @@ var YangToDb_port_breakout_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrP
     log.Info("DPB map ==>", dpbMap)
     return dpbMap, err
 }
+var rpc_breakout_dependencies RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) ([]byte, error) {
+    var err error
+    var input map[string]interface{}
+    err = json.Unmarshal(body, &input)
+    if err != nil {
+       log.Infof("UnMarshall Error %v\n", err)
+       return nil, err
+    }
 
 
+    key := input["sonic-port-breakout:input"].(map[string]interface{})
+    log.Info("KEY : ", key)
+
+    var exec struct {
+        Output struct {
+            DepKeys []string `json:"keys"`
+        } `json:"sonic-port-breakout:output"`
+    }
+    cvSess, _ := cvl.ValidationSessOpen()
+    depConfigs := cvSess.GetDepDataForDelete(fmt.Sprintf("PORT|%v", key["ifname"]))
+    for i, dep := range depConfigs {
+            log.Info("Dep-",i," : ", dep.RefKey)
+            exec.Output.DepKeys = append(exec.Output.DepKeys , dep.RefKey)
+    }
+
+    result, err := json.Marshal(&exec)
+    log.Info("RPC Result: ", result)
+    cvl.ValidationSessClose(cvSess)
+    return result, err
+
+}
