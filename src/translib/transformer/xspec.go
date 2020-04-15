@@ -570,7 +570,7 @@ func annotEntryFill(xYangSpecMap map[string]*yangXpathInfo, xpath string, entry 
 			case "db-name" :
 				xpathData.dbIndex = dbNameToIndex(ext.NName())
 			case "cascade-delete" :
-				if ext.NName() == "ENABLE" {
+				if ext.NName() == "ENABLE" ||  ext.NName() == "enable" {
 					xpathData.cascadeDel = XFMR_ENABLE
 				} else {
 					xpathData.cascadeDel = XFMR_DISABLE

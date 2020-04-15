@@ -92,6 +92,11 @@ module sonic-extensions {
                  or choose a specific DB table based on the type.";
   }
 
+  extension cascade-delete {
+    argument "cascade-delete";
+    description "Cascade delete config";
+  }
+
   extension rpc-callback {
     argument "callback";
     description "RPC callback to be invoked for action";
