@@ -42,7 +42,7 @@
         <COMMAND 
             name="show vxlan vlanvnimap" 
             help="Show Vlan VNI mapping information">
-            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vlanvnimap show_vxlan_vlanvnimap.j2</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vlanvnimap show_vxlan_vlanvnimap.j2 show</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Show command to display all the VLAN VNI mappings
@@ -64,12 +64,17 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
+        <COMMAND 
+            name="show vxlan vlanvnimap count" 
+            help="Show Vlan VNI mapping count">
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vlanvnimap show_vxlan_vlanvnimap.j2 count</ACTION>
+        </COMMAND>
 
         <!--show vxlan vrfvnimap -->
         <COMMAND 
             name="show vxlan vrfvnimap" 
             help="Show Vrf VNI mapping information">
-            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vrfvnimap show_vxlan_vrfvnimap.j2</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vrfvnimap show_vxlan_vrfvnimap.j2 show </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Show command to display all the VRF VNI mappings
@@ -89,12 +94,17 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
+        <COMMAND 
+            name="show vxlan vrfvnimap count" 
+            help="Show Vrf VNI mapping count">
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vrfvnimap show_vxlan_vrfvnimap.j2 count </ACTION>
+        </COMMAND>
 
         <!--show vxlan tunnel -->
         <COMMAND 
             name="show vxlan tunnel" 
             help="Show Vxlan Tunnels">
-            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_tunnel show_vxlan_tunnel.j2</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_tunnel show_vxlan_tunnel.j2 show</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Show command to display all the discovered tunnels. 
@@ -117,6 +127,11 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
+        <COMMAND 
+            name="show vxlan tunnel count" 
+            help="Show Vxlan Tunnels count">
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_tunnel show_vxlan_tunnel.j2 count</ACTION>
+        </COMMAND>
 
         <!--show vxlan evpn remote vni-->
         <COMMAND 
@@ -133,7 +148,7 @@
                 optional="true"
                 >
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_remote_vni show_vxlan_remote_vni.j2 ${remote_ip_addr}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_remote_vni show_vxlan_remote_vni.j2 show ${remote_ip_addr}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Show command to display all the VLANs learnt from the specified remote IP or all the remotes.
@@ -166,6 +181,18 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND 
+            name="show vxlan remote vni count" 
+            help="Show Vxlan Remote vni count">
+            <PARAM
+                name="remote_ip_addr"
+                help="remote vtep ip"
+                ptype="IPV4_ADDR_ABC"
+                optional="true"
+                >
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_remote_vni show_vxlan_remote_vni.j2 count ${remote_ip_addr}</ACTION>
+        </COMMAND>
+        <COMMAND 
             name="show vxlan remote mac" 
             help="Show Vxlan Remote mac">
             <PARAM
@@ -175,7 +202,7 @@
                 optional="true"
                 >
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_remote_mac show_vxlan_remote_mac.j2 ${remote_ip_addr}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_remote_mac show_vxlan_remote_mac.j2 show ${remote_ip_addr}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Show command to display all the MACs learnt from the specified remote IP or all the remotes for the specified/all VLANs.
@@ -214,6 +241,18 @@
                     Total count : 2
                 </EXAMPLE>
             </DOCGEN>
+        </COMMAND>
+        <COMMAND 
+            name="show vxlan remote mac count" 
+            help="Show Vxlan Remote mac count">
+            <PARAM
+                name="remote_ip_addr"
+                help="remote vtep ip"
+                ptype="IPV4_ADDR_ABC"
+                optional="true"
+                >
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_remote_mac show_vxlan_remote_mac.j2 count ${remote_ip_addr}</ACTION>
         </COMMAND>
 
     </VIEW>
