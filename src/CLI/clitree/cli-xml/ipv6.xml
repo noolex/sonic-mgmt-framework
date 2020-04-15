@@ -48,6 +48,12 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
+        name="ipv6 enable"
+        help="Enable IPv6" >
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+    </COMMAND>
+
+    <COMMAND
         name="no ipv6 address"
         help="IPv6 address" >
         <PARAM
@@ -56,6 +62,13 @@ limitations under the License.
             ptype="IPV6_ADDR" />
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
     </COMMAND>
+
+    <COMMAND
+        name="no ipv6 enable"
+        help="Disable IPv6" >
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
+    </COMMAND>
+
   </VIEW>
 
 <VIEW name="configure-if-mgmt-view">
@@ -112,6 +125,12 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
+        name="ipv6 enable"
+        help="Enable IPv6" >
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+    </COMMAND>
+
+    <COMMAND
         name="no ipv6 address"
         help="IPv6 address" >
         <PARAM
@@ -119,6 +138,11 @@ limitations under the License.
             help="IPv6 address"
             ptype="IPV6_ADDR" />
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ipv6 enable"
+        help="Disable IPv6" >
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
     </COMMAND>
 </VIEW>
 
@@ -146,6 +170,12 @@ limitations under the License.
       </COMMAND>
 
       <COMMAND
+          name="ipv6 enable"
+          help="Enable IPv6" >
+          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+      </COMMAND>
+
+      <COMMAND
           name="no ipv6 address"
           help="IPv6 address" >
           <PARAM
@@ -153,6 +183,11 @@ limitations under the License.
               help="IPv6 address"
               ptype="IPV6_ADDR" />
          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+      </COMMAND>
+      <COMMAND
+          name="no ipv6 enable"
+          help="Disable IPv6" >
+          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
       </COMMAND>
 </VIEW>
 
@@ -177,6 +212,11 @@ limitations under the License.
              ptype="IPV6_ADDR_MASK" />
           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${lo_name} ${addr}</ACTION>
       </COMMAND>
+      <COMMAND
+          name="ipv6 enable"
+          help="Enable IPv6" >
+          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+      </COMMAND>
 
       <COMMAND
           name="no ipv6 address"
@@ -187,6 +227,12 @@ limitations under the License.
               ptype="IPV6_ADDR" />
           <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
 
+      </COMMAND>
+
+      <COMMAND
+          name="no ipv6 enable"
+          help="Disable IPv6" >
+          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
       </COMMAND>
 </VIEW>
 

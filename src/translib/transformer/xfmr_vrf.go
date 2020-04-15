@@ -838,7 +838,7 @@ var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb
         dbVal := res_map[intf_tbl_name][intfId]
         (&dbVal).Set("vrf_name", keyName)
 
-        log.Infof("YangToDb_network_instance_interface_binding_subtree_xfmr: set vrf_name %v for %v in %v", 
+        log.Infof("YangToDb_network_instance_interface_binding_subtree_xfmr: set vrf_name %v for %v in %v",
                   keyName, intfId, intf_tbl_name)
 
         log.Infof("YangToDb_network_instance_interface_binding_subtree_xfmr: %v", res_map)
