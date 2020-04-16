@@ -741,6 +741,18 @@ func fill_evpn_spec_pfx_path_loc_rib_data (ipv4LocRibRoutes_obj *ocbinds.Opencon
         ipv4LocRibRouteState.ValidRoute = &value
     }
 
+    if value, ok := pathData["weight"] ; ok {
+        _weight := uint16(value.(float64))
+        ipv4LocRibRouteState.Weight = &_weight
+    }
+
+    bestPath, ok := pathData["bestpath"].(map[string]interface{})
+    if ok {
+        if value, ok := bestPath["overall"].(bool) ; ok {
+            ipv4LocRibRouteState.BestPath = &value
+        }
+    }
+
     lastUpdate, ok := pathData["lastUpdate"].(map[string]interface{})
     if ok {
         if value, ok := lastUpdate["epoch"] ; ok {
