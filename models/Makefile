@@ -33,6 +33,7 @@ SERVER_DIST_INIT	:= $(SERVER_DIST_DIR)/.init_done
 SERVER_DIST_GO		:= $(SERVER_DIST_DIR)/src/swagger
 SERVER_DIST_UI		:= $(SERVER_DIST_DIR)/ui
 SERVER_DIST_UI_HOME	:= $(SERVER_DIST_DIR)/ui/index.html
+RESTCONF_MD_INDEX	:= $(BUILD_DIR)/restconf_md/index.md
 
 include codegen.config
 
@@ -60,13 +61,17 @@ UIGEN_SRCS = $(shell find $(UIGEN_DIR) -type f)
 
 all: go-server py-client
 
-go-server: $(YANGAPI_SERVERS) $(OPENAPI_SERVERS) $(SERVER_DIST_INIT) $(SERVER_DIST_UI_HOME)
+go-server: $(YANGAPI_SERVERS) $(OPENAPI_SERVERS) $(SERVER_DIST_INIT) $(SERVER_DIST_UI_HOME) $(RESTCONF_MD_INDEX)
 
 py-client: $(PY_CLIENT_CODEGEN_DIR)/. $(PY_CLIENT_TARGETS)
 
 $(SERVER_DIST_UI_HOME): $(YANGAPI_SERVERS) $(OPENAPI_SERVERS) $(UIGEN_SRCS)
 	@echo "+++ Generating  landing page for Swagger UI +++"
 	$(UIGEN_DIR)/src/uigen.py
+
+$(RESTCONF_MD_INDEX): $(YANGAPI_SERVERS) $(OPENAPI_SERVERS)
+	@echo "+++ Generating index page for RESTCONF documents +++"
+	$(TOPDIR)/tools/restconf_doc_tools/index.py --mdDir $(BUILD_DIR)/restconf_md
 
 
 .SECONDEXPANSION:
