@@ -3382,15 +3382,55 @@ module openconfig-network-instance-annot {
     }
   }
 
+ deviation  "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
+             "/oc-netinst:protocol/oc-netinst:ospfv2/oc-netinst:global" +
+             "/oc-netinst:inter-area-propagation-policies" +
+             "/oc-ospfv2-ext:inter-area-policy/oc-ospfv2-ext:import-list"  +
+             "/oc-ospfv2-ext:config/oc-ospfv2-ext:name" {
+    deviate add {
+      sonic-ext:field-name "import-list";
+    }
+  }
+
+  deviation  "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
+             "/oc-netinst:protocol/oc-netinst:ospfv2/oc-netinst:global" +
+             "/oc-netinst:inter-area-propagation-policies" +
+             "/oc-ospfv2-ext:inter-area-policy/oc-ospfv2-ext:export-list"  +
+             "/oc-ospfv2-ext:config/oc-ospfv2-ext:name" {
+    deviate add {
+      sonic-ext:field-name "export-list";
+    }
+  }
+
+ deviation  "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
+             "/oc-netinst:protocol/oc-netinst:ospfv2/oc-netinst:global" +
+             "/oc-netinst:inter-area-propagation-policies" +
+             "/oc-ospfv2-ext:inter-area-policy/oc-ospfv2-ext:filter-list-in"  +
+             "/oc-ospfv2-ext:config/oc-ospfv2-ext:name" {
+    deviate add {
+      sonic-ext:field-name "filter-list-in";
+    }
+  }
+  deviation  "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
+             "/oc-netinst:protocol/oc-netinst:ospfv2/oc-netinst:global" +
+             "/oc-netinst:inter-area-propagation-policies" +
+             "/oc-ospfv2-ext:inter-area-policy/oc-ospfv2-ext:filter-list-out"  +
+             "/oc-ospfv2-ext:config/oc-ospfv2-ext:name" {
+    deviate add {
+      sonic-ext:field-name "filter-list-out";
+    }
+  }
   /*-------- OSPFV2_INTERFACE placed in /oc-intf:interfaces/oc-intf:interface ---------- */
 
   /*----------------OSPFV2_ROUTER SHOW COMMANDS-------------------------*/
+  /*
   deviation  "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols" +
              "/oc-netinst:protocol/oc-netinst:ospfv2" {
     deviate add {
       sonic-ext:subtree-transformer "ospfv2_state_xfmr";
     }
   }
+  */
    
 
 }
