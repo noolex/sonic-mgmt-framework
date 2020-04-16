@@ -29,7 +29,7 @@ def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
     body = None
-  
+
     if func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/openconfig-ospfv2-ext:enable', vrfname=args[0])
         body = {"openconfig-ospfv2-ext:enable": True}
@@ -224,7 +224,7 @@ def invoke_api(func, args=[]):
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_default_cost':
 
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/openconfig-ospfv2-ext:stub/config/default-cost', vrfname=args[0], areaid=args[1])
-        body = {"openconfig-ospfv2-ext:default-cost": args[2]}
+        body = {"openconfig-ospfv2-ext:default-cost": int(args[2])}
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_enable':
 
@@ -269,14 +269,65 @@ def invoke_api(func, args=[]):
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest':
 
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}/config/openconfig-ospfv2-ext:authentication/authentication-type', vrfname=args[0], areaid=args[1], linkid=args[2])
-        body = {"openconfig-ospfv2-ext:authentication-typ": "MD5HMAC"}
+        body = {"openconfig-ospfv2-ext:authentication-type": "MD5HMAC"}
         return api.patch(keypath, body)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_key':
 
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}/config/openconfig-ospfv2-ext:authentication/authentication-key', vrfname=args[0], areaid=args[1], linkid=args[2])
-        body = {"openconfig-ospfv2-ext:authentication-typ": args[3]}
+        body = {"openconfig-ospfv2-ext:authentication-key": args[3]}
+        return api.patch(keypath, body)    
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}/config', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        body = {"openconfig-ospfv2-ext:config": { "address-prefix": args[2] }}
         return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_advertise':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}/config/advertise', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        body = {"openconfig-ospfv2-ext:advertise": True}
+        return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_metric':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}/config/metric', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        body = {"openconfig-ospfv2-ext:metric": int(args[3])}
+        return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_notadvertise':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}/config/advertise', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        body = {"openconfig-ospfv2-ext:advertise": False}
+        return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_substitute':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}/config/substitue-prefix', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        body = {"openconfig-ospfv2-ext:substitue-prefix": args[3]}
+        return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_networks_network_config':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/openconfig-ospfv2-ext:networks/network={addressprefix}/config', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        body = { "openconfig-ospfv2-ext:config": { "address-prefix": args[2] }}
+        return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/import-list/config/name', vrfname=args[0], areaid=args[1])
+        body = {"openconfig-ospfv2-ext:name": args[2]}
+        return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_exportlist':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/export-list/config/name', vrfname=args[0], areaid=args[1])
+        body = {"openconfig-ospfv2-ext:name": args[2]}
+        return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_in':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/filter-list-in/config/name', vrfname=args[0], areaid=args[1])
+        body = {"openconfig-ospfv2-ext:name": args[2]}
+        return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_out':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/filter-list-out/config/name', vrfname=args[0], areaid=args[1])
+        body = {"openconfig-ospfv2-ext:name": args[2]}
+        return api.patch(keypath, body)
+    else:
         body = {}
     
     return api.cli_not_implemented(func)
