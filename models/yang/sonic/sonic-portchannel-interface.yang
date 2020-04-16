@@ -104,11 +104,11 @@ module sonic-portchannel-interface {
                  leaf dhcp_relay_src_intf {
                        type string;
                        must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
-                             "(current()/../dhcp_servers)"
-                              {
-                                        error-message "DHCP relay address not configured";
-                                        error-app-tag dhcp-server-adress-config;
-                               }
+                            "(current()/../dhcp_servers)"
+                             {
+                                      error-message "DHCP relay address not configured or invalid operation";
+                                       error-app-tag dhcp-server-adress-config;
+                             }
 
                  }
 

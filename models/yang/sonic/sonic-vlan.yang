@@ -102,26 +102,27 @@ module sonic-vlan {
                 leaf-list dhcpv6_servers{
                      max-elements 4; 
                      type inet:ipv6-address;
+            
                 }
 
                 leaf dhcp_relay_link_select {
-                     type scommon:mode;
+                      type scommon:mode;
                 }
 
                 leaf dhcp_relay_src_intf {
-                     type string;
-                }
+                      type string;
+                } 
 
                 leaf dhcp_relay_max_hop_count {
-                      type uint32;
+                     type uint32;
                 }
 
                 leaf dhcpv6_relay_src_intf {
-                      type string;
+                     type string;
                 }
 
                 leaf dhcpv6_relay_max_hop_count {
-                      type uint32;
+                     type uint32;
                 }
 
             }
