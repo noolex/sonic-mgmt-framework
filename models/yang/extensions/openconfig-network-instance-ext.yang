@@ -95,7 +95,63 @@ module openconfig-network-instance-ext {
       deviate not-supported;
   }
 
-  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding {
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:l2 {
+	  deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:ipv4/oc-netinst:config/oc-netinst:hop-limit {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:ipv4/oc-netinst:state/oc-netinst:hop-limit {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:ipv6/oc-netinst:config/oc-netinst:source-flow-label {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:ipv6/oc-netinst:config/oc-netinst:destination-flow-label {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:ipv6/oc-netinst:config/oc-netinst:hop-limit {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:ipv6/oc-netinst:state/oc-netinst:source-flow-label {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:ipv6/oc-netinst:state/oc-netinst:destination-flow-label {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:ipv6/oc-netinst:state/oc-netinst:hop-limit {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:action/oc-netinst:config/oc-netinst:decapsulate-gre {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:action/oc-netinst:config/oc-netinst:path-selection-group {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:action/oc-netinst:state/oc-netinst:decapsulate-gre {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:action/oc-netinst:state/oc-netinst:path-selection-group {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:policies/oc-netinst:policy/oc-netinst:rules/oc-netinst:rule/oc-netinst:action/oc-netinst:encapsulate-gre {
+      deviate not-supported;
+  }
+
+  deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:policy-forwarding/oc-netinst:path-selection-groups {
 	  deviate not-supported;
   }
 

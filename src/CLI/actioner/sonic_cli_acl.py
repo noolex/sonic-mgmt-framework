@@ -744,10 +744,11 @@ def __convert_l2_rule_to_user_fmt(acl_entry, rule_data):
         pass
 
 
-def __parse_acl_entry(data, acl_entry):
+def __parse_acl_entry(data, acl_entry, acl_type):
     seq_id = acl_entry['sequence-id']
     data[seq_id] = dict()
 
+    log.log_debug("Parse {} rule {}".format(acl_type, str(acl_entry)))
     try:
         data[seq_id]['packets'] = acl_entry['state']['matched-packets']
         data[seq_id]['octets'] = acl_entry['state']['matched-octets']
@@ -765,11 +766,11 @@ def __parse_acl_entry(data, acl_entry):
     elif 'openconfig-acl:DROP' == acl_entry['actions']['state']["forwarding-action"]:
         rule_data.append('deny')
 
-    if 'ipv4' in acl_entry:
+    if 'ip' == acl_type:
         __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data)
-    elif 'ipv6' in acl_entry:
+    elif 'ipv6' == acl_type:
         __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, False)
-    elif 'l2' in acl_entry:
+    elif 'l2' == acl_type:
         __convert_l2_rule_to_user_fmt(acl_entry, rule_data)
 
     try:
@@ -808,7 +809,7 @@ def handle_get_acl_details_response(response, args):
 
                     try:
                         for acl_entry in acl_set['acl-entries']['acl-entry']:
-                            __parse_acl_entry(data[acl_type][acl_name]['rules'], acl_entry)
+                            __parse_acl_entry(data[acl_type][acl_name]['rules'], acl_entry, acl_type)
                     except KeyError:
                         pass
             else:
@@ -827,7 +828,7 @@ def handle_get_acl_details_response(response, args):
 
                 try:
                     for acl_entry in acl_set['acl-entries']['acl-entry']:
-                        __parse_acl_entry(data[acl_type][acl_name]['rules'], acl_entry)
+                        __parse_acl_entry(data[acl_type][acl_name]['rules'], acl_entry, acl_type)
                 except KeyError:
                     pass
 

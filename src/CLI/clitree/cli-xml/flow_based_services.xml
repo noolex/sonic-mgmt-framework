@@ -41,14 +41,15 @@ limitations under the License.
     <VIEW name="enable-view">
         <!-- show policy [NAME] | [type qos|monitoring|forwarding] -->
         <COMMAND name="show policy" help="Show flow based services policy information">
-            <PARAM name="fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="fbs-policy-name" help="Show policy information using policy name (Max size 63)" ptype="STRING_63"/>
-                <PARAM name="type" help="Show all policies using the policy type" ptype="SUBCOMMAND" mode="subcommand" />
-            </PARAM>
-            <PARAM name="fbs-policy-type" help="Policy type" ptype="SUBCOMMAND" mode="switch" test='"${fbs-policy-name}" = "type"' optional="true" order="true">
-                <PARAM name="qos" help="Show all QoS Policies" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="monitoring" help="Show all monitoring policies" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="forwarding" help="Show all forwarding Policies" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="type" help="Show all policies using the policy type" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="fbs-policy-type" help="Policy type" ptype="SUBCOMMAND" mode="switch">
+                        <PARAM name="qos" help="Show all QoS Policies" ptype="SUBCOMMAND" mode="subcommand" />
+                        <PARAM name="monitoring" help="Show all monitoring policies" ptype="SUBCOMMAND" mode="subcommand" />
+                        <PARAM name="forwarding" help="Show all forwarding Policies" ptype="SUBCOMMAND" mode="subcommand" />
+                    </PARAM>
+                </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${fbs-policy-name} ${fbs-policy-type}</ACTION>
         </COMMAND>
@@ -92,6 +93,25 @@ limitations under the License.
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface ${__params}</ACTION>
         </COMMAND>
+
+        <COMMAND name="clear counters service-policy" help="Clear Policy counters" />
+
+        <!-- clear counters service-policy policy NAME [interface NAME] -->
+        <COMMAND name="clear counters service-policy policy" help="Show details by policy name">
+            <PARAM name="fbs-policy-name" help="Policy name (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="interface" help="Show policies applied for interface" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_policy ${__params}</ACTION>
+        </COMMAND>
+
+        <!-- clear counters service-policy interface NAME [type qos|monitoring|forwarding] -->
+        <COMMAND name="clear counters service-policy interface" help="Show details by interface name">
+            <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
+            <MACRO name="FBS-POLICY-TYPES" arg="true" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface ${__params}</ACTION>
+        </COMMAND>
+
     </VIEW>
 
     <!--===================================================================================-->
@@ -182,7 +202,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_match_acl ${fbs-class-name} ${acl-type} ${access-list-name}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no match access-list" help="Delete match using access-list">
+        <COMMAND name="no match access-group" help="Delete match using access-list">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_match_acl ${fbs-class-name}</ACTION>
         </COMMAND>
     </VIEW>
@@ -286,14 +306,14 @@ limitations under the License.
 
         <COMMAND name="match l4-port" help="Match packets using TCP/UDP port">
             <PARAM name="l4-port-type" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="source" help="Source TCP/UDP port equal to" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="destination" help="Source TCP/UDP port range" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="source" help="Match TCP/UDP source port" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="destination" help="Match TCP/UDP destination port" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="l4-port-oper" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="eq" help="Source TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="eq" help="Match TCP/UDP Port equal to" ptype="SUBCOMMAND" mode="subcommand">
                     <PARAM name="eq-port-val" help="TCP/UDP port number" ptype="RANGE_0_65535"/>
                 </PARAM>
-                <PARAM name="range" help="Source TCP/UDP port" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="range" help="Match TCP/UDP port range" ptype="SUBCOMMAND" mode="subcommand">
                     <PARAM name="begin-port-val" help="TCP/UDP port number begin" ptype="RANGE_0_65534"/>
                     <PARAM name="end-port-val" help="TCP/UDP port number end" ptype="RANGE_1_65535"/>
                 </PARAM>
@@ -303,8 +323,8 @@ limitations under the License.
 
         <COMMAND name="no match l4-port" help="Delete match packets using TCP/UDP port">
             <PARAM name="l4-port-type" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="source" help="Source TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="destination" help="Source TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="source" help="Delete match on source TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="destination" help="Delete match on destination TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_layer4_port ${fbs-class-name} ${__params}</ACTION>
         </COMMAND>
