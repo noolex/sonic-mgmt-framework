@@ -50,7 +50,6 @@ var deviceDataMap = map[string]interface{} {
         },
 }
 
-
 func getDBOptions(dbNo db.DBNum, isWriteDisabled bool) db.Options {
         var opt db.Options
 
@@ -263,6 +262,29 @@ func unloadConfigDB(rclient *redis.Client, mpi map[string]interface{}) {
         }
 
 }
+
+func unloadDB(dbNum int, mpi map[string]interface{}) {
+	client := getDbClient(dbNum)
+	opts := getDBOptions(db.ApplDB, false)
+        for key, fv := range mpi {
+                switch fv.(type) {
+                case map[string]interface{}:
+                        for subKey, subValue := range fv.(map[string]interface{}) {
+                                newKey := key + opts.KeySeparator + subKey
+                                _, err := client.Del(newKey).Result()
+
+                                if err != nil {
+                                        fmt.Printf("Invalid data for db: %v : %v %v", newKey, subValue, err)
+                                }
+
+                        }
+                default:
+                        fmt.Printf("Invalid data for db: %v : %v", key, fv)
+                }
+        }
+
+}
+
 /* Loads the Config DB based on JSON File. */
 func loadConfigDB(rclient *redis.Client, mpi map[string]interface{}) {
         for key, fv := range mpi {
@@ -283,12 +305,50 @@ func loadConfigDB(rclient *redis.Client, mpi map[string]interface{}) {
         }
 }
 
+/* Loads the redis DB based on JSON File. */
+func loadDB(dbNum int, mpi map[string]interface{}) {
+	client := getDbClient(dbNum)
+	opts := getDBOptions(db.ApplDB, false)
+        for key, fv := range mpi {
+                switch fv.(type) {
+                case map[string]interface{}:
+                        for subKey, subValue := range fv.(map[string]interface{}) {
+                                newKey := key + opts.KeySeparator + subKey
+                                _, err := client.HMSet(newKey, subValue.(map[string]interface{})).Result()
+
+                                if err != nil {
+                                        fmt.Printf("Invalid data for db: %v : %v %v", newKey, subValue, err)
+                                }
+
+                        }
+                default:
+                        fmt.Printf("Invalid data for db: %v : %v", key, fv)
+                }
+        }
+}
+
+
 func getConfigDbClient() *redis.Client {
         rclient := redis.NewClient(&redis.Options{
                 Network:     "tcp",
                 Addr:        "localhost:6379",
                 Password:    "", // no password set
                 DB:          4,
+                DialTimeout: 0,
+        })
+        _, err := rclient.Ping().Result()
+        if err != nil {
+                fmt.Printf("failed to connect to redis server %v", err)
+        }
+        return rclient
+}
+
+func getDbClient(dbNum int) *redis.Client {
+        rclient := redis.NewClient(&redis.Options{
+                Network:     "tcp",
+                Addr:        "localhost:6379",
+                Password:    "", // no password set
+                DB:          dbNum,
                 DialTimeout: 0,
         })
         _, err := rclient.Ping().Result()
