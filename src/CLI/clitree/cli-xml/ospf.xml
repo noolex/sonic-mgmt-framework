@@ -864,7 +864,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
         <PARAM name="border-routers" help="Show all the ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
         </PARAM>
 
@@ -982,7 +982,19 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2 ${vrf-name}</ACTION>
+      <ACTION>
+        if test "${cmdtype}" == ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2 ${vrf-name} &#xA;
+        else&#xA;
+          if test "${cmdtype}" == "neighbor"; then&#xA;
+            if test "${detail}" != ""; then&#xA;
+              if test "${all}" != ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor_detail_all show_ip_ospf_neighbor_detail_all.j2 ${vrf-name} &#xA;
+              fi&#xA;
+            fi&#xA;
+          fi&#xA;
+        fi&#xA;
+      </ACTION>
         <DOCGEN>
     <DESCRIPTION>
       Display ospf global information

@@ -1,74 +1,136 @@
-{% if 'vrfName' in json_output %}
-{% if json_output['vrfName'] != 'default' %}
-VRF Name: {{json_output['vrfName']}}
-{% endif -%}
-{% endif %}
- OSPF Routing Process, Router ID: {{json_output['openconfig-network-instance:ospfv2']['global']['state']['router-id']}}
- Supports only single TOS (TOS0) routes
- This implementation conforms to RFC2328
- {% if json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:ospf-rfc1583-compatible'] == True %}
- RFC1583Compatibility flag is enabled
-{% else %}
- RFC1583Compatibility flag is disabled
-{% endif %}
-{% if json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:opaque-lsa-capability'] == True %}
- OpaqueCapability flag is enabled
-{% else %}
- OpaqueCapability flag is disabled
-{% endif %}
- Initial SPF scheduling delay {{json_output['openconfig-network-instance:ospfv2']['global']['timers']['spf']['state'] ['openconfig-ospfv2-ext:throttle-delay']}} millisec(s) 
- Minimum hold time between consecutive SPFs {{json_output['openconfig-network-instance:ospfv2']['global']['timers']['spf']['state'] ['initial-delay']}} millisec(s) 
- Maximum hold time between consecutive SPFs {{json_output['openconfig-network-instance:ospfv2']['global']['timers']['spf']['state'] ['maximum-delay']}} millisec(s)
- Hold time multiplier is currently {{json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:hold-time-multiplier']}}
-{% if 'openconfig-ospfv2-ext:last-spf-execution-time' in json_output['openconfig-network-instance:ospfv2'] ['global']['state']%}
- {% set time = json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:last-spf-execution-time']|int %}
- SPF algorithm last executed {{'%dd%dh%dm'|format(time/86400, (time%86400)/3600, ((time%86400)%3600)/60 )}} ago
- Last SPF duration {{json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:last-spf-duration']/1000}}s 
-{% else %}
- SPF algorithm has not been run
-{% endif %}
- {% if json_output['openconfig-network-instance:ospfv2']['global']['timers']['spf']['state'] ['openconfig-ospfv2-ext:spf-timer-due'] != 0 %}
- SPF timer due in {{json_output['openconfig-network-instance:ospfv2']['global']['timers']['spf']['state'] ['openconfig-ospfv2-ext:spf-timer-due']}} secs.
-{% else %}
- SPF timer is inactive
-{% endif %}
-{% if 'openconfig-network-instance:ospfv2' in json_output %}
-{% if 'global' in json_output['openconfig-network-instance:ospfv2'] %}
-{% if 'timers' in json_output['openconfig-network-instance:ospfv2']['global'] %}
-{% if 'lsa-generation' in json_output['openconfig-network-instance:ospfv2']['global']['timers'] %}
-{% if 'state' in json_output['openconfig-network-instance:ospfv2']['global']['timers']['lsa-generation'] %}
- LSA minimum interval {{json_output['openconfig-network-instance:ospfv2']['global']['timers']['lsa-generation']['state']['openconfig-ospfv2-ext:lsa-min-interval-timer']}} msecs  
- LSA minimum arrival {{json_output['openconfig-network-instance:ospfv2']['global']['timers']['lsa-generation']['state']['openconfig-ospfv2-ext:lsa-min-arrival-timer']}} msecs
- Write Multiplier set to {{json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:write-multiplier']}}
- {% set refresh_time = json_output['openconfig-network-instance:ospfv2']['global']['timers']['lsa-generation']['state']['openconfig-ospfv2-ext:refresh-timer'] %}
- Refresh timer {{'%2d'|format(refresh_time/1000)}} secs
-{% endif %}
-{% endif %}
-{% endif %}
-{% endif %}
-{% endif %}
-{% if 'openconfig-network-instance:ospfv2' in json_output %}
-{% if 'global' in json_output['openconfig-network-instance:ospfv2'] %}
-{% if 'state' in json_output['openconfig-network-instance:ospfv2']['global'] %}
- Number of external LSA {{json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:external-lsa-count']}}. Checksum Sum 0x{{'%8s'|format(json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:external-lsa-checksum'].rjust(8,'0'))}}
- Number of opaque AS LSA {{json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:opaque-lsa-count']}}. Checksum Sum 0x{{'%8s'|format(json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:opaque-lsa-checksum'].rjust(8,'0'))}}
- Number of areas attached to this router: {{json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:area-count']}}
-{% endif %}
-{% endif %}
-{% endif %}
-
-{% if json_output['openconfig-network-instance:ospfv2']['global']['state']['openconfig-ospfv2-ext:area-count'] != "0" %}
-{% set vars = {'area_id': "0", 'total_interface': "0", 'active_interface': "0", 'fully_adj_nbrs': "0", 'auth_type': "no authentication", 
+{# There are 3 list elements with key as 'openconfig-network-instance:state'(global state, spt timer state and lsa generation state). #}
+{# remaining are list elements with area states present in this ospf domain. #}
+{% set vars = {'router_id': "0", 'ospf_rfc1583_compatible': "False", 'opaque_capability': "False", 'throttle_delay': "0", 'initial_delay': "0", 'maximum_delay': "0",                'holdtime_multiplier': "0", 'spf_run': "False", 'spf_last_executed_time':"0", 'last_spf_duration':"0", 'spf_timer_running': "False", 'spf_timer_value':"0",
+	'min_interval_timer':"0", 'min_arival_timer':"0", 'refresh_timer':0, 'external_lsa_count':"0", 'external_lsa_checksum':"0", 'opaque_lsa_count':"0",
+	'opaque_lsa_checksum':"0", area_count:0, 'area_id': "0", 'total_interface': "0", 'active_interface': "0", 'fully_adj_nbrs': "0", 
+	'auth_type': "no authentication", 
         'spf_algo_executed_count': "0", 'all_lsa_count': "0", 'router_lsa_count': "0", 'router_lsa_checksum': "0", 'network_lsa_count': "0", 
         'network_lsa_checksum': "0", 'summary_lsa_count': "0", 'summary_lsa_checksum': "0", 'asbr_summary_lsa_count': "0",  
         'asbr_summary_lsa_checksum': "0", 'nssa_lsa_count': "0",'nssa_lsa_checksum': "0", 'opaque_link_lsa_count': "0", 'opaque_link_lsa_checksum': "0", 
-        'opaque_area_lsa_count': "0", 'opaque_lsa_checksum': "0"} %}
-{% if 'area' in json_output['openconfig-network-instance:ospfv2']['areas'] %}
-{% set area_list = json_output['openconfig-network-instance:ospfv2']['areas']['area'] %}
+        'opaque_area_lsa_count': "0", 'opaque_lsa_checksum': "0", 'areas_info': "", 'area_exists':"False"} %}
+{% set ospf_global_list = json_output  %}
+{% for list_elem in ospf_global_list %}
+{% if 'vrfName' in list_elem %}
+{% if list_elem['vrfName'] != 'default' %}
+VRF Name: {{list_elem['vrfName']}}
+{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'router-id' in list_elem['openconfig-network-instance:global_state']%}
+{% if vars.update({'router_id':list_elem['openconfig-network-instance:global_state' ]['router-id']}) %}{% endif -%}
+{% if 'openconfig-ospfv2-ext:ospf-rfc1583-compatible' in list_elem['openconfig-network-instance:global_state'] and list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:ospf-rfc1583-compatible'] == True %}
+{% if vars.update({'ospf_rfc1583_compatible':'RFC1583Compatibility flag is enabled'}) %}{% endif -%}
+{% else %}
+{% if vars.update({'ospf_rfc1583_compatible':'RFC1583Compatibility flag is disabled'}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-ospfv2-ext:opaque-lsa-capability' in list_elem['openconfig-network-instance:global_state'] and list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:opaque-lsa-capability'] == True %}
+{% if vars.update({'opaque_capability':'OpaqueCapability flag is enabled'}) %}{% endif -%}
+{% else %}
+{% if vars.update({'opaque_capability':'OpaqueCapability flag is disabled'}) %}{% endif -%}
+{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:spf_state' in list_elem and 'openconfig-ospfv2-ext:throttle-delay' in list_elem['openconfig-network-instance:spf_state'] %}
+{% if vars.update({'throttle_delay':list_elem['openconfig-network-instance:spf_state']['openconfig-ospfv2-ext:throttle-delay']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:spf_state' in list_elem and  'initial-delay' in list_elem['openconfig-network-instance:spf_state'] %}
+{% if vars.update({'initial_delay':list_elem['openconfig-network-instance:spf_state']['initial-delay']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:spf_state' in list_elem and  'maximum-delay' in list_elem['openconfig-network-instance:spf_state'] %}
+{% if vars.update({'maximum_delay':list_elem['openconfig-network-instance:spf_state']['maximum-delay']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:hold-time-multiplier' in list_elem['openconfig-network-instance:global_state'] %}
+{% if vars.update({'holdtime_multiplier':list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:hold-time-multiplier']}) %}{% endif -%}
+{% endif -%}
+
+{% if 'openconfig-network-instance:global_state' in list_elem %}
+{% if 'openconfig-ospfv2-ext:last-spf-execution-time' in list_elem['openconfig-network-instance:global_state'] %}
+ {% set time = list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:last-spf-execution-time']|int %}
+ {% if vars.update({'spf_last_executed_time':time}) %}{% endif -%}
+ {% if vars.update({'spf_run':'True'}) %}{% endif -%}
+ {% if vars.update({'last_spf_duration':list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:last-spf-duration']}) %}{% endif -%}
+{% else %}
+ {% if vars.update({'spf_run':'False'}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:spf_state' in list_elem and list_elem['openconfig-network-instance:spf_state']['openconfig-ospfv2-ext:spf-timer-due'] != 0 %}
+{% if vars.update({'spf_timer_running':'True'}) %}{% endif -%}
+{% if vars.update({'spf_timer_value':list_elem['openconfig-network-instance:spf_state']['openconfig-ospfv2-ext:spf-timer-due']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:lsa_gen_state' in list_elem and  'openconfig-ospfv2-ext:lsa-min-interval-timer' in list_elem['openconfig-network-instance:lsa_gen_state'] %}
+{% if vars.update({'min_interval_timer':list_elem['openconfig-network-instance:lsa_gen_state']['openconfig-ospfv2-ext:lsa-min-interval-timer']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:lsa_gen_state' in list_elem and  'openconfig-ospfv2-ext:lsa-min-arrival-timer' in list_elem['openconfig-network-instance:lsa_gen_state'] %}
+{% if vars.update({'min_arrival_timer':list_elem['openconfig-network-instance:lsa_gen_state']['openconfig-ospfv2-ext:lsa-min-arrival-timer']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:lsa_gen_state' in list_elem and  'openconfig-ospfv2-ext:refresh-timer' in list_elem['openconfig-network-instance:lsa_gen_state'] %}
+{% if vars.update({'refresh_timer':list_elem['openconfig-network-instance:lsa_gen_state']['openconfig-ospfv2-ext:refresh-timer']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:write-multiplier' in list_elem['openconfig-network-instance:global_state']%}
+{% if vars.update({'write_multiplier':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:write-multiplier']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:external-lsa-count' in list_elem['openconfig-network-instance:global_state']%}
+{% if vars.update({'external_lsa_count':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:external-lsa-count']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:external-lsa-checksum' in list_elem['openconfig-network-instance:global_state']%}
+{% if vars.update({'external_lsa_checksum':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:external-lsa-checksum']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:opaque-lsa-count' in list_elem['openconfig-network-instance:global_state']%}
+{% if vars.update({'opaque_lsa_count':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:opaque-lsa-count']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:opaque-lsa-checksum' in list_elem['openconfig-network-instance:global_state']%}
+{% if vars.update({'opaque_lsa_checksum':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:opaque-lsa-checksum']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:area-count' in list_elem['openconfig-network-instance:global_state']%}
+{% if vars.update({'area_count':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:area-count']}) %}{% endif -%}
+{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:areas' in list_elem %}
+{% if vars.update({'areas_info':list_elem['openconfig-network-instance:areas']}) %}{% endif -%}
+{% endif %}
+{% endfor -%}
+  OSPF Routing Process, Router ID: {{vars.router_id}}
+ Supports only single TOS (TOS0) routes
+ This implementation conforms to RFC2328
+ {{vars.ospf_rfc1583_compatible}}
+ {{vars.opaque_capability}}
+ Initial SPF scheduling delay {{vars.throttle_delay}} millisec(s)
+ Minimum hold time between consecutive SPFs {{vars.initial_delay}} millisec(s)
+ Maximum hold time between consecutive SPFs {{vars.maximum_delay}} millisec(s)
+ Hold time multiplier is currently {{vars.holdtime_multiplier}}
+{% if vars.spf_run == "False" %}
+ SPF algorithm has not been run
+{%else %}
+ SPF algorithm last executed {{'%dd%dh%dm'|format(vars.spf_last_executed_time/86400, (vars.spf_last_executed_time%86400)/3600, ((vars.spf_last_executed_time%86400)%3600)/60 )}} ago
+ Last SPF duration {{vars.last_spf_duration/1000}}s 
+{%endif -%} 
+ {% if vars.spf_timer_running == "False" %}
+ SPF timer is inactive
+{%else %}
+ SPF timer due in {{vars.spf_timer_value}} secs.
+{%endif %}
+ LSA minimum interval {{vars.min_interval_timer}} msecs  
+ LSA minimum arrival {{vars.min_arrival_timer}} msecs
+ Write Multiplier set to {{vars.write_multiplier}}
+ Refresh timer {{'%2d'|format(vars.refresh_timer/1000)}} secs
+ Number of external LSA {{vars.external_lsa_count}}. Checksum Sum 0x{{'%8s'|format(vars.external_lsa_checksum.rjust(8,'0'))}}
+ Number of opaque AS LSA {{vars.opaque_lsa_count}}. Checksum Sum 0x{{'%8s'|format(vars.opaque_lsa_checksum.rjust(8,'0'))}}
+ Number of areas attached to this router: {{vars.area_count}}
+{% if vars.area_count != 0 %}
+{% set area_id_list = [] %}
+{% if 'area' in vars.areas_info %}
+{% set area_list = vars.areas_info['area'] %}
 {% endif %}
 {% for areainfo in area_list %}
+    {% if 'state' in areainfo %}
     {% if 'identifier' in areainfo %}
     {% if vars.update({'area_id':areainfo['identifier']}) %}{% endif %}
+    {% if vars.update({'area_exists':'False'}) %}{% endif %}
+    {% for id in area_id_list %}
+	{% if vars.area_id == id %}
+	    {% if vars.update({'area_exists':'True'}) %}{% endif %}
+	{% endif %}
+    {% endfor %}
+    {% if vars.area_exists == 'False' %}
+	{% do area_id_list.append(vars.area_id) %}
+    {% endif %}
     {% endif %}
     {% if vars.area_id == '0.0.0.0' %}
     {% if vars.update({'backbone':'(Backbone)'})  %}{% endif %}
@@ -135,6 +197,7 @@ VRF Name: {{json_output['vrfName']}}
     {% if "openconfig-ospfv2-ext:opaque-link-lsa-checksum" in areainfo['state'] %}
     {% if vars.update({'opaque_link_lsa_checksum':areainfo['state']['openconfig-ospfv2-ext:opaque-link-lsa-checksum']}) %}{% endif %}
     {% endif %}
+{% if vars.area_exists == "False" %}
  Area ID: {{'%s %s'|format(vars.area_id, vars.backbone)}}
    Number of interfaces in this area: Total: {{'%d'|format(vars.total_interface)}} , Active: {{'%d'|format(vars.active_interface)}}
    Number of fully adjacent neighbors in this area: {{'%d'|format(vars.fully_adj_nbrs)}}
@@ -148,7 +211,7 @@ VRF Name: {{json_output['vrfName']}}
    Number of NSSA LSA {{'%s'|format(vars.nssa_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.nssa_lsa_checksum).rjust(8,'0'))}}
    Number of opaque link LSA {{'%s'|format(vars.opaque_link_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.opaque_link_lsa_checksum).rjust(8,'0'))}}
    Number of opaque area LSA {{'%s'|format(vars.opaque_area_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.opaque_area_lsa_checksum).rjust(8,'0'))}}
-
-{% endfor %}
 {% endif %}
-
+   {% endif %}
+{% endfor -%}
+{% endif -%}
