@@ -184,6 +184,32 @@ def invoke(func, args):
     #######################################
 
     #######################################
+    # Configure  MCLAG Gateway Mac Table - START
+    #######################################
+    if (func == 'patch_sonic_mclag_gw_mac_list'):
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_GW_MAC/MCLAG_GW_MAC_LIST')
+        body = {
+            "sonic-mclag:MCLAG_GW_MAC_LIST": [
+            {
+                "gw_mac":args[0],
+                "gw_mac_en":"enable"
+            }
+          ]
+        }
+        return aa.patch(keypath, body)
+
+    if (func == 'delete_sonic_mclag_gw_mac_list'):
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_GW_MAC/MCLAG_GW_MAC_LIST={gw_mac}',
+                gw_mac=args[0])
+        return aa.delete(keypath)
+
+    #######################################
+    # Configure  MCLAG Gateway Mac Table - END
+    #######################################
+
+
+
+    #######################################
     # Get  APIs   - START
     #######################################
     if func == 'get_sonic_mclag_sonic_mclag':
