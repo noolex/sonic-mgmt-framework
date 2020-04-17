@@ -87,10 +87,9 @@ func decodePortParams(port_i string, mode string, subport int, entry map[string]
     }
     start_lane := subport*lane_speed[0]
     end_lane := start_lane + lane_speed[0]
-    dpb_index = indeces[start_lane]
+    dpb_index = indeces[subport]
     dpb_lanes = lanes[start_lane]
     for i := start_lane + 1; i < end_lane; i++ {
-        dpb_index = dpb_index + "," + indeces[i]
         dpb_lanes = dpb_lanes + "," + lanes[i]
     }
     base_port,_ := strconv.Atoi(strings.TrimLeft(port_i, "Ethernet"))
@@ -247,6 +246,7 @@ func removePorts (d *db.DB, ports_i []portProp) (error) {
         } else {
             log.Info("DPB: port remove success for ", ports_i[i].name)
         }
+        time.Sleep(1 * time.Second)
     }
 
     return dbErr;
