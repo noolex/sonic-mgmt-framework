@@ -350,9 +350,12 @@ module sonic-ospfv2 {
         }
 
         leaf area-id {
+          type sonic-ospf-cmn:ospf-area-identifier;
+          /*
           type leafref {
             path "../../../OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST[vrf_name=current()/../vrf_name]/area-id";
           }
+          */
         }
 
         leaf prefix {
@@ -389,9 +392,12 @@ module sonic-ospfv2 {
         }
 
         leaf area-id {
+          type sonic-ospf-cmn:ospf-area-identifier;
+          /*
           type leafref {
             path "../../../OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST[vrf_name=current()/../vrf_name]/area-id";
           }
+          */
         }
 
         leaf description {
@@ -421,10 +427,16 @@ module sonic-ospfv2 {
         }
 
         leaf authentication-key-id {
-          when "../authentication-type = 'sonic-ospf-cmn:MD5HMAC'";
+          // when "../authentication-type = 'sonic-ospf-cmn:MD5HMAC'";
           type uint8;
           description
             "Authentication key Id";
+        }
+
+        leaf authentication-md5-key {
+          type string;
+          description
+            "OSPF authentication md5 password string.";
         }
 
         leaf dead-interval {
@@ -580,14 +592,14 @@ module sonic-ospfv2 {
         }
 
         leaf table-id {
-          when "../protocol = 'sonic-ospf-cmn:OSPF'" ;
+          //when "../protocol = 'sonic-ospf-cmn:OSPF'" ;
           type uint32;
           description
             "Distribute OSPF protocol routing table instance id";
         }
 
         leaf always {
-          when "../protocol = 'sonic-ospf-cmn:DEFAULT_ROUTE'" ;
+          //when "../protocol = 'sonic-ospf-cmn:DEFAULT_ROUTE' or ../protocol = 'DEFAULT_ROUTE'" ;
           type boolean ;
           description
             "Distribute default-route is always or not";
@@ -628,7 +640,7 @@ module sonic-ospfv2 {
                path "/sonic-vrf:sonic-vrf/sonic-vrf:VRF/sonic-vrf:VRF_LIST/sonic-vrf:vrf_name";
              }
            }
-           //default "default";
+           default "default";
          }
 
          leaf area-id {
@@ -650,7 +662,7 @@ module sonic-ospfv2 {
              "Network type for the interface";
          }
 
-         leaf cost {
+         leaf metric {
            type sonic-ospf-cmn:ospf-metric;
            description
              "The metric for the interface";
@@ -688,13 +700,6 @@ module sonic-ospfv2 {
               "OSPF interface BFD configuration.";
          }
 
-         leaf instance-id {
-           type uint32;
-           description
-             "OSPFv2 instance id for the interace";
-           default 0;
-         }
-
          leaf authentication-type {
            type sonic-ospf-cmn:ospf-authentication-type;
            default AUTH_NONE;
@@ -709,10 +714,16 @@ module sonic-ospfv2 {
          }
 
          leaf authentication-key-id {
-           when "../authentication-type = 'sonic-ospf-cmn:MD5HMAC'";
+           //when "../authentication-type = 'sonic-ospf-cmn:MD5HMAC'";
            type uint8;
            description
              "Authentication key Id";
+         }
+
+         leaf authentication-md5-key {
+           type string;
+           description
+             "OSPF authentication md5 password string.";
          }
 
          leaf dead-interval {
@@ -731,6 +742,14 @@ module sonic-ospfv2 {
              "The number of seconds the local system waits between the
              transmission of subsequent Hello packets";
            default 10;
+         }
+
+         leaf hello-multiplier {
+           type uint32 {
+             range 1..10;
+           }
+           description
+              "OSPF interface hello multiplier configuration.";
          }
 
          leaf retransmission-interval {
