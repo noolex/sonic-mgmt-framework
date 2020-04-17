@@ -207,6 +207,9 @@ type TableSpec struct {
 	// can have TableSeparator as part of the key. Otherwise, we cannot
 	// tell where the key component begins.
 	CompCt int
+	// NoDelete flag (if it is set to true) is to skip the row entry deletion from 
+	// the table when the "SetEntry" or "ModEntry" method is called with empty Value Field map.
+	NoDelete bool
 }
 
 // Key gives the key components.
@@ -783,8 +786,12 @@ func (d *DB) setEntry(ts *TableSpec, key Key, value Value, isCreate bool) error 
 	}
 
 	if len(value.Field) == 0 {
-		glog.Info("setEntry: Mapping to DeleteEntry()")
-		e = d.DeleteEntry(ts, key)
+		if ts.NoDelete == true {
+			glog.Info("setEntry: NoDelete flag is true, skipping deletion of the entry.")
+		} else {
+			glog.Info("setEntry: Mapping to DeleteEntry()")
+			e = d.DeleteEntry(ts, key)
+		}
 		goto setEntryExit
 	}
 
@@ -886,8 +893,12 @@ func (d *DB) ModEntry(ts *TableSpec, key Key, value Value) error {
 	}
 
 	if len(value.Field) == 0 {
-		glog.Info("ModEntry: Mapping to DeleteEntry()")
-		e = d.DeleteEntry(ts, key)
+		if ts.NoDelete == true {
+			glog.Info("ModEntry: NoDelete flag is true, skipping deletion of the entry.")
+		} else {
+			glog.Info("ModEntry: Mapping to DeleteEntry()")
+			e = d.DeleteEntry(ts, key)
+		}		
 		goto ModEntryExit
 	}
 
