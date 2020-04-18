@@ -94,7 +94,7 @@ module sonic-extensions {
 
   extension cascade-delete {
     argument "cascade-delete";
-    description "Cascade delete config";
+    description "Cascade delete extension";
   }
 
   extension rpc-callback {

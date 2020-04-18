@@ -20,9 +20,7 @@ package transformer
 
 import (
     log "github.com/golang/glog"
-    //"errors"
     "strings"
-    //"translib/tlerr"
     "translib/db"
     "cvl"
     "fmt"
@@ -155,31 +153,4 @@ func handleCascadeDelete(d *db.DB, dbDataMap map[int]map[db.DBNum]map[string]map
     }
     return nil
 }
-
-/*****
-Test code once cvl api is ready we can drop it.
-
-
-type CVLDepDataForDelete struct {
-    RefKey string //Ref Key which is getting deleted
-    Entry  map[string]map[string]string //Entry or key which should be deleted as a result
-    //map["BGP_NEIGHBOR|Vrf1|Ethernet0"]: []
-    //map["BGP_NEIGHBOR_AF|Vrf1|Ethernet0|Unicast"]:[]
-    //map["MIRROR_SESSION|sess1"]:[] ---> delete entire entry
-    //map["ACL_RULE|Acl1|Rule1"]:map[MIRROR_ACTION]: "" ---> delete field
-    //map["ACL_TABLE|Acl1"]:map["ports@"]:"Ethernet0" ---> delete a particular value in leaf-list
-}
-
-func TestGetDepDataForDelete(redisKey string) ([]CVLDepDataForDelete)  { //Returns array of entries which should be deleted
-
-    var depList [] CVLDepDataForDelete
-
-    var lentry CVLDepDataForDelete
-    lentry.RefKey = redisKey
-    lentry.Entry = make( map[string]map[string]string)
-    lentry.Entry["INTERFACE|Ethernet0"] = make(map[string]string)
-    depList= append(depList, lentry)
-    return depList
-}
-*****/
 
