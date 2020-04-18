@@ -1,0 +1,62 @@
+module sonic-port-breakout {
+    namespace "http://github.com/Azure/sonic-port-breakout";
+    prefix sbrkprt;
+
+    import sonic-port {
+        prefix prt;
+    }
+
+    import sonic-extension {
+        prefix sonic-ext;
+    }
+
+    organization
+        "SONiC";
+
+    contact
+        "SONiC";
+
+    description
+        "SONiC Port Breakout";
+
+    revision 2020-03-12 {
+        description
+            "Initial revision.";
+    }
+
+	container sonic-port-breakout {
+
+		container BREAKOUT_CFG {
+
+			list BREAKOUT_CFG_LIST {
+
+				key "ifname";
+
+				leaf ifname {
+					sonic-ext:custom-validation ValidateDpbConfigs;
+					type leafref {
+						path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+					}
+				}
+
+				leaf brkout_mode {
+					/*type string {
+						pattern "1x400G|1x100G|2x50G|2x100G|4x25G|4x10G"{
+							error-message "Invalid port breakout mode";
+							error-app-tag port-breakout-mode-invalid;
+						}
+					}*/
+                    type enumeration {
+                        enum 1x400G { value 1; }
+                        enum 1x100G { value 2; }
+                        enum 2x100G { value 3; }
+                        enum 2x50G { value 4; }
+                        enum 4x25G { value 5; }
+                        enum 4x10G { value 6; }
+                    }
+				}
+			}
+		}
+    }
+
+}

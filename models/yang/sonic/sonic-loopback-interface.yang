@@ -6,10 +6,11 @@ module sonic-loopback-interface {
         prefix inet;
     }
 
-   import sonic-vrf {
+    import sonic-vrf {
         prefix vrf;
     }
-   import sonic-common {
+
+    import sonic-common {
         prefix cmn;
     }
 
@@ -65,10 +66,10 @@ module sonic-loopback-interface {
                 }
 
                 leaf ipv6_use_link_local_only {
-                    type cmn:ipv6_mode;
-                    default disable; 
+                    type cmn:mode-enable;
+                    default disable;
                     description
-                        "Enable/Disable IPv6 on interface";
+                        "Enable IPv6 link local address on interface";
                 }
             }
 

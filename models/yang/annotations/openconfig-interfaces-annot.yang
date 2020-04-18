@@ -10,6 +10,7 @@ module openconfig-interfaces-annot {
     import openconfig-interfaces-ext { prefix oc-intf-ext; }
     import openconfig-extensions { prefix oc-ext; }
     import openconfig-if-ethernet {prefix oc-eth; }
+    import openconfig-ospfv2-ext { prefix "oc-ospfv2-ext"; }
     import openconfig-vlan {prefix oc-vlan; }
     import openconfig-if-ip {prefix oc-ip; }
     import openconfig-if-aggregate { prefix oc-lag; }
@@ -370,4 +371,22 @@ module openconfig-interfaces-annot {
         		sonic-ext:field-name "src_ip";            
         }    
     }
+
+    //deviation  "/oc-intf:interfaces/oc-intf:interface/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config"  {
+    deviation  "/oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config"  {
+        deviate add {
+            sonic-ext:db-name "CONFIG_DB";
+            sonic-ext:table-name "OSPFV2_INTERFACE";
+            sonic-ext:key-transformer "ospfv2_interface_tbl_key_xfmr";
+        }
+    }
+
+    //deviation "/oc-intf:interfaces/oc-intf:interface/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config/oc-ospfv2-ext:id" {
+    deviation "/oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config/oc-ospfv2-ext:id" {
+        deviate add {
+            sonic-ext:field-name "name";
+            sonic-ext:field-transformer  "ospfv2_interface_name_fld_xfmr";
+        }
+    }
+
 }

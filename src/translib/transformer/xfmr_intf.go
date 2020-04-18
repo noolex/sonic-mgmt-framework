@@ -1651,10 +1651,12 @@ func deleteLoopbackIntf(inParams *XfmrParams, loName *string) error {
         log.Errorf(errStr)
         return tlerr.InvalidArgsError{Format:errStr}
     }
-    /* If L3 config exist, return error */
-    err = validateL3ConfigExists(inParams.d, loName)
-    if err != nil {
-        return err
+    /* Validate L3 config only if operation is not delete */
+    if inParams.oper != DELETE {
+        err = validateL3ConfigExists(inParams.d, loName)
+        if err != nil {
+            return err
+        }
     }
 
     resMap[intTbl.cfgDb.intfTN] = loMap

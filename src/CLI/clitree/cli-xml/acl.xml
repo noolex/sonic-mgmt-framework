@@ -16,7 +16,7 @@ limitations under the License.
 -->
 
 <!DOCTYPE CLISH_MODULE [
-        <!ENTITY ACL_MAC_ADDR "[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{4}(\.[0-9a-fA-F]{4}){2}">
+        <!ENTITY ACL_MAC_ADDR "^([0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{4}(\.[0-9a-fA-F]{4}){2})$">
         ]>
 
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -28,6 +28,7 @@ limitations under the License.
     <PTYPE name="ACL_MAC_ADDR_MASK" pattern="((&ACL_MAC_ADDR;)\/(&ACL_MAC_ADDR;))" help="MACADDRESS/MACMASK"
            preprocess="toupper"/>
     <PTYPE name="PCP_VALUE_MASK" pattern="[0-7](\/[0-7])?" help="VALUE[/MASK]"/>
+    <PTYPE name="PCP_VALUE" method="integer" pattern="0..7" help="0-7"/>
     <PTYPE name="DEI_VALUE" method="integer" pattern="0..1" help="0-1"/>
     <PTYPE name="ETHERTYPE_VALUE" pattern="0[xX]([6-9a-fA-F][0-9a-fA-A]{2}|[1-9a-fA-F][0-9a-fA-A]{3})" help="0x600-0xffff"/>
 
@@ -137,23 +138,12 @@ limitations under the License.
                 </PARAM>
 
                 <PARAM name="ethertype" help="Match packets using Ethertype value" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='"${action-options}" != "remark"'>
-                    <PARAM name="ethertype-ip" help="IPv4 ethertype (0x800)" ptype="SUBCOMMAND" mode="subcommand" value="ip"/>
-                    <PARAM name="ethertype-ipv6" help="IPv6 ethertype (0x86dd)" ptype="SUBCOMMAND" mode="subcommand" value="ipv6"/>
-                    <PARAM name="ethertype-arp" help="ARP ethertype (0x806)" ptype="SUBCOMMAND" mode="subcommand" value="arp"/>
-                    <PARAM name="ETHERTYPE" help="Ethertype value (0x600-0xffff)" ptype="ETHERTYPE_VALUE"/>
+                    <MACRO name="ACL-MAC-ETHERTYPE-OPTIONS" />
                 </PARAM>
 
                 <PARAM name="pcp" help="Match packets using PCP value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
                     <PARAM name="pcp-options" help="" ptype="SUBCOMMAND" mode="switch">
-                        <PARAM name="pcp-val" help="PCP value. (VALUE or MASK in range 0-7)" ptype="PCP_VALUE_MASK"/>
-                        <PARAM name="pcp-be" help="Best effort (0)" ptype="SUBCOMMAND" mode="subcommand" value="be"/>
-                        <PARAM name="pcp-bk" help="Background (1)" ptype="SUBCOMMAND" mode="subcommand" value="bk"/>
-                        <PARAM name="pcp-ee" help="Excellent effort (2)" ptype="SUBCOMMAND" mode="subcommand" value="ee"/>
-                        <PARAM name="pcp-ca" help="Critical applications (3)" ptype="SUBCOMMAND" mode="subcommand" value="ca"/>
-                        <PARAM name="pcp-vi" help="Video, &lt; 100 ms latency and jitter (4)" ptype="SUBCOMMAND" mode="subcommand" value="vi"/>
-                        <PARAM name="pcp-vo" help="Voice, &lt; 10 ms latency and jitter (5)" ptype="SUBCOMMAND" mode="subcommand" value="vo"/>
-                        <PARAM name="pcp-ic" help="Internetwork control (6)" ptype="SUBCOMMAND" mode="subcommand" value="ic"/>
-                        <PARAM name="pcp-nc" help="Network control (7)" ptype="SUBCOMMAND" mode="subcommand" value="nc"/>
+                        <MACRO name="ACL-MAC-PCP-VAL-OPTIONS" arg="PCP_VALUE_MASK,PCP value. (VALUE or MASK in range 0-7)"/>
                     </PARAM>
                 </PARAM>
 

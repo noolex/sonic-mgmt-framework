@@ -38,7 +38,7 @@ module sonic-common {
         }
     }
 
-    typedef ipv6_mode {
+    typedef mode-enable {
         type enumeration {
             enum enable;
             enum disable;

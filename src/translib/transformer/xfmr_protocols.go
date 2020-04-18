@@ -22,8 +22,10 @@ var network_instance_protocols_ptotocol_table_name_xfmr TableXfmrFunc = func (in
             (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"] = make(map[string]db.Value)
             (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["BGP|bgp"] = db.Value{Field: make(map[string]string)}
             (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["BGP|bgp"].Field["NULL"] = "NULL"
+            (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["OSPF|ospfv2"] = db.Value{Field: make(map[string]string)}
+            (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["OSPF|ospfv2"].Field["NULL"] = "NULL"
             (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["IGMP_SNOOPING|IGMP-SNOOPING"] = db.Value{Field: make(map[string]string)}
-			(*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["IGMP_SNOOPING|IGMP-SNOOPING"].Field["NULL"] = "NULL"
+            (*inParams.dbDataMap)[db.ConfigDB]["CFG_PROTO_TBL"]["IGMP_SNOOPING|IGMP-SNOOPING"].Field["NULL"] = "NULL"
 
             tblList = append(tblList, "CFG_PROTO_TBL")
         }
@@ -33,6 +35,7 @@ var network_instance_protocols_ptotocol_table_name_xfmr TableXfmrFunc = func (in
 
 var YangToDb_network_instance_protocol_key_xfmr KeyXfmrYangToDb = func(inParams XfmrParams) (string, error) {
     var key string
+    log.Info("YangToDb_network_instance_protocol_key_xfmr - Operation: ", inParams.oper)
     log.Info("YangToDb_network_instance_protocol_key_xfmr - URI: ", inParams.uri)
     if (inParams.oper == GET) {
         pathInfo := NewPathInfo(inParams.uri)

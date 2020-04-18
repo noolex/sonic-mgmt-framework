@@ -51,11 +51,35 @@ ethertype_map = OrderedDict([('0x0800', 'ETHERTYPE_IPV4'), ('ip', 'ETHERTYPE_IPV
                              ('0x8847', 'ETHERTYPE_MPLS')])
 
 pcp_map = {"bk": 1, "be": 0, "ee": 2, "ca": 3, "vi": 4, "vo": 5, "ic": 6, "nc": 7}
+dscp_map = {
+    "default": 0,
+    "cs1": 8,
+    "cs2": 16,
+    "cs3": 24,
+    "cs4": 32,
+    "cs5": 40,
+    "cs6": 48,
+    "cs7": 56,
+    "af11": 10,
+    "af12": 12,
+    "af13": 14,
+    "af21": 18,
+    "af22": 20,
+    "af23": 22,
+    "af31": 26,
+    "af32": 28,
+    "af33": 30,
+    "af41": 34,
+    "af42": 36,
+    "af43": 38,
+    "ef": 46,
+    "voice-admit": 44,
+}
 
 proto_number_rev_map = {val: key for key, val in proto_number_map.items()}
 ethertype_rev_map = {val: key for key, val in ethertype_map.items()}
 pcp_rev_map = {val: key for key, val in pcp_map.items()}
-
+dscp_rev_map = {val: key for key, val in dscp_map.items()}
 acl_client = cc.ApiClient()
 
 
@@ -225,7 +249,7 @@ def __create_acl_rule_ipv4_ipv6(args):
         protocol = int(args[4])
 
     log.log_debug('Protocol is {}'.format(protocol))
-    if protocol:
+    if protocol is not None:
         body["acl-entry"][0][af]["config"]["protocol"] = protocol
 
     next_item = 6
@@ -289,7 +313,7 @@ def __create_acl_rule_ipv4_ipv6(args):
             body["acl-entry"][0]["transport"]["config"][l4_port_type] = "0..{}".format(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'dscp':
-            body["acl-entry"][0][af]["config"]["dscp"] = int(args[next_item + 1])
+            body["acl-entry"][0][af]["config"]["dscp"] = int(args[next_item + 1]) if args[next_item + 1] not in dscp_map else dscp_map[args[next_item + 1]]
             next_item += 2
         elif args[next_item] in ['fin', 'syn', 'ack', 'urg', 'rst', 'psh']:
             flags_list.append("tcp_{}".format(args[next_item]).upper())
@@ -634,7 +658,7 @@ def __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, ipv4=True):
     try:
         dscp = acl_entry[field]['state']['dscp']
         rule_data.append('dscp')
-        rule_data.append(dscp)
+        rule_data.append(dscp_rev_map.get(dscp, dscp))
     except KeyError:
         pass
 
