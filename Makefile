@@ -138,6 +138,7 @@ $(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot
 
 #Apply CVL related patches
 	$(apply_cvl_dep_patches)
+	find -type d ! -perm -0200 -exec chmod u+w {} +
 	touch  $@
 
 
