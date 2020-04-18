@@ -9,11 +9,8 @@ import (
     "github.com/openconfig/ygot/ygot"
     log "github.com/golang/glog"
     "translib/ocbinds"
-   // "io/ioutil"
     "encoding/json"
     "fmt"
-	//"github.com/golang/glog"
-    //"translib/tlerr"
     "reflect"
 )
 
@@ -258,8 +255,11 @@ var rpc_breakout_dependencies RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db
     cvSess, _ := cvl.ValidationSessOpen()
     depConfigs := cvSess.GetDepDataForDelete(fmt.Sprintf("PORT|%v", key["ifname"]))
     for i, dep := range depConfigs {
-            log.Info("Dep-",i," : ", dep.RefKey)
-            exec.Output.DepKeys = append(exec.Output.DepKeys , dep.RefKey)
+        for key, depc := range dep.Entry {
+            exec.Output.DepKeys = append(exec.Output.DepKeys , key)
+            log.Info("Dep-",i," : ", dep.RefKey, "/", key, "entry: ", depc)
+        }
+
     }
 
     result, err := json.Marshal(&exec)

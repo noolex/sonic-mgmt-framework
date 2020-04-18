@@ -28,7 +28,7 @@
         </PARAM>
         <ACTION>
             if test "${dpb-subcommands}" = "dependencies"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_dependencies show_interface_breakout.j2 ${phy-if-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_dependencies show_breakout_deps.j2 ${phy-if-id}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_breakout.py get_openconfig_platform_port_components_component_port_breakout_mode_config show_interface_breakout.j2 ${phy-if-id}&#xA;
             fi&#xA;
