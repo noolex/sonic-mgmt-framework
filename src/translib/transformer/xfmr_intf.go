@@ -2952,6 +2952,14 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 		sagIPKey = ifName + "|IPv6"
 	}
 
+	sagIPEntry, _ := inParams.d.GetEntry(&db.TableSpec{Name:"SAG"}, db.Key{Comp: []string{sagIPKey}})
+	sagGwIPList := sagIPEntry.Get("gwip@")
+	sagGwIPMap := strings.Split(sagGwIPList, ",")
+
+	if (sagGwIPMap[0] == "") {
+		return err
+	}
+
 	if ipv4_req || ipv6_req {
 		if intfsObj != nil && intfsObj.Interface != nil && len(intfsObj.Interface) > 0 {
 			var ok bool = false
@@ -2976,10 +2984,6 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 		}
 
 		subIntf = intfObj.Subinterfaces.Subinterface[0]
-
-		sagIPEntry, _ := inParams.d.GetEntry(&db.TableSpec{Name:"SAG"}, db.Key{Comp: []string{sagIPKey}})
-		sagGwIPList := sagIPEntry.Get("gwip@")
-		sagGwIPMap := strings.Split(sagGwIPList, ",")
 
 		if ipv4_req {
 			var sagIpv4 *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv4_SagIpv4
