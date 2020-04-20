@@ -1056,4 +1056,25 @@ func Test_Default_Value_Fill_Get_NoMappingToRedis(t *testing.T) {
         unloadConfigDB(rclient, cleanuptbl)
 }
 
+func Test_Ygot_Merge_Xfmr_Infra_Get(t *testing.T) {
 
+        url := "/openconfig-interfaces:interfaces/interface[name=Ethernet0]/config"
+
+        fmt.Println("++++++++++++++  Get Test_Ygot_Merge_Xfmr_Infra  +++++++++++++")
+
+        get_expected := "{\"openconfig-interfaces:config\":{\"enabled\":true,\"mtu\":9100,\"name\":\"Ethernet0\"}}"
+
+        t.Run("GET on Ygot Merge Xfmr Infra", processGetRequest(url, get_expected, false))
+
+}
+
+func Test_Ygot_Merge_Subtree_Xfmr_Get(t *testing.T) {
+
+        url := "/openconfig-interfaces:interfaces/interface[name=Ethernet0]/state/counters"
+
+        fmt.Println("++++++++++++++  Get Test_Ygot_Merge_Subtree_Xfmr  +++++++++++++")
+
+        get_expected := "{\"openconfig-interfaces:counters\":{\"in-broadcast-pkts\":\"0\",\"in-discards\":\"0\",\"in-errors\":\"0\",\"in-multicast-pkts\":\"0\",\"in-octets\":\"0\",\"in-pkts\":\"0\",\"in-unicast-pkts\":\"0\",\"last-clear\":\"0\",\"out-broadcast-pkts\":\"0\",\"out-discards\":\"0\",\"out-errors\":\"0\",\"out-multicast-pkts\":\"0\",\"out-octets\":\"0\",\"out-pkts\":\"0\",\"out-unicast-pkts\":\"0\"}}"
+
+        t.Run("GET on Ygot Merge Subtree Xfmr", processGetRequest(url, get_expected, false))
+}
