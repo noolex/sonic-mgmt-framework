@@ -661,7 +661,8 @@ func dbMapDelete(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
 
         cdErr := handleCascadeDelete(d, resultMap, cascadeDelTbl)
         if cdErr != nil {
-            xfmrLogInfo("Cascade Delete Failed for cascadeDelTbl (%v).", cascadeDelTbl)
+            xfmrLogInfo("Cascade Delete Failed for cascadeDelTbl (%v), Error: (%v)", cascadeDelTbl, cdErr)
+            return cdErr
         }
 
     printDbData(resultMap, "/tmp/yangToDbDataDel.txt")
@@ -948,7 +949,8 @@ func dbMapCreate(d *db.DB, ygRoot *ygot.GoStruct, oper int, uri string, requestU
                         }
                         cdErr := handleCascadeDelete(d, resultMap, cascadeDelTbl)
                         if cdErr != nil {
-                            xfmrLogInfo("Cascade Delete Failed for cascadeDelTbl (%v).", cascadeDelTbl)
+                            xfmrLogInfo("Cascade Delete Failed for cascadeDelTbl (%v), Error (%v).", cascadeDelTbl, cdErr)
+                            return cdErr
                         }
 
 

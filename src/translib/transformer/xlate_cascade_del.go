@@ -23,6 +23,7 @@ import (
     "strings"
     "translib/db"
     "cvl"
+    "errors"
     "fmt"
 )
 
@@ -105,6 +106,7 @@ func handleCascadeDelete(d *db.DB, dbDataMap map[int]map[db.DBNum]map[string]map
                                         }
                                     } else {
                                         xfmrLogInfo("handleCascadeDelete - xfmrDbTblCbkHandler failed.")
+                                        return errors.New("xfmrDbTblCbkHandler failed for table: " + depEntkeyList[0] + ", Key: " + depEntkeyList[1])
                                     }
                                 } else {
                                     if _, ok := dbDataMap[DELETE][db.ConfigDB][depEntkeyList[0]]; !ok {
