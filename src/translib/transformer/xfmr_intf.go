@@ -2998,6 +2998,12 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 			ygot.BuildEmptyTree(intfObj)
 		}
 
+		if intfObj.Subinterfaces == nil {
+			var _subintfs ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces
+			intfObj.Subinterfaces = &_subintfs
+			ygot.BuildEmptyTree(intfObj.Subinterfaces)
+		}
+
 		var subIntf *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface
 		if _, ok := intfObj.Subinterfaces.Subinterface[0]; !ok {
 			subIntf, err = intfObj.Subinterfaces.NewSubinterface(0)
