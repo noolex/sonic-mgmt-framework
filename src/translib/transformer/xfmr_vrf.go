@@ -746,13 +746,29 @@ var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb
                     log.Info("YangToDb_network_instance_interface_binding_subtree_xfmr: ", errStr);
                     err = tlerr.InvalidArgsError{Format: errStr}
                 }
+
+				isDonor := validateUnnumIntfExistsForDonorIntf(inParams.d, &intfId)
+        		if (isDonor == true) {
+                    errStr := "Interface: " + intfId + " configured as Donor interface"
+                    log.Info("YangToDb_network_instance_interface_binding_subtree_xfmr: ", errStr);
+                    err = tlerr.InvalidArgsError{Format: errStr}
+				}
             } else {
                 err = validateL3ConfigExists(inParams.d, &intfId)
             }
             if err != nil {
                 return res_map, err
             }
-        }
+		} else {
+			// VRF Unbind case. Check if all IP has been deleted before VRF unbind
+			ipKeys, err := inParams.d.GetKeysPattern(&db.TableSpec{Name: intf_tbl_name}, db.Key{Comp: []string{ intfId, "*" }})
+			if len(ipKeys) != 0 {
+				errStr := "L3 Configuration exists for Interface: " + intfId
+				log.Error(errStr)
+				err = tlerr.InvalidArgsError{Format: errStr}
+				return res_map, err
+			}
+		}
 
         res_map[intf_tbl_name] = make(map[string]db.Value)
 

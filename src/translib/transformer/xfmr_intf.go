@@ -2539,6 +2539,31 @@ func intf_unnumbered_del(tblName *string, subIntfObj *ocbinds.OpenconfigInterfac
     return err
 }
 
+func validateUnnumIntfExistsForDonorIntf(d *db.DB, donorIfName *string) bool {
+
+	tables := [2]string{"INTERFACE", "PORTCHANNEL_INTERFACE"}
+
+	for _, table := range tables {
+		intfTable, err := d.GetTable(&db.TableSpec{Name:table})
+		if err != nil {
+			continue
+		}
+
+		keys, err := intfTable.GetKeys()
+		for _, key := range keys {
+			if len(key.Comp) > 2 {
+				continue
+			}
+
+			intfEntry, _ := intfTable.GetEntry(key)
+			if intfEntry.Get("unnumbered") == *donorIfName {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func validateEntryExists(d *db.DB, tblName *string, ifName *string) bool {
     entry, err := d.GetEntry(&db.TableSpec{Name:*tblName}, db.Key{Comp: []string{*ifName}})
     if err != nil {
@@ -2952,6 +2977,14 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 		sagIPKey = ifName + "|IPv6"
 	}
 
+	sagIPEntry, _ := inParams.d.GetEntry(&db.TableSpec{Name:"SAG"}, db.Key{Comp: []string{sagIPKey}})
+	sagGwIPList := sagIPEntry.Get("gwip@")
+	sagGwIPMap := strings.Split(sagGwIPList, ",")
+
+	if (sagGwIPMap[0] == "") {
+		return err
+	}
+
 	if ipv4_req || ipv6_req {
 		if intfsObj != nil && intfsObj.Interface != nil && len(intfsObj.Interface) > 0 {
 			var ok bool = false
@@ -2965,6 +2998,12 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 			ygot.BuildEmptyTree(intfObj)
 		}
 
+		if intfObj.Subinterfaces == nil {
+			var _subintfs ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces
+			intfObj.Subinterfaces = &_subintfs
+			ygot.BuildEmptyTree(intfObj.Subinterfaces)
+		}
+
 		var subIntf *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface
 		if _, ok := intfObj.Subinterfaces.Subinterface[0]; !ok {
 			subIntf, err = intfObj.Subinterfaces.NewSubinterface(0)
@@ -2976,10 +3015,6 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 		}
 
 		subIntf = intfObj.Subinterfaces.Subinterface[0]
-
-		sagIPEntry, _ := inParams.d.GetEntry(&db.TableSpec{Name:"SAG"}, db.Key{Comp: []string{sagIPKey}})
-		sagGwIPList := sagIPEntry.Get("gwip@")
-		sagGwIPMap := strings.Split(sagGwIPList, ",")
 
 		if ipv4_req {
 			var sagIpv4 *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface_Ipv4_SagIpv4

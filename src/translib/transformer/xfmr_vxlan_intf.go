@@ -542,7 +542,7 @@ func (reqP *vxlanReqProcessor) setIntfObjFromReq() error {
 	return err
 }
 
-func (reqP *vxlanReqProcessor) handleDeleteReq() (*map[string]map[string]db.Value, error) {
+func (reqP *vxlanReqProcessor) handleDeleteReq(inParams XfmrParams) (*map[string]map[string]db.Value, error) {
 
 	var res_map map[string]map[string]db.Value = make(map[string]map[string]db.Value)
 
@@ -608,15 +608,15 @@ func (reqP *vxlanReqProcessor) handleDeleteReq() (*map[string]map[string]db.Valu
 				subOpMap[db.ConfigDB]["VXLAN_TUNNEL"] = make(map[string]db.Value)
 				subOpMap[db.ConfigDB]["VXLAN_TUNNEL"][vxlanIntfName] = db.Value{Field: make(map[string]string)}
 				subOpMap[db.ConfigDB]["VXLAN_TUNNEL"][vxlanIntfName].Field["NULL"] = "NULL"
-				reqP.reqParams.subOpDataMap[UPDATE] = &subOpMap
+				inParams.subOpDataMap[UPDATE] = &subOpMap
 				vxlanIntfConfTbl[vxlanIntfName] = vxlanIntfdbV
 				res_map["VXLAN_TUNNEL"] = vxlanIntfConfTbl
 				evpnNvodbV.Field["source_vtep"] = vxlanIntfName
 				evpnNvoTbl["nvo1"] = evpnNvodbV
 				res_map["EVPN_NVO"] = evpnNvoTbl
-			} else {
-				return &res_map, tlerr.NotFound("Resource Not Found")
-			}
+			} // else {
+//				return &res_map, tlerr.NotFound("Resource Not Found")
+//			}
 		} else {
 			return &res_map, tlerr.NotFound("Resource Not Found")
 		}
@@ -686,7 +686,7 @@ func (reqP *vxlanReqProcessor) handleCRUReq() (*map[string]map[string]db.Value, 
 	return &res_map, nil
 }
 
-func (reqP *vxlanReqProcessor) translateToDb() (*map[string]map[string]db.Value, error) {
+func (reqP *vxlanReqProcessor) translateToDb(inParams XfmrParams) (*map[string]map[string]db.Value, error) {
 	//DELETE
 	if reqP.opcode == 5 {
 		// get the target node
@@ -699,7 +699,7 @@ func (reqP *vxlanReqProcessor) translateToDb() (*map[string]map[string]db.Value,
 			log.Info("translateToDb param reqP.targetNode.Name ==> ", reqP.targetNode.Name)
 		}
 
-		res_map, err := reqP.handleDeleteReq()
+		res_map, err := reqP.handleDeleteReq(inParams)
 
 		if err != nil {
 			return nil, err
@@ -748,9 +748,9 @@ func getVxlanNiUriPath(uri string) (*gnmipb.Path, error) {
 
 var YangToDb_intf_vxlan_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[string]map[string]db.Value, error) {
 	var err error
-	if log.V(3) {
-		log.Info("YangToDb_intf_vxlan_config_xfmr entering => inParams.uri => ", inParams.uri)
-	}
+	log.Info("YangToDb_intf_vxlan_config_xfmr entering => inParams.uri => ", inParams.uri)
+	log.Info("YangToDb_intf_vxlan_config_xfmr entering => inParams.requestUri => ", inParams.requestUri)
+	
     // Note: Temporary fix needs to be taken off once parent level delete
     // is handled for sag and vxlan subtree transformers.
     //if inParams.oper == DELETE {
@@ -768,7 +768,7 @@ var YangToDb_intf_vxlan_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrPara
 		return nil, err
 	}
 
-	if log.V(3) {
+	if log.V(3) && reqP.vxlanIntfConfigObj != nil {
 		log.Info("YangToDb_intf_vxlan_config_xfmr ==> printing vxlanIntfConfigPath object request ==> ", (*reqP.vxlanIntfConfigObj))
 	}
 
@@ -776,11 +776,31 @@ var YangToDb_intf_vxlan_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrPara
 		return nil, err
 	}
 
+	reqPath, err := getIntfUriPath(inParams.requestUri); if err != nil {
+		return nil, err
+	}
+	
+	var pathList []*gnmipb.PathElem = reqPath.Elem
+	var vxlanIfNodeFlag bool
+	for i := 0; i < len(pathList); i++ {
+		if pathList[i].Name == "vxlan-if" {
+			vxlanIfNodeFlag = true
+			break
+		}
+	}
+	
+	if inParams.oper == DELETE && vxlanIfNodeFlag == false {
+		// need to return success abrubtly since this subtree call got initiated internally from the transformer
+		// infra for this request, otherwise the orignial given request will fail
+		log.Info("YangToDb_intf_vxlan_config_xfmr: returning success abrubtly since this subtree call got initiated internally from the transformer infra for this request => ", inParams.requestUri)
+		return nil, nil
+	}
+
 	if log.V(3) {
 		log.Info("YangToDb_intf_vxlan_config_xfmr ==> printing intf object request ==> ", (*reqP.intfObject))
 	}
 
-	res_map, err := reqP.translateToDb()
+	res_map, err := reqP.translateToDb(inParams)
 
 	if err == nil {
 		return *res_map, nil
