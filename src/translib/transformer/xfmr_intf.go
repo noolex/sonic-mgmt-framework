@@ -2539,6 +2539,31 @@ func intf_unnumbered_del(tblName *string, subIntfObj *ocbinds.OpenconfigInterfac
     return err
 }
 
+func validateUnnumIntfExistsForDonorIntf(d *db.DB, donorIfName *string) bool {
+
+	tables := [2]string{"INTERFACE", "PORTCHANNEL_INTERFACE"}
+
+	for _, table := range tables {
+		intfTable, err := d.GetTable(&db.TableSpec{Name:table})
+		if err != nil {
+			continue
+		}
+
+		keys, err := intfTable.GetKeys()
+		for _, key := range keys {
+			if len(key.Comp) > 2 {
+				continue
+			}
+
+			intfEntry, _ := intfTable.GetEntry(key)
+			if intfEntry.Get("unnumbered") == *donorIfName {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func validateEntryExists(d *db.DB, tblName *string, ifName *string) bool {
     entry, err := d.GetEntry(&db.TableSpec{Name:*tblName}, db.Key{Comp: []string{*ifName}})
     if err != nil {
@@ -2971,6 +2996,12 @@ var DbToYang_intf_sag_ip_xfmr SubTreeXfmrDbToYang = func(inParams XfmrParams) (e
 			ygot.BuildEmptyTree(intfsObj)
 			intfObj, _ = intfsObj.NewInterface(ifName)
 			ygot.BuildEmptyTree(intfObj)
+		}
+
+		if intfObj.Subinterfaces == nil {
+			var _subintfs ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces
+			intfObj.Subinterfaces = &_subintfs
+			ygot.BuildEmptyTree(intfObj.Subinterfaces)
 		}
 
 		var subIntf *ocbinds.OpenconfigInterfaces_Interfaces_Interface_Subinterfaces_Subinterface
