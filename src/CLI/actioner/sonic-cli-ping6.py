@@ -44,18 +44,13 @@ def contains_valid_intf(args):
         return True
     return False
 
-def print_and_log(inMsg):
-    msg = "Error: ping6 unsuccessful"
-    logMsg = msg + " : " + inMsg
-    print msg
-    log.syslog(log.LOG_ERR, logMsg)
+def print_and_log(msg):
+    print "% Error: ", msg
+    log.syslog(log.LOG_ERR, msg)
 
 def run_vrf(args):
     vrfName = args[0]
     args = " ".join(args[1:])
-    if(set(args) & blocked_chars):
-        print "%Error: Invalid argument."
-        sys.exit(1)
     try:
         if len(args) == 0:
             args = "-h"
@@ -68,14 +63,12 @@ def run_vrf(args):
         # May be triggered when Ctrl + C is used to stop script execution
         return
     except Exception as e:
-        print_and_log(str(e))
+        print_and_log("Unable to call ping6 command, please check logs")
+        log.syslog(log.LOG_ERR, str(e))
         return
 
 def run(args):
     args = " ".join(args[1:])
-    if(set(args) & blocked_chars):
-        print "%Error: Invalid argument."
-        sys.exit(1)
     try:
         if len(args) == 0:
             args = "-h"
@@ -88,21 +81,42 @@ def run(args):
         # May be triggered when Ctrl + C is used to stop script execution
         return
     except Exception as e:
-        print_and_log(str(e))
+        print_and_log("Unable to call ping6 command, please check logs for details")
+        log.syslog(log.LOG_ERR, str(e))
         return
+
+def validate_input(args):
+    if(set(args) & blocked_chars):
+        print_and_log("Invalid argument")
+        return False
+    #check if valid interface is provided or not
+    if " -I" in args:
+        if "vrf" in args:
+            print_and_log("VRF name is not allowed with -I option")
+            return False
+        if contains_valid_intf(args) is False:
+            print_and_log("Invalid interface, valid options are Ethernet<id>|Management<id>|Vlan<id>|PortChannel<id>|Loopback<id>")
+            return False
+
+    if ("fe80:" in args.lower()
+        or "ff01:" in args.lower()
+        or "ff02:" in args.lower()):
+        if "vrf" in args:
+            print_and_log("VRF name is not allowed for IPv6 addresses with link-local scope")
+            return False
+        if " -I" not in args:
+            print_and_log("Interface name is missing")
+            return False
+    return True
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
 
-    #check if valid interface is provided or not
     args = " ".join(sys.argv[0:])
-    if " -I" in args:
-        if contains_valid_intf(args) is False:
-            print("Invalid interface, valid options are Ethernet<id>|Management<id>|Vlan<id>|PortChannel<id>|Loopback<id>")
-            sys.exit(1)
+    if validate_input(args) is False:
+        sys.exit(1)
 
     if len(sys.argv) > 1 and sys.argv[1] == "vrf":
         run_vrf(sys.argv[2:])
     else:
         run(sys.argv)
-
