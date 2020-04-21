@@ -385,6 +385,16 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=Loopback${lo-id}</ACTION>
     </COMMAND>
+	<COMMAND
+         name="interface CPU"
+         help="CPU Interface commands"
+         view="config-if-CPU-view"
+         viewid="cpu_ifname=CPU"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         >
+         <ACTION builtin="clish_nop"></ACTION>
+     </COMMAND>
      </VIEW>
 
      <VIEW
@@ -591,6 +601,148 @@ limitations under the License.
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans ${iface} TRUNK ${vlan_id_list}</ACTION>
         </COMMAND>
+	<COMMAND name="threshold" help="Configure priority-group/queue threshold on an interface."/>
+	<COMMAND name="threshold priority-group"
+		 help="Configure priority-group thresholds" ptype="SUBCOMMAND" mode="subcommand">
+		<PARAM name="PG-Index"
+			help="PG Index value"
+			ptype="RANGE_0_7">
+		</PARAM>
+		<PARAM
+			name="threshold_buffer_type"
+			help="choose from shared, headroom."
+			mode="switch"
+			ptype="SUBCOMMAND">
+                <PARAM
+                       name="headroom"
+                       help="choose headroom as threshold buffer type"
+                       ptype="SUBCOMMAND"
+                       mode="subcommand">
+		</PARAM>
+		<PARAM
+                       name="shared"
+                       help="choose shared as threshold buffer type"
+                       ptype="SUBCOMMAND"
+                       mode="subcommand">
+		</PARAM>
+		</PARAM>
+		<PARAM
+		       name="threshold_value"
+		       help="Threshold value"
+		       ptype="PERCENT_1">
+                </PARAM>
+	    <ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line} ${iface}</ACTION>
+		<DOCGEN>
+		<DESCRIPTION>
+			This command is used to configure a threshold for a specific priority-group shared/headroom buffer of an interface. The threshold value is provided in %. Valid values are 1-100.
+		</DESCRIPTION>
+		<USAGE>
+			Use this command to configure a threshold for a  specific priority-group shared/headroom buffer of an interface.
+		</USAGE>
+		<EXAMPLE summary="Configure priority-group buffer threshold configuration.">
+				sonic(conf-if-Ethernet0)# threshold priority-group 5 headroom 57
+				sonic(conf-if-Ethernet0)# threshold priority-group 7 shared 78
+		</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+	<COMMAND name="threshold queue"
+		 help="Configure queue thresholds" ptype="SUBCOMMAND" mode="subcommand">
+		<PARAM
+                       name="queue_index"
+                       help="queue_index value"
+                       ptype="RANGE_0_7">
+                </PARAM>
+	        <PARAM
+			name="queue_buffer_type"
+			help="choose from unicast/multicast as queue buffer type"
+			mode="switch"
+			ptype="SUBCOMMAND">
+		<PARAM
+			name="unicast"
+			help="choose unicast as queue_buffer_type"
+			ptype="SUBCOMMAND"
+			mode="subcommand">
+		</PARAM>
+		<PARAM
+                       name="multicast"
+                       help="choose multicast as queue_buffer_type"
+                       ptype="SUBCOMMAND"
+                       mode="subcommand">
+		</PARAM>
+                </PARAM>
+		<PARAM
+		       name="threshold_value"
+		       help="Threshold value"
+		       ptype="PERCENT_1">
+                </PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line} ${iface} </ACTION>
+		<DOCGEN>
+		<DESCRIPTION>
+			This command is used to configure a threshold for a specific unicast/multicast queue of an interface. The threshold value is provided in %. Valid values are 1-100..
+		</DESCRIPTION>
+		<USAGE>
+			Use this command to configure queue threshold for a specific unicast/multicast queue of an interface.
+		</USAGE>
+		<EXAMPLE summary="Configure queue buffer threshold configuration.">
+					sonic(conf-if-Ethernet0)# threshold queue 4 unicast 47
+					sonic(conf-if-Ethernet0)# threshold queue 2 multicast 67
+		</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+	<COMMAND
+	        name="no threshold"
+		help="Remove priority-group/queue thresholds"
+		>
+	</COMMAND>
+
+	<!-- no threshold priority-group -->
+	<COMMAND name="no threshold priority-group"
+		help="Clears priority-group buffer threshold."
+		ptype="SUBCOMMAND"
+		mode="subcommand">
+                <PARAM name="PG-Index" help="PG Index value" ptype="RANGE_0_7"> </PARAM>
+                <PARAM name="clear-priority-group-subcommands" help="Clear priority group sub commands" mode="switch" ptype="SUBCOMMAND">
+		<PARAM name="headroom" help="Choose headroom as threshold buffer type." ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+		<PARAM name="shared" help="Choose shared as threshold buffer type." ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+                </PARAM>
+	<ACTION builtin="clish_pyobj">sonic_cli_threshold delete_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line} ${iface}</ACTION>
+		<DOCGEN>
+		<DESCRIPTION>
+			This command can be used to clear a previously configured threshold on shared/headroom priority-group buffer of an interface.
+		</DESCRIPTION>
+		<USAGE>
+			Use this command to clear a previously configured threshold on shared/headroom priority-group buffer of an interface.
+		</USAGE>
+		<EXAMPLE summary="Clear a previously configured threshold on shared/headroom priority-group buffer of an interface.">
+				 sonic(conf-if-Ethernet0)# no threshold priority-group 5 headroom
+				 sonic(conf-if-Ethernet0)# no threshold priority-group 7 shared
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+	<!-- no threshold queue -->
+	<COMMAND name="no threshold queue"
+             help="Clears queue buffer threshold."
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+		<PARAM name="queue_index" help="queue Index value" ptype="RANGE_0_7"> </PARAM>
+		<PARAM name="clear-queue-subcommands" help="Clear queue sub commands" mode="switch" ptype="SUBCOMMAND">
+		<PARAM name="unicast" help="Choose unicast as queue buffer type." ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+		<PARAM name="multicast" help="Choose multicast as queue buffer type." ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+		</PARAM>
+	        <ACTION builtin="clish_pyobj">sonic_cli_threshold delete_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line} ${iface} </ACTION>
+		<DOCGEN>
+		<DESCRIPTION>
+			This command can be used to clear a previously configured threshold on unicast/multicast queue buffer of an interface .
+		</DESCRIPTION>
+		<USAGE>
+			Use this command to clear a previously configured threshold on unicast/multicast queue buffer of an interface.
+		</USAGE>
+		<EXAMPLE summary="Clear a previously configured threshold on unicast/multicast queue buffer of an interface.">
+				sonic(conf-if-Ethernet0)# no threshold queue 7 unicast
+				sonic(conf-if-Ethernet0)# no threshold queue 5 multicast
+			</EXAMPLE>
+		</DOCGEN>
+    </COMMAND>
     </VIEW>
 
 <VIEW
@@ -960,5 +1112,84 @@ limitations under the License.
         </COMMAND>
 
     </VIEW>
-</CLISH_MODULE>
 
+<VIEW
+         name="config-if-CPU-view"
+         prompt="${SYSTEM_NAME}(conf-if-CPU)# "
+         depth="2"
+         >
+         <NAMESPACE
+             ref="configure-view"
+             help="false"
+             completion="false"
+             />
+	<COMMAND name="threshold" help="Configure threshold on CPU interface."/>
+        <COMMAND
+	     name="threshold queue"
+	     help="Configure queue buffer threshold on CPU interface."
+	     ptype="SUBCOMMAND"
+             mode="subcommand">
+		<PARAM
+                       name="queue_index"
+                       help="queue_index value"
+                       ptype="RANGE_0_7">
+                </PARAM>
+		<PARAM
+                       name="multicast"
+                       help="choose multicast as queue buffer type on CPU interface"
+                       ptype="SUBCOMMAND"
+                       mode="subcommand">
+                </PARAM>
+		<PARAM
+		       name="threshold_value"
+		       help="Threshold value"
+		       ptype="PERCENT_1">
+                </PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line}  ${cpu_ifname}</ACTION>
+		<DOCGEN>
+		<DESCRIPTION>
+			This command is used to configure multicact queue buffer threshold of CPU interface. The threshold value is provided in %. Valid values are 1-100..
+		</DESCRIPTION>
+		<USAGE>
+			Use this command to configure multicast queue buffer threshold of CPU interface.
+		</USAGE>
+		<EXAMPLE summary="Configure queue buffer threshold of CPU interface.">
+			sonic(conf-if-CPU)# threshold queue 3 multicast 37
+		</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<!-- no cpu queue threshold -->
+        <COMMAND
+            name="no"
+            help="Negate a command or set its defaults"
+            />
+	<COMMAND
+	        name="no threshold"
+		help="Remove CPU interface thresholds"
+                ptype="SUBCOMMAND"
+                mode="subcommand">
+	</COMMAND>
+	<COMMAND name="no threshold queue"
+		help="Clears CPU interface queue buffer threshold."
+		ptype="SUBCOMMAND"
+		mode="subcommand">
+		<PARAM name="queue_index" help="queue Index value" ptype="RANGE_0_7"> </PARAM>
+		<PARAM name="clear-queue-subcommands" help="Clear queue sub commands" mode="switch" ptype="SUBCOMMAND">
+		<PARAM name="multicast" help="Choose multicast as queue buffer type." ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+		</PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_threshold delete_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line} ${cpu_ifname} </ACTION>
+		<DOCGEN>
+		<DESCRIPTION>
+			This command can be used to clear a previously configured threshold on multicast queue buffer of CPU interface.
+		</DESCRIPTION>
+		<USAGE>
+			Use this command to clear a previously configured threshold on multicast queue buffer of CPU interface.
+		</USAGE>
+		<EXAMPLE summary="Clears previously configured threshold on multicast queue buffer of CPU interface.">
+				sonic(conf-if-CPU)# no threshold queue 7 multicast 77
+		</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+</VIEW>
+</CLISH_MODULE>

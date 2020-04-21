@@ -25,6 +25,11 @@ TOPDIR=$PWD
 BUILD_DIR=$TOPDIR/build
 SERVER_DIR=$BUILD_DIR/rest_server
 
+# Setup database config file path
+if [ -z $DB_CONFIG_PATH ]; then
+    export DB_CONFIG_PATH=$TOPDIR/../../dockers/docker-database/database_config.json
+fi
+
 # LD_LIBRARY_PATH for CVL
 [ -z $LD_LIBRARY_PATH ] && export LD_LIBRARY_PATH=/usr/local/lib
 

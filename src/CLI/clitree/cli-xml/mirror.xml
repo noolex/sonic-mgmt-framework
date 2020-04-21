@@ -109,7 +109,7 @@ limitations under the License.
          >
                  <PARAM
                     name="phy-if-id"
-                    help="Physical interface or erspan"
+                    help="Physical interface or CPU or erspan"
                     ptype="STRING"
                 optional="false"
                     >

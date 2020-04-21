@@ -205,6 +205,12 @@ module openconfig-system-annot {
       }
     }
 
+    deviation /oc-sys:system/oc-sys:aaa/oc-sys:server-groups/oc-sys:server-group/oc-sys:config/oc-sys-ext:nas-ip-address {
+      deviate add {
+          sonic-ext:field-name "nas_ip";
+      }
+    }
+
     deviation /oc-sys:system/oc-sys:aaa/oc-sys:server-groups/oc-sys:server-group/oc-sys:config/oc-sys-ext:retransmit-attempts {
       deviate add {
           sonic-ext:field-name "retransmit";

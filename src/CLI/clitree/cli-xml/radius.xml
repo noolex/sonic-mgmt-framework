@@ -105,6 +105,19 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
+        name="radius-server nas-ip"
+        help="Configure global NAS-IP|IPV6-Address for RADIUS"
+        >
+        <PARAM
+            name="nas_ip"
+            help=""
+            ptype="IPV4V6_ADDR"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_nas_ip_address ${nas_ip}</ACTION>
+    </COMMAND>
+
+    <COMMAND
         name="radius-server timeout"
         help="Configure global timeout for RADIUS"
         >
@@ -280,6 +293,13 @@ limitations under the License.
         help="Unconfigure global source ip for RADIUS"
         >
     <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_source_address</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server nas-ip"
+        help="Unconfigure global NAS-IP|IPV6-Address for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_nas_ip_address</ACTION>
     </COMMAND>
 
     <COMMAND

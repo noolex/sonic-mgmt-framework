@@ -9,6 +9,17 @@ module sonic-ptp {
 	import sonic-extension {
 		prefix sonic-ext;
 	}
+    import sonic-port {
+        prefix prt;
+    }
+
+    import sonic-portchannel {
+        prefix spc;
+    }
+
+    import sonic-vlan {
+        prefix svlan;
+    }
 
 	organization
 		"SONiC";
@@ -237,10 +248,19 @@ module sonic-ptp {
 					}
 				}
 				leaf port-number {
-					type string;
-					description
-						"List of port data sets of the clock (see IEEE Std
-						1588-2008 subclause 8.2.5).";
+                    type union {
+                        type leafref {
+                            path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+                        }
+                        type leafref {
+                            path "/spc:sonic-portchannel/spc:PORTCHANNEL/spc:PORTCHANNEL_LIST/spc:name";
+                        }
+                        type leafref {
+                            path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
+                        }
+                    }
+                    description
+                        "Reference to Ethernet interface, PortChannel or Vlan";
 				}
 				leaf peer-mean-path-delay {
 					type int64;
@@ -323,9 +343,6 @@ module sonic-ptp {
 					description
 						"The comma-separated list of ip addresses to use for
 						master";
-				}
-				must "count(underlying-interface) != 0" {
-					error-message "underlying-interface needed";
 				}
 			}
 		}
