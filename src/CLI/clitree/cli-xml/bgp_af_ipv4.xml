@@ -238,6 +238,32 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
+  <COMMAND name="import" help="Import routes to this address-family"/>
+  <COMMAND name="import vrf" help="Import routes from another VRF">
+    <PARAM name="import-vrf" help="Import VRF options" mode="switch" ptype="SUBCOMMAND">
+       <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+         <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+       </PARAM>
+       <PARAM name="import-vrf-name" help="VRF Name" ptype="STRING_15"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_import_vrf ${vrf-name} IPV4_UNICAST ${import-vrf} ${import-vrf-name} ${route-map-name}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command imports all routes or selective routes based on route-map from other VRF.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to import routes from other VRF.
+      </USAGE>
+      <EXAMPLE summary="This configuration example imports the routes from other VRF under ipv4 address-family">
+        sonic# configure terminal
+        sonic(config)# router bgp 100
+        sonic(config-router-bgp)# address-family ipv4 unicast
+        sonic(config-router-bgp-af)# import vrf Vrf1
+                        or 
+        sonic(config-router-bgp-af)# import vrf route-map map1
+      </EXAMPLE>
+    </DOCGEN>
+  </COMMAND>
 
   <COMMAND name="no" help="no commands"/>
   <COMMAND name="no redistribute" help="Redistribute information from another routing protocol">
@@ -289,6 +315,16 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no dampening" help="Enable route-flap dampening">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV4 ${vrf-name} ${__cmd}</ACTION>
+  </COMMAND>
+  <COMMAND name="no import" help="Import routes to this address-family"/>
+  <COMMAND name="no import vrf" help="Import routes from another VRF">
+    <PARAM name="import-vrf" help="Import routes from another VRF" mode="switch" ptype="SUBCOMMAND">
+       <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND">
+         <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+       </PARAM>
+       <PARAM name="import-vrf-name" help="VRF Name" ptype="STRING_15"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_import_vrf ${vrf-name} IPV4_UNICAST ${import-vrf} ${import-vrf-name} ${route-map-name}</ACTION>
   </COMMAND>
 </VIEW>
 

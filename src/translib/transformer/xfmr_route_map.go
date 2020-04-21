@@ -35,6 +35,8 @@ func init () {
     XlateFuncBind("YangToDb_route_map_field_xfmr", YangToDb_route_map_field_xfmr)
     XlateFuncBind("YangToDb_route_map_stmt_field_xfmr", YangToDb_route_map_stmt_field_xfmr)
     XlateFuncBind("DbToYang_route_map_stmt_field_xfmr", DbToYang_route_map_stmt_field_xfmr)
+    XlateFuncBind("YangToDb_route_map_set_ipv6_next_hop_xfmr", YangToDb_route_map_set_ipv6_next_hop_xfmr)
+    XlateFuncBind("DbToYang_route_map_set_ipv6_next_hop_xfmr", DbToYang_route_map_set_ipv6_next_hop_xfmr)
 }
 
 var DbToYang_route_map_field_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams) (map[string]interface{}, error) {
@@ -231,6 +233,51 @@ var YangToDb_route_map_set_next_hop_xfmr FieldXfmrYangToDb = func(inParams XfmrP
 
     }
     res_map["set_next_hop"] = addr;
+    return res_map, nil
+}
+
+var DbToYang_route_map_set_ipv6_next_hop_xfmr FieldXfmrDbtoYang= func(inParams XfmrParams) (map[string]interface{}, error) {
+
+    result := make(map[string]interface{})
+
+    data := (*inParams.dbDataMap)[inParams.curDb]
+    log.Info("DbToYang_route_map_set_ipv6_next_hop_xfmr: ", data, "inParams : ", inParams)
+
+    pTbl := data["ROUTE_MAP"]
+    if _, ok := pTbl[inParams.key]; !ok {
+        log.Info("DbToYang_route_map_set_ipv6_next_hop_xfmr table not found : ", inParams.key)
+        return result, errors.New("Policy definition table not found : " + inParams.key)
+    }
+    niInst := pTbl[inParams.key]
+    route_hop, ok := niInst.Field["set_ipv6_next_hop_global"]
+    if ok {
+            result["set-ipv6-next-hop-global"] = route_hop
+    } else {
+        log.Info("DbToYang_route_map_set_ipv6_next_hop_xfmr field not found in DB")
+    }
+    return result, nil 
+}
+
+var YangToDb_route_map_set_ipv6_next_hop_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
+    res_map := make(map[string]string)
+    var err error
+    if inParams.param == nil {
+        err = errors.New("No Params")
+        return res_map, err
+    }
+
+    if inParams.oper == DELETE {
+        res_map["set_ipv6_next_hop_global"] = ""
+        return res_map, nil
+    }
+    addr, _ := inParams.param.(*string)
+
+    if (!validIPv6(*addr)) {
+        log.Error("Invalid IPv6 address ", *addr)
+        err = errors.New("Invalid IPv6 address!")
+        return res_map, err
+    }
+    res_map["set_ipv6_next_hop_global"] = *addr;
     return res_map, nil
 }
 
