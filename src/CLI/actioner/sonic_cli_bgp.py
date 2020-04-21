@@ -1848,7 +1848,7 @@ def parseGlobl(vrf_name, cmd, args=[]):
     argds = mkArgs2dict(args)
 
     rc = 0
-    if cmd == 'no router':
+    if cmd == 'no router bgp':
          for aft in [ 'IPV4_UNICAST', 'IPV6_UNICAST' ]:
              for proto in [ 'connected', 'static', 'ospf' ]:
                  if aft == 'IPV6_UNICAST' and proto == 'ospf':
