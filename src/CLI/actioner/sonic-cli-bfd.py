@@ -25,6 +25,25 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 
+def apply_vrf_filter(response, inputvrf):
+    if "null" != inputvrf:
+        new_list_shop = []
+        new_list_mhop = []
+        if 'openconfig-bfd-ext:bfd-state' in response:
+            if 'single-hop-state' in response['openconfig-bfd-ext:bfd-state']:
+                for i in range(len(response['openconfig-bfd-ext:bfd-state']['single-hop-state'])):
+                    shopsession = response['openconfig-bfd-ext:bfd-state']['single-hop-state'][i]
+                    if inputvrf == shopsession['vrf']:
+                        new_list_shop.append(shopsession)
+                response['openconfig-bfd-ext:bfd-state']['single-hop-state'] = new_list_shop
+        if 'openconfig-bfd-ext:bfd-state' in response:
+            if 'multi-hop-state' in response['openconfig-bfd-ext:bfd-state']:
+                for i in range(len(response['openconfig-bfd-ext:bfd-state']['multi-hop-state'])):
+                    mhopsession = response['openconfig-bfd-ext:bfd-state']['multi-hop-state'][i]
+                    if inputvrf == mhopsession['vrf']:
+                        new_list_mhop.append(mhopsession)
+                response['openconfig-bfd-ext:bfd-state']['multi-hop-state'] = new_list_mhop
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
@@ -135,7 +154,17 @@ def invoke_show_api(func, args=[]):
 
 	if func == 'get_bfd_peers':
 		keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-state')
-		return api.get(keypath)
+		response = api.get(keypath)
+
+                if len(args) > 4:
+                    if (args[4] == "vrf"):
+                        vrfname = args[5]
+                        apply_vrf_filter(response.content, vrfname)
+                    elif (len(args) > 5):
+                        vrfname = args[6]
+                        apply_vrf_filter(response.content, vrfname)
+
+                return response;
 	elif func == 'get_openconfig_bfd_ext_bfd_sessions_single_hop':
 		keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-state/single-hop-state={address},{interfacename},{vrfname},{localaddress}', address=args[1], interfacename=args[2], vrfname=args[3], localaddress=args[4])
 		return api.get(keypath)
@@ -156,7 +185,7 @@ def run(func, args):
 				if api_response is None:
 					print("Failed")
 					return
-		show_cli_output(args[0], api_response)
+				show_cli_output(args[0], api_response)
 	else:
 		response = invoke_api(func, args)
 
