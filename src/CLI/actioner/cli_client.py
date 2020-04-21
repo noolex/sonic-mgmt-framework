@@ -24,6 +24,9 @@ import pwd
 from six.moves.urllib.parse import quote
 import syslog
 import requests
+from requests.structures import CaseInsensitiveDict
+from requests import request, RequestException
+from collections import OrderedDict
 import requests_unixsocket
 
 urllib3.disable_warnings()
@@ -48,13 +51,11 @@ class ApiClient(object):
         self.version = "0.0.1"
 
     def set_headers(self):
-        from requests.structures import CaseInsensitiveDict
         return CaseInsensitiveDict({
             'User-Agent': "CLI"
         })
 
     def request(self, method, path, data=None, headers={}, query=None):
-        from requests import request, RequestException
 
         url = '{0}{1}'.format(self.api_uri, path)
 
@@ -120,7 +121,6 @@ class ApiClient(object):
 
     @staticmethod
     def _make_error_response(errMessage, errType='client', errTag='operation-failed'):
-        import requests
         r = Response(requests.Response())
         r.content = {'ietf-restconf:errors':{ 'error':[ {
             'error-type':errType, 'error-tag':errTag, 'error-message':errMessage }]}}
@@ -152,7 +152,7 @@ class Response(object):
             if response.content is None or len(response.content) == 0:
                 self.content = None
             elif _has_json_content(response):
-                self.content = json.loads(response.content)
+                self.content = json.loads(response.content, object_pairs_hook=OrderedDict)
         except ValueError:
             # TODO Can we set status_code to 5XX in this case???
             # Json parsing can fail only if server returned bad json

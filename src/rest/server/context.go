@@ -32,7 +32,7 @@ import (
 type AuthInfo struct {
 	// Username
 	User string
-	
+
 	// Roles
 	Roles []string
 }
@@ -66,12 +66,8 @@ type RequestContext struct {
 	// stats is the apiStats object from the context
 	stats *apiStats
 
-	// route contains current route information
-	route *routeMatchInfo
-
 	// Auth contains the authorized user information
 	Auth AuthInfo
-
 
 	ClientAuth UserAuth
 }
@@ -81,7 +77,8 @@ type contextkey int
 const (
 	requestContextKey contextkey = iota + 1
 	statsContextKey
-	routeContextKey
+	routerConfigContextKey
+	routeMatchContextKey
 )
 
 // Request Id generator
@@ -93,7 +90,7 @@ var requestCounter uint64
 // available; in which case this function also creates a copy of
 // the HTTP request object with new context.
 func GetContext(r *http.Request) (*RequestContext, *http.Request) {
-	cv := r.Context().Value(requestContextKey)
+	cv := getContextValue(r, requestContextKey)
 	if cv != nil {
 		return cv.(*RequestContext), r
 	}
@@ -102,8 +99,20 @@ func GetContext(r *http.Request) (*RequestContext, *http.Request) {
 	rc.ID = fmt.Sprintf("REST-%v", atomic.AddUint64(&requestCounter, 1))
 	rc.stats = getApiStats(r)
 
-	r = r.WithContext(context.WithValue(r.Context(), requestContextKey, rc))
+	r = setContextValue(r, requestContextKey, rc)
 	return rc, r
+}
+
+// setContextValue sets a new value into http request's context.
+// Returns the new http.Request object containing the new context.
+func setContextValue(r *http.Request, k contextkey, v interface{}) *http.Request {
+	return r.WithContext(context.WithValue(r.Context(), k, v))
+}
+
+// getContextValue looks up a value in a http request's context.
+// Returns nil if the value was not found.
+func getContextValue(r *http.Request, k contextkey) interface{} {
+	return r.Context().Value(k)
 }
 
 ///////////

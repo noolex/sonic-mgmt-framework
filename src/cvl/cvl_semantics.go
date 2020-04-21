@@ -435,6 +435,32 @@ func (c *CVL) deleteDestLeafList(dest *xmlquery.Node)  {
 	}
 }
 
+//Delete node from list if must expression is not there under it 
+func (c *CVL) deleteLeafNodeWithoutMust(yangListName string,
+	topNode *xmlquery.Node, cfgData map[string]string) {
+
+	for nodeName, _ := range cfgData {
+		for node := topNode.FirstChild; node != nil; {
+			if (node.Data != nodeName) {
+				node = node.NextSibling
+				continue
+			}
+
+			_, exists := modelInfo.tableInfo[yangListName].mustExpr[nodeName]
+			if (exists == false) {
+				//No must expression exists for this, node to be deleted
+				tmpNode := node.NextSibling
+				c.detachNode(node)
+				node = nil
+				node = tmpNode
+				continue
+			}
+
+			node = node.NextSibling
+		}
+	}
+}
+
 //Check if the given list src node already exists in dest node
 func (c *CVL) checkIfListNodeExists(dest, src *xmlquery.Node) *xmlquery.Node {
 	if (dest == nil) || (src == nil) {
@@ -732,6 +758,12 @@ func (c *CVL) addDepYangData(redisKeys []string, redisKeyFilter,
 
 		if  topYangNode == nil {
 			continue
+		}
+
+		if (topYangNode.FirstChild != nil) &&
+		(topYangNode.FirstChild.FirstChild != nil) {
+			//Add attribute mentioning that data is from db
+			addAttrNode(topYangNode.FirstChild.FirstChild, "db", "")
 		}
 
 		//Build single leaf data requested
@@ -1451,7 +1483,9 @@ func (c *CVL) checkDeleteConstraint(cfgData []CVLEditConfigData,
 		//Else, check if any referred entry is present in DB
 		var nokey []string
 		refKeyVal, err := luaScripts["find_key"].Run(redisClient, nokey, leafRef.tableName,
-		modelInfo.tableInfo[leafRef.tableName].redisKeyDelim, leafRef.field, keyVal).Result()
+		modelInfo.tableInfo[leafRef.tableName].redisKeyDelim,
+		strings.Join(modelInfo.tableInfo[leafRef.tableName].keys, "|"),
+		leafRef.field, keyVal).Result()
 		if (err == nil &&  refKeyVal != "") {
 			CVL_LOG(ERROR, "Delete will violate the constraint as entry %s is referred in %s", tableName, refKeyVal)
 
@@ -1468,6 +1502,11 @@ func (c *CVL) validateSemantics(node *xmlquery.Node,
 	yangListName, key string,
 	cfgData *CVLEditConfigData) (r CVLErrorInfo) {
 
+	//Mark the list entries from DB if not OP_CREATE operation
+	if (node != nil) && (cfgData.VOp != OP_CREATE) {
+		addAttrNode(node, "db", "")
+	}
+
 	//Check all leafref
 	if errObj := c.validateLeafRef(node, yangListName, key, cfgData.VOp) ;
 	errObj.ErrCode != CVL_SUCCESS {
@@ -1483,9 +1522,8 @@ func (c *CVL) validateSemantics(node *xmlquery.Node,
 	//Validate must expression
 	if (cfgData.VOp == OP_DELETE) {
 		if (len(cfgData.Data) > 0) {
-			//Multiple field delete case, must expression execution 
-			//supported for entire entry delete only
-			return CVLErrorInfo{ErrCode:CVL_SUCCESS}
+			//Delete leaf node if it does not have 'must' expression
+			c.deleteLeafNodeWithoutMust(yangListName, node, cfgData.Data)
 		}
 	}
 

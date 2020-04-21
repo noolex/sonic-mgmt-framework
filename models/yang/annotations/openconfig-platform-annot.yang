@@ -1,0 +1,59 @@
+module openconfig-platform-annot {
+
+    yang-version "1";
+    namespace "http://openconfig.net/yang/platform-annot";
+    prefix "oc-platform-annot";
+
+    import openconfig-platform { prefix oc-platform; }
+    import openconfig-interfaces { prefix oc-if; }
+    import openconfig-if-ethernet { prefix oc-eth; }
+    import openconfig-extensions { prefix oc-ext; }
+    import openconfig-platform-port { prefix oc-port; }
+    import sonic-extensions { prefix sonic-ext; }
+
+    deviation /oc-platform:components {
+        deviate add {
+            sonic-ext:subtree-transformer "pfm_components_xfmr";
+        }
+    }
+
+    deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode {
+      deviate add {
+      }
+    }
+
+    deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode/oc-port:config {
+      deviate add {
+            sonic-ext:table-name "BREAKOUT_CFG";
+			sonic-ext:subtree-transformer "port_breakout_config_xfmr";
+      }
+    }
+
+    deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode/oc-port:config/oc-port:num-channels {
+      deviate add {
+      }
+    }
+
+    deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode/oc-port:config/oc-port:channel-speed {
+      deviate add {
+      }
+    }
+
+    deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode/oc-port:state {
+      deviate add {
+            sonic-ext:table-name "BREAKOUT_CFG";
+            sonic-ext:subtree-transformer "port_breakout_state_xfmr";
+      }
+    }
+
+    deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode/oc-port:state/oc-port:num-channels {
+      deviate add {
+      }
+    }
+
+    deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode/oc-port:state/oc-port:channel-speed {
+      deviate add {
+      }
+    }
+
+}

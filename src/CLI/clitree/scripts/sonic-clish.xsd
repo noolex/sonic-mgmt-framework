@@ -114,6 +114,10 @@ limitations under the License.
   <xs:attribute name="summary" type="stringType" use="optional"/>
 </xs:attributeGroup>
 
+<xs:attributeGroup name="altAttr">
+  <xs:attribute name="type" type="stringType" use="required"/>
+</xs:attributeGroup>
+
 <xs:attributeGroup name="viewAttr">
   <xs:attribute name="name" type="stringType" use="required"/>
   <xs:attribute name="prompt" type="stringType" use="optional"/>
@@ -175,7 +179,10 @@ limitations under the License.
 <xs:element name="PTYPE" type="ptypeType"/>
 <xs:element name="PARAM" type="paramType"/>
 <xs:element name="DOCGEN" type="docgenType"/>
-<xs:element name="DESCRIPTION" type="descriptionType"/>
+<xs:element name="DESCRIPTION" type="docgenStringType"/>
+<xs:element name="FEATURE" type="docgenStringType"/>
+<xs:element name="PLATFORM" type="docgenStringType"/>
+<xs:element name="ALTCMD" type="altType"/>
 <xs:element name="USAGE" type="usageType"/>
 <xs:element name="EXAMPLE" type="exampleType"/>
 <xs:element name="NAMESPACE" type="namespaceType"/>
@@ -243,12 +250,15 @@ limitations under the License.
 <xs:complexType name="docgenType">
   <xs:choice minOccurs="0" maxOccurs="unbounded">
     <xs:element ref="DESCRIPTION" minOccurs="0" maxOccurs="1"/>
+    <xs:element ref="FEATURE" minOccurs="0" maxOccurs="unbounded"/>
+    <xs:element ref="PLATFORM" minOccurs="0" maxOccurs="unbounded"/>
     <xs:element ref="USAGE" minOccurs="0" maxOccurs="1"/>
     <xs:element ref="EXAMPLE" minOccurs="0" maxOccurs="unbounded"/>
+    <xs:element ref="ALTCMD" minOccurs="0" maxOccurs="unbounded"/>    
   </xs:choice>
 </xs:complexType>
 
-<xs:complexType name="descriptionType">
+<xs:complexType name="docgenStringType">
   <xs:simpleContent>
     <xs:extension base="xs:string">
     </xs:extension>
@@ -270,6 +280,14 @@ limitations under the License.
   </xs:simpleContent>
 </xs:complexType>
 
+<xs:complexType name="altType">
+  <xs:simpleContent>
+    <xs:extension base="xs:string">
+      <xs:attributeGroup ref="altAttr"/>
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
 <xs:complexType name="namespaceType">
   <xs:attributeGroup ref="namespaceAttr"/>
 </xs:complexType>
@@ -286,3 +304,4 @@ limitations under the License.
   <xs:attribute name="builtin" type="xs:string" use="optional"/>
 </xs:complexType>
 </xs:schema>
+

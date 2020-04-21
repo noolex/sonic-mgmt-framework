@@ -39,10 +39,10 @@ func Process(w http.ResponseWriter, r *http.Request) {
 	rc, r := GetContext(r)
 	reqID := rc.ID
 	args := translibArgs{
-		reqID: reqID,
-		method: r.Method,
+		reqID:       reqID,
+		method:      r.Method,
 		AuthEnabled: rc.ClientAuth.Any(),
-		User: translib.UserRoles{Name: rc.Auth.User, Roles: rc.Auth.Roles},
+		User:        translib.UserRoles{Name: rc.Auth.User, Roles: rc.Auth.Roles},
 	}
 
 	var err error
@@ -57,7 +57,7 @@ func Process(w http.ResponseWriter, r *http.Request) {
 		goto write_resp
 	}
 
-	args.path = getPathForTranslib(r)
+	args.path = getPathForTranslib(r, rc)
 	glog.V(1).Infof("[%s] Translated path = %s", reqID, args.path)
 
 	err = parseQueryParams(&args, r)
@@ -177,10 +177,10 @@ func resolveResponseContentType(data []byte, r *http.Request, rc *RequestContext
 }
 
 // getPathForTranslib converts REST URIs into GNMI paths
-func getPathForTranslib(r *http.Request) string {
-	rc, _ := GetContextWithRouteInfo(r)
-	path := rc.route.path
-	vars := rc.route.vars
+func getPathForTranslib(r *http.Request, rc *RequestContext) string {
+	match := getRouteMatchInfo(r)
+	path := match.path
+	vars := match.vars
 
 	// Return the URL path if no variables in the template..
 	if len(vars) == 0 {
@@ -258,13 +258,13 @@ func parseQueryParams(args *translibArgs, r *http.Request) error {
 
 // translibArgs holds arguments for invoking translib APIs.
 type translibArgs struct {
-	reqID  string // request id
-	method string // method name
-	path   string // Translib path
-	data   []byte // payload
-	depth uint // RESTCONF depth, for Get API only
-	AuthEnabled bool //Enable Authorization
-	User translib.UserRoles // User and role info for RBAC
+	reqID       string             // request id
+	method      string             // method name
+	path        string             // Translib path
+	data        []byte             // payload
+	depth       uint               // RESTCONF depth, for Get API only
+	AuthEnabled bool               //Enable Authorization
+	User        translib.UserRoles // User and role info for RBAC
 }
 
 // invokeTranslib calls appropriate TransLib API for the given HTTP
@@ -273,17 +273,17 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 	var status = 400
 	var content []byte
 	var err error
-	
+
 	ts := time.Now()
 
 	switch r.Method {
 	case "GET", "HEAD":
 
 		req := translib.GetRequest{
-			Path:  args.path,
-			Depth: args.depth,
+			Path:        args.path,
+			Depth:       args.depth,
 			AuthEnabled: args.AuthEnabled,
-			User: args.User,
+			User:        args.User,
 		}
 
 		resp, err1 := translib.Get(req)
@@ -298,10 +298,10 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		if isOperationsRequest(r) {
 
 			req := translib.ActionRequest{
-				Path:    args.path,
-				Payload: args.data,
+				Path:        args.path,
+				Payload:     args.data,
 				AuthEnabled: args.AuthEnabled,
-				User: args.User,
+				User:        args.User,
 			}
 			res, err1 := translib.Action(req)
 			if err1 == nil {
@@ -314,10 +314,10 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 			status = 201
 
 			req := translib.SetRequest{
-				Path:    args.path,
-				Payload: args.data,
+				Path:        args.path,
+				Payload:     args.data,
 				AuthEnabled: args.AuthEnabled,
-				User: args.User,
+				User:        args.User,
 			}
 
 			_, err = translib.Create(req)
@@ -328,10 +328,10 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		status = 204
 
 		req := translib.SetRequest{
-			Path:    args.path,
-			Payload: args.data,
+			Path:        args.path,
+			Payload:     args.data,
 			AuthEnabled: args.AuthEnabled,
-			User: args.User,
+			User:        args.User,
 		}
 		_, err = translib.Replace(req)
 
@@ -339,10 +339,10 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		status = 204
 
 		req := translib.SetRequest{
-			Path:    args.path,
-			Payload: args.data,
+			Path:        args.path,
+			Payload:     args.data,
 			AuthEnabled: args.AuthEnabled,
-			User: args.User,
+			User:        args.User,
 		}
 		_, err = translib.Update(req)
 
@@ -350,9 +350,9 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		status = 204
 
 		req := translib.SetRequest{
-			Path:  args.path,
+			Path:        args.path,
 			AuthEnabled: args.AuthEnabled,
-			User: args.User,
+			User:        args.User,
 		}
 		_, err = translib.Delete(req)
 
@@ -370,12 +370,10 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 	return status, content, err
 }
 
-// commonOptionsHandler is the common HTTP OPTIONS method handler
-// for all REST API paths. Resolves allowed methods for current
-// path by traversing allRoutes cache.
-func commonOptionsHandler(w http.ResponseWriter, r *http.Request) {
-	rc, _ := GetContextWithRouteInfo(r)
-	methods := rc.route.getAllMethodsForPath()
+// writeOptionsResponse writes response for OPTIONS request. Caller
+// should provide current path and allowed methods for the path.
+func writeOptionsResponse(w http.ResponseWriter, r *http.Request,
+	path string, methods []string) {
 	hasPatch := containsString(methods, "PATCH")
 
 	// "Allow" header
@@ -389,9 +387,18 @@ func commonOptionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// "Accept-Patch" header for RESTCONF data paths
-	if hasPatch && strings.HasPrefix(rc.route.path, restconfDataPathPrefix) {
+	if hasPatch && strings.HasPrefix(path, restconfDataPathPrefix) {
 		w.Header().Set("Accept-Patch", mimeYangDataJSON)
 	}
+}
+
+// writeErrorResponse writes HTTP error response for a error object
+func writeErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
+	status, data, ctype := prepareErrorResponse(err, r)
+
+	w.Header().Set("Content-Type", ctype)
+	w.WriteHeader(status)
+	w.Write(data)
 }
 
 // containsString checks if slice 'arr' contains the string value 's'

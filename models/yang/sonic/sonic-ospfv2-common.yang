@@ -1,0 +1,225 @@
+module sonic-ospfv2-common {
+  namespace "http://github.com/Azure/sonic-ospfv2-common";
+  prefix sbc;
+  yang-version 1.1;
+
+  import ietf-yang-types {
+    prefix "ietf-yang";
+  }
+
+  import sonic-port {
+      prefix "sonic-prt";
+  }
+
+  import sonic-portchannel {
+      prefix "sonic-pch";
+  }
+
+  import sonic-vlan {
+      prefix "sonic-vlan";
+  }
+
+  import sonic-loopback-interface {
+      prefix "sonic-lbk";
+  }
+
+  /*
+  import sonic-routing-policy-sets {
+      prefix "sonic-pol";
+  }
+
+  import sonic-route-map {
+      prefix "sonic-rmap";
+  }
+  */
+
+  organization
+      "SONiC";
+
+  contact
+      "SONiC";
+
+  description
+      "SONIC OSPFv2 common YANG attributes";
+
+  revision 2020-03-21 {
+      description
+          "Initial revision.";
+  }
+
+  typedef ospf-area-identifier {
+   type union {
+     type uint32;
+     type ietf-yang:dotted-quad;
+   }
+   description
+     "An identifier for an area with OSPF version 2 or 3. This value
+     is expressed as either a dotted-quad, or a unsigned 32-bit
+     number";
+  }
+
+  typedef ospf-metric {
+    type uint32 {
+       range 0..16777214;
+    }
+    description
+      "A common type that can be utilised to express an OSPF metric";
+  }
+
+  typedef ospf-distance {
+    type uint8;
+    description
+      "A common type that can be utilised to express an OSPF distance";
+  }
+
+  typedef ospf-metric-type {
+    type enumeration {
+      enum TYPE_1 {
+        value 1;
+        description 
+          "OSPF Type-1 metric";
+      }
+      enum TYPE_2 { 
+        value 2;
+        description
+          "OSPF Type-2 metric";
+      }
+    }
+  } 
+
+  typedef ospf-policy-direction {
+    type enumeration {
+      enum IMPORT {
+        description 
+          "OSPF policy import";
+      }
+      enum EXPORT { 
+        description
+          "OSPF policy export";
+      }
+    }
+  }
+
+  typedef ospf-policy-protocol {
+    type enumeration {
+      enum BGP {
+        description 
+          "OSPF policy protocol BGP";
+      }
+      enum OSPF {
+        description 
+          "OSPF policy protocol OSPF";
+      }
+      enum STATIC {
+        description 
+          "OSPF policy protocol static";
+      }
+      enum CONNECTED {
+        description 
+          "OSPF policy protocol connected";
+      }
+      enum KERNEL {
+        description 
+          "OSPF policy protocol kernel";
+      }
+      enum DEFAULT_ROUTE {
+        description 
+          "OSPF policy protocol default-route";
+      }
+    }
+  }
+
+  typedef ospf-abr-type {
+    type enumeration {
+      enum CISCO {
+        description
+          "OSPF ABR type CISCO";
+      }
+      enum IBM {
+        description
+          "OSPF ABR type IBM";
+      }
+      enum STANDARD {
+        description
+          "OSPF ABR type Standard";
+      }
+    }
+  }
+
+  typedef ospf-authentication-type {
+    type enumeration {
+      enum AUTH_NONE {
+        description
+          "OSPF authentication type none";
+      }
+      enum TEXT {
+        description
+          "OSPF authentication type plain text";
+      }
+      enum MD5HMAC {
+        description
+          "OSPF authentication type MD5 HMAC";
+      }
+    }
+  }
+
+  typedef ospf-network-type {
+    type enumeration {
+      enum POINT_TO_POINT_NETWORK {
+        description
+          "OSPF interface network type point-to-point";
+      }
+      enum BROADCAST_NETWORK {
+        description
+          "OSPF interface network type broadcast";
+      }
+    }
+  }
+
+
+  typedef ospf-log-type {
+    type enumeration {
+      enum LOG_NONE {
+        value 0;
+        description
+          "OSPF no log";
+      }
+      enum BRIEF {
+        value 1;
+        description
+          "OSPF log type brief";
+      }
+      enum DETAIL {
+        value 2;
+        description
+          "OSPF log type detail";
+      }
+    }
+  }
+
+
+  typedef ospf-interface {
+    type union {
+      type string {
+        pattern "null";
+      }
+      type leafref {
+        path "/sonic-prt:sonic-port/sonic-prt:PORT/sonic-prt:PORT_LIST/sonic-prt:ifname";
+      }
+      type leafref {
+        path "/sonic-pch:sonic-portchannel/sonic-pch:PORTCHANNEL/sonic-pch:PORTCHANNEL_LIST/sonic-pch:name";
+      }
+      type leafref {
+        path "/sonic-vlan:sonic-vlan/sonic-vlan:VLAN/sonic-vlan:VLAN_LIST/sonic-vlan:name";
+      }
+      type leafref {
+        path "/sonic-lbk:sonic-loopback-interface/sonic-lbk:LOOPBACK_INTERFACE/sonic-lbk:LOOPBACK_INTERFACE_LIST/sonic-lbk:loIfName";
+      }
+    }
+    description 
+      "OSPF Interface name";
+  }
+
+
+}
+

@@ -1816,6 +1816,317 @@ def invoke_show_api(func, args=[]):
 
     return api.cli_not_implemented(func)
 
+def mkArgs2dict(args):
+    dct = {}
+    for e in args:
+        k, v = e.split(':', 1)
+        if v: dct[k] = v
+    return dct
+
+def mkArgds2list(argds, *argv):
+    lst = []
+    for k in argv:
+        if argds.get(k): lst.append(argds.get(k))
+    return lst
+
+def parseInvoke_api(func, args=[]):
+    response = invoke_api(func, args)
+    if response.ok():
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+            print(api_response)
+            if api_response is None:
+                print("Failed")
+                return 1
+    else:
+        print response.error_message()
+        return 1
+    return 0
+
+def parseGlobl(vrf_name, cmd, args=[]):
+    argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'no router':
+         for aft in [ 'IPV4_UNICAST', 'IPV6_UNICAST' ]:
+             for proto in [ 'connected', 'static', 'ospf' ]:
+                 if aft == 'IPV6_UNICAST' and proto == 'ospf':
+                    rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name ] + [ aft, 'ospf3' ])
+                 rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name ] + [ aft, proto ])
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_config', [ vrf_name ])
+    elif cmd == 'max-med':
+         if not argds.get('maxmedval'):
+             if argds.get('maxmedopts') == 'on-startup':
+                rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_max_med_val', [ vrf_name ])
+             else:
+                rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_admin_max_med_val', [ vrf_name ])
+         rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config', [ vrf_name ] + mkArgds2list(argds, 'maxmedopts', 'stime', 'maxmedval'))
+    elif cmd == 'update-delay':
+         if not argds.get('maxmedval'):
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_update_delay_config_establish_wait', [ vrf_name ])
+         rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_update_delay_config', [ vrf_name ] + mkArgds2list(argds, 'time', 'maxmedval'))
+    elif cmd == 'bestpath med':
+         rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_missing_as_worst', [ vrf_name ] + mkArgds2list(argds, 'missing-as-worst'))
+         rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_confed', [ vrf_name ] + mkArgds2list(argds, 'confed'))
+    elif cmd == 'listen':
+         if argds.get('listen-opt') == 'range':
+             rc += parseInvoke_api('patch_openconfig_network_instance1717438887', [ vrf_name ] + mkArgds2list(argds, 'addr', 'pgname'))
+         else:
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_max_dynamic_neighbors', [ vrf_name ] + mkArgds2list(argds, 'lmt-val'))
+    elif cmd == 'confederation':
+         if argds.get('conf-opt') == 'identifier':
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_identifier', [ vrf_name ] + mkArgds2list(argds, 'id-as'))
+         else:
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_member_as', [ vrf_name ] + mkArgds2list(argds, 'peer-as'))
+    elif cmd == 'timers':
+          rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_keepalive_interval', [ vrf_name ] + mkArgds2list(argds, 'keepalive-intvl'))
+          rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_hold_time', [ vrf_name ] + mkArgds2list(argds, 'hold-time'))
+    elif cmd == 'no max-med':
+         if argds.get('maxmedopts') == 'on-startup':
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_time', [ vrf_name ])
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_max_med_val', [ vrf_name ])
+         else:
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_administrative', [ vrf_name ])
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_max_med_config_admin_max_med_val', [ vrf_name ])
+    elif cmd == 'no update-delay':
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_update_delay_config_max_delay', [ vrf_name ])
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_update_delay_config_establish_wait', [ vrf_name ])
+    elif cmd == 'no bestpath as-path multipath-relax':
+         if argds.get('as-set'):
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_use_multiple_paths_ebgp_config_as_set', [ vrf_name ])
+         else:
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_use_multiple_paths_ebgp_config_allow_multiple_as', [ vrf_name ])
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_use_multiple_paths_ebgp_config_as_set', [ vrf_name ])
+    elif cmd == 'no bestpath med':
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_missing_as_worst', [ vrf_name ] + mkArgds2list(argds, 'missing-as-worst'))
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_confed', [ vrf_name ] + mkArgds2list(argds, 'confed'))
+    elif cmd == 'no address-family ipv4':
+         for proto in [ 'connected', 'static', 'ospf' ]:
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name ] + [ 'IPV4_UNICAST', proto ])
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi', [ vrf_name ] + [ 'IPV4_UNICAST' ])
+    elif cmd == 'no address-family ipv6':
+         for proto in [ 'connected', 'static', 'ospf', 'ospf3' ]:
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name ] + [ 'IPV6_UNICAST', proto ])
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi', [ vrf_name ] + [ 'IPV6_UNICAST' ])
+    elif cmd == 'no listen':
+         if argds.get('listen-opt') == 'range':
+             rc += parseInvoke_api('delete_openconfig_network_instance1717438887', [ vrf_name ] + mkArgds2list(argds, 'addr', 'pgname'))
+         else:
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_max_dynamic_neighbors', [ vrf_name ] + mkArgds2list(argds, 'lmt-val'))
+    elif cmd == 'no confederation':
+         if argds.get('conf-opt') == 'identifier':
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_identifier', [ vrf_name ] + mkArgds2list(argds, 'id-as'))
+         else:
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_member_as', [ vrf_name ])
+    elif cmd == 'no timers':
+          rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_keepalive_interval', [ vrf_name ] + mkArgds2list(argds, 'keepalive-intvl'))
+          rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_hold_time', [ vrf_name ] + mkArgds2list(argds, 'hold-time'))
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
+
+def parseNeigh(vrf_name, nbr_addr, cmd, args=[]):
+    argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'ebgp-multihop':
+         if argds.get('hop-count'):
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_ebgp_multihop_config', [ vrf_name, nbr_addr ] + [ 'True' ] + mkArgds2list(argds, 'hop-count'))
+         else:
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_ebgp_multihop_config', [ vrf_name, nbr_addr ] + [ 'True', '255' ])
+    elif cmd == 'remote-as':
+         if argds.get('remtype') == 'internal' or argds.get('remtype') == 'external':
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_type', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'remtype'))
+         else:
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_as', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'as-num-dot'))
+    elif cmd == 'timers':
+         if argds.get('timertype') == 'connect':
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_connect_retry', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'connect-time'))
+         else:
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_keepalive_interval', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'keepalive-intvl'))
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_hold_time', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'hold-time'))
+    elif cmd == 'shutdown':
+         if argds.get('message'):
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_shutdown_message', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'MSG'))
+         rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_enabled', [ vrf_name, nbr_addr ] + [ 'False' ])
+    elif cmd == 'bfd':
+         if argds.get('check-control-plane-failure'):
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_bfd_check_control_plane_failure', [ vrf_name, nbr_addr ] + [ 'True' ])
+         rc += parseInvoke_api('patch_openconfig_bfd_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_enabled', [ vrf_name, nbr_addr ] + [ 'True' ])
+    elif cmd == 'local-as':
+         if argds.get('no-prepend'):
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_no_prepend', [ vrf_name, nbr_addr ] + [ 'True' ])
+         else:
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_no_prepend', [ vrf_name, nbr_addr ] + [ 'False' ])
+         if argds.get('replace-as'):
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_replace_as', [ vrf_name, nbr_addr ] + [ 'True' ])
+         else:
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_replace_as', [ vrf_name, nbr_addr ] + [ 'False' ])
+         rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'asnum'))
+    elif cmd == 'no ebgp-multihop':
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_ebgp_multihop_config_enabled', [ vrf_name, nbr_addr ])
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_ebgp_multihop_config_multihop_ttl', [ vrf_name, nbr_addr ])
+    elif cmd == 'no remote-as':
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_as', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'as-num-dot'))
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_type', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'internal', 'external'))
+    elif cmd == 'no timers':
+         if argds.get('timertype') == 'connect':
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_connect_retry', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'connect-time'))
+         else:
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_keepalive_interval', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'keepalive-intvl'))
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_hold_time', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'hold-time'))
+    elif cmd == 'no shutdown':
+         rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_enabled', [ vrf_name, nbr_addr ] + [ 'True' ])
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_shutdown_message', [ vrf_name, nbr_addr ] + mkArgds2list(argds, 'MSG'))
+    elif cmd == 'no bfd':
+         if argds.get('check-control-plane-failure'):
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_bfd_check_control_plane_failure', [ vrf_name, nbr_addr ])
+         else:
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_bfd_check_control_plane_failure', [ vrf_name, nbr_addr ])
+             rc += parseInvoke_api('delete_openconfig_bfd_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_enable_bfd_config_enabled', [ vrf_name, nbr_addr ])
+    elif cmd == 'no local-as':
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as', [ vrf_name, nbr_addr ])
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_no_prepend', [ vrf_name, nbr_addr ])
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_local_as_replace_as', [ vrf_name, nbr_addr ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
+
+def parsePeerg(vrf_name, template_name, cmd, args=[]):
+    argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'ebgp-multihop':
+         if argds.get('hop-count'):
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_ebgp_multihop_config', [ vrf_name, template_name ] + [ 'True' ] + mkArgds2list(argds, 'hop-count'))
+         else:
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_ebgp_multihop_config', [ vrf_name, template_name ] + [ 'True', '255' ])
+    elif cmd == 'remote-as':
+         if argds.get('remtype') == 'internal' or argds.get('remtype') == 'external':
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_peer_type', [ vrf_name, template_name ] + mkArgds2list(argds, 'remtype'))
+         else:
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_peer_as', [ vrf_name, template_name ] + mkArgds2list(argds, 'as-num-dot'))
+    elif cmd == 'timers':
+         if argds.get('timertype') == 'connect':
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_connect_retry', [ vrf_name, template_name ] + mkArgds2list(argds, 'connect-time'))
+         else:
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_keepalive_interval', [ vrf_name, template_name ] + mkArgds2list(argds, 'keepalive-intvl'))
+             rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_hold_time', [ vrf_name, template_name ] + mkArgds2list(argds, 'hold-time'))
+    elif cmd == 'shutdown':
+         if argds.get('message'):
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_shutdown_message', [ vrf_name, template_name ] + mkArgds2list(argds, 'MSG'))
+         rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_enabled', [ vrf_name, template_name ] + [ 'False' ])
+    elif cmd == 'bfd':
+         if argds.get('check-control-plane-failure'):
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_bfd_check_control_plane_failure', [ vrf_name, template_name ] + [ 'True' ])
+         rc += parseInvoke_api('patch_openconfig_bfd_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_enabled', [ vrf_name, template_name ] + [ 'True' ])
+    elif cmd == 'local-as':
+         if argds.get('no-prepend'):
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_no_prepend', [ vrf_name, template_name ] + [ 'True' ])
+         else:
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_no_prepend', [ vrf_name, template_name ] + [ 'False' ])
+         if argds.get('replace-as'):
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_replace_as', [ vrf_name, template_name ] + [ 'True' ])
+         else:
+             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_replace_as', [ vrf_name, template_name ] + [ 'False' ])
+         rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as', [ vrf_name, template_name ] + mkArgds2list(argds, 'asnum'))
+    elif cmd == 'no ebgp-multihop':
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_ebgp_multihop_config_enabled', [ vrf_name, template_name ])
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_ebgp_multihop_config_multihop_ttl', [ vrf_name, template_name ])
+    elif cmd == 'no remote-as':
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_peer_as', [ vrf_name, template_name ] + mkArgds2list(argds, 'as-num-dot'))
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_peer_type', [ vrf_name, template_name ] + mkArgds2list(argds, 'internal', 'external'))
+    elif cmd == 'no timers':
+         if argds.get('timertype') == 'connect':
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_connect_retry', [ vrf_name, template_name ] + mkArgds2list(argds, 'connect-time'))
+         else:
+             rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_keepalive_interval', [ vrf_name, template_name ] + mkArgds2list(argds, 'keepalive-intvl'))
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_timers_config_hold_time', [ vrf_name, template_name ] + mkArgds2list(argds, 'hold-time'))
+    elif cmd == 'no shutdown':
+         rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_enabled', [ vrf_name, template_name ] + [ 'True' ])
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_shutdown_message', [ vrf_name, template_name ] + mkArgds2list(argds, 'MSG'))
+    elif cmd == 'no bfd':
+         if argds.get('check-control-plane-failure'):
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_bfd_check_control_plane_failure', [ vrf_name, template_name ])
+         else:
+             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_bfd_check_control_plane_failure', [ vrf_name, template_name ])
+             rc += parseInvoke_api('delete_openconfig_bfd_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_enable_bfd_config_enabled', [ vrf_name, template_name ])
+    elif cmd == 'no local-as':
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as', [ vrf_name, template_name ])
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_no_prepend', [ vrf_name, template_name ])
+         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_local_as_replace_as', [ vrf_name, template_name ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
+
+def parseGloblV4(vrf_name, cmd, args=[]):
+    print 'GloblCfgV4:{}: {} {}'.format(vrf_name, cmd, args)
+    argds = mkArgs2dict(args)
+
+def parseNeighV4(vrf_name, nbr_addr, cmd, args=[]):
+    print 'NeighCfgV4:{}:{}: {} {}'.format(vrf_name, nbr_addr, cmd, args)
+    argds = mkArgs2dict(args)
+
+def parsePeergV4(vrf_name, template_name, cmd, args=[]):
+    print 'PeerGCfgV4:{}:{}: {} {}'.format(vrf_name, template_name, cmd, args)
+    argds = mkArgs2dict(args)
+
+def parseGloblV6(vrf_name, cmd, args=[]):
+    print 'GloblCfgV4:{}: {} {}'.format(vrf_name, cmd, args)
+    argds = mkArgs2dict(args)
+
+def parseNeighV6(vrf_name, nbr_addr, cmd, args=[]):
+    print 'NeighCfgV4:{}:{}: {} {}'.format(vrf_name, nbr_addr, cmd, args)
+    argds = mkArgs2dict(args)
+
+def parsePeergV6(vrf_name, template_name, cmd, args=[]):
+    print 'PeerGCfgV4:{}:{}: {} {}'.format(vrf_name, template_name, cmd, args)
+    argds = mkArgs2dict(args)
+
+def invoke_parse(pycmd, args=[]):
+    op = pycmd.split(':')[1]
+    idx = 1 if op[0] == 'G' else 2
+    start = idx
+    end = len(args)
+    while idx < end:
+        if args[idx] == '\n':
+            end = idx
+            idx += 1
+            break
+        elif args[idx][-1] == '\n':
+            args[idx] = args[idx][:-1]
+            idx += 1
+            end = idx
+            break
+        idx += 1
+    cmd = ' '.join(args[start:end])
+
+    if op == 'Gbl':
+        return parseGlobl(args[0], cmd, args[idx:])
+    elif op == 'GblV4':
+        return parseGloblV4(args[0], cmd, args[idx:])
+    elif op == 'GblV6':
+        return parseGloblV6(args[0], cmd, args[idx:])
+    elif op == 'Nbr':
+        return parseNeigh(args[0], args[1], cmd, args[idx:])
+    elif op == 'NbrV4':
+        return parseNeighV4(args[0], args[1], cmd, args[idx:])
+    elif op == 'NbrV6':
+        return parseNeighV6(args[0], args[1], cmd, args[idx:])
+    elif op == 'Pgp':
+        return parsePeerg(args[0], args[1], cmd, args[idx:])
+    elif op == 'PgpV4':
+        return parsePeergV4(args[0], args[1], cmd, args[idx:])
+    elif op == 'PgpV6':
+        return parsePeergV6(args[0], args[1], cmd, args[idx:])
+
+    print cc.ApiClient().cli_not_implemented(cmd).error_message()
+    return 1
+
 def run(func, args):
     if func == 'get_show_bgp':
         response = invoke_show_api(func, args)
@@ -1834,6 +2145,8 @@ def run(func, args):
         response = invoke_show_api(func, args)
     elif func == 'get_show_bgp_peer_group_all':
         response = invoke_show_api(func, args)
+    elif func[:9] == '_PyParse:':
+        invoke_parse(func, args)
     else:
         response = invoke_api(func, args)
         if response.ok():

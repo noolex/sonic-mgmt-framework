@@ -1,0 +1,16 @@
+module sonic-bfd-clear-annot {
+
+    yang-version "1.1";
+
+    namespace "http://openconfig.net/yang/annotation/sbfdclear-annot";
+    prefix "sbfdclear-annot";
+
+    import sonic-bfd-clear { prefix sbfdclear; }
+    import sonic-extensions { prefix sonic-ext; }
+
+    deviation /sbfdclear:clear-bfd {
+        deviate add {
+            sonic-ext:rpc-callback "rpc_clear_bfd";
+        }
+    }
+}

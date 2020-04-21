@@ -220,6 +220,32 @@
 
     <VIEW name="configure-view">
         <COMMAND
+            name="no interface Vxlan"
+            help="VXLAN Configuration mode"
+            >
+            <PARAM
+                name="vxlan-if-name"
+                help="VTEP Name"
+                ptype="STRING_63"
+                >
+            </PARAM>
+            <ACTION builtin="clish_pyobj"> sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list ${vxlan-if-name}
+            </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to delete the VTEP, the VTEP deletion will succeed provided no vlan/vrf vni mapping exists on this VTEP.
+                </DESCRIPTION>
+                <USAGE>
+                    (config)# no interface vxlan VTEPNAME
+                    VTEPNAME - string
+                </USAGE>
+                <EXAMPLE summary="Unconfigure Vxlan VTEP">
+                    sonic(config)# no interface vxlan vtep1
+                    sonic(config-if-vtep1)#
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND
             name="interface Vxlan"
             help="VXLAN Configuration mode"
             view="configure-vxlan-view"
@@ -231,7 +257,8 @@
                 ptype="STRING_63"
                 >
             </PARAM>
-            <ACTION builtin="clish_nop"></ACTION>
+            <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list ${vxlan-if-name}
+            </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Command to enter VxLAN configuration mode.
@@ -243,71 +270,6 @@
                 <EXAMPLE summary="configuration mode for vxlan">
                     sonic(config)# interface vxlan vtep1
                     sonic(config-if-vtep1)#
-                </EXAMPLE>
-            </DOCGEN>
-        </COMMAND>
-        <COMMAND 
-            name="evpn" 
-            help="EVPN Global Configuration" 
-            view="configure-evpn-view" 
-            viewid="iface=EVPN${evpn_name}">
-            <PARAM name="evpn_name" help="EVPN Name" ptype="STRING_63"> </PARAM>
-            <ACTION builtin="clish_nop"/>
-            <DOCGEN>
-                <DESCRIPTION>
-                    Command to enter EVPN configuration mode.
-                </DESCRIPTION>
-                <USAGE>
-                    (config)# evpn NVONAME
-                    NVONAME - string
-                </USAGE>
-                <EXAMPLE summary="configuration mode for evpn">
-                    sonic(config)# evpn evpn1
-                    sonic(conf-if-evpn)#
-                </EXAMPLE>
-            </DOCGEN>
-        </COMMAND>
-    </VIEW>
-    <VIEW name="configure-evpn-view" prompt="${SYSTEM_NAME}(conf-if-evpn)# " depth="2">
-        <!-- Inheritance -->
-        <NAMESPACE ref="configure-view" help="false" completion="false"/>
-        <COMMAND 
-            name="no" 
-            help="Negate a command or set its defaults"> 
-        </COMMAND>
-        <COMMAND 
-            name="no source-vtep" 
-            help="Unset the NVO object">
-            <ACTION builtin="clish_pyobj">sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list ${iface}</ACTION>
-            <DOCGEN>
-                <DESCRIPTION>
-                    Command to unconfigure NVO object
-                </DESCRIPTION>
-                <USAGE>
-                    (config-if-evpn)# no source-vtep
-                </USAGE>
-                <EXAMPLE summary="unconfigure nvo object">
-                    sonic(config)# evpn evpn1
-                    sonic(config-if-evpn)# no source-vtep
-                </EXAMPLE>
-            </DOCGEN>
-        </COMMAND>
-        <COMMAND 
-            name="source-vtep" 
-            help="Set the Vxlan interface to source the IP address ">
-            <PARAM name="vxlan_name" help="VTEP Name" ptype="STRING_63"> </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list ${iface} ${vxlan_name}</ACTION>
-            <DOCGEN>
-                <DESCRIPTION>
-                    Command to set the VxLAN interface to source the IP address
-                </DESCRIPTION>
-                <USAGE>
-                    (config-if-evpn)# source-vtep VTEPNAME
-                    VTEPNAME - String
-                </USAGE>
-                <EXAMPLE summary="set vxlan interface to source the IP address">
-                    sonic(config)# evpn evpn1
-                    sonic(config-if-evpn)# source-vtep vtep1
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
@@ -331,7 +293,7 @@
         <COMMAND
             name="no source-ip"
             help="Unset the source Ipv4 address">
-            <ACTION builtin="clish_pyobj">sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list ${iface}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_src_ip ${iface}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Command to unset the source IPv4 address
@@ -392,8 +354,7 @@
                 ptype="IPV4_ADDR_ABC"
                 >
             </PARAM>
-            <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list ${iface} ${SIP}
-            </ACTION>
+            <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_src_ip ${iface} ${SIP} </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Command to set the source IPv4 address

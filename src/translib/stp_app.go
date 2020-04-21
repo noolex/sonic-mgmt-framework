@@ -913,25 +913,29 @@ func (app *StpApp) convertOCRpvstConfToInternal(opcode int) error {
 }
 
 func (app *StpApp) setRpvstVlanDataInDB(d *db.DB, createFlag bool) error {
-	var err error
 	for vlanName := range app.vlanTableMap {
 		existingEntry, err := d.GetEntry(app.vlanTable, asKey(vlanName))
 		if createFlag && existingEntry.IsPopulated() {
 			return tlerr.AlreadyExists("Vlan %s already configured", vlanName)
 		}
 		if createFlag || (!createFlag && err != nil && !existingEntry.IsPopulated()) {
-			err = d.CreateEntry(app.vlanTable, asKey(vlanName), app.vlanTableMap[vlanName])
+			err1 := d.CreateEntry(app.vlanTable, asKey(vlanName), app.vlanTableMap[vlanName])
+			if err1 != nil {
+				return err1
+			}
 		} else {
 			if existingEntry.IsPopulated() {
-				err = d.ModEntry(app.vlanTable, asKey(vlanName), app.vlanTableMap[vlanName])
+				err1 := d.ModEntry(app.vlanTable, asKey(vlanName), app.vlanTableMap[vlanName])
+				if err1 != nil {
+					return err1
+				}
 			}
 		}
 	}
-	return err
+	return nil
 }
 
 func (app *StpApp) setRpvstVlanInterfaceDataInDB(d *db.DB, createFlag bool) error {
-	var err error
 	for vlanName := range app.vlanIntfTableMap {
 		for intfId := range app.vlanIntfTableMap[vlanName] {
 			existingEntry, err := d.GetEntry(app.vlanIntfTable, asKey(vlanName, intfId))
@@ -939,15 +943,21 @@ func (app *StpApp) setRpvstVlanInterfaceDataInDB(d *db.DB, createFlag bool) erro
 				return tlerr.AlreadyExists("Interface %s already configured", intfId)
 			}
 			if createFlag || (!createFlag && err != nil && !existingEntry.IsPopulated()) {
-				err = d.CreateEntry(app.vlanIntfTable, asKey(vlanName, intfId), app.vlanIntfTableMap[vlanName][intfId])
+				err1 := d.CreateEntry(app.vlanIntfTable, asKey(vlanName, intfId), app.vlanIntfTableMap[vlanName][intfId])
+				if err1 != nil {
+					return err1
+				}
 			} else {
 				if existingEntry.IsPopulated() {
-					err = d.ModEntry(app.vlanIntfTable, asKey(vlanName, intfId), app.vlanIntfTableMap[vlanName][intfId])
+					err1 := d.ModEntry(app.vlanIntfTable, asKey(vlanName, intfId), app.vlanIntfTableMap[vlanName][intfId])
+					if err1 != nil {
+						return err1
+					}
 				}
 			}
 		}
 	}
-	return err
+	return nil
 }
 
 func (app *StpApp) convertDBRpvstVlanConfigToInternal(d *db.DB, vlanKey db.Key) error {

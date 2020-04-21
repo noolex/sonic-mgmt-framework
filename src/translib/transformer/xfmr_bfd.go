@@ -3,6 +3,7 @@ package transformer
 import (
     "errors"
     "translib/ocbinds"
+    "translib/db"
     "strings"
     "encoding/json"
     "strconv"
@@ -13,6 +14,7 @@ import (
 
 func init () {
     XlateFuncBind("DbToYang_bfd_state_xfmr", DbToYang_bfd_state_xfmr)
+    XlateFuncBind("rpc_clear_bfd", rpc_clear_bfd)
 }
 
 
@@ -778,4 +780,91 @@ func fill_bfd_mhop_data (bfd_obj *ocbinds.OpenconfigBfd_Bfd_BfdState, session_da
     }*/
 
     return true;
+}
+
+var rpc_clear_bfd RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) ([]byte, error) {
+    log.Info("In rpc_clear_bfd")
+    var err error
+    var status string
+    var remoteaddr, vrf_name, localaddr, intfname, multi_hop string
+    var cmd string
+    var mapData map[string]interface{}
+
+    err = json.Unmarshal(body, &mapData)
+    if err != nil {
+        log.Info("Failed to unmarshall given input data")
+        return nil, err
+    }
+
+    var result struct {
+        Output struct {
+              Status string `json:"response"`
+        } `json:"sonic-bfd-clear:output"`
+    }
+
+    log.Info("In rpc_clear_bfd", mapData)
+
+    input, _ := mapData["sonic-bfd-clear:input"]
+    mapData = input.(map[string]interface{})
+
+    log.Info("In rpc_clear_bfd", mapData)
+
+    if value, ok := mapData["remote-address"].(string) ; ok {
+        if value != "" {
+            remoteaddr = value + " "
+        }
+    }
+
+    if value, ok := mapData["vrf"].(string) ; ok {
+        log.Info("In vrf", value)
+        if value != "" {
+            vrf_name = value + " "
+        }
+    }
+
+    if value, ok := mapData["interface"].(string) ; ok {
+        if value != "" {
+            intfname = value + " "
+        }
+    }
+
+    if value, ok := mapData["local-address"].(string) ; ok {
+        if value != "" {
+            localaddr = value + " "
+        }
+    }
+
+    if value, ok := mapData["multihop"].(string) ; ok {
+        if value != "" {
+            multi_hop = "multihop "
+        }
+    }
+
+    log.Info("In rpc_clear_bfd", remoteaddr, vrf_name, intfname, localaddr, multi_hop)
+
+    cmd = cmd + "clear bfd peer " + remoteaddr
+
+    if vrf_name != "" {
+        cmd = cmd + "vrf " + vrf_name
+    }
+
+    if multi_hop != "" {
+        cmd = cmd + multi_hop
+    }
+
+    if intfname != "" {
+        cmd = cmd + "interface " + intfname
+    }
+
+    if localaddr != "" {
+        cmd = cmd + "local-address " + localaddr
+    }
+
+    cmd = cmd + "counters"
+
+    cmd = strings.TrimSuffix(cmd, " ")
+    exec_vtysh_cmd (cmd)
+    status = "Success"
+    result.Output.Status = status
+    return json.Marshal(&result)
 }
