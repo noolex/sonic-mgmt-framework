@@ -221,10 +221,10 @@ func Test_LeafList_FieldXfmr_OCYang(t *testing.T) {
 
 	/** FieldXfmr getting called on leaf-list get**/
 	prereq_map = map[string]interface{}{"COMMUNITY_SET":map[string]interface{}{"test1":map[string]interface{}{
-		                                                                                  "community_member@": "1:1,2:2,3:3",
+		                                                                                  "community_member@": "1:1",
 												  "set_type": "STANDARD",
                                                                                                   "match_action": "ANY"}}}
-	expected_get_json = "{\"openconfig-bgp-policy:community-member\":[\"1:1\",\"2:2\",\"3:3\"]}"
+	expected_get_json = "{\"openconfig-bgp-policy:community-member\":[\"1:1\"]}"
 	loadConfigDB(rclient, prereq_map)
 	url = "/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/community-sets/community-set[community-set-name=test1]/config/community-member"
 	t.Run("FieldXfmr leaf-list get.", processGetRequest(url, expected_get_json, false))
@@ -273,22 +273,12 @@ func Test_LeafList_SubtreeXfmr_OCYang(t *testing.T) {
 	/** Get on leaf-list having parent subtree(verify if duplication of elements occur)**/
         prereq_map = map[string]interface{}{"VLAN":map[string]interface{}{"Vlan5":map[string]interface{}{
 		                                                                      "vlanid": "5",
-                                                                                      "members@": "Ethernet32"},
-									  "Vlan10":map[string]interface{}{
-		                                                                      "vlanid": "10",
-                                                                                      "members@": "Ethernet32"},
-									  "Vlan15":map[string]interface{}{
-		                                                                      "vlanid": "15",
                                                                                       "members@": "Ethernet32"}},
 				             "VLAN_MEMBER":map[string]interface{}{"Vlan5|Ethernet32":map[string]interface{}{
-					                                                             "tagging_mode": "tagged"},
-							                           "Vlan10|Ethernet32":map[string]interface{}{
-                                                                                                     "tagging_mode": "tagged"},
-							                          "Vlan15|Ethernet32":map[string]interface{}{
-                                                                                                     "tagging_mode": "tagged"}}}
+					                                                             "tagging_mode": "tagged"}}}
         loadConfigDB(rclient, prereq_map)
         url = "/openconfig-interfaces:interfaces/interface[name=Ethernet32]/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans"
-        expected_get_json = "{\"openconfig-vlan:trunk-vlans\":[10,5,15]}"
+        expected_get_json = "{\"openconfig-vlan:trunk-vlans\":[5]}"
         t.Run("Get leaf-list with parent-subtree.", processGetRequest(url, expected_get_json, false))
         time.Sleep(1 * time.Second)
         unloadConfigDB(rclient, prereq_map)
@@ -406,10 +396,10 @@ func Test_LeafList_DataTypeConversion_OCYang(t *testing.T) {
 
 	/** Data-type conversion getting called on leaf-list get**/
         prereq_map = map[string]interface{}{"BGP_GLOBALS":map[string]interface{}{"default":map[string]interface{}{
-                                                                                                  "confed_peers@": "4294967294,1,4294"}},
+                                                                                                  "confed_peers@": "4294967294"}},
                                             "VRF":map[string]interface{}{"default":map[string]interface{}{
                                                                                                   "NULL": "NULL"}}}
-        expected_get_json = "{\"openconfig-network-instance:member-as\":[4294967294,1,4294]}"
+        expected_get_json = "{\"openconfig-network-instance:member-as\":[4294967294]}"
         loadConfigDB(rclient, prereq_map)
         url = "/openconfig-network-instance:network-instances/network-instance[name=default]/protocols/protocol[identifier=BGP][name=bgp]/bgp/global/confederation/config/member-as"
         t.Run("Data-type conversion leaf-list get.", processGetRequest(url, expected_get_json, false))
@@ -482,12 +472,12 @@ func Test_LeafList_DataTypeConversion_SonicYang(t *testing.T) {
 
         /** Data-type conversion getting called on leaf-list get**/
         prereq_map = map[string]interface{}{"ACL_TABLE":map[string]interface{}{"MyACL1_ACL_IPV4":map[string]interface{}{
-                                                                                          "ports@": "Ethernet8,Ethernet16",
+                                                                                          "ports@": "Ethernet8",
 										          "stage": "INGRESS",
 										          "type": "L3"}}}
 
 	url = "/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST[aclname=MyACL1_ACL_IPV4]/ports"
-        expected_get_json = "{\"sonic-acl:ports\":[\"Ethernet8\",\"Ethernet16\"]}"
+        expected_get_json = "{\"sonic-acl:ports\":[\"Ethernet8\"]}"
         loadConfigDB(rclient, prereq_map)
         t.Run("FieldXfmr leaf-list get.", processGetRequest(url, expected_get_json, false))
         time.Sleep(1 * time.Second)
