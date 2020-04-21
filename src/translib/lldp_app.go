@@ -158,7 +158,7 @@ func (app *lldpApp) translateSubscribe(dbs [db.MaxDB]*db.DB, path string) (*noti
             notifInfo.table = db.TableSpec{Name: "LLDP_ENTRY_TABLE"}
             notifInfo.key = asKey(ifKey)
             notifInfo.needCache = true
-            return &notificationOpts{pType: OnChange}, &notifInfo, nil
+            return &notificationOpts{isOnChangeSupported: true, pType: OnChange}, &notifInfo, nil
         }
     }
     return nil, nil, notSupported

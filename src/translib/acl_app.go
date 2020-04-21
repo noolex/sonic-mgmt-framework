@@ -186,6 +186,7 @@ func (app *AclApp) translateAction(dbs [db.MaxDB]*db.DB) error {
 func (app *AclApp) translateSubscribe(dbs [db.MaxDB]*db.DB, path string) (*notificationOpts, *notificationInfo, error) {
 	pathInfo := NewPathInfo(path)
 	notifInfo := notificationInfo{dbno: db.ConfigDB}
+    notifOpts := notificationOpts{isOnChangeSupported: true}
 	notSupported := tlerr.NotSupportedError{
 		Format: "Subscribe not supported", Path: path}
 
@@ -240,7 +241,7 @@ func (app *AclApp) translateSubscribe(dbs [db.MaxDB]*db.DB, path string) (*notif
 		return nil, nil, notSupported
 	}
 
-	return nil, &notifInfo, nil
+	return &notifOpts, &notifInfo, nil
 }
 
 func (app *AclApp) processCreate(d *db.DB) (SetResponse, error) {
