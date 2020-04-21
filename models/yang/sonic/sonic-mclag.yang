@@ -50,6 +50,25 @@ module sonic-mclag {
 	}
 
 	container sonic-mclag {
+            container MCLAG_GW_MAC {
+
+                list MCLAG_GW_MAC_LIST {
+                    key "gw_mac";
+                    max-elements 1;
+                    description 
+                            "Gateway Mac for MCLAG";
+
+                    leaf gw_mac {
+                        type yang:mac-address;
+	            }
+
+                    leaf gw_mac_en {
+                        type enumeration {
+                            enum enable;
+                        }
+                    }
+                }
+            }
 
         container MCLAG_DOMAIN {
 
