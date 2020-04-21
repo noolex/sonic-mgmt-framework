@@ -130,7 +130,13 @@ func getLeafrefRefdYangType(yngTerminalNdDtType yang.TypeKind, fldXpath string) 
 		if strings.Contains(path, "..") {
 			if entry != nil && len(path) > 0 {
 				// Referenced path within same yang file
-				pathList := strings.Split(path, "/")
+				xpath, err := XfmrRemoveXPATHPredicates(path)
+				if  err != nil {
+					log.Warningf("error in XfmrRemoveXPATHPredicates %v", path)
+					return yngTerminalNdDtType
+				}
+				xpath = xpath[1:]
+				pathList := strings.Split(xpath, "/")
 				for _, x := range pathList {
 					if x == ".." {
 						entry = entry.Parent
@@ -140,7 +146,7 @@ func getLeafrefRefdYangType(yngTerminalNdDtType yang.TypeKind, fldXpath string) 
 						}
 					}
 				}
-				if entry != nil {
+				if entry != nil && entry.Type != nil {
 					yngTerminalNdDtType = entry.Type.Kind
 					xfmrLogInfoAll("yangLeaf datatype %v", yngTerminalNdDtType)
 					if yngTerminalNdDtType == yang.Yleafref {
