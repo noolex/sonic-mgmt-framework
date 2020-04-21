@@ -12,7 +12,7 @@
 #include <ostream>                      // std::endl
 #include <iostream>                     // std::cin, std::cout
 
-#include "hamctl.h"
+#include "hamctl.h"                     // get_dbusconn()
 #include "subsys.h"
 #include "../shared/dbus-address.h"     // DBUS_BUS_NAME_BASE
 #include "../shared/utils.h"            // split()
@@ -30,8 +30,6 @@ struct esc_data_c
     esc_state_t  state = normal;
     unsigned     npar  = 0;
 };
-
-static DBus::BusDispatcher  dispatcher;
 
 /**
  * @brief Eliminate escape sequences from the input. This may happen, for
@@ -243,7 +241,7 @@ static std::vector< std::string > get_roles()
     printf("Enter comma-separated roles: ");
     std::cin.getline(roles, sizeof roles);
 
-    return split(roles, ',');
+    return split(roles, ", \t");
 }
 
 /**
@@ -303,9 +301,7 @@ static int accounts(int argc, char *argv[])
 
     if (rc == 0)
     {
-        DBus::default_dispatcher = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::Connection    conn = DBus::Connection::SystemBus();
-        accounts_proxy_c    acct(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        accounts_proxy_c  acct(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
 
         if (0 == strcmp("useradd", command_p))
         {

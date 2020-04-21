@@ -1,0 +1,24 @@
+# After hamd adds a user to /etc/passwd with the useradd command, hamd
+# invokes, in ASCIIbetical order, the scripts found in this directory.
+#
+# Hamd invokes each script as follows:
+#
+#   [SCRIPT] [USER NAME] [ATTRIBUTES]
+#
+# ATTRIBUTES is a string of semi-colon separated attributes. Currently, only
+# two attributes are supported, the roles and the privilege level.
+#
+# The "roles" attribute is a list of comma-separated roles. For example:
+#    roles=[comma-separated roles]
+#
+# The privilege level is an integer in the range 0 to 15. For example:
+#   priv-lvl=11
+#
+# Examples:
+#    SCRIPT bob roles=netoperator,secadmin;priv-lvl=13
+#    SCRIPT jane priv-lvl=13
+#    SCRIPT wyatt roles=sysadmin
+#
+# Each SCRIPT should return 0 on success, and non-0 on failure. On failure,
+# each SCRIPT should print the cause of the failure to the standard
+# error (stderr).
