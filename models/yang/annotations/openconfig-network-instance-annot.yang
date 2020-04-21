@@ -1524,6 +1524,30 @@ module openconfig-network-instance-annot {
         }
     }
 
+    deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:global/oc-netinst:afi-safis/oc-netinst:afi-safi/oc-bgp-ext:import-network-instance/oc-bgp-ext:config/oc-bgp-ext:name {
+        deviate add {
+            sonic-ext:field-name "import_vrf";
+        }
+    }
+
+    deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:global/oc-netinst:afi-safis/oc-netinst:afi-safi/oc-bgp-ext:import-network-instance/oc-bgp-ext:config/oc-bgp-ext:policy-name {
+        deviate add {
+            sonic-ext:field-name "import_vrf_route_map";
+        }
+    }
+
+    deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:global/oc-netinst:afi-safis/oc-netinst:afi-safi/oc-bgp-ext:import-network-instance/oc-bgp-ext:state/oc-bgp-ext:name {
+        deviate add {
+            sonic-ext:field-name "import_vrf";
+        }
+    }
+
+    deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:global/oc-netinst:afi-safis/oc-netinst:afi-safi/oc-bgp-ext:import-network-instance/oc-bgp-ext:state/oc-bgp-ext:policy-name {
+        deviate add {
+            sonic-ext:field-name "import_vrf_route_map";
+        }
+    }
+
     deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp/oc-netinst:global/oc-netinst:afi-safis/oc-netinst:afi-safi/oc-bgp-ext:network-config/oc-bgp-ext:network {
         deviate add {
             sonic-ext:table-name "BGP_GLOBALS_AF_NETWORK";
