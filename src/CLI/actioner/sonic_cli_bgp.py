@@ -2064,28 +2064,544 @@ def parsePeerg(vrf_name, template_name, cmd, args=[]):
     return rc
 
 def parseGloblV4(vrf_name, cmd, args=[]):
-    print 'GloblCfgV4:{}: {} {}'.format(vrf_name, cmd, args)
     argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'redistribute':
+        if argds.get('route-map-name'):
+            rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection_config_import_policy', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'protocol', 'route-map-name'))
+            rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection_config_import_policy', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'protocol', 'route-map-name'))
+        elif not argds.get('metric'):
+            rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection_config', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'protocol'))
+        if argds.get('metric'):
+            rc += parseInvoke_api('patch_openconfig_network_instance_ext_network_instances_network_instance_table_connections_table_connection_config_metric', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'protocol', 'metvalue'))
+    elif cmd == 'maximum-paths ibgp':
+        rc += parseInvoke_api('patch_openconfig_network_instance1543452951', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'ipaths'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext3691744053', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'equal-cluster-length'))
+    elif cmd == 'network':
+        if argds.get('backdoor') == 'x':
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_backdoor', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        if not argds.get('route-map'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_policy_name', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix', 'backdoor', 'route-map-name'))
+    elif cmd == 'aggregate-address':
+        if argds.get('rtemap'):
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config_policy_name', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix', 'rtemap'))
+        if not argds.get('as-set'):
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config_as_set', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        if not argds.get('summary-only'):
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config_summary_only', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix', 'as-set', 'summary-only'))
+    elif cmd == 'dampening':
+        if not argds.get('reusethr'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_reuse_threshold', [ vrf_name, 'IPV4_UNICAST' ])
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_suppress_threshold', [ vrf_name, 'IPV4_UNICAST' ])
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_max_suppress', [ vrf_name, 'IPV4_UNICAST' ])
+            if not argds.get('halflife'):
+                rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_half_life', [ vrf_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config', [ vrf_name, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'halflife', 'reusethr', 'suppressthr', 'maxsuppress'))
+    elif cmd == 'no redistribute':
+        rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'protocol'))
+        rc += parseInvoke_api('delete_openconfig_network_instance_ext_network_instances_network_instance_table_connections_table_connection_config_metric', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'protocol'))
+    elif cmd == 'no maximum-paths ibgp':
+        rc += parseInvoke_api('delete_openconfig_network_instance1543452951', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'ipaths'))
+        rc += parseInvoke_api('delete_openconfig_bgp_ext3691744053', [ vrf_name, 'IPV4_UNICAST' ])
+    elif cmd == 'no network':
+        if argds.get('backdoor'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_backdoor', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        if argds.get('route-map'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_policy_name', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        elif not argds.get('backdoor'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network', [ vrf_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+    elif cmd == 'no distance bgp':
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_external_route_distance', [ vrf_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_internal_route_distance', [ vrf_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_local_route_distance', [ vrf_name, 'IPV4_UNICAST' ])
+    elif cmd == 'no dampening':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_enabled', [ vrf_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_half_life', [ vrf_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_reuse_threshold', [ vrf_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_suppress_threshold', [ vrf_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_route_flap_damping_config_max_suppress', [ vrf_name, 'IPV4_UNICAST' ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
 
 def parseNeighV4(vrf_name, nbr_addr, cmd, args=[]):
-    print 'NeighCfgV4:{}:{}: {} {}'.format(vrf_name, nbr_addr, cmd, args)
     argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'allowas-in':
+        if argds.get('value'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'value'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'value'))
+        if argds.get('origin'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'True' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'True' ])
+    elif cmd == 'route-map':
+        if argds.get('direction') == 'in':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+             rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+             rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'attribute-unchanged':
+        optstr = argds.get('as-path', '') + argds.get('med', '') + argds.get('next-hop', '')
+        if optstr == '' or optstr == 'as-pathmednext-hop':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ]  + [ 'as-path', 'med', 'next-hop' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'as-path', 'med', 'next-hop'))
+    elif cmd == 'default-originate':
+        if argds.get('route-map'):
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_send_default_route', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'True' ])
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_default_policy_name', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'rtemap'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_send_default_route', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'True' ])
+    elif cmd == 'filter-list':
+        if argds.get('filtopt') == 'in':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_filter_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'fname'))
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_filter_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'fname'))
+    elif cmd == 'next-hop-self':
+        if not argds.get('force'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'force'))
+    elif cmd == 'prefix-list':
+        if argds.get('prfopt') == 'in':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
+    elif cmd == 'remove-private-AS':
+        if not argds.get('all'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        if not argds.get('replace-AS'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-AS'))
+    elif cmd == 'maximum-prefix':
+        if argds.get('threshold-val') == '0':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        if not argds.get('warning-only'):
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_prevent_teardown', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        if not argds.get('restart'):
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_restart_timer', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'max-prefix-val', 'threshold-val', 'maxpfopt', 'interval'))
+    elif cmd == 'no allowas-in':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'value'))
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+    elif cmd == 'no route-map':
+        if argds.get('direction') == 'in':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        elif argds.get('direction') == 'out':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'no attribute-unchanged':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_as_path', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_med', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_next_hop', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+    elif cmd == 'no default-originate':
+        rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_send_default_route', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_default_policy_name', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'rtemap'))
+    elif cmd == 'no filter-list':
+        if argds.get('filtopt') == 'in':
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_filter_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'fname'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_filter_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'fname'))
+    elif cmd == 'no next-hop-self':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_enabled', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+    elif cmd == 'no prefix-list':
+        if argds.get('prfopt') == 'in':
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
+    elif cmd == 'no remove-private-AS':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_enabled', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+    elif cmd == 'no maximum-prefix':
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_max_prefixes', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_prevent_teardown', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_restart_timer', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
 
 def parsePeergV4(vrf_name, template_name, cmd, args=[]):
-    print 'PeerGCfgV4:{}:{}: {} {}'.format(vrf_name, template_name, cmd, args)
     argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'allowas-in':
+        if argds.get('value'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'value'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'value'))
+        if argds.get('origin'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'True' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'True' ])
+    elif cmd == 'route-map':
+        if argds.get('direction') == 'in':
+          rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+          rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+          rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+          rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'attribute-unchanged':
+        optstr = argds.get('as-path', '') + argds.get('med', '') + argds.get('next-hop', '')
+        if optstr == '' or optstr == 'as-pathmednext-hop':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'as-path', 'med', 'next-hop' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'as-path', 'med', 'next-hop'))
+    elif cmd == 'default-originate':
+        if argds.get('route-map'):
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_send_default_route', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'True' ])
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_default_policy_name', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'rtemap'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_send_default_route', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'True' ])
+    elif cmd == 'filter-list':
+        if argds.get('filtopt') == 'in':
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_filter_list_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'fname'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_filter_list_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'fname'))
+    elif cmd == 'next-hop-self':
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'force'))
+        if not argds.get('force'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+    elif cmd == 'prefix-list':
+        if argds.get('prfopt') == 'in':
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
+    elif cmd == 'remove-private-AS':
+        if not argds.get('all'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        if not argds.get('replace-AS'):
+           rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-AS'))
+    elif cmd == 'maximum-prefix':
+        if argds.get('threshold-val') == '0':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        if not argds.get('warning-only'):
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_prevent_teardown', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        if not argds.get('restart'):
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_restart_timer', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'max-prefix-val', 'threshold-val', 'maxpfopt', 'interval'))
+    elif cmd == 'no allowas-in':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'value'))
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'False' ])
+    elif cmd == 'no route-map':
+        if argds.get('direction') == 'in':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        elif argds.get('direction') == 'out':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'no attribute-unchanged':
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_as_path', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_med', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_next_hop', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+    elif cmd == 'no default-originate':
+        rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_send_default_route', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_default_policy_name', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'rtemap'))
+    elif cmd == 'no filter-list':
+        if argds.get('filtopt') == 'in':
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_filter_list_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'fname'))
+        else:
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_filter_list_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'fname'))
+    elif cmd == 'no next-hop-self':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_enabled', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+    elif cmd == 'no prefix-list':
+        if argds.get('prfopt') == 'in':
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
+        else:
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
+    elif cmd == 'no remove-private-AS':
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_enabled', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+    elif cmd == 'no maximum-prefix':
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_max_prefixes', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_prevent_teardown', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_restart_timer', [ vrf_name, template_name, 'IPV4_UNICAST' ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
 
 def parseGloblV6(vrf_name, cmd, args=[]):
-    print 'GloblCfgV4:{}: {} {}'.format(vrf_name, cmd, args)
     argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'redistribute':
+        if argds.get('route-map-name'):
+            rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection_config_import_policy', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'protocol', 'route-map-name'))
+        elif not argds.get('metric'):
+            rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection_config', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'protocol'))
+        if argds.get('metric'):
+            rc += parseInvoke_api('patch_openconfig_network_instance_ext_network_instances_network_instance_table_connections_table_connection_config_metric', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'protocol', 'metvalue'))
+    elif cmd == 'maximum-paths ibgp':
+        rc += parseInvoke_api('patch_openconfig_network_instance1543452951', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'ipaths'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext3691744053', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'equal-cluster-length'))
+    elif cmd == 'network':
+        if argds.get('backdoor') == 'x':
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_backdoor', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        if not argds.get('route-map'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_policy_name', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix', 'backdoor', 'route-map-name'))
+    elif cmd == 'aggregate-address':
+        if argds.get('rtemap'):
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config_policy_name', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix', 'rtemap'))
+        if not argds.get('as-set'):
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config_as_set', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        if not argds.get('summary-only'):
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config_summary_only', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix', 'as-set', 'summary-only'))
+    elif cmd == 'no redistribute':
+        rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'protocol'))
+        rc += parseInvoke_api('delete_openconfig_network_instance_ext_network_instances_network_instance_table_connections_table_connection_config_metric', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'protocol'))
+    elif cmd == 'no maximum-paths ibgp':
+        rc += parseInvoke_api('delete_openconfig_network_instance1543452951', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'ipaths'))
+        rc += parseInvoke_api('delete_openconfig_bgp_ext3691744053', [ vrf_name, 'IPV6_UNICAST' ])
+    elif cmd == 'no network':
+        if argds.get('backdoor'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_backdoor', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        if argds.get('route-map'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_policy_name', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+        elif not argds.get('backdoor'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
+    elif cmd == 'no distance bgp':
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_external_route_distance', [ vrf_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_internal_route_distance', [ vrf_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_local_route_distance', [ vrf_name, 'IPV6_UNICAST' ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
 
 def parseNeighV6(vrf_name, nbr_addr, cmd, args=[]):
-    print 'NeighCfgV4:{}:{}: {} {}'.format(vrf_name, nbr_addr, cmd, args)
     argds = mkArgs2dict(args)
 
+    rc = 0
+    if cmd == 'allowas-in':
+        if argds.get('value'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'value'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'value'))
+        if argds.get('origin'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + [ 'True' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + [ 'True' ])
+    elif cmd == 'route-map':
+        if argds.get('direction') == 'in':
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'attribute-unchanged':
+        optstr = argds.get('as-path', '') + argds.get('med', '') + argds.get('next-hop', '')
+        if optstr == '' or optstr == 'as-pathmednext-hop':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + [ 'as-path', 'med', 'next-hop' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'as-path', 'med', 'next-hop'))
+    elif cmd == 'default-originate':
+        if argds.get('route-map'):
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_send_default_route', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + [ 'True' ])
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_default_policy_name', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'rtemap'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_send_default_route', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + [ 'True' ])
+    elif cmd == 'filter-list':
+        if argds.get('filtopt') == 'in':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_filter_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'fname'))
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_filter_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'fname'))
+    elif cmd == 'next-hop-self':
+        if not argds.get('force'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ]  + [ 'True' ] + mkArgds2list(argds, 'force'))
+    elif cmd == 'prefix-list':
+        if argds.get('prfopt') == 'in':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
+    elif cmd == 'remove-private-AS':
+        if not argds.get('all'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        if not argds.get('replace-AS'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ]  + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-AS'))
+    elif cmd == 'maximum-prefix':
+        if argds.get('threshold-val') == '0':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        if not argds.get('warning-only'):
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_prevent_teardown', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        if not argds.get('restart'):
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_restart_timer', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'max-prefix-val', 'threshold-val', 'maxpfopt', 'interval'))
+    elif cmd == 'no allowas-in':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'value'))
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+    elif cmd == 'no route-map':
+        if argds.get('direction') == 'in':
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        elif argds.get('direction') == 'out':
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'no attribute-unchanged':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_as_path', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_med', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_next_hop', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+    elif cmd == 'no default-originate':
+        rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_send_default_route', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_default_policy_name', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'rtemap'))
+    elif cmd == 'no filter-list':
+        if argds.get('filtopt') == 'in':
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_filter_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'fname'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_filter_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'fname'))
+    elif cmd == 'no next-hop-self':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_enabled', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+    elif cmd == 'no prefix-list':
+        if argds.get('prfopt') == 'in':
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
+    elif cmd == 'no remove-private-AS':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_enabled', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+    elif cmd == 'no maximum-prefix':
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_max_prefixes', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_prevent_teardown', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_restart_timer', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
+
 def parsePeergV6(vrf_name, template_name, cmd, args=[]):
-    print 'PeerGCfgV4:{}:{}: {} {}'.format(vrf_name, template_name, cmd, args)
     argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'allowas-in':
+        if argds.get('value'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'value'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'value'))
+        if argds.get('origin'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'True' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'True' ])
+    elif cmd == 'route-map':
+        if argds.get('direction') == 'in':
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'attribute-unchanged':
+        optstr = argds.get('as-path', '') + argds.get('med', '') + argds.get('next-hop', '')
+        if optstr == '' or optstr == 'as-pathmednext-hop':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'as-path', 'med', 'next-hop' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'as-path', 'med', 'next-hop'))
+    elif cmd == 'default-originate':
+        if argds.get('route-map'):
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_send_default_route', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'True' ])
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_default_policy_name', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'rtemap'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_send_default_route', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'True' ])
+    elif cmd == 'filter-list':
+        if argds.get('filtopt') == 'in':
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_filter_list_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'fname'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_filter_list_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'fname'))
+    elif cmd == 'next-hop-self':
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config', [ vrf_name, template_name, 'IPV6_UNICAST' ]  + [ 'True' ] + mkArgds2list(argds, 'force'))
+        if not argds.get('force'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+    elif cmd == 'prefix-list':
+        if argds.get('prfopt') == 'in':
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
+    elif cmd == 'remove-private-AS':
+        if not argds.get('all'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        if not argds.get('replace-AS'):
+           rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, template_name, 'IPV6_UNICAST' ]  + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-AS'))
+    elif cmd == 'maximum-prefix':
+        if argds.get('threshold-val') == '0':
+             rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        if not argds.get('warning-only'):
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_prevent_teardown', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        if not argds.get('restart'):
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_restart_timer', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'max-prefix-val', 'threshold-val', 'maxpfopt', 'interval'))
+    elif cmd == 'no allowas-in':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'value'))
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'False' ])
+    elif cmd == 'no route-map':
+        if argds.get('direction') == 'in':
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        elif argds.get('direction') == 'out':
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'no attribute-unchanged':
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_as_path', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_med', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_next_hop', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+    elif cmd == 'no default-originate':
+        rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_send_default_route', [ vrf_name, template_name, 'IPV6_UNICAST' ] + [ 'False' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_default_policy_name', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'rtemap'))
+    elif cmd == 'no filter-list':
+        if argds.get('filtopt') == 'in':
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_filter_list_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'fname'))
+        else:
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_filter_list_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'fname'))
+    elif cmd == 'no next-hop-self':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_enabled', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+    elif cmd == 'no prefix-list':
+        if argds.get('prfopt') == 'in':
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
+        else:
+            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
+    elif cmd == 'no remove-private-AS':
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_enabled', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+    elif cmd == 'no maximum-prefix':
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_max_prefixes', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_prevent_teardown', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+        rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_restart_timer', [ vrf_name, template_name, 'IPV6_UNICAST' ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
+
 
 def invoke_parse(pycmd, args=[]):
     op = pycmd.split(':')[1]
