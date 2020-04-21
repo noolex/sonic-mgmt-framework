@@ -13,7 +13,7 @@
 #include "../shared/dbus-address.h" // DBUS_BUS_NAME_BASE
 #include "../shared/org.SONiC.HostAccountManagement.dbus-adaptor.h" // Generated file
 
-#define ROLES_ARE_SAVED_TO_REDIS
+//#define ROLES_ARE_SAVED_TO_REDIS
 
 class hamd_c : public DBus::ObjectAdaptor,
                public DBus::IntrospectableAdaptor,
