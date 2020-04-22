@@ -299,14 +299,8 @@ var YangToDb_prefix_key_xfmr KeyXfmrYangToDb = func(inParams XfmrParams) (string
 
         log.Info("YangToDb_prefix_key_xfmr: in prefix: ", ipPrefix)
 
-        prefix_mask := strings.Split(ipPrefix, "/")
-
-        if (!validIPv6(prefix_mask[0]) && !validIPv4(prefix_mask[0])) {
-            err = errors.New("YangToDb_prefix_key_xfmr: Invalid IP address");
-            return ipPrefix, err
-        }
-
         if masklenrange != "exact" {
+            prefix_mask := strings.Split(ipPrefix, "/")
             length, _ := strconv.Atoi(prefix_mask[1])
 
             m_range := strings.Split(masklenrange, "..")

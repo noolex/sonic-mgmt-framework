@@ -28,7 +28,12 @@ import (
 //Validate if feature is enabled for Broadview features
 func (t *CustomValidation) ValidateTAMFeature(vc *CustValidationCtxt) CVLErrorInfo {
 
-        rclient := getAppDbClient()
+        rclient := util.NewDbClient("APPL_DB")
+	defer func() {
+		if (rclient != nil) {
+			rclient.Close()
+		}
+	}()
 
         if (rclient == nil) {
 		return CVLErrorInfo{

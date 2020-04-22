@@ -210,17 +210,12 @@ func compareErrorDetails(cvlErr cvl.CVLErrorInfo, expCode cvl.CVLRetCode, errApp
 }
 
 func getConfigDbClient() *redis.Client {
-	rclient := redis.NewClient(&redis.Options{
-		Network:     "tcp",
-		Addr:        "localhost:6379",
-		Password:    "", // no password set
-		DB:          4,
-		DialTimeout: 0,
-	})
-	_, err := rclient.Ping().Result()
-	if err != nil {
-		fmt.Printf("failed to connect to redis server %v", err)
+	rclient := NewDbClient("CONFIG_DB")
+
+	if rclient == nil {
+		panic("Unable to connect to Redis Config DB Server")
 	}
+
 	return rclient
 }
 
@@ -3355,9 +3350,15 @@ func TestGetDepDataForDelete(t *testing.T) {
 			"Vlan22|Ethernet7": map[string] interface{} {
 				"tagging_mode":   "tagged",
 			},
+			"Vlan22|Ethernet72": map[string] interface{} {
+				"tagging_mode":   "tagged",
+			},
 		},
 		"PORTCHANNEL_MEMBER" : map[string]interface{} {
 			"Ch47|Ethernet7": map[string] interface{} {
+				"NULL": "NULL",
+			},
+			"Ch47|Ethernet75": map[string] interface{} {
 				"NULL": "NULL",
 			},
 		},
@@ -3365,7 +3366,27 @@ func TestGetDepDataForDelete(t *testing.T) {
 			"TestACL1": map[string] interface{} {
 				"stage": "INGRESS",
 				"type": "L3",
-				"ports@": "Ethernet7,Ethernet9",
+				"ports@": "Ethernet3,Ethernet76,Ethernet7",
+			},
+		},
+		"CFG_L2MC_STATIC_MEMBER_TABLE" : map[string]interface{} {
+			"Vlan24|10.1.1.1|Ethernet7": map[string] interface{} {
+				"NULL": "NULL",
+			},
+			"Vlan25|10.1.1.2|Ethernet78": map[string] interface{} {
+				"NULL": "NULL",
+			},
+		},
+		"MIRROR_SESSION": map[string]interface{}{
+			"sess1": map[string]interface{}{
+				"src_ip": "10.1.0.32",
+				"dst_ip": "2.2.2.2",
+			},
+		},
+		"ACL_RULE" : map[string]interface{} {
+			"TestACL1|Rule1": map[string] interface{} {
+				"PACKET_ACTION": "FORWARD",
+				"MIRROR_ACTION": "sess1",
 			},
 		},
 	}
@@ -3374,14 +3395,18 @@ func TestGetDepDataForDelete(t *testing.T) {
 
         cvSess, _ := cvl.ValidationSessOpen()
 
-	depKeys, depKeysMod := cvSess.GetDepDataForDelete("PORT|Ethernet7")
+	depEntries := cvSess.GetDepDataForDelete("PORT|Ethernet7")
 
-
-        cvl.ValidationSessClose(cvSess)
-
-        if (len(depKeys) == 0) || (len(depKeysMod) == 0) {
+        if (len(depEntries) != 5) { //5 entries to be deleted
                 t.Errorf("GetDepDataForDelete() failed")
         }
+
+	depEntries1 := cvSess.GetDepDataForDelete("MIRROR_SESSION|sess1")
+
+        if (len(depEntries1) != 1) { //1 entry to be deleted
+                t.Errorf("GetDepDataForDelete() failed")
+        }
+        cvl.ValidationSessClose(cvSess)
 
 	unloadConfigDB(rclient, depDataMap)
 }

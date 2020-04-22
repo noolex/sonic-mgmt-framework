@@ -12,6 +12,7 @@ module openconfig-routing-policy-ext {
     import openconfig-bgp-policy { prefix oc-bgp-pol; }
     import openconfig-inet-types { prefix oc-inet; }
     import openconfig-policy-types { prefix oc-pol-types; }
+    import openconfig-network-instance { prefix oc-netinst; }
 
     description
         "This module describes a YANG model for routing policy
@@ -82,9 +83,42 @@ module openconfig-routing-policy-ext {
         }
     }
 
+    grouping routing-policy-ext-match-network-instance {
+        description
+            "Configuration data for match network instance.";
+
+        leaf name {
+            type leafref {
+                path "/oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:config/oc-netinst:name";
+            }
+            description
+                "An operator-assigned unique name for the forwarding
+                instance";
+        }
+    }
+
+    grouping routing-policy-ext-match-src-network-instance-config {
+        description
+            "Configuration data for source VRF match definitions.";
+
+        container match-src-network-instance {
+            container config {
+                uses routing-policy-ext-match-network-instance;
+            }
+            container state {
+                config false;
+                uses routing-policy-ext-match-network-instance;
+            }
+        }
+    }
+
     augment /oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:statements/oc-rpol:statement/oc-rpol:actions/oc-bgp-pol:bgp-actions/oc-bgp-pol:set-as-path-prepend/oc-bgp-pol:config {
         uses asn_list_val;
    }
+ 
+    augment /oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:statements/oc-rpol:statement/oc-rpol:conditions {
+        uses routing-policy-ext-match-src-network-instance-config;
+    }
 
     deviation /oc-rpol:routing-policy/oc-rpol:policy-definitions/oc-rpol:policy-definition/oc-rpol:statements/oc-rpol:statement/oc-rpol:conditions/oc-bgp-pol:bgp-conditions/oc-bgp-pol:community-count {
         deviate not-supported;

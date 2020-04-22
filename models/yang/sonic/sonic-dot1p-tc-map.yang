@@ -1,0 +1,57 @@
+module sonic-dot1p-tc-map {
+	namespace "http://github.com/Azure/sonic-dot1p-tc-map";
+	prefix dot1ptm;
+
+	import sonic-extension {
+		prefix sonic-ext;
+	}
+
+	organization
+		"SONiC";
+
+	contact
+		"SONiC";
+
+	description
+		"SONIC DOT1P_TO_TC_MAP";
+
+	revision 2019-05-15 {
+		description
+			"Initial revision.";
+	}
+
+	container sonic-dot1p-tc-map {	
+
+		container DOT1P_TO_TC_MAP {
+
+			list DOT1P_TO_TC_MAP_LIST {
+				key "name";
+				sonic-ext:map-list true; //special conversion for map tables
+				sonic-ext:map-leaf "dot1p tc_num"; //every key:value pair is mapped to list keys, e.g. "1":"7" ==> dot1p=1, tc_num=7
+
+				leaf name {
+					type string;
+				}
+
+				list DOT1P_TO_TC_MAP { //this is list inside list for storing mapping between two fields
+					key "dot1p tc_num";
+
+                    leaf dot1p {
+						type string {
+							pattern "[0-9]?";
+						}
+					}
+
+					leaf tc_num {
+						type string {
+							pattern "[0-9]?"{
+								error-message "Invalid Traffic Class number";
+								error-app-tag tc-num-invalid;
+							}
+						}
+					}
+                }
+			}
+		}
+	}
+}

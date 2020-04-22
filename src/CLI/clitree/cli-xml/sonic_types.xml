@@ -184,6 +184,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_5_100"
+        method="integer"
+        pattern="5..100"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_0_65535"
         method="integer"
         pattern="0..65535"
@@ -205,6 +212,13 @@ limitations under the License.
     />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_2_65535"
+        method="integer"
+        pattern="2..65535"
+        help=""
+    />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_1_4294967295"
         method="unsignedInteger"
         pattern="1..4294967295"
@@ -212,9 +226,23 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_1_4294967"
+        method="unsignedInteger"
+        pattern="1..4294967"
+        help="1-4294967"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_1_16777215"
         method="unsignedInteger"
         pattern="1..16777215"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_1_16777214"
+        method="unsignedInteger"
+        pattern="1..16777214"
         help=""
         />
     <!--=======================================================-->
@@ -263,6 +291,12 @@ limitations under the License.
         name="INT_OR_IP_ADDR"
         pattern="(&IPV4_ADDRESS;|&UINT_16_RANGE;)"
         help="A.B.C.D or [0..65535]"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="OSPF_INT_OR_IP_ADDR"
+        pattern="(&IPV4_ADDRESS;|&UINT_32_RANGE;)"
+        help="A.B.C.D or [0..4294967295]"
         />
     <!--=======================================================-->
     <PTYPE
@@ -349,13 +383,13 @@ limitations under the License.
         name="UINT16"
         method="integer"
         pattern="0..65535"
-        help=""
+        help="&lt;0-65535&gt;"
         />
     <!--=======================================================-->
     <PTYPE
         name="UINT"
         pattern="[0-9]+"
-        help="Unsigned integer"
+        help="&lt;0-255&gt;"
         />
     <!--=======================================================-->
     <PTYPE
@@ -738,6 +772,34 @@ limitations under the License.
         pattern="1..256"
         help=""
         />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_1_2"
+        method="integer"
+        pattern="1..2"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_10_1800"
+        method="integer"
+        pattern="10..1800"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_0_600000"
+        method="integer"
+        pattern="0..600000"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_0_5000"
+        method="integer"
+        pattern="0..5000"
+        help=""
+        />
     <PTYPE
         name="INT8_RANGE"
         method="integer"
@@ -763,6 +825,7 @@ limitations under the License.
         pattern="1..3600"
         help=""
     />
+    <!--=======================================================-->
      <PTYPE
         name="FILE_TYPE"
         pattern="file:\/\/[^|]+"
@@ -907,6 +970,13 @@ limitations under the License.
         name="RANGE_0_4294967295"
         method="unsignedInteger"
         pattern="0..4294967295"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_1_100"
+        method="integer"
+        pattern="1..100"
         help=""
         />
     <!--=======================================================-->
@@ -1065,7 +1135,7 @@ limitations under the License.
         method="regexp_select"
         ext_pattern="Ethernet(port)"
         pattern="&ETH_ALL_INTF;"
-        help=""
+        help="EthernetNUM"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1073,7 +1143,7 @@ limitations under the License.
         method="regexp_select"
         ext_pattern="Vlan(1-4094)"
         pattern="&VLAN_ALL_INTF;"
-        help=""
+        help="VlanNUM"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1081,7 +1151,7 @@ limitations under the License.
         method="regexp_select"
         ext_pattern="PortChannel(1-128)"
         pattern="&PO_ALL_INTF;"
-        help=""
+        help="PortChannelNUM"
          />
     <!--=======================================================-->
     <PTYPE
@@ -1105,4 +1175,31 @@ limitations under the License.
         help="Authentication Types"
         />
     <!--=======================================================-->
+        name="RL_RATE_TYPE"
+        method="unsignedInteger"
+        pattern="0..100000000"
+        help="kbps"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="VRF_NAME"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$"
+        ext_pattern="Vrf(string)"
+        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_0_7"
+        method="integer"
+        pattern="0..7"
+        help=""
+        />
+    <!--=======================================================-->
+        <PTYPE
+        name="DPB_MODE"
+        method="select"
+        pattern="1x400G 1x100G 2x100G 2x50G 4x25G 4x10G"
+        help="port breakout mode"
+        />
+     <!--=======================================================-->
 </CLISH_MODULE>

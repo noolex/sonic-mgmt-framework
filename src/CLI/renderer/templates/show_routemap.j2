@@ -107,6 +107,12 @@ Route map {{'%s'| format(vars.pol_name)}}:
       {{"tag " + temp_tag|join(",")}}
        {% endif %}
       {% endif %}
+      {% if "openconfig-routing-policy-ext:match-src-network-instance" is in match %}
+       {% set match_src_vrf =  conditions[match] %}
+       {% if "name" in match_src_vrf['config'] %}
+      {{"source-vrf " + match_src_vrf['config']['name']}}
+       {%endif %}
+      {%endif %}
      {% endfor %}
     {% endif %}
     {{"Set clauses: "}}
@@ -127,7 +133,13 @@ Route map {{'%s'| format(vars.pol_name)}}:
        {% set set_bgpconf = actions[set]['config'] %}
        {% for item in set_bgpconf %}
         {% if item == "set-next-hop" %}
-      {{"nexthop " + set_bgpconf[item]}}
+      {{"ip next-hop " + set_bgpconf[item]}}
+        {% endif %}
+       {% if item == "openconfig-bgp-policy-ext:set-ipv6-next-hop-global" %}
+      {{"ipv6 next-hop " + set_bgpconf[item]}}
+        {% endif %}
+      {% if item == "openconfig-bgp-policy-ext:set-ipv6-next-hop-prefer-global" %}
+      {{"ipv6 next-hop prefer-global"}}
         {% endif %}
         {% if item == "set-local-pref" %}
       {{"local preference " + set_bgpconf[item]|string()}}

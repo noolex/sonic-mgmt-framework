@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<ROOT>
+
+<MACRODEF name="BIND-INTF-TO-OSPF">
+
+    <COMMAND name = "ip ospf" help = "OSPF interface commands" >
+    </COMMAND>
+
+    <COMMAND name = "no ip ospf" help = "OSPF interface commands" >
+    </COMMAND>
+
+    <COMMAND name="ip ospf area" help="Enable OSPF on this interface" >
+      <PARAM name = "areaiddecimal" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" /> 
+      <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf area" help="Enable OSPF on this interface" >
+      <PARAM name = "areaiddecimal" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" /> 
+      <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+ 
+    <COMMAND name="ip ospf authentication" help="Enable authentication on this interface" >
+        <PARAM name = "authtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>    
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" /> 
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf authentication" help="Enable authentication on this interface" >
+        <PARAM name = "authtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>    
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" /> 
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+  
+    <COMMAND name="ip ospf authentication-key" help="Authentication password (key)" >
+      <PARAM name="authkey" help="The OSPF password (key)" ptype="STRING" >
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf authentication-key" help="Authentication password (key)" >
+      <PARAM name="authkey" help="The OSPF password (key)" ptype="STRING" >
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+  
+    <COMMAND name="ip ospf bfd" help="Enables BFD support" />
+
+    <COMMAND name="no ip ospf bfd" help="Enables BFD support" />
+ 
+    <COMMAND name="ip ospf cost" help="Interface cost" >
+      <PARAM name="intfcost" help="Cost" ptype="RANGE_1_65535" >
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf cost" help="Interface cost" >
+      <PARAM name="intfcost" help="Cost" ptype="RANGE_1_65535" >
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+ 
+    <COMMAND name="ip ospf dead-interval" help="Interval time after which a neighbor is declared down" >
+      <PARAM name = "deadtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="deadinterval" help="Seconds" ptype="RANGE_1_65535" mode="subcommand" optional="true">
+          <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+        </PARAM>
+        <PARAM name="minimal" help="Minimal 1s dead-interval with fast sub-second hellos" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="hello-multiplier" help="Hello multiplier factor" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name="hellomultiplier" help="Number of Hellos to send each second" ptype="RANGE_1_10" >
+              <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf dead-interval" help="Interval time after which a neighbor is declared down" >
+      <PARAM name = "deadtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="deadinterval" help="Seconds" ptype="RANGE_1_65535" mode="subcommand" optional="true">
+          <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+        </PARAM>
+        <PARAM name="minimal" help="Minimal 1s dead-interval with fast sub-second hellos" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="hello-multiplier" help="Hello multiplier factor" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name="hellomultiplier" help="Number of Hellos to send each second" ptype="RANGE_1_10" >
+              <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+  
+    <COMMAND name="ip ospf hello-interval" help="Time between HELLO packets" >
+      <PARAM name="hellointerval" help="Seconds" ptype="RANGE_1_65535" mode="subcommand" optional="true">
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf hello-interval" help="Time between HELLO packets" >
+      <PARAM name="hellointerval" help="Seconds" ptype="RANGE_1_65535" mode="subcommand" optional="true">
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="ip ospf message-digest-key" help="Message digest authentication password (key)" >
+      <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" mode="subcommand" >
+        <PARAM name="md5" help="Use MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name = "md5key" help = "The OSPF password (key)" ptype = "STRING" mode="subcommand" >
+            <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf message-digest-key" help="Message digest authentication password (key)" >
+      <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" mode="subcommand" >
+        <PARAM name="md5" help="Use MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name = "md5key" help = "The OSPF password (key)" ptype = "STRING" mode="subcommand" >
+            <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+<!-- 
+    <COMMAND name="ip ospf mtu-ignore" help="Disable MTU mismatch detection on this interface" >
+      <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+    </COMMAND>
+--> 
+    <COMMAND name="ip ospf network" help="Network type" >
+      <PARAM name = "networktype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name = "broadcast" help = "Specify OSPF broadcast multi-access network" ptype = "SUBCOMMAND" mode="subcommand" />
+        <PARAM name = "point-to-point" help = "Specify OSPF point-to-point network" ptype = "SUBCOMMAND" mode="subcommand" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf network" help="Network type" >
+      <PARAM name = "networktype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name = "broadcast" help = "Specify OSPF broadcast multi-access network" ptype = "SUBCOMMAND" mode="subcommand" />
+        <PARAM name = "point-to-point" help = "Specify OSPF point-to-point network" ptype = "SUBCOMMAND" mode="subcommand" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="ip ospf priority" help="Router priority">
+        <PARAM name = "priorityval" help = "Priority" ptype = "RANGE_0_255" mode="subcommand" >
+          <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+        </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+  
+    <COMMAND name="no ip ospf priority" help="Router priority">
+        <PARAM name = "priorityval" help = "Priority" ptype = "RANGE_0_255" mode="subcommand" >
+          <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+        </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="ip ospf retransmit-interval" help="Time between retransmitting lost link state advertisements" >
+      <PARAM name = "retransmitinterval" help = "Seconds" ptype = "RANGE_2_65535" mode="subcommand" >
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf retransmit-interval" help="Time between retransmitting lost link state advertisements" >
+      <PARAM name = "retransmitinterval" help = "Seconds" ptype = "RANGE_2_65535" mode="subcommand" >
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+ 
+    <COMMAND name="ip ospf transmit-delay" help="Link state transmit delay" >
+      <PARAM name = "transmitinterval" help = "Seconds" ptype = "RANGE_1_65535" mode="subcommand" >
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip ospf transmit-delay" help="Link state transmit delay" >
+      <PARAM name = "transmitinterval" help = "Seconds" ptype = "RANGE_1_65535" mode="subcommand" >
+        <PARAM name = "interfaceip" help = "Address of interface" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+      </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+    </COMMAND>
+
+</MACRODEF>
+
+</ROOT>

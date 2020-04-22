@@ -6,6 +6,7 @@ module openconfig-acl-ext {
 
     prefix "oc-acl-ext";
 
+    import openconfig-packet-match-types { prefix oc-pkt-match-types; }
     import openconfig-acl { prefix oc-acl; }
 
     description
@@ -69,5 +70,35 @@ module openconfig-acl-ext {
 
     augment "/oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:transport/oc-acl:state" {
         uses transport-fields-ext-config;
+    }
+
+    typedef ip-protocol-type-ext {
+        type union {
+            type uint8;
+            type identityref {
+                base oc-pkt-match-types:IP_PROTOCOL;
+            }
+        }
+    }
+
+    deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv4/oc-acl:config/oc-acl:protocol {
+        deviate replace {
+            type ip-protocol-type-ext;
+        }
+    }
+    deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv4/oc-acl:state/oc-acl:protocol {
+        deviate replace {
+            type ip-protocol-type-ext;
+        }
+    }
+    deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv6/oc-acl:config/oc-acl:protocol {
+        deviate replace {
+            type ip-protocol-type-ext;
+        }
+    }
+    deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv6/oc-acl:state/oc-acl:protocol {
+        deviate replace {
+            type ip-protocol-type-ext;
+        }
     }
 }

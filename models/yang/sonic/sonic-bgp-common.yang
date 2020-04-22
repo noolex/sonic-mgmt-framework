@@ -533,6 +533,9 @@ module sonic-bgp-common {
         uses sonic-bgp-evpn-vni-common;
 
         leaf advertise-all-vni {
+            must "current()/../vrf_name = 'default'" { 
+                error-message "Advertise all VNI is only supported on default VRF!"; 
+            }
             type boolean;
         }     
 
