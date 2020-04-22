@@ -65,7 +65,7 @@ def run(func, args):
             else:
                 return
     else:
-        print "invoke_api failed"
+        print("%Error: invoke_api failed")
 
 if __name__ == '__main__':
 
