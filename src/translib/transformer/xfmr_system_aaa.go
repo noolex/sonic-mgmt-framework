@@ -154,7 +154,9 @@ func YangToDb_ssh_server_vrf_name(inParams XfmrParams) (map[string]string, error
 func DbToYang_ssh_server_vrf_name(inParams XfmrParams) (map[string]interface{}, error) {
 	log.V(1).Infof("DbToYang_ssh_server_vrf_name: key=\"%s\"", inParams.key)
 	result := make(map[string]interface{})
-	result["vrf-name"] = inParams.key
+    if len((*inParams.dbDataMap)[inParams.curDb]) > 0{
+	    result["vrf-name"] = inParams.key
+    }
 	return result, nil
 }
 
