@@ -60,9 +60,7 @@ def run(func, args):
 
             if api_response is None:
                 print("api_response is None")
-            elif func == 'get_sonic_client_auth_rest':
-                show_cli_output(args[0], api_response)
-            elif func == 'get_sonic_client_auth_telemetry':
+            elif func in ['get_sonic_client_auth_rest', 'get_sonic_client_auth_telemetry']:
                 show_cli_output(args[0], api_response)
             else:
                 return
