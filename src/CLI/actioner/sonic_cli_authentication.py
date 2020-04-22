@@ -40,19 +40,11 @@ def invoke_api(func, args):
     elif func == 'set_sonic_client_auth_rest':
        path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/REST_SERVER/REST_SERVER_LIST=default/client_auth')
        body = { "sonic-client-auth:client_auth": args[0].strip(',') }
-       res = api.patch(path, body)
-       path = cc.Path('/restconf/operations/sonic-docker:docker-exec')
-       body = {"sonic-docker-exec:input": {"container-name": "mgmt-framework", "command": ["/usr/bin/supervisorctl", "restart", "rest-server"]}}
-       api.post(path, body)
-       return res
+       return api.patch(path, body)
     elif func == 'set_sonic_client_auth_telemetry':
        path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/TELEMETRY/TELEMETRY_LIST=gnmi/client_auth')
        body = { "sonic-client-auth:client_auth": args[0].strip(',') }
-       res = api.patch(path, body)
-       path = cc.Path('/restconf/operations/sonic-docker:docker-exec')
-       body = {"sonic-docker-exec:input": {"container-name": "telemetry", "command": ["/usr/bin/supervisorctl", "restart", "telemetry"]}}
-       api.post(path, body)
-       return res
+       return api.patch(path, body)
     else:
        body = {}
 

@@ -1175,6 +1175,7 @@ limitations under the License.
         help="Authentication Types"
         />
     <!--=======================================================-->
+    <PTYPE
         name="RL_RATE_TYPE"
         method="unsignedInteger"
         pattern="0..100000000"
