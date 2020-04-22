@@ -731,6 +731,26 @@ func Test_Leaf_OC_Yang_Choice_Case_Replace(t *testing.T) {
         unloadConfigDB(rclient, cleanuptbl)
 }
 
+func Test_Leaf_OC_Yang_Choice_Case_Delete(t *testing.T) {
+
+        cleanuptbl := map[string]interface{}{"NAT_POOL":map[string]interface{}{"pool1":""}}
+        prereq := map[string]interface{}{"NAT_POOL":map[string]interface{}{"pool1":map[string]interface{}{"nat_ip":"1.1.1.1"}}}
+        url := "/openconfig-nat:nat/instances/instance[id=0]/nat-pool/nat-pool-entry[pool-name=pool1]/config/IP-ADDRESS"
+
+        fmt.Println("++++++++++++++  DELETE Test_Leaf_OC_Yang_Choice_Case  +++++++++++++")
+
+        // Setup - Prerequisite
+        loadConfigDB(rclient, prereq)
+
+        delete_expected_map := make(map[string]interface{})
+
+        t.Run("DELETE on Leaf OC Yang Choice Case", processDeleteRequest(url, false))
+        time.Sleep(1 * time.Second)
+        t.Run("Verify delete on Leaf OC Yang Choice Case", verifyDbResult(rclient, "NAT_POOL|pool1", delete_expected_map, false))
+
+        unloadConfigDB(rclient, cleanuptbl)
+}
+
 func Test_Leaf_OC_Yang_Choice_Case_Get(t *testing.T) {
 
         cleanuptbl := map[string]interface{}{"NAT_POOL":map[string]interface{}{"pool1":""}}
@@ -792,6 +812,30 @@ func Test_Leaf_Sonic_Yang_Choice_Case_Replace(t *testing.T) {
         t.Run("Replace on Leaf Sonic Yang Choice Case", processSetRequest(url, put_payload, "PUT", false))
         time.Sleep(1 * time.Second)
         t.Run("Verify replace on Leaf Sonic Yang Choice Case", verifyDbResult(rclient, "ACL_RULE|acl1|rule1", put_expected, false))
+
+        unloadConfigDB(rclient, cleanuptbl1)
+        unloadConfigDB(rclient, cleanuptbl2)
+}
+
+func Test_Leaf_Sonic_Yang_Choice_Case_Delete(t *testing.T) {
+
+        cleanuptbl1 := map[string]interface{}{"ACL_TABLE":map[string]interface{}{"acl1":""}}
+        cleanuptbl2 := map[string]interface{}{"ACL_RULE":map[string]interface{}{"acl1|rule1":""}}
+        prereq1 := map[string]interface{}{"ACL_TABLE":map[string]interface{}{"acl1":map[string]interface{}{"ports@":"Ethernet0","stage":"INGRESS","type":"MIRROR","policy_desc":"descr"}}}
+        prereq2 := map[string]interface{}{"ACL_RULE":map[string]interface{}{"acl1|rule1":map[string]interface{}{"DST_IP":"2.2.2.2/2","SRC_IP":"1.1.1.1/1"}}}
+        url := "/sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST[aclname=acl1][rulename=rule1]/SRC_IP"
+
+        fmt.Println("++++++++++++++  DELETE Test_Leaf_Sonic_Yang_Choice_Case  +++++++++++++")
+
+        // Setup - Prerequisite
+        loadConfigDB(rclient, prereq1)
+        loadConfigDB(rclient, prereq2)
+
+        delete_expected_map := map[string]interface{}{"ACL_RULE":map[string]interface{}{"acl1|rule1":map[string]interface{}{"DST_IP":"2.2.2.2/2"}}}
+
+        t.Run("DELETE on Leaf Sonic Yang Choice Case", processDeleteRequest(url, false))
+        time.Sleep(1 * time.Second)
+        t.Run("Verify delete on Leaf Sonic Yang Choice Case", verifyDbResult(rclient, "ACL_RULE|acl1|rule1", delete_expected_map, false))
 
         unloadConfigDB(rclient, cleanuptbl1)
         unloadConfigDB(rclient, cleanuptbl2)

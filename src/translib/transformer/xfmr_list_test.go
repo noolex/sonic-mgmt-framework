@@ -45,31 +45,31 @@ func Test_List_Custom_DB_Update_Get(t *testing.T) {
         unloadConfigDB(rclient, cleanuptbl2)
 }
 
-func Test_List_Ygot_Merge_Case1_Get(t *testing.T) {
+func Test_List_Ygot_Merge_Xfmr_Infra_Subtree_Xfmr_Get(t *testing.T) {
 
         url := "/openconfig-interfaces:interfaces/interface[name=Ethernet0]"
 
-        fmt.Println("++++++++++++++  Get Test_List_Ygot_Merge_Case1  +++++++++++++")
+        fmt.Println("++++++++++++++  Get Test_List_Ygot_Merge_Xfmr_Infra_Subtree_Xfmr  +++++++++++++")
 
         get_expected := "{\"openconfig-interfaces:interface\":[{\"config\":{\"enabled\":true,\"mtu\":9100,\"name\":\"Ethernet0\"},\"name\":\"Ethernet0\",\"openconfig-if-ethernet:ethernet\":{\"state\":{\"counters\":{\"in-oversize-frames\":\"0\",\"openconfig-if-ethernet-ext:in-distribution\":{\"in-frames-128-255-octets\":\"0\"},\"openconfig-interfaces-ext:out-oversize-frames\":\"0\"},\"port-speed\":\"openconfig-if-ethernet:SPEED_40GB\"}},\"state\":{\"admin-status\":\"UP\",\"counters\":{\"in-broadcast-pkts\":\"0\",\"in-discards\":\"0\",\"in-errors\":\"0\",\"in-multicast-pkts\":\"0\",\"in-octets\":\"0\",\"in-pkts\":\"0\",\"in-unicast-pkts\":\"0\",\"last-clear\":\"0\",\"out-broadcast-pkts\":\"0\",\"out-discards\":\"0\",\"out-errors\":\"0\",\"out-multicast-pkts\":\"0\",\"out-octets\":\"0\",\"out-pkts\":\"0\",\"out-unicast-pkts\":\"0\"},\"description\":\"\",\"enabled\":true,\"mtu\":9100,\"name\":\"Ethernet0\",\"oper-status\":\"DOWN\"},\"subinterfaces\":{\"subinterface\":[{\"index\":0}]}}]}"
 
-        t.Run("GET on List Ygot Merge Case 1", processGetRequest(url, get_expected, false))
+        t.Run("GET on List Ygot Merge Xfmr Infra Subtree Xfmr", processGetRequest(url, get_expected, false))
 
 }
 
-func Test_List_Ygot_Merge_Case2_Get(t *testing.T) {
+func Test_List_Ygot_Merge_None_Get(t *testing.T) {
 
         prereq := map[string]interface{}{"INTERFACE":map[string]interface{}{"Ethernet0":map[string]interface{}{"1.1.1.1/0":""}}}
         url := "/openconfig-interfaces:interfaces/interface[name=Ethernet0]/subinterfaces/subinterface[index=0]/openconfig-if-ip:ipv4/addresses/address[ip=1.1.1.1]"
 
-        fmt.Println("++++++++++++++  Get Test_List_Ygot_Merge_Case2  +++++++++++++")
+        fmt.Println("++++++++++++++  Get Test_List_Ygot_Merge_None  +++++++++++++")
 
         // Setup - Prerequisite
         loadConfigDB(rclient, prereq)
 
         get_expected := "{\"openconfig-if-ip:address\":[{\"ip\":\"1.1.1.1\"}]}"
 
-        t.Run("GET on List Ygot Merge Case 2", processGetRequest(url, get_expected, false))
+        t.Run("GET on List Ygot Merge None", processGetRequest(url, get_expected, false))
 
         unloadConfigDB(rclient, prereq)
 }
