@@ -94,7 +94,7 @@ def validate_input(args):
             print_and_log("VRF name is not allowed for IPv6 addresses with link-local scope")
             return False
         if " -I" not in args:
-            print_and_log("Interface name is missing")
+            print_and_log("Interface name was missing")
             return False
     return True
 
