@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 module openconfig-qos-ext {
 
     yang-version "1";
@@ -11,6 +10,14 @@ module openconfig-qos-ext {
     import openconfig-qos { prefix oc-qos; }
     import openconfig-qos-types { prefix oc-qos-types; }
     import openconfig-yang-types { prefix oc-yang; }
+
+    description
+      "This module defines YANG model for network quality-of-service extension.";
+
+    revision "2020-04-01" {
+      description
+        "Initial version";
+    }
 
     grouping qos-queue-state-ext {
         leaf traffic-type {
@@ -442,38 +449,7 @@ module openconfig-qos-ext {
             }
         }
     }
-}
 
-||||||| merged common ancestors
-=======
-module openconfig-qos-ext {
-
-  yang-version "1";
-
-  // namespace
-  namespace "http://openconfig.net/yang/qos/extension";
-
-  prefix "oc-qos-ext";
-  
-  import openconfig-qos { prefix oc-qos; }
-
-  description
-    "This module defines YANG model for network quality-of-service extension.";
-
-  revision "2020-04-01" {
-    description
-      "Initial version";
-  }
-
-  deviation /oc-qos:qos/oc-qos:forwarding-groups {
-    deviate not-supported;
-  }
-  deviation /oc-qos:qos/oc-qos:queues {
-    deviate not-supported;
-  }
-  deviation /oc-qos:qos/oc-qos:scheduler-policies {
-    deviate not-supported;
-  }
   deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:input/oc-qos:queues {
     deviate not-supported;
   }
@@ -481,12 +457,6 @@ module openconfig-qos-ext {
     deviate not-supported;
   }
   deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:input/oc-qos:virtual-output-queues {
-    deviate not-supported;
-  }
-  deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:output/oc-qos:queues {
-    deviate not-supported;
-  }
-  deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:output/oc-qos:scheduler-policy {
     deviate not-supported;
   }
   deviation /oc-qos:qos/oc-qos:classifiers/oc-qos:classifier/oc-qos:terms/oc-qos:term/oc-qos:conditions/oc-qos:ipv4/oc-qos:config/oc-qos:hop-limit {
@@ -529,4 +499,3 @@ module openconfig-qos-ext {
     deviate not-supported;
   }
 }
->>>>>>> origin/broadcom_sonic_3.x_share
