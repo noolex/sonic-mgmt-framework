@@ -68,12 +68,11 @@
          </PARAM>          
          <PARAM name="image"
                 help="Enter image to remove"
-                ptype="STRING"
-                default=" ">
+                ptype="STRING">
          </PARAM>
 	 </PARAM>
       <ACTION
-         builtin="clish_pyobj">sonic_cli_img rpc_sonic_image_management_image_remove ${image}
+         builtin="clish_pyobj">sonic_cli_img rpc_sonic_image_management_image_remove remove_option=${remove_option} image=${image}
       </ACTION>
     </COMMAND>
   </VIEW>
