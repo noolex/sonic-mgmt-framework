@@ -28,70 +28,52 @@ import (
 	"sort"
 	"strings"
 	"testing"
-
-	"github.com/gorilla/mux"
 )
 
 type jsonObj map[string]interface{}
 
-var testRouter *Router
+var testRouter http.Handler
 
-// Basic mux.Router tests
+// Basic router tests
 func TestRoutes(t *testing.T) {
-	clientAuth := UserAuth{"password": false, "cert": false, "jwt": false}
-	initCount := countRoutes(newRouter(clientAuth))
+	AddRoute("one", "GET", "/testroute/1", newHandler(1))
+	AddRoute("two", "GET", "/testroute/2", newHandler(2))
+	AddRoute("two", "GET", "/restconf/data/testroute/3", newHandler(3))
+	AddRoute("two", "GET", "/restconf/data/testroute/4", newHandler(4))
 
-	// Add couple of test handlers
-
-	AddRoute("one", "GET", "/test/1", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(1)
-	})
-
-	AddRoute("two", "GET", "/test/2", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(2)
-	})
-
-	testRouter = newRouter(clientAuth)
-	newCount := countRoutes(testRouter)
-	expCount := initCount + 4 // OPTIONS handler is automaticall added for above 2 GET handlers
-
-	if newCount != expCount {
-		t.Fatalf("Expected route count %d; found %d", expCount, newCount)
-	}
+	auth := NewUserAuth()
+	testRouter = NewRouter(&RouterConfig{Auth: auth})
 
 	// Try the test URLs and an unknown URL. The unknonw path
 	// should return 404
-	t.Run("Get1", testGet("/test/1", 1))
-	t.Run("Get2", testGet("/test/2", 2))
-	t.Run("GetUnknown", testGet("/test/unknown", 404))
+	t.Run("Get1", testGet("/testroute/1", 1))
+	t.Run("Get2", testGet("/testroute/2", 2))
+	t.Run("Get3", testGet("/restconf/data/testroute/3", 3))
+	t.Run("Get4", testGet("/restconf/data/testroute/4", 4))
+	t.Run("GetUnknown", testGet("/testroute/4", 404))
 	t.Run("Meta", testGet("/.well-known/host-meta", 200))
 
 	// Try the test URLs with authentication enabled.. This should
 	// fail the requests with 401 error. Unknown path should still
 	// return 404.
-	clientAuth.Set("password")
-	testRouter = newRouter(clientAuth)
-	t.Run("Get1_auth", testGet("/test/1", 401))
-	t.Run("Get2_auth", testGet("/test/2", 401))
-	t.Run("GetUnknown_auth", testGet("/test/unknown", 404))
+	//config.Auth = NewUserAuth("password")
+	auth.Set("password")
+	t.Run("Get1_auth", testGet("/testroute/1", 401))
+	t.Run("Get2_auth", testGet("/testroute/2", 401))
+	t.Run("Get3", testGet("/restconf/data/testroute/3", 401))
+	t.Run("Get4", testGet("/restconf/data/testroute/4", 401))
+	t.Run("GetUnknown_auth", testGet("/testroute/4", 404))
 	t.Run("Meta_auth", testGet("/.well-known/host-meta", 401))
 
 	// Cleanup for next tests
 	testRouter = nil
 }
 
-// countRoutes counts the registered routes in a mux.Router
-// object by walking it
-func countRoutes(r *Router) int {
-	var count int
-	r.muxRoutes.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
-		if route.GetHandler() != nil {
-			count++
-		}
-		return nil
-	})
-
-	return count
+// Creates a http handler that returns given status
+func newHandler(n int) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(n)
+	}
 }
 
 // Try the url and check response code
@@ -111,9 +93,8 @@ func TestOptions(t *testing.T) {
 	path3 := restconfDataPathPrefix + "optionstest/3"
 	path4 := restconfDataPathPrefix + "optionstest/4"
 	path5 := restconfDataPathPrefix + "optionstest/unknown"
-	clientAuth := UserAuth{"password": false, "cert": false, "jwt": false}
 
-	h := func(w http.ResponseWriter, r *http.Request) {}
+	h := newHandler(200)
 	AddRoute("OPTGET1", "GET", path1, h)
 	AddRoute("OPTGET2", "GET", path2, h)
 	AddRoute("OPTPUT2", "PUT", path2, h)
@@ -121,12 +102,13 @@ func TestOptions(t *testing.T) {
 	AddRoute("OPTPAT3", "PATCH", path3, h)
 	AddRoute("OPTPAT4", "POST", path4, h)
 
-	testRouter = newRouter(clientAuth)
+	testRouter = NewRouter(nil)
 	t.Run("OPT-1", testOptions(path1, "GET, OPTIONS", ""))
 	t.Run("OPT-2", testOptions(path2, "GET, PUT, PATCH, OPTIONS", ""))
 	t.Run("OPT-3", testOptions(path3, "PATCH, OPTIONS", mimeYangDataJSON))
 	t.Run("OPT-4", testOptions(path4, "POST, OPTIONS", ""))
 	t.Run("OPT-5", testResponseStatus("OPTIONS", path5, 404))
+
 	testRouter = nil
 }
 
@@ -311,7 +293,8 @@ func TestPathConv(t *testing.T) {
 // path into response. Conversion logic depends on context values
 // managed by mux router. Hence should be called from a handler.
 var pathConvHandler = func(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(getPathForTranslib(r)))
+	rc, r := GetContext(r)
+	w.Write([]byte(getPathForTranslib(r, rc)))
 }
 
 func testPathConv(template, path, expPath string) func(*testing.T) {
@@ -319,9 +302,8 @@ func testPathConv(template, path, expPath string) func(*testing.T) {
 }
 
 func testPathConv2(m map[string]string, template, path, expPath string) func(*testing.T) {
-	clientAuth := UserAuth{"password": false, "cert": false, "jwt": false}
 	return func(t *testing.T) {
-		router := newRouter(clientAuth)
+		router := newRouter()
 		router.addRoute(t.Name(), "GET", template, pathConvHandler)
 
 		r := httptest.NewRequest("GET", path, nil)
@@ -703,15 +685,16 @@ func testResponseStatus(method, path string, expStatus int) func(*testing.T) {
 	}
 }
 
+func newRouter() *Router {
+	return &Router{routes: newRouteStore()}
+}
+
 func (r *Router) addRoute(name, method, path string, h http.HandlerFunc) {
-	clientAuth := UserAuth{"password": false, "cert": false, "jwt": false}
-	if isServeFromTree(path) {
-		rr := routeRegInfo{name: name, method: method, path: path, handler: h}
-		r.rcRoutes.add("", path, &rr, clientAuth)
-	} else if path == "*" {
-		r.muxRoutes.Methods(method).HandlerFunc(h)
+	if path == "*" {
+		r.routes.muxRoutes.Methods(method).Handler(withMiddleware(h, name))
 	} else {
-		r.muxRoutes.Methods(method).Path(path).HandlerFunc(h)
+		rr := routeRegInfo{name: name, method: method, path: path, handler: h}
+		r.routes.addRoute(&rr)
 	}
 }
 

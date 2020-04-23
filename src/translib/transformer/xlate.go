@@ -70,7 +70,13 @@ func XlateFuncBind(name string, fn interface{}) (err error) {
 	}
 	return
 }
-
+func IsXlateFuncBinded(name string) bool {
+    if _, ok := XlateFuncs[name]; !ok {
+        return false
+    } else  {
+        return true
+    }
+}
 func XlateFuncCall(name string, params ...interface{}) (result []reflect.Value, err error) {
 	if _, ok := XlateFuncs[name]; !ok {
 		log.Warning(name + " Xfmr function does not exist.")

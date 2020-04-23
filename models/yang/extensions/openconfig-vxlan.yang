@@ -3,7 +3,7 @@ module openconfig-vxlan {
   yang-version "1";
 
   // namespace
-  namespace "http://openconfig.net/yang/vxlan";
+  namespace "http://openconfig.net/yang/vxlan/extension";
 
   prefix "oc-vxlan"; 
 

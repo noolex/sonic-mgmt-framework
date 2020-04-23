@@ -110,23 +110,6 @@ type CustValidationCtxt struct {
 	RClient *redis.Client //Redis client
 }
 
-func getAppDbClient() *redis.Client {
-        rclient := redis.NewClient(&redis.Options{
-                Network:     "tcp",
-                Addr:        "localhost:6379",
-                Password:    "", // no password set
-                DB:          0,
-                DialTimeout: 0,
-        })
-        _, err := rclient.Ping().Result()
-        if err != nil {
-		 CVL_LEVEL_LOG(TRACE_SEMANTIC, "Failed to connect to Redis server = %v", err)
-                 return nil
-        }
-
-        return rclient
-}
-
 //Common function to invoke custom validation
 //TBD should we do this using GO plugin feature ?
 func InvokeCustomValidation(cv *CustomValidation, name string, args... interface{}) CVLErrorInfo {

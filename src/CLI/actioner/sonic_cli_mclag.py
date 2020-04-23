@@ -107,6 +107,21 @@ def invoke(func, args):
 
     #delete MCLAG Domain 
     if (func == 'delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list'):
+        api_response = invoke("get_sonic_mclag_sonic_mclag", args[1:])
+        response = {}
+        if api_response.ok():
+            response = api_response.content
+            if len(response) != 0 and 'MCLAG_DOMAIN' in response['sonic-mclag:sonic-mclag']:
+                mclag_local_if_list  = []
+                if "MCLAG_INTERFACE" in response["sonic-mclag:sonic-mclag"]:
+                    mclag_local_if_list = response['sonic-mclag:sonic-mclag']['MCLAG_INTERFACE']['MCLAG_INTERFACE_LIST']
+                    for list_item  in mclag_local_if_list:
+                        dmid=list_item["domain_id"]
+                        if str(args[0]) == str(dmid):
+                            iname=list_item["if_name"]
+                            print("Removing interface "+ str(iname)+" from domain "+str(dmid))
+                            keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_INTERFACE/MCLAG_INTERFACE_LIST={domain_id},{if_name}', domain_id=args[0], if_name=iname)
+                            aa.delete(keypath)
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}', domain_id=args[0])
         return aa.delete(keypath)
 
@@ -344,8 +359,10 @@ def mclag_show_mclag_interface(args):
                 if len(response) != 0:
                     mclag_remote_if = response['sonic-mclag:MCLAG_REMOTE_INTF_TABLE_LIST']
             
-        count, mclag_iface_info = mclag_get_mclag_intf_dict(mclag_local_if, mclag_remote_if)
-        show_cli_output(args[0], mclag_iface_info)
+            count, mclag_iface_info = mclag_get_mclag_intf_dict(mclag_local_if, mclag_remote_if)
+            show_cli_output(args[0], mclag_iface_info)
+        else:
+            print("No MCLAG Interface " + args[1] + " in MCLAG domain " + args[2] + " or domain not found")
    
     else:
         #error response

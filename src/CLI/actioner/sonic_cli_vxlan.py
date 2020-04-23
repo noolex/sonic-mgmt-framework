@@ -66,21 +66,23 @@ def config_response_handler(api_response, func, args):
                    print('Error: Invalid VNI. Valid range [1 to 16777215]')
                 elif err_app_tag == 'invalid-vtep-name':
                    print('Error: VTEP name should start with "vtep"')
-                elif err_app_tag == 'update-disallowed':
-                   if err_msg is not None:
-                      print("{}".format(err_msg))
-                   else:
-                      print err_app_tag
                 elif err_app_tag == 'instance-required':
                    if err_msg is not None:
                       print("Error: {}".format(err_msg))
                    else:
                       print err_app_tag
                 else :
-                   print('Error: Unknown err-app-tag {}'.format(str(err_app_tag)))
+                   if err_msg is not None:
+                      print("{}".format(err_msg))
+                   else:
+                      print('Error: err-app-tag {}'.format(str(err_app_tag)))
             elif err_tag is not 'NOERROR': 
                 if (func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list'):
                     print("Error: Please delete EVPN NVO and VLAN VNI mappings.")
+                elif (func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list'):
+                    vidstr = args[0]
+                    vnid = args[1]
+                    print("Error: Please check VLAN {}, VNI {} mapping is configured".format(vidstr, vnid))
                 else:
                     print("Error: {}".format(err_tag))
             else:
@@ -98,38 +100,60 @@ def invoke(func, args):
     #[un]configure VTEP 
     if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list' or
         func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list'):
-        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0][6:])
+        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0])
+
+        if (func.startswith("patch") is True):
+            return aa.patch(keypath)
+        else:
+            keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
+            api_response = aa.get(keypath_nvo)
+            response = api_response.content
+            if len(response) != 0:
+                response = aa.delete(keypath_nvo)
+                if response.ok():
+                    return aa.delete(keypath)
+                else:
+                    return response
+            else:
+                return aa.delete(keypath)
+
+
+    #[un]configure VTEP srcip
+    if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_src_ip' or
+        func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_src_ip'):
+        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}/src_ip', name=args[0][6:])
 
         if (func.startswith("patch") is True):
             body = {
-              "sonic-vxlan:VXLAN_TUNNEL_LIST": [
-                {
-                  "name": args[0][6:],
-                  "src_ip": args[1] 
-                }
-              ]
+              "sonic-vxlan:src_ip": args[1]
             }
-            return aa.patch(keypath, body)
-        else:
-            return aa.delete(keypath)
-
-    #[un]configure EVPN NVO
-    if (func == 'patch_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list' or
-        func == 'delete_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list'):
-        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name=args[0][4:])
-
-        if (func.startswith("patch") is True):
-            body = {
-              "sonic-vxlan:EVPN_NVO_LIST": [
-                {
-                  "name": args[0][4:],
-                  "source_vtep": args[1] 
+            response = aa.patch(keypath, body)
+            if response.ok():
+                keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
+                body = {
+                "sonic-vxlan:EVPN_NVO_LIST": [
+                    {
+                    "name": 'nvo1',
+                    "source_vtep": args[0][6:] 
+                    }
+                ]
                 }
-              ]
-            }
-            return aa.patch(keypath, body)
+                return aa.patch(keypath, body)
+            else:
+                return response
         else:
-            return aa.delete(keypath)
+            keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
+            api_response = aa.get(keypath_nvo)
+            response = api_response.content
+            if len(response) != 0:
+                response = aa.delete(keypath_nvo)
+                if response.ok():
+                    return aa.delete(keypath)
+                else:
+                    return response
+            else:
+                return aa.delete(keypath)
+    
 
     #[un]configure Tunnel Map
     if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list' or

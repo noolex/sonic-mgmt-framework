@@ -41,12 +41,12 @@ import (
 
 // Command line parameters
 var (
-	port      int    // Server port
-	certFile  string // Server certificate file path
-	keyFile   string // Server private key file path
-	caFile    string // Client CA certificate file path
-	cliCAFile string // CLI client CA certificate file path
-	clientAuth = server.UserAuth{"password": false, "user": false, "cert": false, "jwt": false}
+	port       int    // Server port
+	certFile   string // Server certificate file path
+	keyFile    string // Server private key file path
+	caFile     string // Client CA certificate file path
+	cliCAFile  string // CLI client CA certificate file path
+	clientAuth = server.NewUserAuth()
 )
 
 func init() {
@@ -118,7 +118,8 @@ func main() {
 	server.JwtRefreshInt = time.Duration(30 * time.Second)
 	server.JwtValidInt = time.Duration(3600 * time.Second)
 
-	router := server.NewRouter(clientAuth)
+	rtrConfig := server.RouterConfig{Auth: clientAuth}
+	router := server.NewRouter(&rtrConfig)
 
 	address := fmt.Sprintf(":%d", port)
 
@@ -151,10 +152,14 @@ func main() {
 // unix socket. This is used for authentication of the CLI client to the REST
 // server, and will not be used for any other client.
 func spawnUnixListener() {
+	var CLIAuth = server.UserAuth{"clisock": true, "cert": true, "jwt": true}
+	rtrConfig := server.RouterConfig{
+		Auth: CLIAuth,
+	}
+
 	// Reuse the handler between the two listeners. This avoids creating an
 	// extra identical handler for the TLS listener on TCP port 8443.
-	CLIAuth := server.UserAuth{"clisock": true, "jwt": true, "cert": true}
-	handler := server.NewRouter(CLIAuth)
+	handler := server.NewRouter(&rtrConfig)
 
 	if cliCAFile != "" {
 		// This block spawns an additional listener listening to localhost:8443
@@ -177,7 +182,7 @@ func spawnUnixListener() {
 		}
 
 		cliServer := &http.Server{
-			Handler: handler,
+			Handler:   handler,
 			TLSConfig: tlsConfig,
 		}
 

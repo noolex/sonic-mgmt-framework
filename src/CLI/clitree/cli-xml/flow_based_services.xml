@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE CLISH_MODULE [
+        <!ENTITY FBS_MAC_ADDR "[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{4}(\.[0-9a-fA-F]{4}){2}">
+        <!ENTITY UINT_32_RANGE "([1-9][0-9]{0,8})|([1-3][0-9]{9})|(4[0-1][0-9]{8})|(42[0-8][0-9]{7})|(429[0-3][0-9]{6})|(4294[0-8][0-9]{5})|(42949[0-5][0-9]{4})|(429496[0-6][0-9]{3})|(4294967[0-1][0-9]{2})|(42949672[0-8][0-9])|(429496729[0-5])">
+        ]>
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xsi:schemaLocation="https://raw.githubusercontent.com/project-arlo/sonic-mgmt-framework/master/src/CLI/clitree/scripts/sonic-clish.xsd">
+
+    <!--=================================  PTYPES =================================-->
+    <PTYPE name="FLOW_PRIORITY" method="integer" pattern="0..1023" help=""/>
+    <PTYPE name="PCP_VALUE" method="integer" pattern="0..7" help=""/>
+    <PTYPE name="POLICER_RATE_BITS" pattern="^((&UINT_32_RANGE;)([kmgt]?bps)?)$" help="" />
+    <PTYPE name="POLICER_RATE_BYTES" pattern="^((&UINT_32_RANGE;)([KMGT]?B)?)$" help="" />
+    <PTYPE name="FBS_MAC_ADDR_MASK" pattern="^((&FBS_MAC_ADDR;)(\/&FBS_MAC_ADDR;)?)$" help="MACADDRESS[/MACADDRESSMASK]" preprocess="toupper"/>
+    <PTYPE name="DESCRIPTION" pattern=".{0,256}" help="String (Max: 256 characters)"/>
+
+    <PTYPE name="FBS_MAC_ADDR" pattern="^(&FBS_MAC_ADDR;)$" help="MACADDRESS" preprocess="toupper"/>
+    <PTYPE name="DEI_VALUE" method="integer" pattern="0..1" help="0-1"/>
+    <PTYPE name="ETHERTYPE_VALUE" pattern="0[xX]([6-9a-fA-F][0-9a-fA-A]{2}|[1-9a-fA-F][0-9a-fA-A]{3})" help="0x600-0xffff"/>
+
+    <!--============================== EXEC MODE COMMANDS =======================-->
+    <VIEW name="enable-view">
+        <!-- show policy [NAME] | [type qos|monitoring|forwarding] -->
+        <COMMAND name="show policy" help="Show flow based services policy information">
+            <PARAM name="fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="fbs-policy-name" help="Show policy information using policy name (Max size 63)" ptype="STRING_63"/>
+                <PARAM name="type" help="Show all policies using the policy type" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <PARAM name="fbs-policy-type" help="Policy type" ptype="SUBCOMMAND" mode="switch" test='"${fbs-policy-name}" = "type"' optional="true" order="true">
+                <PARAM name="qos" help="Show all QoS Policies" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="monitoring" help="Show all monitoring policies" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="forwarding" help="Show all forwarding Policies" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${fbs-policy-name} ${fbs-policy-type}</ACTION>
+        </COMMAND>
+
+        <!-- show classifier [NAME] [type acl|fields] -->
+        <COMMAND name="show classifier" help="Show flow based services policy information">
+            <PARAM name="fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="fbs-class-name" help="Name of the classifier or 'match-type' to show all classifier based on a given match-type" ptype="STRING_63"/>
+                <PARAM name="match-type" help="Show all classifiers using the match type" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <PARAM name="fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch" test='"${fbs-class-name}" = "match-type"'>
+                <PARAM name="acl" help="Show classifier which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="fields" help="Show classifier which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${fbs-policy-name} ${fbs-policy-type}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="show service-policy" help="Show applied Flow based services policies" />
+
+        <!-- show service-policy summary [interface NAME] | [type qos|monitoring|forwarding] -->
+        <COMMAND name="show service-policy summary" help="Show summary of all applied polices">
+            <PARAM name="interface" help="Show policies applied for interface" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
+            </PARAM>
+            <MACRO name="FBS-POLICY-TYPES" arg="true" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy_summary ${__params}</ACTION>
+        </COMMAND>
+
+        <!-- show service-policy policy NAME [interface NAME] -->
+        <COMMAND name="show service-policy policy" help="Show details by policy name">
+            <PARAM name="fbs-policy-name" help="Policy name (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="interface" help="Show policies applied for interface" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_policy ${__params}</ACTION>
+        </COMMAND>
+
+        <!-- show service-policy interface NAME [type qos|monitoring|forwarding] -->
+        <COMMAND name="show service-policy interface" help="Show details by interface name">
+            <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
+            <MACRO name="FBS-POLICY-TYPES" arg="true" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Config Mode commands                                   -->
+    <!--===================================================================================-->
+    <VIEW name="configure-view">
+        <COMMAND name="policy" help="Configure flow based services policy" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}">
+            <PARAM name="fbs-policy-name" help="Name of the policy (Max size 63)" ptype="STRING_63"/>
+            <MACRO name="FBS-POLICY-TYPES" arg="false" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_policy ${fbs-policy-name} ${fbs-policy-type}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no policy" help="Delete flow based services policy">
+            <PARAM name="fbs-policy-name" help="Name of the policy (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_policy ${fbs-policy-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="classifier" help="Configure flow based services classifier" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}">
+            <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="match-type" help="Classifier match type" ptype="SUBCOMMAND" mode="subcommand" optional="false">
+                <PARAM name="fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch">
+                    <PARAM name="acl" help="Classifier using ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
+                    <PARAM name="fields" help="Classifier using L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="match-all" help="Match all fields" ptype="SUBCOMMAND" mode="subcommand"/>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_classifier ${fbs-class-name} ${fbs-class-type}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no classifier" help="Delete flow based services classifier">
+            <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_classifier ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                                     Policy View                                   -->
+    <!--===================================================================================-->
+    <VIEW name="configure-policy-view" prompt="${SYSTEM_NAME}(config-policy)# " depth="2">
+        <NAMESPACE ref="configure-view" help="false" completion="false" />
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+
+        <COMMAND name="description" help="Configure policy description">
+            <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policy_description ${fbs-policy-name} ${description-value}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no description" help="Clear policy description">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_policy_description ${fbs-policy-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="class" help="Configure flow classification and its actions" view="configure-${fbs-policy-type}-flow-view"
+                 viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type};fbs-class-name=${fbs-class-name}">
+            <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="priority" help="Flow priority in the policy" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                <PARAM name="fbs-flow-priority" help="Priority value." ptype="FLOW_PRIORITY" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_flow ${fbs-policy-name} ${fbs-class-name} ${fbs-flow-priority}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no class" help="Delete flow classification and its actions">
+            <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_flow ${fbs-policy-name} ${fbs-class-name}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Classifier view for ACL match-type                     -->
+    <!--===================================================================================-->
+    <VIEW name="configure-acl-classifier-view" prompt="${SYSTEM_NAME}(config-classifier)# " depth="2">
+        <NAMESPACE ref="configure-view" help="false" completion="false"/>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="match" help="Add match criteria"/>
+        <COMMAND name="no match" help="Delete match criteria"/>
+
+        <MACRO name="CLASSIFIER-DESCRIPTION"/>
+
+        <COMMAND name="match access-group" help="Match using access-list">
+            <PARAM name="acl-type" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="mac" help="MAC access-list" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ip" help="IP access-list" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ipv6" help="IPv6 access-list" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+            <PARAM name="access-list-name" help="ACL Name" ptype="STRING_63" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_match_acl ${fbs-class-name} ${acl-type} ${access-list-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match access-list" help="Delete match using access-list">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_match_acl ${fbs-class-name}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Classifier view for fields match-type                  -->
+    <!--===================================================================================-->
+    <VIEW name="configure-fields-classifier-view" prompt="${SYSTEM_NAME}(config-classifier)# " depth="2">
+        <NAMESPACE ref="configure-view" help="false" completion="false"/>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="match" help="Add match criteria"/>
+        <COMMAND name="no match" help="Delete match criteria"/>
+
+        <MACRO name="CLASSIFIER-DESCRIPTION"/>
+
+        <COMMAND name="match source-address" help="Match packets using source address">
+            <MACRO name="MATCH-ADDRESS-TYPES-ADD" arg="source,Source" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_source_address ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match source-address" help="Delete match using source address">
+            <MACRO name="MATCH-ADDRESS-TYPES-DEL" arg="source" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_source_address ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match destination-address" help="Match packets using destination address">
+            <MACRO name="MATCH-ADDRESS-TYPES-ADD" arg="destination,Destination" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_destination_address ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match destination-address" help="Delete match using destination address">
+            <MACRO name="MATCH-ADDRESS-TYPES-DEL" arg="destination" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_destination_address ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match ethertype" help="Match packets using ethertype">
+            <PARAM name="ethertype-options" help="Match packets using Ethertype value" ptype="SUBCOMMAND" mode="switch">
+                <MACRO name="ACL-MAC-ETHERTYPE-OPTIONS" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_ethertype ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match ethertype" help="Delete match using ethertype">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_ethertype ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match vlan" help="Match packets using VLAN ID">
+            <PARAM name="vlan-val" help="VLAN ID value (range 1-4094)" ptype="VLAN_RANGE"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_vlan ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match vlan" help="Delete match using VLAN ID">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_vlan ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match pcp" help="Match packets using PCP">
+            <PARAM name="pcp-options" help="" ptype="SUBCOMMAND" mode="switch">
+                <MACRO name="ACL-MAC-PCP-VAL-OPTIONS" arg="PCP_VALUE,PCP value. (0-7 range)"/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_pcp ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match pcp" help="Match packets using PCP">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_pcp ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match dei" help="Match packets using DEI value">
+            <PARAM name="dei-val" help="DEI value (range 0-1)" ptype="DEI_VALUE"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_dei ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match dei" help="Delete match packets using DEI value">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_dei ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match ip" help="Match packets using IP/IPv6 protocol"/>
+        <COMMAND name="match ip protocol" help="Match packets using IP/IPv6 protocol">
+            <PARAM name="ip-protocol" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="ip-protocol-val" help="Protocol number (0 to 255)" ptype="RANGE_0_255"/>
+                <PARAM name="icmp" help="ICMP Packets" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="icmpv6" help="ICMPv6 Packets" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="tcp" help="TCP packets" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="udp" help="UDP packets" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_ip_protocol ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match ip" help="Delete match packets using IP/IPv6 protocol"/>
+        <COMMAND name="no match ip protocol" help="Delete match packets using IP/IPv6 protocol">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_ip_protocol ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match dscp" help="Match packets using DSCP value">
+            <MACRO name="IP-DSCP-VALUE-OPTIONS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_dscp ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match dscp" help="Match DSCP">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_dscp ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match l4-port" help="Match packets using TCP/UDP port">
+            <PARAM name="l4-port-type" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="source" help="Source TCP/UDP port equal to" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="destination" help="Source TCP/UDP port range" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <PARAM name="l4-port-oper" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="eq" help="Source TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="eq-port-val" help="TCP/UDP port number" ptype="RANGE_0_65535"/>
+                </PARAM>
+                <PARAM name="range" help="Source TCP/UDP port" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="begin-port-val" help="TCP/UDP port number begin" ptype="RANGE_0_65534"/>
+                    <PARAM name="end-port-val" help="TCP/UDP port number end" ptype="RANGE_1_65535"/>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_layer4_port ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match l4-port" help="Delete match packets using TCP/UDP port">
+            <PARAM name="l4-port-type" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="source" help="Source TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="destination" help="Source TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_layer4_port ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="match tcp-flags" help="Match packets using TCP flags">
+            <MACRO name="FBS-TCP-FLAGS" arg="Match" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_tcp_flags ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match tcp-flags" help="Delete match using TCP flags">
+            <MACRO name="FBS-TCP-FLAGS" arg="Delete match" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_tcp_flags ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Flow view for QoS actions                              -->
+    <!--===================================================================================-->
+    <VIEW name="configure-qos-flow-view" prompt="${SYSTEM_NAME}(config-policy-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="set" help="Set parameters" />
+        <COMMAND name="no set" help="Remove/Disable QoS actions" />
+
+        <COMMAND name="description" help="Configure flow description">
+            <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_flow_description ${fbs-policy-name} ${fbs-class-name} ${description-value}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no description" help="Clear flow description">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_flow_description ${fbs-policy-name} ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="set pcp" help="Set PCP remarking">
+            <PARAM name="pcp-value" help="PCP remarking value (0-7)" ptype="PCP_VALUE" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_pcp_remarking_action ${fbs-policy-name} ${fbs-class-name} ${pcp-value}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set pcp" help="Clear PCP remarking">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_pcp_remarking_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="set dscp" help="Set DSCP remarking">
+            <PARAM name="dscp-value" help="DSCP remarking value (0-63)" ptype="RANGE_0_63" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_dscp_remarking_action ${fbs-policy-name} ${fbs-class-name} ${dscp-value}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set dscp" help="Clear DSCP remarking">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_dscp_remarking_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+        </COMMAND>
+<!--
+        <COMMAND name="set traffic-class" help="Set traffic class">
+            <PARAM name="tc-value" help="Traffic class value (0-7)"  ptype="PCP_VALUE" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_traffic_class_value ${fbs-policy-name} ${fbs-class-name} ${tc-value}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set traffic-class" help="Clear traffic class">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_traffic_class_value ${fbs-policy-name} ${fbs-class-name}</ACTION>
+        </COMMAND>
+-->
+        <COMMAND name="police" help="Set rate limiting parameters">
+            <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policer_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no police" help="Clear or reset rate limiting parameters">
+            <PARAM name="cir" help="Clear committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="cbs" help="Clear committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="pir" help="Clear peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="pbs" help="Clear peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_policer_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Flow view for Monitoring actions                       -->
+    <!--===================================================================================-->
+    <VIEW name="configure-monitoring-flow-view" prompt="${SYSTEM_NAME}(config-policy-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="set" help="Set parameters"/>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="no set" help="Remove/Disable monitoring actions" />
+
+        <COMMAND name="set mirror-session" help="Set mirror session result">
+            <PARAM name="session-name" help="Mirror session name" ptype="STRING"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_mirror_session_action ${fbs-policy-name} ${fbs-class-name} ${session-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set mirror-session" help="Delete mirror session result">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_mirror_session_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Flow view for Forwarding actions                       -->
+    <!--===================================================================================-->
+    <VIEW name="configure-forwarding-flow-view" prompt="${SYSTEM_NAME}(config-policy-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="set" help="Set parameters" />
+
+        <COMMAND name="set ip" help="Internet Protocol Version 4 (IPv4)">
+            <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv4,DOTTED_QUAD" />
+            <MACRO name="FBS-NEXT-HOP-PRIORITY" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_next_hop_action ${fbs-policy-name} ${fbs-class-name} ip ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="set ipv6" help="Internet Protocol Version 6 (IPv6)">
+            <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv6,IPV6_ADDR" />
+            <MACRO name="FBS-NEXT-HOP-PRIORITY" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_next_hop_action ${fbs-policy-name} ${fbs-class-name} ipv6 ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="set interface" help="Set egress interface">
+            <MACRO name="FBS-EGRESS-INTF-OPTIONS" />
+            <MACRO name="FBS-NEXT-HOP-PRIORITY" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_egress_interface_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="no set" help="Remove/Disable forwarding actions" />
+        <COMMAND name="no set ip" help="Internet Protocol Version 4 (IPv4)">
+            <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv4,DOTTED_QUAD" />
+            <MACRO name="FBS-NEXT-HOP-PRIORITY" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_next_hop_action ${fbs-policy-name} ${fbs-class-name} ip ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set ipv6" help="Internet Protocol Version 6 (IPv6)">
+            <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv6,IPV6_ADDR" />
+            <MACRO name="FBS-NEXT-HOP-PRIORITY" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_next_hop_action ${fbs-policy-name} ${fbs-class-name} ipv6 ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set interface" help="Set egress interface">
+            <MACRO name="FBS-EGRESS-INTF-OPTIONS" />
+            <MACRO name="FBS-NEXT-HOP-PRIORITY" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_egress_interface_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for Ethernet                       -->
+    <!--===================================================================================-->
+    <VIEW name="configure-if-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for PortChannel                    -->
+    <!--===================================================================================-->
+    <VIEW name="configure-lag-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for VLANs                          -->
+    <!--===================================================================================-->
+    <VIEW name="configure-vlan-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
+    </VIEW>
+</CLISH_MODULE>

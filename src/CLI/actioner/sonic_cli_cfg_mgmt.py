@@ -35,15 +35,17 @@ def prompt(msg):
             print ("Invalid input, expected [y/N]")
             x = raw_input(prompt_msg)
         if x.lower() == "n":
-            exit(1)
+           return False 
+        else:
+           return True
     except:
-        print("")
-        exit(1)
+        print("Error: Except")
+        return False
 
 def prompt_confirm(func, args):
     if len(args) < 2:
         print("Error:Invalid arguments.")
-        exit(1)
+        return False
 
     msg = ""
     if (args[0] == "startup-configuration") or ("file://" in args[0]):
@@ -53,10 +55,11 @@ def prompt_confirm(func, args):
                 "This will result in loss of management connection for a short time.")
             else:
                 print("Error:Invalid arguments.")
-                exit(1)
+                return False
         else:
-                msg = ("Load config from " + args[0] + "?")
-        prompt(msg)
+            msg = ("Load config from " + args[0] + "?")
+        return prompt(msg)
+    return True
 
 def invoke(func, args):
     body = None
@@ -69,23 +72,24 @@ def invoke(func, args):
 
     return aa.post(keypath, body)
 
-def run(func, args):
-    prompt_confirm(func, args)
-    try:
-        api_response = invoke(func, args)
-        if api_response.ok():
-            response = api_response.content
-            if response is None:
-                print "Success"
+def run_copy(func, args):
+    prpt = prompt_confirm(func, args)
+    if prpt == True:
+        try:
+            api_response = invoke(func, args)
+            if api_response.ok():
+                response = api_response.content
+                if response is None:
+                    print "Success"
+                else:
+                   status =response["sonic-config-mgmt:output"]
+                   if status["status"] != 0:
+                      print status["status-detail"] 
             else:
-               status =response["sonic-config-mgmt:output"]
-               if status["status"] != 0:
-                  print status["status-detail"] 
-        else:
-            #error response
-            print api_response.error_message()
+                #error response
+                print api_response.error_message()
 
-    except:
+        except:
             # system/network error
             print "%Error: Transaction Failure"
 
@@ -94,11 +98,10 @@ def prompt_confirm_erase(cmds, argv):
     for c in cmds:
         if len(argv) == len(c) - 2:
             if argv == c[2:]:
-                prompt(c[0])
-                ok = True
-    if not ok:
-        print("Error: Invalid arguments.")
-        exit(1)
+                return prompt(c[0])
+
+    print("Error: Invalid arguments.")
+    return False
 
 def invoke_erase(cmds, argv):
     body = None
@@ -110,7 +113,7 @@ def invoke_erase(cmds, argv):
                 cmd = c[1]
     if not cmd:
         print("Error: Invalid arguments.")
-        exit(1)
+        raise RuntimeError("Error: Invalid arguments.")
 
     aa = cc.ApiClient()
     keypath = cc.Path('/restconf/operations/sonic-config-mgmt:write-erase')
@@ -125,31 +128,56 @@ def run_erase(argv):
         ["All SONiC switch content will be restored to default values, continue?", "op_write_erase_install", "write", "erase", "install"],
         ["Switch configuration erase operation will be cancelled, continue?", "op_no_write_erase", "no", "write", "erase"]
     ]
-    prompt_confirm_erase(cmds, argv)
-    try:
-        api_response = invoke_erase(cmds, argv)
-        if api_response.ok():
-            response = api_response.content
-            if response is None:
-                print "Success"
+    prpt = prompt_confirm_erase(cmds, argv)
+    if prpt == True:
+        try:
+            api_response = invoke_erase(cmds, argv)
+            if api_response.ok():
+                response = api_response.content
+                if response is None:
+                    print "Success"
+                else:
+                    status = response["sonic-config-mgmt:output"]
+                    if status["status"] != 0:
+                        print status["status-detail"] 
             else:
-                status = response["sonic-config-mgmt:output"]
-                if status["status"] != 0:
-                    print status["status-detail"] 
+                #error response
+                print api_response.error_message()
+    
+        except:
+            # system/network error
+            print "%Error: Transaction Failure"
+
+def process_copy(func, args):
+
+    src_copy_options = args[0].split("=")[1]
+    copy_config_url  = args[1].split("=")[1]
+    filepath         = args[2].split("=")[1]
+    overwrite        = args[3].split("=")[1]
+
+    if src_copy_options == "copy_config_url":
+        if overwrite == "":
+            n_args = list((copy_config_url, "running-configuration"))
         else:
-            #error response
-            print api_response.error_message()
+            n_args = list((copy_config_url, "running-configuration", overwrite))
+    else:
+        if filepath == "":
+            if overwrite == "":
+                n_args = list((src_copy_options, "running-configuration"))
+            else:
+                n_args = list((src_copy_options, "running-configuration", overwrite))
+        else:
+            n_args = list((src_copy_options, filepath))
 
-    except:
-        # system/network error
-        print "%Error: Transaction Failure"
+    run_copy(func, n_args)
 
+def run(func, args):
+    if func == "rpc_sonic_config_mgmt_erase":
+        run_erase(args)
+    else:
+        process_copy(func, args)
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
-    #pdb.set_trace()
-    if sys.argv[1] == "rpc_sonic_config_mgmt_erase":
-        run_erase(sys.argv[2:])
-    else:
-        run(sys.argv[1], sys.argv[2:])
+    run(sys.argv[1], sys.argv[2:])
 

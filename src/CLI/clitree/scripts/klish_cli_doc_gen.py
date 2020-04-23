@@ -10,6 +10,9 @@ except ImportError:
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 log = logging.getLogger(__file__)
 
+# Globals
+reference_guide_name = 'industry_standard_cli_reference_guide.md'
+
 class CliDoc:
     # Default KLish XMLs directory path
     currentDir = os.path.dirname(os.path.realpath(__file__)) 
@@ -427,8 +430,14 @@ class CliDoc:
                             CliDoc.print_doc_lines(example.string, cliGuideFp)
                             cliGuideFp.write("\n```\n")
         
-        with open(CliDoc.klish_xml_path_dir + '/' + "cli_reference_guide.md", "w") as cliGuideFp:
-            cliGuideFp.write("# The SONiC CLI Reference Guide \n\n")
+        with open(CliDoc.klish_xml_path_dir + '/' + reference_guide_name, "w") as cliGuideFp:
+            cliGuideFp.write("# The SONiC Industry Standard CLI Reference Guide \n\n")
+            cliGuideFp.write("# Table Of Commands \n\n")
+            command_key_set = set()
+            for command_key in sorted (commandsGuideDict.keys()):
+                if command_key not in command_key_set:
+                    cliGuideFp.write("[%s](#%s)\n\n" % (command_key, command_key.replace(' ','-')))
+                    command_key_set.add(command_key)
             for content_key in sorted (commandsGuideDict.keys()):
                 # if  content_key == "activate":
                 #     import pdb; pdb.set_trace()
@@ -471,4 +480,4 @@ if __name__== "__main__":
         CliDoc.klish_xml_path_dir =  sys.argv[1]   
     CliDoc.parse_klish_xmls()
     CliDoc.commandBuilder()
-    log.info("Please find document at " + CliDoc.klish_xml_path_dir + '/cli_reference_guide.md')    
+    log.info("Please find document at " + CliDoc.klish_xml_path_dir + '/' + reference_guide_name)    

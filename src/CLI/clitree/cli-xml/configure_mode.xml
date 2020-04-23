@@ -23,16 +23,15 @@ limitations under the License.
 			http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
     <!--=======================================================-->
-    <VIEW
-        depth="1"
-        name="configure-view"
-        prompt="${SYSTEM_NAME}(config)# "
-        restore="depth"
-        >
-        <COMMAND
-            name="no"
-            help="To delete / disable commands in config mode"
-            />
+    <VIEW depth="1" name="configure-view" prompt="${SYSTEM_NAME}(config)# " restore="depth">
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="mac" help="Configure Media Access Control (MAC)"/>
+        <COMMAND name="ip" help="Configure Internet Protocol (IP)"/>
+        <COMMAND name="ipv6" help="Configure Internet Protocol v6 (IPv6)"/>
+
+        <COMMAND name="no mac" help="Configure Media Access Control (MAC)"/>
+        <COMMAND name="no ip" help="Configure Internet Protocol (IP)"/>
+        <COMMAND name="no ipv6" help="Configure Internet Protocol v6 (IPv6)"/>
     </VIEW>
 </CLISH_MODULE>
 

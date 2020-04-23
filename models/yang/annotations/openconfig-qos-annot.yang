@@ -1,0 +1,139 @@
+module openconfig-qos-annot {
+
+    yang-version "1.1";
+
+    namespace "http://openconfig.net/yang/qos-annot";
+    prefix "oc-qos-annot"; 
+
+    import sonic-extensions { prefix sonic-ext; }
+    import openconfig-qos { prefix oc-qos; }
+    import openconfig-qos-ext {prefix oc-qos-ext; }
+
+    deviation /oc-qos:qos/oc-qos:interfaces {
+      deviate add {
+        sonic-ext:subtree-transformer "qos_get_all_intf_all_counters_xfmr";
+        sonic-ext:db-name "COUNTERS_DB";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:output/oc-qos:queues {
+      deviate add {
+        sonic-ext:subtree-transformer "qos_get_one_intf_all_q_counters_xfmr";
+        sonic-ext:db-name "COUNTERS_DB";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:output/oc-qos:scheduler-policy/oc-qos:config {
+      deviate add {
+        sonic-ext:subtree-transformer "qos_intf_sched_policy_xfmr";
+        sonic-ext:db-name "CONFIG_DB";
+      }
+    }
+
+
+    deviation /oc-qos:qos/oc-qos:interfaces/oc-qos:interface/oc-qos:input/oc-qos-ext:priority-groups {
+      deviate add {
+        sonic-ext:subtree-transformer "qos_get_one_intf_all_pg_counters_xfmr";
+        sonic-ext:db-name "COUNTERS_DB";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches {
+      deviate add {
+        sonic-ext:db-name "COUNTERS_DB";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches/oc-qos-ext:breach {
+      deviate add {
+        sonic-ext:table-name "THRESHOLD_BREACH_TABLE";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches/oc-qos-ext:breach/oc-qos-ext:breach-value {
+      deviate add {
+        sonic-ext:field-name "breach_value";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches/oc-qos-ext:breach/oc-qos-ext:counter {
+      deviate add {
+        sonic-ext:field-transformer "threshold_breach_counter_field_xfmr";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches/oc-qos-ext:breach/oc-qos-ext:buffer {
+      deviate add {
+        sonic-ext:field-name "buffer";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches/oc-qos-ext:breach/oc-qos-ext:type {
+      deviate add {
+        sonic-ext:field-name "type";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches/oc-qos-ext:breach/oc-qos-ext:port {
+      deviate add {
+        sonic-ext:field-name "port";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches/oc-qos-ext:breach/oc-qos-ext:index {
+      deviate add {
+        sonic-ext:field-name "index";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:threshold-breaches/oc-qos-ext:breach/oc-qos-ext:time-stamp {
+      deviate add {
+        sonic-ext:field-name "time-stamp";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos:queues/oc-qos:queue {
+      deviate add {
+        sonic-ext:table-name "QUEUE";
+        sonic-ext:key-transformer "qos_queue_key_xfmr";
+        sonic-ext:key-delim "|";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos:queues/oc-qos:queue/oc-qos:wred/oc-qos:config/oc-qos-ext:wred-profile {
+      deviate add {
+        sonic-ext:field-name "wred_profile";
+      }
+    }
+
+
+    deviation /oc-qos:qos/oc-qos:queues/oc-qos:queue/oc-qos:wred/oc-qos:state/oc-qos-ext:wred-profile {
+      deviate add {
+        sonic-ext:field-name "wred_profile";
+      }
+    }
+
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler {
+      deviate add {
+        sonic-ext:table-name "SCHEDULER";
+        sonic-ext:subtree-transformer "qos_scheduler_xfmr";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos:scheduler-policies/oc-qos:scheduler-policy/oc-qos:schedulers/oc-qos:scheduler/oc-qos:config/oc-qos:priority {
+      deviate add {
+        sonic-ext:field-name "type";
+        sonic-ext:field-transformer "qos_scheduler_priority_xfmr";
+      }
+    }
+
+    deviation /oc-qos:qos/oc-qos-ext:wred-profiles/oc-qos-ext:wred-profile {
+      deviate add {
+        sonic-ext:table-name "WRED_PROFILE";
+      }
+    }
+
+}
+
+

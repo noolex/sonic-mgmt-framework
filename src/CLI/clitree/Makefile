@@ -48,7 +48,7 @@ $(doc_gen): all
 
 doc_gen_clean:
 	@echo "Documentation guide removed"
-	rm -rf ${TGT_DIR}/command-tree/cli_reference_guide.md
+	rm -rf ${TGT_DIR}/command-tree/industry_standard_cli_reference_guide.md
 
 clean:
 	rm -rf ${TGT_DIR}

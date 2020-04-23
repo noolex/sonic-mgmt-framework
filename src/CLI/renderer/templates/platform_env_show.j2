@@ -1,7 +1,7 @@
 {% for subcomponent, subcomponent_val in json_output.items() %}
 {{ '\n'.ljust(20) }}
-{% if subcomponent == 'openconfig-platform:subcomponents' %}
-{% set  subcomponent_list = subcomponent_val['subcomponent'] %}
+{% if subcomponent == 'openconfig-platform:component' %}
+{% set  subcomponent_list = subcomponent_val[0]['subcomponents']['subcomponent'] %}
 {% for subcomponent_inst in subcomponent_list %}
 {% set subcomp_name = subcomponent_inst['name'].strip() %}
 {{subcomp_name.ljust(20)}}

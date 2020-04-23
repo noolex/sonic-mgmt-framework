@@ -1,0 +1,119 @@
+module sonic-bfd-clear {
+    namespace "http://github.com/Azure/sonic-bfd-clear";
+    prefix sbfdclear;
+    yang-version 1.1;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import sonic-vrf {
+        prefix svrf;
+    }
+
+    import sonic-port {
+        prefix prt;
+    }
+
+    import sonic-portchannel {
+        prefix spc;
+    }
+
+    import sonic-vlan {
+        prefix svlan;
+    }
+
+    import sonic-loopback-interface {
+        prefix sloif;
+    }
+
+    import sonic-common {
+        prefix cmn;
+    }
+
+    organization
+        "SONiC";
+
+    contact
+        "SONiC";
+
+    description
+        "SONiC yang for BFD counters clear options";
+
+    revision 2020-10-02 {
+        description
+            "Initial revision.";
+    }
+
+   rpc clear-bfd {
+
+    description "RPC for clearing BFD counters. Input can be :
+        1. Specific peer with interface and vrf
+        2. Specific peer with interface, vrf and local-address
+        3. Specific multihop peer with local-address and vrf
+        4. Specific multihop peer with local-address, vrf and interface";
+
+    input {
+        choice option {
+
+            leaf remote-address {
+                type string;
+                description "Neighbor IP";
+            }
+
+            leaf vrf {
+                type union {
+                    type string {
+                        pattern "default";
+                    }
+                    type leafref {
+                        path "/svrf:sonic-vrf/svrf:VRF/svrf:VRF_LIST/svrf:vrf_name";
+                    }
+                }
+                description "Network-instance/VRF name";
+            }
+
+            leaf multihop {
+                type boolean;
+                description
+                    "Clear multihop peer.";
+            }
+
+            leaf interface {
+                type union {
+                    type string {
+                        pattern "null";
+                    }
+                    type leafref {
+                        path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+                    }
+                    type leafref {
+                        path "/spc:sonic-portchannel/spc:PORTCHANNEL/spc:PORTCHANNEL_LIST/spc:name";
+                    }
+                    type leafref {
+                        path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
+                    }
+                    type leafref {
+                        path "/sloif:sonic-loopback-interface/sloif:LOOPBACK_INTERFACE/sloif:LOOPBACK_INTERFACE_LIST/sloif:loIfName";
+                    }
+                }
+
+                description "Interface name";
+            }
+
+            leaf local-address {
+                type string;
+                    description "Local IP";
+            }
+        }
+    }
+
+    output {
+        leaf status {
+            type string;
+            description
+                "Success / failure in clearing BFD operation execution request.";
+        }
+    }
+  }
+}

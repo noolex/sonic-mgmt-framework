@@ -18,7 +18,9 @@
                mode="subcommand"
                ptype="SUBCOMMAND">
          </PARAM>
-       <ACTION> python $SONIC_CLI_ROOT/sonic-cli-img.py get_sonic_image_management_sonic_image_management show_image.j2</ACTION>
+       <ACTION
+           builtin="clish_pyobj">sonic_cli_img get_sonic_image_management_sonic_image_management show_image.j2
+       </ACTION>
     </COMMAND>
     <COMMAND
          name="image"
@@ -34,9 +36,9 @@
 	      ptype="STRING"
 	      >
 	 </PARAM>
-      <ACTION>
-         python $SONIC_CLI_ROOT/sonic-cli-img.py rpc_sonic_image_management_image_default ${img-name} 
-   	 </ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=POST url=/restconf/operations/sonic-image-management:image-default body={"sonic-image-management:input":{"imagename":"${img-name}"}} 
+      </ACTION>
     </COMMAND>
     <COMMAND
 	 name="image install"
@@ -47,9 +49,9 @@
 	      ptype="STRING"
 	      >
 	 </PARAM>
-       <ACTION> 
-	       python $SONIC_CLI_ROOT/sonic-cli-img.py rpc_sonic_image_management_image_install ${img-path}
-	   </ACTION>
+       <ACTION 
+	   builtin="clish_restcl">oper=POST url=/restconf/operations/sonic-image-management:image-install body={"sonic-image-management:input":{ "imagename":"${img-path}"}}
+       </ACTION>
     </COMMAND>
     <COMMAND
 	name="image remove"
@@ -69,13 +71,9 @@
                 ptype="STRING">
          </PARAM>
 	 </PARAM>
-   <ACTION>
-    if test "${remove_option}" = "all"; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-img.py rpc_sonic_image_management_image_remove&#xA;    
-     else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-img.py rpc_sonic_image_management_image_remove  ${image}&#xA;
-      fi&#xA;   
-	 </ACTION>
+      <ACTION
+         builtin="clish_pyobj">sonic_cli_img rpc_sonic_image_management_image_remove remove_option=${remove_option} image=${image}
+      </ACTION>
     </COMMAND>
   </VIEW>
 </CLISH_MODULE>
