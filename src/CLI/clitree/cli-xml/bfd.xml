@@ -123,26 +123,44 @@ limitations under the License.
     
     <COMMAND name = "show bfd peers" help = "BFD peers status" >
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure vrf name" ptype = "STRING" default="default" > </PARAM>
+                <PARAM name = "vrfname" help = "Configure vrf name" ptype = "STRING" > </PARAM>
             </PARAM>
-            <PARAM name = "brief" help = "Show BFD peer information in tabular form" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
+            <PARAM name = "showbfdcmd" help = "" ptype = "SUBCOMMAND" mode="switch" optional = "true" >
+                <PARAM name = "brief" help = "Show BFD peer information in tabular form" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
+                <PARAM name = "counters" help = "Show BFD peer counters information" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
+            </PARAM>
         <ACTION>
-	if test "${brief}" != ""; then&#xA;
-	    python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers_brief.j2 ${vrf-name} ${__full_line}&#xA;
+	if test "${showbfdcmd}" != ""; then&#xA;
+            if test "${showbfdcmd}" != "counters"; then&#xA;
+	        python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers_brief.j2 ${vrf-name} ${__full_line}&#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrf-name} ${__full_line}&#xA;
+            fi&#xA;
         else&#xA;
 	    python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers.j2 ${vrf-name} ${__full_line}&#xA;
         fi&#xA;
 	</ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Displays all Bidirectional Forwarding detection(BFD) peers.
+            Displays all Bidirectional Forwarding detection(BFD) peers or counters.
         </DESCRIPTION>
         <EXAMPLE summary="Display BFD peers">
             device# show bfd peers
         </EXAMPLE>
+        <EXAMPLE summary="Display BFD peers in user vrf">
+            device# show bfd peers vrf Vrf7
+        </EXAMPLE>
+        <EXAMPLE summary="Display BFD peers counters">
+            device# show bfd peers counters
+        </EXAMPLE>
+        <EXAMPLE summary="Display BFD peers counters in user vrf">
+            device# show bfd peers vrf Vrf7 counters
+        </EXAMPLE>
     </DOCGEN>
     </COMMAND>
 
+
+<!--
     <COMMAND name = "show bfd peers counters" help = "Show BFD peer counters information" >
         <ACTION>
             python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrf-name} ${__full_line}&#xA; 
@@ -156,7 +174,7 @@ limitations under the License.
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
-
+-->
     <COMMAND name = "clear bfd" help = "Bidirection Forwarding Detection" >
     </COMMAND>
 
@@ -625,3 +643,4 @@ limitations under the License.
 </VIEW> 
 
 </CLISH_MODULE>
+

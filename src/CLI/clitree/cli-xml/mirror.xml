@@ -110,7 +110,7 @@ limitations under the License.
                  <PARAM
                     name="phy-if-id"
                     help="Physical interface or CPU or erspan"
-                    ptype="STRING"
+                    ptype="PHY_INTERFACE"
                 optional="false"
                     >
                  </PARAM>
@@ -124,7 +124,7 @@ limitations under the License.
                  <PARAM
                     name="src-phy-if-id"
                     help="Physical interface"
-                    ptype="STRING"
+                    ptype="PHY_INTERFACE"
                     optional="false"
                     >
                  </PARAM>

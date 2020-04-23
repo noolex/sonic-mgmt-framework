@@ -48,16 +48,11 @@ clear counters [interface <interface>]
                                 mode="subcommand"
                                 >
                             </PARAM>
-                            <PARAM name="Ethernet"
+                            <PARAM name="phy-if-name"
                                    help="Clear Ethernet interface counters"
-                                   ptype="SUBCOMMAND"
-                                   mode="subcommand"
+                                   ptype="PHY_INTERFACE"
+                                   optional="true"
                                    >
-                                   <PARAM name="ifId"
-                                          help="Ethernet interface number"
-                                          optional="true"
-                                          ptype="STRING">
-                                   </PARAM>
                             </PARAM>
                             <PARAM name="PortChannel"
                                    help="Clear PortChannel interface counters"

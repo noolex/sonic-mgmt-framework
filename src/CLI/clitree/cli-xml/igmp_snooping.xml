@@ -240,7 +240,7 @@
 					               <PARAM 
 					               			name="mrouter-if-name" 
 					               			help="Interface name" 
-					               			ptype="STRING"
+					               			ptype="PHY_INTERFACE"
 												/>							             			
 										   </PARAM>										   				
 										</PARAM>
@@ -427,7 +427,7 @@
 							               <PARAM 
 							               			name="mrouter-if-name" 
 							               			help="Interface name" 
-							               			ptype="STRING"
+							               			ptype="PHY_INTERFACE"
 														 />							             			
 										     </PARAM>
 										  </PARAM>

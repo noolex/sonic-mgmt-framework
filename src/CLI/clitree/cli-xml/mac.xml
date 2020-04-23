@@ -90,17 +90,10 @@ limitations under the License.
             ptype="SUBCOMMAND"
             >
             <PARAM
-                name="Ethernet"
+                name="phy-if-name"
                 help="Ethernet IEEE 802.3"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
+                ptype="PHY_INTERFACE"
                 >
-                <PARAM
-                    name="phy-if-id"
-                    help="Physical interface"
-                    ptype="UINT"
-                    >
-                </PARAM>
             </PARAM>
             <PARAM
                 name="PortChannel"
@@ -117,8 +110,8 @@ limitations under the License.
             </PARAM>
         </PARAM>
     <ACTION>
-        if test "${if-subcommands}" = "Ethernet"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 interface Ethernet${phy-if-id}&#xA; 
+        if test "${if-subcommands}" = ${phy-if-name}; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 interface ${phy-if-name}&#xA; 
         elif test "${if-subcommands}" = "PortChannel"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 interface PortChannel${port-channel-id}&#xA; 
         else&#xA;
@@ -177,17 +170,10 @@ limitations under the License.
                     mode="switch"
                     >
                     <PARAM
-                        name="Ethernet"
+                        name="phy-if-name"
                         help="Ethernet IEEE 802.3"
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
+                        ptype="PHY_INTERFACE"
                         >
-                        <PARAM
-                            name="phy-if-id"
-                            help="Physical interface"
-                            ptype="UINT"
-                            >
-                        </PARAM>
                     </PARAM>
                     <PARAM
                         name="PortChannel"
@@ -214,7 +200,7 @@ limitations under the License.
             if test "${interface-subcommand}" = "PortChannel"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static interface PortChannel${port-channel-id}&#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static interface Ethernet${phy-if-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static interface ${phy-if-name}&#xA;
             fi&#xA;
         else&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static ${__full_line}&#xA;
@@ -272,17 +258,10 @@ limitations under the License.
                     mode="switch"           
                     >
                     <PARAM
-                        name="Ethernet"
+                        name="phy-if-name"
                         help="Ethernet IEEE 802.3"
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
+                        ptype="PHY_INTERFACE"
                         >
-                        <PARAM
-                            name="phy-if-id"
-                            help="Physical interface"
-                            ptype="UINT"
-                            >
-                         </PARAM>
                     </PARAM>
                     <PARAM
                         name="PortChannel"
@@ -309,7 +288,7 @@ limitations under the License.
             if test "${interface-subcommand}" = "PortChannel"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface PortChannel${port-channel-id}&#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface Ethernet${phy-if-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface ${phy-if-name}&#xA;
             fi&#xA;
         else&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic ${__full_line}&#xA;

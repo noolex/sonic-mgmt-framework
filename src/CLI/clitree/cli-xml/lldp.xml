@@ -50,7 +50,7 @@ limitations under the License.
 	 <PARAM
             name="ifname"
             help="Interface name"
-	        ptype="STRING"
+	        ptype="PHY_INTERFACE"
 	        optional="true"
            >
         </PARAM>
