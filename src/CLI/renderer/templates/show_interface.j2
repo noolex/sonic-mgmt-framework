@@ -27,6 +27,7 @@
 {% set vars = {'in_oversize':""} %}
 {% set vars = {'out_oversize':""} %}
 {% set vars = {'in_frames_128_255':""} %}
+{% set vars = {'found_counters': False} %}
 {% if json_output -%}
 {% for key_json in json_output %}
 {% set interface_list = json_output[key_json]["interface"] %}
@@ -50,6 +51,7 @@
         {% if vars.update({'mtu':interface[key]["mtu"]}) %}{% endif %}
       {% endif %}
       {% if "counters" in interface["state"] %}
+        {% if vars.update({'found_counters':True}) %} {% endif %}
         {% if vars.update({'in_pkts':interface["state"]["counters"]["in-pkts"]}) %}{% endif %}
         {% if vars.update({'in_octets':interface["state"]["counters"]["in-octets"]}) %}{% endif %}
         {% if vars.update({'in_multi':interface["state"]["counters"]["in-multicast-pkts"]}) %}{% endif %}
@@ -71,7 +73,8 @@
           {% for subif in subif_list %}
             {% if vars.update({'ipv4':"IPV4"}) %}{% endif %}
             {% if vars.update({'ipv6':"IPV6"}) %}{% endif %}
-            {% if subif["openconfig-if-ip:ipv4"] %}
+            {% if subif["openconfig-if-ip:ipv4"] and "addresses" in subif["openconfig-if-ip:ipv4"] and "address" in
+               subif["openconfig-if-ip:ipv4"]["addresses"] and subif["openconfig-if-ip:ipv4"]["addresses"]["address"] is not none %}
               {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
               {% set ip_all = [] %}
               {% for ip in ip_list %}
@@ -84,7 +87,8 @@
 	      {% if vars.update({'ipv4_src_pfx':""}) %}{% endif %}
               {% if vars.update({'mode4':"not-set"}) %}{% endif %}
             {% endif %}
-            {% if subif["openconfig-if-ip:ipv6"] %}
+            {% if subif["openconfig-if-ip:ipv6"] and "addresses" in subif["openconfig-if-ip:ipv6"] and "address" in
+               subif["openconfig-if-ip:ipv6"]["addresses"] and subif["openconfig-if-ip:ipv6"]["addresses"]["address"] is not none %}
               {% set ip_list = subif["openconfig-if-ip:ipv6"]["addresses"]["address"] %}
               {% set ipv6_all = [] %}
               {% for ip in ip_list %}
@@ -117,6 +121,7 @@ Mode of {{ vars.ipv4 }} address assignment: {{ vars.mode4 }}
 Mode of {{ vars.ipv6 }} address assignment: {{ vars.mode6 }}
 IP MTU {{ vars.mtu }} bytes
 LineSpeed {{ vars.speed }}, Auto-negotiation off
+{% if vars.found_counters == True %}
 Input statistics:
         {{vars.in_pkts}} packets, {{vars.in_octets}} octets
         {{vars.in_multi}} Multicasts, {{vars.in_broad}} Broadcasts, {{vars.in_uni}} Unicasts
@@ -126,7 +131,7 @@ Output statistics:
         {{vars.out_pkts}} packets, {{vars.out_octets}} octets
         {{vars.out_multi}} Multicasts, {{vars.out_broad}} Broadcasts, {{vars.out_uni}} Unicasts
         {{vars.out_errors}} error, {{vars.out_discards}} discarded, {{vars.out_oversize}} Oversize
-
+{% endif %}
 {% endif %}
 {% endfor %}
 {% endfor %}

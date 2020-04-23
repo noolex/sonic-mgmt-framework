@@ -78,7 +78,7 @@ Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
      {% else %}
         {% if vars.update({'gateway': 'via ' + nexthop['ip']}) %}{% endif %}
      {% endif %}
-     {% if vars.update({'interface':nexthop['interface']}) %}{% endif %}
+     {% if vars.update({'interface':nexthop['interfaceName']}) %}{% endif %}
      {% set temp = vars.distance |string() + "/" + vars.metric | string() %}
      {% set codes = vars.protocol + vars.selected + vars.fib + vars.queued + vars.rejected + vars.installed %}
      {% if loop.index == 1 %}

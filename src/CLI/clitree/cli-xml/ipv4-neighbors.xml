@@ -24,6 +24,12 @@ limitations under the License.
     xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
 
+<PTYPE
+	name="NEIGH_TIMEOUT"
+	method="integer"
+	pattern="60..14400"
+	help="value in seconds"
+/>
 
 <!--=======================================================-->
 <!--           show/clear ip arp changes                   -->
@@ -313,5 +319,45 @@ limitations under the License.
         fi
        </ACTION>
     </COMMAND>
+</VIEW>
+
+<VIEW name="configure-view">
+	<!-- ip arp timeout -->
+	<COMMAND name="ip arp" help="Configure ARP" ptype="SUBCOMMAND" mode="subcommand">
+		<PARAM name="timeout" help="Set ARP timeout value" ptype="SUBCOMMAND" mode="subcommand"> 
+			<PARAM name="value" help="Timeout in seconds" ptype="NEIGH_TIMEOUT"> </PARAM>
+		</PARAM>
+
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-neighbors.py set_ipv4_arp_timeout ${value}&#xA; </ACTION>
+		<DOCGEN>
+			<DESCRIPTION>
+				Configures time in seconds for ARP cache entry to timeout.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure IPv4 ARP cache entry timeout.
+			</USAGE>
+			<EXAMPLE summary="Configure IPv4 ARP timeout">
+				sonic-cli(config)# ip arp timeout 200 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<!-- no ip arp timeout -->
+	<COMMAND name="no ip arp" help="Unconfigure IPv4 ARP" ptype="SUBCOMMAND" mode="subcommand">
+		<PARAM name="timeout" help="Unset ARP timeout value" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-neighbors.py del_ipv4_arp_timeout &#xA; </ACTION>
+		
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigures ARP cache entry timeout value and sets it to Default Value.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure IPv4 ARP cache entry timeout.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure IPv4 ARP timeout">
+				sonic-cli(config)# no ip arp timeout
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
 </VIEW>
 </CLISH_MODULE>

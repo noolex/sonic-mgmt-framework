@@ -15,6 +15,53 @@ module openconfig-relay-agent-ext {
 
     import openconfig-relay-agent { prefix oc-relay; }
 
+    augment "/oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf src-intf {
+                        type string;
+                        description
+                                "Configure the src-intf from which the packet should
+                                 be relayed.";
+                }
+        }
+
+     augment "/oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf max-hop-count {
+                        type uint32;
+                        description
+                                "Configure the max hops the packet could be forwarded.";
+                }
+        }
+
+
+     augment "/oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf link-select {
+                        type enumeration {
+                              enum enable;
+                              enum disable;
+                        }
+                        description
+                                "Enables link-selection on the referenced interface.
+                                 src-intf must be configured.";
+                }
+        }
+
+     augment "/oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf src-intf {
+                        type string;
+                        description
+                                "Configure the src-intf from which the packet should
+                                 be relayed.";
+                }
+        }
+
+     augment "/oc-relay:relay-agent/oc-relay:dhcp/oc-relay:interfaces/oc-relay:interface/oc-relay:config" {
+                leaf max-hop-count {
+                        type uint32;
+                        description
+                                "Configure the max hops the packet could be forwarded.";
+                }
+        }
+
     deviation /oc-relay:relay-agent/oc-relay:dhcp/oc-relay:config/oc-relay:enable-relay-agent {
       deviate not-supported;
     }
@@ -124,7 +171,19 @@ module openconfig-relay-agent-ext {
         deviate not-supported;
     }
 
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:interface-ref/oc-relay:state/oc-relay:interface {
+      deviate not-supported;
+    }
+
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:interface-ref/oc-relay:config/oc-relay:interface {
+      deviate not-supported;
+    }
+
     deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:interface-ref/oc-relay:config/oc-relay:subinterface {
+        deviate not-supported;
+    }
+
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:options/oc-relay:config/oc-relay:interface-id {
         deviate not-supported;
     }
 
@@ -148,6 +207,10 @@ module openconfig-relay-agent-ext {
         deviate not-supported;
     }
 
+    deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:options/oc-relay:state/oc-relay:interface-id {
+        deviate not-supported;
+    }
+
     deviation /oc-relay:relay-agent/oc-relay:dhcpv6/oc-relay:interfaces/oc-relay:interface/oc-relay:options/oc-relay:state/oc-relay:enable-interface-id {
         deviate not-supported;
     }
@@ -161,3 +224,5 @@ module openconfig-relay-agent-ext {
     }
 
 }
+
+

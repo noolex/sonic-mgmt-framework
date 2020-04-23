@@ -133,7 +133,7 @@ $(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/goya
 cd $(BUILD_GOPATH)/src/github.com/openconfig/ygot/; git reset --hard HEAD;git clean -f -d;git checkout c23bb1518a1e62024ebec956d81d3e007bb127dc 2>/dev/null ; true; \
 cd ../; cp $(TOPDIR)/ygot-modified-files/ygot.patch .; \
 patch -p1 < ygot.patch; rm -f ygot.patch; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot/ygot
+$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot/ygot;
 
 #Apply CVL related patches
 	$(apply_cvl_dep_patches)
@@ -155,6 +155,7 @@ install:
 	$(INSTALL) -D $(TOPDIR)/models/yang/common/*.yang $(DESTDIR)/usr/models/yang/
 	$(INSTALL) -D $(TOPDIR)/models/yang/annotations/*.yang $(DESTDIR)/usr/models/yang/
 	$(INSTALL) -D $(TOPDIR)/models/yang/extensions/*.yang $(DESTDIR)/usr/models/yang/
+	$(INSTALL) -D $(TOPDIR)/models/yang/version.xml $(DESTDIR)/usr/models/yang/
 	$(INSTALL) -D $(TOPDIR)/build/yaml/api_ignore $(DESTDIR)/usr/models/yang/
 	cp -rf $(TOPDIR)/build/rest_server/dist/ui/ $(DESTDIR)/rest_ui/
 	cp -rf $(TOPDIR)/build/cli $(DESTDIR)/usr/sbin/

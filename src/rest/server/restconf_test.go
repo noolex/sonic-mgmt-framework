@@ -26,6 +26,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"translib"
 )
 
 func TestMetaHandler(t *testing.T) {
@@ -176,8 +178,13 @@ func testYlibGetAll(t *testing.T) {
 func testYlibGetMsetID(t *testing.T) {
 	status, data := getYanglibInfo("", "", "module-set-id")
 	verifyRespStatus(t, status, 200)
-	if len(data) != 1 || data["ietf-yang-library:module-set-id"] == nil {
+	msetID := data["ietf-yang-library:module-set-id"]
+	if len(data) != 1 || msetID == nil {
 		t.Fatalf("Server returned incorrect info.. %v", data)
+	}
+	if m, ok := msetID.(string); !ok || m != translib.GetYangBundleVersion().String() {
+		t.Fatalf("Server returned incorrect module-set-id \"%s\"; expected \"%s\"",
+			msetID, translib.GetYangBundleVersion())
 	}
 }
 

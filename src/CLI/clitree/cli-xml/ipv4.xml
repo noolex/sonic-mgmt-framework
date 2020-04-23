@@ -85,6 +85,32 @@ limitations under the License.
             fi&#xA;
         </ACTION>
     </COMMAND>
+    <!-- show ip dhcp-relay -->
+    <COMMAND
+        help="Show IP DHCP relay information"
+        name="show ip dhcp-relay">
+        <MACRO name="DHCP-RELAY-SHOW-OPTIONS" arg=""/>
+        <ACTION> if test -n "${ifName}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state show_ip_dhcp_relay_statistics.j2 ${ifName}&#xA;
+ elif test -n "${brief}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent show_ip_dhcp_relay_brief.j2&#xA;
+ elif test -n "${ifName1}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail show_ip_dhcp_relay_detailed.j2 ${ifName1}&#xA;
+ elif test -n "${detailed}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail show_ip_dhcp_relay_detailed.j2&#xA;
+ fi&#xA;
+        </ACTION>
+    </COMMAND>
+    <!--====================clear <ip> dhcp-relay statistics======================-->
+    <COMMAND name="clear ip dhcp-relay" help="Clear ipv4 dhcp-relay statistics">
+      <PARAM name="clear-subcommands" help="Clear subcommands" mode="switch" ptype="SUBCOMMAND">
+      <PARAM help="clear ip dhcp-relay statistics" name="statistics" optional="false" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32"/>
+      </PARAM>
+      </PARAM>
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_relay_clear  ${ifName}  ${__full_line}
+ </ACTION>
+    </COMMAND>
 </VIEW>
 
 <!--=======================================================-->
@@ -123,7 +149,18 @@ limitations under the License.
 	    ptype="IP_ADDR" />
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
     </COMMAND>
-
+    <COMMAND
+        name="ip dhcp-relay"
+        help="Add DHCP relay on an interface" >
+        <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${ifName} ${hop-count} ${__full_line}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ip dhcp-relay"
+        help="Remove DHCP relay on an interface" >
+        <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${__full_line}</ACTION>
+    </COMMAND>
     <COMMAND
         name="ip unnumbered"
         help="Configure IPv4 unnumbered interface" >
@@ -249,6 +286,19 @@ limitations under the License.
              ptype="IP_ADDR" />
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
       </COMMAND>
+      <COMMAND
+         name="ip dhcp-relay"
+         help="Add DHCP relay on an interface" >
+         <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
+         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${vlan_name} ${ifName} ${hop-count} ${__full_line}</ACTION>
+      </COMMAND>
+      <COMMAND
+         name="no ip dhcp-relay"
+         help="Remove DHCP relay on an interface" >
+         <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+         <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config  ${vlan_name} ${__full_line}</ACTION>
+      </COMMAND>
+
 </VIEW>
 
 <!--=======================================================-->
@@ -284,6 +334,18 @@ limitations under the License.
              help="IP address"
              ptype="IP_ADDR" />
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+      </COMMAND>
+      <COMMAND
+         name="ip dhcp-relay"
+         help="Add DHCP relay on an interface" >
+         <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
+         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${po_name} ${ifName} ${hop-count} ${__full_line}</ACTION> 
+      </COMMAND>
+      <COMMAND
+         name="no ip dhcp-relay"
+         help="Remove DHCP relay on an interface" >
+         <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+         <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${po_name}  ${__full_line}</ACTION>
       </COMMAND>
 
       <COMMAND

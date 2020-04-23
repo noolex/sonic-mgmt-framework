@@ -38,12 +38,12 @@ module sonic-common {
         }
     }
 
-    typedef mode-enable {
-        type enumeration {
-            enum enable;
-            enum disable;
-        }
-    }
+    typedef mode {
+          type enumeration {
+              enum enable;
+              enum disable;
+          }
+      }
 
     container operation {
 	    leaf operation {

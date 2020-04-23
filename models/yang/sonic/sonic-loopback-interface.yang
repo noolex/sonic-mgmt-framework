@@ -61,7 +61,7 @@ module sonic-loopback-interface {
                 }
 
                 leaf ipv6_use_link_local_only {
-                    type cmn:mode-enable;
+                    type cmn:mode;
                     default disable;
                     description
                         "Enable IPv6 link local address on interface";

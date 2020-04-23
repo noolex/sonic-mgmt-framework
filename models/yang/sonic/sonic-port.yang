@@ -6,6 +6,10 @@ module sonic-port {
         prefix scommon;
     }
 
+    import sonic-extension {
+        prefix sonic-ext;
+    }
+
     organization
         "SONiC";
 
@@ -70,6 +74,7 @@ module sonic-port {
                             error-app-tag mtu-invalid;
                         }
                     }
+                    sonic-ext:custom-validation ValidateMtuForPOMemberCount;
                 }
 
                 leaf lanes {

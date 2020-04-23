@@ -9,11 +9,13 @@ import swsssdk
 import cli_client as cc
 import socket
 import ipaddress
+import netifaces
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 from swsssdk import ConfigDBConnector
 from operator import itemgetter
 from collections import OrderedDict
+from socket import AF_INET,AF_INET6
 
 ALLOW_SYSNAME=False
 """
@@ -204,6 +206,7 @@ SecurityModels = { 'any' : 'any', 'v1': 'v1', 'v2c': 'v2c', 'v3': 'usm' }
 SecurityLevels = { 'noauth' : 'no-auth-no-priv', 'auth' : 'auth-no-priv', 'priv' : 'auth-priv' }
 ViewOpts       = { 'read' : 'readView', 'write' : 'writeView', 'notify' : 'notifyView'}
 SORTED_ORDER   = ['sysName', 'sysLocation','sysContact', 'engineID', 'traps']
+ipFamily       = {4: AF_INET, 6: AF_INET6}
 
 config_db = ConfigDBConnector()
 if config_db is None:
@@ -219,14 +222,16 @@ def manageGroupMasterKey(group):
   deleteGroup = True
 
   response = invoke('snmp_group_member_get', None)
-  for entry in response.content['group-member']:
-    if entry['name'] == group:
-      deleteGroup = False
+  if response.ok():
+    for entry in response.content['group-member']:
+      if entry['name'] == group:
+        deleteGroup = False
 
   response = invoke('snmp_group_access_get', None)
-  for entry in response.content['group-access']:
-    if entry['name'] == group:
-      deleteGroup = False
+  if response.ok():
+    for entry in response.content['group-access']:
+      if entry['name'] == group:
+        deleteGroup = False
 
   if deleteGroup == True:
     path = '/restconf/data/ietf-snmp:snmp/vacm/group={name}'
@@ -354,7 +359,7 @@ def set_system(row, data):
   return None
 
 def getIPType(x):
-  try: socket.inet_pton(socket.AF_INET6, x)
+  try: socket.inet_pton(AF_INET6, x)
   except socket.error:
     return False
   return True
@@ -460,6 +465,67 @@ def invoke(func, args):
     if 'interface' in args:
       index = args.index('interface')
       interface = args[index+1]
+
+    if func == 'snmp_agentaddr':    # Need to test parameters before setting
+      ipAddrValid = False
+      ifValid = True
+      if not interface == '':
+        ifValid = False
+      ip = ipaddress.ip_address(unicode(ipAddress))
+      for intf in netifaces.interfaces():
+        if intf == interface:
+          ifValid = True
+        ipaddresses = netifaces.ifaddresses(intf)
+        if ipFamily[ip.version] in ipaddresses:
+          for ipaddr in ipaddresses[ipFamily[ip.version]]:
+            testAddr = ipaddr['addr']
+            if '%' in testAddr:                 # some IPv6 addresses include an interface at the end
+              testAddr = testAddr[0:testAddr.index('%')]
+            if ipAddress == testAddr:
+              ipAddrValid = True
+              break
+
+      portValid = True
+      if ipAddrValid == True and not port == '161':
+        reusePort = False
+        agentAddresses = getAgentAddresses()
+        for agentaddr in agentAddresses:
+          if agentaddr['udpPort'] == port:
+            reusePort = True
+        if reusePort == False:
+          if getIPType(ipAddress):
+            sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+          else:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+          try:
+            sock.bind(('', int(port)))
+            sock.close()
+          except:
+            portValid = False
+
+      if ipAddrValid == True and portValid == True:
+        # make sure ip:port combo not already in use
+        agentAddresses = getAgentAddresses()
+        for agentaddr in agentAddresses:
+          if agentaddr['ipAddr'] == ipAddress and agentaddr['udpPort'] == port:
+            ipAddrValid = False
+            portValid == False
+
+      if ipAddrValid == False or portValid == False or ifValid == False:
+        response=aa.cli_not_implemented("None")        # Just to get the proper format to return data and status
+        response.content = {}                          # This method is used extensively throughout
+        response.status_code = 409
+        if ipAddrValid == False and portValid == False:
+          message = "IP Address/port combination {}:{} is in use".format(ipAddress, port)
+        if ipAddrValid == False:
+          message = "{} is not a valid interface IP Address".format(ipAddress)
+        elif portValid == False:
+          message = "UDP port {} is not available".format(port)
+        elif ifValid == False:
+          message = "{} is not a valid interface".format(interface)
+        response.set_error_message(message)
+        return response
+
     key = (ipAddress, port, interface)
     entry = None                    # default is to delete the entry
     if func == 'snmp_agentaddr':
@@ -639,10 +705,17 @@ def invoke(func, args):
                     g['notify-view'] = entry['notify-view']
                     groups.append(g)
 
-    response=aa.cli_not_implemented("group")              # just to get the proper format
-    response.content = {}
-    response.status_code = 204
-    response.content['group-access'] = sorted(groups, key=itemgetter('name', 'model', 'security'))
+      response=aa.cli_not_implemented("group")              # just to get the proper format
+      response.content = {}
+      response.status_code = 204
+      response.content['group-access'] = sorted(groups, key=itemgetter('name', 'model', 'security'))
+    else:
+      response=aa.cli_not_implemented("None")        # Just to get the proper format to return data and status
+      response.content = {}                          # This method is used extensively throughout
+      response.status_code = 404
+      message = "Resource not found"
+      response.set_error_message(message)
+      return response
 
     return response
 
@@ -913,6 +986,7 @@ def invoke(func, args):
             h['target'] = data['target-params']
             udp = data['udp']
             h['ipaddr'] = udp['ip']
+            h['port'] = udp['port']
             h['ip6'] = getIPType(h['ipaddr'])
             for key, value in data.items():
               if key == 'target-params':
@@ -957,7 +1031,12 @@ def invoke(func, args):
                 hosts6_u.append(h)
 
     if len(hosts4_c) == 0 and len(hosts6_c) == 0 and len(hosts4_u) == 0 and len(hosts6_u) == 0:
-      return None
+      response=aa.cli_not_implemented("None")        # Just to get the proper format to return data and status
+      response.content = {}                          # This method is used extensively throughout
+      response.status_code = 404
+      message = "Resource not found"
+      response.set_error_message(message)
+      return response
     else:
       response.content = { "community" : sorted(hosts4_c, key=lambda i: ipaddress.ip_address(i['ipaddr'])) + sorted(hosts6_c, key=lambda i: ipaddress.ip_address(i['ipaddr'])),
                            "user"      : sorted(hosts4_u, key=lambda i: ipaddress.ip_address(i['ipaddr'])) + sorted(hosts6_u, key=lambda i: ipaddress.ip_address(i['ipaddr'])) }
@@ -965,50 +1044,99 @@ def invoke(func, args):
 
   # Add a host.
   elif func == 'snmp_host_add':
-    key = findKeyForTargetEntry(args[0])
+    host = args[0]
+    key = findKeyForTargetEntry(host)
     if key == 'None':
-      key = findNextKeyForTargetEntry(args[0])
+      key = findNextKeyForTargetEntry(host)
 
     type = 'trapNotify'
     if 'user' == args[1]:
       secModel = SecurityModels['v3']
     else:
-      secModel = SecurityModels['v2c']                      # v1 is not supported, v2c should be default
+      secModel = SecurityModels['v2c']                   # v1 is not supported, v2c should be default
+    secName = args[2]
+    additionalArgs = args[3:]
 
-    response = invoke('snmp_host_delete', [args[0]])        # delete user config if it already exists
+    response = invoke('snmp_host_delete', [host])        # delete user config if it already exists
     secLevel = SecurityLevels['noauth']
-    params = { 'timeout': '15', 'retries': '3' }
-    if len(args) > 3:
-      type = (args[3].rstrip('s'))+'Notify'      # one of 'trapNotify' or 'informNotify'
-      index = 4
-      if secModel == SecurityModels['v3']:
-        secLevel = SecurityLevels[args[4]]
-        index = 5
-      if len(args) > index:
-        if type == 'trapNotify':
-          secModel = args[index]
-        else:
-          params[args[index]] = args[index+1]
-          if len(args) > (index+2):
-            params[args[index+2]] = args[index+3]
+    timeout = '15'
+    retries = '3'
+    udpPort = '162'
+    srcIf = None
+    ifValid = False
 
+    # parameter parsing
+    # optional arguments 'interface', 'port', and for informs, 'timeout' & 'retries'
+    # 'traps' and 'informs' are mutually exclusive but one or the other is required.
+    if 'interface' in additionalArgs:
+      # record interface and remove from optional params
+      index = additionalArgs.index('interface')
+      srcIf = additionalArgs.pop(index + 1)
+      additionalArgs.pop(index)
+    if 'port' in additionalArgs:
+      # record port and remove from optional params
+      index = additionalArgs.index('port')
+      udpPort = additionalArgs.pop(index + 1)
+      additionalArgs.pop(index)
+    if 'timeout' in additionalArgs:
+      # record timeout and remove from optional params
+        index = additionalArgs.index('timeout')
+        timeout = additionalArgs.pop(index + 1)
+        additionalArgs.pop(index)
+    if 'retries' in additionalArgs:
+      # record retires and remove from optional params
+        index = additionalArgs.index('retries')
+        retries = additionalArgs.pop(index + 1)
+        additionalArgs.pop(index)
+    #end of additional/optional paramters
+
+    if len(additionalArgs)>0:
+      type = additionalArgs.pop(0)
+      type = type.rstrip('s')+'Notify'      # one of 'trapNotify' or 'informNotify'
+      if secModel == SecurityModels['v3']:
+        secLevel = SecurityLevels[additionalArgs.pop(0)]
+      if len(additionalArgs) > 0:
+        if type == 'trapNotify':
+          secModel = additionalArgs.pop(0)
+    else:
+      type = 'trapNotify'
+
+    # parameter checking
     # informs can never be 'v1'
     if type == 'informNotify' and secModel == SecurityModels['v1']:
       secModel = SecurityModels['v2c']
+    if srcIf == 'mgmt' :
+      ifValid = True
+    elif not srcIf == None:
+      for intf in netifaces.interfaces():
+        if intf == srcIf:
+          ifValid = True
+          break
+
+    tag = [ type ]
+    if ifValid == True:
+      tag.append(srcIf)
+    elif not srcIf == None:
+      response=aa.cli_not_implemented("None")        # Just to get the proper format to return data and status
+      response.content = {}
+      response.status_code = 409
+      message = "{} is not a valid interface".format(srcIf)
+      response.set_error_message(message)
+      return response
 
     targetEntry=collections.defaultdict(dict)
     targetEntry["target"]=[{ "name": key,
-                             "timeout": 100*int(params['timeout']),
-                             "retries": int(params['retries']),
+                             "timeout": 100*int(timeout),
+                             "retries": int(retries),
                              "target-params": key,
-                             "tag": [ type ],
-                             "udp" : { "ip": args[0], "port": 162}
+                             "tag": tag,
+                             "udp" : { "ip": host, "port": int(udpPort)}
                              }]
     if secModel == 'usm':
-      security = { "user-name": args[2],
+      security = { "user-name": secName,
                    "security-level": secLevel}
     else:
-      security = { "security-name": args[2]}
+      security = { "security-name": secName}
 
     targetParams=collections.defaultdict(dict)
     targetParams["target-params"]=[{ "name": key,
@@ -1065,10 +1193,12 @@ def run(func, args):
       elif func == 'snmp_host_get':
         show_cli_output(args[0], api_response.content['community'])
         show_cli_output('show_snmp_host_user.j2', api_response.content['user'])
-    #else:
-    #  # For some reason, the show commands return a status_code of 500
-    #   print(api_response.status_code)
-    #   print(api_response.error_message())
+    else:
+      if api_response.status_code == 404:               # Resource not found
+        return
+      else:
+        print(api_response.error_message())
+        sys.exit(-1)
 
   except:
     # system/network error

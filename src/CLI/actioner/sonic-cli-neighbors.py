@@ -52,6 +52,17 @@ def get_keypath(func,args):
         elif (len (args) == 4):
             body = {"sonic-neighbor:input":{"family": args[0], "force": args[1], "ip": "", "ifname": args[3]}}
 
+    elif func == 'set_ipv4_arp_timeout': 
+        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv4_arp_timeout')
+        body = {"sonic-neighbor:ipv4_arp_timeout": int(args[0])}
+    elif func == 'set_ipv6_nd_cache_expiry': 
+        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv6_nd_cache_expiry')
+        body = {"sonic-neighbor:ipv6_nd_cache_expiry": int(args[0])}
+    elif func == 'del_ipv4_arp_timeout': 
+        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv4_arp_timeout')
+    elif func == 'del_ipv6_nd_cache_expiry': 
+        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv6_nd_cache_expiry')
+
     return keypath, body
 
 def build_mac_list():
@@ -187,7 +198,11 @@ def run(func, args):
     nbr_list = []
 
     try:
-        if (func == 'rpc_sonic_clear_neighbors'):
+        if (func == 'set_ipv4_arp_timeout') or (func == 'set_ipv6_nd_cache_expiry'):
+            api_response = aa.patch(keypath, body)
+        elif (func == 'del_ipv4_arp_timeout') or (func == 'del_ipv6_nd_cache_expiry'):
+            api_response = aa.delete(keypath)
+        elif (func == 'rpc_sonic_clear_neighbors'):
             api_response = aa.post(keypath,body)
         else:
             api_response = aa.get(keypath)

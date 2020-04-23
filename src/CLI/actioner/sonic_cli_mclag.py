@@ -418,7 +418,7 @@ def mclag_show_mclag_brief(args):
             if domain_cfg_info.get("keepalive_interval") is None:
                 domain_cfg_info['keepalive_interval'] = 1;
             if domain_cfg_info.get("session_timeout") is None:
-                domain_cfg_info['session_timeout']   = 15;
+                domain_cfg_info['session_timeout']   = 30;
             peer_link_name = domain_cfg_info.get("peer_link") 
             domain_cfg_info['peer_link_status'] = mclag_get_peer_link_status(peer_link_name)
             
