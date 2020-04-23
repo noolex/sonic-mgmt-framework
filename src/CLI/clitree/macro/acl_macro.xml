@@ -47,7 +47,7 @@ limitations under the License.
     </MACRODEF>
 
     <MACRODEF name="L4-PORT-OPTIONS">
-        <PARAM name="arg1-l4-port-oper" help="" ptype="SUBCOMMAND" mode="switch" optional="true"
+        <PARAM name="arg1-l4-port-oper" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" 
                test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) -o ( "${ip-protocol}" = "udp" ) -o ( "${ip-protocol-val}" = "17" ) )'>
             <PARAM name="arg1-eq" help="Match packets with TCP/UDP arg2 port equal to the given port number" ptype="SUBCOMMAND" mode="subcommand" optional="true" value="eq">
                 <PARAM name="arg1-port1" help="arg3 port number" ptype="RANGE_0_65535"/>
@@ -123,7 +123,7 @@ limitations under the License.
     </MACRODEF>
 
     <MACRODEF name="IP-RULE-COMMON-OPTIONS">
-        <PARAM name="dscp" help="Match packets using DSCP value" ptype="SUBCOMMAND" mode="subcommand" optional="true" test='"${action-options}" != "remark"'>
+        <PARAM name="dscp" help="Match packets using DSCP value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
             <MACRO name="IP-DSCP-VALUE-OPTIONS"/>
         </PARAM>
     </MACRODEF>

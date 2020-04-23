@@ -26,6 +26,67 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 
+def generate_show_ip_ospf(args):
+    api = cc.ApiClient()
+    keypath = []
+    vrfName = "default"
+    i = 0
+    for arg in args:
+        if "vrf" in arg or "Vrf" in arg:
+            vrfName = args[i]
+        i = i + 1
+
+    d = {}
+    dlist = []
+    d = { 'vrfName': vrfName }
+    dlist.append(d)
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=args[1])
+    response = api.get(keypath)
+    if(response.ok()):
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+            if api_response is None:
+                print("Failed")
+                return
+	    api_response['openconfig-network-instance:global_state'] = api_response.pop('openconfig-network-instance:state')
+            dlist.append(api_response)
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/state', name=args[1])
+    response = api.get(keypath)
+    if(response.ok()):
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+            if api_response is None:
+                print("Failed")
+                return
+	    api_response['openconfig-network-instance:spf_state'] = api_response.pop('openconfig-network-instance:state')
+            dlist.append(api_response)
+    
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/lsa-generation/state', name=args[1])
+    response = api.get(keypath)
+    if(response.ok()):
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+            if api_response is None:
+                print("Failed")
+                return
+	    api_response['openconfig-network-instance:lsa_gen_state'] = api_response.pop('openconfig-network-instance:state')
+            dlist.append(api_response)
+
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=args[1])
+    response = api.get(keypath)
+    if(response.ok()):
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+            if api_response is None:
+                print("Failed")
+                return
+            dlist.append(api_response)
+    show_cli_output(args[0], dlist)
+
 
 def invoke_show_api(func, args=[]):
     api = cc.ApiClient()
@@ -33,28 +94,16 @@ def invoke_show_api(func, args=[]):
     body = None
 
     if func == 'show_ip_ospf':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2', name=args[1])
+        return generate_show_ip_ospf(args)
+    elif func == 'show_ip_ospf_neighbor_detail_all':
+        keypath = cc.path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/neighbors-list', name=args[1])
         return api.get(keypath)
-    else:
+    else: 
         return api.cli_not_implemented(func)
 
 
 def run(func, args):
-    if func == 'show_ip_ospf':
-        response = invoke_show_api(func, args)
-        if response.ok():
-            if (args[1]):
-                d = { 'vrfName': args[1] }
-            if response.content is not None:
-                # Get Command Output
-                api_response = response.content
-                if api_response is None:
-                    print("Failed")
-                    return
-            d.update(api_response)
-        show_cli_output(args[0], d)
-    else:
-        print(response.error_message())
+    invoke_show_api(func, args)
 
 if __name__ == '__main__':
 

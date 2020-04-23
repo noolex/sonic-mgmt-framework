@@ -81,12 +81,14 @@ limitations under the License.
             <PARAM name = "rangecmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" > 
               <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                  <PARAM name = "advertisecost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
+                  <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
                 </PARAM>
               </PARAM>
+<!--
               <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
               </PARAM>
+-->
               <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "rangenetworkprefix" help = "Network prefix to be announced instead of range" ptype = "IP_ADDR_MASK" /> 
@@ -145,19 +147,15 @@ limitations under the License.
         if test "${vlinkcmdtype}" == "transmit-interval"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_transmit_interval ${vrf-name} ${areaid} ${vlinkip} ${transmitinterval} &#xA;
         fi&#xA;
-<!--
-        if test "${vlinkcmdtype}" == "vauthentication"; then&#xA;
-          if test "${vlinkauthtype}" == "null"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_null ${vrf-name} ${intradistance} ${areaid} ${vlinkip} &#xA;
-          fi&#xA;
-          if test "${vlinkauthtype}" == "vmessage-digest"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest ${vrf-name} ${interdistance} ${areaid} ${vlinkip} &#xA;
-          fi&#xA;
-          if test "${auth-key}" != "null"; then&#xA;
+        if test "${vlinkauthtype}" == "null"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_null ${vrf-name} ${intradistance} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
+        if test "${vlinkauthtype}" == "message-digest"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest ${vrf-name} ${interdistance} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
+        if test "${auth-key}" != ""; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_key ${vrf-name} ${intradistance} ${areaid} ${vlinkip} ${auth-key}&#xA;
-          fi&#xA;
-        fi&#xA
--->
+        fi&#xA;
       fi&#xA;
       if test "${areacmdtype}" == "authentication"; then&#xA;
         if test "${message-digest}" != ""; then&#xA;
@@ -178,6 +176,45 @@ limitations under the License.
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_no_summary ${vrf-name} ${areaid} &#xA;
         fi&#xA;
       fi&#xA;
+      if test "${areacmdtype}" == "range"; then&#xA;
+        if test "${rangeprefix}" != ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix ${vrf-name} ${areaid} ${rangeprefix} &#xA;
+        fi&#xA;
+
+        if test "${rangecmdtype}" == "advertise"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_advertise ${vrf-name} ${areaid} ${rangeprefix} &#xA;
+        fi&#xA;
+
+        if test "${cost}" != ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_metric ${vrf-name} ${areaid} ${rangeprefix} ${metriccost} &#xA;
+        fi&#xA;
+
+        if test "${rangecmdtype}" == "not-advertise"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_notadvertise ${vrf-name} ${areaid} ${rangeprefix} &#xA;
+        fi&#xA;
+
+        if test "${rangecmdtype}" == "substitute"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_substitute ${vrf-name} ${areaid} ${rangeprefix} ${rangenetworkprefix} &#xA;
+        fi&#xA;
+      fi&#xA;
+
+      if test "${areacmdtype}" == "import-list"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist ${vrf-name} ${areaid} ${importlistname} &#xA;
+      fi&#xA;
+
+      if test "${areacmdtype}" == "export-list"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_exportlist ${vrf-name} ${areaid} ${exportlistname} &#xA;
+      fi&#xA;
+
+      if test "${areacmdtype}" == "filter-list"; then&#xA;
+        if test "${filterdirection}" == "in"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_in ${vrf-name} ${areaid} ${prefixlistname} &#xA;
+        fi&#xA;
+        if test "${filterdirection}" == "out"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_out ${vrf-name} ${areaid} ${prefixlistname} &#xA;
+        fi&#xA;
+      fi&#xA;
+
       </ACTION>
   </COMMAND>
 
@@ -226,7 +263,7 @@ limitations under the License.
       <PARAM name="virtual-link" help="Configure a virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name = "vlinkip" help = "Router ID of the remote ABR" ptype = "IP_ADDR" >
           <PARAM name = "vlinkcmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
-            <PARAM name="vauthentication" help="Enable authentication on this virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name="authentication" help="Enable authentication on this virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
               <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
                 <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
                 <PARAM name="vmessage-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
@@ -484,17 +521,19 @@ limitations under the License.
   </COMMAND>
 -->
   <COMMAND name="network" help="Enable routing on an IP network" >
-    <PARAM name="ipaddrmask" help="OSPF network prefix" ptype="IP_ADDR_MASK" mode="subcommand" >
-      <PARAM name="area" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand" >
+    <PARAM name="ipaddrmask" help="OSPF network prefix" ptype="IP_ADDR_MASK" >
+      <PARAM name="area" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand">
         <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" />
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_networks_network_config ${vrf-name} ${areaid} ${ipaddrmask} &#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="no network" help="Enable routing on an IP network" >
     <PARAM name="ipaddrmask" help="OSPF network prefix" ptype="IP_ADDR_MASK" mode="subcommand" >
-      <PARAM name="area" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="area-id" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand" >
         <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" />
       </PARAM>
     </PARAM>
@@ -825,7 +864,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
         <PARAM name="border-routers" help="Show all the ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
         </PARAM>
 
@@ -943,7 +982,19 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2 ${vrf-name}</ACTION>
+      <ACTION>
+        if test "${cmdtype}" == ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2 ${vrf-name} &#xA;
+        else&#xA;
+          if test "${cmdtype}" == "neighbor"; then&#xA;
+            if test "${detail}" != ""; then&#xA;
+              if test "${all}" != ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor_detail_all show_ip_ospf_neighbor_detail_all.j2 ${vrf-name} &#xA;
+              fi&#xA;
+            fi&#xA;
+          fi&#xA;
+        fi&#xA;
+      </ACTION>
         <DOCGEN>
     <DESCRIPTION>
       Display ospf global information

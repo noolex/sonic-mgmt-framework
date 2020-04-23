@@ -1,6 +1,7 @@
 module sonic-sflow {
         namespace "http://github.com/Azure/sonic-sflow";
         prefix sflow;
+        yang-version 1.1;
 
         import ietf-inet-types {
                 prefix inet;
@@ -11,6 +12,15 @@ module sonic-sflow {
         }
         import sonic-port {
                 prefix prt;
+        }
+        import sonic-vlan {
+                prefix svlan;
+        }
+        import sonic-loopback-interface {
+                prefix lointf;
+        }
+        import sonic-mgmt-port {
+            prefix smt;
         }
 
         import sonic-extension {
@@ -96,7 +106,21 @@ module sonic-sflow {
 
                     leaf agent_id {
                         sonic-ext:custom-validation ValidateSflowAgentId;
-                        type string;
+                        type union {
+                            type leafref {
+                                path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+                            }
+                            type leafref {
+                                path "/smt:sonic-mgmt-port/smt:MGMT_PORT/smt:MGMT_PORT_LIST/smt:ifname";
+                            }
+                            type leafref {
+                                path "/svlan:sonic-vlan/svlan:VLAN/svlan:VLAN_LIST/svlan:name";
+                            }
+                            type leafref {
+                                path "/lointf:sonic-loopback-interface/lointf:LOOPBACK_INTERFACE/lointf:LOOPBACK_INTERFACE_LIST/lointf:loIfName";
+                            }
+                        }
+                        description "Interface name";
                     }
                 }
            }

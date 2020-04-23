@@ -15,6 +15,7 @@ module openconfig-rib-bgp-ext {
   import openconfig-policy-types { prefix oc-pol-types; }
   import openconfig-bgp-ext { prefix oc-bgp-ext; }
   import openconfig-yang-types { prefix oc-yang; }
+  import openconfig-bgp-evpn-ext { prefix oc-bgp-evpn-ext; }
   organization "OpenConfig working group";
 
   contact
@@ -441,6 +442,27 @@ module openconfig-rib-bgp-ext {
 
   deviation /oc-ni:network-instances/oc-ni:network-instance/oc-ni:protocols/oc-ni:protocol/oc-ni:bgp/oc-ni:rib/oc-ni:afi-safis/oc-ni:afi-safi/oc-ni:ipv6-unicast/oc-bgprib-ext:loc-rib-prefix/oc-bgprib-ext:routes/oc-bgprib-ext:route/oc-bgprib-ext:loc-rib-prefix-paths/oc-bgprib-ext:paths/oc-bgprib-ext:path/oc-bgprib-ext:attr-sets/oc-bgprib-ext:as4-path  {
      deviate not-supported;
+  }
+
+  augment "/oc-ni:network-instances/oc-ni:network-instance/" +
+    "oc-ni:protocols/oc-ni:protocol/" +
+    "oc-ni:bgp/oc-ni:rib/oc-ni:afi-safis/" +
+    "oc-ni:afi-safi/oc-bgp-evpn-ext:l2vpn-evpn/oc-bgp-evpn-ext:loc-rib/" +
+    "oc-bgp-evpn-ext:routes/oc-bgp-evpn-ext:route/oc-bgp-evpn-ext:state" {
+      description
+        "Add best-path field to the Loc-RIB for EVPN";
+
+      leaf best-path {
+        type boolean;
+        description
+          "Current path was selected as the best path.";
+      }
+
+      leaf weight {
+        type uint16;
+        description
+          "Weight of the path.";
+      }
   }
 
 }

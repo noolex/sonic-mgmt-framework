@@ -1,0 +1,16 @@
+{% if json_output -%}
+----------------------------------
+{{'%-25s'|format("Dependent Configurations")}}
+----------------------------------
+{% for key, klist in json_output.iteritems() %}
+{% for keys, entries  in klist.iteritems() %}
+{% if entries == None %}
+{{'%-20s'|format("No dependencies or invalid interface")}}
+{% else %}
+{% for entry in entries %}
+{{'%-20s'|format(entry)}}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}

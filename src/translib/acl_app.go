@@ -186,6 +186,7 @@ func (app *AclApp) translateAction(dbs [db.MaxDB]*db.DB) error {
 func (app *AclApp) translateSubscribe(dbs [db.MaxDB]*db.DB, path string) (*notificationOpts, *notificationInfo, error) {
 	pathInfo := NewPathInfo(path)
 	notifInfo := notificationInfo{dbno: db.ConfigDB}
+    notifOpts := notificationOpts{isOnChangeSupported: true}
 	notSupported := tlerr.NotSupportedError{
 		Format: "Subscribe not supported", Path: path}
 
@@ -240,7 +241,7 @@ func (app *AclApp) translateSubscribe(dbs [db.MaxDB]*db.DB, path string) (*notif
 		return nil, nil, notSupported
 	}
 
-	return nil, &notifInfo, nil
+	return &notifOpts, &notifInfo, nil
 }
 
 func (app *AclApp) processCreate(d *db.DB) (SetResponse, error) {
@@ -1398,10 +1399,7 @@ func convertOCAclRuleToInternalAclRule(ruleData db.Value, seqId uint32, aclName 
 	convertOCToInternalL2(ruleData, aclName, ruleIndex, rule)
 	convertOCToInternalTransport(ruleData, aclName, ruleIndex, rule)
 	err := convertOCToInternalInputAction(ruleData, aclName, ruleIndex, rule)
-	if err == nil {
-		err = convertOCToInternalInputInterface(ruleData, aclName, ruleIndex, rule)
-	}
-	
+
 	return err
 }
 
@@ -1509,12 +1507,6 @@ func convertOCToInternalIPv6(ruleData db.Value, aclName string, ruleIndex uint32
 	if rule.Ipv6.Config.DestinationAddress != nil {
 		ruleData.Field["DST_IPV6"] = *rule.Ipv6.Config.DestinationAddress
 	}
-	if rule.Ipv6.Config.SourceFlowLabel != nil {
-		ruleData.Field["SRC_FLOWLABEL"] = strconv.FormatInt(int64(*rule.Ipv6.Config.SourceFlowLabel), 10)
-	}
-	if rule.Ipv6.Config.DestinationFlowLabel != nil {
-		ruleData.Field["DST_FLOWLABEL"] = strconv.FormatInt(int64(*rule.Ipv6.Config.DestinationFlowLabel), 10)
-	}
 }
 
 func convertOCToInternalTransport(ruleData db.Value, aclName string, ruleIndex uint32, rule *ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry) {
@@ -1578,20 +1570,12 @@ func convertOCToInternalTransport(ruleData db.Value, aclName string, ruleIndex u
 		fmt.Fprintf(&b, "0x%0.2x/0x%0.2x", tcpFlags, tcpFlags)
 		ruleData.Field["TCP_FLAGS"] = b.String()
 	}
-	
+
 	if rule.Transport.Config.IcmpType != nil {
 		ruleData.Field[ACL_RULE_ICMP_TYPE] = strconv.FormatUint(uint64(*rule.Transport.Config.IcmpType), 10)
 	}
 	if rule.Transport.Config.IcmpCode != nil {
 		ruleData.Field[ACL_RULE_ICMP_CODE] = strconv.FormatUint(uint64(*rule.Transport.Config.IcmpCode), 10)
-	}
-}
-
-func convertOCToInternalInputInterface(ruleData db.Value, aclName string, ruleIndex uint32, rule *ocbinds.OpenconfigAcl_Acl_AclSets_AclSet_AclEntries_AclEntry) error {
-	if rule.InputInterface != nil && rule.InputInterface.InterfaceRef != nil {
-		 return tlerr.NotSupported("input-interface not supported")
-	} else {
-		return nil
 	}
 }
 
@@ -1604,12 +1588,8 @@ func convertOCToInternalInputAction(ruleData db.Value, aclName string, ruleIndex
 			ruleData.Field["PACKET_ACTION"] = "DROP"
 		default:
 		}
-		
-		if rule.Actions.Config.LogAction == ocbinds.OpenconfigAcl_LOG_ACTION_LOG_SYSLOG {
-			return tlerr.NotSupported("log-action not supported")
-		}
 	}
-	
+
 	return nil
 }
 

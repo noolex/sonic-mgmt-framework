@@ -2,6 +2,10 @@ module sonic-ssh-server-vrf {
     namespace "http://github.com/Azure/sonic-ssh-server-vrf";
     prefix ssh-server-vrf;
 
+    import sonic-common {
+	    prefix cmn;
+    }
+
     organization
         "SONiC";
 
@@ -34,6 +38,10 @@ module sonic-ssh-server-vrf {
                 }
 
                 leaf port {
+                    must "(current() = 22) or (/cmn:operation/cmn:operation = 'DELETE')" {
+                        error-message "Only port 22 is allowed";
+                        error-app-tag invalid-ssh-port;
+    			    }
                     type uint16;
                     description
                         "SSH port number";

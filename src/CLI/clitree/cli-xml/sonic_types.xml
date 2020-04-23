@@ -1193,8 +1193,15 @@ limitations under the License.
         <PTYPE
         name="DPB_MODE"
         method="select"
-        pattern="1x400G 1x100G 2x100G 2x50G 4x25G 4x10G"
+        pattern="1x400G 1x100G 1x40G 2x100G 2x50G 4x25G 4x10G"
         help="port breakout mode"
         />
-     <!--=======================================================-->
+    <!--=======================================================-->
+        <PTYPE
+        name="SFLOW_AGENT"
+        pattern="(&ETH_ALL_INTF;|&VLAN_ALL_INTF;|&LOOPB_INTF;)"
+        ext_pattern="(Ethernet(port)|Vlan(1-4094)|Loopback(0-16383))"
+        help="sFlow Agent"
+        />
+    <!--=======================================================-->
 </CLISH_MODULE>
