@@ -189,6 +189,7 @@ endif
 	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/etc/dbus-1/system.d/* $(DESTDIR)/etc/dbus-1/system.d/
 	rsync -av --no-o --no-g $(TOPDIR)/src/ham/hamd/etc/sonic/hamd $(DESTDIR)/etc/sonic/hamd
 	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/lib/systemd/system/*  $(DESTDIR)/lib/systemd/system/
+	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/usr/bin/*             $(DESTDIR)/usr/bin/
 	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/hamd     $(DESTDIR)/usr/sbin/.
 	$(INSTALL) -D $(TOPDIR)/src/ham/hamctl/hamctl $(DESTDIR)/usr/bin/.
 	$(INSTALL) -d $(DESTDIR)/lib/x86_64-linux-gnu/
