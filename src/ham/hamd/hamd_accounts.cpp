@@ -317,7 +317,7 @@ std::string hamd_c::get_groups_as_string(const std::vector< std::string > & role
 
 /**
  * @brief Run the post-create scripts located in
- *        /etc/sonic/hamd/scritps/post-create/.
+ *        /etc/sonic/hamd/scripts/post-create/.
  *
  * @param login User's login name.
  *
@@ -330,7 +330,7 @@ std::string hamd_c::post_create_scripts(const std::string  & login) const
     std::string  std_err;
     std::string  std_out;
 
-    for (auto & file : sorted_filelist("/etc/sonic/hamd/scritps/post-create"))
+    for (auto & file : sorted_filelist("/etc/sonic/hamd/scripts/post-create"))
     {
         if (g_file_test(file.c_str(), G_FILE_TEST_IS_EXECUTABLE))
         {
@@ -351,7 +351,7 @@ std::string hamd_c::post_create_scripts(const std::string  & login) const
 
 /**
  * @brief Run the post-create scripts located in
- *        /etc/sonic/hamd/scritps/pre-delete/.
+ *        /etc/sonic/hamd/scripts/pre-delete/.
  *
  * @param login User's login name.
  *
@@ -365,7 +365,7 @@ std::string hamd_c::pre_delete_scripts(const std::string  & login) const
     std::string              std_out;
     std::vector<std::string> errmsgs;
 
-    for (auto & file : sorted_filelist("/etc/sonic/hamd/scritps/pre-delete"))
+    for (auto & file : sorted_filelist("/etc/sonic/hamd/scripts/pre-delete"))
     {
         if (g_file_test(file.c_str(), G_FILE_TEST_IS_EXECUTABLE))
         {
