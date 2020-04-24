@@ -182,7 +182,26 @@ public:
     }
 };
 
-static DBus::BusDispatcher   dispatcher;
+static DBus::Connection  & get_dbusconn()
+{
+    static DBus::Connection  * conn_p = nullptr;
+    if (conn_p == nullptr)
+    {
+        // DBus::BusDispatcher is a "main loop" construct that
+        // handles (i.e. dispatched) DBus messages. This should
+        // be defined as a singleton to avoid memory leaks.
+        static DBus::BusDispatcher dispatcher;
+
+        // DBus::default_dispatcher must be initialized before DBus::Connection.
+        DBus::default_dispatcher = &dispatcher;
+
+        static DBus::Connection conn = DBus::Connection::SystemBus();
+
+        conn_p = &conn;
+    }
+
+    return *conn_p;
+}
 
 #define SYSLOG(LEVEL, args...) \
 do \
@@ -301,20 +320,20 @@ static void read_config()
             }
             if (NULL != (s = startswith(p, "programs")))
             {
-                // 'programs' is a list of comman-separated program names.
+                // 'programs' is a list of comma-separated program names.
                 // So we need to split the list into its components
                 s += strspn(s, " \t=");
-                std::vector<std::string> prog_names = split(s, ',');
+                std::vector<std::string> prog_names = split(s, ", \t");
                 for (auto &prog : prog_names) new_programs.push_back(trim(prog));
 
             }
 #ifdef WITH_PYTHON
             if (NULL != (s = startswith(p, "python_scripts")))
             {
-                // 'python_sctipts' is a list of comman-separated python script names.
+                // 'python_scripts' is a list of comman-separated python script names.
                 // So we need to split the list into its components
                 s += strspn(s, " \t=");
-                std::vector<std::string> scripts = split(s, ',');
+                std::vector<std::string> scripts = split(s, ", \t");
                 for (auto & script : scripts)
                 new_pyscripts.push_back(trim(script));
             }
@@ -544,11 +563,9 @@ enum nss_status _nss_sac_getpwnam_r(const char    * name,
     try
     {
         // Create the DBus interface
-        DBus::default_dispatcher = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::Connection    conn = DBus::Connection::SystemBus();
-        sac_proxy_c         sac(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        sac_proxy_c  sac(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
 
-        std::string errmsg = sac.add_unconfirmed_user(name, getpid());
+        std::string  errmsg = sac.add_unconfirmed_user(name, getpid());
         bool ok = errmsg.empty();
         if (ok)
         {
@@ -560,11 +577,12 @@ enum nss_status _nss_sac_getpwnam_r(const char    * name,
             }
         }
 
-        if (verbose) SYSLOG(LOG_DEBUG, "_nss_sac_getpwnam_r() - User \"%s\": Exiting with Try Again. errmsg=%s, pwd=%p",
+        if (verbose) SYSLOG(LOG_DEBUG, "_nss_sac_getpwnam_r() - User \"%s\": Exiting with Try Again due to: %s, pwd=%p",
                             name, errmsg.c_str(), pwd);
-    } catch (DBus::Error &ex)
+    }
+    catch (DBus::Error &ex)
     {
-        SYSLOG(LOG_ERR, "_nss_sac_getpwnam_r() - User \"%s\": Exiting with Try Again. Exception %s",
+        SYSLOG(LOG_ERR, "_nss_sac_getpwnam_r() - User \"%s\": Exiting with Try Again due to: %s",
                name, ex.what());
     }
 
