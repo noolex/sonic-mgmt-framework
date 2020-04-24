@@ -2,7 +2,7 @@ module openconfig-acl-ext {
 
     yang-version "1";
 
-    namespace "http://openconfig.net/yang/packet-match/extention";
+    namespace "http://openconfig.net/yang/acl/extention";
 
     prefix "oc-acl-ext";
 
@@ -10,7 +10,7 @@ module openconfig-acl-ext {
     import openconfig-acl { prefix oc-acl; }
 
     description
-        "This model describes the packet match extensions.";
+        "This model describes the acl extensions.";
 
     revision 2020-02-08 {
         description
@@ -101,4 +101,37 @@ module openconfig-acl-ext {
             type ip-protocol-type-ext;
         }
     }
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv4/oc-acl:config/oc-acl:hop-limit {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv4/oc-acl:state/oc-acl:hop-limit {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv6/oc-acl:config/oc-acl:source-flow-label {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv6/oc-acl:config/oc-acl:destination-flow-label {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv6/oc-acl:config/oc-acl:hop-limit {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv6/oc-acl:state/oc-acl:source-flow-label {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv6/oc-acl:state/oc-acl:destination-flow-label {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:ipv6/oc-acl:state/oc-acl:hop-limit {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:input-interface {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:actions/oc-acl:config/oc-acl:log-action {
+		deviate not-supported;
+	}
+	deviation /oc-acl:acl/oc-acl:acl-sets/oc-acl:acl-set/oc-acl:acl-entries/oc-acl:acl-entry/oc-acl:actions/oc-acl:state/oc-acl:log-action {
+		deviate not-supported;
+	}
 }

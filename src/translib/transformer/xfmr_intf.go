@@ -1830,7 +1830,7 @@ func validIPv6(ipAddress string) bool {
 }
 
 func validIP(ip net.IP) bool {
-    if (ip.IsLinkLocalUnicast() || ip.IsUnspecified() ||  ip.IsLoopback() ||  ip.IsMulticast()) {
+    if (ip.IsUnspecified() ||  ip.IsLoopback() ||  ip.IsMulticast()) {
         return false
     }
     return true

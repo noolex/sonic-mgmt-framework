@@ -1,5 +1,6 @@
 TOPDIR := ../../..
 SONIC_YANGAPI_DIR     := $(TOPDIR)/build/yaml
+YANGAPI3_DIR          := $(TOPDIR)/build/openapi3
 SONIC_MD_DIR          := $(TOPDIR)/build/restconf_md
 SONIC_YANGDIR           := .
 SONIC_YANGDIR_DEVIATION := $(SONIC_YANGDIR)/deviation
@@ -14,7 +15,7 @@ SONIC_PYANG_DIR        := $(SONIC_TOOLS_DIR)/pyang
 SONIC_PYANG_PLUGIN_DIR := $(SONIC_PYANG_DIR)/pyang_plugins
 SONIC_PYANG_BIN        := pyang
 
-all: yamlGen allyangs.tree allyangs_tree.html yang_tree.md
+all: yamlGen allyangs.tree allyangs_tree.html yang_tree.md openapi3
 
 yamlGen: $(SONIC_YANGAPI_DIR)/.sonic_done
 
@@ -60,6 +61,19 @@ $(SONIC_YANGAPI_DIR)/.sonic_done: $(SONIC_YANG_MOD_FILES) $(SONIC_YANG_COMMON_FI
 		$(SONIC_YANG_MOD_FILES)
 	@echo "+++++ Generation of  YAML files for Sonic Yang modules completed +++++"
 	touch $@
+
+#======================================================================
+# TODO: Temporary remove this when V3 plugin is enabled
+#======================================================================
+openapi3:  $(YANG_MOD_FILES) $(YANG_COMMON_FILES)
+	@echo "+++++ Generating OpenAPI specs for Yang modules +++++"
+	mkdir -p $(YANGAPI3_DIR)
+	$(SONIC_PYANG_BIN) \
+		-f openapiv3 \
+		--outputdir $(YANGAPI3_DIR) \
+		--plugindir $(SONIC_PYANG_PLUGIN_DIR) \
+		-p $(SONIC_YANGDIR_COMMON):$(SONIC_YANGDIR) \
+		$(SONIC_YANG_MOD_FILES)
 
 clean:
 	@echo "Removing files ..."

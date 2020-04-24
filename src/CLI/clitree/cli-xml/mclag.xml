@@ -18,7 +18,32 @@
     <COMMAND name="no mclag domain" help="Remove MCLAG Domain">
       <PARAM name="mclag-domain-id" help="Domain Id" ptype="RANGE_1_4095"> </PARAM>
 	  <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list ${mclag-domain-id} </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Adds Gateway Mac for MCLAG.
+        </DESCRIPTION>
+     </DOCGEN>
     </COMMAND>
+
+    <COMMAND
+           name="mclag gateway-mac"
+           help="Configure gw mac for router ports over MCLAG" >
+           <PARAM name="gw_mac" help="MCLAG Gateway MAC Address" ptype="MAC_ADDR"> </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_gw_mac_list ${gw_mac} </ACTION>
+     <DOCGEN>
+        <DESCRIPTION>
+          Delete Gateway Mac for MCLAG.
+        </DESCRIPTION>
+     </DOCGEN>
+
+    </COMMAND>
+    <COMMAND
+           name="no mclag gateway-mac"
+           help="Unconfigure gw mac for router ports over MCLAG" >
+           <PARAM name="gw_mac" help="MCLAG Gateway MAC Address" ptype="MAC_ADDR"> </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_gw_mac_list ${gw_mac} </ACTION>
+    </COMMAND>
+
   </VIEW>
   <!--MODE : mclag domain view -->
   <VIEW name="configure-mclag-view" prompt="${SYSTEM_NAME}(config-mclag-domain-${id})# " depth="2">

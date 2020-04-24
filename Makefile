@@ -19,6 +19,9 @@
 
 .PHONY: all clean cleanall codegen rest-server rest-clean yamlGen cli clitree ham clidocgen clidocgen-clean
 
+.ONESHELL:
+.SHELLFLAGS += -e
+
 TOPDIR := $(abspath .)
 BUILD_DIR := $(TOPDIR)/build
 export TOPDIR
@@ -131,12 +134,13 @@ $(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/gnmi
 cp $(TOPDIR)/goyang-modified-files/goyang.patch .; \
 patch -p1 < goyang.patch; rm -f goyang.patch; \
 $(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/goyang; \
-cd $(BUILD_GOPATH)/src/github.com/openconfig/ygot/; git reset --hard HEAD;git clean -f -d;git checkout 724a6b18a9224343ef04fe49199dfb6020ce132a 2>/dev/null ; true; \
+cd $(BUILD_GOPATH)/src/github.com/openconfig/ygot/; git reset --hard HEAD;git clean -f -d;git checkout c23bb1518a1e62024ebec956d81d3e007bb127dc 2>/dev/null ; true; \
 cd ../; cp $(TOPDIR)/ygot-modified-files/ygot.patch .; \
 patch -p1 < ygot.patch; rm -f ygot.patch; \
 $(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot/ygot; \
 cd $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi_ext; git checkout e7106f7f5493a9fa152d28ab314f2cc734244ed8 2>/dev/null ; true; \
 $(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi_ext
+	find -type d -exec chmod u+w {} +
 
 #Apply CVL related patches
 	$(apply_cvl_dep_patches)

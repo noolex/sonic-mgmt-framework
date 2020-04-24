@@ -21,6 +21,7 @@ TOPDIR := ../..
 BUILD_DIR := $(TOPDIR)/build
 
 YANGAPI_DIR                 := $(TOPDIR)/build/yaml
+YANGAPI3_DIR                 := $(TOPDIR)/build/openapi3
 MD_DIR                      := $(TOPDIR)/build/restconf_md
 YANGDIR                     := .
 YANGDIR_COMMON              := $(YANGDIR)/common
@@ -37,7 +38,7 @@ PYANG_DIR        := $(TOOLS_DIR)/pyang
 PYANG_PLUGIN_DIR := $(PYANG_DIR)/pyang_plugins
 PYANG_BIN        := pyang
 
-.PHONY: all yamlGen annot
+.PHONY: all yamlGen annot openapi3
 
 all: yamlGen annot allyangs.tree allyangs_tree.html yang_tree.md
 
@@ -92,6 +93,20 @@ $(YANGAPI_DIR)/.done:  $(YANG_MOD_FILES) $(YANG_COMMON_FILES)
 	@echo "+++++ Generation of  YAML files for Yang modules completed +++++"
 	touch $@
 
+#======================================================================
+# TODO: Temporary remove this when V3 plugin is enabled
+#======================================================================
+openapi3:  $(YANG_MOD_FILES) $(YANG_COMMON_FILES)
+	@echo "+++++ Generating OpenAPI specs for Yang modules +++++"
+	mkdir -p $(YANGAPI3_DIR)
+	$(PYANG_BIN) \
+		-f openapiv3 \
+		--outputdir $(YANGAPI3_DIR) \
+		--plugindir $(PYANG_PLUGIN_DIR) \
+		-p $(YANGDIR_COMMON):$(YANGDIR):$(YANGDIR_EXTENSIONS_DIR) \
+		$(YANG_MOD_FILES) $(YANG_MOD_EXTENSION_FILES)
+	@echo "+++++ Generation of  OpenAPI V3 specs for Yang modules completed +++++"
+	
 #======================================================================
 # Generate api_ignore file
 #======================================================================

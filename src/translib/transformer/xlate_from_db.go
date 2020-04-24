@@ -488,7 +488,7 @@ func fillDbDataMapForTbl(uri string, xpath string, tblName string, tblKey string
 	dbresult[cdb] = make(map[string]map[string]db.Value)
 	dbFormat := KeySpec{}
 	dbFormat.Ts.Name = tblName
-	dbFormat.dbNum = cdb
+	dbFormat.DbNum = cdb
 	if tblKey != "" {
 		dbFormat.Key.Comp = append(dbFormat.Key.Comp, tblKey)
 	}

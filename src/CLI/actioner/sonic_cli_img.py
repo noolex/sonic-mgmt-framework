@@ -56,6 +56,15 @@ def invoke_api(func, args):
         return api.get(path)
 
 def run(func, args):
+
+  if func == "rpc_sonic_image_management_image_remove":
+     remove_arg = args.pop(0)
+     image_arg  = args.pop()
+     remove_opt = remove_arg.split("=")[1]
+     image      = image_arg.split("=")[1]
+     if remove_opt != "all":
+         args.append(image)
+
   prpt = prompt_confirm(func, args)  
   if prpt == True:
       try:

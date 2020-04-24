@@ -283,125 +283,158 @@ def invoke(func, args):
 
 #show vxlan interface 
 def vxlan_show_vxlan_interface(args):
-
     print ""
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list", args)
     if api_response.ok():
         response = api_response.content
-	if response is None:
-	    print("no vxlan configuration")
-	elif response is not None:
-           if len(response) != 0:
-             show_cli_output(args[0],response)
+    if response is None:
+        print("no vxlan configuration")
+    elif response is not None:
+        if len(response) != 0:
+            show_cli_output(args[0],response)
 
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list", args)                                                                      
     if api_response.ok():
         response = api_response.content
-
         if response is None:
             print("no evpn configuration")
         elif response is not None:
-           if len(response) != 0:
-             show_cli_output(args[0],response)
+            if len(response) != 0:
+                show_cli_output(args[0],response)
     return
 
 #show vxlan vlan vni map 
 def vxlan_show_vxlan_vlanvnimap(args):
-
-    #print("VLAN-VNI Mapping")
-    list_len = 0
     print("")
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list", args)
     if api_response.ok():
         response = api_response.content
-	if response is None:
-	    print("no vxlan configuration")
-	elif response is not None:
-           if len(response) != 0:
- 	       show_cli_output(args[0], response)
+    if response is None:
+        print("no vxlan configuration")
+    elif response is not None:
+        if (args[1] == 'show'):
+            if len(response) != 0:
+                show_cli_output(args[0], response)
+        elif (args[1] == 'count'):
+            if 'sonic-vxlan:VXLAN_TUNNEL_MAP_LIST' in response:
+                vlan_vni_map_list = response['sonic-vxlan:VXLAN_TUNNEL_MAP_LIST']
+                vlan_vni_map_list_len = str(len(vlan_vni_map_list))
+                print("Total Count: " + vlan_vni_map_list_len)
+            else:
+                print("Total Count: 0")
     return
 
 #show vxlan vrf vni map 
 def vxlan_show_vxlan_vrfvnimap(args):
-
-    #print("VRF-VNI Mapping")
+    print("")
     iter_len = 0
     api_response = invoke("get_list_sonic_vxlan_tunnel_vrf_vni_map_list", args)
     if api_response.ok():
         response = api_response.content
-	if response is None:
-	    print("no vrf configuration")
-	elif response is not None:
-           if len(response) != 0:
-             vrf_list = response['sonic-vrf:VRF_LIST'][0]
-             for iter in vrf_list:
-                iter_len = len(iter)
-                if (iter_len == 3):
-	          show_cli_output(args[0], response)
+    if response is None:
+        print("no vrf configuration")
+    elif response is not None:
+        if len(response) != 0:
+            if (args[1] == 'show'):
+                vrf_list = response['sonic-vrf:VRF_LIST'][0]
+                for iter in vrf_list:
+                    iter_len = len(iter)
+                    if (iter_len == 3):
+                        show_cli_output(args[0], response)
+            elif (args[1] == 'count'):
+                vrf_map_count = 0
+                if 'sonic-vrf:VRF_LIST' in response:
+                    vrf_map_list = response['sonic-vrf:VRF_LIST']
+                    for tunnel in vrf_map_list:
+                        if 'vni' in tunnel and tunnel['vni'] != '' and tunnel['vni'] != 0:
+                            vrf_map_count += 1
+                    print("Total Count: " + str(vrf_map_count))
+                else:
+                    print("Total Count: 0")
     return
 
 #show vxlan tunnel 
 def vxlan_show_vxlan_tunnel(args):
-
-    list_len = 0
+    print("")
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_table_vxlan_tunnel_table_list", args)
     if api_response.ok():
         response = api_response.content
-	if response is None:
-	    print("no vxlan configuration")
-	elif response is not None:
-           if len(response) != 0:
-	       show_cli_output(args[0], response)
+    if response is None:
+        print("no vxlan configuration")
+    elif response is not None:
+        if (args[1] == 'show'):
+            if len(response) != 0:
+                show_cli_output(args[0], response)
+        elif (args[1] == 'count'):
+            if 'sonic-vxlan:VXLAN_TUNNEL_TABLE_LIST' in response:
+                tnl_list = response['sonic-vxlan:VXLAN_TUNNEL_TABLE_LIST']
+                tnl_list_len = str(len(tnl_list))
+                print("Total Count: " + tnl_list_len)
+            else:
+                print("Total Count: 0")
     return
 
 #show vxlan evpn remote vni
 def vxlan_show_vxlan_evpn_remote_vni(args):
+    print("")
     arg_length = len(args);
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_evpn_remote_vni_table_evpn_remote_vni_table_list", args)
     if api_response.ok():
         response = api_response.content
-	if response is None:
-	    print("no vxlan evpn remote vni entires")
-	elif response is not None:
-           if len(response) != 0:
-             if (arg_length == 1):
+    if response is None:
+        print("no vxlan evpn remote vni entires")
+    elif response is not None:
+        if 'sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST' in response:
+            index = 0
+            while (index < len(response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'])):
+                iter = response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'][index] 
+                if (arg_length == 3 and (args[2] != iter['remote_vtep'])):
+                    response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'].pop(index)
+                else:
+                    index = index + 1
+            if (args[1] == 'show'):
                 show_cli_output(args[0], response)
-             else:
-               index = 0
-               while (index < len(response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'])):
-                 iter = response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'][index]
-
-                 if (arg_length == 2 and (args[1] != iter['remote_vtep'])):
-                   response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'].pop(index)
-                 else:
-                   index = index + 1
-               show_cli_output(args[0], response)
-        return
+            elif (args[1] == 'count'):
+                if 'sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST' in response:
+                    remote_vni_list = response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST']
+                    remote_vni_list_len = str(len(remote_vni_list))
+                    print("Total Count: " + remote_vni_list_len)
+                else:
+                    print("Total Count: 0")
+        else:
+            print("Total Count: 0")
+    return
 
 #show vxlan evpn remote mac
 def vxlan_show_vxlan_evpn_remote_mac(args):
+    print("")
     arg_length = len(args);
-    list_len = 0
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_fdb_table_vxlan_fdb_table_list", args)
     if api_response.ok():
         response = api_response.content
-        if response is None:
-            print("no vxlan fdb entries")
-        elif response is not None:
-           if len(response) != 0:
-             if (arg_length == 1):
-                show_cli_output(args[0], response) 
-             else:
-               index = 0
-               while (index < len(response['sonic-vxlan:VXLAN_FDB_TABLE_LIST'])):
-                 iter = response['sonic-vxlan:VXLAN_FDB_TABLE_LIST'][index]
-                 if (arg_length == 2 and (args[1] != iter['remote_vtep'])):
-                   response['sonic-vxlan:VXLAN_FDB_TABLE_LIST'].pop(index)
-                 else:
-                   index = index + 1
-               show_cli_output(args[0], response)      
-        return
-
+    if response is None:
+        print("no vxlan fdb entries")
+    elif response is not None:
+        if 'sonic-vxlan:VXLAN_FDB_TABLE_LIST' in response:
+            index = 0
+            while (index < len(response['sonic-vxlan:VXLAN_FDB_TABLE_LIST'])):
+                iter = response['sonic-vxlan:VXLAN_FDB_TABLE_LIST'][index] 
+                if (arg_length == 3 and (args[2] != iter['remote_vtep'])):
+                    response['sonic-vxlan:VXLAN_FDB_TABLE_LIST'].pop(index)
+                else:
+                    index = index + 1
+            if (args[1] == 'show'):
+                show_cli_output(args[0], response)
+            elif (args[1] == 'count'):
+                if 'sonic-vxlan:VXLAN_FDB_TABLE_LIST' in response:
+                    remote_mac_list = response['sonic-vxlan:VXLAN_FDB_TABLE_LIST']
+                    remote_mac_list_len = str(len(remote_mac_list))
+                    print("Total Count: " + remote_mac_list_len)
+                else:
+                    print("Total Count: 0")
+        else:
+            print("Total Count: 0")
+    return
 
 def run(func, args):
     #show commands
@@ -448,32 +481,3 @@ if __name__ == '__main__':
     pipestr().write(sys.argv)
     #pdb.set_trace()
     run(sys.argv[1], sys.argv[2:])
-
-
-#       if api_response.ok():
-#           response = api_response.content
-#           if response is None:
-#               result = "Success"
-#           elif 'sonic-vxlan:sonic-vxlan' in response.keys():
-#               value = response['sonic-vxlan:sonic-vxlan']
-#               if value is None:
-#                   result = "Success"
-#               else:
-#                   result = "Failed"
-#           
-#       else:
-#           #error response
-#           result =  "Failed"
-#           fail = 1
-#           #print(api_response.error_message())
-#           if (func.startswith("patch") is True):
-#             print("Error:Map creation for VID:{} failed. Verify if the VLAN is created".format(vidstr)) 
-#           else:
-#             print ("Error:Map deletion for VID:{} failed with error = {}".format(vidstr,api_response.error_message()[7:]))
-
-#       if fail == 0:
-#         if (func.startswith("patch") is True):
-#           print("Map creation for {} vids succeeded.".format(count+1))
-#         else:
-#           print("Map deletion for {} vids succeeded.".format(count+1))
-

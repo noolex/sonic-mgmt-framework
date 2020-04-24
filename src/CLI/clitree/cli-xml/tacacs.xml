@@ -67,7 +67,7 @@ limitations under the License.
              help="Show tacacs global configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-tacacs.py get_sonic_tacacs_global show_tacacs_global.j2</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs get_sonic_tacacs_global show_tacacs_global.j2</ACTION>
     </COMMAND>
     <COMMAND name="show tacacs-server host" 
              help="Show tacacs server configuration" 
@@ -78,13 +78,7 @@ limitations under the License.
              ptype="IP_ADDR"
              optional="true"> 
       </PARAM>
-      <ACTION> 
-        if test -z "${address}"; then
-          python $SONIC_CLI_ROOT/sonic-cli-tacacs.py get_sonic_tacacs_server show_tacacs_server.j2;
-        else
-          python $SONIC_CLI_ROOT/sonic-cli-tacacs.py get_sonic_tacacs_server ${address} show_tacacs_server.j2;
-        fi
-      </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs get_sonic_tacacs_server address=${address} show_tacacs_server.j2</ACTION>
     </COMMAND>
   </VIEW>
 
@@ -102,7 +96,9 @@ limitations under the License.
              help=""
              ptype="IPV4V6_ADDR">
       </PARAM>
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-tacacs.py patch_openconfig_system_ext_system_aaa_server_groups_server_group_config_source_address ${src-ip}</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-address body={"openconfig-system-ext:source-address": "${src-ip}"}
+      </ACTION>
     </COMMAND>
 
     <!-- tacacs timeout -->
@@ -114,7 +110,9 @@ limitations under the License.
              help="timeout (default: 5)"
              ptype="TACACS_TIMEOUT">
       </PARAM>
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-tacacs.py patch_openconfig_system_ext_system_aaa_server_groups_server_group_config_timeout ${timeout}</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:timeout body={"openconfig-system-ext:timeout": ${timeout}}
+      </ACTION>
     </COMMAND>
 
     <!-- tacacs authtype -->
@@ -126,7 +124,9 @@ limitations under the License.
              help="Authentication type (default: pap)"
              ptype="AAA_AUTH_TYPE">
       </PARAM>
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-tacacs.py patch_openconfig_system_ext_system_aaa_server_groups_server_group_config_auth_type ${auth-type}</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:auth-type body={"openconfig-system-ext:auth-type": "${auth-type}"}
+      </ACTION>
     </COMMAND>
 
     <!-- tacacs secret-key -->
@@ -138,7 +138,9 @@ limitations under the License.
              help=""
              ptype="TACACS_KEY">
       </PARAM>
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-tacacs.py patch_openconfig_system_ext_system_aaa_server_groups_server_group_config_secret_key ${secret-key}</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:secret-key body={ "openconfig-system-ext:secret-key": "${secret-key}"}
+      </ACTION>
     </COMMAND>
 
     <!-- tacacs server -->
@@ -206,7 +208,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-tacacs.py patch_tacacs_server ${host} port:${port-val} key:${key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val}</ACTION>
     </COMMAND>
 
     <!-- no tacacs server -->
@@ -220,27 +222,37 @@ limitations under the License.
              help="server ip address"
              ptype="IPV4V6_ADDR">
       </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-tacacs.py delete_openconfig_system_system_aaa_server_groups_server_group_servers_server_tacacs_config ${address}</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/servers/server=${address}/tacacs/config
+      </ACTION>
     </COMMAND>
 
     <COMMAND name="no tacacs-server source-ip"
              help="Unconfigure global source ip for TACACS">
-      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-tacacs.py delete_openconfig_system_ext_system_aaa_server_groups_server_group_config_source_address</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-address
+      </ACTION>
     </COMMAND>
 
     <COMMAND name="no tacacs-server timeout"
              help="Unconfigure global timeout for TACACS">
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-tacacs.py patch_openconfig_system_ext_system_aaa_server_groups_server_group_config_timeout 5</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:timeout body={"openconfig-system-ext:timeout": 5}
+      </ACTION>
     </COMMAND>
 
     <COMMAND name="no tacacs-server auth-type"
              help="Unconfigure global auth-type for TACACS">
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-tacacs.py patch_openconfig_system_ext_system_aaa_server_groups_server_group_config_auth_type pap</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:auth-type body={"openconfig-system-ext:auth-type": "pap"}
+      </ACTION>
     </COMMAND>
 
     <COMMAND name="no tacacs-server key"
              help="Unconfigure global shared secret for TACACS">
-      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-tacacs.py delete_openconfig_system_ext_system_aaa_server_groups_server_group_config_secret_key</ACTION>
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:secret-key
+      </ACTION>
     </COMMAND>
 
   </VIEW>

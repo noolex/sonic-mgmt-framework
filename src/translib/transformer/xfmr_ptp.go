@@ -929,7 +929,7 @@ var YangToDb_ptp_unicast_multicast_xfmr FieldXfmrYangToDb = func(inParams XfmrPa
 		if domain_profile == "G.8275.x" {
 			return res_map, tlerr.InvalidArgsError{Format:"multicast not supported with G.8275.2"}
 		}
-		keys, tblErr := inParams.d.GetKeys(&db.TableSpec{Name:"PTP_PORT|GLOBAL"})
+		keys, tblErr := inParams.d.GetKeysPattern(&db.TableSpec{ Name:"PTP_PORT" }, db.Key {[]string{"GLOBAL|*"}})
 		if tblErr == nil {
 			for _, key := range keys {
 				entry2, err2 := inParams.d.GetEntry(&db.TableSpec{Name:"PTP_PORT"}, key)

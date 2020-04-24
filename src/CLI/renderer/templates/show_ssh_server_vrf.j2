@@ -1,0 +1,9 @@
+{{ ' ' }}
+{{ 'VRF Name'|center(32) }} {{ 'Status'|center(32) }}
+{{'-------------------------------- --------------------------------'}}
+{% for i in json_output %}
+  {% set i1 = json_output[loop.index-1] %}
+{{ '%-32s'|format(i1['vrf-name']) -}}
+{{ ' %-32s'|format('enable') }}
+{% endfor %}
+{{ ' ' }}

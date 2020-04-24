@@ -27,6 +27,10 @@ module sonic-route-map {
         prefix svlan;
     }
 
+    import sonic-vrf {
+        prefix svrf;
+    }
+
     organization
         "SONiC";
 
@@ -35,6 +39,11 @@ module sonic-route-map {
 
     description
         "SONIC Route map YANG";
+
+    revision 2020-04-08 {
+        description
+            "Added the fields for IPv6 next hop.";
+    }
 
     revision 2019-09-15 {
         description
@@ -158,6 +167,17 @@ module sonic-route-map {
                     }
                 }
 
+                leaf match_src_vrf {
+                    type union {
+                        type string {
+                            pattern "default";
+                        }
+                        type leafref {
+                            path "/svrf:sonic-vrf/svrf:VRF/svrf:VRF_LIST/svrf:vrf_name";
+                        }
+                    }
+                }
+
                 leaf-list match_neighbor {
                     type union {
                         type inet:ip-address;
@@ -239,7 +259,15 @@ module sonic-route-map {
                 leaf set_next_hop{
                     type string;
                 }
-                 
+
+                leaf set_ipv6_next_hop_global {
+                    type string;
+                }
+
+                leaf set_ipv6_next_hop_prefer_global { 
+                    type boolean;
+                }
+
                 leaf set_repeat_asn{
                     type uint8;
                 }

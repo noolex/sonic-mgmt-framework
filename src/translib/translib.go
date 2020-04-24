@@ -46,7 +46,7 @@ var writeMutex = &sync.Mutex{}
 
 //minimum global interval for subscribe in secs
 var minSubsInterval = 20
-var maxSubsInterval = 60
+var maxSubsInterval = 600
 
 type ErrSource int
 
@@ -158,8 +158,9 @@ type ModelData struct {
 }
 
 type notificationOpts struct {
-	mInterval int
-	pType     NotificationType // for TARGET_DEFINED
+    isOnChangeSupported bool
+	mInterval           int
+	pType               NotificationType // for TARGET_DEFINED
 }
 
 //initializes logging and app modules
@@ -872,6 +873,21 @@ func Subscribe(req SubscribeRequest) ([]*IsSubscribeResponse, error) {
 
 		nOpts, nInfo, errApp := (*app).translateSubscribe(dbs, path)
 
+		if nOpts != nil {
+			if nOpts.mInterval != 0 {
+				if ((nOpts.mInterval >= minSubsInterval) && (nOpts.mInterval <= maxSubsInterval)) {
+					resp[i].MinInterval = nOpts.mInterval
+				} else if (nOpts.mInterval < minSubsInterval) {
+					resp[i].MinInterval = minSubsInterval
+				} else {
+					resp[i].MinInterval = maxSubsInterval
+				}
+			}
+
+			resp[i].IsOnChangeSupported = nOpts.isOnChangeSupported
+			resp[i].PreferredType = nOpts.pType
+		}
+
 		if errApp != nil {
 			resp[i].Err = errApp
 
@@ -879,26 +895,8 @@ func Subscribe(req SubscribeRequest) ([]*IsSubscribeResponse, error) {
 				sErr = errApp
 			}
 
-			resp[i].MinInterval = maxSubsInterval
-
-			if nOpts != nil {
-				if nOpts.mInterval != 0 {
-					resp[i].MinInterval = nOpts.mInterval
-				}
-
-				resp[i].PreferredType = nOpts.pType
-			}
-
 			continue
 		} else {
-
-			if nOpts != nil {
-				if nOpts.mInterval != 0 {
-					resp[i].MinInterval = nOpts.mInterval
-				}
-
-				resp[i].PreferredType = nOpts.pType
-			}
 
 			if nInfo == nil {
 				sErr = tlerr.NotSupportedError{
@@ -906,8 +904,6 @@ func Subscribe(req SubscribeRequest) ([]*IsSubscribeResponse, error) {
 				resp[i].Err = sErr
 				continue
 			}
-
-			resp[i].IsOnChangeSupported = true
 
 			nInfo.path = path
 			nInfo.app = app
@@ -974,19 +970,26 @@ func IsSubscribeSupported(req IsSubscribeRequest) ([]*IsSubscribeResponse, error
 
 		nOpts, _, errApp := (*app).translateSubscribe(dbs, path)
 
+        if nOpts != nil {
+            if nOpts.mInterval != 0 {
+                if ((nOpts.mInterval >= minSubsInterval) && (nOpts.mInterval <= maxSubsInterval)) {
+                    resp[i].MinInterval = nOpts.mInterval
+                } else if (nOpts.mInterval < minSubsInterval) {
+                    resp[i].MinInterval = minSubsInterval
+                } else {
+                    resp[i].MinInterval = maxSubsInterval
+                }
+            }
+
+            resp[i].IsOnChangeSupported = nOpts.isOnChangeSupported
+            resp[i].PreferredType = nOpts.pType
+        }
+
 		if errApp != nil {
 			resp[i].Err = errApp
 			err = errApp
-			continue
-		} else {
-			resp[i].IsOnChangeSupported = true
 
-			if nOpts != nil {
-				if nOpts.mInterval != 0 {
-					resp[i].MinInterval = nOpts.mInterval
-				}
-				resp[i].PreferredType = nOpts.pType
-			}
+			continue
 		}
 	}
 

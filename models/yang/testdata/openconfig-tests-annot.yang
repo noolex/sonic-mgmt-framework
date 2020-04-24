@@ -1,0 +1,17 @@
+module openconfig-tests-annot {
+
+    yang-version "1";
+
+    namespace "http://openconfig.net/yang/openconfig-tests-annot";
+    prefix "oc-tests-annot";
+
+    import openconfig-tests { prefix oc-tests; }
+    import sonic-extensions {prefix sonic-ext; }
+
+    deviation /oc-tests:tests/oc-tests:TABLE_A {
+        deviate add {
+            sonic-ext:table-name "TABLE_A";
+        }
+    }
+ 
+}

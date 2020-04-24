@@ -110,6 +110,16 @@ limitations under the License.
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config ${vrf-name} IPV6_UNICAST ${external} ${internal} ${local}</ACTION>
   </COMMAND>
+  <COMMAND name="import" help="Import routes to this address-family"/>
+  <COMMAND name="import vrf" help="Import routes from another VRF">
+    <PARAM name="import-vrf" help="Import VRF options" mode="switch" ptype="SUBCOMMAND">
+       <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+         <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+       </PARAM>
+       <PARAM name="import-vrf-name" help="VRF Name" ptype="STRING_15"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_import_vrf ${vrf-name} IPV6_UNICAST ${import-vrf} ${import-vrf-name} ${route-map-name}</ACTION>
+  </COMMAND>
 
   <COMMAND name="no" help="no commands"/>
   <COMMAND name="no redistribute" help="Redistribute information from another routing protocol">
@@ -174,6 +184,16 @@ limitations under the License.
              python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_internal_route_distance ${vrf-name} IPV6_UNICAST&#xA;
              python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_local_route_distance ${vrf-name} IPV6_UNICAST&#xA;
     </ACTION>
+  </COMMAND>
+  <COMMAND name="no import" help="Import routes to this address-family"/>
+  <COMMAND name="no import vrf" help="Import routes from another VRF">
+    <PARAM name="import-vrf" help="Import routes from another VRF" mode="switch" ptype="SUBCOMMAND">
+       <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+         <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+       </PARAM>
+       <PARAM name="import-vrf-name" help="VRF Name" ptype="STRING_15"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_import_vrf ${vrf-name} IPV6_UNICAST ${import-vrf} ${import-vrf-name} ${route-map-name}</ACTION>
   </COMMAND>
 </VIEW>
 

@@ -26,7 +26,11 @@ module sonic-tests {
 		container TABLE_A {
 
 			list TABLE_A_LIST {
-				key "ifname";
+				key "id";
+
+                                leaf id {
+					type uint32;
+				}
 
 				leaf ifname {
 					type string {
@@ -38,7 +42,11 @@ module sonic-tests {
 				}
 
 				leaf index {
-					type uint16;
+					type uint32;
+				}
+
+				leaf-list indices {
+					type uint32;
 				}
 
 				leaf speed {

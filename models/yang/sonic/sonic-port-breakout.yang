@@ -41,7 +41,7 @@ module sonic-port-breakout {
 
 				leaf brkout_mode {
 					/*type string {
-						pattern "1x400G|1x100G|2x50G|2x100G|4x25G|4x10G"{
+						pattern "1x400G|1x100G|1x40G|2x50G|2x100G|4x25G|4x10G"{
 							error-message "Invalid port breakout mode";
 							error-app-tag port-breakout-mode-invalid;
 						}
@@ -49,14 +49,35 @@ module sonic-port-breakout {
                     type enumeration {
                         enum 1x400G { value 1; }
                         enum 1x100G { value 2; }
-                        enum 2x100G { value 3; }
-                        enum 2x50G { value 4; }
-                        enum 4x25G { value 5; }
-                        enum 4x10G { value 6; }
+                        enum 1x40G { value 3; }
+                        enum 2x100G { value 4; }
+                        enum 2x50G { value 5; }
+                        enum 4x25G { value 6; }
+                        enum 4x10G { value 7; }
                     }
 				}
 			}
 		}
     }
+    rpc breakout_dependencies {
 
+        description "RPC for showing dependencies on breakout port
+        input is Ethernet interface";
+
+        input {
+            leaf ifname {
+                type leafref {
+                    path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+                }
+            }
+        }
+
+        output {
+            leaf-list keys {
+                type string;
+                description
+                    "On success, returns list of dependent table keys";
+            }
+        }
+    }
 }

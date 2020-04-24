@@ -6,6 +6,10 @@ module sonic-fdb {
         prefix yang;
     }
 
+    import sonic-port {
+        prefix prt;
+    }
+
     organization
         "SONiC";
 
@@ -65,7 +69,9 @@ module sonic-fdb {
                 }
 
                 leaf port {
-                    type string;
+                    type leafref {
+                        path "/prt:sonic-port/prt:PORT/prt:PORT_LIST/prt:ifname";
+                    }
                     description
                         "Reference to the base and/or subinterface for the MAC table entry";
                 }
