@@ -30,6 +30,4 @@ public:
     }
 };
 
-extern DBus::Connection  & get_dbusconn();
-
 #endif /* CTL_H */
