@@ -38,18 +38,6 @@
 #uid_max=59999
 
 # ==============================================================================
-# Parameter: certgen
-#   User certificate generation script. The script specified by "certgen" will
-#   be invoked to generate user certicates. The script will be provided with
-#   the name of the user as an argument. On succes the script must return 0.
-#   On failure, the script should return a non-0 return code and output the
-#   cause of the failure to stderr. On success, stdout may optionally be used
-#   to return a success message.
-#
-# type: string
-#certgen=/usr/bin/certgen
-
-# ==============================================================================
 # Parameter: shell
 #   Shell program used when creating new users.
 #
