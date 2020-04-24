@@ -69,12 +69,15 @@ static inline char * cpy2buf(char * dest, const char * srce, size_t len)
     template<typename InputIt>
     std::string join(InputIt begin,
                      InputIt end,
-                     const std::string & separator = ", ")
+                     const std::string & separator =", ",
+                     const std::string & concluder ="")
     {
         std::ostringstream ss;
 
         if (begin != end)
+        {
             ss << *begin++;
+        }
 
         while (begin != end)
         {
@@ -82,46 +85,32 @@ static inline char * cpy2buf(char * dest, const char * srce, size_t len)
             ss << *begin++;
         }
 
+        ss << concluder;
         return ss.str();
     }
 
     /**
-     * Returns a list (vector) of the sub-strings of @s that are delimited by
-     * one of the bytes in the string delimiters.
+     * Returns a list (vector) of the words in the string, separated by the
+     * delimiter character.
      *
      * @param s - The string to split
-     * @param delimiter - A set of characters that will be used as delimiters.
+     * @param delimiter - Character dividing the string into split groups;
+     *                    default is semi-colon.
      *
      * @return std::vector<std::string>
      */
-    static inline std::vector<std::string> split(const std::string& s, const char * delimiters=";")
+    static inline std::vector<std::string> split(const std::string& s, char delimiter)
     {
-        std::vector<std::string> tokens;
-
-        char   s_copy[s.length() + 1];
-        memcpy(s_copy, s.data(), sizeof s_copy); // Copy whole string including nul char at the end.
-
-        char  * next  = &s_copy[0];
-        char  * token = strsep(&next, delimiters);
-        while (token != nullptr)
-        {
-            tokens.push_back(token);
-            if (next != nullptr)
-                next += strspn(next, delimiters); // Skip all delimiters
-            token = strsep(&next, delimiters);
-        }
-
-        return tokens;
+       std::vector<std::string> tokens;
+       std::string token;
+       std::istringstream token_stream(s);
+       while (std::getline(token_stream, token, delimiter))
+       {
+          tokens.push_back(token);
+       }
+       return tokens;
     }
 
-    /**
-     * @brief Remove leading and trailing characters
-     *
-     * @param str
-     * @param whitespace
-     *
-     * @return The trimmed string
-     */
     static inline std::string trim(const std::string & str,
                                    const std::string & whitespace = " \t")
     {

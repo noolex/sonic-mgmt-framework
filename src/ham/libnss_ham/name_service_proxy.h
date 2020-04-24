@@ -16,5 +16,8 @@ public:
     }
 };
 
+// The dispatcher is a "main loop" construct that handles
+// DBus messages. This should be defined it as a singleton.
+static DBus::BusDispatcher  dispatcher;
 
 #endif // __NAME_SERVICE_PROXY_H__

@@ -30,6 +30,6 @@ public:
 };
 
 
-extern DBus::Connection  & get_dbusconn();
+extern DBus::BusDispatcher * get_dispatcher();
 
 #endif // DBUS_PROXY_H
