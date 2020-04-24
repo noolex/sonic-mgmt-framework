@@ -1,10 +1,6 @@
-module sonic-tests {
-	namespace "http://github.com/Azure/sonic-tests";
-	prefix test;
-
-	import sonic-common {
-		prefix scommon;
-	}
+module openconfig-tests {
+	namespace "http://github.com/Azure/openconfig-tests";
+	prefix oc-test;
 
 	organization
 		"SONiC";
@@ -21,7 +17,7 @@ module sonic-tests {
 	}
 
 
-	container sonic-tests {
+	container openconfig-tests {
 
 		container TABLE_A {
 
@@ -79,25 +75,10 @@ module sonic-tests {
 				}
 
 				leaf admin_status {
-					type scommon:admin-status;
+					type uint16;
 				}
 			}
 		}
 	}
 	
-	rpc sum {
-		input {
-			leaf left {
-				type int32;
-			}
-			leaf right {
-				type int32;
-			}
-		}
-		output {
-			leaf result {
-				type int32;
-			}
-		}
-	}
 }

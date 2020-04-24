@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 //
-// Copyright 2019 Dell, Inc.
+// Copyright 2020 Dell, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,23 +16,16 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-package translib
+package transformer_test
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 	"time"
 	db "translib/db"
 )
 
-func init() {
-	fmt.Println("+++++  Init sFlow test  +++++")
-}
-
 func Test_sFlowOperations(t *testing.T) {
-
-	fmt.Println("+++++  Start sFlow testing  +++++")
 
 	url := "/sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST[sflow_key=global]"
 
@@ -52,7 +45,9 @@ func Test_sFlowOperations(t *testing.T) {
 	time.Sleep(1 * time.Second)
 
         // Verify global configurations
-	t.Run("Verify global configurations", processGetRequest(url, globalConfigGetJsonResp, false))
+	t.Run("Verify global configurations -1", processGetRequest(url, globalConfigGetJsonResp, false))
+	// Verify the same using File (showcase)
+	t.Run("Verify global configurations -2", processGetRequestWithFile(url, "testdata/global_sflow_config.json", false))
 
         //Add collector
         url = "/sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST[collector_name=col1]"
