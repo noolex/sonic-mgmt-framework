@@ -49,8 +49,12 @@ func keyCreate(keyPrefix string, xpath string, data interface{}, dbKeySep string
 			keyVal := ""
 			for i, k := range (strings.Split(yangEntry.Key, " ")) {
 				if i > 0 { keyVal = keyVal + delim }
-				// SNC-3166: fix ipv6 key
-				fVal := fmt.Sprint(data.(map[string]interface{})[k])
+				fieldXpath :=  xpath + "/" + k
+				fVal, err := unmarshalJsonToDbData(yangEntry.Dir[k], fieldXpath, k, data.(map[string]interface{})[k])
+				if err != nil {
+					log.Errorf("Failed to unmashal Json to DbData: path(\"%v\") error (\"%v\").", fieldXpath, err)
+				}
+
 				if ((strings.Contains(fVal, ":")) &&
 				    (strings.HasPrefix(fVal, OC_MDL_PFX) || strings.HasPrefix(fVal, IETF_MDL_PFX) || strings.HasPrefix(fVal, IANA_MDL_PFX))) {
 					// identity-ref/enum has module prefix
@@ -83,6 +87,34 @@ func mapCopy(destnMap map[string]map[string]db.Value, srcMap map[string]map[stri
         }
    }
    mapCopyMutex.Unlock()
+}
+var mapMergeMutex = &sync.Mutex{}
+/* Merge redis-db source to destn map */
+func mapMerge(destnMap map[string]map[string]db.Value, srcMap map[string]map[string]db.Value) {
+	mapMergeMutex.Lock()
+   for table, tableData := range srcMap {
+        _, ok := destnMap[table]
+        if !ok {
+            destnMap[table] = make(map[string]db.Value)
+        }
+        for rule, ruleData := range tableData {
+            _, ok = destnMap[table][rule]
+            if !ok {
+                 destnMap[table][rule] = db.Value{Field: make(map[string]string)}
+            }
+            for field, value := range ruleData.Field {
+                dval := destnMap[table][rule]
+                if dval.IsPopulated() && dval.Has(field) && strings.HasSuffix(field, "@") {
+                    attrList := dval.GetList(field)
+                    attrList = append(attrList, value)
+                    dval.SetList(field, attrList)
+                } else {
+                    destnMap[table][rule].Field[field] = value
+                }
+            }
+        }
+   }
+   mapMergeMutex.Unlock()
 }
 
 func parentXpathGet(xpath string) string {
@@ -363,7 +395,29 @@ func uriWithKeyCreate (uri string, xpathTmplt string, data interface{}) (string,
          yangEntry := xYangSpecMap[xpathTmplt].yangEntry
          if yangEntry != nil {
               for _, k := range (strings.Split(yangEntry.Key, " ")) {
-                  uri += fmt.Sprintf("[%v=%v]", k, data.(map[string]interface{})[k])
+		      keyXpath := xpathTmplt + "/" + k
+		      if _, keyXpathEntryOk := xYangSpecMap[keyXpath]; !keyXpathEntryOk {
+			      log.Errorf("No entry found in xYangSpec map for xapth %v", keyXpath)
+                              err = fmt.Errorf("No entry found in xYangSpec map for xapth %v", keyXpath)
+                              break
+		      }
+		      keyYangEntry := xYangSpecMap[keyXpath].yangEntry
+		      if keyYangEntry == nil {
+			      log.Errorf("Yang Entry not available for xpath %v", keyXpath)
+			      err = fmt.Errorf("Yang Entry not available for xpath %v", keyXpath)
+			      break
+		      }
+		      keyVal, keyValErr := unmarshalJsonToDbData(keyYangEntry, keyXpath, k, data.(map[string]interface{})[k])
+		      if keyValErr != nil {
+			      log.Errorf("unmarshalJsonToDbData() error for key %v with xpath %v", k, keyXpath)
+			      err = keyValErr
+			      break
+		      }
+		      if ((strings.Contains(keyVal, ":")) && (strings.HasPrefix(keyVal, OC_MDL_PFX) || strings.HasPrefix(keyVal, IETF_MDL_PFX) || strings.HasPrefix(keyVal, IANA_MDL_PFX))) {
+			      // identity-ref/enum has module prefix
+			      keyVal = strings.SplitN(keyVal, ":", 2)[1]
+		      }
+                      uri += fmt.Sprintf("[%v=%v]", k, keyVal)
               }
 	 } else {
             err = fmt.Errorf("Yang Entry not available for xpath ", xpathTmplt)
@@ -494,6 +548,7 @@ func formXfmrInputRequest(d *db.DB, dbs [db.MaxDB]*db.DB, cdb db.DBNum, ygRoot *
 	inParams.param = param // generic param
 	inParams.txCache = txCache.(*sync.Map)
 	inParams.skipOrdTblChk = new(bool)
+        inParams.pCascadeDelTbl = new([]string)
 
 	return inParams
 }
@@ -863,7 +918,7 @@ func yangFloatIntToGoType(t yang.TypeKind, v float64) (interface{}, error) {
         return nil, fmt.Errorf("unexpected YANG type %v", t)
 }
 
-func unmarshalJsonToDbData(schema *yang.Entry, fieldName string, value interface{}) (string, error) {
+func unmarshalJsonToDbData(schema *yang.Entry, fieldXpath string, fieldName string, value interface{}) (string, error) {
         var data string
 
         switch v := value.(type) {
@@ -872,6 +927,9 @@ func unmarshalJsonToDbData(schema *yang.Entry, fieldName string, value interface
         }
 
         ykind := schema.Type.Kind
+	if ykind == yang.Yleafref {
+		ykind = getLeafrefRefdYangType(ykind, fieldXpath)
+	}
 
         switch ykind {
         case yang.Ystring, yang.Ydecimal64, yang.Yint64, yang.Yuint64,

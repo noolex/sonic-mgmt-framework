@@ -40,8 +40,18 @@ def invoke_api(func, args=[]):
             body = { "openconfig-routing-policy:policy-result": args[2]}
             return api.patch(keypath, body)
         elif attr == 'openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_next_hop':
-            keypath = cc.Path(uri, name=args[0], name1=args[1])
-            body = { "openconfig-bgp-policy:set-next-hop" : args[2] }
+            if args[2] == 'ipv6' and args[3] == 'prefer-global':
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-prefer-global', name=args[0], name1=args[1])
+                body = { "openconfig-bgp-policy-ext:set-ipv6-next-hop-prefer-global" : True }
+            elif args[2] == 'ipv6' and args[3] == 'global':
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-global', name=args[0], name1=args[1])
+                body = { "openconfig-bgp-policy-ext:set-ipv6-next-hop-global" : args[4] }
+            elif args[2] == 'ipv4':
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/set-next-hop', name=args[0], name1=args[1])
+                body = { "openconfig-bgp-policy:set-next-hop" : args[3] }
+            else:    
+                return api.cli_not_implemented(func)
+            
             return api.patch(keypath, body)
         elif attr == 'openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_local_pref':
             keypath = cc.Path(uri, name=args[0], name1=args[1])
@@ -71,7 +81,17 @@ def invoke_api(func, args=[]):
                 body = { "openconfig-bgp-policy:set-ext-community": { "config" : { "method":"INLINE", "options":args[4]}, "inline": {"config": {"communities":["route-origin:"+args[3]]}}}}
             return api.patch(keypath, body)
     elif op == 'delete':
-        if attr == 'openconfig_routing_policy_routing_policy_policy_definitions_policy_definition':
+        if attr == 'openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_next_hop':
+            if args[2] == 'ipv6' and args[3] == 'prefer-global':
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-prefer-global', name=args[0], name1=args[1])
+            elif args[2] == 'ipv6' and args[3] == 'global':
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-global', name=args[0], name1=args[1])
+            elif args[2] == 'ipv4':
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/set-next-hop', name=args[0], name1=args[1])
+            else:    
+                return api.cli_not_implemented(func)
+            return api.delete(keypath)
+        elif attr == 'openconfig_routing_policy_routing_policy_policy_definitions_policy_definition':
             keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}',
             name=args[0])
             return api.delete(keypath)

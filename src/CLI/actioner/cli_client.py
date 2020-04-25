@@ -27,11 +27,13 @@ import requests
 from requests.structures import CaseInsensitiveDict
 from requests import request, RequestException
 from collections import OrderedDict
-
+import requests_unixsocket
+import signal
+import sys
 
 urllib3.disable_warnings()
 
-sess = requests.Session()
+sess = requests_unixsocket.Session()
 
 class ApiClient(object):
     """
@@ -42,31 +44,23 @@ class ApiClient(object):
         """
         Create a RESTful API client.
         """
+        signal.signal(signal.SIGINT, self.sig_handler)
 
-        uri_root = 'https://localhost:8443'
+        uri_root = 'http+unix://%2Fvar%2Frun%2Frest-local.sock'
         self.api_uri = os.getenv('REST_API_ROOT', uri_root)
 
         self.checkCertificate = False
 
         self.version = "0.0.1"
 
-        if sess.cert is None:
-            cert = os.getenv('USER_CERT_PATH', None)
-            key = os.getenv('USER_KEY_PATH', None)
-            if cert and key:
-                sess.cert = (cert, key)
-            else:
-                username = os.getenv('CLI_USER', None)
-                if username is not None:
-                    certdir = os.path.join(pwd.getpwnam(username)[5], ".cert")
-                    cert = os.path.join(certdir, "certificate.pem")
-                    key = os.path.join(certdir, "key.pem")
-                    sess.cert = (cert, key)
-
     def set_headers(self):
         return CaseInsensitiveDict({
             'User-Agent': "CLI"
         })
+
+    def sig_handler(self, signum, frame):
+        # got interrupt, perform graceful termination
+        sys.exit(0)
 
     def request(self, method, path, data=None, headers={}, query=None):
 

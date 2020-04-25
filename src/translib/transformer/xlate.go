@@ -41,11 +41,11 @@ const (
 )
 
 type KeySpec struct {
-	dbNum db.DBNum
+	DbNum db.DBNum
 	Ts    db.TableSpec
 	Key   db.Key
 	Child []KeySpec
-	ignoreParentKey bool
+	IgnoreParentKey bool
 }
 
 var XlateFuncs = make(map[string]reflect.Value)
@@ -70,7 +70,13 @@ func XlateFuncBind(name string, fn interface{}) (err error) {
 	}
 	return
 }
-
+func IsXlateFuncBinded(name string) bool {
+    if _, ok := XlateFuncs[name]; !ok {
+        return false
+    } else  {
+        return true
+    }
+}
 func XlateFuncCall(name string, params ...interface{}) (result []reflect.Value, err error) {
 	if _, ok := XlateFuncs[name]; !ok {
 		log.Warning(name + " Xfmr function does not exist.")
@@ -92,22 +98,22 @@ func TraverseDb(dbs [db.MaxDB]*db.DB, spec KeySpec, result *map[db.DBNum]map[str
 	var err error
 	var dbOpts db.Options
 
-	dbOpts = getDBOptions(spec.dbNum)
+	dbOpts = getDBOptions(spec.DbNum)
 	separator := dbOpts.KeySeparator
 
 	if spec.Key.Len() > 0 {
 		// get an entry with a specific key
 		if spec.Ts.Name != XFMR_NONE_STRING { // Do not traverse for NONE table
-			data, err := dbs[spec.dbNum].GetEntry(&spec.Ts, spec.Key)
+			data, err := dbs[spec.DbNum].GetEntry(&spec.Ts, spec.Key)
 			if err != nil {
 				log.Warningf("Failed to get data for tbl(%v), key(%v) in TraverseDb", spec.Ts.Name, spec.Key)
 				return err
 			}
 
-			if (*result)[spec.dbNum][spec.Ts.Name] == nil {
-				(*result)[spec.dbNum][spec.Ts.Name] = map[string]db.Value{strings.Join(spec.Key.Comp, separator): data}
+			if (*result)[spec.DbNum][spec.Ts.Name] == nil {
+				(*result)[spec.DbNum][spec.Ts.Name] = map[string]db.Value{strings.Join(spec.Key.Comp, separator): data}
 			} else {
-				(*result)[spec.dbNum][spec.Ts.Name][strings.Join(spec.Key.Comp, separator)] = data
+				(*result)[spec.DbNum][spec.Ts.Name][strings.Join(spec.Key.Comp, separator)] = data
 			}
 		}
 		if len(spec.Child) > 0 {
@@ -118,14 +124,14 @@ func TraverseDb(dbs [db.MaxDB]*db.DB, spec KeySpec, result *map[db.DBNum]map[str
 	} else {
 		// TODO - GetEntry support with regex patten, 'abc*' for optimization
 		if spec.Ts.Name != XFMR_NONE_STRING { //Do not traverse for NONE table
-			keys, err := dbs[spec.dbNum].GetKeys(&spec.Ts)
+			keys, err := dbs[spec.DbNum].GetKeys(&spec.Ts)
 			if err != nil {
 				log.Warningf("Failed to get keys for tbl(%v) in TraverseDb", spec.Ts.Name)
 				return err
 			}
-			xfmrLogInfoAll("keys for table %v in Db %v are %v", spec.Ts.Name, spec.dbNum, keys)
+			xfmrLogInfoAll("keys for table %v in Db %v are %v", spec.Ts.Name, spec.DbNum, keys)
 			for i, _ := range keys {
-				if parentKey != nil && (spec.ignoreParentKey == false) {
+				if parentKey != nil && (spec.IgnoreParentKey == false) {
 					// TODO - multi-depth with a custom delimiter
 					if strings.Index(strings.Join(keys[i].Comp, separator), strings.Join((*parentKey).Comp, separator)) == -1 {
 						continue
@@ -172,11 +178,11 @@ func FillKeySpecs(yangXpath string , keyStr string, retdbFormat *[]KeySpec) ([]K
 		if xpathInfo.tableName != nil {
 			dbFormat := KeySpec{}
 			dbFormat.Ts.Name = *xpathInfo.tableName
-			dbFormat.dbNum = xpathInfo.dbIndex
+			dbFormat.DbNum = xpathInfo.dbIndex
 			if len(xYangSpecMap[yangXpath].xfmrKey) > 0 || xYangSpecMap[yangXpath].keyName != nil {
-				dbFormat.ignoreParentKey = true
+				dbFormat.IgnoreParentKey = true
 			} else {
-				dbFormat.ignoreParentKey = false
+				dbFormat.IgnoreParentKey = false
 			}
 			if keyStr != "" {
 				dbFormat.Key.Comp = append(dbFormat.Key.Comp, keyStr)
@@ -225,7 +231,7 @@ func fillSonicKeySpec(xpath string , tableName string, keyStr string) ( []KeySpe
                 if _, ok := xDbSpecMap[tableName]; ok {
 			cdb = xDbSpecMap[tableName].dbIndex
                 }
-		dbFormat.dbNum = cdb
+		dbFormat.DbNum = cdb
 		if keyStr != "" {
 			dbFormat.Key.Comp = append(dbFormat.Key.Comp, keyStr)
 		}
@@ -243,7 +249,7 @@ func fillSonicKeySpec(xpath string , tableName string, keyStr string) ( []KeySpe
 						cdb := xDbSpecMap[dir].dbIndex
 						dbFormat := KeySpec{}
 						dbFormat.Ts.Name = dir
-						dbFormat.dbNum = cdb
+						dbFormat.DbNum = cdb
 						retdbFormat = append(retdbFormat, dbFormat)
 						}
 					}
@@ -508,6 +514,9 @@ func GetTablesToWatch(xfmrTblList []string, uriModuleNm string) []string {
                                 break
                         }
                 }
+		if processedTbl == false {
+			depTblMap[xfmrTbl] = false
+		}
         }
         for depTbl := range(depTblMap) {
                 depTblList = append(depTblList, depTbl)

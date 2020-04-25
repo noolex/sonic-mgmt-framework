@@ -3,7 +3,7 @@ module openconfig-interfaces-ext {
     yang-version "1";
 
     // namespace
-    namespace "http://openconfig.net/yang/interfaces/extention";
+    namespace "http://openconfig.net/yang/interfaces/extension";
 
     prefix "oc-intf-ext";
 
@@ -163,8 +163,17 @@ module openconfig-interfaces-ext {
 			  "SAG interface config/state";
 		}		  
 	}
+
 	
     deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:hold-time {
+        deviate not-supported;
+    }
+
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-intf:config/oc-intf:description {
+        deviate not-supported;
+    }
+
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-intf:config/oc-intf:enabled {
         deviate not-supported;
     }
 
@@ -189,6 +198,20 @@ module openconfig-interfaces-ext {
         deviate not-supported;
     }
 
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:config/oc-ip:enabled {
+        deviate replace {
+            default false;
+        }
+    }
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:config/oc-ip:mtu {
+        deviate not-supported;
+    }
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:config/oc-ip:dup-addr-detect-transmits {
+        deviate not-supported;
+    }
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:config/oc-ip:dhcp-client {
+        deviate not-supported;
+    }
     deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:addresses/oc-ip:address/oc-ip:vrrp {
         deviate not-supported;
     }
@@ -196,12 +219,6 @@ module openconfig-interfaces-ext {
         deviate not-supported;
     }
     deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:unnumbered {
-        deviate not-supported;
-    }
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:config {
-        deviate not-supported;
-    }
-    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:state {
         deviate not-supported;
     }
     deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip-ext:autoconf {
@@ -232,5 +249,37 @@ module openconfig-interfaces-ext {
 
     deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:subinterfaces/oc-intf:subinterface/oc-ip:ipv6/oc-ip:neighbors/oc-ip:neighbor/oc-ip:state/oc-ip:neighbor-state {
       deviate not-supported;
+    }
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:state/oc-intf:type {
+        deviate not-supported;
+    }
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:state/oc-intf:ifindex {
+        deviate not-supported;
+    }
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:state/oc-intf:last-change {
+        deviate not-supported;
+    }
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-intf:state/oc-intf:logical {
+        deviate not-supported;
+    }
+
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-eth:ethernet/oc-vlan:switched-vlan/oc-vlan:config/oc-vlan:native-vlan {
+        deviate not-supported;
+    }
+
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-eth:ethernet/oc-eth:state/oc-eth:mac-address {
+        deviate not-supported;
+    }
+
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-eth:ethernet/oc-eth:state/oc-eth:enable-flow-control {
+        deviate not-supported;
+    }
+
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-eth:ethernet/oc-eth:state/oc-eth:hw-mac-address {
+        deviate not-supported;
+    }
+
+    deviation /oc-intf:interfaces/oc-intf:interface/oc-eth:ethernet/oc-eth:state/oc-eth:negotiated-port-speed {
+        deviate not-supported;
     }
 }

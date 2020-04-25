@@ -36,6 +36,8 @@ Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
      {% if vars.update({'protocol':"K"}) %}{% endif %}
   {% elif vars.protocol == 'connected' %}
      {% if vars.update({'protocol':"C"}) %}{% endif %}
+  {% elif vars.protocol == 'static' %}
+     {% if vars.update({'protocol':"S"}) %}{% endif %}
   {% elif vars.protocol == 'bgp' %}
      {% if vars.update({'protocol':"B"}) %}{% endif %}
   {% elif vars.protocol == 'ospf' %}

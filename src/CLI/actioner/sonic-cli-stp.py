@@ -281,13 +281,16 @@ def run(args):
     c.verify_ssl = False
 
     import os
+    import pwd
     c.host = os.getenv('REST_API_ROOT', 'https://localhost:8443')
-    username = os.getenv('CLI_USER', None)
-    if username is not None:
-        import pwd
-        certdir = os.path.join(pwd.getpwnam(username).pw_dir, ".cert")
+    try:
+        user = pwd.getpwuid(os.getuid())
+        certdir = os.path.join(user.pw_dir, ".cert")
         c.cert_file = os.path.join(certdir, "certificate.pem")
         c.key_file  = os.path.join(certdir, "key.pem")
+    except KeyError:
+        # User doesn't exist
+        pass
 
     aa = openconfig_spanning_tree_client.OpenconfigSpanningTreeApi(api_client=openconfig_spanning_tree_client.ApiClient(configuration=c))
 

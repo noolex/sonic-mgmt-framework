@@ -38,7 +38,7 @@ module sonic-common {
         }
     }
 
-    typedef mode {
+    typedef mode-enable {
           type enumeration {
               enum enable;
               enum disable;

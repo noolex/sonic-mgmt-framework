@@ -39,6 +39,10 @@ module sonic-vlan-interface {
         description
             "Add DHCP server attribute";
     }
+    revision 2020-02-15 {
+        description
+            "Add ipv6_use_link_local_only attribute to interface object.";
+    }
     revision 2019-12-01 {
         description
             "Add vrf_name for VRF interface binding.";
@@ -97,7 +101,7 @@ module sonic-vlan-interface {
 				}
 
 				leaf ipv6_use_link_local_only {
-					type cmn:mode;
+					type cmn:mode-enable;
 					default disable;
 					description
 						"Enable IPv6 link local address on interface";

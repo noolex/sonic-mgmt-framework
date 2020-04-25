@@ -27,6 +27,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 pthread_mutex_t lock;
 
@@ -75,6 +76,11 @@ CLISH_PLUGIN_SYM(clish_restcl)
 CLISH_PLUGIN_SYM(clish_pyobj)
 {
     char *cmd = clish_shell__get_full_line(clish_context);
+
+    sigset_t sigs;
+    sigemptyset(&sigs);
+    sigaddset(&sigs, SIGINT);
+    sigprocmask(SIG_UNBLOCK, &sigs, NULL);
 
     pthread_mutex_lock(&lock);
     int ret = call_pyobj(cmd, script);

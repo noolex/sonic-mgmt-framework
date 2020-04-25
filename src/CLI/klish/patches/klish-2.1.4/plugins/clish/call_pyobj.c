@@ -124,6 +124,9 @@ int call_pyobj(char *cmd, const char *arg) {
     char *token[20];
     char buf[1024]; 
 
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
     pyobj_set_user_cmd(cmd);
     syslog(LOG_DEBUG, "clish_pyobj: cmd=%s", cmd);
 
@@ -142,6 +145,7 @@ int call_pyobj(char *cmd, const char *arg) {
     if (module == NULL) {
         pyobj_handle_error();
         Py_XDECREF(name);
+        PyGILState_Release(gstate);
     	return -1;
     }
 
@@ -152,6 +156,7 @@ int call_pyobj(char *cmd, const char *arg) {
         syslog(LOG_WARNING, "clish_pyobj: Function run not found in module %s", token[0]);
         Py_XDECREF(module);
         Py_XDECREF(name);
+        PyGILState_Release(gstate);
         return -1;
     }
 
@@ -186,5 +191,6 @@ int call_pyobj(char *cmd, const char *arg) {
     Py_XDECREF(value);
     Py_XDECREF(args_list);
 
+    PyGILState_Release(gstate);
     return ret_code;
 }

@@ -333,6 +333,23 @@ module sonic-bgp-global {
                     }
                 }
 
+                leaf import_vrf {
+                    type union {
+                        type string {
+                            pattern "default";
+                        }
+                        type leafref {
+                            path "/svrf:sonic-vrf/svrf:VRF/svrf:VRF_LIST/svrf:vrf_name";
+                        }
+                    }
+                }
+
+                leaf import_vrf_route_map {
+                    type leafref {
+                        path "/srmap:sonic-route-map/srmap:ROUTE_MAP_SET/srmap:ROUTE_MAP_SET_LIST/srmap:name";
+                    }
+                }
+
                 leaf route_download_filter {
                     type leafref {
                         path "/srmap:sonic-route-map/srmap:ROUTE_MAP_SET/srmap:ROUTE_MAP_SET_LIST/srmap:name";

@@ -506,6 +506,12 @@ func authMiddleware(inner http.Handler) http.Handler {
 				success = true
 			}
 		}
+		if !success && rc.ClientAuth.Enabled("clisock") {
+			err = CliUserAuthenAndAuthor(r, rc)
+			if err == nil {
+				success = true
+			}
+		}
 
 		if rc.stats != nil {
 			rc.stats.authTime = time.Since(ts)

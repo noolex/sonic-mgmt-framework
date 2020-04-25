@@ -1,0 +1,49 @@
+module openconfig-lldp-ext {
+
+  yang-version "1";
+
+  // namespace
+  namespace "http://openconfig.net/yang/lldp/extension";
+
+  prefix "oc-lldp-ext";
+
+  import openconfig-lldp { prefix oc-lldp; }
+
+  deviation /oc-lldp:lldp/oc-lldp:config {
+      deviate not-supported;
+  }
+
+  deviation /oc-lldp:lldp/oc-lldp:state {
+      deviate not-supported;
+  }
+
+  deviation /oc-lldp:lldp/oc-lldp:interfaces/oc-lldp:interface/oc-lldp:config/oc-lldp:enabled {
+      deviate not-supported;
+  }
+
+  deviation /oc-lldp:lldp/oc-lldp:interfaces/oc-lldp:interface/oc-lldp:state {
+      deviate not-supported;
+  }
+
+  deviation /oc-lldp:lldp/oc-lldp:interfaces/oc-lldp:interface/oc-lldp:neighbors/oc-lldp:neighbor/oc-lldp:custom-tlvs {
+      deviate not-supported;
+  }
+
+  deviation /oc-lldp:lldp/oc-lldp:interfaces/oc-lldp:interface/oc-lldp:neighbors/oc-lldp:neighbor/oc-lldp:state/oc-lldp:age {
+      deviate not-supported;
+  }
+
+  deviation /oc-lldp:lldp/oc-lldp:interfaces/oc-lldp:interface/oc-lldp:neighbors/oc-lldp:neighbor/oc-lldp:state/oc-lldp:last-update {
+      deviate not-supported;
+  }
+
+  deviation /oc-lldp:lldp/oc-lldp:interfaces/oc-lldp:interface/oc-lldp:neighbors/oc-lldp:neighbor/oc-lldp:state/oc-lldp:ttl {
+      deviate not-supported;
+  }
+
+  deviation /oc-lldp:lldp/oc-lldp:interfaces/oc-lldp:interface/oc-lldp:neighbors/oc-lldp:neighbor/oc-lldp:state/oc-lldp:management-address-type {
+      deviate not-supported;
+  }
+}
+
+

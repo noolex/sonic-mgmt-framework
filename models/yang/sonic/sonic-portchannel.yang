@@ -60,7 +60,7 @@ module sonic-portchannel {
                 }
                 
                 leaf static {
-                    type string;
+                    type boolean;
                 }
 
                 leaf min_links {

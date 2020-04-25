@@ -1,8 +1,7 @@
 module openconfig-platform-annot {
 
     yang-version "1";
-
-    namespace "http://openconfig.net/yang/annotation/oc-platform-annot";
+    namespace "http://openconfig.net/yang/platform-annot";
     prefix "oc-platform-annot";
 
     import openconfig-platform { prefix oc-platform; }
@@ -11,6 +10,12 @@ module openconfig-platform-annot {
     import openconfig-extensions { prefix oc-ext; }
     import openconfig-platform-port { prefix oc-port; }
     import sonic-extensions { prefix sonic-ext; }
+
+    deviation /oc-platform:components {
+        deviate add {
+            sonic-ext:subtree-transformer "pfm_components_xfmr";
+        }
+    }
 
     deviation /oc-platform:components/oc-platform:component/oc-platform:port/oc-port:breakout-mode {
       deviate add {
@@ -52,4 +57,3 @@ module openconfig-platform-annot {
     }
 
 }
-

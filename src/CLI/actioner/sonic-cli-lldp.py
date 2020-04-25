@@ -1,7 +1,7 @@
 #!/usr/bin/python
 ###########################################################################
 #
-# Copyright 2019 Dell, Inc.
+# Copyright 2020 Dell, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,31 +18,29 @@
 ###########################################################################
 
 import sys
-import time
-import json
-import ast
 import cli_client as cc
-import collections
 from rpipe_utils import pipestr
-from scripts.render_cli import show_cli_output
+from render_cli import show_cli_output
 
-def invoke_api(func, args):
+
+def invoke_api(fn, args):
     api = cc.ApiClient()
     body = None
 
-    if func == 'get_openconfig_lldp_lldp_interfaces':
-       path = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces')
-       return api.get(path)
-    elif func == 'get_openconfig_lldp_lldp_interfaces_interface':
-       path = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}', name=args[1])
-       return api.get(path)
+    if fn == 'get_openconfig_lldp_lldp_interfaces':
+        path = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces')
+        return api.get(path)
+    elif fn == 'get_openconfig_lldp_lldp_interfaces_interface':
+        path = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}', name=args[1])
+        return api.get(path)
     else:
-       body = {}
+        body = {}
 
-    return api.cli_not_implemented(func)
+    return api.cli_not_implemented(fn)
 
-def run(func, args):
-    response = invoke_api(func, args)
+
+def run(fn, args):
+    response = invoke_api(fn, args)
     if response.ok():
         if response.content is not None:
             # Get Command Output
@@ -56,26 +54,26 @@ def run(func, args):
                     neigh_list = response['openconfig-lldp:interfaces']['interface']
                     if neigh_list is None:
                         return
-                    show_cli_output(args[0],neigh_list)
+                    show_cli_output(args[0], neigh_list)
                 elif 'openconfig-lldp:interface' in response.keys():
-                    neigh = response['openconfig-lldp:interface']#[0]['neighbors']['neighbor']
+                    neigh = response['openconfig-lldp:interface']  # [0]['neighbors']['neighbor']
                     if neigh is None:
                         return
                     if args[1] is not None:
                         if 'state' in neigh[0]['neighbors']['neighbor'][0].keys():
-                            show_cli_output(args[0],neigh)
+                            show_cli_output(args[0], neigh)
                         else:
                             print('No LLDP neighbor interface')
                     else:
-                        show_cli_output(args[0],neigh)
+                        show_cli_output(args[0], neigh)
                 else:
                     print("Failed")
     else:
         print response.error_message()
+
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
     func = sys.argv[1]
 
     run(func, sys.argv[2:])
-

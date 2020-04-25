@@ -73,15 +73,17 @@ var YangToDb_intf_nat_zone_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) 
     intTbl := IntfTypeTblMap[intfType]
     tblName, _ := getIntfTableNameByDBId(intTbl, inParams.curDb)
 
-    entry, dbErr := inParams.d.GetEntry(&db.TableSpec{Name:tblName}, db.Key{Comp: []string{ifName}})
-    if dbErr != nil {
-        log.Info("Failed to read DB entry, " + tblName + " " + ifName)
-        return natZoneMap, dbErr
-    }
+
     if inParams.oper == DELETE {
+        entry, dbErr := inParams.d.GetEntry(&db.TableSpec{Name:tblName}, db.Key{Comp: []string{ifName}})
+        if dbErr != nil {
+            log.Info("Failed to read DB entry, " + tblName + " " + ifName)
+            return natZoneMap, nil
+        }
+
         if entry.Has("nat_zone") == false {
             log.Info("NAT zone config not present, " + tblName + " " + ifName)
-            return natZoneMap, errors.New("Note zone config not present, " + tblName + " " + ifName)
+            return natZoneMap, nil
         }
         if _, ok := natZoneMap[tblName]; !ok {
             natZoneMap[tblName] = make (map[string]db.Value)

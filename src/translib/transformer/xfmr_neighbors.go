@@ -28,7 +28,6 @@ import (
     "fmt"
     "os/exec"
     "bufio"
-    "strconv"
 )
 
 func init () {
@@ -307,93 +306,188 @@ var DbToYang_neigh_tbl_get_all_ipv6_xfmr SubTreeXfmrDbToYang = func (inParams Xf
     return err
 }
 
-func clear_arp_all(fam_switch string, force bool) string {
-    var err error
-    var isPerm bool = false
+func getNonDefaultVrfInterfaces(d *db.DB)(map[string]string) {
+    var nonDefaultVrfIntfs map[string]string
+    nonDefaultVrfIntfs = make(map[string]string)
 
-    /* First check if we have any permanent entry */
-    cmd := exec.Command("ip", fam_switch, "neigh", "show", "all")
+    tblList := []string{"INTERFACE", "VLAN_INTERFACE", "PORTCHANNEL_INTERFACE"}
+    for _, tbl := range tblList {
+        tblObj, err := d.GetTable(&db.TableSpec{Name:tbl})
+        if err != nil {
+           continue
+        }
+
+         keys, err := tblObj.GetKeys()
+         for _, key := range keys {
+            entry, err := d.GetEntry(&db.TableSpec{Name: tbl}, key)
+            if(err != nil) {
+                continue
+            }
+
+            log.Info("Key: ", key.Get(0))
+            if input, ok := entry.Field["vrf_name"]; ok {
+                input_str := fmt.Sprintf("%v", input)
+                nonDefaultVrfIntfs[key.Get(0)] = input_str
+                log.Info("VRF Found -- intf: ", key.Get(0), " input_str: ", input_str)
+            } else {
+                log.Info("VRF No Found -- intf: ", key.Get(0))
+            }
+        }
+    }
+
+    entry, _ := d.GetEntry(&db.TableSpec{Name: "MGMT_VRF_CONFIG"}, db.Key{Comp: []string{"vrf_global"}})
+    if _, ok := entry.Field["mgmtVrfEnabled"]; ok {
+        nonDefaultVrfIntfs["eth0"] = "mgmt"
+    }
+
+    return nonDefaultVrfIntfs
+}
+
+
+func clear_all(fam_switch string, d *db.DB)  string {
+    var err error
+    var cmd *exec.Cmd
+
+    vrfList := getNonDefaultVrfInterfaces(d)
+
+    cmd = exec.Command("ip", fam_switch, "neigh", "show", "all")
     cmd.Dir = "/bin"
 
     out, err := cmd.StdoutPipe()
     if err != nil {
         log.Info("Can't get stdout pipe: ", err)
-        return err.Error()
+        return "%Error: Internal error"
     }
 
     err = cmd.Start()
     if err != nil {
         log.Info("cmd.Start() failed with: ", err)
-        return err.Error()
+        return "%Error: Internal error"
     }
 
     in := bufio.NewScanner(out)
     for in.Scan() {
         line := in.Text()
 
-        if strings.Contains(line, "PERMANENT") && force == false {
-            isPerm = true
-            break
+        if strings.Contains(line, "lladdr") {
+            list := strings.Fields(line)
+            ip := list[0]
+            intf := list[2]
+
+            if (vrfList[intf] != "") {
+                continue
+            }
+
+            if strings.Contains(line, "PERMANENT") {
+                continue
+            }
+
+            _, e := exec.Command("ip", fam_switch, "neigh", "del", ip, "dev", intf).Output()
+            if e != nil {
+               log.Info("Eror: ", e)
+                if (strings.Contains(e.Error(), "255")) {
+                    return "Unable to clear all entries, please try again"
+                } else {
+                    return "%Error: Internal error"
+                }
+            }
         }
-    }
-
-    /* Now flush all entries */
-    if (force == true) {
-        log.Info("Executing: ip ", fam_switch, " -s ", "-s ", "neigh ", "flush ", "all ", "nud ", "all")
-        _, err = exec.Command("ip", fam_switch, "-s", "-s", "neigh", "flush", "all", "nud", "all").Output()
-    } else {
-        log.Info("Executing: ip ", fam_switch, " -s ", "-s ", "neigh ", "flush ", "all")
-        _, err = exec.Command("ip", fam_switch, "-s", "-s", "neigh", "flush", "all").Output()
-    }
-
-    if err != nil {
-        log.Info(err)
-        return err.Error()
-    }
-    if isPerm {
-        return "Permanent entry found, use 'force' to delete permanent entries"
-    } else {
-        return "Success"
-    }
-}
-
-func clear_arp_ip(ip string, fam_switch string, force bool) string {
-    var intf string
-
-    //get interface first associated with this ip
-    out, err := exec.Command("ip", fam_switch, "neigh", "show", ip).Output()
-    line := string(out)
-
-    if err != nil {
-        log.Info(err)
-        return err.Error()
-    }
-
-    if strings.Contains(line, "dev") {
-        list := strings.Fields(line)
-        intf = list[2]
-    } else {
-        str := "Error: Neighbor " + ip + " not found"
-        return str
-    }
-
-    if strings.Contains(line, "PERMANENT") && force == false {
-        return "Permanent entry found, use 'force' to delete permanent entries"
-    }
-
-    log.Info("Executing: ip ", fam_switch, " neigh ", "del ", ip, " dev ", intf)
-    out, err = exec.Command("ip", fam_switch, "neigh", "del", ip, "dev", intf).Output()
-    if err != nil {
-        log.Info(err)
-        return err.Error()
     }
 
     return "Success"
 }
 
-func clear_arp_intf(intf string, fam_switch string, force bool) string {
+
+func clear_all_vrf(fam_switch string, vrf string) string {
+    var err error
+    var status string
+    var count int
+
+    if (len(vrf) <= 0) {
+        log.Info("Missing VRF name, returning")
+        return "%Error: Internal error"
+    }
+
+    for count = 1;  count <= 3; count++ {
+        log.Info("Executing: ip ", fam_switch, " -s ", "-s ", "neigh ", "flush ", "all ", "vrf ", vrf)
+        _, err = exec.Command("ip", fam_switch, "-s", "-s", "neigh", "flush", "all", "vrf", vrf).Output()
+
+        if err != nil {
+            log.Info(err)
+            if (strings.Contains(err.Error(), "255")) {
+                 status =  "Unable to clear all entries, please try again"
+                 continue
+            } else {
+                status = "%Error: Internal error"
+                break
+            }
+        }
+
+        status = "Success"
+        break
+    }
+
+    return status
+}
+
+func clear_ip(ip string, fam_switch string, vrf string, d *db.DB) string {
+    var cmd *exec.Cmd
+    var isValidIp bool = false
+
+    vrfList := getNonDefaultVrfInterfaces(d)
+
+    //get interfaces first associated with this ip
+    if (len(vrf) > 0) {
+        cmd = exec.Command("ip", fam_switch, "neigh", "show", ip, "vrf", vrf)
+    } else {
+        cmd = exec.Command("ip", fam_switch, "neigh", "show", ip)
+    }
+    cmd.Dir = "/bin"
+
+    out, err := cmd.StdoutPipe()
+    if err != nil {
+        log.Info("Can't get stdout pipe: ", err)
+        return "%Error: Internal error"
+    }
+
+    err = cmd.Start()
+    if err != nil {
+        log.Info("cmd.Start() failed with: ", err)
+        return "%Error: Internal error"
+    }
+
+    in := bufio.NewScanner(out)
+    for in.Scan() {
+        line := in.Text()
+        list := strings.Fields(line)
+        intf := list[2]
+
+        if (vrfList[intf] != "" && len(vrf) <= 0) {
+            continue
+        }
+
+        log.Info("Executing: ip ", fam_switch, " neigh ", "del ", ip, " dev ", intf)
+        _, e := exec.Command("ip", fam_switch, "neigh", "del", ip, "dev", intf).Output()
+        if e != nil {
+            log.Info(e)
+            if (strings.Contains(e.Error(), "255")) {
+                return "Unable to clear all entries, please try again"
+            } else {
+                return "%Error: Internal error"
+            }
+        }
+        isValidIp = true
+    }
+
+    if isValidIp == true  {
+        return "Success"
+    } else {
+        return "Error: IP address " + ip + " not found"
+    }
+}
+
+func clear_intf(intf string, fam_switch string) string {
     var isValidIntf bool = false
-    var isPerm bool = false
 
     cmd := exec.Command("ip", fam_switch, "neigh", "show", "dev", intf)
     cmd.Dir = "/bin"
@@ -401,13 +495,13 @@ func clear_arp_intf(intf string, fam_switch string, force bool) string {
     out, err := cmd.StdoutPipe()
     if err != nil {
         log.Info("Can't get stdout pipe: ", err)
-        return err.Error()
+        return "%Error: Internal error"
     }
 
     err = cmd.Start()
     if err != nil {
         log.Info("cmd.Start() failed with: ", err)
-        return err.Error()
+        return "%Error: Internal error"
     }
 
     in := bufio.NewScanner(out)
@@ -419,27 +513,23 @@ func clear_arp_intf(intf string, fam_switch string, force bool) string {
             return line
         }
 
-        if strings.Contains(line, "PERMANENT") && force == false {
-            isValidIntf = true
-            isPerm = true
-            continue
-        }
-
         list := strings.Fields(line)
         ip := list[0]
         log.Info("Executing: ip ", fam_switch, " neigh ", "del ", ip, " dev ", intf)
         _, e := exec.Command("ip", fam_switch, "neigh", "del", ip, "dev", intf).Output()
         if e != nil {
             log.Info(e)
-            return e.Error()
+            if (strings.Contains(e.Error(), "255")) {
+                return "Unable to clear all entries, please try again"
+            } else {
+                return "%Error: Internal error"
+            }
         }
         isValidIntf = true
     }
 
-    if isValidIntf == true && isPerm == false {
+    if isValidIntf == true {
         return "Success"
-    } else if isPerm == true {
-        return "Permanent entry found, use 'force' to delete permanent entries"
     } else {
         return "Error: Interface " + intf + " not found"
     }
@@ -450,9 +540,9 @@ var rpc_clear_neighbors RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) (
     var err error
     var status string
     var fam_switch string = "-4"
-    var force bool = false
     var intf string = ""
     var ip string = ""
+    var vrf string = ""
 
     var mapData map[string]interface{}
     err = json.Unmarshal(body, &mapData)
@@ -482,15 +572,6 @@ var rpc_clear_neighbors RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) (
         }
     }
 
-    if input, ok := mapData["force"]; ok {
-        input_str := fmt.Sprintf("%v", input)
-        force, err = strconv.ParseBool(input_str)
-        if (err != nil) {
-            result.Output.Status = "Invalid input"
-            return json.Marshal(&result)
-        }
-    }
-
     if input, ok := mapData["ifname"]; ok {
         input_str := fmt.Sprintf("%v", input)
         intf = input_str
@@ -501,12 +582,19 @@ var rpc_clear_neighbors RpcCallpoint = func(body []byte, dbs [db.MaxDB]*db.DB) (
         ip = input_str
     }
 
+    if input, ok := mapData["vrf"]; ok {
+        input_str := fmt.Sprintf("%v", input)
+        vrf = input_str
+    }
+
     if len(intf) > 0 {
-        status = clear_arp_intf(intf, fam_switch, force)
+        status = clear_intf(intf, fam_switch)
     } else if len(ip) > 0 {
-        status = clear_arp_ip(ip, fam_switch, force)
-    } else if len(intf) <= 0 && len(ip) <= 0 {
-        status = clear_arp_all(fam_switch, force)
+        status = clear_ip(ip, fam_switch, vrf, dbs[db.ConfigDB])
+    } else if len(vrf) > 0 {
+        status = clear_all_vrf(fam_switch, vrf)
+    } else {
+        status = clear_all(fam_switch, dbs[db.ConfigDB])
     }
 
     result.Output.Status = status

@@ -35,10 +35,14 @@ TRANSLIB_TEST_DIR  = $(BUILD_DIR)/tests/translib
 TRANSLIB_TEST_BIN  = $(TRANSLIB_TEST_DIR)/translib.test
 TRANSL_DB_TEST_BIN = $(TRANSLIB_TEST_DIR)/db.test
 
+TRANSFORMER_TEST_BIN = $(TRANSLIB_TEST_DIR)/transformer.test
+TRANSFORMER_TEST_FILES=$(wildcard transformer/*_test.go)
+TRANSFORMER_SRCS = $(shell find transformer/ -name '*.go' | grep -v '/test/')
+
 YANG_FILES = $(shell find $(TOPDIR)/models/yang -name '*.yang')
 YGOT_BINDS = ocbinds/ocbinds.go
 
-all: $(TRANSLIB_PKG) $(TRANSLIB_TEST_BIN) $(TRANSL_DB_TEST_BIN)
+all: $(TRANSLIB_PKG) $(TRANSLIB_TEST_BIN) $(TRANSL_DB_TEST_BIN) $(TRANSFORMER_TEST_BIN)
 
 $(TRANSLIB_PKG): $(TRANSLIB_MAIN_SRCS) $(YGOT_BINDS)
 	$(GO) build -gcflags="all=-N -l" -v translib
@@ -49,6 +53,10 @@ $(TRANSLIB_TEST_BIN): $(TRANSLIB_MAIN_SRCS) $(TRANSLIB_TEST_SRCS) $(YGOT_BINDS)
 
 $(TRANSL_DB_TEST_BIN) : $(TRANSL_DB_ALL_SRCS)
 	$(GO) test -cover -c translib/db -o $@
+
+$(TRANSFORMER_TEST_BIN): $(TRANSFORMER_TEST_FILES) $(TRANSFORMER_SRCS) $(TRANSLIB_MAIN_SRCS)
+	mkdir -p $(@D)/testdata && cp -r transformer/testdata/*.json $(@D)/testdata
+	GOPATH=$(GOPATH) $(GO) test -gcflags="all=-N -l" -c -vet=off -cover -coverpkg=translib/transformer translib/transformer -o $@
 
 $(YGOT_BINDS): $(YANG_FILES)
 	cd ocbinds && $(GO) generate

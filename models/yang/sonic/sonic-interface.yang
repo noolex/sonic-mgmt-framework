@@ -10,29 +10,33 @@ module sonic-interface {
 		prefix prt;
 	}
 
-    import sonic-vrf {
-        prefix vrf;
-    }
+        import sonic-vrf {
+            prefix vrf;
+        }
 
-    import sonic-loopback-interface {
-        prefix lointf;
-    }
+        import sonic-loopback-interface {
+            prefix lointf;
+        }
 
-    import sonic-portchannel {
-        prefix spc;
-    }
+        import sonic-portchannel {
+            prefix spc;
+        }
 
-    import sonic-common {
-        prefix cmn;
-    }
+        import sonic-vlan {
+            prefix svlan;
+        }
 
-    import sonic-extension {
-		prefix sonic-ext;
-	}
+        import sonic-common {
+            prefix cmn;
+        }
 
-    import sonic-interface-common {
-        prefix sonic-if-cmn;
-    }
+        import sonic-extension {
+                prefix sonic-ext;
+        }
+
+        import sonic-interface-common {
+            prefix sonic-if-cmn;
+        }
 
 	organization
 		"SONiC";
@@ -43,6 +47,7 @@ module sonic-interface {
 	description
 		"SONIC INTERFACE";
 
+
     revision 2020-04-07 {
         description
             "Add VRF and IP address attribute";
@@ -50,6 +55,10 @@ module sonic-interface {
     revision 2020-02-28 {
         description
             "Add DHCP server attribute";
+    }
+    revision 2020-02-15 {
+        description
+            "Add ipv6_use_link_local_only attribute to interface object";
     }
     revision 2019-12-01 {
         description
@@ -62,7 +71,7 @@ module sonic-interface {
     revision 2019-07-02 {
         description
 	        "Initial revision.";
-	}
+    }
 
 
 /*
@@ -143,7 +152,7 @@ module sonic-interface {
 				}
 
                                 leaf dhcp_relay_link_select {
-                                        type cmn:mode;
+                                        type cmn:mode-enable;
                                         must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
                                                "(current()/../dhcp_servers and current()/../dhcp_relay_src_intf)"   
                                               {
@@ -196,6 +205,23 @@ module sonic-interface {
 
                                 }
 
+				leaf ipv6_use_link_local_only {
+                                    type cmn:mode-enable;
+                                    default disable; 
+                                    description
+                                        "Enable IPv6 link local address on interface";
+                                    must "count(/spc:sonic-portchannel/spc:PORTCHANNEL_MEMBER/spc:PORTCHANNEL_MEMBER_LIST[spc:ifname=current()/../portname]) = 0"
+                                    {
+                                        error-message "Interface configured as a member of PortChannel. Cannot enable IPv6";
+                                        error-app-tag intf-po-member;
+                                    }
+                                    must "count(/svlan:sonic-vlan/svlan:VLAN_MEMBER/svlan:VLAN_MEMBER_LIST[svlan:ifname=current()/../portname]) = 0"
+                                    {
+                                        error-message "Interface configured as a member of Vlan. Cannot enable IPv6";
+                                        error-app-tag intf-vlan-member;
+                                    }
+
+				}
 
                 leaf unnumbered {
                     must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
@@ -234,13 +260,6 @@ module sonic-interface {
                     type leafref {
                         path "/lointf:sonic-loopback-interface/lointf:LOOPBACK_INTERFACE/lointf:LOOPBACK_INTERFACE_LIST/lointf:loIfName";
                     }
-                }
-
-                leaf ipv6_use_link_local_only {
-                    type cmn:mode;
-                    default disable;
-                    description
-                        "Enable IPv6 link local address on interface";
                 }
 
                 leaf-list helper_address {
@@ -286,6 +305,11 @@ module sonic-interface {
 
                 leaf unnumbered {
                     type string;
+                }
+
+                leaf ipv6_use_link_local_only {
+                    default disable;
+                    type cmn:mode-enable;
                 }
             }
 

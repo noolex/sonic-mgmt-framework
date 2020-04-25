@@ -14,6 +14,10 @@ module sonic-portchannel-interface {
         prefix vrf;
     }
 
+    import sonic-vlan {
+        prefix svlan;
+    }
+
     import sonic-loopback-interface {
         prefix lointf;
     }
@@ -42,6 +46,10 @@ module sonic-portchannel-interface {
     revision 2020-02-28 {
         description
             "Add DHCP server attribute";
+    }
+    revision 2020-02-15 {
+        description
+            "Add ipv6_use_link_local_only attribute to interface object.";
     }
     revision 2019-12-01 {
         description
@@ -100,7 +108,7 @@ module sonic-portchannel-interface {
 		}
           
                 leaf dhcp_relay_link_select {
-                      type cmn:mode;
+                      type cmn:mode-enable;
                       must "((/cmn:operation/cmn:operation != 'CREATE') and (/cmn:operation/cmn:operation != 'UPDATE')) or " +
                             "(current()/../dhcp_servers and current()/../dhcp_relay_src_intf)"
                              {
@@ -150,6 +158,18 @@ module sonic-portchannel-interface {
                                          error-message "DHCP relay address not configured";
                                          error-app-tag dhcp-server-adress-config;
                                }
+                }
+
+                leaf ipv6_use_link_local_only {
+                    type cmn:mode-enable;
+                    default disable; 
+                    description
+                        "Enable IPv6 link local address on interface";
+                    must "count(/svlan:sonic-vlan/svlan:VLAN_MEMBER/svlan:VLAN_MEMBER_LIST[svlan:ifname=current()/../pch_name]) = 0"
+                    {
+                        error-message "Interface configured as a member of Vlan. Cannot enable IPv6";
+                        error-app-tag intf-po-member;
+                    }
 
                 }
 
@@ -183,13 +203,6 @@ module sonic-portchannel-interface {
                     type leafref {
                         path "/lointf:sonic-loopback-interface/lointf:LOOPBACK_INTERFACE/lointf:LOOPBACK_INTERFACE_LIST/lointf:loIfName";
                     }
-                }
-
-                leaf ipv6_use_link_local_only {
-                    type cmn:mode;
-                    default disable;
-                    description
-                        "Enable IPv6 link local address on interface";
                 }
 
                 leaf-list helper_address {

@@ -29,10 +29,14 @@ func init () {
     XlateFuncBind("DbToYang_route_map_bgp_action_set_community", DbToYang_route_map_bgp_action_set_community)
     XlateFuncBind("YangToDb_route_map_bgp_action_set_ext_community", YangToDb_route_map_bgp_action_set_ext_community)
     XlateFuncBind("DbToYang_route_map_bgp_action_set_ext_community", DbToYang_route_map_bgp_action_set_ext_community)
+    XlateFuncBind("YangToDb_route_map_set_next_hop_xfmr", YangToDb_route_map_set_next_hop_xfmr)
+    XlateFuncBind("DbToYang_route_map_set_next_hop_xfmr", DbToYang_route_map_set_next_hop_xfmr)
     XlateFuncBind("DbToYang_route_map_field_xfmr", DbToYang_route_map_field_xfmr)
     XlateFuncBind("YangToDb_route_map_field_xfmr", YangToDb_route_map_field_xfmr)
     XlateFuncBind("YangToDb_route_map_stmt_field_xfmr", YangToDb_route_map_stmt_field_xfmr)
     XlateFuncBind("DbToYang_route_map_stmt_field_xfmr", DbToYang_route_map_stmt_field_xfmr)
+    XlateFuncBind("YangToDb_route_map_set_ipv6_next_hop_xfmr", YangToDb_route_map_set_ipv6_next_hop_xfmr)
+    XlateFuncBind("DbToYang_route_map_set_ipv6_next_hop_xfmr", DbToYang_route_map_set_ipv6_next_hop_xfmr)
 }
 
 var DbToYang_route_map_field_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams) (map[string]interface{}, error) {
@@ -168,6 +172,115 @@ var DbToYang_route_map_action_policy_result_xfmr FieldXfmrDbtoYang = func(inPara
     }
     return result, err
 }
+
+
+
+var DbToYang_route_map_set_next_hop_xfmr FieldXfmrDbtoYang= func(inParams XfmrParams) (map[string]interface{}, error) {
+
+    result := make(map[string]interface{})
+
+    data := (*inParams.dbDataMap)[inParams.curDb]
+    log.Info("DbToYang_route_map_set_next_hop_xfmr: ", data, "inParams : ", inParams)
+
+    pTbl := data["ROUTE_MAP"]
+    if _, ok := pTbl[inParams.key]; !ok {
+        log.Info("DbToYang_route_map_action_policy_result_xfmr table not found : ", inParams.key)
+        return result, errors.New("Policy definition table not found : " + inParams.key)
+    }
+    niInst := pTbl[inParams.key]
+    route_hop, ok := niInst.Field["set_next_hop"]
+    if ok {
+            result["set-next-hop"] = route_hop
+    } else {
+        log.Info("DbToYang_route_map_set_next_hop_xfmr field not found in DB")
+    }
+    return result, nil 
+}
+
+var YangToDb_route_map_set_next_hop_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
+    res_map := make(map[string]string)
+    var err error
+    if inParams.param == nil {
+        err = errors.New("No Params")
+        return res_map, err
+    }
+
+    if inParams.oper == DELETE {
+        res_map["set_next_hop"] = ""
+        return res_map, nil
+    }
+
+    addr := inParams.param.(*ocbinds.OpenconfigRoutingPolicy_RoutingPolicy_PolicyDefinitions_PolicyDefinition_Statements_Statement_Actions_BgpActions_Config_SetNextHop_Union_String).String
+
+    /* Reject special address settings */
+    if (addr == "0.0.0.0") {
+        log.Info("YangToDb_route_map_set_next_hop_xfmr ipPtr value 0.0.0.0, multicast and reserved address are not acceptable")
+        err = errors.New("ip addr 0.0.0.0, multicast and reserved address are not acceptable")   
+        return res_map, err
+    }
+
+    first_no := strings.Split(addr, ".") 
+    fst_byt, err:= strconv.ParseInt(first_no[0],10,64)
+    if (err != nil) {
+       log.Error("Parse set_nex_hop addr failed ")
+       return res_map, err
+
+    }
+    if (fst_byt >= 224 ) {
+       err = errors.New("ip addr 0.0.0.0, multicast and reserved address are not acceptable")
+       log.Info("YangToDb_route_map_set_next_hop_xfmr ipPtr value 0.0.0.0, multicast and reserd address are not acceptable");
+       return res_map, err
+
+    }
+    res_map["set_next_hop"] = addr;
+    return res_map, nil
+}
+
+var DbToYang_route_map_set_ipv6_next_hop_xfmr FieldXfmrDbtoYang= func(inParams XfmrParams) (map[string]interface{}, error) {
+
+    result := make(map[string]interface{})
+
+    data := (*inParams.dbDataMap)[inParams.curDb]
+    log.Info("DbToYang_route_map_set_ipv6_next_hop_xfmr: ", data, "inParams : ", inParams)
+
+    pTbl := data["ROUTE_MAP"]
+    if _, ok := pTbl[inParams.key]; !ok {
+        log.Info("DbToYang_route_map_set_ipv6_next_hop_xfmr table not found : ", inParams.key)
+        return result, errors.New("Policy definition table not found : " + inParams.key)
+    }
+    niInst := pTbl[inParams.key]
+    route_hop, ok := niInst.Field["set_ipv6_next_hop_global"]
+    if ok {
+            result["set-ipv6-next-hop-global"] = route_hop
+    } else {
+        log.Info("DbToYang_route_map_set_ipv6_next_hop_xfmr field not found in DB")
+    }
+    return result, nil 
+}
+
+var YangToDb_route_map_set_ipv6_next_hop_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
+    res_map := make(map[string]string)
+    var err error
+    if inParams.param == nil {
+        err = errors.New("No Params")
+        return res_map, err
+    }
+
+    if inParams.oper == DELETE {
+        res_map["set_ipv6_next_hop_global"] = ""
+        return res_map, nil
+    }
+    addr, _ := inParams.param.(*string)
+
+    if (!validIPv6(*addr)) {
+        log.Error("Invalid IPv6 address ", *addr)
+        err = errors.New("Invalid IPv6 address!")
+        return res_map, err
+    }
+    res_map["set_ipv6_next_hop_global"] = *addr;
+    return res_map, nil
+}
+
 
 var YangToDb_route_map_match_protocol_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (map[string]string, error) {
 

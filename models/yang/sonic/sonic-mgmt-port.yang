@@ -2,10 +2,6 @@ module sonic-mgmt-port {
     namespace "http://github.com/Azure/sonic-mgmt-port";
     prefix smgmtprt;
 
-    import ietf-yang-types {
-        prefix yang;
-    }
-
     import sonic-common {
         prefix scommon;
     }

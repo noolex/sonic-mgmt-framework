@@ -22,15 +22,15 @@
         <COMMAND
             name="no write erase"
             help="Cancel configuration erase operation">
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_erase ${__full_line}
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_cfg_mgmt rpc_sonic_config_mgmt_erase ${__full_line}
             </ACTION>
         </COMMAND>
         <COMMAND
             name="write erase"
             help="Erase configuration files except management interface configuration">
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_erase ${__full_line}
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_cfg_mgmt rpc_sonic_config_mgmt_erase ${__full_line}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -64,8 +64,8 @@
         <COMMAND
             name="write erase boot"
             help="Erase the configuration files including management interface configuration">
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_erase ${__full_line}
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_cfg_mgmt rpc_sonic_config_mgmt_erase ${__full_line}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -90,8 +90,8 @@
         <COMMAND
             name="write erase install"
             help="Restore SONiC switch content to default values">
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_erase ${__full_line}
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_cfg_mgmt rpc_sonic_config_mgmt_erase ${__full_line}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -129,8 +129,8 @@
                 mode="subcommand"
                 >
             </PARAM>
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_copy running-configuration startup-configuration
+        <ACTION
+            builtin="clish_restcl">oper=POST url=/restconf/operations/sonic-config-mgmt:copy body={"sonic-config-mgmt:input":{"source":"running-configuration", "destination":"startup-configuration"}}
         </ACTION>
         </COMMAND>
 
@@ -183,16 +183,8 @@
                               </PARAM>
                        </PARAM>
                 </PARAM>
-                <ACTION>
-                  if test "${src-copy-options}" = "copy_config_url"; then&#xA;
-                      python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_copy ${copy_config_url} ${running-configuration} ${overwrite}&#xA;
-                  else&#xA;
-		              if test "${filepath}" = ""; then&#xA;
-                          python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_copy ${src-copy-options} ${running-configuration} ${overwrite}&#xA;
-                      else&#xA;
-                          python $SONIC_CLI_ROOT/sonic-cli-cfg-mgmt.py rpc_sonic_config_mgmt_copy ${src-copy-options} ${filepath}&#xA;
-                      fi&#xA;
-                  fi&#xA;
+                <ACTION
+                  builtin="clish_pyobj">sonic_cli_cfg_mgmt rpc_sonic_config_mgmt_copy src-copy-options=${src-copy-options} copy_config_url=${copy_config_url} filepath=${filepath} overwrite=${overwrite}
                 </ACTION>
           </COMMAND>                           
     </VIEW>
