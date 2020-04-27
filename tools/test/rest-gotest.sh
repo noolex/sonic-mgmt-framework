@@ -63,18 +63,21 @@ case "$1" in
 esac
 done
 
-export GOPATH=$TOPDIR:$TOPDIR/build/gopkgs:$TOPDIR/build/rest_server/dist
+MGMT_COMMON_DIR=$(realpath $TOPDIR/../sonic-mgmt-common)
 
-export CVL_SCHEMA_PATH=$TOPDIR/build/cvl/schema
+export GOPATH=/tmp/go
+
+export CVL_SCHEMA_PATH=$MGMT_COMMON_DIR/build/cvl/schema
+
+export DB_CONFIG_PATH=$TOPDIR/../../dockers/docker-database/database_config.json
 
 if [ -z $YANG_MODELS_PATH ]; then
     export YANG_MODELS_PATH=$TOPDIR/build/all_test_yangs
     mkdir -p $YANG_MODELS_PATH
     pushd $YANG_MODELS_PATH > /dev/null
     rm -f *
-    find $TOPDIR/models/yang -name "ietf-*.yang" -not -path "*/annotations/*" -exec ln -sf {} \;
-    ln -sf $TOPDIR/models/yang/version.xml
+    find $MGMT_COMMON_DIR/models/yang -name "ietf-*.yang" -not -path "*/annotations/*" -exec ln -sf {} \;
     popd > /dev/null
 fi
 
-${GO} test rest/server -v -cover "${TEST_ARGS[@]}" -args -logtostderr "${REST_ARGS[@]}" | ${PIPE}
+${GO} test -mod=vendor ./rest/server -v -cover "${TEST_ARGS[@]}" -args -logtostderr "${REST_ARGS[@]}" | ${PIPE}
