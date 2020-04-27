@@ -46,9 +46,11 @@ EVPN type-5 prefix: [5]:[EthTag]:[IPlen]:[IP]
   {% if vars.update({'weight':"0"}) %}{% endif %}
   {% if "state" in key %}
     {% if vars.update({'validRoute':route["state"]["valid-route"]}) %}{% endif %}
+    {% if vars.update({'isBest':route["state"]["openconfig-rib-bgp-ext:best-path"]}) %}{% endif %}
     {% if vars.update({'pathId':route["state"]["path-id"]}) %}{% endif %}
     {% if vars.update({'neighbor':route["state"]["origin"]}) %}{% endif %}
     {% if vars.update({'time':route["state"]["last-modified"]}) %}{% endif %}
+    {% if vars.update({'weight':route["state"]["openconfig-rib-bgp-ext:weight"]}) %}{% endif %}
   {% endif %}
   {% if "attr-sets" in key %}
     {% if vars.update({'origin':route["attr-sets"]["origin"]}) %}{% endif %}
@@ -71,20 +73,25 @@ EVPN type-5 prefix: [5]:[EthTag]:[IPlen]:[IP]
     {% endfor %}
     {% endif %}
   {% endif %}
-  {% if vars.origin == 'IGP' %}
-    {% if vars.update({'origin':"i"}) %}{% endif %}
-  {% elif vars.origin == 'EGP' %}
-    {% if vars.update({'origin':"e"}) %}{% endif %}
-  {% else %}
-    {% if vars.update({'origin':"?"}) %}{% endif %}
-  {% endif %}
 {% endfor %}
+{% if vars.origin == 'IGP' %}
+  {% if vars.update({'origin':"i"}) %}{% endif %}
+{% elif vars.origin == 'EGP' %}
+  {% if vars.update({'origin':"e"}) %}{% endif %}
+{% else %}
+  {% if vars.update({'origin':"?"}) %}{% endif %}
+{% endif %}
 {% if vars.validRoute == True %}
 {% if vars.update({'validRoute':"*"}) %}{% endif %}
 {% else %}
 {% if vars.update({'validRoute':""}) %}{% endif %}
 {% endif %}
-{{'%-5s'|format(vars.validRoute)}}{{'%-20s'|format(vars.prefix)}}
+{% if vars.isBest == True %}
+{% if vars.update({'isBest':">"}) %}{% endif %}
+{% else %}
+{% if vars.update({'isBest':""}) %}{% endif %}
+{% endif %}
+{{'%-1s%-4s'|format(vars.validRoute, vars.isBest)}}{{'%-20s'|format(vars.prefix)}}
 {{'%-25s'|format("")}}{{'%-20s'|format(vars.nxtHop)}}{{'%8s'|format(vars.med)}}{{'%8s'|format(vars.locPref)}}{{'%8s'|format(vars.weight)}}{{' '}}{{'%s'|format(vars.aspathstr)}}{{' '}}{{vars.origin}}
 {{'%-25s'|format("")}}{{'%s'|format(vars.extcommstr)}}
 {% endfor %}

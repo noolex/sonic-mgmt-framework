@@ -1,0 +1,17 @@
+module sonic-port-breakout-annot {
+
+    yang-version "1";
+
+    namespace "http://openconfig.net/yang/annotation/sbrkprt-annot";
+    prefix "sbrkprt-annot";
+
+    import sonic-extensions { prefix sonic-ext; }
+    import sonic-port-breakout { prefix sbrkprt; }
+
+    deviation /sbrkprt:breakout_dependencies {
+      deviate add {
+        sonic-ext:rpc-callback "rpc_breakout_dependencies";
+      }
+    }
+}
+

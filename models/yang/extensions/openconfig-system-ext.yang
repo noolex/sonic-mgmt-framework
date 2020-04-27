@@ -82,6 +82,58 @@ module openconfig-system-ext {
         }
     }
 
+    grouping ssh-vrf-config {
+      description
+       "Configuration data for ssh server vrf";
+        leaf vrf-name {
+            type string {
+                pattern "mgmt|Vrf[a-zA-Z0-9_-]+" {
+                    error-message "Invalid VRF name for SSH server";
+                    error-app-tag vrf-name-ssh-invalid;
+                }
+            }
+            description
+                "VRF name";
+        }
+        leaf port {
+            default 22;
+            type uint16;
+            description
+                "SSH port number";
+        }
+    }
+
+    augment "/oc-sys:system/oc-sys:ssh-server" {
+        container ssh-server-vrfs {
+          description
+           "Container for ssh server vrfs";
+            list ssh-server-vrf {
+                key "vrf-name";
+                max-elements 15;
+                description
+                  "list of ssh server vrf";
+            
+                leaf vrf-name {
+                    type leafref {
+                        path "../config/vrf-name";
+                    }
+                }
+
+                container config {
+                    description
+                      "Configuration data for ssh server vrf";
+                    uses ssh-vrf-config;
+                }
+                container state {
+                    config false;
+                    description
+                      "Operational state data for ssh server vrf";
+                    uses ssh-vrf-config;
+                }
+            }
+        }
+    }
+
     deviation /oc-sys:system/oc-sys:config/oc-sys:domain-name {
        deviate not-supported;
     }
@@ -92,5 +144,14 @@ module openconfig-system-ext {
 
     deviation /oc-sys:system/oc-sys:config/oc-sys:motd-banner {
         deviate not-supported;
+    }
+	
+	// ssh-server deviations.
+
+    deviation /oc-sys:system/oc-sys:ssh-server/oc-sys:config {
+       deviate not-supported;
+    }
+    deviation /oc-sys:system/oc-sys:ssh-server/oc-sys:state {
+       deviate not-supported;
     }
 }

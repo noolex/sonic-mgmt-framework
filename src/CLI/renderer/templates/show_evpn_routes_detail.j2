@@ -35,9 +35,11 @@
   {% if vars.update({'weight':"0"}) %}{% endif %}
   {% if "state" in key %}
     {% if vars.update({'validRoute':route["state"]["valid-route"]}) %}{% endif %}
+    {% if vars.update({'isBest':route["state"]["openconfig-rib-bgp-ext:best-path"]}) %}{% endif %}
     {% if vars.update({'pathId':route["state"]["path-id"]}) %}{% endif %}
     {% if vars.update({'neighbor':route["state"]["origin"]}) %}{% endif %}
     {% if vars.update({'time':route["state"]["last-modified"]}) %}{% endif %}
+    {% if vars.update({'weight':route["state"]["openconfig-rib-bgp-ext:weight"]}) %}{% endif %}
   {% endif %}
   {% if "attr-sets" in key %}
     {% if vars.update({'origin':route["attr-sets"]["origin"]}) %}{% endif %}
@@ -60,25 +62,30 @@
     {% endfor %}
     {% endif %}
   {% endif %}
-  {% if vars.origin == 'IGP' %}
-    {% if vars.update({'origin':"IGP"}) %}{% endif %}
-  {% elif vars.origin == 'EGP' %}
-    {% if vars.update({'origin':"EGP"}) %}{% endif %}
-  {% else %}
-    {% if vars.update({'origin':"Incomplete"}) %}{% endif %}
-  {% endif %}
 {% endfor %}
+{% if vars.origin == 'IGP' %}
+  {% if vars.update({'origin':"IGP"}) %}{% endif %}
+{% elif vars.origin == 'EGP' %}
+  {% if vars.update({'origin':"EGP"}) %}{% endif %}
+{% else %}
+  {% if vars.update({'origin':"Incomplete"}) %}{% endif %}
+{% endif %}
 {% if vars.validRoute == True %}
 {% if vars.update({'validRoute':"valid"}) %}{% endif %}
 {% else %}
 {% if vars.update({'validRoute':""}) %}{% endif %}
+{% endif %}
+{% if vars.isBest == True %}
+{% if vars.update({'isBest':"best"}) %}{% endif %}
+{% else %}
+{% if vars.update({'isBest':"not best"}) %}{% endif %}
 {% endif %}
 BGP routing table entry for {{vars.rd~':'~vars.prefix}}
 Paths: ({{''}} availalbe, best #{{''}})
   Route {{vars.prefix}} VNI {{''}}
   {{vars.aspathstr}}
       {{vars.neighbor}} from {{vars.nxtHop}} ({{vars.rd}})
-        Origin {{vars.origin}}, {{vars.validRoute}}, {{''}}, {{''}} ({{''}})
+        Origin {{vars.origin}}, weight {{vars.weight}}, {{vars.validRoute}}, {{vars.isBest}} ({{''}})
         Extended Community: {{vars.extcommstr}}
         Last update: {{datetimeformat(vars.time)|string}}
 {% endfor %}

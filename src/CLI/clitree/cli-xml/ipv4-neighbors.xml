@@ -268,7 +268,7 @@ limitations under the License.
           </PARAM>
         </PARAM>
         <ACTION>
-            if test "${iftype}" = ${phy-if-name}; then&#xA;
+            if test "${iftype}" = "phy-if-name"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${phy-if-name} summary:${summary}&#xA;
             fi&#xA;
             if test "${iftype}" = "Loopback"; then&#xA;

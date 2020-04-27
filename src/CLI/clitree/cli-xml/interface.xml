@@ -149,7 +149,7 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Loopback${lo-id} show_interface_loopback.j2 ${__full_line}&#xA;
             fi&#xA;
         else&#xA;
-            if test "${phy-if-id}" = ""; then&#xA;
+            if test "${phy-if-name}" = ""; then&#xA;
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
             else&#xA;
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface ${phy-if-name} show_interface_id.j2 ${__full_line}&#xA;
@@ -207,6 +207,34 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-portchannel.py get_sonic_portchannel_sonic_portchannel_lag_table show_portchannel.j2 ${__full_line}&#xA;
        </ACTION>
    </COMMAND>
+   <COMMAND
+        name="show threshold"
+        help="show threshold commands"/>
+   <COMMAND
+	name="show threshold breaches"
+	help="Show threshold breach entries"
+	ptype="SUBCOMMAND"
+	mode="subcommand">
+	<ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_threshold_breach_event_reports ${__full_line}&#xA;
+	</ACTION>
+	<DOCGEN>
+           <DESCRIPTION>
+                   This command is used to show information about threshold breach events recorded by the system.
+           </DESCRIPTION>
+           <USAGE>
+                   Use this command to display the threshold breach events recorded by the system.
+           </USAGE>
+           <EXAMPLE
+		    summary="Show threshold breaches">
+	------------------------------------------------------------------------------------------------------------------------------------
+	Event-id    Buffer            Type        Port           Index     Breach Value(%)     Breach Value(bytes)      Time-stamp
+	------------------------------------------------------------------------------------------------------------------------------------
+	2           priority-group    shared      Ethernet0      7         77                  8100                     2020-04-14-11:35:20
+	3           queue             unicast     Ethernet0      5         45                  8000                     2020-04-17-11:30:20
+	   </EXAMPLE>
+	</DOCGEN>
+    </COMMAND>
 
    </VIEW>
 

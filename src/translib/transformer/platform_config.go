@@ -15,19 +15,23 @@ import (
 
 const (
     PLATFORM_JSON = "/usr/share/sonic/hwsku/platform.json"
+    //PLATFORM_JSON = "/projects/csg_sonic/pk409742/repos/3.x/sonic-buildimage/device/accton/x86_64-accton_as7816_64x-r0/Accton-AS7816-64X/platform-dpb.json"
+    DPB_OP_TIMEOUT = 60
 )
 
 
 type portProp struct {
     name string
-    index      string
+    index string
     lanes string
     alias string
     valid_speeds string
     speed string
+    oid string
 }
 
 var platConfigStr map[string]map[string]string
+var portOidMap  map[string]string
 
 /* Functions */
 
@@ -83,10 +87,9 @@ func decodePortParams(port_i string, mode string, subport int, entry map[string]
     }
     start_lane := subport*lane_speed[0]
     end_lane := start_lane + lane_speed[0]
-    dpb_index = indeces[start_lane]
+    dpb_index = indeces[subport]
     dpb_lanes = lanes[start_lane]
     for i := start_lane + 1; i < end_lane; i++ {
-        dpb_index = dpb_index + "," + indeces[i]
         dpb_lanes = dpb_lanes + "," + lanes[i]
     }
     base_port,_ := strconv.Atoi(strings.TrimLeft(port_i, "Ethernet"))
@@ -174,19 +177,78 @@ func shutdownPorts (d *db.DB, ports_i []portProp) (error) {
     return dbErr;
 }
 
-func removePorts (d *db.DB, ports_i []portProp) (error) {
-    var dbErr error
 
-    for _,  port := range ports_i {
-        err := d.DeleteEntry(&db.TableSpec{Name:"PORT"}, db.Key{Comp: []string{port.name}})
-        if nil != err {
-            dbErr := err
-            log.Error("DPB: port remove failed for ", port.name, " Error ", dbErr)
+func isPortRemoveCompleted( ports_i []portProp) (error) {
+    var dbErr error
+    var portsDeleted bool
+    if len(portOidMap) < 1 {
+        portOidMap = make(map[string]string)
+        /* Get the port - oid mapping from counters db */
+        d, err := db.NewDB(getDBOptions(db.CountersDB))
+        if err != nil {
+             log.Infof("DPB unable to connect to Counters DB, error %v", err)
+             return err
+        }
+        OidInfMap,_  := getOidToIntfNameMap(d)
+        for oid, port := range OidInfMap {
+            portOidMap[port] = oid
+        }
+        log.Info("PORT OID Map:", portOidMap)
+        defer d.DeleteDB()
+    }
+    d, err := db.NewDB(getDBOptions(db.AsicDB))
+    if err != nil {
+         log.Infof("DPB unable to connect to ASIC DB, error %v", err)
+         return err
+    }
+
+    for wait:=0;wait<DPB_OP_TIMEOUT;wait++ {
+        portsDeleted = true
+        for _, port := range ports_i {
+            if oid, ok := portOidMap[port.name]; ok {
+                _, dbErr := d.GetEntry(&db.TableSpec{Name:"ASIC_DB"},
+                    db.Key{Comp: []string{"ASIC_STATE:SAI_OBJECT_TYPE_PORT:" + oid}})
+                if nil == dbErr {
+                    log.Info("DPB: ", port.name, "remove in progress. retry ", wait+1)
+                    portsDeleted = false
+                }
+            } else {
+                log.Error("DPB: OID not found for ", port.name)
+                portsDeleted = false
+                return  errors.New("Port name to OID mapping failed")
+            }
+        }
+        if !portsDeleted {
+            time.Sleep(1 * time.Second)
         } else {
-            log.Info("DPB: port remove success for ", port.name)
+            break
         }
     }
-    time.Sleep(1 * time.Second)
+
+    defer d.DeleteDB()
+    if portsDeleted {
+     dbErr = nil
+    } else {
+        dbErr = errors.New("Port remove timed out")
+    }
+
+    return dbErr
+}
+
+func removePorts (d *db.DB, ports_i []portProp) (error) {
+    var dbErr error
+    // Delete in reverse order, so that master port gets deleted last.
+    for i := len(ports_i)-1; i >= 0; i-- {
+        err := d.DeleteEntry(&db.TableSpec{Name:"PORT"}, db.Key{Comp: []string{ports_i[i].name}})
+        if nil != err {
+            dbErr := err
+            log.Error("DPB: port remove failed for ", ports_i[i].name, " Error ", dbErr)
+        } else {
+            log.Info("DPB: port remove success for ", ports_i[i].name)
+        }
+        time.Sleep(1 * time.Second)
+    }
+
     return dbErr;
 }
 

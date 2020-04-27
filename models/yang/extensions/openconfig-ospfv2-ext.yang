@@ -577,6 +577,12 @@ module openconfig-ospfv2-ext {
         description
           "Authentication key Id";
       }
+
+      leaf authentication-md5-key {
+        type string;
+        description
+          "OSPF authentication md5 password string.";
+      }
     }
   } 
 
@@ -1553,13 +1559,6 @@ module openconfig-ospfv2-ext {
         "Virtual Routing Domain name";
     }
 
-    leaf instance-id {
-      type uint32;
-      description
-        "OSPFv2 instance id for the interace";
-      default 0;
-    }
-
     leaf area-id {
       type oc-ospf-types:ospf-area-identifier;
       description
@@ -1573,16 +1572,18 @@ module openconfig-ospfv2-ext {
         "The Interface address";
     }
 
-    leaf cost {
-      type ospf-cost-metric;
-      description
-        "The metric for the interface";
-    }
-
     leaf passive-interface-address {
       type inet:ipv4-address-no-zone;
       description
         "The Interface address";
+    }
+
+    leaf hello-multiplier {
+      type uint32 {
+        range 1..10;
+      }
+      description
+         "OSPF interface hello multiplier configuration.";
     }
 
     leaf mtu-ignore {
@@ -2449,10 +2450,38 @@ module openconfig-ospfv2-ext {
     uses ospfv2-area-interface-message-stats-state-ext;
   }
 
+  /* OSPF interface augmentaion under interface ipv4 */
+
   augment "/oc-if:interfaces/oc-if:interface/oc-if:subinterfaces/oc-if:subinterface/oc-ip:ipv4" {
-  //augment "/oc-if:interfaces/oc-if:interface" {
     uses interface-phys-ospfv2-config-ext;
   }
+
+  deviation "/oc-if:interfaces/oc-if:interface/oc-if:subinterfaces/oc-if:subinterface" +
+            "/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config" +
+            "/oc-ospfv2-ext:metric" {
+    deviate replace {
+      type ospf-cost-metric;
+    }
+  }
+
+  deviation "/oc-if:interfaces/oc-if:interface/oc-if:subinterfaces/oc-if:subinterface" +
+            "/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config" +
+            "/oc-ospfv2-ext:authentication-type" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-if:interfaces/oc-if:interface/oc-if:subinterfaces/oc-if:subinterface" +
+            "/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config" +
+            "/oc-ospfv2-ext:multi-area-adjacency-primary" {
+    deviate not-supported;
+  }
+
+  deviation "/oc-if:interfaces/oc-if:interface/oc-if:subinterfaces/oc-if:subinterface" +
+            "/oc-ip:ipv4/oc-ospfv2-ext:ospfv2/oc-ospfv2-ext:config" +
+            "/oc-ospfv2-ext:hide-network" {
+    deviate not-supported;
+  }
+
 }
   
   

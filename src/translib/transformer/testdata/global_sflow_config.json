@@ -1,0 +1,10 @@
+{
+   "sonic-sflow:SFLOW_LIST":[
+      {
+         "admin_state":"up",
+         "polling_interval":10,
+         "sflow_key":"global",
+         "agent_id":"Ethernet0"
+      }
+   ]
+}

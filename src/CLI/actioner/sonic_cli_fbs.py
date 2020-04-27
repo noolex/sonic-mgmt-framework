@@ -745,7 +745,7 @@ def handle_show_policy_summary_response(response, args, op_str):
                     next = next + 2
 
         render_data = OrderedDict()
-        for binding in response.content['sonic-flow-based-services:POLICY_BINDING_TABLE_LIST']:
+        for binding in response.content.get('sonic-flow-based-services:POLICY_BINDING_TABLE_LIST', []):
             if if_filter and if_filter != binding['INTERFACE_NAME']:
                 continue
 

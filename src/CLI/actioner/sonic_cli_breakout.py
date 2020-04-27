@@ -28,20 +28,25 @@ def invoke(func, args):
     body = None
     aa = cc.ApiClient()
 
-    if func == 'get_openconfig_platform_port_components_component_port_breakout_mode_state':
+    if func == 'rpc_sonic_port_breakout_breakout_dependencies':
         interface = "Ethernet" + args[1]
-        print("Dependencies for {}".format(interface))
+
+        path = cc.Path('/restconf/operations/sonic-port-breakout:breakout_dependencies')
+        body = {"sonic-port-breakout:input": {"ifname": interface}}
+        return aa.post(path, body)
         
-        path = cc.Path('/restconf/data/openconfig-platform:components/component=%s/port/openconfig-platform-port:breakout-mode/state'%interface)
-        return aa.get(path)
     elif func == 'get_openconfig_platform_port_components_component_port_breakout_mode_config':
-        interface = "Ethernet" + args[1]
+        if len(args)<2:
+            print("Not supported currently")
+            interface = ""
+        else:
+            interface = "Ethernet" + args[1]
         path = cc.Path('/restconf/data/openconfig-platform:components/component=%s/port/openconfig-platform-port:breakout-mode/config'%interface)
         return aa.get(path)
     else:
         config_confirm("Breakout mode change will result into dependent configuration clean-up and causes traffic disruption. Continue?");
         interface = args[0]
-        speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "4x25G":"SPEED_25GB", "2x50G":"SPEED_50GB", "1x400G":"SPEED_400GB"}
+        speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "1x40G":"SPEED_40GB", "4x25G":"SPEED_25GB", "2x50G":"SPEED_50GB", "1x400G":"SPEED_400GB"}
         path = cc.Path('/restconf/data/openconfig-platform:components/component=%s/port/openconfig-platform-port:breakout-mode/config'%interface)
 
         if 1 == len(args):
@@ -57,7 +62,6 @@ def run(func, args):
         if api_response.ok():
             if api_response.content is not None:
                 response = api_response.content
-                #print response
                 if 'openconfig-platform-port:config' in response.keys():
                    value = response.pop('openconfig-platform-port:config')
                    interface = "Ethernet{}".format(args[1])
@@ -66,6 +70,8 @@ def run(func, args):
                        show_cli_output(args[0], response)
                    else:
                         print "Port not in breakout mode"
+                elif 'sonic-port-breakout:output' in response.keys():
+                    show_cli_output(args[0], response)
         else:
             print api_response.error_message()
 

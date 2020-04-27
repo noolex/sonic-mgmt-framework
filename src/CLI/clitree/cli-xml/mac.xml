@@ -110,7 +110,7 @@ limitations under the License.
             </PARAM>
         </PARAM>
     <ACTION>
-        if test "${if-subcommands}" = ${phy-if-name}; then&#xA;
+        if test "${if-subcommands}" = "phy-if-name"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 interface ${phy-if-name}&#xA; 
         elif test "${if-subcommands}" = "PortChannel"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 interface PortChannel${port-channel-id}&#xA; 
