@@ -15,6 +15,41 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <ROOT>
+    <MACRODEF name="NEW_BGP_SHW_OPTIONS">
+      <PARAM name="unicast" help="BGP IPvarg1 unicast" ptype="SUBCOMMAND" mode="subcommand"/>
+      <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+      </PARAM>
+      <PARAM name="querytype" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch">
+        <PARAM name="ip-addr" help="IPvarg1 Address" ptype="IParg2_ADDR">
+          <PARAM name="filter" help="Filter" ptype="SUBCOMMAND" mode="switch" optional="true">
+            <PARAM name="bestpath" help="Best path" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="multipath" help="Multiple paths" ptype="SUBCOMMAND" mode="subcommand"/>
+          </PARAM>
+        </PARAM>
+        <PARAM name="ip-prefix" help="IPvarg1 Prefix" ptype="IParg2_ADDR_MASK">
+          <PARAM name="filter" help="Filter" ptype="SUBCOMMAND" mode="switch" optional="true">
+            <PARAM name="bestpath" help="Best path" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="multipath" help="Multiple paths" ptype="SUBCOMMAND" mode="subcommand"/>
+          </PARAM>
+        </PARAM>
+        <PARAM name="community" help="Community" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="comm_opts" help="Community" ptype="SUBCOMMAND" mode="switch">
+             <PARAM name="aann" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN"/>
+             <PARAM name="local-AS" help="Local AS" ptype="SUBCOMMAND" mode="subcommand"/>
+             <PARAM name="no-advertise" help="No advertise" ptype="SUBCOMMAND" mode="subcommand"/>
+             <PARAM name="no-export" help="No export" ptype="SUBCOMMAND" mode="subcommand"/>
+             <PARAM name="no-peer" help="No peer" ptype="SUBCOMMAND" mode="subcommand"/>
+          </PARAM>
+          <PARAM name="exact-match" help="Exact match" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+        </PARAM>
+        <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND">
+          <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+        </PARAM>
+        <PARAM name="statistics" help="Stats" ptype="SUBCOMMAND" mode="subcommand"/>
+      </PARAM>
+    </MACRODEF>
+
     <MACRODEF name="IP_BGP_NBR_SHW_RTE_OPTIONS">
         <PARAM name="neighbor-subcommands" help="Neighbor subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
           <PARAM name="routes" help="Display the routes learned from neighbor" ptype="SUBCOMMAND" mode="subcommand"/>

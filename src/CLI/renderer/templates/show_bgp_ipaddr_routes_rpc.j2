@@ -1,0 +1,91 @@
+{% set vars = {'routerId': ""} %}
+{% set vars = {'asNum': ""} %}
+{% set vars = {'vrf': ""} %}
+{% set vars = {'prefix': ""} %}
+{% set vars = {'nxtHop': ""} %}
+{% set vars = {'neighbor': ""} %}
+{% set vars = {'pathId': ""} %}
+{% set vars = {'med': ""} %}
+{% set vars = {'locPref': ""} %}
+{% set vars = {'origin': "IGP"} %}
+{% set vars = {'weight': "0"} %}
+{% set vars = {'numpaths': "0"} %}
+{% set vars = {'bestpaths': "0"} %}
+{% set numpaths = 0 %}
+{% set bestpaths = 0 %}
+{% set vars = {'validRoute': False} %}
+{% set vars = {'bestRoute': False} %}
+{% set vars = {'time': "0"} %}
+{% set vars = {'members': ""} %}
+{% set vars = {'communities': ""} %}
+{% if json_output -%}
+{% set globalConfig = json_output %}
+  {% if vars.update({'prefix':globalConfig["prefix"]}) %}{% endif %}
+  {% set pathsList = globalConfig["paths"] %}
+  {% if pathsList %}
+    {% for path in pathsList %}
+      {% set numpaths = numpaths + 1 %}
+      {% if vars.update({'validRoute':False}) %} {% endif %}
+      {% if vars.update({'bestRoute':False}) %} {% endif %}
+      {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
+      {% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}
+      {% if vars.update({'pathId':path["pathId"]}) %}{% endif %}
+      {% if vars.update({'routerId':path["peer"]["routerId"]}) %}{% endif %}
+      {% if vars.update({'weight':path["weight"]}) %}{% endif %}
+      {% if vars.bestRoute == True %}
+        {% set bestpaths = bestpaths + 1 %}
+        {% if vars.update({'bestpaths': bestpaths}) %}{% endif %}
+      {% endif %}
+      {% if vars.update({'numpaths': numpaths}) %}{% endif %}
+    {% endfor %}
+  {% endif %}
+  {% if vars.numpaths %}
+BGP routing table entry for {{ vars.prefix }}
+Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default)
+  {% endif %}
+{% endif %}
+{% if json_output and vars.numpaths -%}
+  {% set globalConfig = json_output %}
+  {% if vars.update({'prefix':globalConfig["prefix"]}) %}{% endif %}
+  {% set pathsList = globalConfig["paths"] %}
+  {% if pathsList %}
+    {% for path in pathsList %}
+      {% if vars.update({'validRoute':False}) %} {% endif %}
+      {% if vars.update({'bestRoute':False}) %} {% endif %}
+      {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
+      {% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}
+      {% if vars.update({'pathId':path["pathId"]}) %}{% endif %}
+      {% if vars.update({'routerId':path["peer"]["routerId"]}) %}{% endif %}
+      {% if vars.update({'weight':path["weight"]}) %}{% endif %}
+      {% if vars.update({'members':path["aspath"]["string"]}) %}{% endif %}
+      {% if vars.update({'origin':path["origin"]}) %}{% endif %}
+      {% if vars.update({'communities':''}) %} {% endif %}
+      {% if vars.update({'time':path["lastUpdate"]["epoch"]}) %}{% endif %}
+      {% if vars.update({'nxtHop':path["peer"]["peerId"]}) %}{% endif %}
+      {% for nxthop in nexthops %}
+        {% if vars.update({'neighbor':nxthop["ip"]}) %}{% endif %}
+      {% endfor %}
+      {% set nexthops = path["nexthops"] %}
+      {% for nxthop in nexthops %}
+        {% if vars.update({'neighbor':nxthop["ip"]}) %}{% endif %}
+      {% endfor %}
+      {% if vars.validRoute == True %}
+         {% if vars.update({'validRoute':"valid"}) %}{% endif %}
+      {% else %}
+         {% if vars.update({'validRoute':""}) %}{% endif %}
+      {% endif %}
+      {% if vars.bestRoute == True %}
+        {% if vars.update({'bestRoute':"best"}) %}{% endif %}
+      {% else %}
+        {% if vars.update({'bestRoute':""}) %}{% endif %}
+      {% endif %}
+
+{{'  %s'|format(vars.members)}}
+{{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
+{{'      Origin '}}{{ vars.origin }}{{', '}}{{vars.validRoute}}{% if vars.bestRoute == 'best' %}{{', '}}{{vars.bestRoute}}{% endif %}{{'\n'}}
+{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}
+{{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}
+    {% endfor %}
+  {% endif %}
+{% endif %}
+
