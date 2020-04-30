@@ -224,18 +224,6 @@ def generate_show_bgp_routes(args):
                      # no routes
                      return 0
                   show_cli_output("show_bgp_ipaddr_routes_rpc.j2", d)
-               elif querytype == 'COMMUNITY-STRING':
-                 return 1
-               elif querytype == 'COMMUNITY-LOCAL-AS':
-                 return 1
-               elif querytype == 'COMMUNITY-NO-ADVERTISE':
-                 return 1
-               elif querytype == 'COMMUNITY-NO-EXPORT':
-                 return 1
-               elif querytype == 'COMMUNITY-NO-PEER':
-                 return 1
-               elif querytype == 'ROUTE-MAP':
-                 return 1
                else:
                   routes = d.get("routes")
                   if not routes:
@@ -417,6 +405,44 @@ def generate_show_bgp_peer_groups(args, show_all=False):
           show_cli_output("show_bgp_peer_group.j2", d)
 
    return d
+
+def generate_show_bgp_stats(args):
+   api = cc.ApiClient()
+   keypath = []
+   body = None
+   afisafi = "IPV4_UNICAST"
+   rib_type = "ipv4-unicast"
+   vrf = "default"
+   rfilter = None
+   i = 0
+   for arg in args:
+       if "vrf" == arg:
+          vrf = args[i+1]
+       elif "ipv4" == arg:
+          afisafi = "IPV4_UNICAST"
+          rib_type = "ipv4-unicast"
+       elif "ipv6" == arg:
+          afisafi = "IPV6_UNICAST"
+          rib_type = "ipv6-unicast"
+       else:
+          pass
+       i = i + 1
+   d = { 'vrf': vrf }
+   keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/config', name=vrf, identifier=IDENTIFIER,name1=NAME1)
+   response = api.get(keypath)
+   if(response.ok()):
+       keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp-statistics')
+       body = {"sonic-bgp-show:input": {"vrf-name":vrf, "address-family":afisafi}}
+       response = api.post(keypath, body)
+       if not response:
+           # unknown error (bad imput?)
+           return 1
+       if(response.ok()):
+          d = response.content['sonic-bgp-show:output']['response']
+          if len(d) != 0 and "warning" not in d:
+             d = json.loads(d)
+
+             show_cli_output("show_ip_bgp_stats_rpc.j2", d)
 
 
 def invoke_api(func, args=[]):
@@ -2207,6 +2233,7 @@ def parseGloblShow(vrf_name, cmd, args=[]):
             # TBD
             print cc.ApiClient().cli_not_implemented('{} {}'.format(cmd, args[0])).error_message()
             return 1
+            #return generate_show_bgp_stats(args)
         elif args[0] == 'ip-prefix':
             return generate_show_bgp_prefix_routes(args)
         else:

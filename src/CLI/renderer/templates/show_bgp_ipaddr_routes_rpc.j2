@@ -6,17 +6,20 @@
 {% set vars = {'neighbor': ""} %}
 {% set vars = {'pathId': ""} %}
 {% set vars = {'med': ""} %}
+{% set vars = {'metric': ""} %}
 {% set vars = {'locPref': ""} %}
 {% set vars = {'origin': "IGP"} %}
-{% set vars = {'weight': "0"} %}
+{% set vars = {'weight': ""} %}
 {% set vars = {'numpaths': "0"} %}
 {% set vars = {'bestpaths': "0"} %}
 {% set numpaths = 0 %}
 {% set bestpaths = 0 %}
 {% set vars = {'validRoute': False} %}
 {% set vars = {'bestRoute': False} %}
+{% set vars = {'bestReason': ""} %}
 {% set vars = {'time': "0"} %}
 {% set vars = {'members': ""} %}
+{% set vars = {'peertype': ""} %}
 {% set vars = {'communities': ""} %}
 {% if json_output -%}
 {% set globalConfig = json_output %}
@@ -28,10 +31,7 @@
       {% if vars.update({'validRoute':False}) %} {% endif %}
       {% if vars.update({'bestRoute':False}) %} {% endif %}
       {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
-      {% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}
-      {% if vars.update({'pathId':path["pathId"]}) %}{% endif %}
-      {% if vars.update({'routerId':path["peer"]["routerId"]}) %}{% endif %}
-      {% if vars.update({'weight':path["weight"]}) %}{% endif %}
+      {% if "bestpath" in path %} {% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}{% endif %}
       {% if vars.bestRoute == True %}
         {% set bestpaths = bestpaths + 1 %}
         {% if vars.update({'bestpaths': bestpaths}) %}{% endif %}
@@ -52,14 +52,20 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
     {% for path in pathsList %}
       {% if vars.update({'validRoute':False}) %} {% endif %}
       {% if vars.update({'bestRoute':False}) %} {% endif %}
+      {% if vars.update({'weight':""}) %} {% endif %}
+      {% if vars.update({'communities':""}) %} {% endif %}
       {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
-      {% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}
+      {% if "bestpath" in path %}{% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}{% endif %}
       {% if vars.update({'pathId':path["pathId"]}) %}{% endif %}
       {% if vars.update({'routerId':path["peer"]["routerId"]}) %}{% endif %}
-      {% if vars.update({'weight':path["weight"]}) %}{% endif %}
+      {% if vars.update({'peertype':path["peer"]["type"]}) %}{% endif %}
+      {% if vars.update({'med':path["med"]}) %}{% endif %}
+      {% if vars.update({'metric':path["metric"]}) %}{% endif %}
+      {% if "weight" in path %}{% if vars.update({'weight':path["weight"]}) %}{% endif %}{% endif %}
+      {% if vars.update({'locPref':path["localpref"]}) %}{% endif %}
       {% if vars.update({'members':path["aspath"]["string"]}) %}{% endif %}
       {% if vars.update({'origin':path["origin"]}) %}{% endif %}
-      {% if vars.update({'communities':''}) %} {% endif %}
+      {% if "community" in path %}{% if vars.update({'communities':path["community"]["list"]|join(' ')}) %}{% endif %}{% endif %}
       {% if vars.update({'time':path["lastUpdate"]["epoch"]}) %}{% endif %}
       {% if vars.update({'nxtHop':path["peer"]["peerId"]}) %}{% endif %}
       {% for nxthop in nexthops %}
@@ -76,14 +82,22 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
       {% endif %}
       {% if vars.bestRoute == True %}
         {% if vars.update({'bestRoute':"best"}) %}{% endif %}
+        {% if vars.update({'bestReason':""}) %}{% endif %}
+        {% if vars.update({'bestReason':path["bestpath"]["selectionReason"]}) %}{% endif %}
       {% else %}
         {% if vars.update({'bestRoute':""}) %}{% endif %}
+        {% if vars.update({'bestReason':""}) %}{% endif %}
       {% endif %}
 
 {{'  %s'|format(vars.members)}}
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
-{{'      Origin '}}{{ vars.origin }}{{', '}}{{vars.validRoute}}{% if vars.bestRoute == 'best' %}{{', '}}{{vars.bestRoute}}{% endif %}{{'\n'}}
-{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}
+{{'      Origin '}}{{ vars.origin }}{{', metric '}}{{vars.metric}}{{', localpref '}}{{vars.locPref}}{% if vars.weight != '' %}{{', weight '}}{{vars.weight}}{% endif %}
+   {% if vars.validRoute != '' %}{{', '}}{{vars.validRoute}}{% endif %}
+   {% if vars.peertype != '' %}{{', '}}{{vars.peertype}}{% endif %}
+   {% if vars.bestRoute != '' %}{{', '}}{{vars.bestRoute}}{% endif %}
+   {% if vars.bestReason != '' %}{{' ('}}{{vars.bestReason}}{{')'}}{% endif %}
+   {{'\n'}}
+{% if vars.communities != '' %}{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}{% endif %}
 {{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}
     {% endfor %}
   {% endif %}

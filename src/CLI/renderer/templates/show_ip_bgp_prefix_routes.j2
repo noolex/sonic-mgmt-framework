@@ -150,7 +150,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
 {{'  %s'|format(vars.members)}}
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
 {{'      Origin '}}{{ vars.origin }}{{', '}}{{vars.validRoute}}{% if vars.bestRoute == 'best' %}{{', '}}{{vars.bestRoute}}{% endif %}{{'\n'}}
-{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}
+{% if vars.communities != '' %}{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}{% endif %}
 {{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}
             {% endfor %}
          {% endif %}
