@@ -42,7 +42,8 @@ def run_vrf(args):
     args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
     try:
         if len(args) == 0:
-            args = "-h"
+            print_and_log("The command is not completed.")
+            return
         cmd = "ping -6 " + args + " -I " + vrfName
         cmd = re.sub('-I\s*Management', '-I eth', cmd)
         cmdList = cmd.split(' ')
@@ -61,7 +62,8 @@ def run(args):
     args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
     try:
         if len(args) == 0:
-            args = "-h"
+            print_and_log("The command is not completed.")
+            return
         cmd = "ping -6 " + args
         cmd = re.sub('-I\s*Management', '-I eth', cmd)
         cmdList = cmd.split(' ')
