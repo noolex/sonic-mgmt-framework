@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+
+<MACRODEF name="WRED_THD_NO_CONFIG">
+    <PARAM
+        name="minimum-threshold"
+        help="Minimum threshold keyword"
+        mode="subcommand"
+        ptype="SUBCOMMAND">
+        <PARAM
+            name="min-threshold"
+            help="Specify the minimum threshold in KB"
+            ptype="QoS_THRESHOLD"
+            sub_oper_yang="remove:arg4min-thd"
+            />
+        <PARAM
+            name="maximum-threshold"
+            help="Maximum threshold keyword"
+            mode="subcommand"
+            ptype="SUBCOMMAND">
+            <PARAM
+                name="max-threshold"
+                help="Specify the maximum threshold in KB"
+                ptype="QoS_THRESHOLD"
+                sub_oper_yang="remove:arg4max-thd"
+                />
+            <PARAM
+                name="drop-probability"
+                help="Maximum drop rate keyword"
+                mode="subcommand"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="max-drop-rate"
+                    help="Specify maximum in drop rate in percent"
+                    ptype="PERCENT"
+                    sub_oper_yang="remove:arg4max-drop-rate"
+                    />
+            </PARAM>
+        </PARAM>
+    </PARAM>
+</MACRODEF>
+
+<MACRODEF name="WRED_THD_CONFIG">
+    <PARAM
+        name="minimum-threshold"
+        help="Minimum threshold keyword"
+        mode="subcommand"
+        ptype="SUBCOMMAND">
+        <PARAM
+            name="min-threshold"
+            help="Specify the minimum threshold in KB"
+            ptype="QoS_THRESHOLD"
+            />
+        <PARAM
+            name="maximum-threshold"
+            help="Maximum threshold keyword"
+            mode="subcommand"
+            ptype="SUBCOMMAND">
+            <PARAM
+                name="max-threshold"
+                help="Specify the maximum threshold in KB"
+                ptype="QoS_THRESHOLD"
+                />
+            <PARAM
+                name="drop-probability"
+                help="Maximum drop rate keyword"
+                mode="subcommand"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="max-drop-rate"
+                    help="Specify maximum in drop rate in percent"
+                    ptype="PERCENT"
+                    />
+            </PARAM>
+        </PARAM>
+    </PARAM>
+</MACRODEF>
+
+</ROOT>

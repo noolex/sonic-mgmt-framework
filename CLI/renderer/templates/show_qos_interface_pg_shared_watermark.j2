@@ -1,0 +1,15 @@
+{{'Ingress shared pool watermark per PG:'}}
+{{'-------------------------------------------------------------------'}}
+{{'%-5s'|format("PG0")}}{{'%-5s'|format("PG1")}}{{'%-5s'|format("PG2")}}{{'%-5s'|format("PG3")}}{{'%-5s'|format("PG4")}}{{'%-5s'|format("PG5")}}{{'%-5s'|format("PG6")}}{{'%-5s'|format("PG7")}}
+{{'-------------------------------------------------------------------'}}
+{% if json_output %}
+{% set watermark = {}%}
+{% set pg_info_list = json_output['priority-group'] %}
+{% for pg_info in pg_info_list %}
+    {% set pg_stats_info = pg_info['state'] %}
+    {% set pg = pg_stats_info['name'] %}
+    {% set pgname = pg.split(':') %}
+    {% if watermark.update({pgname[1] :  pg_stats_info['shared-watermark']}) %} {% endif %}
+{% endfor %}
+{{'%-5s'|format(watermark['0'])}}{{'%-5s'|format(watermark['1'])}}{{'%-5s'|format(watermark['2'])}}{{'%-5s'|format(watermark['3'])}}{{'%-5s'|format(watermark['4'])}}{{'%-5s'|format(watermark['5'])}}{{'%-5s'|format(watermark['6'])}}{{'%-5s'|format(watermark['7'])}}
+{% endif %}
