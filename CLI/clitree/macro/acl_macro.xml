@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<ROOT>
+    <MACRODEF name="ACL-ACTION-OPTIONS">
+        <PARAM name="action-options" help="" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="deny" help="Drop traffic in data plane" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="permit" help="Allow traffic in control and data plane" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="remark" help="Set remark or description for rule" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="remark-val" help="Remark or description for rule" ptype="LINE"/>
+            </PARAM>
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="IP-PROTOCOL-OPTIONS">
+        <PARAM name="ip-protocol" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
+            <PARAM name="ip-protocol-val" help="Protocol number (0 to 255)" ptype="RANGE_0_255"/>
+            <PARAM name="arg1" help="arg2 Packets" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="arg3" help="Any arg4 Packets" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="tcp" help="TCP packets" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="udp" help="UDP packets" ptype="SUBCOMMAND" mode="subcommand"/>
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="IPADDRESS-OPTIONS">
+        <PARAM name="arg1-ip-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
+            <PARAM name="arg1-ip-prefix" help="arg3 prefix" ptype="arg5"/>
+            <PARAM name="arg1-ip-any" help="Any arg2 address" ptype="SUBCOMMAND" mode="subcommand" value="any"/>
+            <PARAM name="arg1-ip-host" help="arg2 IP address" ptype="SUBCOMMAND" mode="subcommand" value="host">
+                <PARAM name="arg1-ip" help="arg3 IP address value" ptype="arg6"/>
+            </PARAM>
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="L4-PORT-OPTIONS">
+        <PARAM name="arg1-l4-port-oper" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" 
+               test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) -o ( "${ip-protocol}" = "udp" ) -o ( "${ip-protocol-val}" = "17" ) )'>
+            <PARAM name="arg1-eq" help="Match packets with TCP/UDP arg2 port equal to the given port number" ptype="SUBCOMMAND" mode="subcommand" optional="true" value="eq">
+                <PARAM name="arg1-port1" help="arg3 port number" ptype="RANGE_0_65535"/>
+            </PARAM>
+            <PARAM name="arg1-gt" help="Match packets with TCP/UDP arg2 port greater than the given port number" ptype="SUBCOMMAND" mode="subcommand" optional="true" value="gt">
+                <PARAM name="arg1-port1" help="arg3 port number" ptype="RANGE_0_65534"/>
+            </PARAM>
+            <PARAM name="arg1-lt" help="Match packets with TCP/UDP arg2 port lesser than the given port number" ptype="SUBCOMMAND" mode="subcommand" optional="true" value="lt">
+                <PARAM name="arg1-port1" help="arg3 port number" ptype="RANGE_1_65535"/>
+            </PARAM>
+            <PARAM name="arg1-range" help="Match packets with TCP/UDP arg2 port in the given range" ptype="SUBCOMMAND" mode="subcommand" optional="true" value="range">
+                <PARAM name="arg1-port1" help="arg3 port begin" ptype="RANGE_0_65534"/>
+                <PARAM name="arg1-port2" help="arg3 port end. Must be greater than arg2 port begin." ptype="RANGE_1_65535"/>
+            </PARAM>
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="TCP-FLAGS-OPTIONS">
+        <PARAM name="fin" help="Match packets with FIN TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
+        <PARAM name="syn" help="Match packets with SYN TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
+        <PARAM name="rst" help="Match packets with RST TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
+        <PARAM name="psh" help="Match packets with PSH TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
+        <PARAM name="ack" help="Match packets with ACK TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
+        <PARAM name="urg" help="Match packets with URG TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
+    </MACRODEF>
+
+    <MACRODEF name="ICMP-TYPE-CODE-OPTIONS">
+        <PARAM name="type" help="Match packets using arg3 type" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"
+               test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "arg1" ) -o ( "${ip-protocol-val}" = "arg2" ) )'>
+            <PARAM name="TYPE" help="arg3 type" ptype="RANGE_0_255"/>
+        </PARAM>
+        <PARAM name="code" help="Match packets using arg3 code" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"
+               test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "arg1" ) -o ( "${ip-protocol-val}" = "arg2" ) )'>
+            <PARAM name="CODE" help="arg3 code" ptype="RANGE_0_255"/>
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="RULE-COMMON-OPTIONS">
+        <PARAM name="vlan" help="Match packets using VLAN ID value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
+            <PARAM name="vlan-val" help="VLAN ID value (range 1-4094)" ptype="VLAN_RANGE"/>
+        </PARAM>
+        <PARAM name="remark" help="Set remark or description for rule" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
+            <PARAM name="remark-val" help="Remark or description for rule" ptype="LINE"/>
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="IP-DSCP-VALUE-OPTIONS">
+        <PARAM name="dscp-options" help="" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="default" help="Match packets with CS0 DSCP (000000 - Decimal value 0)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="cs1" help="Match packets with CS1 DSCP (001000 - Decimal value 8)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="cs2" help="Match packets with CS2 DSCP (010000 - Decimal value 16)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="cs3" help="Match packets with CS3 DSCP (011000 - Decimal value 24)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="cs4" help="Match packets with CS4 DSCP (100000 - Decimal value 32)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="cs5" help="Match packets with CS5 DSCP (101000 - Decimal value 40)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="cs6" help="Match packets with CS6 DSCP (110000 - Decimal value 48)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="cs7" help="Match packets with CS7 DSCP (111000 - Decimal value 56)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af11" help="Match packets with AF11 DSCP (001010 - Decimal value 10)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af12" help="Match packets with AF12 DSCP (001100 - Decimal value 12)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af13" help="Match packets with AF13 DSCP (001110 - Decimal value 14)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af21" help="Match packets with AF21 DSCP (010010 - Decimal value 18)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af22" help="Match packets with AF22 DSCP (010100 - Decimal value 20)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af23" help="Match packets with AF23 DSCP (010110 - Decimal value 22)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af31" help="Match packets with AF31 DSCP (011010 - Decimal value 26)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af32" help="Match packets with AF32 DSCP (011100 - Decimal value 28)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af33" help="Match packets with AF33 DSCP (011110 - Decimal value 30)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af41" help="Match packets with AF41 DSCP (100010 - Decimal value 34)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af42" help="Match packets with AF42 DSCP (100100 - Decimal value 36)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="af43" help="Match packets with AF43 DSCP (100110 - Decimal value 38)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="ef" help="Match packets with EF DSCP (101110 - Decimal value 46)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="voice-admit" help="Match packets with VOICE-ADMIT DSCP (101100 - Decimal value 44)" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="dscp-val" help="DSCP value (range 0-63)" ptype="RANGE_0_63"/>
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="IP-RULE-COMMON-OPTIONS">
+        <PARAM name="dscp" help="Match packets using DSCP value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
+            <MACRO name="IP-DSCP-VALUE-OPTIONS"/>
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="ACL-COMMON-OPTIONS">
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+
+        <COMMAND name="no seq" help="Sequence number">
+            <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535"/>
+            <PARAM name="remark" help="Clear remark or description for rule" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl_rule ${name} arg1 ${seq-no} ${remark}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="remark" help="Set remark or description for ACL">
+            <PARAM name="remark-val" help="Remark or description for ACL" ptype="LINE"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl set_acl_remark ${name} arg1 ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no remark" help="Clear remark or description for ACL">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_remark ${name} arg1</ACTION>
+        </COMMAND>
+    </MACRODEF>
+
+    <MACRODEF name="ACL-BINDING-OPTIONS-INGRESS">
+        <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+        <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="ACL-BINDING-OPTIONS-EGRESS">
+        <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+        <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="out" help="Apply access-list in outgoing direction" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+    </MACRODEF>
+    
+    <MACRODEF name="ACL-BINDING-OPTIONS-BOTH">
+        <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+        <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+    </MACRODEF>
+    
+    <MACRODEF name="ACL-BINDING-OPTIONS">
+        <COMMAND name="mac" help="Configure MAC parameters"/>
+        <!-- mac|ip|ipv6 access-group NAME in|out -->
+        <COMMAND name="mac access-group" help="Specify MAC access control for packets">
+            <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_L2 ${iface} ${vlan_name} ${po_name} ${direction-switch}</ACTION>
+        </COMMAND>
+        <COMMAND name="ip access-group" help="Specify IP access control for packets">
+            <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV4 ${iface} ${vlan_name} ${po_name} ${direction-switch}</ACTION>
+        </COMMAND>
+        <COMMAND name="ipv6 access-group" help="Specify IPv6 access control for packets">
+            <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV6 ${iface} ${vlan_name} ${po_name} ${direction-switch}</ACTION>
+        </COMMAND>
+    
+        <!-- no mac|ip|ipv6 access-group NAME in|out -->
+        <COMMAND name="no mac access-group" help="Specify MAC access control for packets">
+            <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${iface} ${vlan_name} ${po_name} ${access-list-name} ACL_L2 ${direction-switch}</ACTION>
+        </COMMAND>
+        <COMMAND name="no ip access-group" help="Specify IP access control for packets">
+            <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${iface} ${vlan_name} ${po_name} ${access-list-name} ACL_IPV4 ${direction-switch}</ACTION>
+        </COMMAND>
+        <COMMAND name="no ipv6 access-group" help="Specify IPv6 access control for packets">
+            <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${iface} ${vlan_name} ${po_name} ${access-list-name} ACL_IPV6 ${direction-switch}</ACTION>
+        </COMMAND>
+    </MACRODEF>
+
+    <MACRODEF name="ACL-MAC-ETHERTYPE-OPTIONS">
+        <PARAM name="ethertype-ip" help="IPv4 ethertype (0x800)" ptype="SUBCOMMAND" mode="subcommand" value="ip"/>
+        <PARAM name="ethertype-ipv6" help="IPv6 ethertype (0x86dd)" ptype="SUBCOMMAND" mode="subcommand" value="ipv6"/>
+        <PARAM name="ethertype-arp" help="ARP ethertype (0x806)" ptype="SUBCOMMAND" mode="subcommand" value="arp"/>
+        <PARAM name="ETHERTYPE" help="Ethertype value (0x600-0xffff)" ptype="ETHERTYPE_VALUE"/>
+    </MACRODEF>
+
+    <MACRODEF name="ACL-MAC-PCP-VAL-OPTIONS">
+        <PARAM name="pcp-be" help="Best effort (0)" ptype="SUBCOMMAND" mode="subcommand" value="be"/>
+        <PARAM name="pcp-bk" help="Background (1)" ptype="SUBCOMMAND" mode="subcommand" value="bk"/>
+        <PARAM name="pcp-ee" help="Excellent effort (2)" ptype="SUBCOMMAND" mode="subcommand" value="ee"/>
+        <PARAM name="pcp-ca" help="Critical applications (3)" ptype="SUBCOMMAND" mode="subcommand" value="ca"/>
+        <PARAM name="pcp-vi" help="Video, &lt; 100 ms latency and jitter (4)" ptype="SUBCOMMAND" mode="subcommand" value="vi"/>
+        <PARAM name="pcp-vo" help="Voice, &lt; 10 ms latency and jitter (5)" ptype="SUBCOMMAND" mode="subcommand" value="vo"/>
+        <PARAM name="pcp-ic" help="Internetwork control (6)" ptype="SUBCOMMAND" mode="subcommand" value="ic"/>
+        <PARAM name="pcp-nc" help="Network control (7)" ptype="SUBCOMMAND" mode="subcommand" value="nc"/>
+        <PARAM name="pcp-val" help="arg2" ptype="arg1"/>
+    </MACRODEF>
+</ROOT>
