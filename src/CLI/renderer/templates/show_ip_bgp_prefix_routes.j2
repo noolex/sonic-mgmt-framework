@@ -11,8 +11,6 @@
 {% set vars = {'weight': "0"} %}
 {% set vars = {'numpaths': "0"} %}
 {% set vars = {'bestpaths': "0"} %}
-{% set numpaths = 0 %}
-{% set bestpaths = 0 %}
 {% set vars = {'validRoute': False} %}
 {% set vars = {'bestRoute': False} %}
 {% set vars = {'time': "0"} %}
@@ -41,7 +39,7 @@
           {% set pathList = pathsList["path"] %}
           {% if pathList %}
             {% for path in pathList %}
-               {% set numpaths = numpaths + 1 %}
+               {% set pathindex = loop.index %}
                {% for key in path %}
                  {% if "state" in key %}
                     {% if vars.update({'validRoute':False}) %} {% endif %}
@@ -51,12 +49,11 @@
                     {% if vars.update({'pathId':path["state"]["path-id"]}) %}{% endif %}
                     {% if vars.update({'routerId':path["state"]["remote-router-id"]}) %}{% endif %}
                     {% if vars.bestRoute == True %}
-                      {% set bestpaths = bestpaths + 1 %}
-                      {% if vars.update({'bestpaths': bestpaths}) %}{% endif %}
+                      {% if vars.update({'bestpaths': pathindex}) %}{% endif %}
                     {% endif %}
                  {% endif %}
                {% endfor %}
-               {% if vars.update({'numpaths': numpaths}) %}{% endif %}
+               {% if vars.update({'numpaths': loop.index}) %}{% endif %}
             {% endfor %}
           {% endif %}
          {% endif %}

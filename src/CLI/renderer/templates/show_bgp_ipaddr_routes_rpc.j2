@@ -12,8 +12,6 @@
 {% set vars = {'weight': ""} %}
 {% set vars = {'numpaths': "0"} %}
 {% set vars = {'bestpaths': "0"} %}
-{% set numpaths = 0 %}
-{% set bestpaths = 0 %}
 {% set vars = {'validRoute': False} %}
 {% set vars = {'bestRoute': False} %}
 {% set vars = {'bestReason': ""} %}
@@ -27,16 +25,14 @@
   {% set pathsList = globalConfig["paths"] %}
   {% if pathsList %}
     {% for path in pathsList %}
-      {% set numpaths = numpaths + 1 %}
       {% if vars.update({'validRoute':False}) %} {% endif %}
       {% if vars.update({'bestRoute':False}) %} {% endif %}
       {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
       {% if "bestpath" in path %} {% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}{% endif %}
       {% if vars.bestRoute == True %}
-        {% set bestpaths = bestpaths + 1 %}
-        {% if vars.update({'bestpaths': bestpaths}) %}{% endif %}
+        {% if vars.update({'bestpaths': loop.index}) %}{% endif %}
       {% endif %}
-      {% if vars.update({'numpaths': numpaths}) %}{% endif %}
+      {% if vars.update({'numpaths': loop.index}) %}{% endif %}
     {% endfor %}
   {% endif %}
   {% if vars.numpaths %}
@@ -54,15 +50,17 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
       {% if vars.update({'bestRoute':False}) %} {% endif %}
       {% if vars.update({'weight':""}) %} {% endif %}
       {% if vars.update({'communities':""}) %} {% endif %}
+      {% if vars.update({'locPref':""}) %} {% endif %}
+      {% if vars.update({'peertype':""}) %} {% endif %}
       {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
       {% if "bestpath" in path %}{% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}{% endif %}
       {% if vars.update({'pathId':path["pathId"]}) %}{% endif %}
       {% if vars.update({'routerId':path["peer"]["routerId"]}) %}{% endif %}
-      {% if vars.update({'peertype':path["peer"]["type"]}) %}{% endif %}
+      {% if "type" in path["peer"] %}{% if vars.update({'peertype':path["peer"]["type"]}) %}{% endif %}{% endif %}
       {% if vars.update({'med':path["med"]}) %}{% endif %}
       {% if vars.update({'metric':path["metric"]}) %}{% endif %}
       {% if "weight" in path %}{% if vars.update({'weight':path["weight"]}) %}{% endif %}{% endif %}
-      {% if vars.update({'locPref':path["localpref"]}) %}{% endif %}
+      {% if "localpref" in path %}{% if vars.update({'locPref':path["localpref"]}) %}{% endif %}{% endif %}
       {% if vars.update({'members':path["aspath"]["string"]}) %}{% endif %}
       {% if vars.update({'origin':path["origin"]}) %}{% endif %}
       {% if "community" in path %}{% if vars.update({'communities':path["community"]["list"]|join(' ')}) %}{% endif %}{% endif %}
@@ -91,7 +89,8 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
 
 {{'  %s'|format(vars.members)}}
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
-{{'      Origin '}}{{ vars.origin }}{{', metric '}}{{vars.metric}}{{', localpref '}}{{vars.locPref}}{% if vars.weight != '' %}{{', weight '}}{{vars.weight}}{% endif %}
+{{'      Origin '}}{{ vars.origin }}{{', metric '}}{{vars.metric}}{% if vars.locPref != '' %}{{', localpref '}}{{vars.locPref}}{% endif %}
+   {% if vars.weight != '' %}{{', weight '}}{{vars.weight}}{% endif %}
    {% if vars.validRoute != '' %}{{', '}}{{vars.validRoute}}{% endif %}
    {% if vars.peertype != '' %}{{', '}}{{vars.peertype}}{% endif %}
    {% if vars.bestRoute != '' %}{{', '}}{{vars.bestRoute}}{% endif %}
