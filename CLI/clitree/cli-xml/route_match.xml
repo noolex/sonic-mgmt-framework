@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.  
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+    <!--=======================================================-->
+
+
+<VIEW name="configure-route-map-view">
+
+    <COMMAND name="no" help="Negate a  commands"/>
+    <COMMAND name="no match" help="Negate a  commands"/>
+    <COMMAND name="no match interface" help="delete matched interface">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match tag" help="delete matched tag">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_tag_set_config_tag_value ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match as-path" help="delete matched as-path-name">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_as_path_set_config_as_path_set ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match community" help="delete matched community">
+
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_community_set ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match ext-community" help="delete matched external community">
+
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_ext_community_set ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match origin" help="delete matched origin">
+
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_origin_eq ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match metric" help="delete matched metric">
+
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_med_eq ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match local-preference" help="delete matched local-preference">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_local_pref_eq  ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match ip next-hop" help="delete matched ip next-hop">
+    </COMMAND>
+
+    <COMMAND name="no match ip next-hop prefix-list" help="delete matched ip next-hop prefix-list">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_bgp_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_next_hop_set  ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match peer" help="delete matched peer IP">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address  ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no call" help="delete matched call policy">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_call_policy  ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match source-protocol" help="delete matched source-protocol">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_install_protocol_eq  ${name} ${seq_num}
+     </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no match ip" help="Negate a  commands"/>
+    <COMMAND name="no match ip address" help="Negate a  commands"/>
+    <COMMAND name="no match ipv6" help="Negate a  commands"/>
+    <COMMAND name="no match ipv6 address" help="Negate a  commands"/>
+
+    <COMMAND name="no match ip address prefix-list" help="delete matched ip address prefix">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num}
+      </ACTION>
+    </COMMAND>
+    
+    <COMMAND name="no match ipv6 address prefix-list" help="delete matched ipv6 address prefix">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set
+ ${name} ${seq_num}
+      </ACTION>
+    </COMMAND>
+ 
+    <COMMAND name="no match source-vrf" help="Source VRF">
+       <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_src_network_instance_config_name ${name} ${seq_num}
+       </ACTION>
+    </COMMAND>
+
+
+    <COMMAND
+        name="match"
+        help="Set routing policy match criteria"
+    />
+
+    <COMMAND
+        name="match as-path"
+        help="Set routing policy match criteria as-path"
+        >
+        <PARAM name="as-path-name"
+                     help="Name of as-path-name (Max size 63)"
+                     ptype="STRING"
+        />
+        <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_as_path_set_config_as_path_set ${name} ${seq_num} ${as-path-name} &#xA;
+        </ACTION>
+    </COMMAND>
+
+
+    <COMMAND
+        name="match ip"
+        help="Set routing policy match criteria"
+    />
+    <COMMAND
+        name="match ipv6"
+        help="Set routing policy match criteria"
+    />
+    <COMMAND
+        name="match ip address"
+        help="Set routing policy match criteria"
+    />
+    <COMMAND
+        name="match ipv6 address"
+        help="Set routing policy match criteria"
+    />
+    <COMMAND                                                                                                                                                                                         name="match ip next-hop" 
+        help="Set routing policy match criteria"                                                                                                                                                 />
+    <COMMAND 
+        name="match ip address prefix-list" 
+        help="Set routing policy match criteria to ipv4 prefix-list"
+        >
+        <PARAM name="prefix-list-name"
+                     help="Name of prefix-list (Max size 63)"
+                     ptype="STRING"
+        />
+        <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num} ${prefix-list-name} &#xA;
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND 
+        name="match ipv6 address prefix-list"
+        help="Set routing policy match criteria to ipv6 prefix-list"
+        >
+        <PARAM name="prefix-list-name"
+                     help="Name of route map (Max size 63)"
+                     ptype="STRING"
+        />
+       <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num} ${prefix-list-name} &#xA;
+       </ACTION>
+    </COMMAND>
+
+    
+
+    <COMMAND
+        name="match interface"
+        help="Set routing policy match criteria to interface"
+        >
+        <PARAM name="if-type" 
+	       help="Configure match peer"  
+           mode="switch" 
+           ptype="SUBCOMMAND">
+           <PARAM name="Ethernet" 
+              help="Select an interface" 
+              mode="subcommand" 
+              ptype="SUBCOMMAND">
+              <PARAM name="phy-if-name" 
+                 help="Physical interface" 
+                 ptype="UINT"
+              />
+           </PARAM>
+           <PARAM name="PortChannel" 
+              help="Port channel Interface Configuration" 
+              mode="subcommand" 
+              ptype="SUBCOMMAND">
+              <PARAM name="lag-id" 
+                 help="PortChannel identifier" 
+                 ptype="LAG_ID"
+              />
+           </PARAM>
+           <PARAM name="Vlan" 
+              help="Vlan Interface Configuration" 
+              mode="subcommand" 
+              ptype="SUBCOMMAND">
+              <PARAM name="vlan-id" 
+                 help="Vlan identifier" 
+                 ptype="VLAN_ID"
+              />
+           </PARAM>
+        </PARAM>
+       <ACTION>
+           if test "${if-type}" = "Ethernet" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface ${name} ${seq_num} Ethernet${phy-if-name} &#xA;
+           elif test "${if-type}" = "PortChannel" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface ${name} ${seq_num} PortChannel${lag-id} &#xA;
+           elif test "${if-type}" = "Vlan" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface ${name} ${seq_num} Vlan${vlan-id} &#xA;
+           fi&#xA;
+       </ACTION>
+    </COMMAND>
+
+   <COMMAND
+        name="match community"
+        help="Set routing policy match criteria to BGP community"
+        >
+        <PARAM name="community-name"
+                     help="Name of community (Max size 63)"
+                     ptype="STRING"
+        />
+        <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_community_set ${name} ${seq_num} ${community-name} &#xA;
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="match ext-community"
+        help="Set routing policy match criteria to BGP external community"
+        >
+        <PARAM name="community-name"
+                     help="Name of external community (Max size 63)"
+                     ptype="STRING"
+        />
+        <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py  patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_ext_community_set ${name} ${seq_num} ${community-name} &#xA;
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="match tag"
+        help="redistributes routes in the routing table that match the specified tags."
+        >
+        <PARAM name="match-tag"
+                     help="tag value (1-4294967295)"
+                     ptype="RANGE_1_4294967295"
+        />
+       <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_tag_set_config_tag_value  ${name} ${seq_num} ${match-tag}
+
+       </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="match local-preference"
+        help="Set routing policy match criteria to local-preference"
+        >
+        <PARAM name="match-loc"
+                     help="local-preference (1-4294967295)"
+                     ptype="UINT"
+        />
+       <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_local_pref_eq  ${name} ${seq_num} ${match-loc}
+       </ACTION>
+    </COMMAND>
+
+ 
+    <COMMAND name="match source-vrf" help="Source VRF">
+        <PARAM name="src-vrf" help="The VRF name" ptype="STRING_15"/>
+       <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_src_network_instance_config_name ${name} ${seq_num} ${src-vrf}
+       </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="match ip next-hop prefix-list"
+        help="Set routing policy match criteria to next-hop prefix-list"
+        >
+        <PARAM name="match-hop"
+                     help="next-hop prefix-list"
+                     ptype="STRING"
+        />
+       <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_next_hop_set  ${name} ${seq_num} ${match-hop}
+       </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="call"
+        help="Jump to another Route-Map after match_set"
+        >
+        <PARAM name="match-call"
+                     help="Target route-map name"
+                     ptype="STRING"
+        />
+       <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_call_policy  ${name} ${seq_num} ${match-call}
+       </ACTION>
+    </COMMAND>
+
+     <COMMAND
+        name="match peer"
+        help="Set routing policy match criteria to peer ip"
+        >
+        <PARAM name="peer-type" 
+	   help="Configure match peer"  
+           mode="switch" 
+           ptype="SUBCOMMAND">
+           <PARAM name="match-peer"
+              help="Peer's IP address"
+              ptype="IPV4V6_ADDR"
+           />
+           <PARAM name="Ethernet" 
+              help="Select an interface" 
+              mode="subcommand" 
+              ptype="SUBCOMMAND">
+              <PARAM name="phy-if-name" 
+                 help="Physical interface" 
+                 ptype="UINT"
+              />
+           </PARAM>
+           <PARAM name="PortChannel" 
+              help="Port channel Interface Configuration" 
+              mode="subcommand" 
+              ptype="SUBCOMMAND">
+              <PARAM name="lag-id" 
+                 help="PortChannel identifier" 
+                 ptype="LAG_ID"
+              />
+           </PARAM>
+           <PARAM name="Vlan" 
+              help="Vlan Interface Configuration" 
+              mode="subcommand" 
+              ptype="SUBCOMMAND">
+              <PARAM name="vlan-id" 
+                 help="Vlan identifier" 
+                 ptype="VLAN_ID"
+              />
+           </PARAM>
+        </PARAM>
+        <ACTION>
+           if test "${peer-type}" = "match-peer" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address ${name} ${seq_num} ${match-peer}&#xA;
+           fi&#xA;
+           if test "${peer-type}" = "Ethernet" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address ${name} ${seq_num} Ethernet${phy-if-name}&#xA;
+           fi&#xA;
+           if test "${peer-type}" = "PortChannel" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address ${name} ${seq_num} PortChannel${lag-id}&#xA;
+           fi&#xA;
+           if test "${peer-type}" = "Vlan" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address ${name} ${seq_num} Vlan${vlan-id}&#xA;
+           fi&#xA;
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+         name="match source-protocol"
+         help="Specify source protocol"
+         >
+         <PARAM name="action-switch"
+            help="Configure match source protocol"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+
+            <PARAM name="bgp"
+                help="Border Gateway protocol"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                                />
+
+            <PARAM name="ospf"
+                help="open shortest path first"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                                />
+
+           <PARAM name="ospf3"
+                help="ospf3"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                                />
+
+           <PARAM name="static"
+                help="static"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                                />
+
+           <PARAM name="connected"
+                help="Connected"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                                />
+        </PARAM>
+
+    <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_install_protocol_eq ${name} ${seq_num} ${action-switch}&#xA;
+    </ACTION>
+    </COMMAND>
+
+
+    <COMMAND
+        name="match metric"
+        help="Set routing policy match criteria to metric"
+        >
+        <PARAM name="match-met"
+                     help="metric value (0-4294967295)"
+                     ptype="UINT"
+        />
+       <ACTION>
+           python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_med_eq  ${name} ${seq_num} ${match-met}
+
+       </ACTION>
+    </COMMAND>
+
+    <COMMAND
+         name="match origin"
+         help="Specify BGP origin"
+         >
+         <PARAM name="action-switch"
+            help="Configure the BGP origin"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+
+            <PARAM name="egp"
+                help="Exterior Gateway protocol"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                                />
+
+            <PARAM name="igp"
+                help="Interior Gateway protocol"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                                />
+
+           <PARAM name="incomplete"
+                help="Incomplete"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                                />
+        </PARAM>
+
+    <ACTION>
+        if test "${action-switch}" = "egp"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_origin_eq  ${name} ${seq_num} EGP&#xA;
+        elif test "${action-switch}" = "igp"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_origin_eq ${name} ${seq_num} IGP&#xA;
+        else&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-route-match.py patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_origin_eq ${name} ${seq_num} INCOMPLETE&#xA;
+        fi&#xA;
+
+    </ACTION>
+    </COMMAND>
+   
+
+</VIEW>
+</CLISH_MODULE>
+
+
