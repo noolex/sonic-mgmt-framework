@@ -52,12 +52,16 @@
       </DOCGEN>
     </COMMAND>
   </VIEW>
-  <VIEW name="configure-if-view">
-    <COMMAND name="no breakout" help="Change the port breakout mode to default">
-      <ACTION builtin="clish_pyobj">sonic_cli_breakout delete_openconfig_platform_port_components_component_port_breakout_mode_config ${iface} </ACTION>
+  <VIEW name="configure-view">
+    <COMMAND name="no interface breakout" help="Change the port breakout mode to default">
+       <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_breakout delete_openconfig_platform_port_components_component_port_breakout_mode_config ${iface} </ACTION>
     </COMMAND>
-    <COMMAND name="breakout" help="Port breakout configuration commands">
-       <PARAM name="breakout_mode" help="breakout mode" ptype="DPB_MODE"/>
+    <COMMAND name="interface breakout" help="Port breakout configuration commands">
+       <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand">
+        <PARAM name="breakout_mode" help="breakout mode" ptype="DPB_MODE">
+        </PARAM>
+       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_breakout patch_openconfig_platform_port_components_component_port_breakout_mode_config ${iface} ${breakout_mode}</ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -68,8 +72,8 @@
           </USAGE>
           <EXAMPLE>
               sonic# configure terminal
-              sonic(config)# port-breakout Ethernet0 4x25
-              sonic(config)# no port-breakout Ethernet0
+              sonic(config)# interface breakout Ethernet 0 4x25
+              sonic(config)# no interface breakout Ethernet 0
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
