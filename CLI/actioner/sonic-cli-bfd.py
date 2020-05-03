@@ -155,16 +155,10 @@ def invoke_show_api(func, args=[]):
 	if func == 'get_bfd_peers':
 		keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-state')
 		response = api.get(keypath)
-
-                if len(args) > 4:
-                    if (args[4] == "vrf"):
-                        vrfname = args[5]
-                        apply_vrf_filter(response.content, vrfname)
-                    elif (len(args) > 5):
-                        vrfname = args[6]
-                        apply_vrf_filter(response.content, vrfname)
-
-                return response;
+        vrfname = args[1]
+        if (vrfname != "all"):
+		apply_vrf_filter(response.content, vrfname)
+        return response;
 	elif func == 'get_openconfig_bfd_ext_bfd_sessions_single_hop':
 		keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-state/single-hop-state={address},{interfacename},{vrfname},{localaddress}', address=args[1], interfacename=args[2], vrfname=args[3], localaddress=args[4])
 		return api.get(keypath)
