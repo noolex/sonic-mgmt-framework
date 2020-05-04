@@ -208,7 +208,30 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val}</ACTION>
+      <PARAM name="vrf"
+             help="Management VRF"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             optional="true">
+        <PARAM
+                name="vrf-fwitch"
+                help="VRF commands"
+                mode="switch"
+                ptype="SUBCOMMAND">
+          <PARAM name="mgmt"
+                 help="management VRF name"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand">
+          </PARAM>
+          <PARAM name="default"
+                 help="default VRF name"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand">
+          </PARAM>
+        </PARAM>
+      </PARAM>
+
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${mgmt}${default}</ACTION>
     </COMMAND>
 
     <!-- no tacacs server -->
