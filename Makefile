@@ -72,13 +72,11 @@ rest: $(GO_DEPS) models
 
 # Special target for local compilation of REST server binary.
 # Compiles models, translib and cvl schema from sonic-mgmt-common
-rest-server: rest-clean
-	$(MAKE) -C $(MGMT_COMMON_DIR)/models
-	TOPDIR=$(MGMT_COMMON_DIR) $(MAKE) -C $(MGMT_COMMON_DIR)/cvl/schema
-	$(MAKE) -C $(MGMT_COMMON_DIR)/translib ocbinds/ocbinds.go
+rest-server: go-deps-clean
+	$(MAKE) -C $(MGMT_COMMON_DIR)
 	$(MAKE) rest
 
-rest-clean: go-deps-clean
+rest-clean: go-deps-clean models-clean
 	$(MAKE) -C rest clean
 
 .PHONY: models
@@ -129,7 +127,7 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 
 clean: rest-clean models-clean
 	(cd ham; ./build.sh clean)
-	$(RMDIR) debian/.debhelper
+	git check-ignore debian/* | xargs -r $(RMDIR)
 
 cleanall: clean
 	$(RMDIR) $(BUILD_DIR)
