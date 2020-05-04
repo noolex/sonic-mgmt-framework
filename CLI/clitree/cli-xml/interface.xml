@@ -484,6 +484,20 @@ limitations under the License.
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/mtu body={"openconfig-interfaces:mtu": 9100}</ACTION>
         </COMMAND>
         <COMMAND
+            name="speed"
+            help="Configure speed">
+            <PARAM
+                name="speed"
+                help="Speed config of the interface"
+                ptype="INTF_SPEED" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface} ${speed}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no speed"
+            help="Set default speed config">
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body = {"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
+        </COMMAND>
+        <COMMAND
             name="channel-group"
             help="Configure PortChannel parameters"
             >
