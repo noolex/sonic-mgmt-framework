@@ -23,7 +23,7 @@ def invoke(func, args=[]):
         return api.get(path)
     elif func == 'patch_list_openconfig_qos_ext_qos_wred_profiles_wred_profile':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}', name=args[0])
-        body = {"openconfig-qos-ext:wred-profile" : [{"name" : args[0]}]}
+        body = {"openconfig-qos-ext:wred-profile" : [{ "name": args[0], "config": { "name": args[0]}}]}
         return api.patch(path, body)
     elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
