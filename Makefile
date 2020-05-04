@@ -17,189 +17,109 @@
 #                                                                              #
 ################################################################################
 
-.PHONY: all clean cleanall codegen rest-server rest-clean yamlGen cli clitree ham clidocgen clidocgen-clean
-
 .ONESHELL:
 .SHELLFLAGS += -e
 
 TOPDIR := $(abspath .)
 BUILD_DIR := $(TOPDIR)/build
-export TOPDIR
+MGMT_COMMON_DIR := $(abspath ../sonic-mgmt-common)
 
-ifeq ($(BUILD_GOPATH),)
-export BUILD_GOPATH=$(TOPDIR)/build/gopkgs
-endif
-
-export GOPATH=$(BUILD_GOPATH):$(TOPDIR)
-
-ifeq ($(GO),)
-GO := /usr/local/go/bin/go 
-export GO
-endif
-
+GO      ?= /usr/local/go/bin/go
+GOPATH  ?= /tmp/go
+RMDIR   ?= rm -rf
 INSTALL := /usr/bin/install
 
 MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
 
-GO_DEPS_LIST = github.com/gorilla/mux \
-               github.com/Workiva/go-datastructures/queue \
-               github.com/go-redis/redis \
-               github.com/golang/glog \
-               github.com/pkg/profile \
-               gopkg.in/go-playground/validator.v9 \
-               golang.org/x/crypto/ssh \
-               github.com/antchfx/xpath \
-               github.com/antchfx/jsonquery \
-               github.com/antchfx/xmlquery \
-               github.com/facette/natsort \
-               github.com/philopon/go-toposort \
-               gopkg.in/godbus/dbus.v5 \
-               github.com/dgrijalva/jwt-go \
-               github.com/msteinert/pam
+GO_MOD   = go.mod
+GO_DEPS  = vendor/.done
 
-# GO_DEPS_LIST_2 includes "download only" dependencies.
-# They are patched, compiled and installed explicitly later.
-GO_DEPS_LIST_2 = github.com/openconfig/gnmi/proto/gnmi \
-                 github.com/openconfig/gnmi/proto/gnmi_ext \
-                 github.com/openconfig/goyang \
-                 github.com/openconfig/ygot/ygot
+export TOPDIR MGMT_COMMON_DIR GO GOPATH RMDIR
 
+.PHONY: all
+all: rest cli ham
 
-REST_BIN = $(BUILD_DIR)/rest_server/main
-CERTGEN_BIN = $(BUILD_DIR)/rest_server/generate_cert
+$(GO_MOD):
+	$(GO) mod init github.com/Azure/sonic-mgmt-framework
 
-go-deps = $(BUILD_DIR)/gopkgs/.done
-go-patch = $(BUILD_DIR)/gopkgs/.patch_done
-go-redis-patch = $(BUILD_DIR)/gopkgs/.redis_patch_done
-
-all: build-deps $(go-deps) $(go-redis-patch) $(go-patch) translib rest-server cli ham
-
-build-deps:
-	mkdir -p $(BUILD_DIR)/gopkgs
-
-$(BUILD_DIR)/gopkgs/.done: $(MAKEFILE_LIST)
-	$(GO) get -v $(GO_DEPS_LIST)
-	$(GO) get -v -d $(GO_DEPS_LIST_2)
+$(GO_DEPS): $(GO_MOD)
+	$(MAKE) -C models -f openapi_codegen.mk go-server-init
+	$(GO) mod vendor
+	$(MGMT_COMMON_DIR)/patches/apply.sh vendor
 	touch  $@
 
-$(go-redis-patch): $(go-deps)
-	cd $(BUILD_GOPATH)/src/github.com/go-redis/redis; git checkout d19aba07b47683ef19378c4a4d43959672b7cec8 2>/dev/null ; true; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/go-redis/redis
-	touch  $@
+go-deps-clean:
+	$(RMDIR) vendor
 
 cli: 
-	$(MAKE) -C src/CLI
+	$(MAKE) -C CLI
 
 clish:
-	SONIC_CLI_ROOT=$(BUILD_DIR) $(MAKE) -C src/CLI/klish
+	SONIC_CLI_ROOT=$(BUILD_DIR) $(MAKE) -C CLI/klish
 
 clitree:
-	 TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C src/CLI/clitree
+	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI/clitree
 
 clidocgen:
-	 TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C src/CLI/clitree doc_gen
+	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI/clitree doc_gen
 
 clidocgen-clean:
-	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C src/CLI/clitree doc_gen_clean
+	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI/clitree doc_gen_clean
 
-cvl: $(go-deps) $(go-patch) $(go-redis-patch)
-	$(MAKE) -C src/cvl
+.PHONY: rest
+rest: $(GO_DEPS) models
+	$(MAKE) -C rest
 
-cvl-test:
-	$(MAKE) -C src/cvl gotest
+# Special target for local compilation of REST server binary.
+# Compiles models, translib and cvl schema from sonic-mgmt-common
+rest-server: rest-clean
+	$(MAKE) -C $(MGMT_COMMON_DIR)/models
+	TOPDIR=$(MGMT_COMMON_DIR) $(MAKE) -C $(MGMT_COMMON_DIR)/cvl/schema
+	$(MAKE) -C $(MGMT_COMMON_DIR)/translib ocbinds/ocbinds.go
+	$(MAKE) rest
 
-rest-server: build-deps translib
-	$(MAKE) -C src/rest
+rest-clean: go-deps-clean
+	$(MAKE) -C rest clean
 
-rest-clean:
-	$(MAKE) -C src/rest clean
-
-translib: cvl
-	$(MAKE) -C src/translib
-
-codegen:
+.PHONY: models
+models:
 	$(MAKE) -C models
 
-yamlGen:
-	$(MAKE) -C models/yang
-	$(MAKE) -C models/yang/sonic
+models-clean:
+	$(MAKE) -C models clean
 
+.PHONY: ham
 ham:
-	(cd src/ham; ./build.sh)
-
-$(go-patch): $(go-deps)
-	cd $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi; git reset --hard HEAD;git clean -f -d;git checkout e7106f7f5493a9fa152d28ab314f2cc734244ed8 >/dev/null ; true; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi; \
-	cd $(BUILD_GOPATH)/src/github.com/openconfig/goyang/; git reset --hard HEAD;git clean -f -d;git checkout 064f9690516f4f72db189f4690b84622c13b7296 >/dev/null ; true; \
-cp $(TOPDIR)/goyang-modified-files/goyang.patch .; \
-patch -p1 < goyang.patch; rm -f goyang.patch; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/goyang; \
-cd $(BUILD_GOPATH)/src/github.com/openconfig/ygot/; git reset --hard HEAD;git clean -f -d;git checkout c23bb1518a1e62024ebec956d81d3e007bb127dc 2>/dev/null ; true; \
-cd ../; cp $(TOPDIR)/ygot-modified-files/ygot.patch .; \
-patch -p1 < ygot.patch; rm -f ygot.patch; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/ygot/ygot; \
-cd $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi_ext; git checkout e7106f7f5493a9fa152d28ab314f2cc734244ed8 2>/dev/null ; true; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/openconfig/gnmi/proto/gnmi_ext
-	find -type d -exec chmod u+w {} +
-
-#Apply CVL related patches
-	$(apply_cvl_dep_patches)
-	touch  $@
+	(cd ham; ./build.sh)
 
 
 install:
-	$(INSTALL) -D $(REST_BIN) $(DESTDIR)/usr/sbin/rest_server
-	$(INSTALL) -D $(CERTGEN_BIN) $(DESTDIR)/usr/sbin/generate_cert
-	$(INSTALL) -d $(DESTDIR)/usr/sbin/schema/
+	$(INSTALL) -D $(BUILD_DIR)/rest_server/main $(DESTDIR)/usr/sbin/rest_server
+	$(INSTALL) -D $(BUILD_DIR)/rest_server/generate_cert $(DESTDIR)/usr/sbin/generate_cert
 	$(INSTALL) -d $(DESTDIR)/usr/sbin/lib/
 	$(INSTALL) -d $(DESTDIR)/usr/bin/
-	$(INSTALL) -d $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/models/yang/sonic/*.yang $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/models/yang/sonic/common/*.yang $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/models/yang/*.yang $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/config/transformer/models_list $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/config/transformer/sonic_table_info.json $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/models/yang/common/*.yang $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/models/yang/annotations/*.yang $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/models/yang/extensions/*.yang $(DESTDIR)/usr/models/yang/
-	$(INSTALL) -D $(TOPDIR)/build/yaml/api_ignore $(DESTDIR)/usr/models/yang/
 	cp -rf $(TOPDIR)/build/rest_server/dist/ui/ $(DESTDIR)/rest_ui/
 	cp -rf $(TOPDIR)/build/cli $(DESTDIR)/usr/sbin/
 	rsync -a --exclude="test" --exclude="docs" build/swagger_client_py $(DESTDIR)/usr/sbin/lib/
-	cp -rf $(TOPDIR)/src/cvl/conf/cvl_cfg.json $(DESTDIR)/usr/sbin/cvl_cfg.json
-
-# Copy all CVL schema files
-	cp -aT build/cvl/schema $(DESTDIR)/usr/sbin/schema
-
-	# Scripts for host service
-	$(INSTALL) -d $(DESTDIR)/usr/lib/sonic_host_service/host_modules
-	$(INSTALL) -D $(TOPDIR)/scripts/sonic_host_server.py $(DESTDIR)/usr/lib/sonic_host_service
-	$(INSTALL) -D $(TOPDIR)/scripts/host_modules/*.py $(DESTDIR)/usr/lib/sonic_host_service/host_modules
-ifneq ($(ENABLE_ZTP),y)
-	$(RM) -f $(DESTDIR)/usr/lib/sonic_host_service/host_modules/ztp_handler.py
-endif
+	
 	$(INSTALL) -d $(DESTDIR)/etc/dbus-1/system.d
-	$(INSTALL) -D $(TOPDIR)/scripts/org.sonic.hostservice.conf $(DESTDIR)/etc/dbus-1/system.d
 	$(INSTALL) -d $(DESTDIR)/lib/systemd/system
-	$(INSTALL) -D $(TOPDIR)/scripts/sonic-hostservice.service $(DESTDIR)/lib/systemd/system
-	$(INSTALL) -d $(DESTDIR)/etc/sonic/
-	$(INSTALL) -D $(TOPDIR)/config/cfg_mgmt.json $(DESTDIR)/etc/sonic/
-
+	
 	# Scripts for Host Account Management (HAM)
-	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/etc/dbus-1/system.d/* $(DESTDIR)/etc/dbus-1/system.d/
+	$(INSTALL) -D $(TOPDIR)/ham/hamd/etc/dbus-1/system.d/* $(DESTDIR)/etc/dbus-1/system.d/
 	$(INSTALL) -d $(DESTDIR)/etc/sonic/hamd/
-	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/etc/sonic/hamd/*      $(DESTDIR)/etc/sonic/hamd/
-	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/lib/systemd/system/*  $(DESTDIR)/lib/systemd/system/
-	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/usr/bin/*             $(DESTDIR)/usr/bin/
-	$(INSTALL) -D $(TOPDIR)/src/ham/hamd/hamd     $(DESTDIR)/usr/sbin/.
-	$(INSTALL) -D $(TOPDIR)/src/ham/hamctl/hamctl $(DESTDIR)/usr/bin/.
+	$(INSTALL) -D $(TOPDIR)/ham/hamd/etc/sonic/hamd/*      $(DESTDIR)/etc/sonic/hamd/
+	$(INSTALL) -D $(TOPDIR)/ham/hamd/lib/systemd/system/*  $(DESTDIR)/lib/systemd/system/
+	$(INSTALL) -D $(TOPDIR)/ham/hamd/usr/bin/*             $(DESTDIR)/usr/bin/
+	$(INSTALL) -D $(TOPDIR)/ham/hamd/hamd     $(DESTDIR)/usr/sbin/.
+	$(INSTALL) -D $(TOPDIR)/ham/hamctl/hamctl $(DESTDIR)/usr/bin/.
 	$(INSTALL) -d $(DESTDIR)/lib/x86_64-linux-gnu/
-	$(INSTALL) -D $(TOPDIR)/src/ham/libnss_ham/libnss_ham.so.2 $(DESTDIR)/lib/x86_64-linux-gnu/.
-
+	$(INSTALL) -D $(TOPDIR)/ham/libnss_ham/libnss_ham.so.2 $(DESTDIR)/lib/x86_64-linux-gnu/.
+	
 	# Scripts for the certificate fixer oneshot service
-	$(INSTALL) -D $(TOPDIR)/src/certfix/usr/sbin/*             $(DESTDIR)/usr/sbin/
-	$(INSTALL) -D $(TOPDIR)/src/certfix/lib/systemd/system/*   $(DESTDIR)/lib/systemd/system/
-
+	$(INSTALL) -D $(TOPDIR)/certfix/usr/sbin/*             $(DESTDIR)/usr/sbin/
+	$(INSTALL) -D $(TOPDIR)/certfix/lib/systemd/system/*   $(DESTDIR)/lib/systemd/system/
+	
 ifeq ($(SONIC_COVERAGE_ON),y)
 	echo "" > $(DESTDIR)/usr/sbin/.test
 endif
@@ -207,28 +127,10 @@ endif
 $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 	mv $* $(DEST)/
 
-clean: rest-clean
-	$(MAKE) -C src/translib clean
-	$(MAKE) -C src/cvl clean
-	(cd src/ham; ./build.sh clean)
-	rm -rf debian/.debhelper
-	(cd build && find .  -maxdepth 1 -name "gopkgs" -prune -o -not -name '.' -exec rm -rf {} +) || true
-	(cd src/ham && ./build.sh clean || true)
+clean: rest-clean models-clean
+	(cd ham; ./build.sh clean)
+	$(RMDIR) debian/.debhelper
 
-cleanall:
-	$(MAKE) -C src/cvl cleanall
-	rm -rf build/*
+cleanall: clean
+	$(RMDIR) $(BUILD_DIR)
 
-#Function to apply CVL related patches
-define apply_cvl_dep_patches
-
-	cd $(BUILD_GOPATH)/src/github.com/antchfx/xpath; git reset --hard HEAD; \
-	git checkout d9ad276609987dd73ce5cd7d6265fe82189b10b6; git apply $(TOPDIR)/patches/xpath.patch
-
-	cd $(BUILD_GOPATH)/src/github.com/antchfx/jsonquery; git reset --hard HEAD; \
-	git checkout 3b69d31134d889b501e166a035a4d5ecb8c6c367; git apply $(TOPDIR)/patches/jsonquery.patch
-
-	cd $(BUILD_GOPATH)/src/github.com/antchfx/xmlquery; git reset --hard HEAD; \
-	git checkout fe009d4cc63c3011f05e1dfa75a27899acccdf11; git apply $(TOPDIR)/patches/xmlquery.patch
-
-endef

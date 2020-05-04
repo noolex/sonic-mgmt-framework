@@ -1,0 +1,364 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE CLISH_MODULE [
+]>
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+
+<!--=======================================================-->
+<!--                Config Interface PHY-MODE              -->
+<!--=======================================================-->
+
+<VIEW name="configure-if-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="ipv6 address"
+        help="IPv6 address" >
+        <PARAM
+            name="addr"
+            help="IPv6 address with mask"
+            ptype="IPV6_ADDR_MASK" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${iface} ${addr}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="ipv6 enable"
+        help="Enable IPv6" >
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no ipv6 address"
+        help="IPv6 address" >
+        <PARAM
+            name="addr"
+            help="IPv6 address"
+            ptype="IPV6_ADDR" />
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="ipv6 dhcp-relay"
+        help="Add DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${ifName} ${hop-count} ${__full_line}</ACTION>  
+    </COMMAND>
+    <COMMAND
+        name="no ipv6 dhcp-relay"
+        help="Remove DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${__full_line}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no ipv6 enable"
+        help="Disable IPv6" >
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
+    </COMMAND>
+
+  </VIEW>
+
+<VIEW name="configure-if-mgmt-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="ipv6 address"
+        help="IPv6 address" >
+        <PARAM
+            name="addr"
+            help="IPv6 address with mask"
+            ptype="IPV6_ADDR_MASK" />
+        <PARAM name="gwaddr" help="Default Gateway address" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name="gw_addr" help="Gateway IP address" ptype="IPV6_ADDR" />
+        </PARAM>
+         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${iface} ${addr} ${gw_addr}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no ipv6 address"
+        help="IPv6 address" >
+        <PARAM
+            name="addr"
+            help="IPv6 address"
+            ptype="IPV6_ADDR" />
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+    </COMMAND>
+</VIEW>
+
+<VIEW name="configure-lag-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="ipv6 address"
+        help="IPv6 address" >
+        <PARAM
+            name="addr"
+            help="IPv6 address with mask"
+            ptype="IPV6_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${po_name} ${addr}</ACTION>
+
+    </COMMAND>
+
+    <COMMAND
+        name="ipv6 enable"
+        help="Enable IPv6" >
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no ipv6 address"
+        help="IPv6 address" >
+        <PARAM
+            name="addr"
+            help="IPv6 address"
+            ptype="IPV6_ADDR" />
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="ipv6 dhcp-relay"
+        help="Add DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${po_name} ${ifName} ${hop-count} ${__full_line}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ipv6 dhcp-relay"
+        help="Remove DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config  ${po_name} ${__full_line}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ipv6 enable"
+        help="Disable IPv6" >
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
+    </COMMAND>
+</VIEW>
+
+<!-- VLAN VIEW -->
+<VIEW
+     name="configure-vlan-view"
+     >
+     <COMMAND
+          name="ipv6"
+          help="Interface Internet Protocol v6 config commands"
+      />
+      <COMMAND
+          name="no ipv6"
+          help="Interface Internet Protocol v6 config commands"
+      >
+      </COMMAND>
+      <COMMAND
+          name="ipv6 address"
+          help="IPv6 address" >
+          <PARAM
+             name="addr"
+             help="IPv6 address with mask"
+             ptype="IPV6_ADDR_MASK" />
+      <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${vlan_name} ${addr}</ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="ipv6 enable"
+          help="Enable IPv6" >
+          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="no ipv6 address"
+          help="IPv6 address" >
+          <PARAM
+              name="addr"
+              help="IPv6 address"
+              ptype="IPV6_ADDR" />
+         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+      </COMMAND>
+      <COMMAND
+        name="ipv6 dhcp-relay"
+        help="Add DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${vlan_name} ${ifName} ${hop-count} ${__full_line}</ACTION>
+      </COMMAND>
+      <COMMAND
+        name="no ipv6 dhcp-relay"
+        help="Remove DHCP relay on an interface" >
+        <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${vlan_name} ${__full_line}</ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="no ipv6 enable"
+          help="Disable IPv6" >
+          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
+      </COMMAND>
+</VIEW>
+
+<VIEW
+     name="configure-lo-view"
+     >
+     <COMMAND
+          name="ipv6"
+          help="Interface Internet Protocol v6 config commands"
+      />
+      <COMMAND
+          name="no ipv6"
+          help="Interface Internet Protocol v6 config commands"
+      >
+      </COMMAND>
+      <COMMAND
+          name="ipv6 address"
+          help="IPv6 address" >
+          <PARAM
+             name="addr"
+             help="IPv6 address with mask (/128 is supported)"
+             ptype="IPV6_ADDR_MASK" />
+          <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${lo_name} ${addr}</ACTION>
+      </COMMAND>
+      <COMMAND
+          name="ipv6 enable"
+          help="Enable IPv6" >
+          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="no ipv6 address"
+          help="IPv6 address" >
+          <PARAM
+              name="addr"
+              help="IPv6 address"
+              ptype="IPV6_ADDR" />
+          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+
+      </COMMAND>
+
+      <COMMAND
+          name="no ipv6 enable"
+          help="Disable IPv6" >
+          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
+      </COMMAND>
+</VIEW>
+
+<VIEW name="enable-view">
+    <COMMAND
+        help="show IP commands"
+        name="show ipv6"
+        >
+    <ACTION builtin="clish_nop"/>
+    </COMMAND>
+    <!-- show ipv6 interfaces -->
+    <COMMAND
+        name="show ipv6 interfaces"
+        help="IPv6 Info of Interfaces"
+        >
+    <ACTION>
+       python $SONIC_CLI_ROOT/sonic_cli_if.py ip6_interfaces_get show_ip_interfaces_sonic.j2 ${__full_line}
+    </ACTION>
+    </COMMAND>
+
+    <!-- show ip route -->
+    <COMMAND
+        help="IP route information"
+        name="show ipv6 route">
+        <PARAM
+	         name="route-cmd"
+	         help=""
+	         mode="switch"
+	         ptype="SUBCOMMAND"
+	         optional="true">
+             <PARAM
+                help="IP route information per vrf"
+                name="vrf"
+                optional = "true"
+                mode="subcommand"
+                ptype="SUBCOMMAND">
+	            <PARAM
+                    help="VRF name"
+                    name="vrfname"
+                    ptype="STRING">
+                    <PARAM
+                        help="Destination prefix"
+                        name="prefix"
+                        optional="true"
+                        ptype="IPV6_ADDR_MASK">
+                    </PARAM>
+                </PARAM>
+           </PARAM>
+           <PARAM
+                help="Destination prefix"
+                optional="true"
+                name="prefix"
+                ptype="IPV6_ADDR_MASK">
+           </PARAM>
+        </PARAM>
+        <ACTION>
+            if test -n "${prefix}"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 prefix ${prefix} ${__full_line}&#xA;
+            else&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 ${__full_line}&#xA;
+            fi&#xA;
+        </ACTION>
+    </COMMAND>
+    <!-- show ipv6 dhcp-relay -->
+    <COMMAND
+        help="Show IPV6 DHCP relay information"
+        name="show ipv6 dhcp-relay">
+        <MACRO name="DHCP-RELAY-SHOW-OPTIONS" arg=""/>
+        <ACTION> if test -n "${ifName}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_state show_ipv6_dhcp_relay_statistics.j2 ${ifName}&#xA;
+ elif test -n "${brief}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcpv6 show_ipv6_dhcp_relay_brief.j2&#xA;
+ elif test -n "${ifName1}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail_dhcpv6 show_ipv6_dhcp_relay_detailed.j2 ${ifName1}&#xA;
+ elif test -n "${detailed}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail_dhcpv6 show_ipv6_dhcp_relay_detailed.j2&#xA;
+ fi&#xA;
+        </ACTION>
+    </COMMAND>
+     <!--====================clear <ipv6> dhcp-relay statistics======================-->
+    <COMMAND name="clear ipv6 dhcp-relay" help="Clear ipv6 dhcp-relay statistics">
+      <PARAM name="clear-subcommands" help="Clear subcommands" mode="switch" ptype="SUBCOMMAND">
+      <PARAM help="clear ipv6 dhcp-relay statistics" name="statistics" optional="false" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32"/>
+      </PARAM>
+      </PARAM>
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_relay_clear  ${ifName}  ${__full_line}
+ </ACTION>
+    </COMMAND>
+</VIEW>
+</CLISH_MODULE>
