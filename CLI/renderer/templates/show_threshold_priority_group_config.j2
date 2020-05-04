@@ -1,0 +1,32 @@
+{% set vars = {'Port': ""} %}
+{% set vars = {'PG0': ""} %}
+{% set vars = {'PG1': ""} %}
+{% set vars = {'PG2': ""} %}
+{% set vars = {'PG3': ""} %}
+{% set vars = {'PG4': ""} %}
+{% set vars = {'PG5': ""} %}
+{% set vars = {'PG6': ""} %}
+{% set vars = {'PG7': ""} %}
+
+{% if json_output -%}
+
+-----------------------------------------------------------------------
+ {{'%-18s'|format("Port")}}{{'%-7s'|format("PG0")}}{{'%-7s'|format("PG1")}}{{'%-7s'|format("PG2")}}{{'%-7s'|format("PG3")}}{{'%-7s'|format("PG4")}}{{'%-7s'|format("PG5")}}{{'%-7s'|format("PG6")}}{{'%-7s'|format("PG7")}}
+-----------------------------------------------------------------------
+
+{% for key_json in json_output %}
+
+	{% if vars.update({'Port':key_json[0]}) %}{% endif %}
+	{% if vars.update({'PG0':key_json[1]}) %}{% endif %}
+	{% if vars.update({'PG1':key_json[2]}) %}{% endif %}
+	{% if vars.update({'PG2':key_json[3]}) %}{% endif %}
+	{% if vars.update({'PG3':key_json[4]}) %}{% endif %}
+	{% if vars.update({'PG4':key_json[5]}) %}{% endif %}
+	{% if vars.update({'PG5':key_json[6]}) %}{% endif %}
+	{% if vars.update({'PG6':key_json[7]}) %}{% endif %}
+	{% if vars.update({'PG7':key_json[8]}) %}{% endif %}
+
+ {{'%-18s'|format(vars.Port)}}{{'%-7s'|format(vars.PG0)}}{{'%-7s'|format(vars.PG1)}}{{'%-7s'|format(vars.PG2)}}{{'%-7s'|format(vars.PG3)}}{{'%-7s'|format(vars.PG4)}}{{'%-7s'|format(vars.PG5)}}{{'%-7s'|format(vars.PG6)}}{{'%-7s'|format(vars.PG7)}}
+
+{% endfor %}
+{% endif %}

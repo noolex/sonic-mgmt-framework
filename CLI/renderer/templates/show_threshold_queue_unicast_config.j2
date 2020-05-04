@@ -1,0 +1,32 @@
+{% set vars = {'Port': ""} %}
+{% set vars = {'UC0': ""} %}
+{% set vars = {'UC1': ""} %}
+{% set vars = {'UC2': ""} %}
+{% set vars = {'UC3': ""} %}
+{% set vars = {'UC4': ""} %}
+{% set vars = {'UC5': ""} %}
+{% set vars = {'UC6': ""} %}
+{% set vars = {'UC7': ""} %}
+
+{% if json_output -%}
+
+-----------------------------------------------------------------------
+ {{'%-18s'|format("Port")}}{{'%-7s'|format("UC0")}}{{'%-7s'|format("UC1")}}{{'%-7s'|format("UC2")}}{{'%-7s'|format("UC3")}}{{'%-7s'|format("UC4")}}{{'%-7s'|format("UC5")}}{{'%-7s'|format("UC6")}}{{'%-7s'|format("UC7")}}
+-----------------------------------------------------------------------
+
+{% for key_json in json_output %}
+
+	{% if vars.update({'Port':key_json[0]}) %}{% endif %}
+	{% if vars.update({'UC0':key_json[1]}) %}{% endif %}
+	{% if vars.update({'UC1':key_json[2]}) %}{% endif %}
+	{% if vars.update({'UC2':key_json[3]}) %}{% endif %}
+	{% if vars.update({'UC3':key_json[4]}) %}{% endif %}
+	{% if vars.update({'UC4':key_json[5]}) %}{% endif %}
+	{% if vars.update({'UC5':key_json[6]}) %}{% endif %}
+	{% if vars.update({'UC6':key_json[7]}) %}{% endif %}
+	{% if vars.update({'UC7':key_json[8]}) %}{% endif %}
+
+ {{'%-18s'|format(vars.Port)}}{{'%-7s'|format(vars.UC0)}}{{'%-7s'|format(vars.UC1)}}{{'%-7s'|format(vars.UC2)}}{{'%-7s'|format(vars.UC3)}}{{'%-7s'|format(vars.UC4)}}{{'%-7s'|format(vars.UC5)}}{{'%-7s'|format(vars.UC6)}}{{'%-7s'|format(vars.UC7)}}
+
+{% endfor %}
+{% endif %}

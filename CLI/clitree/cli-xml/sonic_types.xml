@@ -1165,4 +1165,11 @@ limitations under the License.
         help="sFlow Agent"
         />
     <!--=======================================================-->
+        <PTYPE
+        name="RANGE_0_47"
+        method="integer"
+        pattern="0..47"
+        help=""
+        />
+    <!--=======================================================-->
 </CLISH_MODULE>

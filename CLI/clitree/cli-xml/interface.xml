@@ -234,17 +234,36 @@ limitations under the License.
            </USAGE>
            <EXAMPLE
 		    summary="Show threshold breaches">
-	------------------------------------------------------------------------------------------------------------------------------------
-	Event-id    Buffer            Type        Port           Index     Breach Value(%)     Breach Value(bytes)      Time-stamp
-	------------------------------------------------------------------------------------------------------------------------------------
-	2           priority-group    shared      Ethernet0      7         77                  8100                     2020-04-14-11:35:20
-	3           queue             unicast     Ethernet0      5         45                  8000                     2020-04-17-11:30:20
+	------------------------------------------------------------------------------------------------------------------
+	Event-id    Buffer            Type        Port           Index     Breach Value(%)       Time-stamp
+	------------------------------------------------------------------------------------------------------------------
+	2           priority-group    shared      Ethernet0      7         77                    2020-04-14-11:35:20
+	3           queue             unicast     Ethernet0      5         45                    2020-04-17-11:30:20
 	   </EXAMPLE>
 	</DOCGEN>
     </COMMAND>
-
+    <COMMAND name="show threshold buffer-pool" help="Show buffer-pool configuration" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list ${__full_line}
+ </ACTION>
+    </COMMAND>
+    <COMMAND name="show threshold priority-group" help="Show priority-group threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="threshold_buffer_type" help="choose from shared, headroom." mode="switch" ptype="SUBCOMMAND">
+        <PARAM name="headroom" help="choose headroom as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+        <PARAM name="shared" help="choose shared as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      </PARAM>
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
+ </ACTION>
+    </COMMAND>
+    <COMMAND name="show threshold queue" help="Show queue threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="queue_buffer_type" help="choose from unicast/multicast as queue buffer type" mode="switch" ptype="SUBCOMMAND">
+        <PARAM name="unicast" help="choose unicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+        <PARAM name="multicast" help="choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+        <PARAM name="CPU" help="choose threshold cpu queue" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      </PARAM>
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
+ </ACTION>
+    </COMMAND>
    </VIEW>
-
    <VIEW
        name="configure-view"
        >
@@ -423,6 +442,39 @@ limitations under the License.
          >
          <ACTION builtin="clish_nop"></ACTION>
      </COMMAND>
+     <COMMAND name="buffer-pool" help="Configure buffer pool."/>
+	<COMMAND name="buffer-pool threshold" help="configure buffer pool threshold."
+		ptype="SUBCOMMAND"
+		mode="subcommand"
+		>
+                <PARAM
+                    name="buffer_pool_name"
+                    help="configure buffer pool name"
+                    ptype="STRING_63"
+                    >
+                 </PARAM>
+		<PARAM
+                       name="threshold_value"
+                       help="threshold value"
+                       ptype="PERCENT_1">
+                </PARAM>
+	<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list_threshold ${__params}
+	</ACTION>
+	<DOCGEN>
+           <DESCRIPTION>
+                   this command is to configure buffer pool threshold on ingress/egress buffers pools-lossy/lossless.
+           </DESCRIPTION>
+           <USAGE>
+                   use this command to configure buffer pool threshold on ingress/egress buffer pools-lossy/lossless.
+           </USAGE>
+           <EXAMPLE
+                    summary="buffer pool threshold configuration commands.">
+			    sonic(config)# buffer-pool threshold ingress_lossless_pool 1
+			    sonic(config)# buffer-pool threshold egress_lossy_pool 1
+			    sonic(config)# buffer-pool threshold egress_lossless_pool 1
+           </EXAMPLE>
+	</DOCGEN>
+         </COMMAND>
      </VIEW>
 
      <VIEW
@@ -1158,9 +1210,9 @@ limitations under the License.
 	     ptype="SUBCOMMAND"
              mode="subcommand">
 		<PARAM
-                       name="queue_index"
-                       help="queue_index value"
-                       ptype="RANGE_0_7">
+                       name="cpu_queue_index"
+                       help="cpu_queue_index value"
+                       ptype="RANGE_0_47">
                 </PARAM>
 		<PARAM
                        name="multicast"
@@ -1202,7 +1254,7 @@ limitations under the License.
 		help="Clears CPU interface queue buffer threshold."
 		ptype="SUBCOMMAND"
 		mode="subcommand">
-		<PARAM name="queue_index" help="queue Index value" ptype="RANGE_0_7"> </PARAM>
+		<PARAM name="cpu_queue_index" help="cpu_queue index value" ptype="RANGE_0_47"> </PARAM>
 		<PARAM name="clear-queue-subcommands" help="Clear queue sub commands" mode="switch" ptype="SUBCOMMAND">
 		<PARAM name="multicast" help="Choose multicast as queue buffer type." ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
 		</PARAM>
