@@ -67,7 +67,6 @@ def invoke(func, args=[]):
 
 def run(func, args):
 
-    print args
     response = invoke(func, args)
 
     if response.ok():
@@ -75,7 +74,6 @@ def run(func, args):
             api_response = response.content
             
             #print api_response
-            #print sys.argv[2:]
 
             if func == 'get_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers':
                 show_cli_output('show_qos_scheduler.j2', response)

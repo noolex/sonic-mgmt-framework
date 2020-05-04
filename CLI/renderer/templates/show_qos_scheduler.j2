@@ -1,5 +1,6 @@
 {% if json_output %}
 {% set schedulers = json_output['openconfig-qos:schedulers'] %}
+{% if schedulers %}
 {% set scheduler_list = schedulers['scheduler'] %}
 {% for scheduler in scheduler_list %}
   {{' Scheduler: '}}{{scheduler['sequence']}}
@@ -34,4 +35,5 @@
     {% endif %}
   {% endif %}
 {% endfor %}
+{% endif %}
 {% endif %}
