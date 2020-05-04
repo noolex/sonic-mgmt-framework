@@ -408,6 +408,20 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
+        <COMMAND name="qos-mode" help="Configure qos-mode">
+            <PARAM name="qos-mode" help="QoS mode" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="uniform" help="Uniform QoS mode" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+                <PARAM name="pipe" help="Pipe QoS mode" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="dscp" help="pipe mode dscp" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="dscp-value" help="dscp value" ptype="RANGE_0_63"> </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">
+                <!--sonic_cli_vxlan patch_openconfig_vxlan_interfaces_interface_vxlan_if_config_vxlan_qos_mode ${iface} ${qos-mode} ${dscp-value}-->
+                sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_qos_mode ${iface} ${qos-mode} ${dscp-value}
+            </ACTION>
+        </COMMAND>
         <COMMAND 
             name="map" 
             help="Configure Mapping">
