@@ -1,0 +1,15 @@
+{{'Egress queue watermark per multicast queue:'}}
+{{'-------------------------------------------------------------------'}}
+{{'%-10s'|format("TxQ")}}{{'%-15s'|format("Bytes")}}
+{{'-------------------------------------------------------------------'}}
+{% if json_output %}
+{% set queue_info_list = json_output['queue'] %}
+{% for queue_info in queue_info_list %}
+    {% set q_stats_info = queue_info['state'] %}
+    {% set queue = q_stats_info['name'] %}
+    {% set qname = queue.split(':') %}
+    {% set bytes = q_stats_info['openconfig-qos-ext:persistent-watermark'] %}
+    {% set q_string = 'MC' + qname[1]%}
+{{'%-10s'|format(q_string)}}{{'%-15s'|format(bytes)}}
+{% endfor %}
+{% endif %}

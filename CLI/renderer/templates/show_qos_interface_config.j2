@@ -1,0 +1,11 @@
+{% if json_output %}
+  {% set sp_config = json_output['openconfig-qos:config'] %}
+  {% set sp_name = '' %}
+  {% if sp_config %} 
+    {% set sp_name = sp_config['name'] %}
+  {% endif %}
+
+  {{'interface config:'}}
+  {{'    scheduler policy: '}}{{sp_name}}
+
+{% endif %}
