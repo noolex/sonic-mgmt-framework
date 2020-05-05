@@ -58,6 +58,9 @@ def invoke_api(func, args):
                    no_vrf = True
                    indata.pop('vrf')
 
+           if val_name == 'vrf' and val == "management":
+               val = "mgmt"
+
            if val:
                indata[val_name] = val
 

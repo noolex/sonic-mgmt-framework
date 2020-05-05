@@ -20,7 +20,7 @@
     {% if vars.update({'priority':server["priority"]}) %}{% endif %}
     {% if vars.update({'timeout':server["timeout"]}) %}{% endif %}
     {% if 'vrf' in server %}
-        {% if vars.update({'vrf':server["vrf"]}) %}{% endif %}
+        {% if vars.update({'vrf':"management"}) %}{% endif %}
     {% else %}
         {% if vars.update({'vrf':"default"}) %}{% endif %}
     {% endif %}
