@@ -11,53 +11,53 @@
         name="VRF_NAME"
         method="regexp"
         pattern="^(Vrf[0-9A-Za-z_-]{1,12})"
-        help="vrf name"
+        help="VRF name"
     />
     <VIEW name="enable-view">
         <COMMAND name="traceroute"
-                 help="traceroute --help shows help"
+                 help="prints the route packets take to the host"
                  args="traceroute-option"
                  args_help="traceroute options(--help for help)">
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute.py ${traceroute-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute vrf mgmt"
-                 help="Management vrf name"
+                 help="traceroute using management VRF"
                  args="traceroute-option"
                  args_help="traceroute options(--help for help)">
                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute.py vrf mgmt ${traceroute-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute vrf"
-                 help="traceroute vrf --help shows help"
+                 help="Select VRF instance"
                  args="traceroute-option"
                  args_help="traceroute options(--help for help)">
                  <PARAM name="vrf-name"
-                        help="VRF name (max 15 char)"
+                        help="traceroute using given VRF name (max 15 char)"
                         ptype="VRF_NAME" />
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute.py vrf ${vrf-name} ${traceroute-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute6"
-                 help="traceroute6 --help shows help"
+                 help="prints the route packets take to the IPv6 host"
                  args="traceroute6-option"
                  args_help="traceroute6 options(--help for help)">
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute6.py ${traceroute6-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute6 vrf mgmt"
-                 help="Management vrf name"
+                 help="traceroute6 using management VRF"
                  args="traceroute6-option"
                  args_help="traceroute6 options(--help for help)">
                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute6.py vrf mgmt ${traceroute6-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute6 vrf"
-                 help="traceroute6 vrf --help shows help"
+                 help="Select VRF instance"
                  args="traceroute6-option"
                  args_help="traceroute6 options(--help for help)">
                  <PARAM name="vrf-name"
-                        help="VRF name (max 15 char)"
+                        help="traceroute6 using given VRF name (max 15 char)"
                         ptype="VRF_NAME" />
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute6.py vrf ${vrf-name} ${traceroute6-option} 2>/dev/stdout</ACTION>
         </COMMAND>

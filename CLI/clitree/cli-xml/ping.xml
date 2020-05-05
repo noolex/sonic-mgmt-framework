@@ -11,19 +11,19 @@
         name="VRF_NAME"
         method="regexp"
         pattern="^(Vrf[0-9A-Za-z_-]{1,12})"
-        help="vrf name"
+        help="VRF name"
     />
 
     <VIEW name="enable-view">
         <COMMAND name="ping"
-                 help="ping -h shows help"
+                 help="sends ICMP ECHO_REQUEST to network hosts"
                  args="ping-option"
                  args_help="ping options(-h  for help)">
                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py ${ping-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="ping vrf mgmt"
-                 help="Management vrf name"
+                 help="ping using management VRF"
                  args="ping-vrf-option"
                  args_help="ping options(-h  for help)">
                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf mgmt ${ping-vrf-option} 2>/dev/stdout</ACTION>
@@ -34,20 +34,20 @@
                  args="ping-vrf-option"
                  args_help="ping options(-h  for help)">
                  <PARAM name="vrf-name"
-                        help="VRF name (max 15 char)"
+                        help="ping using given VRF name (max 15 char)"
                         ptype="VRF_NAME"/>
                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf ${vrf-name} ${ping-vrf-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="ping6"
-                 help="ping6 -h shows help"
+                 help="sends ICMPv6 ECHO_REQUEST to network hosts"
                  args="ping-option"
                  args_help="ping6 options(-h  for help)">
                  <ACTION >python $SONIC_CLI_ROOT/sonic-cli-ping6.py ${ping-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="ping6 vrf mgmt"
-                 help="Management vrf name"
+                 help="ping6 using management VRF"
                  args="ping-vrf-option"
                  args_help="ping6 options(-h  for help)">
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf mgmt ${ping-vrf-option} 2>/dev/stdout</ACTION>
@@ -58,7 +58,7 @@
                  args="ping-vrf-option"
                  args_help="ping options(-h  for help)">
                  <PARAM name="vrf-name"
-                        help="VRF name (max 15 char)"
+                        help="ping6 using given VRF name (max 15 char)"
                         ptype="VRF_NAME"/>
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf ${vrf-name} ${ping-vrf-option} 2>/dev/stdout</ACTION>
         </COMMAND>
