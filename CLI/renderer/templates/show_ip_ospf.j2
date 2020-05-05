@@ -211,6 +211,7 @@ VRF Name: {{list_elem['vrfName']}}
    Number of NSSA LSA {{'%s'|format(vars.nssa_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.nssa_lsa_checksum).rjust(8,'0'))}}
    Number of opaque link LSA {{'%s'|format(vars.opaque_link_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.opaque_link_lsa_checksum).rjust(8,'0'))}}
    Number of opaque area LSA {{'%s'|format(vars.opaque_area_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.opaque_area_lsa_checksum).rjust(8,'0'))}}
+   {{' ' }}
 {% endif %}
    {% endif %}
 {% endfor -%}
