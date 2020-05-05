@@ -19,14 +19,14 @@
                  help="ping -h shows help"
                  args="ping-option"
                  args_help="ping options(-h  for help)">
-                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py ${ping-option}</ACTION>
+                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py ${ping-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="ping vrf mgmt"
                  help="Management vrf name"
                  args="ping-vrf-option"
                  args_help="ping options(-h  for help)">
-                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf mgmt ${ping-vrf-option}</ACTION>
+                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf mgmt ${ping-vrf-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="ping vrf"
@@ -36,21 +36,21 @@
                  <PARAM name="vrf-name"
                         help="VRF name (max 15 char)"
                         ptype="VRF_NAME"/>
-                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf ${vrf-name} ${ping-vrf-option}</ACTION>
+                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf ${vrf-name} ${ping-vrf-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="ping6"
                  help="ping6 -h shows help"
                  args="ping-option"
                  args_help="ping6 options(-h  for help)">
-                 <ACTION >python $SONIC_CLI_ROOT/sonic-cli-ping6.py ${ping-option}</ACTION>
+                 <ACTION >python $SONIC_CLI_ROOT/sonic-cli-ping6.py ${ping-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="ping6 vrf mgmt"
                  help="Management vrf name"
                  args="ping-vrf-option"
                  args_help="ping6 options(-h  for help)">
-                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf mgmt ${ping-vrf-option}</ACTION>
+                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf mgmt ${ping-vrf-option} 2>/dev/stdout</ACTION>
         </COMMAND>
 
         <COMMAND name="ping6 vrf"
@@ -60,7 +60,7 @@
                  <PARAM name="vrf-name"
                         help="VRF name (max 15 char)"
                         ptype="VRF_NAME"/>
-                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf ${vrf-name} ${ping-vrf-option}</ACTION>
+                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf ${vrf-name} ${ping-vrf-option} 2>/dev/stdout</ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>
