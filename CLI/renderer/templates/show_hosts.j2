@@ -1,0 +1,21 @@
+Default domain is not configured
+Name/address lookup uses domain service
+{% if json_output -%}
+   {% set gbl_cfg = json_output['openconfig-system:dns']['config'] %}
+   {% if gbl_cfg -%}
+      {% set srcip = gbl_cfg['openconfig-system-ext:source-address'] %}
+Source IP  : {{srcip}}
+   {% endif %}
+   {% set servers = json_output['openconfig-system:dns']['servers'] %}
+   {% if servers -%}
+     {% set server_list = servers['server'] %}
+     {% if server_list -%}
+       {% set server_ip = [] %}
+       {%for server in server_list %}
+       {% do server_ip.append(server['address']) %}
+       {% endfor %}
+Name servers are: {{server_ip|join(' ')}}
+    {% endif %}
+   {% endif %}
+{% endif %}
+

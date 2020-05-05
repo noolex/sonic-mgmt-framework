@@ -149,8 +149,8 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand">
       <PARAM name="host"
-             help="IPV4|IPV6 address"
-             ptype="IPV4V6_ADDR">
+             help="Hostname or IP address of TACACS+ server"       
+             ptype="STRING">
       </PARAM>
 
       <PARAM name="port"
@@ -219,8 +219,8 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand">
       <PARAM name="address"
-             help="server ip address"
-             ptype="IPV4V6_ADDR">
+             help="Hostname or IP address of TACACS+ server"       
+             ptype="STRING">
       </PARAM>
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/servers/server=${address}/tacacs/config

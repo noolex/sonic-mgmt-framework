@@ -175,8 +175,8 @@ limitations under the License.
         >
         <PARAM
             name="host"
-            help="IPV4|IPV6 address"
-            ptype="IPV4V6_ADDR"
+            help="Hostname or IP address of RADIUS server"
+            ptype="STRING"
             >
         </PARAM>
 
@@ -343,8 +343,8 @@ limitations under the License.
 
         <PARAM
             name="host"
-            help="IPV4|IPV6 address"
-            ptype="IPV4V6_ADDR"
+            help="Hostname or IP address of RADIUS server"
+            ptype="STRING"
             >
         </PARAM>
 
