@@ -26,6 +26,7 @@ import cli_client as cc
 from netaddr import *
 from scripts.render_cli import show_cli_output
 import subprocess
+from natsort import natsorted
 
 import urllib3
 urllib3.disable_warnings()
@@ -268,6 +269,8 @@ def invoke_api(func, args=[]):
         responseIntfTbl = api.get(path)
         if responseIntfTbl.ok():
             d.update(responseIntfTbl.content)
+            tbl_key = "sonic-interface:INTF_TABLE_IPADDR_LIST"
+            d[tbl_key] = natsorted(d[tbl_key],key=lambda t: t["ifName"])
             if func == 'ip_interfaces_get':
                 filter_address(d, True)
             else:
