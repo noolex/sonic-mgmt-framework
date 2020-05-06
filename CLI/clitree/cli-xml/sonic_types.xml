@@ -1158,11 +1158,46 @@ limitations under the License.
         help="port breakout mode"
         />
     <!--=======================================================-->
+    <PTYPE
+        name="QoS_THRESHOLD"
+        method="integer"
+        pattern="1..12480"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="ECN_LIMITED_OPTION"
+        method="select"
+        pattern="none(ecn_none) green(ecn_green) all(ecn_all)"
+        help="ECN Options"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="ECN_OPTION"
+        method="select"
+        pattern="none(ecn_none) green(ecn_green) yellow(ecn_yellow) red(ecn_red) green_yellow(ecn_green_yellow) green_red(ecn_green_red) yellow_red(ecn_yellow_red) all(ecn_all)"
+        help="ECN Options"
+        />
+    <!--=======================================================-->
         <PTYPE
         name="SFLOW_AGENT"
         pattern="(&ETH_ALL_INTF;|&VLAN_ALL_INTF;|&LOOPB_INTF;)"
         ext_pattern="(Ethernet(port)|Vlan(1-4094)|Loopback(0-16383))"
         help="sFlow Agent"
+        />
+    <!--=======================================================-->
+       <PTYPE
+        name="RANGE_0_15"
+        method="integer"
+        pattern="0..15"
+        help=""
+        />
+    <!--=======================================================-->
+       <PTYPE
+        name="RANGE_0_31"
+        method="integer"
+        pattern="0..31"
+        help=""
         />
     <!--=======================================================-->
 </CLISH_MODULE>
