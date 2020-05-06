@@ -1160,7 +1160,7 @@ limitations under the License.
         <PTYPE
         name="DPB_MODE"
         method="select"
-        pattern="1x40G 2x100G 2x50G 4x100G 4x25G 4x10G"
+        pattern="1x100G 1x40G 2x100G 2x50G 4x100G 4x25G 4x10G 1x400G 2x200G 4x50G"
         help="port breakout mode"
         />
     <!--=======================================================-->
