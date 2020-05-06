@@ -69,12 +69,11 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
       {% if "community" in path %}{% if vars.update({'communities':path["community"]["list"]|join(' ')}) %}{% endif %}{% endif %}
       {% if vars.update({'time':path["lastUpdate"]["epoch"]}) %}{% endif %}
       {% if vars.update({'nxtHop':path["peer"]["peerId"]}) %}{% endif %}
-      {% for nxthop in nexthops %}
-        {% if vars.update({'neighbor':nxthop["ip"]}) %}{% endif %}
-      {% endfor %}
       {% set nexthops = path["nexthops"] %}
       {% for nxthop in nexthops %}
         {% if vars.update({'neighbor':nxthop["ip"]}) %}{% endif %}
+        {% if vars.update({'scope':nxthop["scope"]}) %}{% endif %}
+        {% if vars.scope == 'global' %}{% break %}{% endif %}
       {% endfor %}
       {% if vars.bestRoute == True %}
         {% if vars.update({'bestReason':""}) %}{% endif %}
