@@ -1,8 +1,9 @@
 // Host Account Management
 #include <glib.h>                       // g_main_loop_new(), g_main_context_default(), g_main_loop_run(), g_main_loop_unref(), g_main_loop_quit(), gboolean, etc...
 #include <glib-unix.h>                  // g_unix_signal_add()
-#include <dbus-c++/glib-integration.h>  // DBus::Glib::BusDispatcher, DBus::default_dispatcher
+#include <dbus-c++/glib-integration.h>  // DBus::Glib::BusDispatcher
 #include <stdlib.h>                     // EXIT_SUCCESS
+
 #include "hamd.h"                       // hamd_c, hamd_config_c
 #include "../shared/utils.h"            // LOG_CONDITIONAL()
 
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
     // DBus setup
     LOG_CONDITIONAL(config.tron_m, LOG_DEBUG, "Initializing the loop's dispatcher");
     DBus::Glib::BusDispatcher   dispatcher;
-    DBus::default_dispatcher = &dispatcher;
+    DBus::default_dispatcher = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
     dispatcher.attach(main_ctx_p);
 
     LOG_CONDITIONAL(config.tron_m, LOG_DEBUG, "Requesting System DBus connection \"" DBUS_BUS_NAME_BASE "\"");

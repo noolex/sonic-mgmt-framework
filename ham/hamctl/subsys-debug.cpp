@@ -2,15 +2,14 @@
 #include <getopt.h>
 #include <string.h>
 #include <limits.h>
+#include <dbus/dbus-shared.h>           // DBUS_BUS_SYSTEM
 
-#include "hamctl.h"
+#include "hamctl.h"                     // get_dbusconn()
 #include "subsys.h"
-#include "../shared/dbus-address.h"    // DBUS_BUS_NAME_BASE
+#include "../shared/dbus-address.h"     // DBUS_BUS_NAME_BASE
 
 #define FMT_RED         "\x1b[0;31m"
 #define FMT_NORMAL      "\x1b[0m"
-
-static DBus::BusDispatcher  dispatcher;
 
 /**
  * @brief hamctl's debug command
@@ -65,9 +64,7 @@ static int debug(int argc, char *argv[])
 
     if (rc == 0)
     {
-        DBus::default_dispatcher = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::Connection    conn = DBus::Connection::SystemBus();
-        debug_proxy_c       debug(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        debug_proxy_c  debug(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
 
         if (0 == strcmp("tron", command_p))
         {
