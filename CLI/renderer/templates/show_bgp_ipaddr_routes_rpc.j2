@@ -13,6 +13,7 @@
 {% set vars = {'numpaths': "0"} %}
 {% set vars = {'bestpaths': "0"} %}
 {% set vars = {'validRoute': False} %}
+{% set vars = {'multiPath': False} %}
 {% set vars = {'bestRoute': False} %}
 {% set vars = {'bestReason': ""} %}
 {% set vars = {'time': "0"} %}
@@ -47,12 +48,14 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
   {% if pathsList %}
     {% for path in pathsList %}
       {% if vars.update({'validRoute':False}) %} {% endif %}
+      {% if vars.update({'multiPath':False}) %} {% endif %}
       {% if vars.update({'bestRoute':False}) %} {% endif %}
       {% if vars.update({'weight':""}) %} {% endif %}
       {% if vars.update({'communities':""}) %} {% endif %}
       {% if vars.update({'locPref':""}) %} {% endif %}
       {% if vars.update({'peertype':""}) %} {% endif %}
       {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
+      {% if vars.update({'multiPath':path["multipath"]}) %}{% endif %}
       {% if "bestpath" in path %}{% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}{% endif %}
       {% if vars.update({'pathId':path["pathId"]}) %}{% endif %}
       {% if vars.update({'routerId':path["peer"]["routerId"]}) %}{% endif %}
@@ -73,17 +76,10 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
       {% for nxthop in nexthops %}
         {% if vars.update({'neighbor':nxthop["ip"]}) %}{% endif %}
       {% endfor %}
-      {% if vars.validRoute == True %}
-         {% if vars.update({'validRoute':"valid"}) %}{% endif %}
-      {% else %}
-         {% if vars.update({'validRoute':""}) %}{% endif %}
-      {% endif %}
       {% if vars.bestRoute == True %}
-        {% if vars.update({'bestRoute':"best"}) %}{% endif %}
         {% if vars.update({'bestReason':""}) %}{% endif %}
         {% if vars.update({'bestReason':path["bestpath"]["selectionReason"]}) %}{% endif %}
       {% else %}
-        {% if vars.update({'bestRoute':""}) %}{% endif %}
         {% if vars.update({'bestReason':""}) %}{% endif %}
       {% endif %}
 
@@ -91,10 +87,10 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
 {{'      Origin '}}{{ vars.origin }}{{', metric '}}{{vars.metric}}{% if vars.locPref != '' %}{{', localpref '}}{{vars.locPref}}{% endif %}
    {% if vars.weight != '' %}{{', weight '}}{{vars.weight}}{% endif %}
-   {% if vars.validRoute != '' %}{{', '}}{{vars.validRoute}}{% endif %}
+   {% if vars.validRoute == True %}{{', valid'}}{% endif %}
    {% if vars.peertype != '' %}{{', '}}{{vars.peertype}}{% endif %}
-   {% if vars.bestRoute != '' %}{{', '}}{{vars.bestRoute}}{% endif %}
-   {% if vars.bestReason != '' %}{{' ('}}{{vars.bestReason}}{{')'}}{% endif %}
+   {% if vars.multiPath == True %}{{', multipath'}}{% endif %}
+   {% if vars.bestRoute == True %}{{', best'}}{% if vars.bestReason != '' %}{{' ('}}{{vars.bestReason}}{{')'}}{% endif %}{% endif %}
    {{'\n'}}
 {% if vars.communities != '' %}{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}{% endif %}
 {{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}

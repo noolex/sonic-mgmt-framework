@@ -93,16 +93,6 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                     {% if vars.update({'validRoute':path["state"]["valid-route"]}) %}{% endif %}
                     {% if vars.update({'bestRoute':path["state"]["best-path"]}) %}{% endif %}
                     {% if vars.update({'pathId':path["state"]["path-id"]}) %}{% endif %}
-                    {% if vars.validRoute == True %}
-                       {% if vars.update({'validRoute':"valid"}) %}{% endif %}
-                    {% else %}
-                       {% if vars.update({'validRoute':""}) %}{% endif %}
-                    {% endif %}
-                    {% if vars.bestRoute == True %}
-                      {% if vars.update({'bestRoute':"best"}) %}{% endif %}
-                    {% else %}
-                      {% if vars.update({'bestRoute':""}) %}{% endif %}
-                    {% endif %}
                  {% endif %}
                  {% if "attr-sets" in key %}
                     {% set attr_sets = path[key] %}
@@ -146,7 +136,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
  
 {{'  %s'|format(vars.members)}}
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
-{{'      Origin '}}{{ vars.origin }}{{', '}}{{vars.validRoute}}{% if vars.bestRoute == 'best' %}{{', '}}{{vars.bestRoute}}{% endif %}{{'\n'}}
+{{'      Origin '}}{{ vars.origin }}{% if vars.validRoute == True %}{{', valid'}}{% endif %}{% if vars.bestRoute == True %}{{', best'}}{% endif %}{{'\n'}}
 {% if vars.communities != '' %}{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}{% endif %}
 {{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}
             {% endfor %}
