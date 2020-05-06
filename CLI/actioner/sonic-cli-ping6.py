@@ -53,7 +53,7 @@ def run_vrf(args):
         # May be triggered when Ctrl + C is used to stop script execution
         return
     except Exception as e:
-        print_and_log("Unable to call ping6 command, please check logs")
+        print_and_log("Internal error")
         log.syslog(log.LOG_ERR, str(e))
         return
 
@@ -73,7 +73,7 @@ def run(args):
         # May be triggered when Ctrl + C is used to stop script execution
         return
     except Exception as e:
-        print_and_log("Unable to call ping6 command, please check logs for details")
+        print_and_log("Internal error")
         log.syslog(log.LOG_ERR, str(e))
         return
 
