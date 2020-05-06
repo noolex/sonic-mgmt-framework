@@ -27,38 +27,23 @@ import re
 blocked_chars = frozenset(['&', ';', '<', '>', '|', '`', '\''])
 
 def contains_valid_intf(args):
-    op = re.search(r' -I\s*Vlan(409[0-5]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])(\s+|$)', args)
-    if op is not None:
-        return True
-    op = re.search(r' -I\s*Ethernet([1-3][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[0-9])(\s+|$)', args)
-    if op is not None:
-        return True
-    op = re.search(r' -I\s*Management([1-3][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[0-9])(\s+|$)', args)
-    if op is not None:
-        return True
-    op = re.search(r' -I\s*PortChannel([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-6])(\s+|$)', args)
-    if op is not None:
-        return True
-    op = re.search(r' -I\s*Loopback([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|1[0-5][0-9]{3}|16[0-2][0-9]{2}|163[0-7][0-9]|1638[0-3])(\s+|$)', args)
+    op = re.search(r'-i\s*(Ethernet|Loopback|Management|PortChannel|Vlan)', args)
     if op is not None:
         return True
     return False
 
-def print_and_log(inMsg):
-    msg = "Error: traceroute unsuccessful"
-    logMsg = msg + " : " + inMsg
-    print msg
-    log.syslog(log.LOG_ERR, logMsg)
+def print_and_log(msg):
+    print "% Error: ", msg
+    log.syslog(log.LOG_ERR, msg)
 
 def run_vrf(args):
     vrfName = args[0]
     args = " ".join(args[1:])
-    if(set(args) & blocked_chars):
-        print "%Error: Invalid argument."
-        sys.exit(1)
+    args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
     try:
         if len(args) == 0:
-            args = "--help"
+            print_and_log("The command is not completed.")
+            return
         cmd = "traceroute " + args + " -i " + vrfName
         cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
@@ -68,17 +53,17 @@ def run_vrf(args):
         # May be triggered when Ctrl + C is used to stop script execution
         return
     except Exception as e:
-        print_and_log(str(e))
+        print_and_log("Internal error")
+        log.syslog(log.LOG_ERR, str(e))
         return
 
 def run(args):
     args = " ".join(args[1:])
-    if(set(args) & blocked_chars):
-        print "%Error: Invalid argument."
-        sys.exit(1)
+    args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
     try:
         if len(args) == 0:
-            args = "--help"
+            print_and_log("The command is not completed.")
+            return
         cmd = "traceroute " + args
         cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
@@ -88,21 +73,41 @@ def run(args):
         # May be triggered when Ctrl + C is used to stop script execution
         return
     except Exception as e:
-        print_and_log(str(e))
+        print_and_log("Internal error")
+        log.syslog(log.LOG_ERR, str(e))
         return
+
+def validate_input(args):
+    if(set(args) & blocked_chars):
+        print_and_log("Invalid argument")
+        return False
+    #check if valid interface is provided or not
+    if " -i" in args:
+        if "vrf" in args:
+            print_and_log("VRF name is not allowed with -i option")
+            return False
+        if contains_valid_intf(args) is False:
+            print_and_log("Invalid interface, valid options are Ethernet<id>|Management<id>|Vlan<id>|PortChannel<id>|Loopback<id>")
+            return False
+    if ("fe80:" in args.lower()
+        or "ff01:" in args.lower()
+        or "ff02:" in args.lower()):
+        if "vrf" in args:
+            print_and_log("VRF name is not allowed for IPv6 addresses with link-local scope")
+            return False
+        if " -i" not in args:
+            print_and_log("Interface name was missing")
+            return False
+    return True
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
 
-    #check if valid interface is provided or not
     args = " ".join(sys.argv[0:])
-    if " -i" in args:
-        if contains_valid_intf(args) is False:
-            print("Invalid interface, valid options are Ethernet<id>|Management<id>|Vlan<id>|PortChannel<id>|Loopback<id>")
-            sys.exit(1)
+    if validate_input(args) is False:
+        sys.exit(1)
 
     if len(sys.argv) > 1 and sys.argv[1] == "vrf":
         run_vrf(sys.argv[2:])
     else:
         run(sys.argv)
-
