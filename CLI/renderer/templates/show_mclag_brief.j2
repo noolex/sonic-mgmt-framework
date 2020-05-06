@@ -13,6 +13,12 @@
 {% set mclag_iface_info = json_output["mclag_iface_info"] %}
 {% endif %}
 
+{% if "gateway_mac_info" in json_output %}
+{% set gateway_mac_info = json_output["gateway_mac_info"] %}
+{% endif %}
+
+
+
 {{ ' ' }}
 
 {% if domain_info -%}
@@ -39,6 +45,11 @@
 {{'Keepalive Interval'.ljust(20)}} : {{ vars.keepalive_interval}} {{'secs'}}
 {{'Session Timeout'.ljust(20)}} : {{ vars.session_timeout}} {{'secs'}}
 {{'System Mac'.ljust(20)}} : {{ vars.system_mac}}
+
+{% if gateway_mac_info -%}
+{% if vars.update({'gateway_mac':gateway_mac_info["gateway_mac"]}) %}{% endif %}
+{{'Gateway Mac'.ljust(20)}} : {{ vars.gateway_mac}}
+{% endif %}
 
 {{ ' \n ' }}
 Number of MLAG Interfaces:{{ number_of_mclag_ifaces }}
