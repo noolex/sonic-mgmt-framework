@@ -1149,9 +1149,7 @@ limitations under the License.
 
 <VIEW name="enable-view">
   <COMMAND name="show bgp l2vpn" help="Layer 2 Virtual Private Network"/>
-  <COMMAND name="show bgp l2vpn evpn" help="Ethernet Virtual Private Network">
-    <ACTION builtin="clish_nop"/>
-  </COMMAND>
+  <COMMAND name="show bgp l2vpn evpn" help="Ethernet Virtual Private Network"/>
   <COMMAND name="show bgp l2vpn evpn route" help="EVPN Route information">
     <PARAM name="evpnroutesubcommands" help="EVPN Route Subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
       <PARAM name="rd" help="Route Distinguisher" mode="subcommand" ptype="SUBCOMMAND" optional="true">
