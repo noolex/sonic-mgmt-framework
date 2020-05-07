@@ -27,6 +27,7 @@ import (
 	"os/user"
 	"strings"
 
+	"github.com/Azure/sonic-mgmt-common/translib"
 	"github.com/golang/glog"
 	"github.com/msteinert/pam"
 	"golang.org/x/crypto/ssh"
@@ -145,6 +146,15 @@ func PAMAuthUser(u string, p string) error {
 	return err
 }
 func GetUserRoles(usr *user.User) ([]string, error) {
+	// Get user roles from DB
+	tlUser, errDb := translib.GetUser(usr.Username)
+	if errDb == nil {
+		// We have a match, use the DB contents
+		glog.Infof("DB info user=%v roles=%#v", tlUser.Name, tlUser.Roles)
+		return tlUser.Roles, nil
+	}
+	// No match, fallback to using group membership
+
 	// Lookup Roles
 	gids, err := usr.GroupIds()
 	if err != nil {
