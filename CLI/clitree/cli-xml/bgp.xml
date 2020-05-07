@@ -127,7 +127,7 @@ limitations under the License.
             OutQ depth is 0
                                   Sent        Rcvd
             Opens:                1           1
-           sNotifications:        0           0
+            Notifications:        0           0
             Updates:              2           8
             Keepalive:            2           2
             Route Refresh:        0           0
