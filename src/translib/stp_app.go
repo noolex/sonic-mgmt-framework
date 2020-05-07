@@ -1397,8 +1397,10 @@ func (app *StpApp) convertOCStpInterfacesToInternal() {
 				if stpIntfConf.Config.BpduGuard != nil {
 					if *stpIntfConf.Config.BpduGuard == true {
 						(&dbVal).Set("bpdu_guard", "true")
+						(&dbVal).Set("bpdu_guard_do_disable", "false")
 					} else {
 						(&dbVal).Set("bpdu_guard", "false")
+						(&dbVal).Set("bpdu_guard_do_disable", "false")
 					}
 				}
 
@@ -1414,9 +1416,11 @@ func (app *StpApp) convertOCStpInterfacesToInternal() {
 
 				if stpIntfConf.Config.BpduGuardPortShutdown != nil {
 					if *stpIntfConf.Config.BpduGuardPortShutdown == true {
+						(&dbVal).Set("bpdu_guard", "true")
 						(&dbVal).Set("bpdu_guard_do_disable", "true")
 					} else {
 						(&dbVal).Set("bpdu_guard_do_disable", "false")
+						(&dbVal).Set("bpdu_guard", "false")
 					}
 				}
 
@@ -1633,31 +1637,33 @@ func (app *StpApp) convertInternalToOCStpInterfaces(intfName string, interfaces 
 
 		operDbVal := app.intfOperTableMap[intfName]
 		if operDbVal.IsPopulated() && intf != nil {
-			var boolVal bool
+            var portFast bool
+            var bpduGuardShut bool
+            var bpduFilter bool
 
-			bpduGuardShut := (&operDbVal).Get("bpdu_guard_shutdown")
-			if bpduGuardShut == "yes" {
-				boolVal = true
-			} else if bpduGuardShut == "no" {
-				boolVal = false
+			opBpduGuardShut := (&operDbVal).Get("bpdu_guard_shutdown")
+			if opBpduGuardShut == "yes" {
+				bpduGuardShut = true
+			} else {
+				bpduGuardShut = false
 			}
-			intf.State.BpduGuardShutdown = &boolVal
+			intf.State.BpduGuardShutdown = &bpduGuardShut
 
 			opPortfast := (&operDbVal).Get("port_fast")
 			if opPortfast == "yes" {
-				boolVal = true
-			} else if opPortfast == "no" {
-				boolVal = false
+				portFast = true
+			} else {
+				portFast = false
 			}
-			intf.State.Portfast = &boolVal
+			intf.State.Portfast = &portFast
 
 			opBpduFilter := (&operDbVal).Get("bpdu_filter")
 			if opBpduFilter == "yes" {
-				boolVal = true
-			} else if opBpduFilter == "no" {
-				boolVal = false
+				bpduFilter = true
+			} else {
+				bpduFilter = false
 			}
-			intf.State.BpduFilter = &boolVal
+			intf.State.BpduFilter = &bpduFilter
 
 			opEdgePortType := (&operDbVal).Get("edge_port")
 			if opEdgePortType == "yes" {
@@ -1791,6 +1797,10 @@ func (app *StpApp) convertOperInternalToOCVlanInterface(vlanName string, intfId 
 					pvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_LEARNING
 				case "FORWARDING":
 					pvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_FORWARDING
+				case "BPDU-DIS":
+					pvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_BPDU_DIS
+				case "ROOT-INC":
+					pvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_ROOT_INC
 				}
 
 				switch portRole {
@@ -1824,14 +1834,18 @@ func (app *StpApp) convertOperInternalToOCVlanInterface(vlanName string, intfId 
 				switch portState {
 				case "DISABLED":
 					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_DISABLED
-				case "BLOCKING":
-					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_BLOCKING
+				case "DISCARDING":
+					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_DISCARDING
 				case "LISTENING":
 					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_LISTENING
 				case "LEARNING":
 					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_LEARNING
 				case "FORWARDING":
 					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_FORWARDING
+				case "BPDU-DIS":
+					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_BPDU_DIS
+				case "ROOT-INC":
+					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_ROOT_INC
 				}
 
 				switch portRole {

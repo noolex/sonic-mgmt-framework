@@ -13,9 +13,27 @@ module openconfig-spanning-tree-ext {
 
 
     identity PVST {
-        base  oc-stp-types:STP_PROTOCOL;
+        base oc-stp-types:STP_PROTOCOL;
         description
             "Per Vlan Spanning Tree Protocol";
+    }
+    
+    identity DISCARDING {
+        base oc-stp-types:STP_PORT_STATE;
+        description
+            "Equivalent of BLOCKING state in RSTP";
+    }
+    
+    identity BPDU-DIS {
+        base oc-stp-types:STP_PORT_STATE;
+        description
+            "Port state when port is shutdown due to BPDU guard action";
+    }
+
+    identity ROOT-INC {
+        base oc-stp-types:STP_PORT_STATE;
+        description
+            "Port state when port is in root inconsistent state due to guard root action";
     }
 
     typedef stp-bridge-priority-type-ext {
