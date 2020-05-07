@@ -1,0 +1,18 @@
+{% set vars = {'pool_name': ""} %}
+{% set vars = {'threshold': ""} %}
+
+{% if json_output -%}
+
+---------------------------------------------------------------
+{{'%-50s'|format("pool_name")}}{{'%-50s'|format("threshold")}}
+---------------------------------------------------------------
+{% for buffer_pool_entries in json_output %}
+
+{% if vars.update({'pool_name':buffer_pool_entries["pool_name"]}) %}{% endif %}
+    {% if vars.update({'threshold':buffer_pool_entries["threshold"]}) %}{% endif %}
+
+{{'%-50s'|format(vars.pool_name)}}{{'%-50s'|format(vars.threshold)}}
+
+{% endfor %}
+
+{% endif %}
