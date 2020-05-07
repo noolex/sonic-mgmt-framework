@@ -819,15 +819,26 @@ def run(op_str, args):
         if op_str != 'post_openconfig_spanning_tree_stp_global_config_enabled_protocol':
             stp_mode_get(aa)
             if not g_stp_mode:
-                return
+                if 'process_stp_show' in op_str:
+                    return 0
+                else:
+                    return -1
 
         resp = request_handlers[op_str](new_args)
         if not resp:
-            return
+            if 'process_stp_show' in op_str:
+                return 0
+            else:
+                return -1
+        else:
+            if 'process_stp_show' in op_str:
+                if len(resp.keys()) == 1 and 'openconfig-spanning-tree:enabled-protocol' in resp.keys():
+                    return 0
+
         response_handlers[op_str](resp, new_args)
     except Exception as e:
         print("%Error: {}".format(str(e)))
-        sys.exit()
+        sys.exit(-1)
 
-    return
+    return 0
 
