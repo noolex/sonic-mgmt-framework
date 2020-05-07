@@ -32,7 +32,7 @@
         {% if routeList %}
          {% for route in routeList %}
          {% if vars.update({'prefix':route["prefix"]}) %}{% endif %}
-         {% if not "loc-rib-prefix-paths" in route %} {% break %} {% endif %}
+         {% if not "loc-rib-prefix-paths" in route %}{% break %}{% endif %}
          {% set prefixPathsList = route["loc-rib-prefix-paths"] %}
          {% set pathsList = prefixPathsList["paths"] %}
          {% if pathsList %}
@@ -42,8 +42,8 @@
                {% set pathindex = loop.index %}
                {% for key in path %}
                  {% if "state" in key %}
-                    {% if vars.update({'validRoute':False}) %} {% endif %}
-                    {% if vars.update({'bestRoute':False}) %} {% endif %}
+                    {% if vars.update({'validRoute':False}) %}{% endif %}
+                    {% if vars.update({'bestRoute':False}) %}{% endif %}
                     {% if vars.update({'validRoute':path["state"]["valid-route"]}) %}{% endif %}
                     {% if vars.update({'bestRoute':path["state"]["best-path"]}) %}{% endif %}
                     {% if vars.update({'pathId':path["state"]["path-id"]}) %}{% endif %}
@@ -81,15 +81,15 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
          {% set pathList = pathsList["path"] %}
          {% if pathList %}
             {% for path in pathList %}
-               {% if vars.update({'members':''}) %} {% endif %}
-               {% if vars.update({'communities':''}) %} {% endif %}
+               {% if vars.update({'members':''}) %}{% endif %}
+               {% if vars.update({'communities':''}) %}{% endif %}
                {% if vars.update({'weight':"0"}) %}{% endif %}
                {% for key in path %}
                  {% if "state" in key %}
                     {% if vars.update({'neighbor':path["state"]["origin"]}) %}{% endif %}
                     {% if vars.update({'time':path["state"]["last-modified"]}) %}{% endif %}
-                    {% if vars.update({'validRoute':False}) %} {% endif %}
-                    {% if vars.update({'bestRoute':False}) %} {% endif %}
+                    {% if vars.update({'validRoute':False}) %}{% endif %}
+                    {% if vars.update({'bestRoute':False}) %}{% endif %}
                     {% if vars.update({'validRoute':path["state"]["valid-route"]}) %}{% endif %}
                     {% if vars.update({'bestRoute':path["state"]["best-path"]}) %}{% endif %}
                     {% if vars.update({'pathId':path["state"]["path-id"]}) %}{% endif %}
@@ -120,7 +120,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                              {% endfor %}
                           {% endif %}
                         {% endfor %}
-                        {% if vars.update({'members': temp|join(" ")}) %} {% endif %}
+                        {% if vars.update({'members': temp|join(" ")}) %}{% endif %}
                        {% endif %}
                     {% endif %}
                     {% if "community" in attr_sets %}
@@ -130,15 +130,14 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                             {%  do temp.append(community) %}
                        {% endfor %}
                     {% endif %}
-                    {% if vars.update({'communities': temp|join(" ")}) %} {% endif %}
+                    {% if vars.update({'communities': temp|join(" ")}) %}{% endif %}
                  {% endif %}
                {% endfor %}
- 
 {{'  %s'|format(vars.members)}}
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
 {{'      Origin '}}{{ vars.origin }}{% if vars.validRoute == True %}{{', valid'}}{% endif %}{% if vars.bestRoute == True %}{{', best'}}{% endif %}{{'\n'}}
 {% if vars.communities != '' %}{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}{% endif %}
-{{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}
+{{'      Last update: '}}{{datetimeformat(vars.time)|string}}{{'\n'}}
             {% endfor %}
          {% endif %}
          {% endif %}

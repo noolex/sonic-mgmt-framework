@@ -26,10 +26,10 @@
   {% set pathsList = globalConfig["paths"] %}
   {% if pathsList %}
     {% for path in pathsList %}
-      {% if vars.update({'validRoute':False}) %} {% endif %}
-      {% if vars.update({'bestRoute':False}) %} {% endif %}
+      {% if vars.update({'validRoute':False}) %}{% endif %}
+      {% if vars.update({'bestRoute':False}) %}{% endif %}
       {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
-      {% if "bestpath" in path %} {% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}{% endif %}
+      {% if "bestpath" in path %}{% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}{% endif %}
       {% if vars.bestRoute == True %}
         {% if vars.update({'bestpaths': loop.index}) %}{% endif %}
       {% endif %}
@@ -47,13 +47,13 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
   {% set pathsList = globalConfig["paths"] %}
   {% if pathsList %}
     {% for path in pathsList %}
-      {% if vars.update({'validRoute':False}) %} {% endif %}
-      {% if vars.update({'multiPath':False}) %} {% endif %}
-      {% if vars.update({'bestRoute':False}) %} {% endif %}
-      {% if vars.update({'weight':""}) %} {% endif %}
-      {% if vars.update({'communities':""}) %} {% endif %}
-      {% if vars.update({'locPref':""}) %} {% endif %}
-      {% if vars.update({'peertype':""}) %} {% endif %}
+      {% if vars.update({'validRoute':False}) %}{% endif %}
+      {% if vars.update({'multiPath':False}) %}{% endif %}
+      {% if vars.update({'bestRoute':False}) %}{% endif %}
+      {% if vars.update({'weight':""}) %}{% endif %}
+      {% if vars.update({'communities':""}) %}{% endif %}
+      {% if vars.update({'locPref':""}) %}{% endif %}
+      {% if vars.update({'peertype':""}) %}{% endif %}
       {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
       {% if vars.update({'multiPath':path["multipath"]}) %}{% endif %}
       {% if "bestpath" in path %}{% if vars.update({'bestRoute':path["bestpath"]["overall"]}) %}{% endif %}{% endif %}
@@ -92,7 +92,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
    {% if vars.bestRoute == True %}{{', best'}}{% if vars.bestReason != '' %}{{' ('}}{{vars.bestReason}}{{')'}}{% endif %}{% endif %}
    {{'\n'}}
 {% if vars.communities != '' %}{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}{% endif %}
-{{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}
+{{'      Last update: '}}{{datetimeformat(vars.time)|string}}{{'\n'}}
     {% endfor %}
   {% endif %}
 {% endif %}
