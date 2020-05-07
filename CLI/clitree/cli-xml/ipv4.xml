@@ -61,7 +61,7 @@ limitations under the License.
 	           <PARAM
 		            help="VRF name"
 		            name="vrfname"
-		            ptype="STRING">
+		            ptype="STRING_15">
                    <PARAM
 	                    help="Destination prefix"
 		                  name="prefix"
@@ -167,7 +167,7 @@ limitations under the License.
         <PARAM
             name="donor-interface"
             help="Donor Interface Name"
-            ptype="STRING" />
+            ptype="LOOPBACK_INTERFACE" />
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
 		<DOCGEN>
 			<DESCRIPTION>
@@ -354,7 +354,7 @@ limitations under the License.
          <PARAM
              name="donor-interface"
              help="Donor Interface Name"
-             ptype="STRING" />
+             ptype="LOOPBACK_INTERFACE" />
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
 
 		<DOCGEN>
