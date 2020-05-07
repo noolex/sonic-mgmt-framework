@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+  <VIEW name="configure-view">
+    <!-- qos -->
+    <COMMAND
+        name="qos"
+        help="QoS Configuration"
+        view="configure-qos-intf-view"
+        viewid="intf_name=${name}"
+        >
+        <PARAM
+        name="interface"
+        help="Interface QoS Configuration"
+        mode="subcommand"
+        ptype="SUBCOMMAND"
+        >
+        <PARAM
+           name="name"
+           help="Interface Name"
+           ptype="STRING_32"
+           >
+        </PARAM>
+        </PARAM>
+        <ACTION>
+        </ACTION>
+    </COMMAND>
+  </VIEW>
+
+  <VIEW name="configure-qos-intf-view"
+        prompt="${SYSTEM_NAME}(conf-qos-${intf_name})# "
+        depth="2"
+        >
+
+    <!-- Inheritance -->
+    <NAMESPACE
+        ref="configure-view"
+        help="false"
+        completion="false"
+        />
+
+        <COMMAND
+            name="queue"
+            help="Queue configuration">
+           <PARAM
+               name="qid"
+               help="queue name"
+               ptype="STRING_32"
+               >
+              <PARAM 
+                name="wred-profile"
+                help="WRED profile" 
+                mode="subcommand"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="wred_prof_name"
+                    help="WRED profile name"
+                    ptype="STRING_32"
+                    >
+                </PARAM>
+              </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile ${intf_name}:${qid} ${wred_prof_name}
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="scheduler-policy"
+            help="Scheduler Policy configuration">
+           <PARAM
+               name="sp_name"
+               help="Scheduler Policy name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${intf_name} ${sp_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no" help="Negate a command"/>
+        <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/output/scheduler-policy/config/name
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND name="no queue" help="Negate Queue configuration">
+           <PARAM
+               name="qid"
+               help="queue name"
+               ptype="STRING_32"
+               >
+              <PARAM 
+                name="wred-profile"
+                help="WRED profile"
+                mode="subcommand"
+                ptype="SUBCOMMAND">
+              </PARAM>
+           </PARAM>
+           <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/queues/queue=${intf_name}:${qid}/wred/config/openconfig-qos-ext:wred-profile
+            </ACTION>
+        </COMMAND>
+
+  </VIEW>
+  <VIEW name="enable-view">
+    <COMMAND name="show qos" help="Show QoS information">
+        <PARAM 
+            name="interface"
+            help="interface QoS info"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            >
+          <PARAM
+             name="Ethernet"
+             help="Name of physical interface"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             >
+          <PARAM
+             name="intf_name"
+             help="Name of physical interface"
+             ptype="STRING"
+             >
+             <PARAM
+              name="queue"
+              help="Queue Id"
+              ptype="SUBCOMMAND"
+              mode="subcommand"
+              optional="true"
+              >
+                <PARAM
+                 name="queue-id"
+                 help="Queue id: 0, 1, .. etc"
+                 ptype="STRING"
+                 >
+                </PARAM>
+              </PARAM>
+          </PARAM>
+          </PARAM>
+        </PARAM>
+        <ACTION>
+            if test "${queue}" != ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_queues_queue Ethernet${intf_name}:${queue-id} &#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config Ethernet${intf_name} &#xA;
+            fi&#xA;   
+        </ACTION>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+  </VIEW>
+ </CLISH_MODULE>

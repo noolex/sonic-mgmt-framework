@@ -1,0 +1,28 @@
+
+Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack        
+                Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx        
+--------------------------------------------------------------------------------------------
+{% set ospf_global_list = json_output  %}
+{% for list_elem in ospf_global_list %}
+{% if 'vrfName' in list_elem %}
+VRF Name: {{list_elem['vrfName']}}
+{% endif -%}
+{% if 'area' in list_elem['openconfig-network-instance:areas'] %}
+{% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
+{% endif -%}
+{% for areainfo in area_list %}
+{% if 'interfaces' in areainfo and 'interface' in areainfo['interfaces'] %}
+{% set interface_list = areainfo['interfaces']['interface'] %}
+{% for interfaceinfo in interface_list %}
+{% if 'openconfig-ospfv2-ext:message-statistics' in interfaceinfo %}
+{% set stats = interfaceinfo['openconfig-ospfv2-ext:message-statistics'] %}
+{% endif -%}
+{% if 'state' in interfaceinfo %}
+{% set interface_state = interfaceinfo['state'] %}
+{% endif -%}
+{{interface_state['id']}}    {{stats['hello-receive']}}/{{stats['hello-transmit']}}          {{stats['db-description-receive']}}/{{stats['db-description-transmit']}}             {{stats['ls-request-receive']}}/{{stats['ls-request-transmit']}}           {{stats['ls-update-receive']}}/{{stats['ls-update-transmit']}}         {{stats['ls-acknowledge-receive']}}/{{stats['ls-acknowledge-transmit']}}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+============================================================================================

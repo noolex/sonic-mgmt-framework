@@ -868,6 +868,9 @@ limitations under the License.
         <PARAM name="border-routers" help="Show all the ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
         </PARAM>
 
+        <PARAM name="route" help="OSPF routing table" ptype="SUBCOMMAND" mode="subcommand">
+        </PARAM>
+
         <PARAM name="database" help="Database summary" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
             <PARAM name="asbr-summary" help="ASBR summary link states" ptype="SUBCOMMAND" mode="subcommand">
@@ -974,25 +977,25 @@ limitations under the License.
         </PARAM>
 
         <PARAM name="neighbor" help="Neighbor list" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="detail" help="detail of all neighbors" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="all" help="include down status neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
           <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="true"/>
-          <PARAM name="detail" help="detail of all neighbors" ptype="SUBCOMMAND" mode="subcommand" optional="true">
             <PARAM name="all" help="include down status neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
           </PARAM>
         </PARAM>
       </PARAM>
 
       <ACTION>
-        if test "${cmdtype}" == ""; then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2 ${vrf-name} &#xA;
-        else&#xA;
-          if test "${cmdtype}" == "neighbor"; then&#xA;
-            if test "${detail}" != ""; then&#xA;
-              if test "${all}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor_detail_all show_ip_ospf_neighbor_detail_all.j2 ${vrf-name} &#xA;
-              fi&#xA;
-            fi&#xA;
-          fi&#xA;
+        if test "${cmdtype}" = ""; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "neighbor" &amp;&amp; test "${detail}" != ""; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor_detail_all show_ip_ospf_neighbor_detail_all.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "interface" &amp;&amp; test "${traffic}" = "" &amp;&amp; test "${interfacename}" = ""; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_interface show_ip_ospf_interface.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "interface" &amp;&amp; test "${traffic}" != ""; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_interface_traffic show_ip_ospf_interface_traffic.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "route"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_route show_ip_ospf_route.j2 ${vrf-name} &#xA;
         fi&#xA;
       </ACTION>
         <DOCGEN>
@@ -1052,7 +1055,7 @@ limitations under the License.
      </COMMAND>
 
      <COMMAND name="show ip ospf route" help="OSPF routing table" >
-        <ACTION builtin="clish_nop"></ACTION>
+        <ACTION>python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_route show_ip_ospf_route.j2 default&#xA;</ACTION>
      </COMMAND>
 
      <COMMAND name="show ip ospf vrfs" help="Show OSPF VRFs" >

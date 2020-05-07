@@ -11,19 +11,6 @@ import urllib3
 import string
 urllib3.disable_warnings()
 
-def config_confirm(msg):
-    prompt_msg = msg + " [y/N]:";
-
-    try:
-        x = raw_input(prompt_msg)
-        while x.lower() != "y" and x.lower() != "n":
-           print ("Invalid input, expected [y/N]")
-           x = raw_input(prompt_msg)
-           if x.lower() == "n":
-               exit(1)
-    except:
-        exit(1)
-
 def invoke(func, args):
     body = None
     aa = cc.ApiClient()
@@ -44,7 +31,6 @@ def invoke(func, args):
         path = cc.Path('/restconf/data/openconfig-platform:components/component=%s/port/openconfig-platform-port:breakout-mode/config'%interface)
         return aa.get(path)
     else:
-        config_confirm("Breakout mode change will result into dependent configuration clean-up and causes traffic disruption. Continue?");
         interface = args[0]
         speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "1x40G":"SPEED_40GB", "4x25G":"SPEED_25GB", "2x50G":"SPEED_50GB", "1x400G":"SPEED_400GB"}
         path = cc.Path('/restconf/data/openconfig-platform:components/component=%s/port/openconfig-platform-port:breakout-mode/config'%interface)

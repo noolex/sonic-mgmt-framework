@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+  <VIEW name="enable-view">
+    <COMMAND name="show queue" help="Show Queue information">
+         <PARAM
+             name="queue-subcommands"
+             help="queue subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND"
+             >
+             <!-- show queue counters -->
+             <PARAM
+                 name="counters"
+                 help="Counters for all interface, all queues"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+                 <!-- show queue counters interface Ethernet [<id>] -->
+                 <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+		             >
+		             <PARAM
+                         name="intf-type-subcommands"
+                         help="interface type subcommands"
+                         mode="switch"
+                         ptype="SUBCOMMAND"
+                         >
+                         <PARAM
+                            name="Ethernet"
+                            help="Counters for interface queues"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="phy-if-id"
+                                help="Physical interface"
+                                ptype="UINT"
+                                >
+                                <!-- show queue counters interface Ethernet [<id>] queue [<queue-name>] -->
+                                <PARAM
+                                   name="queue"
+                                   help="Counters for interface queue"
+                                   ptype="SUBCOMMAND"
+                                   mode="subcommand"
+                                   optional="true"
+                                   >
+                                   <PARAM
+                                       name="queue-id"
+                                       help="Queue id: 0, 1, .. etc"
+                                       ptype="RANGE_0_15"
+                                       >
+                                   </PARAM>
+                                </PARAM>
+                            </PARAM>
+                         </PARAM>
+                         <PARAM
+                             name="CPU"
+                             help="Counters for interface queues"
+                             ptype="SUBCOMMAND"
+                             mode="subcommand"
+                             >
+                             <!-- show queue counters interface CPU queue [<queue-name>] -->
+                             <PARAM
+                                 name="queue"
+                                 help="Counters for interface queue"
+                                 ptype="SUBCOMMAND"
+                                 mode="subcommand"
+                                 optional="true"
+                                 >
+                                 <PARAM
+                                     name="queue-id"
+                                     help="Queue id: 0, 1, .. etc"
+                                     ptype="RANGE_0_31"
+                                     >
+                                 </PARAM>
+                              </PARAM>
+                         </PARAM>
+                     </PARAM>
+                 </PARAM>
+             </PARAM>
+             <!-- show queue watermark -->
+             <PARAM
+                 name="watermark"
+                 help="Watermark for all interface queues"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+               <PARAM
+                 name="queue-type-subcommands"
+                 help="queue type subcommands"
+                 mode="switch"
+                 ptype="SUBCOMMAND"
+                 >
+                 <!-- show queue watermark unicast --> 
+                 <PARAM
+                     name="unicast"
+                     help="Watermark for all interface unicast queues"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+		             >
+                     <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                     <PARAM
+                         name="intf-type-subcommands"
+                         help="interface type subcommands"
+                         mode="switch"
+                         ptype="SUBCOMMAND"
+                         >
+                     <!-- show queue watermark unicast interface Ethernet [<id>] -->
+                        <PARAM
+                             name="Ethernet"
+                             help="Watermark for interface unicast queues"
+                             ptype="SUBCOMMAND"
+                             mode="subcommand"
+                             >
+                             <PARAM
+                                 name="phy-if-id"
+                                 help="Physical interface"
+                                 ptype="UINT"
+                                 >
+                            </PARAM>
+                         </PARAM>
+                     </PARAM>
+                     </PARAM>
+                 </PARAM>
+                 <!-- show queue watermark multicast --> 
+                 <PARAM
+                     name="multicast"
+                     help="Watermark for all interface multicast queues"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     >
+                     <!-- show queue watermark multicast interface Ethernet [<id>] -->
+                     <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+		             >
+                    <PARAM
+                         name="intf-type-subcommands"
+                         help="interface type subcommands"
+                         mode="switch"
+                         ptype="SUBCOMMAND"
+                         >
+                         <PARAM
+                            name="Ethernet"
+                            help="Watermark for interface multicast queues"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                               name="phy-if-id"
+                               help="Physical interface"
+                               ptype="UINT"
+                               >
+                            </PARAM>
+                         </PARAM>
+                         <PARAM
+                            name="CPU"
+                            help="Watermark for interface multicast queues"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                         </PARAM>
+                     </PARAM>
+                     </PARAM>
+                 </PARAM>
+               </PARAM>
+             </PARAM>
+             <!-- show queue persistent-watermark -->
+             <PARAM
+                 name="persistent-watermark"
+                 help="Persistent-Watermark for all interface queues"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+               <PARAM
+                 name="queue-type-subcommands"
+                 help="queue type subcommands"
+                 mode="switch"
+                 ptype="SUBCOMMAND"
+                 >
+                 <!-- show queue persistent-watermark unicast --> 
+                 <PARAM
+                     name="unicast"
+                     help="Persistent-Watermark for all interface unicast queues"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+		             >
+                     <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                     <PARAM
+                         name="intf-type-subcommands"
+                         help="interface type subcommands"
+                         mode="switch"
+                         ptype="SUBCOMMAND"
+                         >
+                     <!-- show queue persistent-watermark unicast Ethernet [<id>] -->
+                         <PARAM
+                         name="Ethernet"
+                         help="Persistent-Watermark for interface unicast queues"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                         <PARAM
+                             name="phy-if-id"
+                             help="Physical interface"
+                             ptype="UINT"
+                             >
+                         </PARAM>
+                     </PARAM>
+                     </PARAM>
+                     </PARAM>
+                 </PARAM>
+                 <!-- show queue persistent-watermark multicast --> 
+                 <PARAM
+                     name="multicast"
+                     help="Persistent-Watermark for all interface multicast queues"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     >
+                     <!-- show queue persistent-watermark multicast interface Ethernet [<id>] -->
+                     <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+		             >
+                     <PARAM
+                         name="intf-type-subcommands"
+                         help="interface type subcommands"
+                         mode="switch"
+                         ptype="SUBCOMMAND"
+                         >
+                         <PARAM
+                            name="Ethernet"
+                            help="Persistent-Watermark for interface multicast queues"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            optional="true"
+                            >
+                            <PARAM
+                                name="phy-if-id"
+                                help="Physical interface"
+                                ptype="UINT"
+                                >
+                            </PARAM>
+                         </PARAM>
+                         <PARAM
+                            name="CPU"
+                            help="Persistent-Watermark for interface multicast queues"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            optional="true"
+                            >
+                          </PARAM>
+                     </PARAM>
+                     </PARAM>
+                 </PARAM>
+               </PARAM>
+             </PARAM>
+             <!-- show queue buffer-threshold-breaches -->
+             <PARAM
+                 name="buffer-threshold-breaches"
+                 help="buffer threshold breaches"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+             </PARAM>
+         </PARAM>
+      <ACTION> if test "${queue-subcommands}" = "counters"; then&#xA;
+              if test "${intf-type-subcommands}" = ""; then&#xA;
+                  python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_queue_counters.j2&#xA;
+              else&#xA;
+                  if test "${intf-type-subcommands}" = "Ethernet"; then&#xA;
+                     if test "${queue-id}" = ""; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_all_queue_counters.j2&#xA;
+                     else&#xA;
+                         python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues_queue_state Ethernet${phy-if-id} ${queue-id} &#xA;
+                     fi&#xA;
+                  else&#xA;
+                     if test "${queue-id}" = ""; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_all_queue_counters.j2&#xA;
+                     else&#xA;
+                         python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues_queue_state CPU ${queue-id} &#xA;
+                     fi&#xA;
+                  fi&#xA;
+              fi&#xA;
+          elif test "${queue-subcommands}" = "watermark"; then&#xA;
+	      if test "${queue-type-subcommands}" = "unicast"; then&#xA;
+                 if test "${intf-type-subcommands}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_uc_watermark.j2&#xA;
+                 else&#xA;
+                    if test "${intf-type-subcommands}" = "Ethernet"; then&#xA;
+                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_uc_watermark.j2&#xA;
+                    else&#xA;
+                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_uc_watermark.j2&#xA;
+                    fi&#xA;   
+                 fi&#xA;   
+              else&#xA;
+                 if test "${intf-type-subcommands}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_mc_watermark.j2&#xA;
+                 else&#xA;
+                    if test "${intf-type-subcommands}" = "Ethernet"; then&#xA;
+                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_mc_watermark.j2&#xA;
+                    else&#xA;
+                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_cpu_mc_watermark.j2&#xA;
+                    fi&#xA;   
+                 fi&#xA;   
+              fi&#xA;   
+          elif test "${queue-subcommands}" = "persistent-watermark"; then&#xA;
+              if test "${queue-type-subcommands}" = "unicast"; then&#xA;
+                 if test "${intf-type-subcommands}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_uc_persistent_watermark.j2&#xA;
+                 else&#xA;
+                    if test "${intf-type-subcommands}" = "Ethernet"; then&#xA;
+                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_uc_persistent_watermark.j2&#xA;
+                    else&#xA;
+                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_uc_persistent_watermark.j2&#xA;
+                    fi&#xA;   
+                 fi&#xA;   
+              else&#xA;
+                 if test "${intf-type-subcommands}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_mc_persistent_watermark.j2&#xA;
+                 else&#xA;
+                    if test "${intf-type-subcommands}" = "Ethernet"; then&#xA;
+                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_mc_persistent_watermark.j2&#xA;
+                    else&#xA;
+                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_cpu_mc_persistent_watermark.j2&#xA;
+                    fi&#xA;   
+                 fi&#xA;   
+              fi&#xA;   
+          elif test "${queue-subcommands}" = "buffer-threshold-breaches"; then&#xA;
+              python $SONIC_CLI_ROOT/sonic_cli_qos.py get_list_openconfig_qos_ext_qos_threshold_breaches_breach &#xA;
+          fi&#xA;
+      </ACTION>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <COMMAND name="show priority-group" help="Show priority group information">
+         <PARAM
+            name="priority-group-subcommands"
+            help="priority-group subcommands"
+            mode="switch"
+            ptype="SUBCOMMAND"
+            >
+             <!-- show priority-group watermark -->
+             <PARAM
+                 name="watermark"
+                 help="Watermark for all interface priority-groups"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+               <PARAM
+                 name="priority-group-watermark-subcommands"
+                 help="priority group watermark subcommands"
+                 mode="switch"
+                 ptype="SUBCOMMAND"
+                 >
+                 <!-- show priority-group watermark headroom --> 
+                 <PARAM
+                     name="headroom"
+                     help="Watermark in the headroom for all interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     >
+                     <!-- show priority-group watermark headroom interface Ethernet [<id>] -->
+                     <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                     <PARAM
+                         name="Ethernet"
+                         help="Watermark in the headroom for interface "
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         optional="true"
+                         >
+                         <PARAM
+                             name="phy-if-id"
+                             help="Physical interface"
+                             ptype="UINT"
+                             >
+                         </PARAM>
+                     </PARAM>
+                     </PARAM>
+                 </PARAM>
+                 <!-- show priority-group watermark shared --> 
+                 <PARAM
+                     name="shared"
+                     help="Watermark in shared buffer for all interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     >
+                     <!-- show priority-group watermark shared interface Ethernet [<id>] -->
+                     <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                     <PARAM
+                         name="Ethernet"
+                         help="Watermark in shared buffer for interface"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                         <PARAM
+                             name="phy-if-id"
+                             help="Physical interface"
+                             ptype="UINT"
+                             >
+                         </PARAM>
+                     </PARAM>
+                     </PARAM>
+                 </PARAM>
+               </PARAM>
+             </PARAM>
+             <!-- show priority-group persistent-watermark -->
+             <PARAM
+                 name="persistent-watermark"
+                 help="Persistent-Watermark for all interface "
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+               <PARAM
+                 name="priority-group-watermark-subcommands"
+                 help="priority-group watermark subcommands"
+                 mode="switch"
+                 ptype="SUBCOMMAND"
+                 >
+                 <!-- show priority-group persistent-watermark headroom --> 
+                 <PARAM
+                     name="headroom"
+                     help="Persistent-Watermark in the headroom for all interface "
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     >
+                     <!-- show priority-group persistent-watermark headroom interface Ethernet [<id>] -->
+                     <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                     <PARAM
+                         name="Ethernet"
+                         help="Persistent-Watermark in the headroom for interface "
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                         <PARAM
+                             name="phy-if-id"
+                             help="Physical interface"
+                             ptype="UINT"
+                             >
+                         </PARAM>
+                     </PARAM>
+                     </PARAM>
+                 </PARAM>
+                 <!-- show priority-group persistent-watermark shared --> 
+                 <PARAM
+                     name="shared"
+                     help="Persistent-Watermark in shared buffer for all interface "
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     >
+                     <!-- show priority-group persistent-watermark shared interface Ethernet [<id>] -->
+                     <PARAM 
+                     name="interface"
+                     help="Clear counters interface"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                     <PARAM
+                         name="Ethernet"
+                         help="Persistent-Watermark in shared buffer for interface "
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                         <PARAM
+                             name="phy-if-id"
+                             help="Physical interface"
+                             ptype="UINT"
+                             >
+                         </PARAM>
+                     </PARAM>
+                     </PARAM>
+                 </PARAM>
+               </PARAM>
+             </PARAM>
+         </PARAM>
+      <ACTION> 
+          if test "${priority-group-subcommands}" = "watermark"; then&#xA;
+              if test "${priority-group-watermark-subcommands}" = "headroom"; then&#xA;
+                 if test "${phy-if-id}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_pg_headroom_watermark.j2&#xA;
+                 else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_input_priority_groups Ethernet${phy-if-id} show_qos_interface_pg_headroom_watermark.j2&#xA;
+                 fi&#xA;   
+              else&#xA;
+                 if test "${phy-if-id}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_pg_shared_watermark.j2&#xA;
+                 else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_input_priority_groups Ethernet${phy-if-id} show_qos_interface_pg_shared_watermark.j2&#xA;
+                 fi&#xA;   
+              fi&#xA;   
+          elif test "${priority-group-subcommands}" = "persistent-watermark"; then&#xA;
+              if test "${priority-group-watermark-subcommands}" = "headroom"; then&#xA;
+                 if test "${phy-if-id}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_pg_headroom_persistent_watermark.j2&#xA;
+                 else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_input_priority_groups Ethernet${phy-if-id} show_qos_interface_pg_headroom_persistent_watermark.j2&#xA;
+                 fi&#xA;   
+              else&#xA;
+                 if test "${phy-if-id}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_pg_shared_persistent_watermark.j2&#xA;
+                 else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_input_priority_groups Ethernet${phy-if-id} show_qos_interface_pg_shared_persistent_watermark.j2&#xA;
+                 fi&#xA;   
+              fi&#xA;   
+          fi
+      </ACTION>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+  </VIEW>
+ </CLISH_MODULE>

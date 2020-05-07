@@ -25,66 +25,33 @@ limitations under the License.
     <COMMAND name = "no ip ospf" help = "OSPF interface commands" >
     </COMMAND>
 
-
-    <COMMAND name="vrf" help="OSPFv2 Interface VRF name" >
-      <PARAM name="vrf-name" help="OSPFv2 interface VRF Name" ptype="STRING" >
-      </PARAM>
-      <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_vrf ${iface} ${vlan_name} ${po_name} ${lo_name} ${vrf-name} &#xA;
-      </ACTION>
-    </COMMAND>
-
-    <COMMAND name="no  vrf" help="OSPFv2 Interface VRF name" >
-      <PARAM name="vrf-name" help="VRF Name" ptype="STRING">
-      </PARAM>
-      <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_vrf ${iface} ${vlan_name} ${po_name} ${lo_name} ${vrf-name} &#xA;
+    <COMMAND name = "no ip ospf interface" help = "Unconfigure Ospf on this interface" >
+      <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_unconfig ${iface} ${vlan_name} ${po_name} ${lo_name} &#xA;
       </ACTION>
     </COMMAND>
 
 
     <COMMAND name="ip ospf area" help="Enable OSPF on this interface" >
-      <PARAM name = "area-id" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" /> 
-      <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_area_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${area-id}  &#xA;
+      <PARAM name = "area-id" help = "OSPF area ID as a decimal value/IP address format" ptype = "AREA_NUM_DOT">
+         <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR"  optional="true" />
+      </PARAM>
+      <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_area_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${area-id} ${ip-address}  &#xA;
       </ACTION>
     </COMMAND>
 
     <COMMAND name="no ip ospf area" help="Enable OSPF on this interface" >
-      <PARAM name = "area-id" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" /> 
+      <PARAM name = "area-id" help = "OSPF area ID as a decimal value/IP address format" ptype = "AREA_NUM_DOT">
+         <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR"  optional="true" />
+      </PARAM>
       <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_area_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${area-id}  &#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_area_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${area-id} ${ip-address} &#xA;
       </ACTION>
     </COMMAND>
 
-    <COMMAND name="ip ospf address" help="Interface IP address" >
-      <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR"  optional="true" />
-      <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_address ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;
-      </ACTION>
-    </COMMAND>
-
-     <COMMAND name="no ip ospf address" help="Interface IP address" >
-      <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_address ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;
-      </ACTION>
-    </COMMAND>
-
-    <COMMAND name="ip ospf passive" help="Enable interface as Passive interface" >
-      <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR"  optional="true" />
-      <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_passive ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;
-      </ACTION>
-    </COMMAND>
-
-     <COMMAND name="no ip ospf passive" help="Disable interface as Passive interface" >
-      <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_passive ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;
-      </ACTION>
-    </COMMAND>
- 
     <COMMAND name="ip ospf authentication" help="Enable authentication on this interface" >
-        <PARAM name = "authtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name = "authtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
           <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" >
              <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true" />
           </PARAM>
@@ -94,17 +61,21 @@ limitations under the License.
         </PARAM>    
         <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true" /> 
       <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${authtype} &#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${authtype} ${ip-address} &#xA;
       </ACTION>
     </COMMAND>
 
     <COMMAND name="no ip ospf authentication" help="Enable authentication on this interface" >
         <PARAM name = "authtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-          <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-          <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-        </PARAM>    
+          <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" >
+             <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true" />
+          </PARAM>
+          <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand">
+             <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true" />
+          </PARAM>
+        </PARAM>
       <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${authtype} &#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${authtype} ${ip-address} &#xA;
       </ACTION>
     </COMMAND>
   
@@ -119,6 +90,7 @@ limitations under the License.
 
     <COMMAND name="no ip ospf authentication-key" help="Authentication password (key)" >
       <PARAM name="authkey" help="The OSPF password (key)" ptype="STRING" >
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key ${iface} ${vlan_name} ${po_name} ${lo_name} ${authkey} ${ip-address} &#xA;
@@ -148,12 +120,14 @@ limitations under the License.
 
     <COMMAND name="no ip ospf cost" help="Interface cost" >
       <PARAM name="interface-cost" help="Cost" ptype="RANGE_1_65535" >
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_cost ${iface} ${vlan_name} ${po_name} ${lo_name} ${interface-cost} ${ip-address} &#xA;
       </ACTION>
     </COMMAND>
- 
+
+
     <COMMAND name="ip ospf dead-interval" help="Interval time after which a neighbor is declared down" >
       <PARAM name = "deadtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="deadinterval" help="Seconds" ptype="RANGE_1_65535" optional="true">
@@ -168,43 +142,31 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <ACTION>
-        if test "${deadtype}" == "deadinterval"; then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_dead_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${deadinterval} ${ip-address} &#xA;
-        fi&#xA;
-        if test "${deadtype}" == "minimal"; then&#xA;
-          if test "${hellomultiplier}" != ""; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_multiplier ${iface} ${vlan_name} ${po_name} ${lo_name} ${hellomultiplier} ${ip-address} &#xA;
-          fi&#xA;
-        fi&#xA;
+         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_dead_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${deadtype} ${deadinterval} ${hellomultiplier} ${ip-address} &#xA;
       </ACTION>
     </COMMAND>
+
 
     <COMMAND name="no ip ospf dead-interval" help="Interval time after which a neighbor is declared down" >
       <PARAM name = "deadtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="deadinterval" help="Seconds" ptype="RANGE_1_65535" optional="true">
+          <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
         </PARAM>
         <PARAM name="minimal" help="Minimal 1s dead-interval with fast sub-second hellos" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="hello-multiplier" help="Hello multiplier factor" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
             <PARAM name="hellomultiplier" help="Number of Hellos to send each second" ptype="RANGE_1_10" >
+              <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR"  optional="true"/>
             </PARAM>
           </PARAM>
         </PARAM>
       </PARAM>
       <ACTION >
-        if test "${deadtype}" == "deadinterval"; then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_dead_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${deadinterval} ${ip-address} &#xA;
-        fi&#xA;
-        if test "${deadtype}" == "minimal"; then&#xA;
-          if test "${hellomultiplier}" != ""; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_multiplier ${iface} ${vlan_name} ${po_name} ${lo_name} ${hellomultiplier} ${ip-address} &#xA;
-          fi&#xA;
-        fi&#xA;
+         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_dead_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${deadtype} ${deadinterval} ${hellomultiplier} ${ip-address} &#xA;
       </ACTION>
     </COMMAND>
-  
     <COMMAND name="ip ospf hello-interval" help="Time between HELLO packets" >
       <PARAM name="hellointerval" help="Seconds" ptype="RANGE_1_65535" optional="true">
-        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true" />
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${hellointerval} ${ip-address} &#xA;
@@ -212,7 +174,8 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no ip ospf hello-interval" help="Time between HELLO packets" >
-      <PARAM name="hellointerval" help="Seconds" ptype="RANGE_1_65535" mode="subcommand" optional="true">
+      <PARAM name="hellointerval" help="Seconds" ptype="RANGE_1_65535" optional="true">
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${hellointerval} ${ip-address} &#xA;
@@ -224,7 +187,7 @@ limitations under the License.
       <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" >
         <PARAM name="md5" help="Use MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name = "md5key" help = "The OSPF password (key)" ptype = "STRING" >
-            <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true" />
+            <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
           </PARAM>
         </PARAM>
       </PARAM>
@@ -234,9 +197,10 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no ip ospf message-digest-key" help="Message digest authentication password (key)" >
-      <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" mode="subcommand" >
+      <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" >
         <PARAM name="md5" help="Use MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name = "md5key" help = "The OSPF password (key)" ptype = "STRING" >
+            <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
           </PARAM>
         </PARAM>
       </PARAM>
@@ -254,6 +218,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no ip ospf mtu-ignore" help="Disable MTU mismatch detection on this interface" >
+      <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_mtu_ignore ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;
       </ACTION>
@@ -270,10 +235,6 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no ip ospf network" help="Network type" >
-      <PARAM name = "networktype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-        <PARAM name = "broadcast" help = "Specify OSPF broadcast multi-access network" ptype = "SUBCOMMAND" mode="subcommand" />
-        <PARAM name = "point-to-point" help = "Specify OSPF point-to-point network" ptype = "SUBCOMMAND" mode="subcommand" />
-      </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_network_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${networktype}  &#xA;
       </ACTION>
@@ -281,7 +242,7 @@ limitations under the License.
 
     <COMMAND name="ip ospf priority" help="Router priority">
       <PARAM name = "priorityval" help = "Priority" ptype = "RANGE_0_255" >
-        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true" />
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_priority ${iface} ${vlan_name} ${po_name} ${lo_name} ${priorityval} ${ip-address} &#xA;
@@ -289,8 +250,9 @@ limitations under the License.
     </COMMAND>
   
     <COMMAND name="no ip ospf priority" help="Router priority">
-        <PARAM name = "priorityval" help = "Priority" ptype = "RANGE_0_255" >
-        </PARAM>
+      <PARAM name = "priorityval" help = "Priority" ptype = "RANGE_0_255" >
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
+      </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_priority ${iface} ${vlan_name} ${po_name} ${lo_name} ${priorityval} ${ip-address} &#xA;
        </ACTION>
@@ -298,7 +260,7 @@ limitations under the License.
 
     <COMMAND name="ip ospf retransmit-interval" help="Time between retransmitting lost link state advertisements" >
       <PARAM name = "retransmitinterval" help = "Retransmit interval in seconds" ptype = "RANGE_2_65535"  >
-        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true" />
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_retransmit_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${retransmitinterval} ${ip-address} &#xA;
@@ -306,7 +268,8 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no ip ospf retransmit-interval" help="Time between retransmitting lost link state advertisements" >
-      <PARAM name = "retransmitinterval" help = "Retransmit interval in seconds" ptype = "RANGE_2_65535"  >
+      <PARAM name = "retransmitinterval" help = "Retransmit interval in seconds" ptype = "RANGE_2_65535">
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION >
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_retransmit_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${retransmitinterval} ${ip-address} &#xA;
@@ -314,17 +277,20 @@ limitations under the License.
     </COMMAND>
  
     <COMMAND name="ip ospf transmit-delay" help="Link state transmit delay" >
-      <PARAM name = "transmitdelay" help = "Transmit delay in seconds" ptype = "RANGE_1_65535"  >
-        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR"  optional="true" />
+      <PARAM name = "transmitdelay" help = "Transmit delay in seconds" ptype = "RANGE_1_65535" >
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR"  optional="true"/>
       </PARAM>
-      <ACTION >
+      <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_transmit_delay ${iface} ${vlan_name} ${po_name} ${lo_name} ${transmitdelay} ${ip-address} &#xA;
       </ACTION>
     </COMMAND>
 
     <COMMAND name="no ip ospf transmit-delay" help="Link state transmit delay" >
-      <ACTION >
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_transmit_delay ${iface} ${vlan_name} ${po_name} ${lo_name}  &#xA;
+      <PARAM name = "transmitdelay" help = "Transmit delay in seconds" ptype = "RANGE_1_65535">
+        <PARAM name = "ip-address" help = "Address of interface" ptype = "IP_ADDR"  optional="true"/>
+      </PARAM>
+      <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_transmit_delay ${iface} ${vlan_name} ${po_name} ${lo_name} ${transmitdelay} ${ip-address} &#xA;
       </ACTION>
     </COMMAND>
 

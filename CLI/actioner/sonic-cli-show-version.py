@@ -17,6 +17,7 @@
 #
 ###########################################################################
 
+import syslog as log
 import sys
 import time
 import json
@@ -27,22 +28,42 @@ from scripts.render_cli import show_cli_output
 
 urllib3.disable_warnings()
 
-def run(func, args):
+def invoke(func, args):
+    body = None
     aa = cc.ApiClient()
 
-    path = cc.Path('/restconf/data/openconfig-platform:components/component=%s'%args[0])
-    api_response = aa.get(path)
-    if api_response.ok() and "openconfig-platform:state" in api_response.content:
-        response = api_response.content
-        versionResponse = response["openconfig-platform:state"]
-        responseContent = {"Software Version": versionResponse['software-version']}
-        show_cli_output(sys.argv[3], responseContent)
+    if func == 'get_openconfig_platform_components_component':
+        keypath = cc.Path('/restconf/data/openconfig-platform:components/component=%s'%args[0])
+        return aa.get(keypath)
     else:
-        print api_response.error_message()
+        return body
 
+def run(func, args):
+    try:
+        api_response = invoke(func,args)
+
+        if api_response.ok():
+            response = api_response.content
+            if response is not None and len(response) is not 0:
+                if 'openconfig-platform:component' in response:
+                    show_ver_comp = response['openconfig-platform:component']
+                    show_ver_compo = show_ver_comp[0]
+                    if 'openconfig-platform-ext:software' in show_ver_compo:
+                        responseContent = show_ver_compo['openconfig-platform-ext:software']
+                    else:
+                        return
+                else:
+                    return
+            else:
+                return
+        else:
+            return
+        show_cli_output(sys.argv[3], responseContent)
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print 'Error Transaction'
 
 if __name__ == '__main__':
 
     func = sys.argv[1]
     run(func, sys.argv[2:])
-

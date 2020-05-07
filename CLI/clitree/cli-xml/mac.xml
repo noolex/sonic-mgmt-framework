@@ -352,10 +352,58 @@ limitations under the License.
                     >
                 </PARAM>
             </PARAM>
+            <PARAM
+                name="interface"
+                help="Dynamic Interface ethernet or port-channel"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="interface-subcommand"
+                    help="Dynamic interface subcommands"
+                    ptype="SUBCOMMAND"
+                    mode="switch"           
+                    >
+                    <PARAM
+                        name="Ethernet"
+                        help="Ethernet IEEE 802.3"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand"
+                        >
+                        <PARAM
+                            name="phy-if-id"
+                            help="Physical interface"
+                            ptype="UINT"
+                            >
+                        </PARAM>
+                    </PARAM>
+                    <PARAM
+                        name="PortChannel"
+                        help="Dynamic port-channel"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand"
+                        >
+                        <PARAM
+                            name="port-channel-id"
+                            help="port-channel id"
+                            ptype="LAG_ID"
+                            >
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
         </PARAM>
     <ACTION>
         if test "${d-subcommands}" = "all"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb ALL ALL&#xA;
+        elif test "${d-subcommands}" = "Vlan"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb VLAN Vlan${vlan-id}&#xA;
+        elif test "${d-subcommands}" = "interface"; then&#xA;
+            if test "${interface-subcommand}" = "PortChannel"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb PORT PortChannel${port-channel-id}&#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb PORT Ethernet${phy-if-id}&#xA;
+            fi&#xA;
         else&#xA;
             builtin="clish_nop"&#xA;
         fi

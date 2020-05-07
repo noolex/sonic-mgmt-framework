@@ -109,14 +109,18 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <COMMAND name="sflow agent-id" help="Collector agent interface" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="interface" help="Interface name" ptype="SFLOW_AGENT"/>
-      <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id ${interface} </ACTION> 
+      <PARAM name="if-switch" help="agent interface" mode="switch" ptype="STRING">
+        <PARAM name="phy-if-name" help="Physical interface" ptype="PHY_INTERFACE"/>
+        <PARAM name="vlan-if-name" help="Vlan indentifer" ptype="VLAN_INTERFACE"/>
+        <PARAM name="loop-if-name" help="Loopback identifier" ptype="LOOPBACK_INTERFACE"/>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id ${phy-if-name}${vlan-if-name}${loop-if-name}</ACTION>
       <DOCGEN>
-          <DESCRIPTION>Configure sFlow agent interface</DESCRIPTION>
-          <EXAMPLE>
-              sonic(config)# sflow agent-id Ethernet0
-              sonic(config)#
-          </EXAMPLE>
+        <DESCRIPTION>Configure sFlow agent interface</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# sflow agent-id Ethernet0
+               sonic(config)#
+        </EXAMPLE>
       </DOCGEN>
     </COMMAND>
     <COMMAND name="sflow polling-interval" help="Collector polling interval" ptype="SUBCOMMAND" mode="subcommand">

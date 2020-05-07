@@ -1,0 +1,24 @@
+{{'-------------------------------------------------------------------'}}
+{{'%-12s'|format("Interface")}}{{'%-7s'|format("Queue")}}{{'%-14s'|format("breach-value")}}{{'%-17s'|format("watermark-bytes")}}{{'%-32s'|format("time-stamp")}}
+{{'-------------------------------------------------------------------'}}
+{% if json_output %}
+{% set breach_list = json_output['openconfig-qos-ext:breach'] %}
+{% for breach in breach_list %}
+
+  {% set buffer = breach['buffer'] %}
+  {% set type = breach['type'] %}
+  {% set port = breach['port'] %}
+  {% set index = breach['index'] %}
+  {% set breach_value = breach['breach-value'] %}
+  {% set counter = breach['counter'] %}
+  {% set timestamp = breach['time-stamp'] %}
+
+  {% if buffer == "queue" %}
+    {% set queue_type = "UC" %}
+    {% if type == "multicast" %}
+      {% set queue_type = "MC" %}
+    {% endif %}
+{{'%-12s'|format(port)}}{{'%-2s'|format(queue_type)}}{{'%-5s'|format(index)}}{{'%-14s'|format(breach_value)}}{{'%-17s'|format(counter)}}{{'%-32s'|format(timestamp)}}
+  {% endif %}
+{% endfor %}
+{% endif %}

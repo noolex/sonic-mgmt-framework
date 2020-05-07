@@ -24,6 +24,7 @@ import ast
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
+import readline
 
 def prompt(msg):
     prompt_msg = msg + " [confirm y/N]: "
