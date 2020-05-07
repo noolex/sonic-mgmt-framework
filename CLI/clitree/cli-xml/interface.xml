@@ -48,7 +48,6 @@ limitations under the License.
                  name="phy-if-name"
                  help="Physical Interface"
                  ptype="PHY_INTERFACE"
-                 optional="true"
                  >
              </PARAM>
 	         <!-- show interface PortChannel-->
