@@ -22,20 +22,20 @@
         </COMMAND>
     </VIEW>
     <VIEW name="configure-if-view">
-        <COMMAND name="storm-control" help="configure storm-control"/>
-        <COMMAND name="storm-control broadcast" help="configure storm-control">
+        <COMMAND name="storm-control" help="Configure storm-control"/>
+        <COMMAND name="storm-control broadcast" help="Configure storm-control">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE"> </PARAM>
             <ACTION> 
                 python $SONIC_CLI_ROOT/sonic-cli-storm-control.py patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "broadcast" ${kbps}
             </ACTION>
         </COMMAND>
-        <COMMAND name="storm-control unknown-unicast" help="configure storm-control">
+        <COMMAND name="storm-control unknown-unicast" help="Configure storm-control">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE"> </PARAM>
             <ACTION> 
                 python $SONIC_CLI_ROOT/sonic-cli-storm-control.py patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "unknown-unicast" ${kbps}
             </ACTION>
         </COMMAND>
-        <COMMAND name="storm-control unknown-multicast" help="configure storm-control">
+        <COMMAND name="storm-control unknown-multicast" help="Configure storm-control">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE"> </PARAM>
             <ACTION> 
                 python $SONIC_CLI_ROOT/sonic-cli-storm-control.py patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "unknown-multicast" ${kbps}
@@ -43,18 +43,18 @@
         </COMMAND>
 
         <!-- no storm-control -->
-        <COMMAND name="no storm-control" help="configure storm-control"/>
-        <COMMAND name="no storm-control broadcast" help="configure storm-control">
+        <COMMAND name="no storm-control" help="Configure storm-control"/>
+        <COMMAND name="no storm-control broadcast" help="Configure storm-control">
             <ACTION> 
                 python $SONIC_CLI_ROOT/sonic-cli-storm-control.py delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "broadcast" 
             </ACTION>
         </COMMAND>
-        <COMMAND name="no storm-control unknown-unicast" help="configure storm-control">
+        <COMMAND name="no storm-control unknown-unicast" help="Configure storm-control">
             <ACTION> 
                 python $SONIC_CLI_ROOT/sonic-cli-storm-control.py delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "unknown-unicast" 
             </ACTION>
         </COMMAND>
-        <COMMAND name="no storm-control unknown-multicast" help="configure storm-control">
+        <COMMAND name="no storm-control unknown-multicast" help="Configure storm-control">
             <ACTION> 
                 python $SONIC_CLI_ROOT/sonic-cli-storm-control.py delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "unknown-multicast" 
             </ACTION>

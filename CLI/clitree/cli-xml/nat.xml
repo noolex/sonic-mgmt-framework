@@ -41,7 +41,7 @@ limitations under the License.
     <COMMAND
         name="nat"
 	view="configure-nat-view"
-        help="NAT configuration"
+        help="Enter NAT global configuration"
         />
 
    </VIEW>
@@ -201,13 +201,13 @@ limitations under the License.
          >
 	 <PARAM
              name="binding-name"
-             help="NAT Binding name"
+             help="NAT binding name"
              ptype="STRING"
              >
          </PARAM>
          <PARAM
              name="pool-name"
-             help="NAT Pool name"
+             help="NAT pool name"
              ptype="STRING"
              >
          </PARAM>
@@ -245,13 +245,13 @@ limitations under the License.
 
       <COMMAND
          name="no binding"
-         help="Remove NAT Binding"
+         help="Remove NAT binding"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
          <PARAM
              name="bind-name"
-             help="NAT Binding name"
+             help="NAT binding name"
              ptype="STRING"
              >
          </PARAM>
@@ -260,7 +260,7 @@ limitations under the License.
 
      <COMMAND
          name="no bindings"
-         help="Remove all NAT Bindings"
+         help="Remove all NAT bindings"
      >
      <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-acl-pool-binding</ACTION>
      </COMMAND>
@@ -391,7 +391,7 @@ limitations under the License.
          >
          <PARAM
              name="no-static-subcommands"
-             help="Remove Static NAT subcommands"
+             help="Remove static NAT subcommands"
              mode="switch"
              ptype="SUBCOMMAND"
              >
@@ -462,14 +462,14 @@ limitations under the License.
             >
             <PARAM
                 name="translations"
-                help="Clearing dynamic NAT Translations"
+                help="Clearing dynamic NAT translations"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
             </PARAM>
             <PARAM
                 name="statistics"
-                help="Clearing NAT Statistics"
+                help="Clearing NAT statistics"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -493,13 +493,13 @@ limitations under the License.
              <!-- show nat translations -->
              <PARAM
                  name="translations"
-                 help="NAT Translations"
+                 help="NAT translations"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
                  <PARAM
                      name="count"
-                     help="NAT Translations Count"
+                     help="NAT translations count"
                      ptype="SUBCOMMAND"
                      mode="subcommand"
                      optional="true"
@@ -546,14 +546,14 @@ limitations under the License.
                      </PARAM>
                      <PARAM
                          name="bindings"
-                         help="NAT Static bindings"
+                         help="NAT static bindings"
                          ptype="SUBCOMMAND"
                          mode="subcommand"
                          >
                      </PARAM>
                      <PARAM
                          name="globalvalues"
-                         help="NAT Static globals"
+                         help="NAT static globals"
                          ptype="SUBCOMMAND"
                          mode="subcommand"
                          >

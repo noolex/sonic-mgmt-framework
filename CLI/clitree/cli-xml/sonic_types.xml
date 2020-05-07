@@ -391,13 +391,13 @@ limitations under the License.
         name="UINT16"
         method="integer"
         pattern="0..65535"
-        help="&lt;0-65535&gt;"
+        help="&lt;0..65535&gt;"
         />
     <!--=======================================================-->
     <PTYPE
         name="UINT"
         pattern="[0-9]+"
-        help="&lt;0-255&gt;"
+        help="&lt;0..255&gt;"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1102,7 +1102,7 @@ limitations under the License.
     <PTYPE
         name="VLAN_INTERFACE"
         method="regexp_select"
-        ext_pattern="Vlan(1-4094)"
+        ext_pattern="Vlan(1..4094)"
         pattern="&VLAN_ALL_INTF;"
         help="VlanNUM"
         />
@@ -1110,7 +1110,7 @@ limitations under the License.
     <PTYPE
         name="PO_INTERFACE"
         method="regexp_select"
-        ext_pattern="PortChannel(1-128)"
+        ext_pattern="PortChannel(1..128)"
         pattern="&PO_ALL_INTF;"
         help="PortChannelNUM"
          />
@@ -1118,7 +1118,7 @@ limitations under the License.
     <PTYPE
 	name="LOOPBACK_INTERFACE"
 	method="regexp_select"
-	ext_pattern="Loopback(0-16383)"
+	ext_pattern="Loopback(0..16383)"
 	pattern="&LOOPB_INTF;"
 	help=""
 	/>

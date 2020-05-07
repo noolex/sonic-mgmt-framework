@@ -930,14 +930,14 @@ limitations under the License.
                     >
                     <PARAM
                         name="point-to-point"
-                        help = "link type of given interface is point-to-point."
+                        help = "Link type of given interface is point-to-point."
                         ptype="SUBCOMMAND"
                         mode="subcommand"
                         >
                     </PARAM>
                     <PARAM
                         name="shared"
-                        help = "link type of given interface is shared."
+                        help = "Link type of given interface is shared."
                         ptype="SUBCOMMAND"
                         mode="subcommand"
                         >
@@ -1828,7 +1828,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
       name="no spanning-tree bpdufilter"
-      help="if spanning-tree BPDU filter on the port-channel is disabled, global bpdufilter will be applied"
+      help="If spanning-tree BPDU filter on the PortChannel is disabled, global bpdufilter will be applied"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION>

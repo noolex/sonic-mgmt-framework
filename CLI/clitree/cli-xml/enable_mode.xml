@@ -38,7 +38,7 @@ limitations under the License.
         <NAMESPACE ref="hidden-view" help="false" completion="false"/>
         <COMMAND
             name="no"
-            help="No commands under exec mode"/>
+            help="No commands under Exec mode"/>
         <COMMAND
             name="exit"
             help="Exit from the CLI"

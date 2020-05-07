@@ -35,7 +35,7 @@ limitations under the License.
     <!-- show ip interfaces -->
     <COMMAND
         name="show ip interfaces"
-        help="IP Info of Interfaces"
+        help="IP information of interfaces"
         >
     <ACTION>
        python $SONIC_CLI_ROOT/sonic_cli_if.py ip_interfaces_get show_ip_interfaces_sonic.j2 ${__full_line}

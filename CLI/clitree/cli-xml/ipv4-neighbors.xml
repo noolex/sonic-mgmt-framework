@@ -225,7 +225,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="PortChannel"
-                help="Port channel Interface Configuration"
+                help="PortChannel interface configuration"
                 mode="subcommand"
                 ptype="SUBCOMMAND">
                 <PARAM
@@ -243,12 +243,12 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="Vlan"
-                help="Vlan Interface Configuration"
+                help="VLAN interface configuration"
                 mode="subcommand"
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vlan-id"
-                    help="Vlan identifier"
+                    help="VLAN identifier"
                     ptype="VLAN_ID">
                     <PARAM
                         help="Summary of ARP entries"
@@ -261,7 +261,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="Vxlan"
-                help="VXLAN Configuration mode"
+                help="VXLAN configuration mode"
                 mode="subcommand"
                 ptype="SUBCOMMAND">
                 <PARAM

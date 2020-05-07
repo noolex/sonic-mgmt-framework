@@ -26,7 +26,7 @@ limitations under the License.
 
     <COMMAND
         name="bgp extcommunity-list"
-        help="Add a extcommunity list entry">
+        help="Add BGP extended community-list entry">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -35,13 +35,13 @@ limitations under the License.
             >
             <PARAM
                 name="standard"
-                help="Add a standard extended community list entry"
+                help="Add a standard extended community-list entry"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Communty list name"
+                    help="Community list name"
                     ptype="STRING"
                     >
                     <PARAM
@@ -149,7 +149,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="expanded"
-                help="Add a expanded extended community list entry"
+                help="Add a expanded extended community-list entry"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -160,7 +160,7 @@ limitations under the License.
                     >
                     <PARAM
                         name="line"
-                        help="LINE An ordered list as a regular-expression"
+                        help="LINE an ordered list as a regular-expression"
                         ptype="LINE"
                         >
                         <PARAM
@@ -227,7 +227,7 @@ limitations under the License.
 
     <COMMAND
         name="no bgp extcommunity-list"
-        help="Delete a extended community list entry">
+        help="Delete a extended community-list entry">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -236,13 +236,13 @@ limitations under the License.
             >
             <PARAM
                 name="standard"
-                help="Delete standard extcommunity list entry"
+                help="Delete standard extended community-list entry"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Communty list name"
+                    help="Community list name"
                     ptype="STRING"
                     >
                     <PARAM
@@ -307,18 +307,18 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="expanded"
-                help="Delete a expanded community list entry"
+                help="Delete a expanded community-list entry"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Communty list name"
+                    help="Extended community-list-name"
                     ptype="STRING"
                     >
                     <PARAM
                         name="line"
-                        help="LINE An ordered list as a regular-expression"
+                        help="LINE an ordered list as a regular-expression"
                         ptype="LINE"
                         optional="true"
                         >

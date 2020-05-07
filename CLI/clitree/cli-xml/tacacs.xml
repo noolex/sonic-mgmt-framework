@@ -62,19 +62,19 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <COMMAND name="show tacacs-server" 
-             help="Show tacacs info"/>
+             help="Show TACACS info"/>
     <COMMAND name="show tacacs-server global" 
-             help="Show tacacs global configuration" 
+             help="Show TACACS global configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION builtin="clish_pyobj">sonic_cli_tacacs get_sonic_tacacs_global show_tacacs_global.j2</ACTION>
     </COMMAND>
     <COMMAND name="show tacacs-server host" 
-             help="Show tacacs server configuration" 
+             help="Show TACACS server configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <PARAM name="address" 
-             help="IP address of the tacacs server" 
+             help="IP address of the TACACS server" 
              ptype="IP_ADDR"
              optional="true"> 
       </PARAM>
@@ -85,7 +85,7 @@ limitations under the License.
   <VIEW name="configure-view">
     <!-- tacacs -->
     <COMMAND name="tacacs-server"
-             help="TACACS server Configuration"/>
+             help="TACACS server configuration"/>
 
     <!-- tacacs src-ip -->
     <COMMAND name="tacacs-server source-ip"
@@ -198,12 +198,12 @@ limitations under the License.
       </PARAM>
 
       <PARAM name="priority"
-             help="server priority"
+             help="Server priority"
              ptype="SUBCOMMAND"
              mode="subcommand"
              optional="true">
         <PARAM name="priority-val"
-               help="server priority"
+               help="Server priority"
                ptype="TACACS_PRIORITY">
         </PARAM>
       </PARAM>
@@ -219,7 +219,7 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand">
       <PARAM name="address"
-             help="server ip address"
+             help="Server ip address"
              ptype="IPV4V6_ADDR">
       </PARAM>
       <ACTION

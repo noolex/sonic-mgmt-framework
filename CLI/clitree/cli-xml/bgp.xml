@@ -26,7 +26,7 @@ limitations under the License.
 
 <VIEW name="enable-view">
   <COMMAND name="show ip bgp" help="BGP information">
-    <PARAM name="bgp subcommands" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
+    <PARAM name="bgp subcommands" help="BGP subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
        <MACRO name="IP_BGP_SUB_CMDS" arg=""></MACRO>
        <PARAM name="vrf" help="BGP VRF" mode="subcommand" ptype="SUBCOMMAND" optional="true">
          <PARAM name="vrf-name" help="VRF Name" ptype="STRING_15" default="default">
@@ -127,7 +127,7 @@ limitations under the License.
             OutQ depth is 0
                                   Sent        Rcvd
             Opens:                1           1
-            Notifications:        0           0
+           sNotifications:        0           0
             Updates:              2           8
             Keepalive:            2           2
             Route Refresh:        0           0

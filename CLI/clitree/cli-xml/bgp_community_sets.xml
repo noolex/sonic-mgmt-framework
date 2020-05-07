@@ -21,7 +21,7 @@ limitations under the License.
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
 
    <VIEW name = "enable-view">
-    <COMMAND name="show bgp" help="show bgp community, ext community, as list information"> </COMMAND>
+    <COMMAND name="show bgp" help="Show bgp community, ext community, as list information"> </COMMAND>
     <COMMAND name="show bgp community-list" help="Community list">
         <PARAM name="list-name" help="Community list name" ptype="STRING" optional="true"> </PARAM>
       <ACTION> if test "${list-name}" != ""; then&#xA;
@@ -87,7 +87,7 @@ limitations under the License.
         </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="show bgp as-path-access-list" help="AS path acces list">
+    <COMMAND name="show bgp as-path-access-list" help="AS path access list">
         <PARAM name="list-name" help="AS path list name" ptype="STRING" optional="true"> </PARAM>
       <ACTION> if test "${list-name}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_aspath_show_specific show_bgp_aspath.j2 ${list-name}&#xA;
@@ -124,11 +124,11 @@ limitations under the License.
        >
     <COMMAND
         name="bgp"
-        help="bgp command list"/>
+        help="BGP command list"/>
 
     <COMMAND
         name="bgp community-list"
-        help="Add bgp community-list entry">
+        help="Add BGP community-list entry">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -137,7 +137,7 @@ limitations under the License.
             >
             <PARAM
                 name="standard"
-                help="Add a standard community list entry"
+                help="Add a standard community-list entry"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -148,7 +148,7 @@ limitations under the License.
                     >
                     <PARAM
                         name="community-members-subcommands"
-                        help="BGP Community members subcommands"
+                        help="BGP community members subcommands"
                         mode="switch"
                         ptype="SUBCOMMAND"
                         >
@@ -463,7 +463,7 @@ limitations under the License.
 
             <PARAM
                 name="expanded"
-                help="Add a expanded community list entry"
+                help="Add a expanded community-list entry"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -585,11 +585,11 @@ limitations under the License.
 
     <COMMAND
         name="no bgp"
-        help="bgp command list"/>
+        help="BGP command list"/>
 
     <COMMAND
         name="no bgp community-list"
-        help="Delete bgp community-list entry">
+        help="Delete BGP community-list entry">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -689,7 +689,7 @@ limitations under the License.
 
     <COMMAND
         name="no bgp as-path-list"
-        help="Deleting bgp autonomous system path"
+        help="Deleting BGP autonomous system path"
         >
         <PARAM
             name="as-path-list-name"

@@ -30,7 +30,7 @@ limitations under the License.
 <!--====================show mac address-table command======================-->
     <COMMAND
         name="show mac address-table"
-        help="MAC address table"
+        help="MAC address-table"
         >
     <ACTION> 
         python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 show
@@ -50,7 +50,7 @@ limitations under the License.
 <!--====================show mac address-table address <mac-address> command ======================-->
     <COMMAND
         name="show mac address-table address"
-        help="Show MAC address table address for MAC address"
+        help="Show MAC address-table address for MAC address"
         >
         <PARAM
             name="mac-addr"
@@ -261,7 +261,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="interface"
-                help="Dynamic Interface ethernet or port-channel"
+                help="Dynamic interface Ethernet or PortChannel"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -286,7 +286,7 @@ limitations under the License.
                     </PARAM>
                     <PARAM
                         name="PortChannel"
-                        help="Dynamic port-channel"
+                        help="Dynamic Port-channel"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
                         >
@@ -327,7 +327,7 @@ limitations under the License.
 
     <COMMAND
         name="clear mac address-table"
-        help="Clear MAC address table"
+        help="Clear MAC address-table"
         >
     </COMMAND>
 
