@@ -12,4 +12,6 @@ export CLISH_PATH=$SONIC_CLI_ROOT/command-tree
 export LD_LIBRARY_PATH=/usr/local/lib:$SONIC_CLI_ROOT/.libs:$LD_LIBRARY_PATH
 export PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin:$SONIC_CLI_ROOT
 
+export SONIC_CLI_IFACE_MODE=alias
+
 $SONIC_CLI_ROOT/clish "$@"
