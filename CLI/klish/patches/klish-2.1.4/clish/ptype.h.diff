@@ -4,12 +4,15 @@
 < 
 ---
 > #include "types.h"
-17a17,18
-> typedef struct clish_ptype_s clish_ptype_t;
+16a16,18
+> #include <stdbool.h>
 > 
-33a35
+> typedef struct clish_ptype_s clish_ptype_t;
+33a36
 > 	CLISH_PTYPE_METHOD_REGEXP_SELECT, /* dell-emc */
-49a52,58
+45a49
+>         CLISH_PTYPE_PRE_MODE,
+49a54,60
 > enum help_type_s {
 >     USE_NAME,
 >     USE_VALUE,
@@ -17,20 +20,19 @@
 > };
 > typedef enum help_type_s help_type_t;
 > 
-57c66
+57c68
 < 	clish_ptype_preprocess_e preprocess);
 ---
 > 	clish_ptype_preprocess_e preprocess, const char *ext_pattern, const char *ext_help);
-68c77
+68c79
 < char *clish_ptype_validate(clish_ptype_t * instance, const char *text);
 ---
 > char *clish_ptype_validate(clish_ptype_t * instance, const char *text, bool_t isHelp);
-84c93
+84c95
 < 	lub_argv_t *matches, const char *text);
 ---
 > 	lub_argv_t *matches, const char *text, const char *penultimate_text);
-95a105,119
-> 
+96a108,123
 > int get_index(char *str);
 > help_type_t clish_ptype__get_usename(const clish_ptype_t * instance);
 > clish_ptype_method_e clish_ptype__get_method(const clish_ptype_t * instance);
@@ -45,3 +47,5 @@
 > char *clish_ptype_regexp_select__get_ext_help(const clish_ptype_t * instance, unsigned index);
 > int clish_ptype_select__get_help(const clish_ptype_t *instance, clish_help_t *help, const char *pval);
 > void clish_ptype__set_usename(clish_ptype_t * instance, help_type_t val);
+> 
+> extern bool nos_use_alt_name(void);

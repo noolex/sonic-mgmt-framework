@@ -191,13 +191,18 @@
 < 		clish_ptype_init(this, name, help, pattern, method, preprocess);
 ---
 > 		clish_ptype_init(this, name, help, pattern, method, preprocess, ext_pattern, ext_help);
-144a315,353
+144a315,358
 > char *clish_ptype_regexp_select__get_name(const clish_ptype_t * this,
 > 	unsigned index)
 > {
 > 	char *result = NULL;
 > 	const char *arg = lub_argv__get_arg(this->u.regexp_select.items, index);
 > 	if (arg) {
+> 		if ((this->preprocess == CLISH_PTYPE_PRE_MODE) &&
+>                nos_use_alt_name()) {
+> 			result = lub_string_dup("Eth");
+> 			return result;
+> 		}
 > 		size_t name_len = strlen(arg);
 > 		const char *lbrk = strchr(arg, '(');
 > 		if (lbrk)
@@ -231,7 +236,7 @@
 > }
 > 
 > /*--------------------------------------------------------- */
-190a400,426
+190a405,431
 > 	case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 > 	{
 > 		/* Setup the selection values to the help text */
@@ -259,30 +264,35 @@
 > 		break;
 > 	}
 > 	/*------------------------------------------------- */
-203c439,440
+203c444,445
 < 	"code"
 ---
 > 	"code",
 > 	"regexp_select"
-214a452,457
+214a457,462
 > clish_ptype_method_e clish_ptype__get_method(const clish_ptype_t * this)
 > {
 > 	return (clish_ptype_method_e) (this->method);
 > }
 > 
 > /*--------------------------------------------------------- */
-264c507
+234c482,483
+< 	"tolower"
+---
+> 	"tolower",
+>         "mode"
+264c513
 < 	lub_argv_t *matches, const char *text)
 ---
 > 	lub_argv_t *matches, const char *text,  const char *penultimate_text)
-267a511
+267a517
 > 	bool ret = false;
-270c514,515
+270c520,521
 < 	if (this->method != CLISH_PTYPE_METHOD_SELECT)
 ---
 > 	if (this->method != CLISH_PTYPE_METHOD_SELECT &&
 > 		this->method != CLISH_PTYPE_METHOD_REGEXP_SELECT)
-274,284c519,522
+274,284c525,528
 < 	result = clish_ptype_validate(this, text);
 < 	if (result) {
 < 		lub_argv_add(matches, result);
@@ -299,7 +309,7 @@
 > 	{
 > 		result = clish_ptype_validate(this, text, BOOL_TRUE);
 > 		if (result) {
-286c524,550
+286c530,556
 < 		lub_string_free(result);
 ---
 > 			lub_string_free(result);
@@ -329,13 +339,13 @@
 >                         return;
 > 
 >                 clish_ptype_regexp_select_get_match(this, text, matches);
-287a552
+287a558
 > 
-292c557
+292c563
 < 	const char *text, bool_t translate)
 ---
 > 	const char *text, bool_t translate, bool_t isHelp)
-346a612,726
+346a618,732
 >         case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 >         {
 >         	unsigned i;
@@ -451,19 +461,19 @@
 > 	}
 > 
 > 	/*------------------------------------------------- */
-437c817
+437c823
 < char *clish_ptype_validate(clish_ptype_t * this, const char *text)
 ---
 > char *clish_ptype_validate(clish_ptype_t * this, const char *text, bool_t isHelp)
-439c819
+439c825
 < 	return clish_ptype_validate_or_translate(this, text, BOOL_FALSE);
 ---
 > 	return clish_ptype_validate_or_translate(this, text, BOOL_FALSE, BOOL_TRUE);
-445c825
+445c831
 < 	return clish_ptype_validate_or_translate(this, text, BOOL_TRUE);
 ---
 > 	return clish_ptype_validate_or_translate(this, text, BOOL_TRUE, BOOL_FALSE);
-500a881,895
+500a887,901
 > 	case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 >                 {
 >                         int result;
@@ -479,7 +489,7 @@
 >                 }
 > 
 > 	/*------------------------------------------------- */
-506a902,1024
+506a908,1030
 > 
 > 
 > void clish_ptype__set_extpattern(clish_ptype_t * this,

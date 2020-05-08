@@ -531,25 +531,28 @@ def invoke_api(func, args=[]):
     return api.cli_not_implemented(func)
  
 
-
-
 def getId(item):
-    prfx = "Ethernet"
     state_dict = item['state']
     ifName = state_dict['name']
 
-    if ifName.startswith(prfx):
-        ifId = int(ifName[len(prfx):])
+    if ifName.startswith("Ethernet"):
+        ifId = int(ifName[len("Ethernet"):])
+        return ifId
+    # Alias name - Eg:Eth1/2
+    elif ifName.startswith("Eth"):
+        ifId = int(ifName[len("Eth") + 2:])
         return ifId
     return ifName
 
 def getSonicId(item):
-
-    prfx = "Ethernet"
     state_dict = item
     ifName = state_dict['ifname']
-    if ifName.startswith(prfx):
-        ifId = int(ifName[len(prfx):])
+    if ifName.startswith("Ethernet"):
+        ifId = int(ifName[len("Ethernet"):])
+        return ifId
+    # Alias name - Eg:Eth1/2
+    elif ifName.startswith("Eth"):
+        ifId = int(ifName[len("Eth") + 2:])
         return ifId
     return ifName
 
