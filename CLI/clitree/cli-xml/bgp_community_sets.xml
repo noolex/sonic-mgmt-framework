@@ -21,7 +21,7 @@ limitations under the License.
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
 
    <VIEW name = "enable-view">
-    <COMMAND name="show bgp" help="Show bgp community, ext community, as list information"> </COMMAND>
+    <COMMAND name="show bgp" help="Show BGP community, ext community, as list information"> </COMMAND>
     <COMMAND name="show bgp community-list" help="Community list">
         <PARAM name="list-name" help="Community list name" ptype="STRING" optional="true"> </PARAM>
       <ACTION> if test "${list-name}" != ""; then&#xA;
