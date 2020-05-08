@@ -39,16 +39,23 @@ def invoke(func, args):
     body = None
     aa = cc.ApiClient()
     if func == 'rpc_sonic_interface_clear_counters':
+
+        switch = args[0].split("=")[1]
+        name = "all"
+        if switch != "all":
+            name = str(args[1].split("=")[1])
+
         keypath = cc.Path('/restconf/operations/sonic-interface:clear_counters')
-        body = {"sonic-interface:input":{"interface-param":args[0]}}
-        if args[0] == "all":
+        body = {"sonic-interface:input":{"interface-param":name}}
+
+        if name == "all":
             prompt("Clear all Interface counters")
-        elif args[0] == "PortChannel":
+        elif name == "PortChannel":
             prompt("Clear all PortChannel interface counters")
-        elif args[0] == "Ethernet":
+        elif name == "Ethernet":
             prompt("Clear all Ethernet interface counters")
         else:
-           prompt("Clear counters for " + args[0])
+           prompt("Clear counters for " + name)
         return aa.post(keypath, body)
     else:
         return 

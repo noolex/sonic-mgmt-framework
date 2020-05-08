@@ -43,20 +43,12 @@ limitations under the License.
                  mode="subcommand"
                  >
              </PARAM>
-             <!-- show interface Ethernet [<id>] -->
+             <!-- show interface Ethernet[<id>] -->
              <PARAM
-                 name="Ethernet"
+                 name="phy-if-name"
                  help="Physical Interface"
-                 ptype="SUBCOMMAND"
-                 mode="subcommand"
+                 ptype="PHY_INTERFACE"
                  >
-                 <PARAM
-                    name="phy-if-id"
-                    help="Physical interface"
-                    ptype="UINT"
-                    optional="true"
-                    >
-                 </PARAM>
              </PARAM>
 	         <!-- show interface PortChannel-->
 	         <PARAM
@@ -156,10 +148,10 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Loopback${lo-id} show_interface_loopback.j2 ${__full_line}&#xA;
             fi&#xA;
         else&#xA;
-            if test "${phy-if-id}" = ""; then&#xA;
+            if test "${phy-if-name}" = ""; then&#xA;
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
             else&#xA;
-            python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Ethernet${phy-if-id} show_interface_id.j2 ${__full_line}&#xA;
+            python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface ${phy-if-name} show_interface_id.j2 ${__full_line}&#xA;
             fi&#xA;
         fi
    </ACTION>

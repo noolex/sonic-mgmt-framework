@@ -170,22 +170,17 @@ limitations under the License.
             mode="switch"
             ptype="SUBCOMMAND">
             <PARAM
-                name="Ethernet"
-                help="Select an interface"
-                mode="subcommand"
-                ptype="SUBCOMMAND">
-                <PARAM
-                    name="phy-if-name"
-                    help="Physical interface"
-                    ptype="UINT">
-                    <PARAM
-                        help="Summary of ARP entries"
-                        name="summary"
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        optional="true">
-                    </PARAM>
-                </PARAM>
+                 name="phy-if-name"
+                 help="Select an interface"
+                 ptype="PHY_INTERFACE"
+                 >
+                 <PARAM
+                    help="Summary of ARP entries"
+                    name="summary"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                 </PARAM>
             </PARAM>
             <PARAM
                 name="Loopback"
@@ -279,8 +274,8 @@ limitations under the License.
           </PARAM>
         </PARAM>
         <ACTION>
-            if test "${iftype}" = "Ethernet"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${phy-if-name} summary:${summary}&#xA;
+            if test "${iftype}" = "phy-if-name"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${phy-if-name} summary:${summary}&#xA;
             fi&#xA;
             if test "${iftype}" = "Loopback"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${lo-id} summary:${summary}&#xA;

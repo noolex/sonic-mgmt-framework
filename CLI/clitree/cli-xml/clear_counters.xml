@@ -48,32 +48,20 @@ clear counters [interface <interface>]
                                 mode="subcommand"
                                 >
                             </PARAM>
-                            <PARAM name="Ethernet"
+                            <PARAM name="phy-if-name"
                                    help="Clear Ethernet interface counters"
-                                   ptype="SUBCOMMAND"
-                                   mode="subcommand"
+                                   ptype="PHY_INTERFACE"
                                    >
-                                   <PARAM name="ifId"
-                                          help="Ethernet interface number"
-                                          optional="true"
-                                          ptype="STRING">
-                                   </PARAM>
                             </PARAM>
-                            <PARAM name="PortChannel"
+                            <PARAM name="po-if-name"
                                    help="Clear PortChannel interface counters"
-                                   ptype="SUBCOMMAND"
-                                   mode="subcommand"
+                                   ptype="PO_INTERFACE"
                                    >
-                                   <PARAM name="ifId"
-                                          help="Port-channel interface number"
-                                          optional="true"
-                                          ptype="LAG_ID">
-                                    </PARAM>
                             </PARAM>
                         </PARAM>
                  </PARAM>
             <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-counters.py rpc_sonic_interface_clear_counters ${interface-switch}${ifId}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-counters.py rpc_sonic_interface_clear_counters if-switch=${interface-switch} if-name=${phy-if-name}${po-if-name}&#xA;
             </ACTION>
         </COMMAND>
     </VIEW>
