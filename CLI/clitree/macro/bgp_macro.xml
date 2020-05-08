@@ -18,9 +18,12 @@ limitations under the License.
     <MACRODEF name="NEW_BGP_SHW_OPTIONS">
       <PARAM name="unicast" help="BGP IPvarg1 unicast" ptype="SUBCOMMAND" mode="subcommand"/>
       <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+        <PARAM name="vrforall" help="VRF Options" ptype="SUBCOMMAND" mode="switch">
+           <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+           <PARAM name="all" help="All VRFs" ptype="SUBCOMMAND" mode="subcommand"/>
+        </PARAM>
       </PARAM>
-      <PARAM name="querytype" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch">
+      <PARAM name="querytype" test='"${vrf-name}" != "all"' help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch">
         <PARAM name="ip-addr" help="IPvarg1 Address" ptype="IParg2_ADDR">
           <PARAM name="filter" help="Filter" ptype="SUBCOMMAND" mode="switch" optional="true">
             <PARAM name="bestpath" help="Best path" ptype="SUBCOMMAND" mode="subcommand"/>

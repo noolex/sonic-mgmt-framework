@@ -216,7 +216,7 @@ def generate_show_bgp_routes(args):
              return 1
          if(response.ok()):
             d = response.content['sonic-bgp-show:output']['response']
-            if len(d) != 0 and "warning" not in d:
+            if len(d) != 0 and "warning" not in d and "Unknown command:" not in d:
                d = json.loads(d)
                if querytype == 'IP-ADDR':
                   prf = d.get("prefix")
@@ -306,6 +306,26 @@ def generate_show_bgp_routes(args):
        pass
 
    return d
+
+def generate_show_bgp_vrf_all(args):
+    api = cc.ApiClient()
+    keypath = []
+    body = None
+
+    # Use SONIC model to get all configued VRF names
+    keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
+    sonic_vrfs = api.get(keypath)
+    if sonic_vrfs.ok():
+        args[5] = 'default'
+        d = generate_show_bgp_routes(args)
+        # then show bgp routes on remaining VRF
+        if 'sonic-vrf:VRF_LIST' in sonic_vrfs.content:
+            vrf_list = sonic_vrfs.content['sonic-vrf:VRF_LIST']
+            for vrf in vrf_list:
+               vrf_name = vrf['vrf_name']
+               if vrf_name != 'default':
+                   args[5] = vrf_name
+                   d = generate_show_bgp_routes(args)
 
 def generate_show_bgp_prefix_routes(args):
    api = cc.ApiClient()
@@ -2764,6 +2784,11 @@ def parseGloblShow(vrf_name, cmd, args=[]):
         except:
             # no pipe
             pass
+
+        if vrf_name == 'all':
+            generate_show_bgp_vrf_all(args)
+            return 0
+
         if args[0] == 'statistics':
             # TBD
             print cc.ApiClient().cli_not_implemented('{} {}'.format(cmd, args[0])).error_message()
