@@ -96,7 +96,7 @@ STP Port Parameters:
         {% if intf['state'] %}
             {% if vars.update({'intf_pri':intf['state']['port-priority']}) %}{% endif %}
             {% if vars.update({'intf_path_cost':intf['state']['cost']}) %}{% endif %}
-            {% if vars.update({'intf_state':intf['state']['port-state']| replace('openconfig-spanning-tree-types:',"")| replace('openconfig-spanning-tree-types-ext:',"")}) %}{% endif %}
+            {% if vars.update({'intf_state':intf['state']['port-state']| replace('openconfig-spanning-tree-types:',"")| replace('openconfig-spanning-tree-ext:',"")}) %}{% endif %}
             {% if vars.update({'intf_desig_cost':intf['state']['designated-cost']}) %}{% endif %}
             {% if vars.update({'intf_desig_root':intf['state']['designated-root-address']}) %}{% endif %}
             {% if vars.update({'intf_desig_bridge':intf['state']['designated-bridge-address']}) %}{% endif %}
@@ -186,7 +186,7 @@ RSTP (IEEE 802.1w) Port Parameters:
             {% if vars.update({'intf_pri':intf['state']['port-priority']}) %}{% endif %}
             {% if vars.update({'intf_path_cost':intf['state']['cost']}) %}{% endif %}
             {% if vars.update({'intf_role':intf['state']['role']| replace('openconfig-spanning-tree-types:',"")}) %}{% endif %}
-            {% if vars.update({'intf_state':intf['state']['port-state']| replace('openconfig-spanning-tree-types:',"")| replace('openconfig-spanning-tree-types-ext:',"")}) %}{% endif %}
+            {% if vars.update({'intf_state':intf['state']['port-state']| replace('openconfig-spanning-tree-types:',"")| replace('openconfig-spanning-tree-ext:',"")}) %}{% endif %}
             {% if vars.update({'intf_desig_cost':intf['state']['designated-cost']}) %}{% endif %}
             {% if vars.update({'intf_desig_bridge':intf['state']['designated-bridge-address']}) %}{% endif %}
         {%endif%}
