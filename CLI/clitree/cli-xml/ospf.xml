@@ -52,7 +52,7 @@ limitations under the License.
           <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
         </PARAM>
         <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-          <PARAM name="defaultcost" help="Stub's advertised default summary cost" ptype="RANGE_1_16777215" />
+          <PARAM name="defaultcost" help="Stub's advertised default summary cost" ptype="RANGE_0_16777215" />
         </PARAM>
         <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="exportlistname" help="Name of the access-list" ptype="STRING" />
@@ -345,7 +345,7 @@ limitations under the License.
         fi&#xA;
       fi&#xA;
       if test "${areacmdtype}" = "range"; then&#xA;
-        if test "${rangeprefix}" != ""; then&#xA;
+        if test "${rangecmdtype}" = ""; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix ${vrf-name} ${areaid} ${rangeprefix} &#xA;
         fi&#xA;
 
@@ -429,7 +429,7 @@ limitations under the License.
     <PARAM name="originate" help="Distribute a default route" ptype="SUBCOMMAND" mode="subcommand" >
       <PARAM name="always" help="Always advertise default route" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
       <PARAM name="metric" help="OSPF default metric" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="metricval" help="Always advertise default route" ptype="RANGE_1_16777214" />
+          <PARAM name="metricval" help="Always advertise default route" ptype="RANGE_0_16777214" />
       </PARAM>
       <PARAM name="metric-type" help="OSPF metric type for default routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="mertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
@@ -523,8 +523,26 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="no distance" help="Administrative distance" >
+    <PARAM name="ospf" help="" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+      <PARAM name = "distancetype" help = "" ptype="SUBCOMMAND" mode="switch" >
+        <PARAM name="external" help="External routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="inter-area" help="Inter-area routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="intra-area" help="Intra-area routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+    </PARAM>
     <ACTION>
-      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config ${vrf-name};
+    if test "${distancetype}" = ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_all ${vrf-name} &#xA;
+    fi&#xA;
+    if test "${distancetype}" = "intra-area"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_intra_area ${vrf-name} &#xA;
+    fi&#xA;
+    if test "${distancetype}" = "inter-area"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_inter_area ${vrf-name} &#xA;
+    fi&#xA;
+    if test "${distancetype}" = "external"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_external ${vrf-name} &#xA;
+    fi&#xA;
     </ACTION>
   </COMMAND>
 
@@ -588,7 +606,7 @@ limitations under the License.
           <PARAM name="extdistance" help="Time (seconds) to wait till full shutdown" ptype="RANGE_5_100" />
         </PARAM>
         <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="interdistance" help="Time (seconds) to advertise self as stub-router" ptype="RANGE_5_100" />
+          <PARAM name="interdistance" help="Time (seconds) to advertise self as stub-router" ptype="RANGE_5_86400" />
         </PARAM>
       </PARAM>
     </PARAM>
@@ -741,7 +759,7 @@ limitations under the License.
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand"/>
       <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" >
-        <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" optional="true" />
+        <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" />
       </PARAM>
     </PARAM>
     <ACTION>
@@ -755,14 +773,17 @@ limitations under the License.
 
   <COMMAND name="no passive-interface" help="Suppress routing updates on an interface" >
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-      <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" />
+      <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
+      <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" >
+        <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" />
+      </PARAM>
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
     </PARAM>
     <ACTION>
     if test "${interfacetype}" = "default"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface_default ${vrf-name} &#xA;
     else&#xA;
-      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface_default ${vrf-name} ${interfacename} ${ipaddr} &#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface ${vrf-name} ${interfacename} ${ipaddr} &#xA;
     fi&#xA;
     </ACTION>
   </COMMAND>
@@ -771,7 +792,7 @@ limitations under the License.
     <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="bgp" help="Border Gateway Protocol (BGP)" ptype="SUBCOMMAND" mode="subcommand" >
         <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="bgpmetricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+          <PARAM name="bgpmetricval" help="OSPF default metric" ptype="RANGE_0_16777214" />
         </PARAM>
         <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="bgpmertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
@@ -782,7 +803,7 @@ limitations under the License.
       </PARAM>
       <PARAM name="connected" help="Connected routes (directly attached subnet or host)" ptype="SUBCOMMAND" mode="subcommand" >
         <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="connmetricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+          <PARAM name="connmetricval" help="OSPF default metric" ptype="RANGE_0_16777214" />
         </PARAM>
         <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="connmertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
@@ -793,7 +814,7 @@ limitations under the License.
       </PARAM>
       <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" >
         <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="staticmetricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+          <PARAM name="staticmetricval" help="OSPF default metric" ptype="RANGE_0_16777214" />
         </PARAM>
         <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="staticmertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
@@ -804,7 +825,7 @@ limitations under the License.
       </PARAM>
       <PARAM name="ospf" help=" Open Shortest Path First" ptype="SUBCOMMAND" mode="subcommand" >
         <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="ospfmetricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+          <PARAM name="ospfmetricval" help="OSPF default metric" ptype="RANGE_0_16777214" />
         </PARAM>
         <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="ospfmertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
@@ -815,7 +836,7 @@ limitations under the License.
       </PARAM>
       <PARAM name="kernel" help="Kernel routes (not installed via the zebra RIB)" ptype="SUBCOMMAND" mode="subcommand" >
         <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="kernelmetricval" help="OSPF default metric" ptype="RANGE_1_16777214" />
+          <PARAM name="kernelmetricval" help="OSPF default metric" ptype="RANGE_0_16777214" />
         </PARAM>
         <PARAM name="metric-type" help="OSPF exterior metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="kernelmertrictype" help="Set OSPF External Type 1/2 metrics" ptype="RANGE_1_2" />
