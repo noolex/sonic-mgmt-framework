@@ -42,7 +42,7 @@ Flags: U-Unnumbered interface
           {% endfor %}
       {% endif %}
   {% endfor %}
-  {% if vars.name.startswith('Ethernet') %}
+  {% if vars.name.startswith('Eth') %}
       {% if vars.update({'admin_state':"down"}) %}{% endif %}
       {% if vars.update({'oper_state':"down"}) %}{% endif %}
       {% for nKey in json_output %}

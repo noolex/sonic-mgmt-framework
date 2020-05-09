@@ -21,7 +21,7 @@
       {%else %}
         {% if vars.update({'description':"-"}) %}{% endif %}
       {% endif %}
-{% if 'Ethernet' in vars.name %}
+{% if 'Eth' in vars.name %}
 {{'%-20s'|format(vars.name)}}{{'%-20s'|format(vars.description)}}{{'%-15s'|format(vars.admin_state|lower())}}{{'%-15s'|format(vars.oper_state|lower())}}{{'%-15s'|format(vars.speed)}}{{'%-15s'|format(vars.mtu)}}
 {% endif %}
 {% endfor %}

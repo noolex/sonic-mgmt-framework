@@ -32,7 +32,9 @@ def invoke(func, args):
         return aa.get(path)
     else:
         interface = args[0]
-        speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "1x40G":"SPEED_40GB", "4x25G":"SPEED_25GB", "2x50G":"SPEED_50GB", "1x400G":"SPEED_400GB"}
+        speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "1x40G":"SPEED_40GB",
+                      "4x25G":"SPEED_25GB", "2x50G":"SPEED_50GB", "1x400G":"SPEED_400GB",
+                      "4x100G":"SPEED_100GB", "4x50G":"SPEED_50GB", "2x100G":"SPEED_100GB", "2x200G":"SPEED_200GB"}
         path = cc.Path('/restconf/data/openconfig-platform:components/component=%s/port/openconfig-platform-port:breakout-mode/config'%interface)
 
         if 1 == len(args):
