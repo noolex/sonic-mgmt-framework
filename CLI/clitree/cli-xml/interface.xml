@@ -22,6 +22,9 @@ limitations under the License.
     xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
     http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
+    <VAR name="phyifname" dynamic="true">
+        <ACTION>echo -n "${phy-if-name}" | sed 's#/#%2f#g'</ACTION>
+    </VAR>
 
     <VIEW name="enable-view">
     <!--show interface -->
@@ -274,7 +277,7 @@ limitations under the License.
                 help="Physical interface"
                 ptype="PHY_INTERFACE"
                 view="configure-if-view"
-                viewid="iface=${phy-if-name}"
+                viewid="iface=${phy-if-name};iface_uri=${phyifname}"
         />
         <PARAM
                 name="vlan-if-name"
@@ -506,12 +509,12 @@ limitations under the License.
                 name="desc"
                 help="Textual description of the interface"
                 ptype="STRING" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
             help="Remove description" >
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
         </COMMAND>
         <COMMAND
             name="mtu"
@@ -520,12 +523,12 @@ limitations under the License.
                 name="mtu"
                 help="MTU of the interface"
                 ptype="RANGE_MTU" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
         </COMMAND>
         <COMMAND
             name="no mtu"
             help="Remove MTU">
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/mtu body={"openconfig-interfaces:mtu": 9100}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/mtu body={"openconfig-interfaces:mtu": 9100}</ACTION>
         </COMMAND>
         <COMMAND
             name="speed"
