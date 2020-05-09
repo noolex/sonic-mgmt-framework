@@ -23,14 +23,14 @@ ABS_TOPDIR := $(abspath $(TOPDIR))
 BUILD_DIR := $(TOPDIR)/build
 CODEGEN_TOOLS_DIR := $(TOPDIR)/tools/swagger_codegen
 
-CODEGEN_VER	:= 2.4.5
-CODEGEN_JAR := $(CODEGEN_TOOLS_DIR)/swagger-codegen-cli-$(CODEGEN_VER).jar
+CODEGEN_VER	:= 4.2.3
+CODEGEN_JAR := $(CODEGEN_TOOLS_DIR)/openapi-generator-cli-$(CODEGEN_VER).jar
 
 SERVER_BUILD_DIR	:= $(BUILD_DIR)/rest_server
 SERVER_CODEGEN_DIR	:= $(SERVER_BUILD_DIR)/codegen
 SERVER_DIST_DIR		:= $(SERVER_BUILD_DIR)/dist
 SERVER_DIST_INIT	:= $(SERVER_DIST_DIR)/.init_done
-SERVER_DIST_GO		:= $(SERVER_DIST_DIR)/swagger
+SERVER_DIST_GO		:= $(SERVER_DIST_DIR)/openapi
 SERVER_DIST_UI		:= $(SERVER_DIST_DIR)/ui
 SERVER_DIST_UI_HOME	:= $(SERVER_DIST_UI)/index.html
 RESTCONF_MD_INDEX	:= $(BUILD_DIR)/restconf_md/index.md
@@ -49,7 +49,7 @@ OPENAPI_SERVERS := $(addsuffix /.openapi_done, $(addprefix $(SERVER_CODEGEN_DIR)
 
 PY_YANGAPI_NAMES       := $(filter $(YANGAPI_NAMES), $(PY_YANGAPI_CLIENTS))
 PY_OPENAPI_NAMES       := $(filter $(OPENAPI_NAMES), $(PY_OPENAPI_CLIENTS))
-PY_CLIENT_CODEGEN_DIR  := $(BUILD_DIR)/swagger_client_py
+PY_CLIENT_CODEGEN_DIR  := $(BUILD_DIR)/openapi_client_py
 PY_CLIENT_TARGETS := $(addsuffix .yangapi_client, $(addprefix $(PY_CLIENT_CODEGEN_DIR)/, $(PY_YANGAPI_NAMES))) \
                      $(addsuffix .openapi_client, $(addprefix $(PY_CLIENT_CODEGEN_DIR)/, $(PY_OPENAPI_NAMES)))
 
@@ -88,42 +88,44 @@ $(RESTCONF_MD_INDEX): $(YANGAPI_SERVERS) $(OPENAPI_SERVERS)
 	mkdir -p $@
 
 #======================================================================
-# Download swagger codegen jar from Maven.org repo. It will be saved as
-# build/swagger-codegen-cli.jar file.
+# Download openapi codegen jar from Maven.org repo. It will be saved as
+# build/openapi-codegen-cli.jar file.
 #======================================================================
 $(CODEGEN_JAR): | $$(@D)/.
 	cd $(@D) && \
-	wget https://repo1.maven.org/maven2/io/swagger/swagger-codegen-cli/$(CODEGEN_VER)/$(@F)
+	wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/$(CODEGEN_VER)/$(@F)
 
 #======================================================================
-# Generate swagger server in GO language for Yang generated OpenAPIs
+# Generate openapi server in GO language for Yang generated OpenAPIs
 # specs.
 #======================================================================
 %/.yangapi_done: $(YANGAPI_DIR)/$$(*F).yaml | $$(@D)/. $(CODEGEN_JAR) $(SERVER_DIST_INIT)
 	@echo "+++ Generating GO server for Yang API $$(basename $(@D)).yaml +++"
 	$(JAVA) -jar $(CODEGEN_JAR) generate \
-		--lang go-server \
+		-g go-server \
 		--input-spec $(YANGAPI_DIR)/$$(basename $(@D)).yaml \
 		--template-dir $(CODEGEN_TOOLS_DIR)/go-server/templates-yang \
 		--output $(@D)
+	rm -rf  $(@D)/go/api_*service.go
 	cp $(@D)/go/api_* $(SERVER_DIST_GO)/
 	cp $(@D)/go/routers.go $(SERVER_DIST_GO)/routers_$$(basename $(@D)).go
-	cp $(@D)/api/swagger.yaml $(SERVER_DIST_UI)/$$(basename $(@D)).yaml
+	cp $(@D)/api/openapi.yaml $(SERVER_DIST_UI)/$$(basename $(@D)).yaml
 	touch $@
 
 #======================================================================
-# Generate swagger server in GO language for handcoded OpenAPI specs
+# Generate openapi server in GO language for handcoded OpenAPI specs
 #======================================================================
 %/.openapi_done: $(OPENAPI_DIR)/$$(*F).yaml | $$(@D)/. $(CODEGEN_JAR) $(SERVER_DIST_INIT)
 	@echo "+++ Generating GO server for OpenAPI $$(basename $(@D)).yaml +++"
 	$(JAVA) -jar $(CODEGEN_JAR) generate \
-		--lang go-server \
+		-g go-server \
 		--input-spec $(OPENAPI_DIR)/$$(basename $(@D)).yaml \
 		--template-dir $(CODEGEN_TOOLS_DIR)/go-server/templates-nonyang \
 		--output $(@D)
+	rm -rf  $(@D)/go/api_*service.go
 	cp $(@D)/go/api_* $(@D)/go/model_* $(SERVER_DIST_GO)/
 	cp $(@D)/go/routers.go $(SERVER_DIST_GO)/routers_$$(basename $(@D)).go
-	cp $(@D)/api/swagger.yaml $(SERVER_DIST_UI)/$$(basename $(@D)).yaml
+	cp $(@D)/api/openapi.yaml $(SERVER_DIST_UI)/$$(basename $(@D)).yaml
 	touch $@
 
 #======================================================================
@@ -135,26 +137,26 @@ $(SERVER_DIST_INIT): | $$(@D)/.
 	touch $@
 
 #======================================================================
-# Generate swagger client in Python for yang generated OpenAPI specs
+# Generate openapi client in Python for yang generated OpenAPI specs
 #======================================================================
 %.yangapi_client: $(YANGAPI_DIR)/$$(*F).yaml | $(CODEGEN_JAR) $$(@D)/.
 	@echo "+++++ Generating Python client for $(*F).yaml +++++"
 	$(JAVA) -jar $(CODEGEN_JAR) generate \
-		-DpackageName=$(subst -,_,$(*F))_client \
-		--lang python \
+		--package-name $(subst -,_,$(*F))_client \
+		-g python \
 		--input-spec $(YANGAPI_DIR)/$(*F).yaml \
 		--template-dir $(CODEGEN_TOOLS_DIR)/py-client/templates \
 		--output $(@D)
 	touch $@
 
 #======================================================================
-# Generate swagger client in Python for handcoded OpenAPI specs
+# Generate openapi client in Python for handcoded OpenAPI specs
 #======================================================================
 %.openapi_client: $(OPENAPI_DIR)/$$(*F).yaml | $(CODEGEN_JAR) $$(@D)/.
 	@echo "+++++ Generating Python client for $(*F).yaml +++++"
 	$(JAVA) -jar $(CODEGEN_JAR) generate \
-		-DpackageName=$(subst -,_,$(*F))_client \
-		--lang python \
+		--package-name $(subst -,_,$(*F))_client \
+		-g python \
 		--input-spec $(OPENAPI_DIR)/$(*F).yaml \
 		--template-dir $(CODEGEN_TOOLS_DIR)/py-client/templates \
 		--output $(@D)

@@ -385,7 +385,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-map" help="Name of the route map (max 140 chars)">
+  <COMMAND name="route-map" help="Name of the route map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -852,7 +852,7 @@ limitations under the License.
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value}</ACTION>
   </COMMAND>
-  <COMMAND name="no route-map" help="Name of the route map (max 140 chars)">
+  <COMMAND name="no route-map" help="Name of the route map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
@@ -1009,7 +1009,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-map" help="Name of the route map (max 140 chars)">
+  <COMMAND name="route-map" help="Name of the route map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -1464,7 +1464,7 @@ limitations under the License.
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value}</ACTION>
   </COMMAND>
-  <COMMAND name="no route-map" help="Name of the route map (max 140 chars)">
+  <COMMAND name="no route-map" help="Name of the route map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
