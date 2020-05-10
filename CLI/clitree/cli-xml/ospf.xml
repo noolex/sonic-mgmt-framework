@@ -564,15 +564,13 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="no distribute-list" help="Filter networks in routing updates" >
-    <PARAM name="aclname" help="Access-list name" ptype="STRING_15" >
-      <PARAM name="out" help="Filter outgoing routing updates" ptype="SUBCOMMAND" mode="subcommand" >
-        <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
-          <PARAM name="bgp" help="Border Gateway Protocol (BGP)" ptype="SUBCOMMAND" mode="subcommand" />
-          <PARAM name="connected" help="Connected routes (directly attached subnet or host)" ptype="SUBCOMMAND" mode="subcommand" />
-          <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" />
-          <PARAM name="kernel" help="Kernel routes (not installed via the zebra RIB)" ptype="SUBCOMMAND" mode="subcommand" />
-          <PARAM name="table" help="Non-main Kernel Routing Table" ptype="SUBCOMMAND" mode="subcommand" />
-        </PARAM>
+    <PARAM name="out" help="Filter outgoing routing updates" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="bgp" help="Border Gateway Protocol (BGP)" ptype="SUBCOMMAND" mode="subcommand" />
+        <PARAM name="connected" help="Connected routes (directly attached subnet or host)" ptype="SUBCOMMAND" mode="subcommand" />
+        <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" />
+        <PARAM name="kernel" help="Kernel routes (not installed via the zebra RIB)" ptype="SUBCOMMAND" mode="subcommand" />
+        <PARAM name="table" help="Non-main Kernel Routing Table" ptype="SUBCOMMAND" mode="subcommand" />
       </PARAM>
     </PARAM>
     <ACTION>

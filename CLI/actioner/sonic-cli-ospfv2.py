@@ -132,7 +132,7 @@ def invoke_api(func, args=[]):
         body = {"openconfig-ospfv2-ext:minimum-arrival": int(args[1])}
         return api.patch(keypath, body)
 
-    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum-arrival':
+    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum_arrival':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/lsa-generation/config/openconfig-ospfv2-ext:minimum-arrival', vrfname=args[0])
         return api.delete(keypath)
 
