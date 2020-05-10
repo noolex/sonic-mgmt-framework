@@ -1,9 +1,13 @@
+{% set vars = {'interface_name': ""} %}
 {% set ospf_global_list = json_output  %}
 {% for list_elem in ospf_global_list %}
-{% if 'vrfName' in list_elem %}
+{% if 'vrfName' in list_elem  and list_elem['vrfName'] != "default" %}
 VRF Name: {{list_elem['vrfName']}}
 {% endif -%}
-{% if 'area' in list_elem['openconfig-network-instance:areas'] %}
+{% if 'interfacename' in list_elem %}
+{% if vars.update({'interface_name':list_elem['interfacename']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:areas' in  list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
 {% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
 {% endif -%}
 {% for areainfo in area_list %}
@@ -16,14 +20,17 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'timers' in interfaceinfo and 'state' in interfaceinfo['timers']%}
 {% set interface_timers_state = interfaceinfo['timers']['state'] %}
 {% endif -%}
+{% if vars.interface_name == "" or vars.interface_name == interface_state['id'] %}
 {{interface_state['id']}} is {{interface_state['openconfig-ospfv2-ext:operational-state']}}
   ifindex {{interface_state['openconfig-ospfv2-ext:index']}}, MTU {{interface_state['openconfig-ospfv2-ext:mtu']}} bytes, BW {{interface_state['openconfig-ospfv2-ext:bandwidth']}} Mbit {{interface_state['openconfig-ospfv2-ext:if-flags']}}
   Internet Address {{interface_state['openconfig-ospfv2-ext:address']}}/{{interface_state['openconfig-ospfv2-ext:address-len']}}, Broadcast {{interface_state['openconfig-ospfv2-ext:broadcast-address']}}, Area {{interface_state['openconfig-ospfv2-ext:area-id']}}
   MTU mismatch detection: enabled
-  Router ID {{interface_state['openconfig-ospfv2-ext:router-id']}}, Network Type {{interface_state['openconfig-ospfv2-ext:ospf-interface-type']}}, Cost: {{interface_state['openconfig-ospfv2-ext:cost']}}
+  Router ID {{interface_state['openconfig-ospfv2-ext:router-id']}}, Network Type {{interface_state['openconfig-ospfv2-ext:ospf-interface-type'].upper()}}, Cost: {{interface_state['openconfig-ospfv2-ext:cost']}}
   Transmit Delay is {{interface_state['openconfig-ospfv2-ext:transmit-delay']}} sec, State {{interface_state['openconfig-ospfv2-ext:adjacency-state']}}, Priority {{interface_state['priority']}}
   Backup Designated Router (ID) {{interface_state['openconfig-ospfv2-ext:backup-designated-router-id']}}, Interface Address {{interface_state['openconfig-ospfv2-ext:backup-designated-router-address']}}
+{% if 'openconfig-ospfv2-ext:network-lsa-sequence-number' in interface_state %}
   Saved Network-LSA sequence number {{interface_state['openconfig-ospfv2-ext:network-lsa-sequence-number']}}
+{% endif -%}
 {% if interface_state['openconfig-ospfv2-ext:member-of-ospf-all-routers'] == True %}
 {% if interface_state['openconfig-ospfv2-ext:member-of-ospf-designated-routers'] == True %}
   Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
@@ -33,10 +40,12 @@ VRF Name: {{list_elem['vrfName']}}
 {% else %}
   Multicast group memberships: 
 {% endif %}
-  Timer intervals configured, Hello {{interface_timers_state['hello-interval']}}s, Dead {{interface_timers_state['dead-interval']}}s, Wait {{interface_timers_state['openconfig-ospfv2-ext:wait-time']}}s, Retransmit {{interface_timers_state['retransmission-interval']}}
-    Hello due in {{interface_timers_state['openconfig-ospfv2-ext:hello-due']}}s
+  Timer intervals configured, Hello {{'%d'|format(interface_timers_state['hello-interval']/1000)}}s, Dead {{interface_timers_state['dead-interval']}}s, Wait {{interface_timers_state['openconfig-ospfv2-ext:wait-time']}}s, Retransmit {{interface_timers_state['retransmission-interval']}}
+    Hello due in {{interface_timers_state['openconfig-ospfv2-ext:hello-due']/1000}}s
   Neighbor Count is {{interface_state['openconfig-ospfv2-ext:neighbor-count']}}, Adjacent neighbor count is {{interface_state['openconfig-ospfv2-ext:adjacency-count']}}
+{% endif -%}
 {% endfor -%}
 {% endif -%}
 {% endfor -%}
 {% endfor -%}
+{{' '}}

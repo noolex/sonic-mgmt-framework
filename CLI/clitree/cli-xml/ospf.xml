@@ -1219,25 +1219,44 @@ limitations under the License.
         </PARAM>
 
         <PARAM name="neighbor" help="Neighbor list" ptype="SUBCOMMAND" mode="subcommand">
-          <PARAM name="detail" help="detail of all neighbors" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-          <PARAM name="all" help="include down status neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
-          <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="true"/>
+          <PARAM name = "neighborshowtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+            <PARAM name = "neighip" help = "Neighbor ID" ptype = "IP_ADDR" optional="true" />
             <PARAM name="all" help="include down status neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+            <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="true"/>
           </PARAM>
+          <PARAM name="detail" help="detail of all neighbors" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
         </PARAM>
       </PARAM>
 
       <ACTION>
         if test "${cmdtype}" = ""; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf show_ip_ospf.j2 ${vrf-name} &#xA;
-        elif test "${cmdtype}" = "neighbor" &amp;&amp; test "${detail}" != ""; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor_detail_all show_ip_ospf_neighbor_detail_all.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "neighbor"; then&#xA;
+            if test "${neighborshowtype}" = ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor show_ip_ospf_neighbor.j2 ${vrf-name} &#xA;
+            else&#xA;
+                if test "${neighborshowtype}" = "neighip"; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor_detail show_ip_ospf_neighbor_detail.j2 ${vrf-name} ${neighip} &#xA;
+                elif test "${neighborshowtype}" = "interfacename" &amp;&amp; test "${interfacename}" = "detail"; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor_detail show_ip_ospf_neighbor_detail.j2 ${vrf-name} &#xA;
+                elif test "${neighborshowtype}" = "interfacename" &amp;&amp; test "${interfacename}" != "detail" &amp;&amp; test "${detail}" != ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor_detail show_ip_ospf_neighbor_detail.j2 ${vrf-name} ${interfacename} &#xA;
+                elif test "${neighborshowtype}" = "interfacename" &amp;&amp; test "${interfacename}" != "detail"; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_neighbor show_ip_ospf_neighbor.j2 ${vrf-name} ${interfacename} &#xA;
+                fi&#xA;
+            fi&#xA;
         elif test "${cmdtype}" = "interface" &amp;&amp; test "${traffic}" = "" &amp;&amp; test "${interfacename}" = ""; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_interface show_ip_ospf_interface.j2 ${vrf-name} &#xA;
-        elif test "${cmdtype}" = "interface" &amp;&amp; test "${traffic}" != ""; then&#xA;
+        elif test "${cmdtype}" = "interface" &amp;&amp; test "${traffic}" = "" &amp;&amp; test "${interfacename}" != ""; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_interface show_ip_ospf_interface.j2 ${vrf-name} ${interfacename} &#xA;
+        elif test "${cmdtype}" = "interface" &amp;&amp; test "${traffic}" != "" &amp;&amp; test "${interfacename}" = ""; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_interface_traffic show_ip_ospf_interface_traffic.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "interface" &amp;&amp; test "${traffic}" != "" &amp;&amp; test "${interfacename}" != ""; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_interface_traffic show_ip_ospf_interface_traffic.j2 ${vrf-name} ${interfacename} &#xA;
         elif test "${cmdtype}" = "route"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_route show_ip_ospf_route.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "border-routers"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_border_routers show_ip_ospf_border_routers.j2 ${vrf-name} &#xA;
         fi&#xA;
       </ACTION>
         <DOCGEN>

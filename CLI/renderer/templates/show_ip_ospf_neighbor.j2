@@ -1,0 +1,47 @@
+{% set vars = {'nbr_router_id': "0", 'nbr_intf_addr': "0.0.0.0", 'area_id': "0.0.0.0", 'intf_name': "None", 'nbr_priority': "0", 'nbr_state': "0",
+      'nbr_state_change_count': "0", 'lastPrgrsvChangeMsec': 0, 'dr_address':"0.0.0.0", 'bdr_address':"0", 'nbr_options': "None", 'dead_timer_due':"0",
+        'db_summary_count':"0", 'ls_req_count':"0", 'ls_retran_count':'0', 'timer_inactivity':"off", 'db_desc_thread':"off", 'ls_req_thread':"off",
+        'ls_update_thread':"off", 'interface_name': "", 'dr_status': "", 'header_line':"false", 'number' : 0} %}
+{% set ospf_global_list = json_output  %}
+{% for list_elem in ospf_global_list %}
+{% if 'vrfName' in list_elem and list_elem['vrfName'] != 'default' %}
+VRF Name: {{list_elem['vrfName']}}
+{% endif -%}
+{% if vars.header_line == "false" %}
+{% if vars.update({'header_line':"true"}) %}{% endif -%}
+{{' '}}
+Neighbor ID     Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
+{% endif %}
+{% if 'interfacename' in list_elem %}
+{% if vars.update({'interface_name':list_elem['interfacename']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:areas' in list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
+{% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
+{% endif -%}
+{% for areainfo in area_list %}
+{% if 'interfaces' in areainfo and 'interface' in areainfo['interfaces'] %}
+{% set interface_list = areainfo['interfaces']['interface'] %}
+{% for interfaceinfo in interface_list %}
+{% if 'openconfig-ospfv2-ext:neighbors-list' in interfaceinfo and 'neighbor' in interfaceinfo['openconfig-ospfv2-ext:neighbors-list'] %}
+{% set neighbor_list = interfaceinfo['openconfig-ospfv2-ext:neighbors-list']['neighbor'] %}
+{% for neighborinfo in neighbor_list %}
+{% if vars.interface_name == "" or vars.interface_name == neighborinfo['interface-name'] %}
+{% if vars.update({'dr_status':""}) %}{% endif -%}
+{% if neighborinfo['neighbor-address'] == neighborinfo['designated-router'] %}
+{% if vars.update({'dr_status':"DR"}) %}{% endif -%}
+{% elif neighborinfo['neighbor-address'] == neighborinfo['backup-designated-router'] %}
+{% if vars.update({'dr_status':"Backup"}) %}{% endif -%}
+{% else %}
+{% if vars.update({'dr_status':"DROther"}) %}{% endif -%}
+{% endif -%}
+{% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif -%}
+{% if vars.update({'nbr_state':neighborinfo['adjacency-state'].split(':')[1]}) %}{% endif -%}
+{{'%-15s'|format(neighborinfo['neighbor-id'])}} {{'%3s'|format(neighborinfo['priority'])}} {{'%-15s'|format(vars.nbr_state + '/' + vars.dr_status)}} {{'%9s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}} {{'%-15s'|format(neighborinfo['neighbor-address'])}} {{'%-20s'|format(neighborinfo['interface-name'] + ':' + neighborinfo['interface-address'])}} {{'%5s'|format(neighborinfo['retransmit-summary-queue-length'])}} {{'%5s'|format(neighborinfo['link-state-request-queue-length'])}} {{'%5s'|format(neighborinfo['database-summary-queue-length'])}}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+{{' '}}

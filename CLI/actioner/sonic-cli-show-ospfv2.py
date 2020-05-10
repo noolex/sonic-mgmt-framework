@@ -96,16 +96,22 @@ def generate_show_ip_ospf_areas(args):
     api = cc.ApiClient()
     keypath = []
     vrfName = "default"
+    interfacename = ""
     i = 0
     for arg in args:
         if "vrf" in arg or "Vrf" in arg:
             vrfName = args[i]
         i = i + 1
 
+    if(len(args) > 2):
+       interfacename = args[2]
     d = {}
     dlist = []
     d = { 'vrfName': vrfName }
     dlist.append(d)
+    if interfacename != "":
+        intfparam = {'interfacename': interfacename }
+        dlist.append(intfparam)
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=args[1])
     response = api.get(keypath)
     if(response.ok()):
@@ -151,16 +157,19 @@ def invoke_show_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
     body = None
-
     if func == 'show_ip_ospf':
         return generate_show_ip_ospf(args)
-    elif func == 'show_ip_ospf_neighbor_detail_all':
+    elif func == 'show_ip_ospf_neighbor_detail':
+        return generate_show_ip_ospf_areas(args)
+    elif func == 'show_ip_ospf_neighbor':
         return generate_show_ip_ospf_areas(args)
     elif func == 'show_ip_ospf_interface':
         return generate_show_ip_ospf_areas(args)
     elif func == 'show_ip_ospf_interface_traffic':
         return generate_show_ip_ospf_areas(args)
     elif func == 'show_ip_ospf_route':
+        return generate_show_ip_ospf_route(args)
+    elif func == 'show_ip_ospf_border_routers':
         return generate_show_ip_ospf_route(args)
     else: 
         return api.cli_not_implemented(func)
