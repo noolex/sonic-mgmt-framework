@@ -36,7 +36,9 @@ limitations under the License.
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
       <PARAM name="vrf-name" help="VRF Name" ptype="STRING_15" default="default"/>
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global ${vrf-name} &#xA;
+</ACTION>
   </COMMAND>
 </VIEW>
 
@@ -108,11 +110,18 @@ limitations under the License.
                 <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
                   <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
                   <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                    <PARAM name="authentication-key" help="Authentication password (key)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                      <PARAM name="auth-key" help="Password" ptype="STRING" />
+                    <PARAM name="message-digest-key" help="Message digest authentication password (key)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                      <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" >
+                        <PARAM name="md5" help="Use MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
+                          <PARAM name="md5key" help="The OSPF password (key)" ptype="STRING" />
+                        </PARAM>
+                      </PARAM>
                     </PARAM>
                   </PARAM>
                 </PARAM>
+              </PARAM>
+              <PARAM name="authentication-key" help="Authentication password (key)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="auth-key" help="Password" ptype="STRING" />
               </PARAM>
               <PARAM name="dead-interval" help="Interval time after which a neighbor is declared down" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "deadinterval" help = "Seconds" ptype = "RANGE_1_65535" />
@@ -123,7 +132,7 @@ limitations under the License.
               <PARAM name="retransmit-interval" help="Time between retransmitting lost link state advertisements" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "retransmitinterval" help = "Seconds" ptype = "RANGE_1_65535" />
               </PARAM>
-              <PARAM name="transmit-interval" help="Link state transmit delay" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+              <PARAM name="transmit-delay" help="Link state transmit delay" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "transmitinterval" help = "Seconds" ptype = "RANGE_1_65535" />
               </PARAM>
             </PARAM>
@@ -131,57 +140,61 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <ACTION>
-      if test "${areacmdtype}" == "virtual-link"; then&#xA;
-        if test "${vlinkcmdtype}" == ""; then&#xA;
+      if test "${areacmdtype}" = "virtual-link"; then&#xA;
+        if test "${vlinkcmdtype}" = ""; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link ${vrf-name} ${areaid} ${vlinkip} &#xA;
         fi&#xA;
-        if test "${vlinkcmdtype}" == "dead-interval"; then&#xA;
+        if test "${vlinkcmdtype}" = "dead-interval"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_dead_interval ${vrf-name} ${areaid} ${vlinkip} ${deadinterval} &#xA;
         fi&#xA;
-        if test "${vlinkcmdtype}" == "hello-interval"; then&#xA;
+        if test "${vlinkcmdtype}" = "hello-interval"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_hello_interval ${vrf-name} ${areaid} ${vlinkip} ${hellointerval} &#xA;
         fi&#xA;
-        if test "${vlinkcmdtype}" == "retransmit-interval"; then&#xA;
+        if test "${vlinkcmdtype}" = "retransmit-interval"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_retransmission_interval ${vrf-name} ${areaid} ${vlinkip} ${retransmitinterval} &#xA;
         fi&#xA;
-        if test "${vlinkcmdtype}" == "transmit-interval"; then&#xA;
+        if test "${vlinkcmdtype}" = "transmit-delay"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_transmit_interval ${vrf-name} ${areaid} ${vlinkip} ${transmitinterval} &#xA;
         fi&#xA;
-        if test "${vlinkauthtype}" == "null"; then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_null ${vrf-name} ${intradistance} ${areaid} ${vlinkip} &#xA;
+        if test "${vlinkauthtype}" = "null"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_null ${vrf-name} ${areaid} ${vlinkip} &#xA;
         fi&#xA;
-        if test "${vlinkauthtype}" == "message-digest"; then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest ${vrf-name} ${interdistance} ${areaid} ${vlinkip} &#xA;
+        if test "${vlinkauthtype}" = "message-digest"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest ${vrf-name} ${areaid} ${vlinkip} &#xA;
+          if test "${md5}" != ""; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_keyid ${vrf-name} ${areaid} ${vlinkip} ${keyid} &#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_md5pass ${vrf-name} ${areaid} ${vlinkip} ${md5key} &#xA;
+          fi&#xA;
         fi&#xA;
-        if test "${auth-key}" != ""; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_key ${vrf-name} ${intradistance} ${areaid} ${vlinkip} ${auth-key}&#xA;
+        if test "${vlinkcmdtype}" = "authentication-key"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_key ${vrf-name} ${areaid} ${vlinkip} ${auth-key}&#xA;
         fi&#xA;
       fi&#xA;
-      if test "${areacmdtype}" == "authentication"; then&#xA;
+      if test "${areacmdtype}" = "authentication"; then&#xA;
         if test "${message-digest}" != ""; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_config_authentication_type_message_digest ${vrf-name} ${areaid} &#xA;
         fi&#xA;
-        if test "${message-digest}" == ""; then&#xA;
+        if test "${message-digest}" = ""; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_config_authentication_type_text ${vrf-name} ${areaid} &#xA;
         fi&#xA;
       fi&#xA;
-      if test "${areacmdtype}" == "default-cost"; then&#xA;
+      if test "${areacmdtype}" = "default-cost"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_default_cost ${vrf-name} ${areaid} ${defaultcost} &#xA;
       fi&#xA;
-      if test "${areacmdtype}" == "stub"; then&#xA;
-        if test "${no-summary}" == ""; then&#xA;
+      if test "${areacmdtype}" = "stub"; then&#xA;
+        if test "${no-summary}" = ""; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_enable ${vrf-name} ${areaid} &#xA;
         fi&#xA;
         if test "${no-summary}" != ""; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_no_summary ${vrf-name} ${areaid} &#xA;
         fi&#xA;
       fi&#xA;
-      if test "${areacmdtype}" == "range"; then&#xA;
+      if test "${areacmdtype}" = "range"; then&#xA;
         if test "${rangeprefix}" != ""; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix ${vrf-name} ${areaid} ${rangeprefix} &#xA;
         fi&#xA;
 
-        if test "${rangecmdtype}" == "advertise"; then&#xA;
+        if test "${rangecmdtype}" = "advertise"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_advertise ${vrf-name} ${areaid} ${rangeprefix} &#xA;
         fi&#xA;
 
@@ -189,28 +202,28 @@ limitations under the License.
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_metric ${vrf-name} ${areaid} ${rangeprefix} ${metriccost} &#xA;
         fi&#xA;
 
-        if test "${rangecmdtype}" == "not-advertise"; then&#xA;
+        if test "${rangecmdtype}" = "not-advertise"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_notadvertise ${vrf-name} ${areaid} ${rangeprefix} &#xA;
         fi&#xA;
 
-        if test "${rangecmdtype}" == "substitute"; then&#xA;
+        if test "${rangecmdtype}" = "substitute"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_substitute ${vrf-name} ${areaid} ${rangeprefix} ${rangenetworkprefix} &#xA;
         fi&#xA;
       fi&#xA;
 
-      if test "${areacmdtype}" == "import-list"; then&#xA;
+      if test "${areacmdtype}" = "import-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist ${vrf-name} ${areaid} ${importlistname} &#xA;
       fi&#xA;
 
-      if test "${areacmdtype}" == "export-list"; then&#xA;
+      if test "${areacmdtype}" = "export-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_exportlist ${vrf-name} ${areaid} ${exportlistname} &#xA;
       fi&#xA;
 
-      if test "${areacmdtype}" == "filter-list"; then&#xA;
-        if test "${filterdirection}" == "in"; then&#xA;
+      if test "${areacmdtype}" = "filter-list"; then&#xA;
+        if test "${filterdirection}" = "in"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_in ${vrf-name} ${areaid} ${prefixlistname} &#xA;
         fi&#xA;
-        if test "${filterdirection}" == "out"; then&#xA;
+        if test "${filterdirection}" = "out"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_out ${vrf-name} ${areaid} ${prefixlistname} &#xA;
         fi&#xA;
       fi&#xA;
@@ -218,65 +231,158 @@ limitations under the License.
       </ACTION>
   </COMMAND>
 
+
   <COMMAND name="no area" help="OSPF area parameters" >
-      <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" /> 
-      <PARAM name="authentication" help="Enable authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-      </PARAM>
-      <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-      <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-        <PARAM name="exportlistname" help="Name of the access-list" ptype="STRING" />
-      </PARAM>
-      <PARAM name="filter-list" help="Filter networks between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="prefix" help="Filter prefixes between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" >
-          <PARAM name="prefixlistname" help="Name of an IP prefix-list" ptype="STRING" >
+      <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" />
+      <PARAM name = "areacmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="authentication" help="Enable authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+        <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="filter-list" help="Filter networks between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="prefix" help="Filter prefixes between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" >
             <PARAM name = "filterdirection" help = "" ptype = "SUBCOMMAND" mode="switch" >
               <PARAM name="in" help="Filter networks sent to this area" ptype="SUBCOMMAND" mode="subcommand" />
               <PARAM name="out" help="Filter networks sent from this area" ptype="SUBCOMMAND" mode="subcommand" />
-            </PARAM> 
-          </PARAM> 
-        </PARAM>   
-      </PARAM>
-      <PARAM name="import-list" help="Set the filter for networks from other areas announced to the specified one" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="importlistname" help="Name of the access-list" ptype="STRING" />
-      </PARAM>
-<!--
-      <PARAM name="nssa" help="Configure OSPF area as nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="no-summary" help="Do not inject inter-area routes into nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-        <PARAM name="translate-always" help="Configure NSSA-ABR to always translate" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-        <PARAM name="translate-candidate" help="Configure NSSA-ABR for translate election (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-        <PARAM name="translate-never" help="Configure NSSA-ABR to never translate" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-      </PARAM>
--->
-      <PARAM name="range" help="Summarize routes matching address/mask (border routers only)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-        <PARAM name = "rangeprefix" help = "Area range prefix" ptype = "IP_ADDR" > 
-          <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-          <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-            <PARAM name = "rangemetric" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
-          </PARAM>
-          <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-          <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-            <PARAM name = "rangenetworkprefix" help = "Network prefix to be announced instead of range" ptype = "IP_ADDR" /> 
-          </PARAM>
-        </PARAM>
-      </PARAM>
-      <PARAM name="virtual-link" help="Configure a virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name = "vlinkip" help = "Router ID of the remote ABR" ptype = "IP_ADDR" >
-          <PARAM name = "vlinkcmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
-            <PARAM name="authentication" help="Enable authentication on this virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-              <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-                <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-                <PARAM name="vmessage-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-              </PARAM>
             </PARAM>
-            <PARAM name="dead-interval" help="Interval time after which a neighbor is declared down" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-            <PARAM name="hello-interval" help="Time between HELLO packets" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-            <PARAM name="retransmit-interval" help="Time between retransmitting lost link state advertisements" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-            <PARAM name="transmit-interval" help="Link state transmit delay" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          </PARAM>
+        </PARAM>
+        <PARAM name="import-list" help="Set the filter for networks from other areas announced to the specified one" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
+        <PARAM name="nssa" help="Configure OSPF area as nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="no-summary" help="Do not inject inter-area routes into nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-always" help="Configure NSSA-ABR to always translate" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-candidate" help="Configure NSSA-ABR for translate election (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-never" help="Configure NSSA-ABR to never translate" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+-->
+        <PARAM name="range" help="Summarize routes matching address/mask (border routers only)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name = "rangeprefix" help = "Area range prefix" ptype = "IP_ADDR_MASK" >
+            <PARAM name = "rangecmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
+              <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              </PARAM>
+<!--
+              <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
+              </PARAM>
+-->
+              <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
+
+        <PARAM name="stub" help="Configure OSPF area as stub" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="no-summary" help="Do not inject inter-area routes into stub" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+
+        <PARAM name="virtual-link" help="Configure a virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name = "vlinkip" help = "Router ID of the remote ABR" ptype = "IP_ADDR" >
+            <PARAM name = "vlinkcmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
+              <PARAM name="authentication" help="Enable authentication on this virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+                  <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+                  <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                    <PARAM name="message-digest-key" help="Message digest authentication password (key)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                      <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" >
+                        <PARAM name="md5" help="Use MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" />
+                      </PARAM>
+                    </PARAM>
+                  </PARAM>
+                </PARAM>
+              </PARAM>
+              <PARAM name="authentication-key" help="Authentication password (key)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="dead-interval" help="Interval time after which a neighbor is declared down" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="hello-interval" help="Time between HELLO packets" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="retransmit-interval" help="Time between retransmitting lost link state advertisements" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="transmit-delay" help="Link state transmit delay" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+            </PARAM>
           </PARAM>
         </PARAM>
       </PARAM>
-      <ACTION builtin="clish_nop"></ACTION>
+      <ACTION>
+      if test "${areacmdtype}" = "virtual-link"; then&#xA;
+        if test "${vlinkcmdtype}" = "dead-interval"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_dead_interval ${vrf-name} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
+        if test "${vlinkcmdtype}" = "hello-interval"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_hello_interval ${vrf-name} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
+        if test "${vlinkcmdtype}" = "retransmit-interval"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_retransmission_interval ${vrf-name} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
+        if test "${vlinkcmdtype}" = "transmit-delay"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_transmit_interval ${vrf-name} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
+        if test "${vlinkauthtype}" = "null"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type ${vrf-name} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
+        if test "${vlinkauthtype}" = "message-digest"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type ${vrf-name} ${areaid} ${vlinkip} &#xA;
+          if test "${md5}" != ""; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_keyid ${vrf-name} ${areaid} ${vlinkip} ${keyid} &#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_md5pass ${vrf-name} ${areaid} ${vlinkip} &#xA;
+          fi&#xA;
+        fi&#xA;
+        if test "${vlinkcmdtype}" = "authentication-key"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_auth_type_message_digest_key ${vrf-name} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
+      fi&#xA;
+      if test "${areacmdtype}" = "authentication"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_config_authentication_type ${vrf-name} ${areaid} &#xA;
+      fi&#xA;
+      if test "${areacmdtype}" = "default-cost"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_default_cost ${vrf-name} ${areaid} &#xA;
+      fi&#xA;
+      if test "${areacmdtype}" = "stub"; then&#xA;
+        if test "${no-summary}" = ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_enable ${vrf-name} ${areaid} &#xA;
+        fi&#xA;
+        if test "${no-summary}" != ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_stub_config_no_summary ${vrf-name} ${areaid} &#xA;
+        fi&#xA;
+      fi&#xA;
+      if test "${areacmdtype}" = "range"; then&#xA;
+        if test "${rangeprefix}" != ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix ${vrf-name} ${areaid} ${rangeprefix} &#xA;
+        fi&#xA;
+
+        if test "${rangecmdtype}" = "advertise"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_advertise ${vrf-name} ${areaid} ${rangeprefix} &#xA;
+        fi&#xA;
+
+        if test "${cost}" != ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_metric ${vrf-name} ${areaid} ${rangeprefix} &#xA;
+        fi&#xA;
+
+        if test "${rangecmdtype}" = "not-advertise"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_advertise ${vrf-name} ${areaid} ${rangeprefix} &#xA;
+        fi&#xA;
+
+        if test "${rangecmdtype}" = "substitute"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_substitute ${vrf-name} ${areaid} ${rangeprefix} &#xA;
+        fi&#xA;
+      fi&#xA;
+
+      if test "${areacmdtype}" = "import-list"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist ${vrf-name} ${areaid} &#xA;
+      fi&#xA;
+
+      if test "${areacmdtype}" = "export-list"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_exportlist ${vrf-name} ${areaid} &#xA;
+      fi&#xA;
+
+      if test "${areacmdtype}" = "filter-list"; then&#xA;
+        if test "${filterdirection}" = "in"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_in ${vrf-name} ${areaid} &#xA;
+        fi&#xA;
+        if test "${filterdirection}" = "out"; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_out ${vrf-name} ${areaid} &#xA;
+        fi&#xA;
+      fi&#xA;
+      </ACTION>
   </COMMAND>
 
   <COMMAND name="auto-cost" help="Calculate OSPF interface cost according to bandwidth" >
@@ -290,7 +396,9 @@ limitations under the License.
 
   <COMMAND name="no auto-cost" help="Calculate OSPF interface cost according to bandwidth" >
     <PARAM name="reference-bandwidth" help="Use reference bandwidth method to assign OSPF cost" ptype="SUBCOMMAND" mode="subcommand" />
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_auto_cost_reference_bandwidth ${vrf-name}
+    </ACTION>
   </COMMAND>
 <!--
   <COMMAND name="capability" help="Enable specific OSPF feature" >
@@ -312,7 +420,9 @@ limitations under the License.
 
   <COMMAND name="no compatible" help="OSPF compatibility list" >
     <PARAM name="rfc1583" help="compatible with RFC 1583" ptype="SUBCOMMAND" mode="subcommand" />
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_ospf_rfc1583_compatible ${vrf-name}
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="default-information" help="Control distribution of default information" >
@@ -333,13 +443,13 @@ limitations under the License.
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_always ${vrf-name} &#xA;
     fi&#xA;
     if test "${metricval}" != ""; then&#xA;
-      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} "default_route" ${metricval} &#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_metric ${vrf-name} "default_route" ${metricval} &#xA;
     fi&#xA;
     if test "${mertrictype}" != ""; then&#xA;
-      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} "default_route" ${mertrictype} &#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_metric_type ${vrf-name} "default_route" ${mertrictype} &#xA;
     fi&#xA;
     if test "${routemapname}" != ""; then&#xA;
-      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} "default_route" ${routemapname} &#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_route_map_default ${vrf-name} "default_route" ${routemapname} &#xA;
     fi&#xA;
     </ACTION>
   </COMMAND>
@@ -351,23 +461,38 @@ limitations under the License.
       <PARAM name="metric-type" help="OSPF metric type for default routes" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
       <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    if test "${always}" != ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_always ${vrf-name} &#xA;
+    fi&#xA;
+    if test "${metric}" != ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_metric ${vrf-name} "default_route" &#xA;
+    fi&#xA;
+    if test "${metric-type}" != ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_metric_type ${vrf-name} "default_route" &#xA;
+    fi&#xA;
+    if test "${route-map}" != ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_route_map_default ${vrf-name} "default_route" &#xA;
+    fi&#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="default-metric" help="Set metric of redistributed routes" >
     <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_1_16777214" />
     <ACTION>
-    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_metric ${vrf-name} ${defaultmetric} &#xA;
+    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_config_default_metric ${vrf-name} ${defaultmetric} &#xA;
     </ACTION>
   </COMMAND>
 
   <COMMAND name="no default-metric" help="Set metric of redistributed routes" >
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_config_default_metric ${vrf-name} &#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="distance" help="Administrative distance" >
-    <PARAM name = "distancetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-      <PARAM name="admindistance" help="OSPF Administrative distance" ptype="RANGE_1_255" mode="subcommand" optional="true" />
+    <PARAM name = "distancetype" help = "" ptype="SUBCOMMAND" mode="switch" >
+      <PARAM name="admindistance" help="OSPF Administrative distance" ptype="RANGE_1_255" optional="true" />
       <PARAM name="ospf" help="" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
         <PARAM name="external" help="External routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="extdistance" help="Distance for external routes" ptype="RANGE_1_255" />
@@ -398,16 +523,9 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="no distance" help="Administrative distance" >
-      <PARAM name="admindistance" help="OSPF Administrative distance" ptype="RANGE_1_255" mode="subcommand" optional="true">
-        <PARAM name="ospf" help="" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name = "distancetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-            <PARAM name="external" help="External routes" ptype="SUBCOMMAND" mode="subcommand" />
-            <PARAM name="inter-area" help="Inter-area routes" ptype="SUBCOMMAND" mode="subcommand" />
-            <PARAM name="intra-area" help="Intra-area routes" ptype="SUBCOMMAND" mode="subcommand" />
-          </PARAM>
-        </PARAM>
-      </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config ${vrf-name};
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="distribute-list" help="Filter networks in routing updates" >
@@ -428,7 +546,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="no distribute-list" help="Filter networks in routing updates" >
-    <PARAM name="aclname" help="Access-list name" ptype="STRING_15" mode="subcommand" >
+    <PARAM name="aclname" help="Access-list name" ptype="STRING_15" >
       <PARAM name="out" help="Filter outgoing routing updates" ptype="SUBCOMMAND" mode="subcommand" >
         <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
           <PARAM name="bgp" help="Border Gateway Protocol (BGP)" ptype="SUBCOMMAND" mode="subcommand" />
@@ -439,7 +557,9 @@ limitations under the License.
         </PARAM>
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="log-adjacency-changes" help="Log changes in adjacency state" >
@@ -455,7 +575,9 @@ limitations under the License.
 
   <COMMAND name="no log-adjacency-changes" help="Log changes in adjacency state" >
     <PARAM name="detail" help="Log all state changes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes ${vrf-name} &#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="max-metric" help="OSPF maximum / infinite-distance metric" >
@@ -471,15 +593,15 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION>
-    if test "${maxmetrictype}" == "administrative"; then&#xA;
+    if test "${maxmetrictype}" = "administrative"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative ${vrf-name} &#xA;
     fi&#xA;
 
-    if test "${maxmetrictype}" == "on-shutdown"; then&#xA;
+    if test "${maxmetrictype}" = "on-shutdown"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_shutdown ${vrf-name} ${extdistance} &#xA;
     fi&#xA;
 
-    if test "${maxmetrictype}" == "on-startup"; then&#xA;
+    if test "${maxmetrictype}" = "on-startup"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_startup ${vrf-name} ${interdistance} &#xA;
     fi&#xA;
     </ACTION>
@@ -493,7 +615,19 @@ limitations under the License.
         <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    if test "${maxmetrictype}" = "administrative"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative ${vrf-name} &#xA;
+    fi&#xA;
+
+    if test "${maxmetrictype}" = "on-shutdown"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_shutdown ${vrf-name} &#xA;
+    fi&#xA;
+
+    if test "${maxmetrictype}" = "on-startup"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_startup ${vrf-name} &#xA;
+    fi&#xA;
+    </ACTION>
   </COMMAND>
 <!--
   <COMMAND name="neighbor" help="Specify neighbor router" >
@@ -532,12 +666,14 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="no network" help="Enable routing on an IP network" >
-    <PARAM name="ipaddrmask" help="OSPF network prefix" ptype="IP_ADDR_MASK" mode="subcommand" >
-      <PARAM name="area-id" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand" >
+    <PARAM name="ipaddrmask" help="OSPF network prefix" ptype="IP_ADDR_MASK" >
+      <PARAM name="area" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand" >
         <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "OSPF_INT_OR_IP_ADDR" />
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_networks_network ${vrf-name} ${areaid} ${ipaddrmask} &#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="ospf" help="OSPF specific commands" >
@@ -561,19 +697,19 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION> 
-      if test "${ospf_cmd}" == "abr-type"; then&#xA;
+      if test "${ospf_cmd}" = "abr-type"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_abr_type ${vrf-name} ${abrtype} &#xA;
       fi&#xA;
 <!--
-      if test "${ospf_cmd}" == "opaque-lsa"; then&#xA;
+      if test "${ospf_cmd}" = "opaque-lsa"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_opaque_lsa_capability ${vrf-name} &#xA;
       fi&#xA;
 -->
-      if test "${ospf_cmd}" == "router-id"; then&#xA;
+      if test "${ospf_cmd}" = "router-id"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id ${vrf-name} ${routerid} &#xA;
       fi&#xA;
 
-      if test "${ospf_cmd}" == "write-multiplier"; then&#xA;
+      if test "${ospf_cmd}" = "write-multiplier"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} ${writemaxinterface} &#xA;
       fi&#xA;
     </ACTION>
@@ -588,21 +724,31 @@ limitations under the License.
       <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       <PARAM name="write-multiplier" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+      if test "${ospf_cmd}" = "abr-type"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_abr_type ${vrf-name} &#xA;
+      fi&#xA;
+      if test "${ospf_cmd}" = "router-id"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id ${vrf-name} &#xA;
+      fi&#xA;
+      if test "${ospf_cmd}" = "write-multiplier"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} &#xA;
+      fi&#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="passive-interface" help="Suppress routing updates on an interface" >
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand"/>
       <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" >
         <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" optional="true" />
       </PARAM>
-      <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
     </PARAM>
     <ACTION>
-    if test "${interfacetype}" == "default"; then&#xA;
+    if test "${interfacetype}" = "default"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface_default ${vrf-name} &#xA;
     else&#xA;
-      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface_default ${vrf-name} ${interfacename} ${ipaddr} &#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface ${vrf-name} ${interfacename} ${ipaddr} &#xA;
     fi&#xA;
     </ACTION>
   </COMMAND>
@@ -612,7 +758,13 @@ limitations under the License.
       <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" />
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    if test "${interfacetype}" = "default"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface_default ${vrf-name} &#xA;
+    else&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface_default ${vrf-name} ${interfacename} ${ipaddr} &#xA;
+    fi&#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="redistribute" help="Redistribute information from another routing protocol" >
@@ -674,7 +826,8 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION>
-    if test "${protocol}" == "bgp"; then&#xA;
+     python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+    if test "${protocol}" = "bgp"; then&#xA;
       if test "${bgpmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${bgpmetricval} &#xA;
       fi&#xA;
@@ -685,7 +838,7 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} ${bgproutemapname} &#xA;
       fi&#xA;
     fi&#xA;
-    if test "${protocol}" == "ospf"; then&#xA;
+    if test "${protocol}" = "ospf"; then&#xA;
       if test "${ospfmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${ospfmetricval} &#xA;
       fi&#xA;
@@ -696,7 +849,7 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} ${ospfroutemapname} &#xA;
       fi&#xA;
     fi&#xA;
-    if test "${protocol}" == "static"; then&#xA;
+    if test "${protocol}" = "static"; then&#xA;
       if test "${staticmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${staticmetricval} &#xA;
       fi&#xA;
@@ -707,7 +860,7 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} ${staticroutemapname} &#xA;
       fi&#xA;
     fi&#xA;
-    if test "${protocol}" == "connected"; then&#xA;
+    if test "${protocol}" = "connected"; then&#xA;
       if test "${connmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${connmetricval} &#xA;
       fi&#xA;
@@ -718,7 +871,7 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} ${connroutemapname} &#xA;
   fi&#xA;
     fi&#xA;
-    if test "${protocol}" == "kernel"; then&#xA;
+    if test "${protocol}" = "kernel"; then&#xA;
       if test "${kernelmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${kernelmetricval} &#xA;
       fi&#xA;
@@ -760,7 +913,63 @@ limitations under the License.
         <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    if test "${protocol}" = "bgp"; then&#xA;
+      if test "${metric}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${metric-type}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${route-map}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+    fi&#xA;
+    if test "${protocol}" = "ospf"; then&#xA;
+      if test "${metric}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${metric-type}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${route-map}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+    fi&#xA;
+    if test "${protocol}" = "static"; then&#xA;
+      if test "${metric}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${metric-type}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${route-map}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+    fi&#xA;
+    if test "${protocol}" = "connected"; then&#xA;
+      if test "${metric}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${metric-type}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${route-map}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
+  fi&#xA;
+    fi&#xA;
+    if test "${protocol}" = "kernel"; then&#xA;
+      if test "${metric}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${metric-type}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+      if test "${route-map}" != ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
+    fi&#xA; 
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="refresh" help="Adjust refresh parameters" >
@@ -774,7 +983,9 @@ limitations under the License.
 
   <COMMAND name="no refresh" help="Adjust refresh parameters" >
     <PARAM name="timer" help="Set refresh timer" ptype="SUBCOMMAND" mode="subcommand" />
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_refresh_timer ${vrf-name} &#xA;
+    </ACTION>
   </COMMAND>
 
 <!--
@@ -812,11 +1023,11 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION>
-    if test "${timertype}" == "lsa"; then&#xA;
-      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_initial_delay ${vrf-name} ${minarrivaltimer} &#xA;
+    if test "${timertype}" = "lsa"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum_arrival ${vrf-name} ${minarrivaltimer} &#xA;
     else&#xA;
-      if test "${throttletype}" == "lsa"; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_maximum_delay ${vrf-name} ${lsadelaytimer} &#xA;
+      if test "${throttletype}" = "lsa"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum_interval ${vrf-name} ${lsadelaytimer} &#xA;
       else&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_spf ${vrf-name} ${spfdelaytime} ${spfinitialholdtime} ${spfmaxholdtime} &#xA;
       fi&#xA;
@@ -838,7 +1049,17 @@ limitations under the License.
         </PARAM>
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    if test "${timertype}" = "lsa"; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum_arrival ${vrf-name} &#xA;
+    else&#xA;
+      if test "${throttletype}" = "lsa"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum_interval ${vrf-name} &#xA;
+      else&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_spf_config ${vrf-name} &#xA;
+      fi&#xA;
+    fi&#xA;
+    </ACTION>
   </COMMAND>
 
   <COMMAND name="write-multiplier" help="Write multiplier" >
@@ -849,7 +1070,9 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="no write-multiplier" help="Write multiplier" >
-    <ACTION builtin="clish_nop"></ACTION>
+    <ACTION>
+    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} &#xA;
+    </ACTION>
   </COMMAND>
 
 </VIEW>

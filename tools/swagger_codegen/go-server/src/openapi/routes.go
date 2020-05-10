@@ -17,8 +17,8 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-package swagger
+package openapi
 
-// Load function logs swagger generated routes into REST server.
+// Load function loads OpenAPI generated routes into REST server.
 func Load() {
 }
