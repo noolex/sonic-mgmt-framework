@@ -144,6 +144,8 @@ int call_pyobj(char *cmd, const char *arg) {
     name = PyBytes_FromString(token[0]);
     module = PyImport_Import(name);
     if (module == NULL) {
+        lub_dump_printf("%%Error: Internal error.\n");
+        syslog(LOG_WARNING, "clish_pyobj: Failed to load module %s", token[0]);
         pyobj_handle_error();
         Py_XDECREF(name);
         PyGILState_Release(gstate);
