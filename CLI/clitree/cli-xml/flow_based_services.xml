@@ -31,7 +31,7 @@ limitations under the License.
     <PTYPE name="POLICER_RATE_BITS" pattern="^((&UINT_32_RANGE;)([kmgt]?bps)?)$" help="" />
     <PTYPE name="POLICER_RATE_BYTES" pattern="^((&UINT_32_RANGE;)([KMGT]?B)?)$" help="" />
     <PTYPE name="FBS_MAC_ADDR_MASK" pattern="^((&FBS_MAC_ADDR;)(\/&FBS_MAC_ADDR;)?)$" help="MACADDRESS[/MACADDRESSMASK]" preprocess="toupper"/>
-    <PTYPE name="DESCRIPTION" pattern=".{0,256}" help="String (Max: 256 characters)"/>
+    <PTYPE name="DESCRIPTION" pattern="[^|]{1,255}" help="String (Max: 255 characters)"/>
 
     <PTYPE name="FBS_MAC_ADDR" pattern="^(&FBS_MAC_ADDR;)$" help="MACADDRESS" preprocess="toupper"/>
     <PTYPE name="DEI_VALUE" method="integer" pattern="0..1" help="0-1"/>

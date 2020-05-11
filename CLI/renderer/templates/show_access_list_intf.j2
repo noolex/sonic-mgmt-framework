@@ -2,7 +2,7 @@
     {{- intf_name }}
     {% for acl_type, acl_type_data in acl_intf_data.iteritems() %}
         {% for acl_name, acl_data in acl_type_data.iteritems() %}
-            {{- "  "}} {{ acl_type }} access-list {{ acl_name }}
+            {{- "  "}} {{ acl_type }} access-list {{ acl_name }} at {{ acl_data['stage'] }}
             {% if 'description' in acl_data %}
               {{- "    remark" }} {{ acl_data['description'] }}
             {% endif %}
