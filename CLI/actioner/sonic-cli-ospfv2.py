@@ -810,7 +810,8 @@ def invoke_api(func, args=[]):
         if_name = args[0]
         if_address = args[3] if (len(args) >= 4 and args[3] != "") else "0.0.0.0"
         keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/authentication/authentication-key-id', ospf_if=if_name, ospf_if_addr=if_address)
-        api.delete(keypath)
+        response = api.delete(keypath)
+        if response.ok() == False : return response
         keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/authentication/authentication-md5-key', ospf_if=if_name, ospf_if_addr=if_address)
         return api.delete(keypath)
 
@@ -905,26 +906,42 @@ def invoke_api(func, args=[]):
         deadtype = args[1]
         if deadtype != "" and deadtype == 'deadinterval' :
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval', ospf_if=if_name, ospf_if_addr=if_address)
-            body = { "openconfig-ospfv2-ext:dead-interval": int(args[2]) } 
+            body = { "openconfig-ospfv2-ext:dead-interval": int(args[2]), "openconfig-ospfv2-ext:dead-interval-minimal": False }
             return api.patch(keypath, body)
         elif deadtype != "" and deadtype == 'minimal' :
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/hello-multiplier', ospf_if=if_name, ospf_if_addr=if_address)
-            body = { "openconfig-ospfv2-ext:hello-multiplier": int(args[2]) }  
+            body = { "openconfig-ospfv2-ext:hello-multiplier": int(args[2]), "openconfig-ospfv2-ext:dead-interval-minimal": True }  
             return api.patch(keypath, body)
-        fi
 
     elif func == 'delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_dead_interval' :
         if_name = args[0]
-        if_address = args[3] if (len(args) >= 4 and args[3] != "") else "0.0.0.0"
-
-        deadtype = args[1]
-        if deadtype != "" and deadtype == 'deadinterval' :
+        if_address = "0.0.0.0"
+        deadtype = ''
+        if len(args) >= 2 and args[1] != '' : deadtype = args[1]
+        #print("System arguments - args {} deadtype {}".format(args, deadtype))
+        if deadtype == 'minimal' :
+            if len(args) >= 3 and args[2] != '' : if_address = args[2]
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval-minimal', ospf_if=if_name, ospf_if_addr=if_address)
+            response = api.delete(keypath)
+            if response.ok() == False : return response
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval', ospf_if=if_name, ospf_if_addr=if_address)
-            return api.delete(keypath)
-        elif deadtype != "" and deadtype == 'minimal' :
+            response = api.delete(keypath)
+            if response.ok() == False : return response
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/hello-multiplier', ospf_if=if_name, ospf_if_addr=if_address)
             return api.delete(keypath)
-        fi
+        else :
+            if deadtype == 'ip-address' :
+                if len(args) >= 3 and args[2] != '' : if_address = args[2]
+            else :
+                if len(args) >= 2 and args[1] != '' : if_address = args[1]
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval-minimal', ospf_if=if_name, ospf_if_addr=if_address)
+            response = api.delete(keypath)
+            if response.ok() == False : return response
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/hello-multiplier', ospf_if=if_name, ospf_if_addr=if_address)
+            response = api.delete(keypath)
+            if response.ok() == False : return response
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval', ospf_if=if_name, ospf_if_addr=if_address)
+            return api.delete(keypath)
 
     elif func == 'patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_multiplier' :
         if_name = args[0]
