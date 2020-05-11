@@ -2,6 +2,7 @@
 {{'LLDP Neighbors'.ljust(20)}}
 {{'-----------------------------------------------------------'}}
 {% for neigh in json_output %}
+{% if 'neighbors' in neigh %}
 {% set value = neigh['neighbors']['neighbor'][0] %}
 {{'Interface:'}}{{'   '}}{{value['id']}}{{',via:'}}{{' LLDP'}}
 {{'  Chassis:'}}
@@ -9,6 +10,7 @@
 {{'    SysName:      '}}{{value['state']['system-name']}}
 {% set desc = value['state']['system-description'].split('\r\n')[1:] %}
 {{'    SysDescr:     '}}{{value['state']['system-description'].split('\r\n')[0]}}
+{{'    TTL:          '}}{{value['state']['ttl']}}
 {{'    MgmtIP:       '}}{{value['state']['management-address'].split(',')[0]}}
 {{'    MgmtIP:       '}}{{value['state']['management-address'].split(',')[-1]}}
 {% for v in desc %}
@@ -29,5 +31,6 @@
 {{'    PortID:       '}}{{value['state']['port-id']}}
 {{'    PortDescr:    '}}{{value['state']['port-description']}}
 {{'-----------------------------------------------------------'}}
+{% endif %}
 {% endfor %}
 

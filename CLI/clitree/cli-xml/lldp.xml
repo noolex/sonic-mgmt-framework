@@ -90,7 +90,393 @@ limitations under the License.
     </DOCGEN>
    </COMMAND>
 </VIEW>
+
+<!--MODE : Global LLDP config commands-->
+<PTYPE
+	name = "LLDP_HELLO_TIME_TYPE"
+	method = "integer"
+	pattern = "5..254"
+	help = ""
+/>
+
+<PTYPE
+	name = "LLDP_MULTIPLIER_TYPE"
+	method = "integer"
+	pattern = "1..10"
+	help = ""
+/>
+
+<PTYPE
+	name="LLDP_MODE_TYPE"
+	method="select"
+	pattern="receive transmit"
+	help="Mode type"
+/>
+
+<PTYPE
+	name="LLDP_TLV_TYPE"
+	method="select"
+	pattern="management-address system-capabilities"
+	help="TLV type"
+/>
+
+<VIEW name="configure-view">
+	<COMMAND name="lldp" help="LLDP configuration subcommands"/>
+	<COMMAND name="no lldp" help="LLDP configuration subcommands"/>
+	<COMMAND name = "lldp disable"
+		help = "Disable LLDP at global level">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py disable_lldp_global false</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Disable LLDP at global level
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to disable LLDP globally
+			</USAGE>
+			<EXAMPLE summary="Disable LLDP at global level">
+				sonic-cli(config)# lldp disable
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp disable"
+		help = "Enable LLDP at global level">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py enable_lldp_global</ACTION>
+		
+		<DOCGEN>
+			<DESCRIPTION>
+				Enable LLDP at global level.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to enable LLDP globally.
+			</USAGE>
+			<EXAMPLE summary="Enable LLDP at global level">
+				sonic-cli(config)# no lldp disable
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp hello-time"
+		help = "Configure LLDP hello time value in seconds (5 - 254 sec)">
+		<PARAM
+			name="hello-time"
+			help="Hello time value (Range 5 - 254 seconds)"
+			ptype="LLDP_HELLO_TIME_TYPE">
+		</PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py set_hello_time ${hello-time}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP hello time. It is the time interval at which periodic hellos are exchanged.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to set LLDP hello time. Default message time is 30 seconds.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP hello time">
+				sonic-cli(config)# lldp hello-time 10 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp hello-time" help = "Unconfigure LLDP hello time value ">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py del_hello_time</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP hello time.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to set LLDP hello time to Default value.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP hello time">
+				sonic-cli(config)# no lldp hello-time
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp multiplier"
+		help = "Configure LLDP multiplier value (1 - 10)">
+		<PARAM
+			name="multiplier"
+			help="Multiplier value (Range 1 - 10)"
+			ptype="LLDP_MULTIPLIER_TYPE">
+		</PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py set_multiplier ${multiplier}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP multiplier value that is used to determine the 
+				timeout interval (i.e. hello-time x multiplier value) after
+				which LLDP neighbor entry is deleted
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to set LLDP multiplier value. Default value is 4.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP multiplier">
+				sonic-cli(config)# lldp multiplier 6 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp multiplier" help = "Unconfigure LLDP multiplier value ">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py del_multiplier</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP multiplier value.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to set LLDP multiplier value to Default value.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP multiplier value">
+				sonic-cli(config)# no lldp multiplier 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp system-name"
+		help = "Configure LLDP System Name">
+		<PARAM
+			name="system_name"
+			help="System Name"
+			ptype="STRING">
+		</PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py set_system_name ${system_name}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP System name.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP system name.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP system name">
+				sonic-cli(config)# lldp system-name "BroadcomSonic"
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp system-name" help = "Unconfigure LLDP system name">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py del_system_name</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP system name.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP system name.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP system name">
+				sonic-cli(config)# no lldp system-name 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+
+	<COMMAND name = "lldp system-description"
+		help = "Configure LLDP System description">
+		<PARAM
+			name="system_description"
+			help="System description"
+			ptype="LINE">
+		</PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py set_system_description "${system_description}"</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP System description.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP system description.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP system description">
+				sonic-cli(config)# lldp system-description "Broadcom Sonic"
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp system-description" help = "Unconfigure LLDP system description">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py del_system_description</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP system description.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP system description.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP system description">
+				sonic-cli(config)# no lldp system-description 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp mode"
+		help = "Configure LLDP Mode">
+		<PARAM
+			name="mode"
+			help="Mode"
+			ptype="LLDP_MODE_TYPE">
+		</PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py set_mode ${mode}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP Mode.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP mode.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP mode">
+				sonic-cli(config)# lldp mode receive
+						or
+				sonic-cli(config)# lldp mode transmit
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp mode" help = "Unconfigure LLDP mode">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py del_mode</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP mode.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP mode.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP mode">
+				sonic-cli(config)# no lldp mode 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp suppress-tlv"
+		help = "Configure LLDP TLVs to be suppressed in LLDP frame">
+		<PARAM
+			name="tlv"
+			help="TLV to be suppressed"
+			ptype="LLDP_TLV_TYPE">
+		</PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py set_tlv ${tlv}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP TLVs to be suppressed. 
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP TLVs to be suppressed 
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP suppress tlv">
+				sonic-cli(config)# lldp suppress-tlv system-capabilities 
+				sonic-cli(config)# lldp suppress-tlv management-address 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp suppress-tlv" help = "Unconfigure LLDP ">
+		<PARAM
+			name="tlv"
+			help="TLV to be suppressed"
+			ptype="LLDP_TLV_TYPE">
+		</PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py del_tlv ${tlv}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP TLVs to be suppressed. 
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP TLVs to be suppressed 
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP ">
+				sonic-cli(config)# no lldp suppress-tlv system-capabilities 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+	</VIEW>
+
+	<!--MODE : interface -->
+	<VIEW name="configure-if-view">
+	<COMMAND name="lldp" help="LLDP interface configuration subcommands"/>
+	<COMMAND name="no lldp" help="LLDP interface configuration subcommands"/>
+	<COMMAND name = "lldp disable"
+		help = "Disable LLDP at interface level">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py disable_lldp_intf ${iface} false</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Disable LLDP at interface level
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to disable LLDP at interface level
+			</USAGE>
+			<EXAMPLE summary="Disable LLDP at interface level">
+				sonic-cli(config)# interface Ethernet 0
+				sonic-cli(conf-if-Ethernet0)# lldp disable
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp disable"
+		help = "Enable LLDP at interface level">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py enable_lldp_intf ${iface}</ACTION>
+		
+		<DOCGEN>
+			<DESCRIPTION>
+				Enable LLDP at interface level.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to enable LLDP at interface level.
+			</USAGE>
+			<EXAMPLE summary="Enable LLDP at interface level">
+				sonic-cli(config)# interface Ethernet 0
+				sonic-cli(conf-if-Ethernet0)# no lldp disable
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp mode"
+		help = "Configure LLDP Mode">
+		<PARAM
+			name="mode"
+			help="Mode"
+			ptype="LLDP_MODE_TYPE">
+		</PARAM>
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py set_lldp_intf_mode ${iface} ${mode}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP Mode.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP mode.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP mode">
+				sonic-cli(config)# lldp mode transmit 
+						or
+				sonic-cli(config)# lldp mode receive 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp mode" help = "Unconfigure LLDP mode">
+		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-lldp.py del_lldp_intf_mode ${iface}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP mode.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP mode.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP mode">
+				sonic-cli(config)# no lldp mode 
+			</EXAMPLE>
+		</DOCGEN>
+	</COMMAND>
+		
+	</VIEW>
+
 </CLISH_MODULE>
-
-
-
