@@ -26,6 +26,9 @@ import cli_client as cc
 from netaddr import *
 from scripts.render_cli import show_cli_output
 import subprocess
+import re
+import syslog
+import traceback
 from natsort import natsorted
 
 import urllib3
@@ -527,37 +530,38 @@ def invoke_api(func, args=[]):
         else:
            path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}', id=args[1])
         return api.get(path)
-        
+
     return api.cli_not_implemented(func)
- 
+
+def _name_to_val(ifName):
+    tk = ifName.split('.')
+    plist = re.findall(r'\d+', tk[0])
+    val = 0
+    if len(plist) == 1:  #ex: Ethernet40
+       val = int(plist[0]) * 10000
+    elif len(plist) == 2:  #ex: Eth1/5
+       val= int(plist[0]+plist[1].zfill(3)+'000000')
+    elif len(plist) == 3:  #ex: Eth1/5/2
+       val= int(plist[0]+plist[1].zfill(3)+plist[2].zfill(2)+'0000')
+
+    if len(tk) == 2:   #ex: 2345 in Eth1/1.2345
+       val += int(tk[1])
+
+    syslog.syslog(syslog.LOG_DEBUG, "{}: {}".format(ifName, val))
+    return val
 
 def getId(item):
     state_dict = item['state']
     ifName = state_dict['name']
-
-    if ifName.startswith("Ethernet"):
-        ifId = int(ifName[len("Ethernet"):])
-        return ifId
-    # Alias name - Eg:Eth1/2
-    elif ifName.startswith("Eth"):
-        ifId = int(ifName[len("Eth") + 2:])
-        return ifId
-    return ifName
+    return _name_to_val(ifName)
 
 def getSonicId(item):
     state_dict = item
     ifName = state_dict['ifname']
-    if ifName.startswith("Ethernet"):
-        ifId = int(ifName[len("Ethernet"):])
-        return ifId
-    # Alias name - Eg:Eth1/2
-    elif ifName.startswith("Eth"):
-        ifId = int(ifName[len("Eth") + 2:])
-        return ifId
-    return ifName
+    return _name_to_val(ifName)
 
 def run(func, args):
-   
+
     if func == 'rpc_relay_clear':
         if not (args[0].startswith("Ethernet") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
            print("%Error: Invalid Interface")
@@ -637,6 +641,7 @@ def run(func, args):
             return 1
 
     except Exception as e:
+        syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
         print("%Error: Transaction Failure")
         return 1
 
