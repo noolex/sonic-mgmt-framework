@@ -100,15 +100,12 @@ install:
 	cp -rf $(TOPDIR)/build/cli $(DESTDIR)/usr/sbin/
 	rsync -a --exclude="test" --exclude="docs" build/openapi_client_py $(DESTDIR)/usr/sbin/lib/
 	
-	$(INSTALL) -d $(DESTDIR)/etc/dbus-1/system.d
 	$(INSTALL) -d $(DESTDIR)/lib/systemd/system
 	
 	# Scripts for Host Account Management (HAM)
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/etc/dbus-1/system.d/* $(DESTDIR)/etc/dbus-1/system.d/
-	$(INSTALL) -d $(DESTDIR)/etc/sonic/hamd/
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/etc/sonic/hamd/*      $(DESTDIR)/etc/sonic/hamd/
+	rsync --archive --verbose --no-owner --no-group $(TOPDIR)/ham/hamd/etc $(DESTDIR)
 	$(INSTALL) -D $(TOPDIR)/ham/hamd/lib/systemd/system/*  $(DESTDIR)/lib/systemd/system/
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/usr/bin/*             $(DESTDIR)/usr/bin/
+
 	$(INSTALL) -D $(TOPDIR)/ham/hamd/hamd     $(DESTDIR)/usr/sbin/.
 	$(INSTALL) -D $(TOPDIR)/ham/hamctl/hamctl $(DESTDIR)/usr/bin/.
 	$(INSTALL) -d $(DESTDIR)/lib/x86_64-linux-gnu/

@@ -31,7 +31,6 @@ hamd_config_c::hamd_config_c(int argc, char **argv)
         "  poll_period=[sec]   Daemon's polling period. Used for periodic house keeping tasks [" + std::to_string(poll_period_sec_default_m) + "s]\n" +
         "  uid_min=[uint32]    System-assigned credentials minimum UID. Should be >= 1000     [" + std::to_string(sac_uid_min_default_m) + "]\n" +
         "  uid_max=[uint32]    System-assigned credentials maximum UID. Should be > uid_min   [" + std::to_string(sac_uid_max_default_m) + "]\n" +
-        "  certgen=[path]      Certificate generation program                                 [" + certgen_default_m + "]\n" +
         "  shell=[path]        Shell to be assigned to new users                              [" + shell_default_m + "]";
 
     ctx_p = g_option_context_new(nullptr);
@@ -54,7 +53,6 @@ void hamd_config_c::reload()
         gint sac_uid_min     = sac_uid_min_default_m;
         gint sac_uid_max     = sac_uid_max_default_m;
         bool tron            = tron_default_m;
-        std::string certgen  = certgen_default_m;
         std::string shell    = shell_default_m;
 
         #define WHITESPACE " \t\n\r"
@@ -102,11 +100,6 @@ void hamd_config_c::reload()
                     syslog(LOG_ERR, "Error reading %s: uid_max %s (ignored)", conf_file_pm, errstr_p);
                 }
             }
-            else if (nullptr != (s = startswith(p, "certgen")))
-            {
-                s += strspn(s, " \t=");            // Skip leading spaces and equal sign (=)
-                certgen = s;
-            }
             else if (nullptr != (s = startswith(p, "shell")))
             {
                 s += strspn(s, " \t=");            // Skip leading spaces and equal sign (=)
@@ -132,19 +125,6 @@ void hamd_config_c::reload()
             sac_uid_min_m   = sac_uid_min;
             sac_uid_max_m   = sac_uid_max;
             sac_uid_range_m = 1 + (sac_uid_max_m - sac_uid_min_m);
-        }
-
-        if (certgen_m != certgen)
-        {
-            // Make sure that the file exists
-            if (g_file_test(certgen.c_str(), G_FILE_TEST_EXISTS))
-            {
-                certgen_m = certgen;
-            }
-            else
-            {
-                syslog(LOG_ERR, "Error reading %s: certgen=%s. File not found.", conf_file_pm, certgen.c_str());
-            }
         }
 
         if (shell_m != shell)
@@ -179,7 +159,6 @@ std::string hamd_config_c::to_string() const
 
     oss << "Running config:\n"
         << "  conf_file_pm              = " << conf_file_pm << '\n'
-        << "  certgen_m                 = " << certgen_m << '\n'
         << "  poll_period_sec_m         = " << std::to_string(poll_period_sec_m)  << "s\n"
         << "  sac_uid_min_m             = " << std::to_string(sac_uid_min_m) << '\n'
         << "  sac_uid_max_m             = " << std::to_string(sac_uid_max_m) << '\n'
@@ -189,7 +168,6 @@ std::string hamd_config_c::to_string() const
         << '\n'
         << "Default config:\n"
         << "  conf_file_default_pm      = " << conf_file_default_pm << '\n'
-        << "  certgen_default_m         = " << certgen_default_m << '\n'
         << "  poll_period_sec_default_m = " << std::to_string(poll_period_sec_default_m)  << "s\n"
         << "  sac_uid_min_default_m     = " << std::to_string(sac_uid_min_default_m) << '\n'
         << "  sac_uid_max_default_m     = " << std::to_string(sac_uid_max_default_m) << '\n'
