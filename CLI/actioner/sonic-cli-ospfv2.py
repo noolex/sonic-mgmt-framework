@@ -119,12 +119,12 @@ def invoke_api(func, args=[]):
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:passive-interfaces', vrfname=args[0])
-        body = {"openconfig-ospfv2-ext:passive-interfaces": { "passive-interface": [ {"name": args[1],"config": { "name": args[1],  "address": args[2] } }]}}
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:passive-interfaces/passive-interface={intfname},{intfaddr}', vrfname=args[0], intfname=args[1], intfaddr=args[2])
+        body = {"openconfig-ospfv2-ext:passive-interface": [{"name": args[1], "address": args[2], "config": {"name": args[1],"address": args[2]}}]}
         return api.patch(keypath, body)
-
+		
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/openconfig-ospfv2-ext:passive-interface-default', vrfname=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:passive-interfaces/passive-interface={intfname},{intfaddr}', vrfname=args[0], intfname=args[1], intfaddr=args[2])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum_arrival':
@@ -132,7 +132,7 @@ def invoke_api(func, args=[]):
         body = {"openconfig-ospfv2-ext:minimum-arrival": int(args[1])}
         return api.patch(keypath, body)
 
-    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum-arrival':
+    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_minimum_arrival':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/lsa-generation/config/openconfig-ospfv2-ext:minimum-arrival', vrfname=args[0])
         return api.delete(keypath)
 
@@ -195,8 +195,8 @@ def invoke_api(func, args=[]):
         body = {"openconfig-ospfv2-ext:all": int(args[1])}
         return api.patch(keypath, body)
 
-    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distance/config', vrfname=args[0])
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_all':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distance/config/all', vrfname=args[0])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_intra_area':
@@ -204,15 +204,27 @@ def invoke_api(func, args=[]):
         body = {"openconfig-ospfv2-ext:intra-area": int(args[1])}
         return api.patch(keypath, body)
 
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_intra_area':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distance/config/intra-area', vrfname=args[0])
+        return api.delete(keypath)
+
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_inter_area':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distance/config/inter-area', vrfname=args[0])
         body = {"openconfig-ospfv2-ext:inter-area": int(args[1])}
         return api.patch(keypath, body)
 
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_inter_area':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distance/config/inter-area', vrfname=args[0])
+        return api.delete(keypath)
+
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_external':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distance/config/external', vrfname=args[0])
         body = {"openconfig-ospfv2-ext:external": int(args[1])}
         return api.patch(keypath, body)
+
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config_external':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distance/config/external', vrfname=args[0])
+        return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_route_map':
         importprotocol = None
@@ -621,7 +633,7 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}/config', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}', vrfname=args[0], areaid=args[1], addressprefix=args[2])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_advertise':
@@ -798,7 +810,8 @@ def invoke_api(func, args=[]):
         if_name = args[0]
         if_address = args[3] if (len(args) >= 4 and args[3] != "") else "0.0.0.0"
         keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/authentication/authentication-key-id', ospf_if=if_name, ospf_if_addr=if_address)
-        api.delete(keypath)
+        response = api.delete(keypath)
+        if response.ok() == False : return response
         keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/authentication/authentication-md5-key', ospf_if=if_name, ospf_if_addr=if_address)
         return api.delete(keypath)
 
@@ -893,26 +906,42 @@ def invoke_api(func, args=[]):
         deadtype = args[1]
         if deadtype != "" and deadtype == 'deadinterval' :
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval', ospf_if=if_name, ospf_if_addr=if_address)
-            body = { "openconfig-ospfv2-ext:dead-interval": int(args[2]) } 
+            body = { "openconfig-ospfv2-ext:dead-interval": int(args[2]), "openconfig-ospfv2-ext:dead-interval-minimal": False }
             return api.patch(keypath, body)
         elif deadtype != "" and deadtype == 'minimal' :
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/hello-multiplier', ospf_if=if_name, ospf_if_addr=if_address)
-            body = { "openconfig-ospfv2-ext:hello-multiplier": int(args[2]) }  
+            body = { "openconfig-ospfv2-ext:hello-multiplier": int(args[2]), "openconfig-ospfv2-ext:dead-interval-minimal": True }  
             return api.patch(keypath, body)
-        fi
 
     elif func == 'delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_dead_interval' :
         if_name = args[0]
-        if_address = args[3] if (len(args) >= 4 and args[3] != "") else "0.0.0.0"
-
-        deadtype = args[1]
-        if deadtype != "" and deadtype == 'deadinterval' :
+        if_address = "0.0.0.0"
+        deadtype = ''
+        if len(args) >= 2 and args[1] != '' : deadtype = args[1]
+        #print("System arguments - args {} deadtype {}".format(args, deadtype))
+        if deadtype == 'minimal' :
+            if len(args) >= 3 and args[2] != '' : if_address = args[2]
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval-minimal', ospf_if=if_name, ospf_if_addr=if_address)
+            response = api.delete(keypath)
+            if response.ok() == False : return response
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval', ospf_if=if_name, ospf_if_addr=if_address)
-            return api.delete(keypath)
-        elif deadtype != "" and deadtype == 'minimal' :
+            response = api.delete(keypath)
+            if response.ok() == False : return response
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/hello-multiplier', ospf_if=if_name, ospf_if_addr=if_address)
             return api.delete(keypath)
-        fi
+        else :
+            if deadtype == 'ip-address' :
+                if len(args) >= 3 and args[2] != '' : if_address = args[2]
+            else :
+                if len(args) >= 2 and args[1] != '' : if_address = args[1]
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval-minimal', ospf_if=if_name, ospf_if_addr=if_address)
+            response = api.delete(keypath)
+            if response.ok() == False : return response
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/hello-multiplier', ospf_if=if_name, ospf_if_addr=if_address)
+            response = api.delete(keypath)
+            if response.ok() == False : return response
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={ospf_if}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2/if-addresses={ospf_if_addr}/config/dead-interval', ospf_if=if_name, ospf_if_addr=if_address)
+            return api.delete(keypath)
 
     elif func == 'patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_multiplier' :
         if_name = args[0]
