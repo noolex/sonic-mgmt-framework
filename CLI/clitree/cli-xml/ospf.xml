@@ -304,6 +304,9 @@ limitations under the License.
       </PARAM>
       <ACTION>
       if test "${areacmdtype}" = "virtual-link"; then&#xA;
+        if test "${vlinkcmdtype}" = ""; then&#xA;
+          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link ${vrf-name} ${areaid} ${vlinkip} &#xA;
+        fi&#xA;
         if test "${vlinkcmdtype}" = "dead-interval"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_dead_interval ${vrf-name} ${areaid} ${vlinkip} &#xA;
         fi&#xA;
@@ -845,8 +848,10 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION>
-     python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
     if test "${protocol}" = "bgp"; then&#xA;
+      if test "${bgpmetricval}" = "" &amp;&amp; test "${bgpmertrictype}" = "" &amp;&amp; test "${bgproutemapname}" = ""; then&#xA; 
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
       if test "${bgpmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${bgpmetricval} &#xA;
       fi&#xA;
@@ -858,6 +863,9 @@ limitations under the License.
       fi&#xA;
     fi&#xA;
     if test "${protocol}" = "ospf"; then&#xA;
+      if test "${ospfmetricval}" = "" &amp;&amp; test "${ospfmertrictype}" = "" &amp;&amp; test "${ospfroutemapname}" = ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
       if test "${ospfmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${ospfmetricval} &#xA;
       fi&#xA;
@@ -869,6 +877,9 @@ limitations under the License.
       fi&#xA;
     fi&#xA;
     if test "${protocol}" = "static"; then&#xA;
+      if test "${staticmetricval}" = "" &amp;&amp; test "${staticmertrictype}" = "" &amp;&amp; test "${staticroutemapname}" = ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
       if test "${staticmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${staticmetricval} &#xA;
       fi&#xA;
@@ -880,6 +891,9 @@ limitations under the License.
       fi&#xA;
     fi&#xA;
     if test "${protocol}" = "connected"; then&#xA;
+      if test "${connmetricval}" = "" &amp;&amp; test "${connmertrictype}" = "" &amp;&amp; test "${connroutemapname}" = ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
       if test "${connmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${connmetricval} &#xA;
       fi&#xA;
@@ -891,6 +905,9 @@ limitations under the License.
   fi&#xA;
     fi&#xA;
     if test "${protocol}" = "kernel"; then&#xA;
+      if test "${kernelmetricval}" = "" &amp;&amp; test "${kernelmertrictype}" = "" &amp;&amp; test "${kernelroutemapname}" = ""; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+      fi&#xA;
       if test "${kernelmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${kernelmetricval} &#xA;
       fi&#xA;
@@ -933,61 +950,18 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION>
-    if test "${protocol}" = "bgp"; then&#xA;
-      if test "${metric}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${metric-type}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${route-map}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
+    if test "${metric}" = "" &amp;&amp; test "${metric-type}" = "" &amp;&amp; test "${route-map}" = ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
     fi&#xA;
-    if test "${protocol}" = "ospf"; then&#xA;
-      if test "${metric}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${metric-type}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${route-map}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
+    if test "${metric}" != ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
     fi&#xA;
-    if test "${protocol}" = "static"; then&#xA;
-      if test "${metric}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${metric-type}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${route-map}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
+    if test "${metric-type}" != ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
     fi&#xA;
-    if test "${protocol}" = "connected"; then&#xA;
-      if test "${metric}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${metric-type}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${route-map}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
-  fi&#xA;
+    if test "${route-map}" != ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
     fi&#xA;
-    if test "${protocol}" = "kernel"; then&#xA;
-      if test "${metric}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${metric-type}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-      if test "${route-map}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
-      fi&#xA;
-    fi&#xA; 
     </ACTION>
   </COMMAND>
 
