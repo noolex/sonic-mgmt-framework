@@ -16,21 +16,15 @@
              ptype="SUBCOMMAND"
              >
             <PARAM name="dependencies" help="Show dependent configuations on interface" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="Ethernet" help="Ethernet IEEE 802.3" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="phy-if-id" help="Physical interface" ptype="UINT">
-                    </PARAM>
-                </PARAM>
+                <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE"/>
             </PARAM>
-            <PARAM name="Ethernet" help="Ethernet IEEE 802.3" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="phy-if-id" help="Physical interface" optional="true" ptype="UINT">
-                </PARAM>
-            </PARAM>
+            <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE"/>
         </PARAM>
         <ACTION>
             if test "${dpb-subcommands}" = "dependencies"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_dependencies show_breakout_deps.j2 ${phy-if-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_dependencies show_breakout_deps.j2 ${iface}&#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_breakout.py get_openconfig_platform_port_components_component_port_breakout_mode_config show_interface_breakout.j2 ${phy-if-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_breakout.py get_openconfig_platform_port_components_component_port_breakout_mode_config show_interface_breakout.j2 ${iface}&#xA;
             fi&#xA;
         </ACTION>
       <xi:include href="include/pipe.xml"/>
