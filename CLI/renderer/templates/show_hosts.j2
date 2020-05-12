@@ -2,6 +2,9 @@
    {% set gbl_cfg = json_output['openconfig-system:dns']['config'] %}
    {% if gbl_cfg -%}
       {% set src_intf = gbl_cfg['openconfig-system-ext:source-intf'] %}
+      {% if src_intf == "eth0" %}
+          {% set src_intf = "Management0" %}
+      {% endif %}  
 Source Interface  : {{src_intf}}
    {% endif %}
    {% set servers = json_output['openconfig-system:dns']['servers'] %}

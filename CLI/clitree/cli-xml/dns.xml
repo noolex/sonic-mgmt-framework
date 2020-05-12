@@ -44,7 +44,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="ip name-server source-intf"
-             help="Configure source IP to reach the name server"
+             help="Configure source interface to pick the source IP, used for the DNS query"
              ptype="SUBCOMMAND"
              mode="subcommand">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
@@ -69,7 +69,7 @@ limitations under the License.
     </COMMAND>
  
     <COMMAND name="no ip name-server source-intf"
-             help="Delete source Interface"
+             help="Configure source interface to pick the source IP, used for the DNS query"
              ptype="SUBCOMMAND"
              mode="subcommand">
       <ACTION builtin="clish_pyobj">sonic_cli_dns delete_openconfig_dns_global_config_source_address</ACTION>

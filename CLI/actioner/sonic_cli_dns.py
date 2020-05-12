@@ -38,7 +38,7 @@ def invoke_api(func, args=[]):
     if func == 'patch_openconfig_dns_global_config_source_address':
         keypath = cc.Path(DNS +
             'config/openconfig-system-ext:source-intf')
-        body = { "openconfig-system-ext:source-intf": args[0] }
+        body = { "openconfig-system-ext:source-intf": args[0] if args[0] != 'Management0' else 'eth0'}
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_dns_server_address':
         keypath = cc.Path(DNS_SERVERS+
