@@ -11,14 +11,11 @@ bool ham_useradd(const char * login, const char * roles_p, const char * hashed_p
     bool success = false;
     try
     {
-        // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::default_dispatcher = get_dispatcher();
-        DBus::Connection    conn = DBus::Connection::SystemBus();
-        accounts_proxy_c    acct(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        accounts_proxy_c  acct(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
 
-        std::vector< std::string > roles = split(roles_p, ',');
+        std::vector< std::string > roles = split(roles_p, ", \t");
 
-        ::DBus::Struct<bool, std::string> ret;
+        ::DBus::Struct<bool/*success*/, std::string/*errmsg*/> ret;
 
         ret = acct.useradd(login, roles, hashed_pw);
         success = ret._1;
