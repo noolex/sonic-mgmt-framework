@@ -1,4 +1,4 @@
-{% set vars = {'interface_name': ""} %}
+{% set vars = {'interface_name': "", 'mtu_str': ''} %}
 {% set ospf_global_list = json_output  %}
 {% for list_elem in ospf_global_list %}
 {% if 'vrfName' in list_elem  and list_elem['vrfName'] != "default" %}
@@ -24,10 +24,19 @@ VRF Name: {{list_elem['vrfName']}}
 {{interface_state['id']}} is {{interface_state['openconfig-ospfv2-ext:operational-state']}}
   ifindex {{interface_state['openconfig-ospfv2-ext:index']}}, MTU {{interface_state['openconfig-ospfv2-ext:mtu']}} bytes, BW {{interface_state['openconfig-ospfv2-ext:bandwidth']}} Mbit {{interface_state['openconfig-ospfv2-ext:if-flags']}}
   Internet Address {{interface_state['openconfig-ospfv2-ext:address']}}/{{interface_state['openconfig-ospfv2-ext:address-len']}}, Broadcast {{interface_state['openconfig-ospfv2-ext:broadcast-address']}}, Area {{interface_state['openconfig-ospfv2-ext:area-id']}}
-  MTU mismatch detection: enabled
+{% if  'openconfig-ospfv2-ext:mtu-ignore' in interface_state and interface_state['openconfig-ospfv2-ext:mtu-ignore'] == True %}
+{% if vars.update({'mtu_str':'disabled'}) %}{% endif -%}
+{% else %}
+{% if vars.update({'mtu_str':'enabled'}) %}{% endif -%}
+{% endif %}
+  MTU mismatch detection: {{vars.mtu_str}}
   Router ID {{interface_state['openconfig-ospfv2-ext:router-id']}}, Network Type {{interface_state['openconfig-ospfv2-ext:ospf-interface-type'].upper()}}, Cost: {{interface_state['openconfig-ospfv2-ext:cost']}}
   Transmit Delay is {{interface_state['openconfig-ospfv2-ext:transmit-delay']}} sec, State {{interface_state['openconfig-ospfv2-ext:adjacency-state']}}, Priority {{interface_state['priority']}}
+{% if 'openconfig-ospfv2-ext:backup-designated-router-id' in interface_state %}
   Backup Designated Router (ID) {{interface_state['openconfig-ospfv2-ext:backup-designated-router-id']}}, Interface Address {{interface_state['openconfig-ospfv2-ext:backup-designated-router-address']}}
+{% else %}
+  No backup designated router on this network
+{% endif %}
 {% if 'openconfig-ospfv2-ext:network-lsa-sequence-number' in interface_state %}
   Saved Network-LSA sequence number {{interface_state['openconfig-ospfv2-ext:network-lsa-sequence-number']}}
 {% endif -%}
