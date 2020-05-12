@@ -37,8 +37,8 @@ def invoke_api(func, args=[]):
 
     if func == 'patch_openconfig_dns_global_config_source_address':
         keypath = cc.Path(DNS +
-            'config/openconfig-system-ext:source-address')
-        body = { "openconfig-system-ext:source-address": args[0] }
+            'config/openconfig-system-ext:source-intf')
+        body = { "openconfig-system-ext:source-intf": args[0] }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_dns_server_address':
         keypath = cc.Path(DNS_SERVERS+
@@ -47,7 +47,7 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
     elif func == 'delete_openconfig_dns_global_config_source_address':
         keypath = cc.Path(DNS +
-            'config/openconfig-system-ext:source-address')
+            'config/openconfig-system-ext:source-intf')
         return api.delete(keypath)
     elif func == 'delete_openconfig_dns_server_address':
         keypath = cc.Path(DNS_SERVERS+

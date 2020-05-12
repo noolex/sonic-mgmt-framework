@@ -43,19 +43,22 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_server_address ${nameserver}</ACTION>
     </COMMAND>
 
-    <COMMAND name="ip name-server source-ip"
+    <COMMAND name="ip name-server source-intf"
              help="Configure source IP to reach the name server"
              ptype="SUBCOMMAND"
              mode="subcommand">
-      <PARAM name="src-ip"
-             help="Source IP address for DNS query"
-             ptype="IPV4V6_ADDR">
-      </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_global_config_source_address ${src-ip}</ACTION>
+        <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
+          <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+        </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_global_config_source_address ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${instance}</ACTION>
     </COMMAND>
 
     <COMMAND name="no ip name-server"
-             help="Configure the name server address"
+             help="Delete the name server address"
              ptype="SUBCOMMAND"
              mode="subcommand">
       <PARAM name="nameserver"
@@ -65,15 +68,11 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_dns delete_openconfig_dns_server_address ${nameserver}</ACTION>
     </COMMAND>
  
-    <COMMAND name="no ip name-server source-ip"
-             help="Configure source IP to reach the name server"
+    <COMMAND name="no ip name-server source-intf"
+             help="Delete source Interface"
              ptype="SUBCOMMAND"
              mode="subcommand">
-      <PARAM name="src-ip"
-             help="Source IP address for DNS query"
-             ptype="IPV4V6_ADDR">
-      </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_dns delete_openconfig_dns_global_config_source_address ${src-ip}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_dns delete_openconfig_dns_global_config_source_address</ACTION>
     </COMMAND>
      
   </VIEW>
