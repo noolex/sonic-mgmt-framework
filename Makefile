@@ -37,7 +37,7 @@ GO_DEPS  = vendor/.done
 export TOPDIR MGMT_COMMON_DIR GO GOPATH RMDIR
 
 .PHONY: all
-all: rest-server cli ham
+all: rest cli ham
 
 $(GO_MOD):
 	$(GO) mod init github.com/Azure/sonic-mgmt-framework
@@ -72,11 +72,13 @@ rest: $(GO_DEPS) models
 
 # Special target for local compilation of REST server binary.
 # Compiles models, translib and cvl schema from sonic-mgmt-common
-rest-server: go-deps-clean
-	$(MAKE) -C $(MGMT_COMMON_DIR)
+rest-server: rest-clean
+	$(MAKE) -C $(MGMT_COMMON_DIR)/models
+	TOPDIR=$(MGMT_COMMON_DIR) $(MAKE) -C $(MGMT_COMMON_DIR)/cvl/schema
+	$(MAKE) -C $(MGMT_COMMON_DIR)/translib ocbinds/ocbinds.go
 	$(MAKE) rest
 
-rest-clean: go-deps-clean models-clean
+rest-clean: go-deps-clean
 	$(MAKE) -C rest clean
 
 .PHONY: models
@@ -127,7 +129,7 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 
 clean: rest-clean models-clean
 	(cd ham; ./build.sh clean)
-	git check-ignore debian/* | xargs -r $(RMDIR)
+	$(RMDIR) debian/.debhelper
 
 cleanall: clean
 	$(RMDIR) $(BUILD_DIR)
