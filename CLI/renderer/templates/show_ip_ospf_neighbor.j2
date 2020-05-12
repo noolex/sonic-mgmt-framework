@@ -36,6 +36,7 @@ Neighbor ID     Pri State           Dead Time Address         Interface         
 {% endif -%}
 {% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif -%}
 {% if vars.update({'nbr_state':neighborinfo['adjacency-state'].split(':')[1]}) %}{% endif -%}
+{% if vars.update({'nbr_state':vars.nbr_state|capitalize}) %}{% endif -%}
 {{'%-15s'|format(neighborinfo['neighbor-id'])}} {{'%3s'|format(neighborinfo['priority'])}} {{'%-15s'|format(vars.nbr_state + '/' + vars.dr_status)}} {{'%9s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}} {{'%-15s'|format(neighborinfo['neighbor-address'])}} {{'%-20s'|format(neighborinfo['interface-name'] + ':' + neighborinfo['interface-address'])}} {{'%5s'|format(neighborinfo['retransmit-summary-queue-length'])}} {{'%5s'|format(neighborinfo['link-state-request-queue-length'])}} {{'%5s'|format(neighborinfo['database-summary-queue-length'])}}
 {% endif -%}
 {% endfor -%}
