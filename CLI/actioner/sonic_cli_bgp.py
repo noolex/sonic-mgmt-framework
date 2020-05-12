@@ -2790,10 +2790,14 @@ def parseGloblShow(vrf_name, cmd, args=[]):
             return 0
 
         if args[0] == 'statistics':
-            # TBD
-            print cc.ApiClient().cli_not_implemented('{} {}'.format(cmd, args[0])).error_message()
-            return 1
+            # FIXME: pending FRR json
             #return generate_show_bgp_stats(args)
+            print cc.ApiClient().cli_not_implemented('(pending): {} {}'.format(cmd, args[0])).error_message()
+            return 1
+        elif args[0] == 'route-map':
+            # FIXME: pending FRR json
+            print cc.ApiClient().cli_not_implemented('(pending): {} {}'.format(cmd, args[0])).error_message()
+            return 1
         elif args[0] == 'ip-prefix':
             return generate_show_bgp_prefix_routes(args)
         else:
