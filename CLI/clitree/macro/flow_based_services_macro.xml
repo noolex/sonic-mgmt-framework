@@ -11,7 +11,7 @@
             <PARAM name="Vlan" help="Vlan interface" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM name="vlan-if-id" help="Vlan interface id" ptype="VLAN_ID"/>
             </PARAM>
-            <PARAM name="Switch" help="Switch interface" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
         </PARAM>
     </MACRODEF>
 

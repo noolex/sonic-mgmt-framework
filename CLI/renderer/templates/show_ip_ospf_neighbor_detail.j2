@@ -1,0 +1,62 @@
+{% set vars = {'nbr_router_id': "0", 'nbr_intf_addr': "0.0.0.0", 'area_id': "0.0.0.0", 'intf_name': "None", 'nbr_priority': "0", 'nbr_state': "0",
+      'nbr_state_change_count': "0", 'lastPrgrsvChangeMsec': 0, 'dr_address':"0.0.0.0", 'bdr_address':"0", 'nbr_options': "None", 'dead_timer_due':"0",
+        'db_summary_count':"0", 'ls_req_count':"0", 'ls_retran_count':0, 'timer_inactivity':"off", 'db_desc_thread':"off", 'ls_req_thread':"off",
+        'ls_update_thread':"off", 'interface_name': "", 'number' : 0, 'change_time' : 0} %}
+{% set ospf_global_list = json_output  %}
+{% for list_elem in ospf_global_list %}
+{% if 'vrfName' in list_elem and list_elem['vrfName'] != 'default' %}
+VRF Name: {{list_elem['vrfName']}}
+{% endif -%}
+{% if 'interfacename' in list_elem %}
+{% if vars.update({'interface_name':list_elem['interfacename']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:areas' in list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
+{% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
+{% endif -%}
+{% for areainfo in area_list %}
+{% if 'interfaces' in areainfo and 'interface' in areainfo['interfaces'] %}
+{% set interface_list = areainfo['interfaces']['interface'] %}
+{% for interfaceinfo in interface_list %}
+{% if 'openconfig-ospfv2-ext:neighbors-list' in interfaceinfo and 'neighbor' in interfaceinfo['openconfig-ospfv2-ext:neighbors-list'] %}
+{% set neighbor_list = interfaceinfo['openconfig-ospfv2-ext:neighbors-list']['neighbor'] %}
+{% for neighborinfo in neighbor_list %}
+{% if vars.interface_name == "" or vars.interface_name == neighborinfo['interface-name'] %}
+{% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif %}
+{% if vars.update({'change_time':neighborinfo['last-established-time'] | int}) %}{% endif %}
+{% if vars.update({'change_time':vars.change_time/1000}) %}{% endif %}
+ Neighbor {{neighborinfo['neighbor-id']}}, interface address {{neighborinfo['neighbor-address']}}
+    In the area {{neighborinfo['area-id']}} via interface {{neighborinfo['interface-name']}}
+    Neighbor priority is {{neighborinfo['priority']}}, State is {{neighborinfo['adjacency-state'].split(':')[1]}}, {{neighborinfo['state-changes']}} state changes
+    Most recent state change statistics:
+      Progressive change {{'%dh%dm%ds'|format(vars.change_time/3600, (vars.change_time%3600)/60,((vars.change_time%3600)%60)) }} ago
+    DR is {{neighborinfo['designated-router']}}, BDR is {{neighborinfo['backup-designated-router']}}
+    Options {{neighborinfo['option-value']}} {{neighborinfo['optional-capabilities']}}
+    Dead timer due in {{'%s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}}
+    Database Summary List {{neighborinfo['database-summary-queue-length']}}
+    Link State Request List {{neighborinfo['link-state-request-queue-length']}}
+    Link State Retransmission List {{neighborinfo['retransmit-summary-queue-length']}}
+{% if neighborinfo['thread-inactivity-timer'] == True %}
+    Thread Inactivity Timer on
+{% else %}
+    Thread Inactivity Timer off
+{% endif %}
+    Thread Database Description Retransmision off
+{% if neighborinfo['thread-ls-request-retransmission'] == True %}
+    Thread Link State Request Retransmission on
+{% else %}
+    Thread Link State Request Retransmission off
+{% endif %}
+{% if neighborinfo['thread-ls-update-retransmission'] == True %}
+    Thread Link State Update Retransmission on
+{% else %}
+    Thread Link State Update Retransmission off
+{% endif %}
+{% endif %}
+{{' '}}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+{{' '}}

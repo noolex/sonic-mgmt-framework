@@ -11,6 +11,9 @@
 {% set  key_val = temp[temp|length - 1] %}
 {% endif %}
 {% endif %}
+{% if 'openconfig-platform-ext:' in key %}
+{% set key = key.split(':')[1] %}
+{% endif %}
 {{key.ljust(20)}}:{{key_val}}
 {% endfor %}
 {% endif %}
