@@ -31,6 +31,7 @@ limitations under the License.
     <PTYPE name="PCP_VALUE" method="integer" pattern="0..7" help="0-7"/>
     <PTYPE name="DEI_VALUE" method="integer" pattern="0..1" help="0-1"/>
     <PTYPE name="ETHERTYPE_VALUE" pattern="0[xX]([6-9a-fA-F][0-9a-fA-A]{2}|[1-9a-fA-F][0-9a-fA-A]{3})" help="0x600-0xffff"/>
+    <PTYPE name="STRING_255" pattern="[^|]{1,255}" help="String (Max: 255 characters)"/>
 
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
@@ -81,16 +82,19 @@ limitations under the License.
 
     <!--============================== INTERFACE ETHERNET MODE COMMANDS ======================-->
     <VIEW name="configure-if-view">
+        <COMMAND name="mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE PORTCHANNEL MODE COMMANDS ======================-->
     <VIEW name="configure-lag-view">
+        <COMMAND name="mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE VLAN MODE COMMANDS ======================-->
     <VIEW name="configure-vlan-view">
+        <COMMAND name="mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
@@ -129,6 +133,9 @@ limitations under the License.
             <PARAM name="access-list-name" help="Name of the IPv6 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_IPV6</ACTION>
         </COMMAND>
+
+        <!-- Gloabl ACL Binding -->
+        <MACRO name="ACL-BINDING-OPTIONS" arg="Switch" />
     </VIEW>
 
     <VIEW name="configure-mac-acl-view" prompt="${SYSTEM_NAME}(config-mac-acl)# " depth="2">
