@@ -11,10 +11,7 @@ bool ham_groupadd(const char * group)
     bool success = false;
     try
     {
-        // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::default_dispatcher = get_dispatcher();
-        DBus::Connection    conn = DBus::Connection::SystemBus();
-        accounts_proxy_c    acct(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        accounts_proxy_c  acct(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
 
         ::DBus::Struct<bool/*success*/, std::string/*errmsg*/> ret;
         ret = acct.groupadd(group);
@@ -24,7 +21,7 @@ bool ham_groupadd(const char * group)
     }
     catch (DBus::Error & ex)
     {
-        syslog(LOG_CRIT, "ham_groupadd(group=\"%s\" - Exception %s\n", group, ex.what());
+        syslog(LOG_CRIT, "ham_groupadd(group=\"%s\" - DBus Exception %s\n", group, ex.what());
     }
 
     return success;

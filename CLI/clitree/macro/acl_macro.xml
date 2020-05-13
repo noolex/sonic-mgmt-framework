@@ -218,4 +218,23 @@ limitations under the License.
         <PARAM name="pcp-nc" help="Network control (7)" ptype="SUBCOMMAND" mode="subcommand" value="nc"/>
         <PARAM name="pcp-val" help="arg2" ptype="arg1"/>
     </MACRODEF>
+
+    <MACRODEF name="ACL-SHOW-CLEAR-COMMAND-OPTIONS">
+        <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true">
+            <PARAM name="interface" help="arg1 arg2 ACL counters applied on interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                <PARAM name="interface-types" help="" ptype="SUBCOMMAND" mode="switch">
+                    <PARAM name="Ethernet" help="Ethernet interface" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="port-id" help="Port number" ptype="UINT" completion="false"/>
+                    </PARAM>
+                    <PARAM name="PortChannel" help="Portchannel interface" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="portchannel-id" help="Lag number" ptype="LAG_ID" completion="false"/>
+                    </PARAM>
+                    <PARAM name="Vlan" help="Vlan interface" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="vlan-id" help="VLAN ID" ptype="VLAN_ID" completion="false"/>
+                    </PARAM>
+                    <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                </PARAM>
+            </PARAM>
+        </PARAM>
+    </MACRODEF>
 </ROOT>

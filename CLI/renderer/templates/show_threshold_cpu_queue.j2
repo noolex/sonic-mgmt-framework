@@ -1,0 +1,18 @@
+{% set vars = {'Queue': ""} %}
+{% set vars = {'Percent': ""} %}
+
+
+{% if json_output -%}
+
+----------------------------------
+ {{'%-20s'|format("Queue")}}{{'%-7s'|format("Percent")}}
+----------------------------------
+
+{% for key_json in json_output %}
+	{% if vars.update({'Queue':key_json[0]}) %}{% endif %}
+	{% if vars.update({'Percent':key_json[1]}) %}{% endif %}
+
+ {{'%-20s'|format(vars.Queue)}}{{'%-7s'|format(vars.Percent)}}
+
+{% endfor %}
+{% endif %}

@@ -120,14 +120,8 @@ limitations under the License.
             </PARAM>
         </PARAM>
     </PARAM>
-    <ACTION>
-       if test "${vlan}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp show_stp.j2&#xA;
-       elif test "${name}" = "";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp_vlan show_stp.j2 ${vlan-id}&#xA;
-       else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp_vlan_interfaces_interface show_stp.j2 ${vlan-id} ${name}&#xA;
-        fi&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp process_stp_show show_stp.j2 ${vlan-id} ${name} 
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -179,13 +173,8 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION>
-       if test "${vlan}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp_counters show_stp_counters.j2&#xA;
-       else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp_counters_vlan show_stp_counters.j2 ${vlan-id}&#xA;
-       fi&#xA;
-      builtin="clish_nop"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp process_stp_show_counters show_stp_counters.j2 ${vlan-id}
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -231,12 +220,8 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION>
-        if test "${vlan}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp_inconsistentports show_stp_root_guard.j2&#xA;
-        else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py get_custom_stp_inconsistentports_vlan show_stp_root_guard.j2 ${vlan-id}&#xA;
-        fi&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp process_stp_show_inconsistentports show_stp_root_guard.j2 ${vlan-id}
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -262,8 +247,8 @@ limitations under the License.
         name="show spanning-tree bpdu-guard"
         help="Show spanning tree BPDU guard information"
         >
-    <ACTION>
-     python $SONIC_CLI_ROOT/sonic-cli-stp.py get_openconfig_spanning_tree_stp_interfaces show_stp_bpdu_guard.j2
+    <ACTION builtin="clish_pyobj">
+     sonic_cli_stp get_openconfig_spanning_tree_stp_interfaces show_stp_bpdu_guard.j2
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -310,7 +295,8 @@ limitations under the License.
             >
             </PARAM>
         </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_global_config_bpdu_filter True&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_stp_global_config_bpdu_filter True&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -353,12 +339,8 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION>
-        if test "${mode-subcmds}" = "";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py post_openconfig_spanning_tree_stp_global_config_enabled_protocol "pvst"&#xA;
-        else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py post_openconfig_spanning_tree_stp_global_config_enabled_protocol ${__params}&#xA;
-        fi&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp post_openconfig_spanning_tree_stp_global_config_enabled_protocol ${__params}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -444,18 +426,8 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION>
-        if test "${stp-vlan-subcmds}" = "forward-time";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_config_forwarding_delay ${vlan-range} ${seconds}&#xA;
-        elif test "${stp-vlan-subcmds}" = "hello-time";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_config_hello_time ${vlan-range} ${seconds}&#xA;
-        elif test "${stp-vlan-subcmds}" = "max-age";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_config_max_age ${vlan-range} ${seconds}&#xA;
-        elif test "${stp-vlan-subcmds}" = "priority";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_config_bridge_priority ${vlan-range} ${value}&#xA;
-        elif test "${stp-vlan-subcmds}" = "";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_config_enable ${vlan-range} True&#xA;
-        fi&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_vlan_subcmds ${stp-vlan-subcmds} ${vlan-range} ${seconds} ${value}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -486,7 +458,7 @@ limitations under the License.
             ptype="STP_FORWARD_DELAY"
             >
         </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_forwarding_delay ${seconds}&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_global_config_forwarding_delay ${seconds}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -525,7 +497,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout ${value}&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout ${value}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -552,7 +524,7 @@ limitations under the License.
             ptype="STP_HELLO_TIME"
             >
         </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_hello_time ${seconds}&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_global_config_hello_time ${seconds}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -579,7 +551,7 @@ limitations under the License.
             ptype="STP_MAX_AGE"
             >
         </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_max_age ${seconds}&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_global_config_max_age ${seconds}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -606,7 +578,7 @@ limitations under the License.
             ptype="STP_PRIORITY"
             >
         </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_bridge_priority ${value}&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_global_config_bridge_priority ${value}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -647,7 +619,7 @@ limitations under the License.
             >
             </PARAM>
         </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_global_config_bpdu_filter False&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_stp_global_config_bpdu_filter False&#xA;
     </ACTION>
     </COMMAND>
 
@@ -655,8 +627,8 @@ limitations under the License.
         name="no spanning-tree mode"
         help="Unconfigure spanning tree"
         >
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_global_config_enabled_protocol
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_openconfig_spanning_tree_stp_global_config_enabled_protocol
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -719,18 +691,8 @@ limitations under the License.
                     >
                 </PARAM>
             </PARAM>
-    <ACTION>
-        if test "${stp-vlan-subcmds}" = "forward-time";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_custom_stp_vlan_config_forwarding_delay ${vlan-range}&#xA;
-        elif test "${stp-vlan-subcmds}" = "hello-time";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_custom_stp_vlan_config_hello_time ${vlan-range}&#xA;
-        elif test "${stp-vlan-subcmds}" = "max-age";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_custom_stp_vlan_config_max_age ${vlan-range}&#xA;
-        elif test "${stp-vlan-subcmds}" = "priority";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_custom_stp_vlan_config_bridge_priority ${vlan-range}&#xA;
-        elif test "${stp-vlan-subcmds}" = "";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_config_enable ${vlan-range} False&#xA;
-        fi&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_stp_vlan_subcmds ${stp-vlan-subcmds} ${vlan-range}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -755,7 +717,7 @@ limitations under the License.
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_forwarding_delay&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_forwarding_delay&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -788,7 +750,7 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -809,7 +771,7 @@ limitations under the License.
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_hello_time&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_hello_time&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -830,7 +792,7 @@ limitations under the License.
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_max_age&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_max_age&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -851,7 +813,7 @@ limitations under the License.
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_global_config_bridge_priority&#xA;
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_bridge_priority&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -996,37 +958,8 @@ limitations under the License.
             >
         </PARAM>
     </PARAM>
-    <ACTION>
-        if test "${stp-if-subcmds}" = "bpduguard";then&#xA;
-            if test "${port-shutdown}" != "";then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_bpdu_guard_port_shutdown ${iface} True&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_guard ${iface} True&#xA;
-            fi&#xA;
-        elif test "${stp-if-subcmds}" = "portfast";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} True&#xA;
-        elif test "${stp-if-subcmds}" = "uplinkfast";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${iface} True&#xA;
-        elif test "${stp-if-subcmds}" = "enable";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${iface} True&#xA;
-        elif test "${stp-if-subcmds}" = "cost";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${iface} ${value}&#xA;
-        elif test "${stp-if-subcmds}" = "port-priority";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${iface} ${value}&#xA;
-        elif test "${stp-if-subcmds}" = "link-type";then&#xA;
-            if test "${link-sub-cmds}" = "auto";then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${iface}&#xA;
-            elif test "${link-sub-cmds}" = "point-to-point";then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${iface} "P2P"&#xA;
-            elif test "${link-sub-cmds}" = "shared";then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${iface} "SHARED"&#xA;
-            fi&#xA;
-        elif test "${stp-if-subcmds}" = "port";then&#xA;
-            if test "${edge}" != "";then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_edge_port ${iface} True&#xA;
-            fi&#xA;
-        fi&#xA;
-        builtin="clish_nop"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_if_subcmds ${stp-if-subcmds} ${iface} ${value} ${port-shutdown} ${link-sub-cmds} ${edge}
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1074,12 +1007,8 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION>
-        if test "${bpdufilt_sub_cmds}" = "enable";then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${iface} True&#xA;
-        elif test "${bpdufilt_sub_cmds}" = "disable";then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${iface} False&#xA;
-        fi&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_if_bpdu_filter ${bpdufilt_sub_cmds} ${iface}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1107,8 +1036,8 @@ limitations under the License.
             mode="subcommand"
             >
         </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface} "ROOT"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface}
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1169,13 +1098,8 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
             </PARAM>
-    <ACTION>
-       if test "${stp-if-vlan-subcmds}" = "cost";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_interfaces_interface_config_cost ${vlan-range} ${iface} ${value}&#xA;
-        elif test "${stp-if-vlan-subcmds}" = "port-priority";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py  patch_custom_stp_vlan_interfaces_interface_config_port_priority ${vlan-range} ${iface} ${value}&#xA;
-        fi&#xA;
-        builtin="clish_nop"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_if_vlan_subcmds ${stp-if-vlan-subcmds} ${vlan-range} ${iface} ${value}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1287,33 +1211,8 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION>
-       if test "${stp-if-subcmds}" = "bpduguard";then&#xA;
-            if test "${port-shutdown}" != "";then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_bpdu_guard_port_shutdown ${iface} False&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_guard ${iface} False&#xA;
-            fi&#xA;
-        elif test "${stp-if-subcmds}" = "uplinkfast";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${iface} False&#xA;
-        elif test "${stp-if-subcmds}" = "bpdufilter";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${iface}&#xA;
-        elif test "${stp-if-subcmds}" = "portfast";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} False&#xA;
-        elif test "${stp-if-subcmds}" = "enable";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${iface} False&#xA;
-        elif test "${stp-if-subcmds}" = "cost";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${iface}&#xA;
-        elif test "${stp-if-subcmds}" = "port-priority";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${iface}&#xA;
-        elif test "${stp-if-subcmds}" = "link-type";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${iface}&#xA;
-        elif test "${stp-if-subcmds}" = "port";then&#xA;
-            if test "${type}" != "";then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_edge_port ${iface} False&#xA;
-            fi&#xA;
-        fi&#xA;
-        builtin="clish_nop"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_stp_if_subcmds ${stp-if-subcmds} ${iface} ${port-shutdown} ${type}
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1348,8 +1247,8 @@ limitations under the License.
             mode="subcommand"
             >
         </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface} "NONE"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface} "NONE"
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1398,13 +1297,8 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION>
-       if test "${stp-if-vlan-subcmds}" = "cost";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_custom_stp_vlan_interfaces_interface_config_cost ${vlan-range} ${iface}&#xA;
-        elif test "${stp-if-vlan-subcmds}" = "port-priority";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py  delete_custom_stp_vlan_interfaces_interface_config_port_priority ${vlan-range} ${iface}&#xA;
-        fi&#xA;
-        builtin="clish_nop"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_stp_if_vlan_subcmds ${stp-if-vlan-subcmds} ${vlan-range} ${iface}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1443,13 +1337,8 @@ limitations under the License.
         mode="subcommand" 
         optional="true"> 
       </PARAM>
-      <ACTION>
-          if test "${port-shutdown}" != "";then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_bpdu_guard_port_shutdown ${po_name} True&#xA;
-          else&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_guard ${po_name} True&#xA;
-          fi&#xA;
-          builtin="clish_nop"
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp config_stp_if_bpdu_guard_subcmds ${po_name} ${port-shutdown}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1475,8 +1364,8 @@ limitations under the License.
         help="Port cost value" 
         ptype="STP_COST"> 
       </PARAM>
-      <ACTION> 
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name} ${value}&#xA;
+      <ACTION builtin="clish_pyobj"> 
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name} ${value}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1497,8 +1386,8 @@ limitations under the License.
       help="Enables spanning-tree on the port-channel" 
       ptype="SUBCOMMAND" 
       mode="subcommand">
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${po_name} True&#xA;
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${po_name} True&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1543,14 +1432,8 @@ limitations under the License.
           mode="subcommand"> 
         </PARAM>
       </PARAM>
-      <ACTION>
- if test "${link-sub-cmds}" = "auto";then&#xA;
- python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name}&#xA;
- elif test "${link-sub-cmds}" = "point-to-point";then&#xA;
- python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name} "P2P"&#xA;
- elif test "${link-sub-cmds}" = "shared";then&#xA;
- python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name} "SHARED"&#xA;
- fi&#xA;
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp config_stp_if_link_type_subcmds ${link-sub-cmds} ${po_name}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1571,8 +1454,8 @@ limitations under the License.
       help="Enables portfast on the port-channel" 
       ptype="SUBCOMMAND" 
       mode="subcommand">
-      <ACTION>
- python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${po_name} True&#xA;
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${po_name} True&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1598,8 +1481,8 @@ limitations under the License.
         help="Port priority value" 
         ptype="STP_PORT_PRIORITY"> 
       </PARAM>
-      <ACTION>
- python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name} ${value}&#xA;
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name} ${value}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1632,10 +1515,8 @@ limitations under the License.
           mode="subcommand"> 
         </PARAM>
       </PARAM>
-      <ACTION>
- if test "${edge}" != "";then&#xA;
- python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_edge_port ${po_name} True&#xA;
- fi&#xA;
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp config_stp_if_edge_port ${po_name} ${edge}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1656,8 +1537,8 @@ limitations under the License.
       help="Enables uplink fast on the port-channel" 
       ptype="SUBCOMMAND" 
       mode="subcommand">
-      <ACTION>
- python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${po_name} True&#xA;
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${po_name} True&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1703,12 +1584,8 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION>
-        if test "${bpdufilt_sub_cmds}" = "enable";then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name} True&#xA;
-        elif test "${bpdufilt_sub_cmds}" = "disable";then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name} False&#xA;
-        fi&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_if_bpdu_filter ${bpdufilt_sub_cmds} ${po_name}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1736,8 +1613,8 @@ limitations under the License.
             mode="subcommand"
             >
         </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "ROOT"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name}
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1798,13 +1675,8 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
             </PARAM>
-    <ACTION>
-       if test "${stp-if-vlan-subcmds}" = "cost";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_custom_stp_vlan_interfaces_interface_config_cost ${vlan-range} ${po_name} ${value}&#xA;
-        elif test "${stp-if-vlan-subcmds}" = "port-priority";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py  patch_custom_stp_vlan_interfaces_interface_config_port_priority ${vlan-range} ${po_name} ${value}&#xA;
-        fi&#xA;
-        builtin="clish_nop"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_if_vlan_subcmds ${stp-if-vlan-subcmds} ${vlan-range} ${po_name} ${value}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1831,8 +1703,8 @@ limitations under the License.
       help="if spanning-tree BPDU filter on the port-channel is disabled, global bpdufilter will be applied"
       ptype="SUBCOMMAND"
       mode="subcommand">
-      <ACTION>
-          python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name}&#xA;
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1860,12 +1732,8 @@ limitations under the License.
         mode="subcommand"
         optional="true">
       </PARAM>
-      <ACTION>
-        if test "${port-shutdown}" != "";then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_bpdu_guard_port_shutdown ${po_name} False&#xA;
-        else&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_guard ${po_name} False&#xA;
-        fi&#xA;
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp delete_stp_if_bpdu_guard_subcmds ${po_name} ${port-shutdown}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1886,8 +1754,8 @@ limitations under the License.
       help="Unset the port level cost value for a VLAN"
       ptype="SUBCOMMAND"
       mode="subcommand">
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name}&#xA;
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1908,8 +1776,8 @@ limitations under the License.
       help="Disables spanning-tree on the port-channel"
       ptype="SUBCOMMAND"
       mode="subcommand">
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${po_name} False&#xA;
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${po_name} False&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1930,8 +1798,8 @@ limitations under the License.
       help="Unset link type of the port-channel"
       ptype="SUBCOMMAND"
       mode="subcommand">
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name}&#xA;
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1952,8 +1820,8 @@ limitations under the License.
       help="Disables portfast on the port-channel"
       ptype="SUBCOMMAND"
       mode="subcommand">
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${po_name} False&#xA;
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${po_name} False&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1974,8 +1842,8 @@ limitations under the License.
       help="Reset the port level priority on the port-channel"
       ptype="SUBCOMMAND"
       mode="subcommand">
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name}&#xA;
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1996,8 +1864,8 @@ limitations under the License.
       help="Disables uplink fast on the port-channel"
       ptype="SUBCOMMAND"
       mode="subcommand">
-      <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${po_name} False&#xA;
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${po_name} False&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -2025,10 +1893,8 @@ limitations under the License.
         mode="subcommand"
         optional="true">
       </PARAM>
-      <ACTION>
-        if test "${type}" != "";then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_edge_port ${po_name} False&#xA;
-        fi&#xA;
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_stp_if_edge_port_subcmds ${po_name} ${type}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -2055,8 +1921,8 @@ limitations under the License.
             mode="subcommand"
             >
         </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "NONE"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "NONE"
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -2105,13 +1971,8 @@ limitations under the License.
                 >
             </PARAM>
         </PARAM>
-    <ACTION>
-       if test "${stp-if-vlan-subcmds}" = "cost";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_custom_stp_vlan_interfaces_interface_config_cost ${vlan-range} ${po_name}&#xA;
-        elif test "${stp-if-vlan-subcmds}" = "port-priority";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py  delete_custom_stp_vlan_interfaces_interface_config_port_priority ${vlan-range} ${po_name}&#xA;
-        fi&#xA;
-        builtin="clish_nop"
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_stp_if_vlan_cost ${stp-if-vlan-subcmds} ${vlan-range} ${po_name}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
