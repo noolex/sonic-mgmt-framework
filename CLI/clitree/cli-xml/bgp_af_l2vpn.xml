@@ -439,7 +439,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-map" help="Name of the route map (max 140 chars)">
+  <COMMAND name="route-map" help="Name of the route map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -617,7 +617,7 @@ limitations under the License.
              python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
     </ACTION>
   </COMMAND>
-  <COMMAND name="no route-map" help="Name of the route map (max 140 chars)">
+  <COMMAND name="no route-map" help="Name of the route map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
@@ -730,7 +730,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-map" help="Name of the route map (max 140 chars)">
+  <COMMAND name="route-map" help="Name of the route map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -1012,7 +1012,7 @@ limitations under the License.
              python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN False&#xA;
     </ACTION>
   </COMMAND>
-  <COMMAND name="no route-map" help="Name of the route map (max 140 chars)">
+  <COMMAND name="no route-map" help="Name of the route map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
@@ -1149,9 +1149,7 @@ limitations under the License.
 
 <VIEW name="enable-view">
   <COMMAND name="show bgp l2vpn" help="Layer 2 Virtual Private Network"/>
-  <COMMAND name="show bgp l2vpn evpn" help="Ethernet Virtual Private Network">
-    <ACTION builtin="clish_nop"/>
-  </COMMAND>
+  <COMMAND name="show bgp l2vpn evpn" help="Ethernet Virtual Private Network"/>
   <COMMAND name="show bgp l2vpn evpn route" help="EVPN Route information">
     <PARAM name="evpnroutesubcommands" help="EVPN Route Subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
       <PARAM name="rd" help="Route Distinguisher" mode="subcommand" ptype="SUBCOMMAND" optional="true">

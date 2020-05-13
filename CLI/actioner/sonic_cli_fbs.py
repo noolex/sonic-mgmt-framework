@@ -521,7 +521,7 @@ def set_policer_action(args):
             print('%Error: Unknown argument {}'.format(args[index]))
             return
 
-        data[key] = int(value)
+        data[key] = value
         index += 2
 
     body["POLICY_SECTIONS_TABLE_LIST"] = [data]

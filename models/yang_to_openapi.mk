@@ -21,7 +21,6 @@ TOPDIR := ..
 BUILD_DIR := $(TOPDIR)/build
 
 YANGAPI_DIR                 := $(TOPDIR)/build/yaml
-YANGAPI3_DIR                := $(TOPDIR)/build/openapi3
 MD_DIR                      := $(TOPDIR)/build/restconf_md
 
 YANGDIR                     := yangs
@@ -48,9 +47,16 @@ all: $(YANGAPI_DIR)/.done $(YANGAPI_DIR)/.sonic_done
 	mkdir -p $@
 
 #======================================================================
+# Unit tests for OpenAPI generator 
+#======================================================================
+$(YANGAPI_DIR)/.openapi_gen_ut: $(PYANG_PLUGIN_DIR)/openapi.py $(YANGAPI_DIR)/.
+	$(MAKE) -C $(TOOLS_DIR)/openapi_tests
+	touch $@
+
+#======================================================================
 # Generate YAML files for Yang modules
 #======================================================================
-$(YANGAPI_DIR)/.done: $(YANG_MOD_FILES) $(YANG_COMMON_FILES) $(YANGAPI_DIR)/. $(MD_DIR)/.
+$(YANGAPI_DIR)/.done: $(YANG_MOD_FILES) $(YANG_COMMON_FILES) $(YANGAPI_DIR)/. $(MD_DIR)/. $(YANGAPI_DIR)/.openapi_gen_ut
 	@echo "+++++ Generating YAML files for Yang modules +++++"
 	$(PYANG) \
 		-f swaggerapi \
@@ -79,19 +85,6 @@ $(YANGAPI_DIR)/.sonic_done: $(SONIC_YANG_MOD_FILES) $(SONIC_YANG_COMMON_FILES) $
 	@echo "+++++ Generation of  YAML files for Sonic Yang modules completed +++++"
 	touch $@
 
-#======================================================================
-# TODO: Temporary remove this when V3 plugin is enabled
-#======================================================================
-openapi3:  $(YANG_MOD_FILES) $(YANG_COMMON_FILES) $(YANGAPI3_DIR)/.
-	@echo "+++++ Generating OpenAPI specs for Yang modules +++++"
-	$(PYANG) \
-		-f openapiv3 \
-		--outputdir $(YANGAPI3_DIR) \
-		--plugindir $(PYANG_PLUGIN_DIR) \
-		-p $(YANGDIR_COMMON):$(YANGDIR):$(YANGDIR_EXTENSIONS):$(YANGDIR_SONIC_COMMON):$(YANGDIR_SONIC) \
-		$(YANG_MOD_FILES) $(YANG_MOD_EXTENSION_FILES) $(SONIC_YANG_MOD_FILES)
-	@echo "+++++ Generation of  OpenAPI V3 specs for Yang modules completed +++++"
-	
 #======================================================================
 # Cleanups
 #======================================================================

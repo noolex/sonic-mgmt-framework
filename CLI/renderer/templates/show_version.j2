@@ -1,3 +1,24 @@
-{% for key,value in json_output.items() %}
-{{key.ljust(10)}}:{{value}}
+{{ ' ' }}
+{{ 'Software Version'.ljust(18) }}: {{ json_output['software-version'] }}
+{{ 'Distribution'.ljust(18) }}: {{ json_output['distribution-version'] }}
+{{ 'Kernel'.ljust(18) }}: {{ json_output['kernel-version'] }}
+{{ 'Build Commit'.ljust(18) }}: {{ json_output['build-commit'] }}
+{{ 'Build Date'.ljust(18) }}: {{ json_output['build-date'] }}
+{{ 'Built By'.ljust(18) }}: {{ json_output['built-by'] }}
+{{ 'Platform'.ljust(18) }}: {{ json_output['platform-name'] }}
+{{ 'HwSKU'.ljust(18) }}: {{ json_output['hwsku-version'] }}
+{{ 'ASIC'.ljust(18) }}: {{ json_output['asic-version'] }}
+{{ 'Hardware Version'.ljust(18) }}: {{ json_output['hardware-version'] }}
+{{ 'Serial Number'.ljust(18) }}: {{ json_output['serial-number'] }}
+{{ 'Uptime'.ljust(18) }}: {{ json_output['up-time'] }}
+{{ 'Mfg'.ljust(18) }}: {{ json_output['mfg-name'] }}
+{{ ' ' }}
+
+{% set docker_version = json_output["docker-version"] %}
+{{'REPOSITORY'.ljust(40)}} {{'TAG'.ljust(20)}}{{'IMAGE ID'.ljust(20)}} {{'SIZE'.ljust(20)}}
+{% for docker_ver in docker_version %}
+{{(docker_ver['docker-name'] | string).ljust(40)}}{{(docker_ver['docker-tag-id'] | string).ljust(20)}}{{(docker_ver['docker-image-id'] | string).ljust(20)}}{{(docker_ver['docker-size'] | string).ljust(20)}}
 {% endfor %}
+
+{{ ' ' }}
+

@@ -402,6 +402,7 @@ def mclag_show_mclag_brief(args):
     mclag_info = {}
     mclag_info['domain_info'] = {}
     mclag_info['domain_info'] = {}
+    mclag_info['gateway_mac_info'] = {}
     mclag_info['mclag_iface_info'] = {}
     count_of_mclag_ifaces = 0
 
@@ -429,6 +430,16 @@ def mclag_show_mclag_brief(args):
             mclag_info['domain_info'] = domain_cfg_info.copy()
             mclag_info['domain_info'].update(domain_state_info)
             
+            mclag_info['gateway_mac_info'] = {}
+            if "MCLAG_GW_MAC" in response["sonic-mclag:sonic-mclag"]:
+                mclag_gw_mac_list = response['sonic-mclag:sonic-mclag']['MCLAG_GW_MAC']['MCLAG_GW_MAC_LIST']
+                gateway_mac_info = {}
+                #MCLAG_GW_MAC_LIST always has only one entry
+                for list_item  in mclag_gw_mac_list:
+                    gateway_mac=list_item["gw_mac"]
+                    gateway_mac_info['gateway_mac']=gateway_mac
+                mclag_info['gateway_mac_info'].update(gateway_mac_info)
+ 
             mclag_local_if_list  = []
             if "MCLAG_INTERFACE" in response["sonic-mclag:sonic-mclag"]:
                 mclag_local_if_list = response['sonic-mclag:sonic-mclag']['MCLAG_INTERFACE']['MCLAG_INTERFACE_LIST']

@@ -10,5 +10,10 @@
 {{'EVPN VTEP        : '}} {{(nvo_list.source_vtep|string).ljust(8)}}
 {% endfor %}
 
+{% for loIntfAttr in  json_output['sonic-loopback-interface:LOOPBACK_INTERFACE'] %}
+{% if loIntfAttr == 'src_if' %}
+{{'Source Interface : '}} {{(json_output['sonic-loopback-interface:LOOPBACK_INTERFACE']['src_if']|string).ljust(8)}}
+{% endif %}
+{% endfor %}
 {% endif %}
 

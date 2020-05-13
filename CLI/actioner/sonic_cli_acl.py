@@ -475,12 +475,37 @@ def handle_unbind_acl_request(args):
 
 
 def handle_get_acl_details_request(args):
-    if len(args) == 1:
-        keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets')
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/state/counter-capability')
+    resp = acl_client.get(keypath)
+    if resp.ok():
+        counter_mode = resp.content["openconfig-acl:counter-capability"].split(":")[1]
     else:
-        keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}',
-                          name=args[1], acl_type=args[0])
-    return acl_client.get(keypath)
+        print("%Error: Unable to get ACL Counter mode")
+        return None
+
+    if len(args) == 1:
+        if counter_mode == "AGGREGATE_ONLY":
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets')
+            response = acl_client.get(keypath)
+        else:
+            keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
+            response = acl_client.get(keypath)
+    elif len(args) == 2:
+        if counter_mode == "AGGREGATE_ONLY":
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
+            response = acl_client.get(keypath)
+        else:
+            keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname='{}_{}'.format(args[1], args[0]))
+            response = acl_client.get(keypath)
+    else:
+        if counter_mode != "INTERFACE_ONLY":
+            print("%Error: Per interface counter mode not set")
+            return
+        keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname='{}_{}'.format(args[1], args[0]))
+        response = acl_client.get(keypath)
+
+    response.counter_mode = counter_mode
+    return response
 
 
 def handle_get_all_acl_binding_request(args):
@@ -526,6 +551,30 @@ def __clear_acl_rule_remark(args):
     return acl_client.delete(keypath)
 
 
+def clear_acl_counters_request(args):
+    path = cc.Path('/restconf/operations/sonic-acl:clear-acl-counters')
+
+    if len(args) == 1:
+        body = {"sonic-acl:input": {"type": args[0]}}
+    elif len(args) == 2:
+        body = {"sonic-acl:input": {"aclname": args[1], "type": args[0]}}
+    else:
+        ifname = "".join(args[3:])
+        body = {"sonic-acl:input": {"aclname": args[1], "type": args[0], "ifname": ifname}}
+
+    return acl_client.post(path, body)
+
+
+def set_counter_mode_request(args):
+    keypath = cc.Path("/restconf/data/openconfig-acl:acl/config/openconfig-acl-ext:counter-capability")
+    if args[0] == 'per-entry':
+        body = {"openconfig-acl-ext:counter-capability": "AGGREGATE_ONLY"}
+    else:
+        body = {"openconfig-acl-ext:counter-capability": "INTERFACE_ONLY"}
+
+    return acl_client.patch(keypath, body)
+
+
 def handle_generic_set_response(response, args):
     if response.ok():
         resp_content = response.content
@@ -534,8 +583,13 @@ def handle_generic_set_response(response, args):
     else:
         try:
             error_data = response.errors().get('error', list())[0]
-            if 'error-app-tag' in error_data and error_data['error-app-tag'] == 'too-many-elements':
-                print('Error: Exceeds maximum number of ACL / ACL Rules')
+            if 'error-app-tag' in error_data:
+                if error_data['error-app-tag'] == 'too-many-elements':
+                    print('Error: Exceeds maximum number of ACL / ACL Rules.')
+                elif error_data['error-app-tag'] == 'counters-in-use':
+                    print('Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
+                else:
+                    print(response.error_message())
             else:
                 print(response.error_message())
         except Exception as e:
@@ -582,6 +636,17 @@ def __convert_oc_acl_type_to_user_fmt(acl_type):
         return 'ip'
     elif acl_type == 'ACL_IPV6' or acl_type == 'openconfig-acl:ACL_IPV6':
         return 'ipv6'
+    else:
+        raise RuntimeError("Unknown ACL Type {}".format(acl_type))
+
+
+def __convert_oc_acl_type_to_sonic_fmt(acl_type):
+    if acl_type == 'ACL_L2' or acl_type == 'openconfig-acl:ACL_L2':
+        return 'L2'
+    elif acl_type == 'ACL_IPV4' or acl_type == 'openconfig-acl:ACL_IPV4':
+        return 'L3'
+    elif acl_type == 'ACL_IPV6' or acl_type == 'openconfig-acl:ACL_IPV6':
+        return 'L3V6'
     else:
         raise RuntimeError("Unknown ACL Type {}".format(acl_type))
 
@@ -770,7 +835,7 @@ def __parse_acl_entry(data, acl_entry, acl_type):
         __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data)
     elif 'ipv6' == acl_type:
         __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, False)
-    elif 'l2' == acl_type:
+    elif 'mac' == acl_type:
         __convert_l2_rule_to_user_fmt(acl_entry, rule_data)
 
     try:
@@ -783,57 +848,230 @@ def __parse_acl_entry(data, acl_entry, acl_type):
     data[seq_id]['rule_data'] = rule_data
 
 
+def __convert_oc_acl_set_to_user_fmt(acl_set, data):
+    acl_name = acl_set['name']
+    acl_type = __convert_oc_acl_type_to_user_fmt(acl_set['type'])
+    if not data.get(acl_type, None):
+        data[acl_type] = OrderedDict()
+    data[acl_type][acl_name] = OrderedDict()
+    data[acl_type][acl_name]['rules'] = OrderedDict()
+
+    try:
+        data[acl_type][acl_name]['description'] = acl_set['state']['description']
+    except KeyError:
+        pass
+
+    try:
+        temp_rules = dict()
+        for acl_entry in acl_set['acl-entries']['acl-entry']:
+            __parse_acl_entry(temp_rules, acl_entry, acl_type)
+
+        rules_key_list = temp_rules.keys()
+        rules_key_list.sort()
+        for k in rules_key_list:
+            data[acl_type][acl_name]['rules'][k] = temp_rules[k]
+    except KeyError:
+        pass
+
+
+def __handle_get_acl_details_aggregate_mode_response(resp_content, args):
+    log.log_debug(json.dumps(resp_content, indent=4))
+    if bool(resp_content):
+        data = OrderedDict()
+        if len(args) == 1:
+            log.log_debug('Get details for specific ACL Type {}'.format(args[0]))
+            acl_type = __convert_oc_acl_type_to_user_fmt(args[0])
+            data[acl_type] = OrderedDict()
+
+            for acl_set in resp_content["openconfig-acl:acl-sets"]["acl-set"]:
+                if not acl_set['type'].endswith(args[0]):
+                    continue
+
+                __convert_oc_acl_set_to_user_fmt(acl_set, data)
+                # acl_name = acl_set['name']
+                # data[acl_type][acl_name] = OrderedDict()
+                # data[acl_type][acl_name]['rules'] = OrderedDict()
+                #
+                # try:
+                #     data[acl_type][acl_name]['description'] = acl_set['state']['description']
+                # except KeyError:
+                #     pass
+                #
+                # try:
+                #     temp_rules = dict()
+                #     for acl_entry in acl_set['acl-entries']['acl-entry']:
+                #         __parse_acl_entry(temp_rules, acl_entry, acl_type)
+                #
+                #     rules_key_list = temp_rules.keys()
+                #     rules_key_list.sort()
+                #     for k in rules_key_list:
+                #         data[acl_type][acl_name]['rules'][k] = temp_rules[k]
+                # except KeyError:
+                #     pass
+        else:
+            log.log_debug('Get details for ACL Type {}::{}'.format(args[0], args[1]))
+            __convert_oc_acl_set_to_user_fmt(resp_content['openconfig-acl:acl-set'][0], data)
+            # acl_type = __convert_oc_acl_type_to_user_fmt(args[0])
+            # acl_name = args[1]
+            # data[acl_type] = OrderedDict()
+            # data[acl_type][acl_name] = OrderedDict()
+            # data[acl_type][acl_name]['rules'] = OrderedDict()
+            #
+            # acl_set = resp_content['openconfig-acl:acl-set'][0]
+            # try:
+            #     data[acl_type][acl_name]['description'] = acl_set['state']['description']
+            # except KeyError:
+            #     pass
+            #
+            # try:
+            #     temp_rules = dict()
+            #     for acl_entry in acl_set['acl-entries']['acl-entry']:
+            #         __parse_acl_entry(temp_rules, acl_entry, acl_type)
+            #
+            #     rules_key_list = temp_rules.keys()
+            #     rules_key_list.sort()
+            #     for k in rules_key_list:
+            #         data[acl_type][acl_name]['rules'][k] = temp_rules[k]
+            # except KeyError:
+            #     pass
+
+        log.log_debug(str(data))
+        show_cli_output('show_access_list.j2', data)
+
+
+def __deep_copy(dst, src):
+    for key, value in src.items():
+        if isinstance(value, dict):
+            node = dst.setdefault(key, {})
+            __deep_copy(node, value)
+        else:
+            dst[key] = value
+    return dst
+
+
+def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, stage, cache=dict()):
+    log.log_debug('ACL:{} Type:{} Intf:{} Stage:{}'.format(acl_name, acl_type, intf_name, stage))
+    acl_name = acl_name.replace("_" + acl_type, "")
+    output = OrderedDict()
+    if cache.get(acl_name, None) is None:
+        log.log_debug("No Cache present")
+        keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}',
+                          name=acl_name, acl_type=acl_type)
+        response = acl_client.get(keypath)
+        if response.ok():
+            log.log_debug(response.content)
+            __convert_oc_acl_set_to_user_fmt(response.content['openconfig-acl:acl-set'][0], output)
+            temp = OrderedDict()
+            __deep_copy(temp, output)
+            cache[acl_name] = temp
+        else:
+            log.log_error("Error pulling ACL config for {}:{}".format(acl_name, acl_type))
+            print("%Error: {}".format(response.error_message()))
+            return True
+    else:
+        log.log_debug("Cache present")
+        __deep_copy(output, cache[acl_name])
+
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/{stage}-acl-sets/{stage}-acl-set={setname},{acltype}',
+                      id=intf_name, stage=stage.lower(), setname=acl_name, acltype=acl_type)
+    response = acl_client.get(keypath)
+    if response.ok():
+        log.log_debug(response.content)
+        acl_set = response.content['openconfig-acl:{}-acl-set'.format(stage.lower())][0]
+        user_acl_type = __convert_oc_acl_type_to_user_fmt(acl_set['type'])
+        for acl_entry in acl_set['acl-entries']['acl-entry']:
+            output[user_acl_type][acl_name]['rules'][acl_entry['sequence-id']]['packets'] = acl_entry['state']['matched-packets']
+            output[user_acl_type][acl_name]['rules'][acl_entry['sequence-id']]['octets'] = acl_entry['state']['matched-octets']
+
+        render_dict = dict()
+        if intf_name != "Switch":
+            render_dict["interface {}".format(intf_name)] = output
+        else:
+            render_dict[intf_name] = output
+
+        show_cli_output('show_access_list_intf.j2', render_dict)
+
+        return False
+    else:
+        print("%Error: {}".format(response.error_message()))
+        return True
+
+
+def __process_acl_counters_request_by_name_and_inf(response, args):
+    acl_type = __convert_oc_acl_type_to_sonic_fmt(args[0])
+    acl_data = response["sonic-acl:ACL_TABLE_LIST"]
+    if not bool(acl_data):
+        print("%Error: ACL not found")
+        return
+
+    acl_data = acl_data[0]
+    if acl_type != acl_data["type"].upper():
+        print("%Error: ACL is not of type {}".format(__convert_oc_acl_type_to_user_fmt(args[0])))
+        return
+
+    stage = acl_data.get("stage", "INGRESS")
+    ports = acl_data.get("ports", [])
+    if "".join(args[3:]) in ports:
+        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], "".join(args[3:]), stage)
+    else:
+        print("%Error: ACL {} not applied to {}".format(args[1], "".join(args[3:])))
+
+
+def __process_acl_counters_request_by_type_and_name(response, args):
+    acl_type = __convert_oc_acl_type_to_sonic_fmt(args[0])
+    acl_data = response["sonic-acl:ACL_TABLE_LIST"]
+    if not bool(acl_data):
+        print("%Error: ACL not found")
+        return
+
+    acl_data = acl_data[0]
+    if acl_type != acl_data["type"].upper():
+        print("%Error: ACL is not of type {}".format(__convert_oc_acl_type_to_user_fmt(args[0])))
+        return
+
+    cache = dict()
+    stage = acl_data.get("stage", "INGRESS")
+    for port in acl_data.get("ports", []):
+        stop = __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache)
+        if stop:
+            return
+
+
+def __process_acl_counters_request_by_type(response, args):
+    acl_type = __convert_oc_acl_type_to_sonic_fmt(args[0])
+
+    filtered_acls = []
+    for acl_data in response["sonic-acl:ACL_TABLE_LIST"]:
+        if acl_type == acl_data["type"].upper():
+            filtered_acls.append(acl_data)
+            log.log_debug("ACL {} is of type {}. Add to list".format(acl_data["aclname"], acl_type))
+        else:
+            log.log_debug("ACL {} is not of type {}. Skip".format(acl_data["aclname"], acl_type))
+
+    cache = dict()
+    for acl in filtered_acls:
+        stage = acl.get("stage", "INGRESS")
+        for port in acl.get("ports", []):
+            stop = __get_and_show_acl_counters_by_name_and_intf(acl["aclname"], args[0], port, stage, cache)
+            if stop:
+                return
+
+
+def __handle_get_acl_details_interface_mode_response(response, args):
+    if len(args) == 1:
+        __process_acl_counters_request_by_type(response, args)
+    elif len(args) == 2:
+        __process_acl_counters_request_by_type_and_name(response, args)
+    else:
+        __process_acl_counters_request_by_name_and_inf(response, args)
+
+
 def handle_get_acl_details_response(response, args):
     if response.ok():
-        resp_content = response.content
-        log.log_debug(json.dumps(resp_content, indent=4))
-        if bool(resp_content):
-            data = OrderedDict()
-            if len(args) == 1:
-                log.log_debug('Get details for specific ACL Type {}'.format(args[0]))
-                acl_type = __convert_oc_acl_type_to_user_fmt(args[0])
-                data[acl_type] = OrderedDict()
-
-                for acl_set in resp_content["openconfig-acl:acl-sets"]["acl-set"]:
-                    if not acl_set['type'].endswith(args[0]):
-                        continue
-
-                    acl_name = acl_set['name']
-                    data[acl_type][acl_name] = OrderedDict()
-                    data[acl_type][acl_name]['rules'] = OrderedDict()
-
-                    try:
-                        data[acl_type][acl_name]['description'] = acl_set['state']['description']
-                    except KeyError:
-                        pass
-
-                    try:
-                        for acl_entry in acl_set['acl-entries']['acl-entry']:
-                            __parse_acl_entry(data[acl_type][acl_name]['rules'], acl_entry, acl_type)
-                    except KeyError:
-                        pass
-            else:
-                log.log_debug('Get details for ACL Type {}::{}'.format(args[0], args[1]))
-                acl_type = __convert_oc_acl_type_to_user_fmt(args[0])
-                acl_name = args[1]
-                data[acl_type] = OrderedDict()
-                data[acl_type][acl_name] = OrderedDict()
-                data[acl_type][acl_name]['rules'] = OrderedDict()
-
-                acl_set = resp_content['openconfig-acl:acl-set'][0]
-                try:
-                    data[acl_type][acl_name]['description'] = acl_set['state']['description']
-                except KeyError:
-                    pass
-
-                try:
-                    for acl_entry in acl_set['acl-entries']['acl-entry']:
-                        __parse_acl_entry(data[acl_type][acl_name]['rules'], acl_entry, acl_type)
-                except KeyError:
-                    pass
-
-            log.log_debug(str(data))
-            show_cli_output('show_access_list.j2', data)
+        if response.counter_mode == 'AGGREGATE_ONLY':
+            __handle_get_acl_details_aggregate_mode_response(response.content, args)
+        else:
+            __handle_get_acl_details_interface_mode_response(response.content, args)
     else:
         if response.status_code != 404:
             print(response.error_message())
@@ -871,6 +1109,15 @@ def handle_get_all_acl_binding_response(response, args):
             print(response.error_message())
 
 
+def clear_acl_counters_response(response, args):
+    if not response.ok():
+        print(response.error_message())
+    else:
+        if response.content['clear-acl-counters:output']['status'] != "SUCCESS":
+            print("%Error: {}".format(response.content['clear-acl-counters:output']['status-detail']))
+        log.log_debug("clear completed")
+
+
 request_handlers = {
     'create_acl': handle_create_acl_request,
     'create_acl_rule': handle_create_acl_rule_request,
@@ -881,7 +1128,9 @@ request_handlers = {
     'get_acl_details': handle_get_acl_details_request,
     'get_all_acl_binding': handle_get_all_acl_binding_request,
     'set_acl_remark': set_acl_remark_request,
-    'clear_acl_remark': clear_acl_remark_request
+    'clear_acl_remark': clear_acl_remark_request,
+    'clear_acl_counters': clear_acl_counters_request,
+    'set_counter_mode': set_counter_mode_request
 }
 
 response_handlers = {
@@ -894,7 +1143,9 @@ response_handlers = {
     'get_acl_details': handle_get_acl_details_response,
     'get_all_acl_binding': handle_get_all_acl_binding_response,
     'set_acl_remark': handle_generic_set_response,
-    'clear_acl_remark': handle_generic_delete_response
+    'clear_acl_remark': handle_generic_delete_response,
+    'clear_acl_counters': clear_acl_counters_response,
+    'set_counter_mode': handle_generic_set_response
 }
 
 

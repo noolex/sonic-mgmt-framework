@@ -71,7 +71,7 @@ def invoke(func, args):
         return aa.get(keypath)
     elif func == 'rpc_sonic_fdb_clear_fdb':
         keypath = cc.Path('/restconf/operations/sonic-fdb:clear_fdb')
-        body = {"sonic-fdb:input":{"mac-param":"all"}}
+        body = {"sonic-fdb:input": { args[0]: args[1]}}
         return aa.post(keypath, body)
     else:
         return body

@@ -26,6 +26,7 @@ import cli_client as cc
 from netaddr import *
 from scripts.render_cli import show_cli_output
 import subprocess
+from natsort import natsorted
 
 import urllib3
 urllib3.disable_warnings()
@@ -166,7 +167,8 @@ def invoke_api(func, args=[]):
         
     elif func == 'patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/port-speed', name=args[0])
-        speed_map = {"10MBPS":"SPEED_10MB", "100MBPS":"SPEED_100MB", "1GIGE":"SPEED_1GB", "auto":"SPEED_1GB" }
+        speed_map = {"10MBPS":"SPEED_10MB", "100MBPS":"SPEED_100MB", "1GIGE":"SPEED_1GB", "auto":"SPEED_1GB", "10GIGE":"SPEED_10GB",
+                        "25GIGE":"SPEED_25GB", "40GIGE":"SPEED_40GB", "100GIGE":"SPEED_100GB" }
         if args[1] not in speed_map.keys():
             print("%Error: Invalid port speed config")
             exit(1)
@@ -268,6 +270,8 @@ def invoke_api(func, args=[]):
         responseIntfTbl = api.get(path)
         if responseIntfTbl.ok():
             d.update(responseIntfTbl.content)
+            tbl_key = "sonic-interface:INTF_TABLE_IPADDR_LIST"
+            d[tbl_key] = natsorted(d[tbl_key],key=lambda t: t["ifName"])
             if func == 'ip_interfaces_get':
                 filter_address(d, True)
             else:

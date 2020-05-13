@@ -22,6 +22,7 @@ extern "C" {
 #include "private.h"
 #include "lub/dump.h"
 #include "nos_extn.h"
+#include "logging.h"
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -31,7 +32,6 @@ extern "C" {
 #include <stdlib.h>
 #include <pwd.h>
 #include <cJSON.h>
-#include <syslog.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <stdbool.h>
@@ -112,7 +112,7 @@ int print_error(const char *str) {
             std::string err_msg = "operation failed";
 
             cJSON* err_tag = cJSON_GetObjectItemCaseSensitive(error, "error-tag");
-            if(err_tag == nullptr) {
+            if(err_tag == NULL) {
                 lub_dump_printf("%% Error: %s\r\n", err_msg.c_str());
                 return 1;
             }
@@ -169,7 +169,12 @@ static int _init_curl() {
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
 
-    curl_easy_setopt(curl, CURLOPT_UNIX_SOCKET_PATH, "/var/run/rest-local.sock");
+    if (REST_API_ROOT.find("https://") == 0) {
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+    } else {
+        curl_easy_setopt(curl, CURLOPT_UNIX_SOCKET_PATH, "/var/run/rest-local.sock");
+    }
 
     return 0;
 }
