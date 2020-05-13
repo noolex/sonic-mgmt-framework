@@ -39,7 +39,7 @@ def generate_body(func, args):
         keypath = cc.Path('/restconf/data/sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST')
         #keypath = []
         body = {
-                   "sonic-storm-control:PORT_STORM_CONTROL:PORT_STORM_CONTROL_LIST":
+                   "sonic-storm-control:PORT_STORM_CONTROL_LIST":
                    [
                        {
                            "ifname":args[0],
