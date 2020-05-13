@@ -1,0 +1,10 @@
+{% set alias = "disabled" %}
+
+{% if 'sonic-device-metadata:aliasMode' in json_output %}
+{% if json_output['sonic-device-metadata:aliasMode'] == True %}
+{% set alias = "enabled" %}
+{% endif %}
+{% endif %}
+
+Alias mode is {{alias}}
+
