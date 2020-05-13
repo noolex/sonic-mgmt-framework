@@ -1,0 +1,16 @@
+{{'-----------------------------------------------------------'}}
+{{'PSU'.ljust(20)}} {{'Status'}}
+{{'-----------------------------------------------------------'}}
+
+{% for psu_name, psu_info in json_output.items() %}
+{% if 'state' in psu_info %}
+{% if 'oper-status' in psu_info['state'] %}
+{% set oper_status = psu_info['state']['oper-status'] %}
+{% if 'openconfig-platform-types:' in oper_status %}
+{% set oper_status = oper_status.split(':')[1] %}
+{% endif %}
+{{psu_name.ljust(20)}} {{oper_status}}
+{% endif %}
+{% endif %}
+{% endfor %}
+

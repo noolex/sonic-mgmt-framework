@@ -27,8 +27,14 @@ limitations under the License.
     <COMMAND name="show platform environment" help="Show platform Environment">
       <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component "Sensor" platform_env_show.j2 ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="show platform syseeprom" help="Show platoform eeprom information">
+    <COMMAND name="show platform syseeprom" help="Show platform eeprom information">
       <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component "System Eeprom" platform_eeprom_show.j2 ${__full_line} </ACTION>
+    </COMMAND>
+    <COMMAND name="show platform psustatus" help="Show platform PSU status">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_psu_status platform_psustatus_show.j2 ${__full_line} </ACTION>
+    </COMMAND>
+    <COMMAND name="show platform psusummary" help="Show platform PSU summary">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_psu_summary platform_psusummary_show.j2 ${__full_line} </ACTION>
     </COMMAND>
   </VIEW>
 </CLISH_MODULE>
