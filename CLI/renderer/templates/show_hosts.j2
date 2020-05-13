@@ -5,7 +5,7 @@
       {% if src_intf == "eth0" %}
           {% set src_intf = "Management0" %}
       {% endif %}  
-Source Interface  : {{src_intf}}
+Source Interface: {{src_intf}}
    {% endif %}
    {% set servers = json_output['openconfig-system:dns']['servers'] %}
    {% if servers -%}
@@ -15,7 +15,7 @@ Source Interface  : {{src_intf}}
        {%for server in server_list %}
        {% do server_ip.append(server['address']) %}
        {% endfor %}
-Name servers are: {{server_ip|join(' ')}}
+Name servers are: {{server_ip|join(', ')}}
     {% endif %}
    {% endif %}
 {% endif %}
