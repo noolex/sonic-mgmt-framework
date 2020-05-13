@@ -537,12 +537,12 @@ limitations under the License.
                 name="speed"
                 help="Speed config of the interface"
                 ptype="INTF_SPEED" />
-            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface} ${speed}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface_uri} ${speed}</ACTION>
         </COMMAND>
         <COMMAND
             name="no speed"
             help="Set default speed config">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body = {"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/port-speed body = {"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
         </COMMAND>
         <COMMAND
             name="channel-group"
@@ -555,23 +555,23 @@ limitations under the License.
                 ptype="LAG_ID"
             >
         </PARAM>
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id body={"openconfig-if-aggregate:aggregate-id": "${lag-id}"}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id body={"openconfig-if-aggregate:aggregate-id": "${lag-id}"}</ACTION>
         </COMMAND>
 
         <COMMAND
             name="no channel-group"
             help="Remove from PortChannel group">
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id</ACTION>
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id</ACTION>
         </COMMAND>
         <COMMAND
             name="shutdown"
             help="Disable the interface">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
         </COMMAND>
         <COMMAND
             name="no shutdown"
             help="Enable the interface">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
         </COMMAND>
 
         <COMMAND
@@ -596,7 +596,7 @@ limitations under the License.
                     ptype="VLAN_ID"
                     />
             </PARAM>
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config body={"openconfig-vlan:config": {"interface-mode": "ACCESS", "access-vlan": ${vlan-id}}}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config body={"openconfig-vlan:config": {"interface-mode": "ACCESS", "access-vlan": ${vlan-id}}}</ACTION>
         </COMMAND>
 
         <COMMAND
@@ -624,26 +624,26 @@ limitations under the License.
                         />
                 </PARAM>
             </PARAM>
-             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config ${iface} TRUNK ${vlan_id_list}</ACTION>
+             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config ${iface_uri} TRUNK ${vlan_id_list}</ACTION>
        </COMMAND>
 
        <COMMAND name="sflow" help="Interface sFlow settings"/>
        <COMMAND name="sflow sampling-rate" help="Set sampling-rate" ptype="SUBCOMMAND" mode="subcommand">
             <PARAM name="rate" help="Sampling rate" ptype="SFLOW_SAMPLING_RATE"/>
-            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface}/sample_rate body={"sonic-sflow:sample_rate": ${rate}}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/sample_rate body={"sonic-sflow:sample_rate": ${rate}}</ACTION>
        </COMMAND>
 
        <COMMAND name="sflow enable" help="Enable sflow" ptype="SUBCOMMAND" mode="subcommand">
-            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface}/admin_state body={"sonic-sflow:admin_state": "up"}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/admin_state body={"sonic-sflow:admin_state": "up"}</ACTION>
        </COMMAND>
 
        <COMMAND name="no sflow" help="Interface sFlow settings"/>
        <COMMAND name="no sflow enable" help="Disable sflow">
-            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface}/admin_state body={"sonic-sflow:admin_state": "down"}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/admin_state body={"sonic-sflow:admin_state": "down"}</ACTION>
        </COMMAND>
 
        <COMMAND name="no sflow sampling-rate" help="Set sampling rate to default" ptype="SUBCOMMAND" mode="subcommand">
-            <ACTION builtin="clish_restcl">oper=DELETE url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface}/sample_rate</ACTION>
+            <ACTION builtin="clish_restcl">oper=DELETE url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/sample_rate</ACTION>
        </COMMAND>
 
        <COMMAND name="no switchport" help="Remove switchport paramaters"/>
@@ -660,7 +660,7 @@ limitations under the License.
                 mode="subcommand"
                 >
             </PARAM>
-            <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan</ACTION>
+            <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan</ACTION>
         </COMMAND>
 
         <COMMAND
@@ -688,7 +688,7 @@ limitations under the License.
                 />
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans ${iface} TRUNK ${vlan_id_list}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans ${iface_uri} TRUNK ${vlan_id_list}</ACTION>
         </COMMAND>
 	<COMMAND name="threshold" help="Configure priority-group/queue threshold on an interface."/>
 	<COMMAND name="threshold priority-group"
