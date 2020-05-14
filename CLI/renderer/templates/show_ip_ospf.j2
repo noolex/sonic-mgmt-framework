@@ -1,19 +1,17 @@
 {# There are 3 list elements with key as 'openconfig-network-instance:state'(global state, spt timer state and lsa generation state). #}
 {# remaining are list elements with area states present in this ospf domain. #}
-{% set vars = {'router_id': "0", 'ospf_rfc1583_compatible': "False", 'opaque_capability': "False", 'throttle_delay': "0", 'initial_delay': "0", 'maximum_delay': "0",                'holdtime_multiplier': "0", 'spf_run': "False", 'spf_last_executed_time':"0", 'last_spf_duration':"0", 'spf_timer_running': "False", 'spf_timer_value':"0",
-	'min_interval_timer':"0", 'min_arival_timer':"0", 'refresh_timer':0, 'external_lsa_count':"0", 'external_lsa_checksum':"0", 'opaque_lsa_count':"0",
+{% set vars = {'router_id': "0", 'ospf_rfc1583_compatible': "False", 'opaque_capability': "False", 'throttle_delay': "0", 'initial_delay': "0", 'maximum_delay': "0",                'holdtime_multiplier': "0", 'spf_run': "False", 'spf_last_executed_time': 0, 'last_spf_duration':"0", 'spf_timer_running': "False", 'spf_timer_value':"0",
+	'min_interval_timer':"0", 'min_arival_timer':"0", 'refresh_timer':"0", 'external_lsa_count':"0", 'external_lsa_checksum':"0", 'opaque_lsa_count':"0",
 	'opaque_lsa_checksum':"0", area_count:0, 'area_id': "0", 'total_interface': "0", 'active_interface': "0", 'fully_adj_nbrs': "0", 
 	'auth_type': "no authentication", 
         'spf_algo_executed_count': "0", 'all_lsa_count': "0", 'router_lsa_count': "0", 'router_lsa_checksum': "0", 'network_lsa_count': "0", 
         'network_lsa_checksum': "0", 'summary_lsa_count': "0", 'summary_lsa_checksum': "0", 'asbr_summary_lsa_count': "0",  
         'asbr_summary_lsa_checksum': "0", 'nssa_lsa_count': "0",'nssa_lsa_checksum': "0", 'opaque_link_lsa_count': "0", 'opaque_link_lsa_checksum': "0", 
-        'opaque_area_lsa_count': "0", 'opaque_lsa_checksum': "0", 'areas_info': "", 'area_exists':"False"} %}
+        'opaque_area_lsa_count': "0", 'opaque_lsa_checksum': "0", 'areas_info': "", 'area_exists':"False", 'abrtype': 'None' } %}
 {% set ospf_global_list = json_output  %}
 {% for list_elem in ospf_global_list %}
-{% if 'vrfName' in list_elem %}
-{% if list_elem['vrfName'] != 'default' %}
+{% if 'vrfName' in list_elem and list_elem['vrfName'] != 'default' %}
 VRF Name: {{list_elem['vrfName']}}
-{% endif -%}
 {% endif -%}
 {% if 'openconfig-network-instance:global_state' in list_elem and 'router-id' in list_elem['openconfig-network-instance:global_state']%}
 {% if vars.update({'router_id':list_elem['openconfig-network-instance:global_state' ]['router-id']}) %}{% endif -%}
@@ -44,11 +42,12 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'openconfig-network-instance:global_state' in list_elem %}
 {% if 'openconfig-ospfv2-ext:last-spf-execution-time' in list_elem['openconfig-network-instance:global_state'] %}
  {% set time = list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:last-spf-execution-time']|int %}
- {% if vars.update({'spf_last_executed_time':time}) %}{% endif -%}
+ {% if vars.update({'spf_last_executed_time':time/1000}) %}{% endif -%}
  {% if vars.update({'spf_run':'True'}) %}{% endif -%}
  {% if vars.update({'last_spf_duration':list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:last-spf-duration']}) %}{% endif -%}
 {% else %}
  {% if vars.update({'spf_run':'False'}) %}{% endif -%}
+{% endif -%}
 {% endif -%}
 {% if 'openconfig-network-instance:spf_state' in list_elem and list_elem['openconfig-network-instance:spf_state']['openconfig-ospfv2-ext:spf-timer-due'] != 0 %}
 {% if vars.update({'spf_timer_running':'True'}) %}{% endif -%}
@@ -81,12 +80,24 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:area-count' in list_elem['openconfig-network-instance:global_state']%}
 {% if vars.update({'area_count':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:area-count']}) %}{% endif -%}
 {% endif -%}
-{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:abr-type' in list_elem['openconfig-network-instance:global_state']%}
+{% if list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:abr-type'] == 'openconfig-ospfv2-ext:CISCO' %}
+{% if vars.update({'abrtype':'Alternative Cisco'}) %}{% endif -%}
+{% elif list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:abr-type'] == 'openconfig-ospfv2-ext:IBM' %}
+{% if vars.update({'abrtype':'Alternative IBM'}) %}{% endif -%}
+{% elif list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:abr-type'] == 'openconfig-ospfv2-ext:STANDARD' %}
+{% if vars.update({'abrtype':'Standard (RFC2328)'}) %}{% endif -%}
+{% elif list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:abr-type'] == 'openconfig-ospfv2-ext:SHORTCUT' %}
+{% if vars.update({'abrtype':'Alternative Shortcut'}) %}{% endif -%}
+{% else %}
+{% if vars.update({'abrtype':''}) %}{% endif -%}
+{% endif %}
+{% endif %}
 {% if 'openconfig-network-instance:areas' in list_elem %}
 {% if vars.update({'areas_info':list_elem['openconfig-network-instance:areas']}) %}{% endif -%}
 {% endif %}
 {% endfor -%}
-  OSPF Routing Process, Router ID: {{vars.router_id}}
+ {{' '}}OSPF Routing Process, Router ID: {{vars.router_id}}
  Supports only single TOS (TOS0) routes
  This implementation conforms to RFC2328
  {{vars.ospf_rfc1583_compatible}}
@@ -95,11 +106,14 @@ VRF Name: {{list_elem['vrfName']}}
  Minimum hold time between consecutive SPFs {{vars.initial_delay}} millisec(s)
  Maximum hold time between consecutive SPFs {{vars.maximum_delay}} millisec(s)
  Hold time multiplier is currently {{vars.holdtime_multiplier}}
-{% if vars.spf_run == "False" %}
- SPF algorithm has not been run
-{%else %}
- SPF algorithm last executed {{'%dd%dh%dm'|format(vars.spf_last_executed_time/86400, (vars.spf_last_executed_time%86400)/3600, ((vars.spf_last_executed_time%86400)%3600)/60 )}} ago
- Last SPF duration {{vars.last_spf_duration/1000}}s 
+{% if vars.spf_run == "False" -%}
+  SPF algorithm has not been run
+{% elif vars.spf_last_executed_time/86400 >= 1 -%}
+  SPF algorithm last executed {{'%dd%dh%dm%ds'|format(vars.spf_last_executed_time/86400, (vars.spf_last_executed_time%86400)/3600, ((vars.spf_last_executed_time%86400)%3600)/60, ((vars.spf_last_executed_time%86400)%3600)%60 )}} ago
+ Last SPF duration {{vars.last_spf_duration}} usecs
+{% else -%} 
+ {{' '}}SPF algorithm last executed {{'%dh%dm%ds'|format((vars.spf_last_executed_time%86400)/3600, ((vars.spf_last_executed_time%86400)%3600)/60, ((vars.spf_last_executed_time%86400)%3600)%60 )}} ago
+ Last SPF duration {{vars.last_spf_duration}} usecs
 {%endif -%} 
  {% if vars.spf_timer_running == "False" %}
  SPF timer is inactive
@@ -110,8 +124,11 @@ VRF Name: {{list_elem['vrfName']}}
  LSA minimum arrival {{vars.min_arrival_timer}} msecs
  Write Multiplier set to {{vars.write_multiplier}}
  Refresh timer {{'%2d'|format(vars.refresh_timer/1000)}} secs
- Number of external LSA {{vars.external_lsa_count}}. Checksum Sum 0x{{'%8s'|format(vars.external_lsa_checksum.rjust(8,'0'))}}
- Number of opaque AS LSA {{vars.opaque_lsa_count}}. Checksum Sum 0x{{'%8s'|format(vars.opaque_lsa_checksum.rjust(8,'0'))}}
+{% if vars.abrtype != 'None' -%}
+ {{' '}}This router is an ABR, ABR type is: {{vars.abrtype}}
+{% endif -%}
+ {{' '}}Number of external LSA {{vars.external_lsa_count}}. Checksum Sum {{'%8s'|format(vars.external_lsa_checksum.rjust(8,'0'))}}
+ Number of opaque AS LSA {{vars.opaque_lsa_count}}. Checksum Sum {{'%8s'|format(vars.opaque_lsa_checksum.rjust(8,'0'))}}
  Number of areas attached to this router: {{vars.area_count}}
 {% if vars.area_count != 0 %}
 {% set area_id_list = [] %}
@@ -148,6 +165,9 @@ VRF Name: {{list_elem['vrfName']}}
     {% endif %}
     {% if 'openconfig-ospfv2-ext:authentication-type' in areainfo['state'] %}
     {% if vars.update({'auth_type':'no authentication'}) %}{% endif %}
+    {% if areainfo['state']['openconfig-ospfv2-ext:authentication-type'] == 'openconfig-ospfv2-ext:MD5HMAC' %}
+    {% if vars.update({'auth_type':'message digest authentication'}) %}{% endif %}
+    {% endif %}
     {% endif %}
     {% if "openconfig-ospfv2-ext:spf-execution-count" in areainfo['state'] %}
     {% if vars.update({'spf_algo_executed_count':areainfo['state']['openconfig-ospfv2-ext:spf-execution-count']}) %}{% endif %}
@@ -199,18 +219,24 @@ VRF Name: {{list_elem['vrfName']}}
     {% endif %}
 {% if vars.area_exists == "False" %}
  Area ID: {{'%s %s'|format(vars.area_id, vars.backbone)}}
+{% if vars.area_id != '0.0.0.0' %}
+   Shortcutting mode: Default, S-bit consensus: no
+{% endif %}
    Number of interfaces in this area: Total: {{'%d'|format(vars.total_interface)}} , Active: {{'%d'|format(vars.active_interface)}}
    Number of fully adjacent neighbors in this area: {{'%d'|format(vars.fully_adj_nbrs)}}
    Area has {{'%s'|format(vars.auth_type)}}
+{% if vars.area_id != '0.0.0.0' %}
+   Number of full virtual adjacencies going through this area: 0
+{% endif %}
    SPF algorithm executed {{'%s'|format(vars.spf_algo_executed_count)}} times
    Number of LSA {{'%s'|format(vars.all_lsa_count)}}
-   Number of router LSA {{'%s'|format(vars.router_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.router_lsa_checksum).rjust(8,'0'))}}
-   Number of network LSA {{'%s'|format(vars.network_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.network_lsa_checksum).rjust(8,'0'))}}
-   Number of summary LSA {{'%s'|format(vars.summary_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.summary_lsa_checksum).rjust(8,'0'))}}
-   Number of ASBR summary LSA {{'%s'|format(vars.asbr_summary_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.asbr_summary_lsa_checksum).rjust(8,'0'))}}
-   Number of NSSA LSA {{'%s'|format(vars.nssa_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.nssa_lsa_checksum).rjust(8,'0'))}}
-   Number of opaque link LSA {{'%s'|format(vars.opaque_link_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.opaque_link_lsa_checksum).rjust(8,'0'))}}
-   Number of opaque area LSA {{'%s'|format(vars.opaque_area_lsa_count)}}. Checksum Sum 0x{{'%8s'|format((vars.opaque_area_lsa_checksum).rjust(8,'0'))}}
+   Number of router LSA {{'%s'|format(vars.router_lsa_count)}}. Checksum Sum {{'%8s'|format((vars.router_lsa_checksum).rjust(8,'0'))}}
+   Number of network LSA {{'%s'|format(vars.network_lsa_count)}}. Checksum Sum {{'%8s'|format((vars.network_lsa_checksum).rjust(8,'0'))}}
+   Number of summary LSA {{'%s'|format(vars.summary_lsa_count)}}. Checksum Sum {{'%8s'|format((vars.summary_lsa_checksum).rjust(8,'0'))}}
+   Number of ASBR summary LSA {{'%s'|format(vars.asbr_summary_lsa_count)}}. Checksum Sum {{'%8s'|format((vars.asbr_summary_lsa_checksum).rjust(8,'0'))}}
+   Number of NSSA LSA {{'%s'|format(vars.nssa_lsa_count)}}. Checksum Sum {{'%8s'|format((vars.nssa_lsa_checksum).rjust(8,'0'))}}
+   Number of opaque link LSA {{'%s'|format(vars.opaque_link_lsa_count)}}. Checksum Sum {{'%8s'|format((vars.opaque_link_lsa_checksum).rjust(8,'0'))}}
+   Number of opaque area LSA {{'%s'|format(vars.opaque_area_lsa_count)}}. Checksum Sum {{'%8s'|format((vars.opaque_area_lsa_checksum).rjust(8,'0'))}}
    {{' ' }}
 {% endif %}
    {% endif %}

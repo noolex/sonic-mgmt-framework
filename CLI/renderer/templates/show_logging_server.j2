@@ -1,0 +1,18 @@
+{% set vars = {'host': ""} %}
+{% set vars = {'port': ""} %}
+{% set vars = {'source': ""} %}
+{% set vars = {'vrf': ""} %}
+{% if json_output -%}
+{% if json_output["header"] == 'True' -%}
+--------------------------------------------------------------------------------
+{{'%-16s'|format("HOST")}}{{'%-10s'|format("PORT")}}{{'%-16s'|format("SOURCE-IP")}}{{'%-5s'|format("VRF")}}
+--------------------------------------------------------------------------------
+{% else %}
+    {% if vars.update({'host':json_output["host"]}) %}{% endif %}
+    {% if vars.update({'port':json_output["port"]}) %}{% endif %}
+    {% if vars.update({'source':json_output["source"]}) %}{% endif %}
+    {% if vars.update({'vrf':json_output["vrf"]}) %}{% endif %}
+{{'%-15s'|format(vars.host)}} {{'%-9s'|format(vars.port)}} {{'%-15s'|format(vars.source)}} {{'%-5s'|format(vars.vrf)}}
+{% endif %}
+{% endif %}
+

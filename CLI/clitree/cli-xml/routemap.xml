@@ -328,7 +328,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="no set metric" help="Metric value for destination routing protocol">
-    <PARAM name="pvalue" help="Preference value" ptype="STRING" optional="true"/>
+    <PARAM name="pvalue" help="Metric value (0-4294967295)" ptype="RANGE_0_4294967295" optional="true"/>
     <ACTION> python $SONIC_CLI_ROOT/sonic-cli-routemap.py delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_med ${name} ${seq_num} ${pvalue}</ACTION>
   </COMMAND>
 

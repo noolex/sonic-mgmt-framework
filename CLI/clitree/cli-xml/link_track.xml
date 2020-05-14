@@ -75,15 +75,15 @@ limitations under the License.
 </VIEW>
 
 <VIEW name="configure-if-view">
-    <MACRO name="LINK-STATE-TRACK-UPSTREAM-INTF" arg="" />
+    <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="2" />
 </VIEW>
 
 <VIEW name="configure-lag-view">
-    <MACRO name="LINK-STATE-TRACK-UPSTREAM-INTF" arg="" />
+    <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="2" />
 </VIEW>
 
 <VIEW name="configure-vlan-view">
-    <MACRO name="LINK-STATE-TRACK-UPSTREAM-INTF" arg="" />
+    <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="1" />
 </VIEW>
 
 <VIEW name="enable-view">

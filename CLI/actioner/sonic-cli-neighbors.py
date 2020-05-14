@@ -203,8 +203,8 @@ def build_vrf_list():
                     continue
 
                 vrfName = intf.get('vrf_name')
-                if vrfName is None:
-                    vrfName = ""
+                #if vrfName is None:
+                #    vrfName = ""
 
                 vrfDict[portName] = vrfName
 
@@ -347,6 +347,19 @@ def clear_neighbors(keypath, body):
     else:
         return
 
+def set_neighbors(keypath, body, del_req):
+    if del_req:
+        apiResponse = apiClient.delete(keypath)
+    else:
+        apiResponse = apiClient.patch(keypath, body)
+
+    if apiResponse.ok():
+        response = apiResponse.content
+    else:
+        print(response.error_message())
+        return -1
+    return 0
+
 def show_neighbors(keypath, args):
     outputList = []
 
@@ -356,22 +369,15 @@ def show_neighbors(keypath, args):
         rendererScript = "arp_summary_show.j2"
 
     try:
-        if (func == 'set_ipv4_arp_timeout') or (func == 'set_ipv6_nd_cache_expiry'):
-            api_response = aa.patch(keypath, body)
-        elif (func == 'del_ipv4_arp_timeout') or (func == 'del_ipv6_nd_cache_expiry'):
-            api_response = aa.delete(keypath)
-        elif (func == 'rpc_sonic_clear_neighbors'):
-            api_response = aa.post(keypath,body)
-        else:
-            api_response = aa.get(keypath)
+        apiResponse = apiClient.get(keypath)
     except:
         # system/network error
         print "Error: Unable to connect to the server"
         return
 
     try:
-        if api_response.ok():
-            response = api_response.content
+        if apiResponse.ok():
+            response = apiResponse.content
         else:
             print "%Error: Internal error"
             return
@@ -394,6 +400,8 @@ def process_args(args):
 
   for arg in args:
         tmp = arg.split(":", 1)
+        if not len(tmp) == 2:
+            continue
         if tmp[1] == "":
             tmp[1] = None
         inputDict[tmp[0]] = tmp[1]
@@ -403,6 +411,7 @@ def run(func, args):
     global vrfDict
     global inputDict
     global egressPortDict
+    status = 0
 
     process_args(args)
     build_vrf_list()
@@ -412,6 +421,10 @@ def run(func, args):
 
     if (func == 'rpc_sonic_clear_neighbors'):
         clear_neighbors(keypath, body)
+    elif (func == 'set_ipv4_arp_timeout') or (func == 'set_ipv6_nd_cache_expiry'):
+        status = set_neighbors(keypath, body, False)
+    elif (func == 'del_ipv4_arp_timeout') or (func == 'del_ipv6_nd_cache_expiry'):
+        status = set_neighbors(keypath, body, True)
     else:
         show_neighbors(keypath, args)
 
@@ -420,8 +433,10 @@ def run(func, args):
     inputDict = {}
     egressPortDict = {}
     isMacDictAvailable = False
-    return
+    return status
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
-    run(sys.argv[1], sys.argv[2:])
+    status = run(sys.argv[1], sys.argv[2:])
+    if status != 0:
+        sys.exit(0)

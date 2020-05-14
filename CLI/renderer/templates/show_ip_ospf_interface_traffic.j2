@@ -1,13 +1,17 @@
-
+{{' '}}
 Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack        
                 Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx        
 --------------------------------------------------------------------------------------------
+{% set vars = {'interface_name': ""} %}
 {% set ospf_global_list = json_output  %}
 {% for list_elem in ospf_global_list %}
-{% if 'vrfName' in list_elem %}
+{% if 'vrfName' in list_elem and list_elem['vrfName'] != "default" %}
 VRF Name: {{list_elem['vrfName']}}
 {% endif -%}
-{% if 'area' in list_elem['openconfig-network-instance:areas'] %}
+{% if 'interfacename' in list_elem %}
+{% if vars.update({'interface_name':list_elem['interfacename']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:areas' in list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
 {% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
 {% endif -%}
 {% for areainfo in area_list %}
@@ -20,9 +24,12 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'state' in interfaceinfo %}
 {% set interface_state = interfaceinfo['state'] %}
 {% endif -%}
-{{interface_state['id']}}    {{stats['hello-receive']}}/{{stats['hello-transmit']}}          {{stats['db-description-receive']}}/{{stats['db-description-transmit']}}             {{stats['ls-request-receive']}}/{{stats['ls-request-transmit']}}           {{stats['ls-update-receive']}}/{{stats['ls-update-transmit']}}         {{stats['ls-acknowledge-receive']}}/{{stats['ls-acknowledge-transmit']}}
+{% if vars.interface_name == "" or vars.interface_name == interface_state['id'] %}
+{{'%-10s'|format(interface_state['id'])}} {{'%8u'|format(stats['hello-receive'])}}/{{'%-8u'|format(stats['hello-transmit'])}} {{'%7u'|format(stats['db-description-receive'])}}/{{'%-7u'|format(stats['db-description-transmit'])}} {{'%7u'|format(stats['ls-request-receive'])}}/{{'%-7u'|format(stats['ls-request-transmit'])}} {{'%7u'|format(stats['ls-update-receive'])}}/{{'%-7u'|format(stats['ls-update-transmit'])}} {{'%7u'|format(stats['ls-acknowledge-receive'])}}/{{'%-7u'|format(stats['ls-acknowledge-transmit'])}}
+{% endif -%}
 {% endfor -%}
 {% endif -%}
 {% endfor -%}
 {% endfor -%}
-============================================================================================
+{{' '}}
+

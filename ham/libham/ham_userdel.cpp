@@ -11,12 +11,9 @@ bool ham_userdel(const char * login)
     bool success = false;
     try
     {
-        // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::default_dispatcher = get_dispatcher();
-        DBus::Connection    conn = DBus::Connection::SystemBus();
-        accounts_proxy_c    acct(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        accounts_proxy_c  acct(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
 
-        ::DBus::Struct<bool, std::string> ret;
+        ::DBus::Struct<bool/*success*/, std::string/*errmsg*/> ret;
         ret = acct.userdel(login);
         success = ret._1;
         if (!success)

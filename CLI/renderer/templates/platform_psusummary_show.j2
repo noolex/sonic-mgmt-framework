@@ -1,0 +1,37 @@
+{% for psu_name, psu_info in json_output.items() %}
+{{psu_name}}:
+{% if 'state' in psu_info %}
+{% for key, val in psu_info['state'].items() %}
+{% if val is string %}
+{% if 'openconfig-platform-types:' in val %}
+{% set val = val.split(':')[1] %}
+{% endif %}
+{% endif %}
+{% if 'openconfig-platform-ext:' in key %}
+{% set key = key.split(':')[1] %}
+{% endif %}
+    {{key.ljust(20)}} {{val}}
+{% endfor %}
+{% endif %}
+{% if 'power-supply' in psu_info %}
+{% if 'state' in psu_info['power-supply'] %}
+{% for key, val in psu_info['power-supply']['state'].items() %}
+{% if 'openconfig-platform-psu:' in key %}
+{% set key = key.split(':')[1] %}
+{% endif %}
+{% if 'output-current' in key %}
+{% set key = key + ' (W)' %}
+    {{key.ljust(20)}} {{'%0.2f' | format(val|float)}}
+{% endif %}
+{% if 'output-power' in key %}
+{% set key = key + ' (W)' %}
+    {{key.ljust(20)}} {{'%0.2f' | format(val|float)}}
+{% endif %}
+{% if 'output-voltage' in key %}
+{% set key = key + ' (V)' %}
+    {{key.ljust(20)}} {{'%0.2f' | format(val|float)}}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endfor %}

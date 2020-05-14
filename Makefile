@@ -37,7 +37,7 @@ GO_DEPS  = vendor/.done
 export TOPDIR MGMT_COMMON_DIR GO GOPATH RMDIR
 
 .PHONY: all
-all: rest-server cli ham
+all: rest cli ham
 
 $(GO_MOD):
 	$(GO) mod init github.com/Azure/sonic-mgmt-framework
@@ -72,11 +72,13 @@ rest: $(GO_DEPS) models
 
 # Special target for local compilation of REST server binary.
 # Compiles models, translib and cvl schema from sonic-mgmt-common
-rest-server: go-deps-clean
-	$(MAKE) -C $(MGMT_COMMON_DIR)
+rest-server: rest-clean
+	$(MAKE) -C $(MGMT_COMMON_DIR)/models
+	TOPDIR=$(MGMT_COMMON_DIR) $(MAKE) -C $(MGMT_COMMON_DIR)/cvl/schema
+	$(MAKE) -C $(MGMT_COMMON_DIR)/translib ocbinds/ocbinds.go
 	$(MAKE) rest
 
-rest-clean: go-deps-clean models-clean
+rest-clean: go-deps-clean
 	$(MAKE) -C rest clean
 
 .PHONY: models
@@ -98,17 +100,14 @@ install:
 	$(INSTALL) -d $(DESTDIR)/usr/bin/
 	cp -rf $(TOPDIR)/build/rest_server/dist/ui/ $(DESTDIR)/rest_ui/
 	cp -rf $(TOPDIR)/build/cli $(DESTDIR)/usr/sbin/
-	rsync -a --exclude="test" --exclude="docs" build/swagger_client_py $(DESTDIR)/usr/sbin/lib/
+	rsync -a --exclude="test" --exclude="docs" build/openapi_client_py $(DESTDIR)/usr/sbin/lib/
 	
-	$(INSTALL) -d $(DESTDIR)/etc/dbus-1/system.d
 	$(INSTALL) -d $(DESTDIR)/lib/systemd/system
 	
 	# Scripts for Host Account Management (HAM)
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/etc/dbus-1/system.d/* $(DESTDIR)/etc/dbus-1/system.d/
-	$(INSTALL) -d $(DESTDIR)/etc/sonic/hamd/
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/etc/sonic/hamd/*      $(DESTDIR)/etc/sonic/hamd/
+	rsync --archive --verbose --no-owner --no-group $(TOPDIR)/ham/hamd/etc $(DESTDIR)
 	$(INSTALL) -D $(TOPDIR)/ham/hamd/lib/systemd/system/*  $(DESTDIR)/lib/systemd/system/
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/usr/bin/*             $(DESTDIR)/usr/bin/
+
 	$(INSTALL) -D $(TOPDIR)/ham/hamd/hamd     $(DESTDIR)/usr/sbin/.
 	$(INSTALL) -D $(TOPDIR)/ham/hamctl/hamctl $(DESTDIR)/usr/bin/.
 	$(INSTALL) -d $(DESTDIR)/lib/x86_64-linux-gnu/
@@ -127,7 +126,7 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 
 clean: rest-clean models-clean
 	(cd ham; ./build.sh clean)
-	git check-ignore debian/* | xargs -r $(RMDIR)
+	$(RMDIR) debian/.debhelper
 
 cleanall: clean
 	$(RMDIR) $(BUILD_DIR)
