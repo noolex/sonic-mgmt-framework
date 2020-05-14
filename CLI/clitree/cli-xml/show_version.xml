@@ -22,7 +22,7 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <COMMAND name="show version" help="Show version information">
-      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-show-version.py get_openconfig_platform_components_component "System Eeprom" show_version.j2 ${__full_line} </ACTION>
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-show-version.py get_openconfig_platform_components_component "Software" show_version.j2 ${__full_line} </ACTION>
     </COMMAND>
   </VIEW>
 </CLISH_MODULE>

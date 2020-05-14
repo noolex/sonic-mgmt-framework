@@ -1,0 +1,16 @@
+{% if json_output %}
+{% set q_info_list = json_output['openconfig-qos:queue'] %}
+{% for q_info in q_info_list %}
+  {% set queue = q_info['name'] %}
+  {% set wred = q_info['wred'] %}
+  {% set wred_prof = '' %}
+  {% if wred %}
+    {% set wred_config = wred['config'] %}
+    {% if wred_config %}
+      {% set wred_prof = wred_config['openconfig-qos-ext:wred-profile'] %}
+    {% endif %}
+  {% endif %}
+{{'interface queue '}}{{queue}}{{' config:'}}
+{{'    WRED profile: '}}{{wred_prof}}
+{% endfor %}
+{% endif %}
