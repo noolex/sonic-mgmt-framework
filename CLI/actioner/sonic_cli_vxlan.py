@@ -217,6 +217,10 @@ def invoke(func, args):
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST')
         return aa.get(keypath)
 
+    if func == "get_sonic_loopback_interface_sonic_loopback_interface_loopback_interface":
+        keypath = cc.Path('/restconf/data/sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE')
+        return aa.get(keypath)
+
     if func == "get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list":
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL_MAP/VXLAN_TUNNEL_MAP_LIST')
         return aa.get(keypath)
@@ -291,6 +295,9 @@ def vxlan_show_vxlan_interface(args):
         print("no vxlan configuration")
     elif response is not None:
         if len(response) != 0:
+            tunnel_list = response['sonic-vxlan:VXLAN_TUNNEL_LIST']
+            for item in tunnel_list:
+                source_vtep_ip = item['src_ip']
             show_cli_output(args[0],response)
 
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list", args)                                                                      
@@ -300,6 +307,30 @@ def vxlan_show_vxlan_interface(args):
             print("no evpn configuration")
         elif response is not None:
             if len(response) != 0:
+                show_cli_output(args[0],response)
+
+    api_response = invoke("get_sonic_loopback_interface_sonic_loopback_interface_loopback_interface", args)                                                                      
+    if api_response.ok():
+        response = api_response.content
+        if response is None:
+            print("no evpn configuration")
+        elif response is not None:
+            if len(response) != 0:
+                found = False
+                if 'sonic-loopback-interface:LOOPBACK_INTERFACE' in response:
+                    loopback_intf_container = response['sonic-loopback-interface:LOOPBACK_INTERFACE']
+                    if 'LOOPBACK_INTERFACE_IPADDR_LIST' in loopback_intf_container:
+                        loopback_ipaddr_list = loopback_intf_container['LOOPBACK_INTERFACE_IPADDR_LIST']
+                        for item in loopback_ipaddr_list:
+                            loop_if_prefix = item['ip_prefix']
+                            loop_if_prefix = loop_if_prefix.split('/')
+                            loop_if_ipaddr = loop_if_prefix[0]
+                            if source_vtep_ip == loop_if_ipaddr:
+                                response['sonic-loopback-interface:LOOPBACK_INTERFACE']['src_if'] = item['loIfName']
+                                found = True
+                                break 
+                if found is False: 
+                    response['sonic-loopback-interface:LOOPBACK_INTERFACE']['src_if'] = "Not Configured"
                 show_cli_output(args[0],response)
     return
 

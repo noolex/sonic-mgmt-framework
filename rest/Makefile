@@ -17,7 +17,7 @@
 #                                                                              #
 ################################################################################
 
-TOPDIR     ?= ..
+TOPDIR     := ..
 BUILD_DIR  ?= $(TOPDIR)/build
 
 GO     ?= go
@@ -27,22 +27,26 @@ REST_BUILD_DIR := $(BUILD_DIR)/rest_server
 REST_BIN := $(REST_BUILD_DIR)/main
 REST_TEST_BIN := $(BUILD_DIR)/tests/rest/server.test
 
-ALL_GO_SRCS = $(shell find . -name '*.go' -prune -not -name '*_test.go')
+REST_GO_SRCS   = $(shell find . -name '*.go' -not -name '*_test.go')
 REST_TEST_SRCS = $(shell find . -name '*_test.go')
 GENERATED_SRCS = $(shell find $(REST_BUILD_DIR)/dist -name '*.go')
+MGMT_COMM_SRCS = $(shell find $(TOPDIR)/vendor/github.com/Azure/sonic-mgmt-common -name '*.go')
+OPENAPI_SPECS  = $(shell find $(TOPDIR)/models/openapi -name '*.yaml')
 
 # Source files affecting REST server
-REST_SRCS := $(ALL_GO_SRCS) \
-			 $(GENERATED_SRCS) \
-			 $(shell find $(TOPDIR)/models/openapi -name '*.yaml')
+REST_SRCS := $(REST_GO_SRCS) $(GENERATED_SRCS) $(MGMT_COMM_SRCS) $(OPENAPI_SPECS)
 
 # Certificate generator tool for generating temp certificates.
 # Compiled from standard crypto/tls/generate_cert.go
 CERTGEN_BIN := $(REST_BUILD_DIR)/generate_cert
 
 
-# Default target
-all: $(REST_BIN) $(CERTGEN_BIN) $(REST_TEST_BIN)
+DEFAULT_TARGETS = $(REST_BIN) $(CERTGEN_BIN)
+ifeq ($(NO_TEST_BINS),)
+DEFAULT_TARGETS += $(REST_TEST_BIN)
+endif
+
+all: $(DEFAULT_TARGETS)
 
 .PRECIOUS: %/.
 %/.:
@@ -58,7 +62,7 @@ else
 endif
 
 # Gotest binary for REST Server
-$(REST_TEST_BIN): $(REST_TEST_SRCS) $(ALL_GO_SRCS) $(@D)/.
+$(REST_TEST_BIN): $(REST_TEST_SRCS) $(REST_GO_SRCS) $(@D)/.
 	$(GO) test -mod=vendor -cover -c ../rest/server -o $@
 
 # Compile certificate generator from standard crypto/tls/generate_cert.go.

@@ -18,25 +18,68 @@
 ###########################################################################
 
 import sys
-import time
-import json
-import ast
 import cli_client as cc
 import urllib3
-from scripts.render_cli import show_cli_output
+from render_cli import show_cli_output
+from collections import OrderedDict
+from struct import unpack
+from base64 import b64decode
 
 urllib3.disable_warnings()
 
+PSU_CNT = 2
+
+def convert4BytesToStr(b):
+    return unpack('>f', b64decode(b))[0]
+
+def decodePsuStats(psu):
+    if 'power-supply' not in psu or 'state' not in psu['power-supply']:
+        return
+    if 'openconfig-platform-psu:output-current' in psu['power-supply']['state']:
+        psu['power-supply']['state']['openconfig-platform-psu:output-current'] = \
+            convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:output-current'])
+    if 'openconfig-platform-psu:output-power' in psu['power-supply']['state']:
+        psu['power-supply']['state']['openconfig-platform-psu:output-power'] = \
+            convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:output-power'])
+    if 'openconfig-platform-psu:output-voltage' in psu['power-supply']['state']:
+        psu['power-supply']['state']['openconfig-platform-psu:output-voltage'] = \
+            convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:output-voltage'])
+
 def run(func, args):
     aa = cc.ApiClient()
-
-    path = cc.Path('/restconf/data/openconfig-platform:components/component=%s'%args[0])
-    response = aa.get(path)
-    if response.ok():
-        show_cli_output(sys.argv[3], response.content)
-    else:
-        print response.error_message()
-
+    template = sys.argv[3]
+    response = None
+    try:
+        if func == 'get_openconfig_platform_components_component':
+            path = cc.Path('/restconf/data/openconfig-platform:components/component=%s'%args[0])
+            response = aa.get(path)
+            if response.ok():
+                show_cli_output(template, response.content)
+            else:
+                print response.error_message()
+                return
+        elif (func == 'get_openconfig_platform_components_component_psu_status' or
+            func == 'get_openconfig_platform_components_component_psu_summary'):
+            template = sys.argv[2]
+            psuInfo = OrderedDict()
+            for i in range(1, PSU_CNT + 1):
+                path = cc.Path('/restconf/data/openconfig-platform:components/component=PSU %s'%i)
+                response = aa.get(path)
+                if not response.ok():
+                    print response.error_message()
+                    return
+                if (len(response.content) == 0 or
+                    not ('openconfig-platform:component' in response.content) or
+                    len(response.content['openconfig-platform:component']) == 0 or
+                    not ('name' in response.content['openconfig-platform:component'][0])):
+                    continue
+                psuName = response.content['openconfig-platform:component'][0]['name']
+                psuInfo[psuName] = response.content['openconfig-platform:component'][0]
+                decodePsuStats(psuInfo[psuName])
+            show_cli_output(template, psuInfo)
+    except Exception as e:
+        print("%Error: Transaction Failure")
+        return
 
 if __name__ == '__main__':
 

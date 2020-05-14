@@ -49,8 +49,9 @@ def generate_show_ip_ospf(args):
             if api_response is None:
                 print("Failed")
                 return
-	    api_response['openconfig-network-instance:global_state'] = api_response.pop('openconfig-network-instance:state')
-            dlist.append(api_response)
+            if api_response['openconfig-network-instance:state'] is not None:
+                api_response['openconfig-network-instance:global_state'] = api_response.pop('openconfig-network-instance:state')
+                dlist.append(api_response)
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/state', name=args[1])
     response = api.get(keypath)
     if(response.ok()):
@@ -60,8 +61,9 @@ def generate_show_ip_ospf(args):
             if api_response is None:
                 print("Failed")
                 return
-	    api_response['openconfig-network-instance:spf_state'] = api_response.pop('openconfig-network-instance:state')
-            dlist.append(api_response)
+            if api_response['openconfig-network-instance:state'] is not None:
+                api_response['openconfig-network-instance:spf_state'] = api_response.pop('openconfig-network-instance:state')
+                dlist.append(api_response)
     
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/lsa-generation/state', name=args[1])
     response = api.get(keypath)
@@ -72,10 +74,73 @@ def generate_show_ip_ospf(args):
             if api_response is None:
                 print("Failed")
                 return
-	    api_response['openconfig-network-instance:lsa_gen_state'] = api_response.pop('openconfig-network-instance:state')
-            dlist.append(api_response)
+            if api_response['openconfig-network-instance:state'] is not None:
+                api_response['openconfig-network-instance:lsa_gen_state'] = api_response.pop('openconfig-network-instance:state')
+                dlist.append(api_response)
 
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=args[1])
+    response = api.get(keypath)
+    if(response.ok()):
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+            if api_response is None:
+                print("Failed")
+                return
+            dlist.append(api_response)
+    show_cli_output(args[0], dlist)
+
+
+
+def generate_show_ip_ospf_areas(args):
+    api = cc.ApiClient()
+    keypath = []
+    vrfName = "default"
+    interfacename = ""
+    i = 0
+    for arg in args:
+        if "vrf" in arg or "Vrf" in arg:
+            vrfName = args[i]
+        i = i + 1
+
+    if(len(args) > 2):
+       interfacename = args[2]
+    d = {}
+    dlist = []
+    d = { 'vrfName': vrfName }
+    dlist.append(d)
+    if interfacename != "":
+        intfparam = {'interfacename': interfacename }
+        dlist.append(intfparam)
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=args[1])
+    response = api.get(keypath)
+    if(response.ok()):
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+            if api_response is None:
+                print("Failed")
+                return
+            dlist.append(api_response)
+    show_cli_output(args[0], dlist)
+
+
+
+def generate_show_ip_ospf_route(args):
+    api = cc.ApiClient()
+    keypath = []
+    vrfName = "default"
+    i = 0
+    for arg in args:
+        if "vrf" in arg or "Vrf" in arg:
+            vrfName = args[i]
+        i = i + 1
+
+    d = {}
+    dlist = []
+    d = { 'vrfName': vrfName }
+    dlist.append(d)
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/openconfig-ospfv2-ext:route-tables', name=args[1])
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -92,12 +157,20 @@ def invoke_show_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
     body = None
-
     if func == 'show_ip_ospf':
         return generate_show_ip_ospf(args)
-    elif func == 'show_ip_ospf_neighbor_detail_all':
-        keypath = cc.path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/neighbors-list', name=args[1])
-        return api.get(keypath)
+    elif func == 'show_ip_ospf_neighbor_detail':
+        return generate_show_ip_ospf_areas(args)
+    elif func == 'show_ip_ospf_neighbor':
+        return generate_show_ip_ospf_areas(args)
+    elif func == 'show_ip_ospf_interface':
+        return generate_show_ip_ospf_areas(args)
+    elif func == 'show_ip_ospf_interface_traffic':
+        return generate_show_ip_ospf_areas(args)
+    elif func == 'show_ip_ospf_route':
+        return generate_show_ip_ospf_route(args)
+    elif func == 'show_ip_ospf_border_routers':
+        return generate_show_ip_ospf_route(args)
     else: 
         return api.cli_not_implemented(func)
 

@@ -19,11 +19,11 @@
 */
 #include "lub/dump.h"
 #include "private.h"
+#include "logging.h"
 
 #include <stdio.h>
 #include <Python.h>
 #include <stdarg.h>
-#include <syslog.h>
 
 void pyobj_init() {
     Py_Initialize();
@@ -123,6 +123,7 @@ int call_pyobj(char *cmd, const char *arg) {
     int ret_code = 0;
     char *token[20];
     char buf[1024]; 
+    int i;
 
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
@@ -143,6 +144,8 @@ int call_pyobj(char *cmd, const char *arg) {
     name = PyBytes_FromString(token[0]);
     module = PyImport_Import(name);
     if (module == NULL) {
+        lub_dump_printf("%%Error: Internal error.\n");
+        syslog(LOG_WARNING, "clish_pyobj: Failed to load module %s", token[0]);
         pyobj_handle_error();
         Py_XDECREF(name);
         PyGILState_Release(gstate);
@@ -164,7 +167,7 @@ int call_pyobj(char *cmd, const char *arg) {
     PyTuple_SetItem(args, 0, PyBytes_FromString(token[1]));
 
     PyObject *args_list = PyList_New(0);
-    for (int i=1; i< idx-1; i++) {
+    for (i=1; i< idx-1; i++) {
         PyList_Append(args_list, PyBytes_FromString(token[i+1]));
     }
     PyTuple_SetItem(args, 1, args_list);

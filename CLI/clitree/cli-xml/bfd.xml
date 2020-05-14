@@ -123,7 +123,7 @@ limitations under the License.
     
     <COMMAND name = "show bfd peers" help = "BFD peers status" >
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure vrf name" ptype = "STRING" > </PARAM>
+                <PARAM name = "vrfname" help = "Configure vrf name" ptype = "STRING" default="all"> </PARAM>
             </PARAM>
             <PARAM name = "showbfdcmd" help = "" ptype = "SUBCOMMAND" mode="switch" optional = "true" >
                 <PARAM name = "brief" help = "Show BFD peer information in tabular form" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
@@ -132,12 +132,12 @@ limitations under the License.
         <ACTION>
 	if test "${showbfdcmd}" != ""; then&#xA;
             if test "${showbfdcmd}" != "counters"; then&#xA;
-	        python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers_brief.j2 ${vrf-name} ${__full_line}&#xA;
+	        python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers_brief.j2 ${vrfname} &#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrf-name} ${__full_line}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrfname} &#xA;
             fi&#xA;
         else&#xA;
-	    python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers.j2 ${vrf-name} ${__full_line}&#xA;
+	    python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers.j2 ${vrfname} &#xA;
         fi&#xA;
 	</ACTION>
     <DOCGEN>
@@ -163,7 +163,7 @@ limitations under the License.
 <!--
     <COMMAND name = "show bfd peers counters" help = "Show BFD peer counters information" >
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrf-name} ${__full_line}&#xA; 
+            python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrf-name} &#xA; 
 	</ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -312,7 +312,7 @@ limitations under the License.
         </DOCGEN>
     </COMMAND>
 
-    <COMMAND name = "no peer" help = "Configure peer" view="configure-peer-view">
+    <COMMAND name = "no peer" help = "Configure peer" >
             <PARAM name = "address" help = "" ptype = "SUBCOMMAND" mode="switch" >
                 <PARAM name = "peer_ipv4" help = "IPv4 Peer address" ptype = "IP_ADDR"> </PARAM>
                 <PARAM name = "peer_ipv6" help = "IPv6 Peer address" ptype = "IPV6_ADDR"> </PARAM>
