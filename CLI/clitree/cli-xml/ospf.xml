@@ -442,6 +442,9 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION>
+    if test "${always}" = "" &amp;&amp; test "${metricval}" = "" &amp;&amp; test "${metrictype}" = "" &amp;&amp; test "${routemapname}" = ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_import ${vrf-name} &#xA;
+    fi&#xA;
     if test "${always}" != ""; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_always ${vrf-name} &#xA;
     fi&#xA;
@@ -465,6 +468,9 @@ limitations under the License.
       <PARAM name="route-map" help="Route map reference" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
     </PARAM>
     <ACTION>
+    if test "${always}" = "" &amp;&amp; test "${metric}" = "" &amp;&amp; test "${metric-type}" = "" &amp;&amp; test "${route-map}" = ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_import ${vrf-name} &#xA;
+    fi&#xA;
     if test "${always}" != ""; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_always ${vrf-name} &#xA;
     fi&#xA;
