@@ -21,7 +21,7 @@ limitations under the License.
             <PARAM name="deny" help="Drop traffic in data plane" ptype="SUBCOMMAND" mode="subcommand"/>
             <PARAM name="permit" help="Allow traffic in control and data plane" ptype="SUBCOMMAND" mode="subcommand"/>
             <PARAM name="remark" help="Set remark or description for rule" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="remark-val" help="Remark or description for rule" ptype="LINE"/>
+                <PARAM name="remark-val" help="Remark or description for rule" ptype="STRING_255"/>
             </PARAM>
         </PARAM>
     </MACRODEF>
@@ -90,7 +90,7 @@ limitations under the License.
             <PARAM name="vlan-val" help="VLAN ID value (range 1-4094)" ptype="VLAN_RANGE"/>
         </PARAM>
         <PARAM name="remark" help="Set remark or description for rule" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
-            <PARAM name="remark-val" help="Remark or description for rule" ptype="LINE"/>
+            <PARAM name="remark-val" help="Remark or description for rule" ptype="STRING_255"/>
         </PARAM>
     </MACRODEF>
 
@@ -138,7 +138,7 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="remark" help="Set remark or description for ACL">
-            <PARAM name="remark-val" help="Remark or description for ACL" ptype="LINE"/>
+            <PARAM name="remark-val" help="Remark or description for ACL" ptype="STRING_255"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl set_acl_remark ${name} arg1 ${__params}</ACTION>
         </COMMAND>
 
@@ -168,35 +168,34 @@ limitations under the License.
             <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
         </PARAM>
     </MACRODEF>
-    
+
     <MACRODEF name="ACL-BINDING-OPTIONS">
-        <COMMAND name="mac" help="Configure MAC parameters"/>
         <!-- mac|ip|ipv6 access-group NAME in|out -->
         <COMMAND name="mac access-group" help="Specify MAC access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_L2 ${iface} ${vlan_name} ${po_name} ${direction-switch}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_L2 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
         </COMMAND>
         <COMMAND name="ip access-group" help="Specify IP access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV4 ${iface} ${vlan_name} ${po_name} ${direction-switch}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV4 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
         </COMMAND>
         <COMMAND name="ipv6 access-group" help="Specify IPv6 access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV6 ${iface} ${vlan_name} ${po_name} ${direction-switch}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV6 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
         </COMMAND>
     
         <!-- no mac|ip|ipv6 access-group NAME in|out -->
         <COMMAND name="no mac access-group" help="Specify MAC access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${iface} ${vlan_name} ${po_name} ${access-list-name} ACL_L2 ${direction-switch}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_L2 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
         </COMMAND>
         <COMMAND name="no ip access-group" help="Specify IP access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${iface} ${vlan_name} ${po_name} ${access-list-name} ACL_IPV4 ${direction-switch}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV4 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
         </COMMAND>
         <COMMAND name="no ipv6 access-group" help="Specify IPv6 access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
-            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${iface} ${vlan_name} ${po_name} ${access-list-name} ACL_IPV6 ${direction-switch}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV6 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
         </COMMAND>
     </MACRODEF>
 
@@ -221,19 +220,21 @@ limitations under the License.
 
     <MACRODEF name="ACL-SHOW-CLEAR-COMMAND-OPTIONS">
         <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true">
-            <PARAM name="interface" help="arg1 arg2 ACL counters applied on interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-                <PARAM name="interface-types" help="" ptype="SUBCOMMAND" mode="switch">
-                    <PARAM name="Ethernet" help="Ethernet interface" ptype="SUBCOMMAND" mode="subcommand">
-                        <PARAM name="port-id" help="Port number" ptype="UINT" completion="false"/>
+            <PARAM name="interface-or-global" help="" ptype="SUBCOMMAND" mode="switch" optional="true" >
+                <PARAM name="interface" help="arg1 arg2 ACL counters applied on interface" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="interface-types" help="" ptype="SUBCOMMAND" mode="switch">
+                        <PARAM name="Ethernet" help="Ethernet interface" ptype="SUBCOMMAND" mode="subcommand">
+                            <PARAM name="port-id" help="Port number" ptype="UINT" completion="false"/>
+                        </PARAM>
+                        <PARAM name="PortChannel" help="Portchannel interface" ptype="SUBCOMMAND" mode="subcommand">
+                            <PARAM name="portchannel-id" help="Lag number" ptype="LAG_ID" completion="false"/>
+                        </PARAM>
+                        <PARAM name="Vlan" help="Vlan interface" ptype="SUBCOMMAND" mode="subcommand">
+                            <PARAM name="vlan-id" help="VLAN ID" ptype="VLAN_ID" completion="false"/>
+                        </PARAM>
                     </PARAM>
-                    <PARAM name="PortChannel" help="Portchannel interface" ptype="SUBCOMMAND" mode="subcommand">
-                        <PARAM name="portchannel-id" help="Lag number" ptype="LAG_ID" completion="false"/>
-                    </PARAM>
-                    <PARAM name="Vlan" help="Vlan interface" ptype="SUBCOMMAND" mode="subcommand">
-                        <PARAM name="vlan-id" help="VLAN ID" ptype="VLAN_ID" completion="false"/>
-                    </PARAM>
-                    <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
                 </PARAM>
+                <PARAM name="Switch" help="ACLs applied at switch level" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
         </PARAM>
     </MACRODEF>
