@@ -24,6 +24,7 @@ class CliDoc:
     viewsCmdDict = OrderedDict()
     viewsSoupDict = OrderedDict()
     ptyperoot = None
+    feature_to_cli = OrderedDict()
 
     """
     Implementation for CLI document generator
@@ -326,23 +327,6 @@ class CliDoc:
                                         else:
                                             modesList.append(CliDoc.filter_extra_spaces(baseCmd))
                                         modeCmdList = modeCmdList.union(set(modesList))
-                        
-                    # for cmd in cmdList:
-                    #     if 'show bgp community-list' in cmd:
-                    #         pdb.set_trace()
-                    #     print("%s"%(cmd))
-                    # print("\tmodes:")
-                    # for modeCmd in modeCmdList:
-                    #     print("\t%s"%(modeCmd))
-                    # print("\tparams:")
-                    # print("\t", paramsList)
-                    
-                    # cliGuideFp = None
-                    # if command_tag["name"] not in commandsGuideDict:
-                    #     cliGuideFp = StringIO()                        
-                    #     commandsGuideDict[command_tag["name"]] = cliGuideFp
-                    # else:
-                    #     cliGuideFp = commandsGuideDict[command_tag["name"]]
 
                     cliGuideFp = StringIO()
                     if command_tag["name"] not in commandsGuideDict:                      
@@ -429,7 +413,30 @@ class CliDoc:
                             cliGuideFp.write("\n```\n")
                             CliDoc.print_doc_lines(example.string, cliGuideFp)
                             cliGuideFp.write("\n```\n")
-        
+
+                        # Features sub section
+                        features = docgen.find_all('FEATURE')
+                        if len(features) > 0:
+                            cliGuideFp.write("### %s \n" %("Features this CLI belongs to"))
+                        for feature in features:
+                            if feature.string not in CliDoc.feature_to_cli:
+                                CliDoc.feature_to_cli[feature.string] = list()
+                            CliDoc.feature_to_cli[feature.string].append(command_tag["name"])                                
+                            CliDoc.print_doc_lines('* ' +feature.string, cliGuideFp)
+                        if len(features) > 0:
+                            cliGuideFp.write("\n\n")
+
+                        # ALTCMD sub section
+                        altcmds = docgen.find_all('ALTCMD')
+                        if len(altcmds) > 0:
+                            cliGuideFp.write("### %s \n" %("Alternate command"))
+                        for altcmd in altcmds:
+                            if 'type' in altcmd.attrs:
+                                cliGuideFp.write("#### %s \n" %(altcmd["type"]))
+                            cliGuideFp.write("\n```\n")
+                            CliDoc.print_doc_lines(altcmd.string, cliGuideFp)
+                            cliGuideFp.write("\n```\n")                            
+
         with open(CliDoc.klish_xml_path_dir + '/' + reference_guide_name, "w") as cliGuideFp:
             cliGuideFp.write("# The SONiC Industry Standard CLI Reference Guide \n\n")
             cliGuideFp.write("# Table Of Commands \n\n")
@@ -438,6 +445,16 @@ class CliDoc:
                 if command_key not in command_key_set:
                     cliGuideFp.write("[%s](#%s)\n\n" % (command_key, command_key.replace(' ','-')))
                     command_key_set.add(command_key)
+            
+            cliGuideFp.write("# CLIs By Feature \n\n")
+            feature_key_set = set()
+            for feature_key in sorted (CliDoc.feature_to_cli.keys()):
+                if feature_key not in feature_key_set:
+                    cliGuideFp.write("## %s \n\n" % format(feature_key))
+                    for feature_cli in CliDoc.feature_to_cli[feature_key]:
+                        cliGuideFp.write("[%s](#%s)\n\n" % (feature_cli, feature_cli.replace(' ','-')))
+                    feature_key_set.add(feature_key)
+
             for content_key in sorted (commandsGuideDict.keys()):
                 # if  content_key == "activate":
                 #     import pdb; pdb.set_trace()

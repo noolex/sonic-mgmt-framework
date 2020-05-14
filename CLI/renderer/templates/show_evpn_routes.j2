@@ -50,7 +50,9 @@ EVPN type-5 prefix: [5]:[EthTag]:[IPlen]:[IP]
     {% if vars.update({'pathId':route["state"]["path-id"]}) %}{% endif %}
     {% if vars.update({'neighbor':route["state"]["origin"]}) %}{% endif %}
     {% if vars.update({'time':route["state"]["last-modified"]}) %}{% endif %}
+    {% if "openconfig-rib-bgp-ext:weight" in route["state"] %}
     {% if vars.update({'weight':route["state"]["openconfig-rib-bgp-ext:weight"]}) %}{% endif %}
+    {% endif %}
   {% endif %}
   {% if "attr-sets" in key %}
     {% if vars.update({'origin':route["attr-sets"]["origin"]}) %}{% endif %}

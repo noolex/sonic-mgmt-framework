@@ -310,7 +310,7 @@ limitations under the License.
 	            <PARAM
                     help="VRF name"
                     name="vrfname"
-                    ptype="STRING">
+                    ptype="STRING_15">
                     <PARAM
                         help="Destination prefix"
                         name="prefix"

@@ -34,7 +34,7 @@ import (
 	"time"
 
 	"github.com/Azure/sonic-mgmt-framework/rest/server"
-	"github.com/Azure/sonic-mgmt-framework/build/rest_server/dist/swagger"
+	"github.com/Azure/sonic-mgmt-framework/build/rest_server/dist/openapi"
 
 	"github.com/golang/glog"
 	"github.com/pkg/profile"
@@ -114,7 +114,7 @@ func main() {
 		glog.Warning("client_auth mode \"user\" is deprecated, use \"password\" instead.")
 	}
 
-	swagger.Load()
+	openapi.Load()
 
 	server.GenerateJwtSecretKey()
 	server.JwtRefreshInt = time.Duration(30 * time.Second)

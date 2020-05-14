@@ -31,22 +31,25 @@ def invoke(func, args):
     
     # Get the rules of all ACL table entries.
     if func == 'get_igmp_snooping_interfaces_interface_state':
-        if len(args) == 4 and args[2].lower() == 'vlan':
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface=Vlan{vlanid}',
-                vlanid=args[3])
-            return aa.get(keypath)
-        elif len(args) == 3 and args[2].lower() == 'groups':
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces')            
-            return aa.get(keypath)
-        elif len(args) == 5 and args[2].lower() == 'groups':
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface=Vlan{vlanid}',
-                vlanid=args[4])
-            return aa.get(keypath)
-        else: 
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces')
-            return aa.get(keypath)            
+        if len(args) >= 2:
+            if args[1].lower() == 'snooping':
+                if len(args) == 2 or args[2] == '\|':
+                    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces')
+                    return aa.get(keypath)
+                elif args[2].lower() == 'vlan':
+                    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface=Vlan{vlanid}',
+                    vlanid=args[3])
+                    return aa.get(keypath)
+                elif args[2].lower() == 'groups':
+                    if len(args) == 3 or args[3] == '\|':
+                        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces')            
+                        return aa.get(keypath)
+                    elif len(args) > 3 and args[3].lower() == 'vlan':
+                        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface=Vlan{vlanid}',
+                        vlanid=args[4])
+                        return aa.get(keypath)                    
 
-    if func == 'patch_igmp_snooping_interfaces_interface_config' :            
+    elif func == 'patch_igmp_snooping_interfaces_interface_config' :            
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}',
                 vlanid=args[0])
         
@@ -167,7 +170,7 @@ def invoke(func, args):
         keypath = None
         
         if len(args) == 2 :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/enabled',
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}',
                 vlanid=args[0])
         elif args[2] == 'querier' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/querier',

@@ -18,14 +18,21 @@
 
 .PHONY: install doc_gen doc_gen_clean
 
+TOPDIR               := ../..
 # TGT_DIR is the directory wher all prepreocssed cli model, actioner and
 # renderer scripts and temlates will be dumped. Can be overidden from caller.
-TGT_DIR ?= $(SONIC_CLI_ROOT)/target
-#doc_guide := ${TGT_DIR}/command-tree/cli_reference_guide.md
-doc_gen := doc_gen
-doc_gen_clean := doc_gen_clean
+TGT_DIR              ?= $(SONIC_CLI_ROOT)/target
+doc_gen              := doc_gen
+doc_gen_clean        := doc_gen_clean
+CLI_XML_FILES        := $(shell find $(TOPDIR)/CLI/clitree/cli-xml -name '*.xml' | sort)
+CLI_XML_MACRO_FILES  := $(shell find $(TOPDIR)/CLI/clitree/macro -name '*.xml' | sort)
+CLI_DOCGEN_SCRIPT    := $(TOPDIR)/CLI/clitree/scripts/klish_cli_doc_gen.py
+cli_done             := ${TGT_DIR}/command-tree/.done
+cli_guide            := ${TGT_DIR}/command-tree/industry_standard_cli_reference_guide.md
 
-all:
+all: $(cli_done) $(doc_gen)
+
+$(cli_done): $(CLI_XML_FILES) $(CLI_XML_MACRO_FILES)
 	mkdir -p ${TGT_DIR}/command-tree ${TGT_DIR}/cli-macro ${TGT_DIR}/render-templates ${TGT_DIR}/scripts
 	cp -r cli-xml/include ${TGT_DIR}/command-tree
 	cp cli-xml/*.xml ${TGT_DIR}/command-tree
@@ -40,17 +47,19 @@ all:
             xmllint --noout --schema sonic-clish.xsd ${TGT_DIR}/command-tree/include/*.xml) || exit 1
 	rm -rf ${TGT_DIR}/cli-macro
 	rm -rf scripts/*.pyc
+	touch $@
 
-# TODO: The incremental build for clitree needs to be implemented
-$(doc_gen): all
+$(doc_gen): $(cli_guide)
+
+$(cli_guide): $(cli_done) $(CLI_DOCGEN_SCRIPT)
 	@echo "==Generating documentation for CLIs=="
 	python scripts/klish_cli_doc_gen.py ${TGT_DIR}/command-tree
 
 doc_gen_clean:
 	@echo "Documentation guide removed"
-	rm -rf ${TGT_DIR}/command-tree/industry_standard_cli_reference_guide.md
+	rm -rf $(cli_guide)
 
-clean:
+clean: doc_gen_clean
 	rm -rf ${TGT_DIR}
 	@echo "Clitree Cleaned"
 
