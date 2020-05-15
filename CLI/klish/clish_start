@@ -14,7 +14,7 @@ export PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin:$SONIC_CLI_ROOT
 
 ALIAS=$(sonic-cfggen -d -v "DEVICE_METADATA['localhost']['aliasMode']")
 if [ $ALIAS == 'true' ]; then
-    export SONIC_CLI_IFACE_MODE=$ALIAS
+    export SONIC_CLI_IFACE_MODE=alias
 fi
 
 $SONIC_CLI_ROOT/clish "$@"
