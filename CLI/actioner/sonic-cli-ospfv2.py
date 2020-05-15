@@ -238,7 +238,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             importprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            importprotocol = "CONNECTED"
+            importprotocol = "DIRECTLY_CONNECTED"
         elif (args[1] == "table"):
             importprotocol = "DEFAULT_ROUTE"
 
@@ -258,11 +258,20 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             importprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            importprotocol = "CONNECTED"
+            importprotocol = "DIRECTLY_CONNECTED"
         elif (args[1] == "table"):
             importprotocol = "DEFAULT_ROUTE"
 
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/route-map', vrfname=args[0], protocol=importprotocol)
+        return api.delete(keypath)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_import':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list=DEFAULT_ROUTE,IMPORT/config', vrfname=args[0])
+        body = { "openconfig-ospfv2-ext:config": { "protocol": "DEFAULT_ROUTE", "direction": "IMPORT" }}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_import':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list=DEFAULT_ROUTE,IMPORT', vrfname=args[0])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_metric':
@@ -319,7 +328,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            exportprotocol = "CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
@@ -338,11 +347,11 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            exportprotocol = "CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config', vrfname=args[0], protocol=exportprotocol)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT', vrfname=args[0], protocol=exportprotocol)
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric':
@@ -357,7 +366,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            exportprotocol = "CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
@@ -377,7 +386,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            exportprotocol = "CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
@@ -397,7 +406,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            importprotocol = "CONNECTED"
+            importprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
@@ -422,7 +431,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            importprotocol = "CONNECTED"
+            importprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
@@ -441,7 +450,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            exportprotocol = "CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
@@ -461,7 +470,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            exportprotocol = "CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 

@@ -83,6 +83,16 @@ dscp_rev_map = {val: key for key, val in dscp_map.items()}
 acl_client = cc.ApiClient()
 
 
+class SonicAclCLIError(RuntimeError):
+    """Indicates CLI processing errors that needs to be displayed to user"""
+    pass
+
+
+class SonicACLCLIStopNoError(RuntimeError):
+    """Indicates that CLI processing should be stopped. No error will be displayed to user"""
+    pass
+
+
 def handle_create_acl_request(args):
     """Configure ACL table"""
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set')
@@ -104,13 +114,13 @@ def __format_mac_addr(macaddr):
 
 
 def __create_acl_rule_l2(args):
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries/acl-entry',
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries',
                       name=args[0], acl_type=args[1])
 
     forwarding_action = "ACCEPT" if args[3] == 'permit' else 'DROP'
 
     body = collections.defaultdict()
-    body["acl-entry"] = [{
+    body["openconfig-acl:acl-entry"] = [{
         "sequence-id": int(args[2]),
         "config": {
             "sequence-id": int(args[2])
@@ -127,71 +137,69 @@ def __create_acl_rule_l2(args):
     }]
 
     if args[4] == 'host':
-        body["acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(args[5])
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(args[5])
         next_item = 6
     elif '/' in args[4]:
         mac, mask = args[4].split('/')
-        body["acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(mac)
-        body["acl-entry"][0]["l2"]["config"]["source-mac-mask"] = __format_mac_addr(mask)
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(mac)
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac-mask"] = __format_mac_addr(mask)
         next_item = 5
     elif args[4] == 'any':
         next_item = 5
     else:
-        print('%Error: Incorrect Source MAC Address')
-        return
+        raise SonicAclCLIError('Incorrect Source MAC Address')
 
     if args[next_item] == 'host':
-        body["acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(args[next_item + 1])
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(args[next_item + 1])
         next_item += 2
     elif '/' in args[next_item]:
         mac, mask = args[next_item].split('/')
-        body["acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(mac)
-        body["acl-entry"][0]["l2"]["config"]["destination-mac-mask"] = __format_mac_addr(mask)
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(mac)
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac-mask"] = __format_mac_addr(mask)
         next_item += 1
     elif args[next_item] == 'any':
         next_item += 1
     else:
-        print('%Error: Incorrect destination MAC Address')
-        return
+        raise SonicAclCLIError('Incorrect destination MAC Address')
 
     while next_item < len(args):
         if args[next_item] == 'pcp':
             if args[next_item + 1] in pcp_map:
-                body["acl-entry"][0]["l2"]["config"]['pcp'] = pcp_map[args[next_item + 1]]
+                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = pcp_map[args[next_item + 1]]
             elif '/' in args[next_item + 1]:
                 val, mask = args[next_item + 1].split('/')
-                body["acl-entry"][0]["l2"]["config"]['pcp'] = int(val)
-                body["acl-entry"][0]["l2"]["config"]['pcp-mask'] = int(mask)
+                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = int(val)
+                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp-mask'] = int(mask)
             else:
-                body["acl-entry"][0]["l2"]["config"]['pcp'] = int(args[next_item + 1])
+                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'dei':
-            body["acl-entry"][0]["l2"]["config"]['dei'] = int(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["l2"]["config"]['dei'] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'vlan':
-            body["acl-entry"][0]["l2"]["config"]['vlanid'] = int(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["l2"]["config"]['vlanid'] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'remark':
             full_cmd = os.getenv('USER_COMMAND', None)
             match = re.search('remark (["]?.*["]?)', full_cmd)
             if match:
-                body["acl-entry"][0]["config"]['description'] = match.group(1)
+                body["openconfig-acl:acl-entry"][0]["config"]['description'] = match.group(1)
             next_item = len(args)
         else:
             ethertype = args[next_item]
             if ethertype in ethertype_map:
-                body["acl-entry"][0]["l2"]["config"]['ethertype'] = ethertype_map[ethertype]
+                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['ethertype'] = ethertype_map[ethertype]
             else:
                 ethertype = "0x{:04x}".format(int(args[next_item], base=0))
-                body["acl-entry"][0]["l2"]["config"]['ethertype'] = int(ethertype, base=0)
+                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['ethertype'] = int(ethertype, base=0)
             next_item += 1
 
     log.log_debug(str(body))
-    return acl_client.patch(keypath, body)
+    return acl_client.post(keypath, body)
 
 
 def __create_acl_rule_ipv4_ipv6(args):
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries/acl-entry',
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries',
                       name=args[0], acl_type=args[1])
 
     forwarding_action = "ACCEPT" if args[3] == 'permit' else 'DROP'
@@ -200,7 +208,7 @@ def __create_acl_rule_ipv4_ipv6(args):
     body = collections.defaultdict()
     if args[1] == 'ACL_IPV4':
         af = 'ipv4'
-        body["acl-entry"] = [{
+        body["openconfig-acl:acl-entry"] = [{
             "sequence-id": int(args[2]),
             "config": {
                 "sequence-id": int(args[2])
@@ -221,7 +229,7 @@ def __create_acl_rule_ipv4_ipv6(args):
         }]
     else:
         af = 'ipv6'
-        body["acl-entry"] = [{
+        body["openconfig-acl:acl-entry"] = [{
             "sequence-id": int(args[2]),
             "config": {
                 "sequence-id": int(args[2])
@@ -250,20 +258,19 @@ def __create_acl_rule_ipv4_ipv6(args):
 
     log.log_debug('Protocol is {}'.format(protocol))
     if protocol is not None:
-        body["acl-entry"][0][af]["config"]["protocol"] = protocol
+        body["openconfig-acl:acl-entry"][0][af]["config"]["protocol"] = protocol
 
     next_item = 6
     if args[5] == 'host':
         try:
             if 'ipv4' == af:
                 ipaddress.IPv4Address(args[next_item].decode('utf-8'))
-                body["acl-entry"][0][af]["config"]["source-address"] = args[next_item] + '/32'
+                body["openconfig-acl:acl-entry"][0][af]["config"]["source-address"] = args[next_item] + '/32'
             else:
                 ipaddress.IPv6Address(args[next_item].decode('utf-8'))
-                body["acl-entry"][0][af]["config"]["source-address"] = args[next_item] + '/128'
+                body["openconfig-acl:acl-entry"][0][af]["config"]["source-address"] = args[next_item] + '/128'
         except ipaddress.AddressValueError:
-            print("%Error: Invalid {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item]))
-            return
+            raise SonicAclCLIError("Invalid {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item]))
         next_item += 1
     elif args[5] == 'any':
         log.log_debug('No value stored for src ip as any')
@@ -273,67 +280,62 @@ def __create_acl_rule_ipv4_ipv6(args):
                 ipaddress.IPv4Network(args[5].decode('utf-8'))
             else:
                 ipaddress.IPv6Network(args[5].decode('utf-8'))
-            body["acl-entry"][0][af]["config"]["source-address"] = args[5]
+            body["openconfig-acl:acl-entry"][0][af]["config"]["source-address"] = args[5]
         except ipaddress.AddressValueError as e:
             log.log_error(str(e))
-            print("%Error: Invalid {} prefix {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[5]))
-            return
+            raise SonicAclCLIError("Invalid {} prefix {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[5]))
         except ipaddress.NetmaskValueError as e:
             log.log_error(str(e))
-            print("%Error: Invalid mask for {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[5]))
-            return
+            raise SonicAclCLIError("Invalid mask for {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[5]))
         except ValueError as e:
             log.log_error(str(e))
-            print("%Error: {}. Please fix the {} address or prefix length".format(str(e), "IPv4" if 'ipv4' == af else 'IPv6'))
-            return
+            raise SonicAclCLIError("{}. Please fix the {} address or prefix length".format(str(e), "IPv4" if 'ipv4' == af else 'IPv6'))
 
     else:
-        print("%Error: Unknown option {}".format(args[5]))
-        return
+        raise SonicAclCLIError("Unknown option {}".format(args[5]))
 
     flags_list = []
     l4_port_type = "source-port"
     while next_item < len(args):
         log.log_debug("{} {}".format(next_item, args[next_item]))
         if args[next_item] == 'eq':
-            body["acl-entry"][0]["transport"]["config"][l4_port_type] = int(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["transport"]["config"][l4_port_type] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'range':
             begin = int(args[next_item + 1])
             end = int(args[next_item + 2])
             if begin >= end:
-                print("%Error: Invalid range. Begin({}) is not lesser than End({})".format(begin, end))
-                return
-            body["acl-entry"][0]["transport"]["config"][l4_port_type] = "{}..{}".format(begin, end)
+                raise SonicAclCLIError("Invalid range. Begin({}) is not lesser than End({})".format(begin, end))
+            body["openconfig-acl:acl-entry"][0]["transport"]["config"][l4_port_type] = "{}..{}".format(begin, end)
             next_item += 3
         elif args[next_item] == 'gt':
-            body["acl-entry"][0]["transport"]["config"][l4_port_type] = "{}..65535".format(int(args[next_item + 1]))
+            body["openconfig-acl:acl-entry"][0]["transport"]["config"][l4_port_type] = "{}..65535".format(int(args[next_item + 1]))
             next_item += 2
         elif args[next_item] == 'lt':
-            body["acl-entry"][0]["transport"]["config"][l4_port_type] = "0..{}".format(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["transport"]["config"][l4_port_type] = "0..{}".format(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'dscp':
-            body["acl-entry"][0][af]["config"]["dscp"] = int(args[next_item + 1]) if args[next_item + 1] not in dscp_map else dscp_map[args[next_item + 1]]
+            body["openconfig-acl:acl-entry"][0][af]["config"]["dscp"] = int(args[next_item + 1]) if args[next_item + 1] not in dscp_map else dscp_map[args[next_item + 1]]
             next_item += 2
         elif args[next_item] in ['fin', 'syn', 'ack', 'urg', 'rst', 'psh']:
             flags_list.append("tcp_{}".format(args[next_item]).upper())
             next_item += 1
         elif args[next_item] == "vlan":
-            body["acl-entry"][0]["l2"] = {}
-            body["acl-entry"][0]["l2"]['config'] = {}
-            body["acl-entry"][0]["l2"]['config']['vlanid'] = int(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["l2"] = {}
+            body["openconfig-acl:acl-entry"][0]["l2"]['config'] = {}
+            body["openconfig-acl:acl-entry"][0]["l2"]['config']['vlanid'] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'type':
-            body["acl-entry"][0]["transport"]["config"]["icmp-type"] = int(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["transport"]["config"]["icmp-type"] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'code':
-            body["acl-entry"][0]["transport"]["config"]["icmp-code"] = int(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["transport"]["config"]["icmp-code"] = int(args[next_item + 1])
             next_item += 2
         elif args[next_item] == 'remark':
             full_cmd = os.getenv('USER_COMMAND', None)
             match = re.search('remark (["]?.*["]?)', full_cmd)
             if match:
-                body["acl-entry"][0]["config"]['description'] = match.group(1)
+                body["openconfig-acl:acl-entry"][0]["config"]['description'] = match.group(1)
             next_item = len(args)
         else:
             l4_port_type = "destination-port"
@@ -341,13 +343,12 @@ def __create_acl_rule_ipv4_ipv6(args):
                 try:
                     if 'ipv4' == af:
                         ipaddress.IPv4Address(args[next_item+1].decode('utf-8'))
-                        body["acl-entry"][0][af]["config"]["destination-address"] = args[next_item + 1] + '/32'
+                        body["openconfig-acl:acl-entry"][0][af]["config"]["destination-address"] = args[next_item + 1] + '/32'
                     else:
                         ipaddress.IPv6Address(args[next_item+1].decode('utf-8'))
-                        body["acl-entry"][0][af]["config"]["destination-address"] = args[next_item + 1] + '/128'
+                        body["openconfig-acl:acl-entry"][0][af]["config"]["destination-address"] = args[next_item + 1] + '/128'
                 except ipaddress.AddressValueError:
-                    print("%Error: Invalid {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item + 1]))
-                    return
+                    raise SonicAclCLIError("Invalid {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item + 1]))
                 next_item += 2
             elif args[next_item] == 'any':
                 next_item += 1
@@ -357,25 +358,22 @@ def __create_acl_rule_ipv4_ipv6(args):
                         ipaddress.IPv4Network(args[next_item].decode('utf-8'))
                     else:
                         ipaddress.IPv6Network(args[next_item].decode('utf-8'))
-                    body["acl-entry"][0][af]["config"]["destination-address"] = args[next_item]
+                    body["openconfig-acl:acl-entry"][0][af]["config"]["destination-address"] = args[next_item]
                 except ipaddress.AddressValueError as e:
                     log.log_error(str(e))
-                    print("%Error: Invalid {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item]))
-                    return
+                    raise SonicAclCLIError("Invalid {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item]))
                 except ipaddress.NetmaskValueError as e:
                     log.log_error(str(e))
-                    print("%Error: Invalid mask for {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item]))
-                    return
+                    raise SonicAclCLIError("Invalid mask for {} address {}".format("IPv4" if 'ipv4' == af else 'IPv6', args[next_item]))
                 next_item += 1
             else:
-                print("%Error: Unknown option {}".format(args[next_item]))
-                return
+                raise SonicAclCLIError("Unknown option {}".format(args[next_item]))
 
     if bool(flags_list):
-        body["acl-entry"][0]["transport"]["config"]["tcp-flags"] = flags_list
+        body["openconfig-acl:acl-entry"][0]["transport"]["config"]["tcp-flags"] = flags_list
 
     log.log_debug(str(body))
-    return acl_client.patch(keypath, body)
+    return acl_client.post(keypath, body)
 
 
 def handle_create_acl_rule_request(args):
@@ -409,20 +407,19 @@ def handle_delete_acl_rule_request(args):
     return acl_client.delete(keypath)
 
 
-def handle_bind_acl_request(args):
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface')
+def __handle_interface_acl_bind_request(args):
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}', id=args[2])
     if args[3] == "in":
-        body = {"openconfig-acl:interface": [{
-            "id": args[2],
-            "config": {
+        body = {
+            "openconfig-acl:config": {
                 "id": args[2]
             },
-            "interface-ref": {
+            "openconfig-acl:interface-ref": {
                 "config": {
                     "interface": args[2]
                 }
             },
-            "ingress-acl-sets": {
+            "openconfig-acl:ingress-acl-sets": {
                 "ingress-acl-set": [
                     {
                         "set-name": args[0],
@@ -433,20 +430,18 @@ def handle_bind_acl_request(args):
                         }
                     }
                 ]
-            }
-        }]}
+            }}
     else:
-        body = {"interface": [{
-            "id": args[2],
-            "config": {
+        body = {
+            "openconfig-acl:config": {
                 "id": args[2]
             },
-            "interface-ref": {
+            "openconfig-acl:interface-ref": {
                 "config": {
                     "interface": args[2]
                 }
             },
-            "egress-acl-sets": {
+            "openconfig-acl:egress-acl-sets": {
                 "egress-acl-set": [
                     {
                         "set-name": args[0],
@@ -457,20 +452,87 @@ def handle_bind_acl_request(args):
                         }
                     }
                 ]
-            }
-        }]}
+            }}
 
     log.log_debug(str(body))
-    return acl_client.patch(keypath, body)
+    return acl_client.post(keypath, body)
+
+
+def __handle_global_ctrl_plane_acl_bind_request(args):
+    if args[3] == "in":
+        if args[2] == "Switch":
+            keypath = cc.Path(
+                '/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/ingress-acl-sets')
+        else:
+            keypath = cc.Path(
+                '/restconf/data/openconfig-acl:acl/openconfig-acl-ext:control-plane/ingress-acl-sets')
+
+        body = {
+            "openconfig-acl-ext:ingress-acl-set": [
+                {
+                    "set-name": args[0],
+                    "type": args[1],
+                    "config": {
+                        "set-name": args[0],
+                        "type": args[1]
+                    }
+                }
+            ]
+        }
+    else:
+        if args[2] == "Switch":
+            keypath = cc.Path(
+                '/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/egress-acl-sets')
+        else:
+            raise SonicAclCLIError("Control Plane ACLs not supported at egress")
+
+        body = {
+            "openconfig-acl-ext:egress-acl-set": [
+                {
+                    "set-name": args[0],
+                    "type": args[1],
+                    "config": {
+                        "set-name": args[0],
+                        "type": args[1]
+                    }
+                }
+            ]
+        }
+
+    log.log_debug(str(body))
+    return acl_client.post(keypath, body)
+
+
+def handle_bind_acl_request(args):
+    if args[2] == "Switch" or args[2] == "ControlPlane":
+        return __handle_global_ctrl_plane_acl_bind_request(args)
+    else:
+        return __handle_interface_acl_bind_request(args)
 
 
 def handle_unbind_acl_request(args):
-    if args[3] == 'in':
-        keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/ingress-acl-sets/ingress-acl-set={set_name},{acl_type}',
-                          id=args[0], set_name=args[1], acl_type=args[2])
+    if args[2] == "Switch":
+        if args[3] == 'in':
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/ingress-acl-sets/ingress-acl-set={set_name},{acl_type}',
+                              set_name=args[0], acl_type=args[1])
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/egress-acl-sets/egress-acl-set={set_name},{acl_type}',
+                              set_name=args[0], acl_type=args[1])
+    elif args[2] == "ControlPlane":
+        if args[3] == 'in':
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:control-plane/ingress-acl-sets/ingress-acl-set={set_name},{acl_type}',
+                              set_name=args[0], acl_type=args[1])
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:control-plane/egress-acl-sets/egress-acl-set={set_name},{acl_type}',
+                              set_name=args[0], acl_type=args[1])
     else:
-        keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/egress-acl-sets/egress-acl-set={set_name},{acl_type}',
-                          id=args[0], set_name=args[1], acl_type=args[2])
+        if args[3] == 'in':
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/ingress-acl-sets/ingress-acl-set={set_name},{acl_type}',
+                              id=args[2], set_name=args[0], acl_type=args[1])
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/egress-acl-sets/egress-acl-set={set_name},{acl_type}',
+                              id=args[2], set_name=args[0], acl_type=args[1])
+
     return acl_client.delete(keypath)
 
 
@@ -480,8 +542,7 @@ def handle_get_acl_details_request(args):
     if resp.ok():
         counter_mode = resp.content["openconfig-acl:counter-capability"].split(":")[1]
     else:
-        print("%Error: Unable to get ACL Counter mode")
-        return None
+        raise SonicAclCLIError("Unable to get ACL Counter mode")
 
     if len(args) == 1:
         if counter_mode == "AGGREGATE_ONLY":
@@ -499,8 +560,7 @@ def handle_get_acl_details_request(args):
             response = acl_client.get(keypath)
     else:
         if counter_mode != "INTERFACE_ONLY":
-            print("%Error: Per interface counter mode not set")
-            return
+            raise SonicAclCLIError("Per interface counter mode not set")
         keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname='{}_{}'.format(args[1], args[0]))
         response = acl_client.get(keypath)
 
@@ -509,7 +569,7 @@ def handle_get_acl_details_request(args):
 
 
 def handle_get_all_acl_binding_request(args):
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces')
+    keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST')
     return acl_client.get(keypath)
 
 
@@ -559,8 +619,8 @@ def clear_acl_counters_request(args):
     elif len(args) == 2:
         body = {"sonic-acl:input": {"aclname": args[1], "type": args[0]}}
     else:
-        ifname = "".join(args[3:])
-        body = {"sonic-acl:input": {"aclname": args[1], "type": args[0], "ifname": ifname}}
+        intf_name = args[2] if len(args) == 3 else "".join(args[3:])
+        body = {"sonic-acl:input": {"aclname": args[1], "type": args[0], "ifname": intf_name}}
 
     return acl_client.post(path, body)
 
@@ -592,15 +652,19 @@ def handle_generic_set_response(response, args):
                     print(response.error_message())
             else:
                 print(response.error_message())
+
+            return -1
         except Exception as e:
             print(response.error_message())
+
+    return 0
 
 
 def handle_generic_delete_response(response, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
-            print("%Error: {}".format(str(resp_content)))
+            raise SonicAclCLIError("{}".format(str(resp_content)))
     elif response.status_code != '404':
         try:
             error_data = response.errors().get('error', list())[0]
@@ -888,52 +952,9 @@ def __handle_get_acl_details_aggregate_mode_response(resp_content, args):
                     continue
 
                 __convert_oc_acl_set_to_user_fmt(acl_set, data)
-                # acl_name = acl_set['name']
-                # data[acl_type][acl_name] = OrderedDict()
-                # data[acl_type][acl_name]['rules'] = OrderedDict()
-                #
-                # try:
-                #     data[acl_type][acl_name]['description'] = acl_set['state']['description']
-                # except KeyError:
-                #     pass
-                #
-                # try:
-                #     temp_rules = dict()
-                #     for acl_entry in acl_set['acl-entries']['acl-entry']:
-                #         __parse_acl_entry(temp_rules, acl_entry, acl_type)
-                #
-                #     rules_key_list = temp_rules.keys()
-                #     rules_key_list.sort()
-                #     for k in rules_key_list:
-                #         data[acl_type][acl_name]['rules'][k] = temp_rules[k]
-                # except KeyError:
-                #     pass
         else:
             log.log_debug('Get details for ACL Type {}::{}'.format(args[0], args[1]))
             __convert_oc_acl_set_to_user_fmt(resp_content['openconfig-acl:acl-set'][0], data)
-            # acl_type = __convert_oc_acl_type_to_user_fmt(args[0])
-            # acl_name = args[1]
-            # data[acl_type] = OrderedDict()
-            # data[acl_type][acl_name] = OrderedDict()
-            # data[acl_type][acl_name]['rules'] = OrderedDict()
-            #
-            # acl_set = resp_content['openconfig-acl:acl-set'][0]
-            # try:
-            #     data[acl_type][acl_name]['description'] = acl_set['state']['description']
-            # except KeyError:
-            #     pass
-            #
-            # try:
-            #     temp_rules = dict()
-            #     for acl_entry in acl_set['acl-entries']['acl-entry']:
-            #         __parse_acl_entry(temp_rules, acl_entry, acl_type)
-            #
-            #     rules_key_list = temp_rules.keys()
-            #     rules_key_list.sort()
-            #     for k in rules_key_list:
-            #         data[acl_type][acl_name]['rules'][k] = temp_rules[k]
-            # except KeyError:
-            #     pass
 
         log.log_debug(str(data))
         show_cli_output('show_access_list.j2', data)
@@ -966,8 +987,7 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
             cache[acl_name] = temp
         else:
             log.log_error("Error pulling ACL config for {}:{}".format(acl_name, acl_type))
-            print("%Error: {}".format(response.error_message()))
-            return True
+            raise SonicAclCLIError("{}".format(response.error_message()))
     else:
         log.log_debug("Cache present")
         __deep_copy(output, cache[acl_name])
@@ -979,6 +999,7 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
         log.log_debug(response.content)
         acl_set = response.content['openconfig-acl:{}-acl-set'.format(stage.lower())][0]
         user_acl_type = __convert_oc_acl_type_to_user_fmt(acl_set['type'])
+        output[user_acl_type][acl_name]['stage'] = stage.capitalize()
         for acl_entry in acl_set['acl-entries']['acl-entry']:
             output[user_acl_type][acl_name]['rules'][acl_entry['sequence-id']]['packets'] = acl_entry['state']['matched-packets']
             output[user_acl_type][acl_name]['rules'][acl_entry['sequence-id']]['octets'] = acl_entry['state']['matched-octets']
@@ -990,50 +1011,57 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
             render_dict[intf_name] = output
 
         show_cli_output('show_access_list_intf.j2', render_dict)
-
-        return False
     else:
-        print("%Error: {}".format(response.error_message()))
-        return True
+        raise SonicAclCLIError("{}".format(response.error_message()))
 
 
 def __process_acl_counters_request_by_name_and_inf(response, args):
     acl_type = __convert_oc_acl_type_to_sonic_fmt(args[0])
     acl_data = response["sonic-acl:ACL_TABLE_LIST"]
     if not bool(acl_data):
-        print("%Error: ACL not found")
-        return
+        raise SonicAclCLIError("ACL not found")
 
     acl_data = acl_data[0]
     if acl_type != acl_data["type"].upper():
-        print("%Error: ACL is not of type {}".format(__convert_oc_acl_type_to_user_fmt(args[0])))
-        return
+        raise SonicAclCLIError("ACL is not of type {}".format(__convert_oc_acl_type_to_user_fmt(args[0])))
 
     stage = acl_data.get("stage", "INGRESS")
     ports = acl_data.get("ports", [])
-    if "".join(args[3:]) in ports:
-        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], "".join(args[3:]), stage)
+    intf_name = args[2] if len(args) == 3 else "".join(args[3:])
+    if intf_name in ports:
+        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], intf_name, stage)
     else:
-        print("%Error: ACL {} not applied to {}".format(args[1], "".join(args[3:])))
+        raise SonicAclCLIError("ACL {} not applied to {}".format(args[1], intf_name))
 
 
 def __process_acl_counters_request_by_type_and_name(response, args):
     acl_type = __convert_oc_acl_type_to_sonic_fmt(args[0])
+    if not bool(response):
+        raise SonicAclCLIError("ACL not found")
+
     acl_data = response["sonic-acl:ACL_TABLE_LIST"]
     if not bool(acl_data):
-        print("%Error: ACL not found")
-        return
+        raise SonicAclCLIError("ACL not found")
 
     acl_data = acl_data[0]
     if acl_type != acl_data["type"].upper():
-        print("%Error: ACL is not of type {}".format(__convert_oc_acl_type_to_user_fmt(args[0])))
-        return
+        raise SonicAclCLIError("ACL is not of type {}".format(__convert_oc_acl_type_to_user_fmt(args[0])))
 
     cache = dict()
     stage = acl_data.get("stage", "INGRESS")
-    for port in acl_data.get("ports", []):
-        stop = __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache)
-        if stop:
+    ports = acl_data.get("ports", [])
+    if len(ports) != 0:
+        log.log_debug("ACL {} Type {} has ports.".format(acl_data["aclname"], acl_type))
+        for port in acl_data.get("ports", []):
+            __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache)
+    else:
+        log.log_debug("ACL {} Type {} has ZERO ports. Show only ACL configuration.".format(acl_data["aclname"], acl_type))
+        keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
+        response = acl_client.get(keypath)
+        if response.ok():
+            __handle_get_acl_details_aggregate_mode_response(response.content, args)
+        else:
+            print(response.error_message())
             return
 
 
@@ -1051,9 +1079,21 @@ def __process_acl_counters_request_by_type(response, args):
     cache = dict()
     for acl in filtered_acls:
         stage = acl.get("stage", "INGRESS")
-        for port in acl.get("ports", []):
-            stop = __get_and_show_acl_counters_by_name_and_intf(acl["aclname"], args[0], port, stage, cache)
-            if stop:
+        ports = acl.get("ports", [])
+        if len(ports) != 0:
+            log.log_debug("ACL {} Type {} has ports.".format(acl["aclname"], acl_type))
+            for port in ports:
+                __get_and_show_acl_counters_by_name_and_intf(acl["aclname"], args[0], port, stage, cache)
+        else:
+            log.log_debug("ACL {} Type {} has ZERO ports. Show only ACL configuration.".format(acl["aclname"], acl_type))
+
+            acl_name = acl["aclname"].replace("_" + args[0], "")
+            keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=acl_name, acl_type=args[0])
+            response = acl_client.get(keypath)
+            if response.ok():
+                __handle_get_acl_details_aggregate_mode_response(response.content, [args[0], acl_name])
+            else:
+                print(response.error_message())
                 return
 
 
@@ -1070,13 +1110,16 @@ def handle_get_acl_details_response(response, args):
     if response.ok():
         if response.counter_mode == 'AGGREGATE_ONLY':
             __handle_get_acl_details_aggregate_mode_response(response.content, args)
-        else:
-            __handle_get_acl_details_interface_mode_response(response.content, args)
+        else: 
+            if bool(response.content):
+                __handle_get_acl_details_interface_mode_response(response.content, args)
+            elif len(args) > 1:
+                raise SonicAclCLIError('ACL {} not found'.format(args[1]))
     else:
         if response.status_code != 404:
             print(response.error_message())
         elif len(args) == 2:
-            print('%Error: ACL {} not found'.format(args[1]))
+            raise SonicAclCLIError('ACL {} not found'.format(args[1]))
 
 
 def handle_get_all_acl_binding_response(response, args):
@@ -1085,21 +1128,31 @@ def handle_get_all_acl_binding_response(response, args):
     if response.ok():
         resp_content = response.content
         if bool(resp_content):
-            for intf_data in resp_content["openconfig-acl:interfaces"]["interface"]:
-                render_data[intf_data["id"]] = list()
-                for direction in ["ingress-acl-set", "egress-acl-set"]:
-                    if (direction + "s") in intf_data:
-                        for in_acl_data in intf_data[(direction + "s")][direction]:
-                            if in_acl_data["type"] == 'openconfig-acl:' + args[0]:
-                                if args[0] == 'ACL_L2':
-                                    render_data[intf_data["id"]].append(tuple([(direction.split('-')[0]).capitalize(),
-                                                                               "MAC", in_acl_data["set-name"]]))
-                                elif args[0] == 'ACL_IPV4':
-                                    render_data[intf_data["id"]].append(tuple([(direction.split('-')[0]).capitalize(),
-                                                                               "IP", in_acl_data["set-name"]]))
-                                elif args[0] == 'ACL_IPV6':
-                                    render_data[intf_data["id"]].append(tuple([(direction.split('-')[0]).capitalize(),
-                                                                               "IPv6", in_acl_data["set-name"]]))
+            for intf_data in resp_content["sonic-acl:ACL_BINDING_TABLE_LIST"]:
+                if intf_data["intfname"] != render_data.keys():
+                    if_bind_list = list()
+                    render_data[intf_data["intfname"]] = if_bind_list
+                else:
+                    if_bind_list = render_data[intf_data["intfname"]]
+
+
+                if "L2" in intf_data.keys():
+                    aclname = intf_data["L2"]
+                    if aclname.endswith("ACL_L2"):
+                        aclname = aclname[:-7]
+                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "MAC", aclname]))
+
+                if "L3" in intf_data.keys():
+                    aclname = intf_data["L3"]
+                    if aclname.endswith("ACL_IPV4"):
+                        aclname = aclname[:-9]
+                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "IP", aclname]))
+
+                if "L3V6" in intf_data.keys():
+                    aclname = intf_data["L3V6"]
+                    if aclname.endswith("ACL_IPV6"):
+                        aclname = aclname[:-9]
+                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "IPV6", aclname]))
 
             # TODO Sort the data in the order Eth->Po->Vlan->Switch
             log.log_debug(str(render_data))
@@ -1113,8 +1166,8 @@ def clear_acl_counters_response(response, args):
     if not response.ok():
         print(response.error_message())
     else:
-        if response.content['clear-acl-counters:output']['status'] != "SUCCESS":
-            print("%Error: {}".format(response.content['clear-acl-counters:output']['status-detail']))
+        if response.content['sonic-acl:output']['status'] != "SUCCESS":
+            raise SonicAclCLIError("{}".format(response.content['sonic-acl:output']['status-detail']))
         log.log_debug("clear completed")
 
 
@@ -1154,11 +1207,16 @@ def run(op_str, args):
         log.log_debug(str(args))
         resp = request_handlers[op_str](args)
         if resp:
-            response_handlers[op_str](resp, args)
+            return response_handlers[op_str](resp, args)
+    except SonicAclCLIError as e:
+        print("%Error: {}".format(e.message))
+        return -1
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))
-    return
+        return -1
+
+    return 0
 
 
 if __name__ == '__main__':

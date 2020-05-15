@@ -11,7 +11,7 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'interfacename' in list_elem %}
 {% if vars.update({'interface_name':list_elem['interfacename']}) %}{% endif -%}
 {% endif -%}
-{% if 'openconfig-network-instance:areas' in list-elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
+{% if 'openconfig-network-instance:areas' in list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
 {% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
 {% endif -%}
 {% for areainfo in area_list %}

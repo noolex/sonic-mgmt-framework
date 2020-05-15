@@ -100,7 +100,7 @@ def delete_stp_vlan_config(args):
     elif op_str == 'forward-time':
         return delete_stp_vlan_fwd_delay(args[1:])
     else:
-        return patch_stp_vlan_enable(args)
+        return delete_stp_vlan_enable(args)
 
     return None
 
@@ -171,12 +171,7 @@ def patch_stp_vlan_bridge_priority(args):
 
 
 def patch_stp_vlan_enable(args):
-    body = None
-    if (len(args) > 1):
-        if args[1]:
-            body = { "openconfig-spanning-tree-ext:spanning-tree-enable": True }
-        else:
-            body = { "openconfig-spanning-tree-ext:spanning-tree-enable": False }
+    body = { "openconfig-spanning-tree-ext:spanning-tree-enable": True }
     if g_stp_mode == 'PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/config/spanning-tree-enable', vlan_id=args[0])
     elif g_stp_mode == 'RAPID_PVST':
@@ -186,6 +181,16 @@ def patch_stp_vlan_enable(args):
 
     return aa.patch(uri, body)
 
+def delete_stp_vlan_enable(args):
+    body = { "openconfig-spanning-tree-ext:spanning-tree-enable": False }
+    if g_stp_mode == 'PVST':
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/config/spanning-tree-enable', vlan_id=args[0])
+    elif g_stp_mode == 'RAPID_PVST':
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/config/openconfig-spanning-tree-ext:spanning-tree-enable',vlan_id=args[0])
+    else:
+        return None
+
+    return aa.patch(uri, body)
 
 def patch_stp_global_fwd_delay(args):
     body = {"openconfig-spanning-tree-ext:forwarding-delay": int(args[0])}
@@ -219,7 +224,7 @@ def patch_stp_global_bridge_priority(args):
 
 def config_stp_intf_bpdu_guard_subcmds(args):
     ifname  = args[0].strip()
-    if len(args) == 2:
+    if args[1].strip() == "port-shutdown":
         return patch_stp_intf_bpdu_guard_shutdown([ifname, True])
     else:
         return patch_stp_intf_bpdu_guard([ifname, True])
@@ -353,9 +358,10 @@ def patch_stp_intf_root_guard(args):
 
 
 def config_stp_vlan_intf_subcmds(args):
-    if args[0] == 'cost':
+    sub_cmd = args[0].strip()
+    if sub_cmd == "cost":
         return patch_stp_vlan_intf_cost(args[1:])
-    elif args[0] == 'priority':
+    elif sub_cmd == "port-priority":
         return patch_stp_vlan_intf_priority(args[1:])
     else:
         return None
@@ -464,7 +470,7 @@ def delete_stp_intf_config(args):
     sub_cmd = args[0].strip()
     ifname  = args[1].strip()
     if sub_cmd == 'bpduguard':
-        if len(args) == 3:
+        if len(args) == 4:
             return patch_stp_intf_bpdu_guard_shutdown([ifname, False])
         else:
             return patch_stp_intf_bpdu_guard([ifname, False])
@@ -507,9 +513,9 @@ def delete_stp_intf_bpdu_filter(args):
 
 
 def delete_stp_vlan_intf_config(args):
-    if args[0] == 'cost':
+    if args[0].strip() == "cost":
         return delete_stp_vlan_intf_cost(args[1:])
-    elif args[0] == 'port-priority':
+    elif args[0].strip() == "port-priority":
         return delete_stp_vlan_intf_priority(args[1:])
     else:
         return None
