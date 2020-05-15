@@ -104,13 +104,13 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="PortChannel"
-                help="Port-channel ID"
+                help="PortChannel ID"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
                 <PARAM
                     name="port-channel-id"
-                    help="Port-channel id"
+                    help="PortChannel id"
                     ptype="LAG_ID"
                     >
                 </PARAM>
@@ -166,7 +166,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="interface"
-                help="Interface ethernet or port-channel"
+                help="Interface Ethernet or PortChannel"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -191,13 +191,13 @@ limitations under the License.
                     </PARAM>
                     <PARAM
                         name="PortChannel"
-                        help="Port-channel id"
+                        help="PortChannel id"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
                         >
                         <PARAM
                             name="port-channel-id"
-                            help="Port-channel id"
+                            help="PortChannel id"
                             ptype="LAG_ID"
                             >
                         </PARAM>
@@ -286,13 +286,13 @@ limitations under the License.
                     </PARAM>
                     <PARAM
                         name="PortChannel"
-                        help="Dynamic Port-channel"
+                        help="Dynamic PortChannel"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
                         >
                         <PARAM
                             name="port-channel-id"
-                            help="port-channel id"
+                            help="PortChannel id"
                             ptype="LAG_ID"
                             >
                         </PARAM>
@@ -375,7 +375,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="interface"
-                help="Dynamic Interface ethernet or port-channel"
+                help="Dynamic interface Ethernet or PortChannel"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -400,13 +400,13 @@ limitations under the License.
                     </PARAM>
                     <PARAM
                         name="PortChannel"
-                        help="Dynamic port-channel"
+                        help="Dynamic PortChannel"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
                         >
                         <PARAM
                             name="port-channel-id"
-                            help="port-channel id"
+                            help="PortChannel id"
                             ptype="LAG_ID"
                             >
                         </PARAM>

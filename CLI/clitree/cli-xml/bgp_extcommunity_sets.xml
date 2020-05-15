@@ -41,7 +41,7 @@ limitations under the License.
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Community list name"
+                    help="Community-list name"
                     ptype="STRING"
                     >
                     <PARAM
@@ -155,12 +155,12 @@ limitations under the License.
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Communty list name"
+                    help="Community-list name"
                     ptype="STRING"
                     >
                     <PARAM
                         name="line"
-                        help="LINE an ordered list as a regular-expression"
+                        help="An ordered list as a regular-expression"
                         ptype="LINE"
                         >
                         <PARAM
@@ -242,7 +242,7 @@ limitations under the License.
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Community list name"
+                    help="Community-list name"
                     ptype="STRING"
                     >
                     <PARAM
@@ -313,12 +313,12 @@ limitations under the License.
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Extended community-list-name"
+                    help="Extended community-list name"
                     ptype="STRING"
                     >
                     <PARAM
                         name="line"
-                        help="LINE an ordered list as a regular-expression"
+                        help="An ordered list as a regular-expression"
                         ptype="LINE"
                         optional="true"
                         >
