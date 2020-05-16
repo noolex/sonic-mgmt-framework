@@ -129,7 +129,7 @@ def __match_mac_address(addr_type, args):
                       classifier_name=args[0], addr_type=addr_type)
 
     if 'mac' == args[1]:
-        value = args[2] if args[2] != 'host' else args[3]
+        value = "{}/{}".format(args[2], args[3]) if args[2] != 'host' else args[3]
         value = value.split('/')
         for idx in range(len(value)):
             value[idx] = __format_mac_addr(value[idx])
