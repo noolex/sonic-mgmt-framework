@@ -24,9 +24,30 @@ VRF Name: {{list_elem['vrfName']}}
 {% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif %}
 {% if vars.update({'change_time':neighborinfo['last-established-time'] | int}) %}{% endif %}
 {% if vars.update({'change_time':vars.change_time/1000}) %}{% endif %}
+{% if 'adjacency-state' in neighborinfo %}
+{% if vars.update({'nbr_state':neighborinfo['adjacency-state'].split(':')[1]}) %}{% endif -%}
+{% set neighbor_state = " " %}
+{% if vars.nbr_state == "FULL" %}
+{% set neighbor_state = "Full" %}
+{% elif vars.nbr_state == "INIT" %}
+{% set neighbor_state = "Init"  %}
+{% elif vars.nbr_state == "DOWN" %}
+{% set neighbor_state = "Down"  %}
+{% elif vars.nbr_state == "ATTEMPT" %}
+{% set neighbor_state = "Attempt"  %}
+{% elif vars.nbr_state == "TWO_WAY" %}
+{% set neighbor_state = "2-Way"  %}
+{% elif vars.nbr_state == "EXCHANGE" %}
+{% set neighbor_state = "Exchange"  %}
+{% elif vars.nbr_state == "EXSTART" %}
+{% set neighbor_state = "ExStart"  %}
+{% elif vars.nbr_state == "LOADING" %}
+{% set neighbor_state = "Loading"  %}
+{% endif -%}
+{% endif -%}
  Neighbor {{neighborinfo['neighbor-id']}}, interface address {{neighborinfo['neighbor-address']}}
     In the area {{neighborinfo['area-id']}} via interface {{neighborinfo['interface-name']}}
-    Neighbor priority is {{neighborinfo['priority']}}, State is {{neighborinfo['adjacency-state'].split(':')[1]}}, {{neighborinfo['state-changes']}} state changes
+    Neighbor priority is {{neighborinfo['priority']}}, State is {{neighbor_state}}, {{neighborinfo['state-changes']}} state changes
     Most recent state change statistics:
       Progressive change {{'%dh%dm%ds'|format(vars.change_time/3600, (vars.change_time%3600)/60,((vars.change_time%3600)%60)) }} ago
     DR is {{neighborinfo['designated-router']}}, BDR is {{neighborinfo['backup-designated-router']}}
@@ -50,6 +71,12 @@ VRF Name: {{list_elem['vrfName']}}
     Thread Link State Update Retransmission on
 {% else %}
     Thread Link State Update Retransmission off
+{% endif %}
+{% if 'bfd-state' in neighborinfo %}
+  {{'  '}}
+    BFD: Type: {{neighborinfo['bfd-peer-type']}}
+      Detect Multiplier: 3, Min Rx interval: 300, Min Tx interval: 300
+      Status: {{neighborinfo['bfd-status']}}, Last update:{{neighborinfo['bfd-peer-last-update-time']}}
 {% endif %}
 {% endif %}
 {{' '}}
