@@ -1,0 +1,15 @@
+{% set ticks = json_output['timestamp'] | int / (1000 * 1000) %}
+{% set datetime = datetimeformat(ticks) %}
+{{"Time            : "}}{{datetime}}
+{{"Executable      : "}}{{json_output['executable']}}
+{{"Core File       : "}}{{json_output['core-file']}}
+{{"PID             : "}}{{json_output['pid']}}
+{{"User ID         : "}}{{json_output['uid']}}
+{{"Group ID        : "}}{{json_output['gid']}}
+{{"Signal          : "}}{{json_output['signal']}}
+{{"Command Line    : "}}{{json_output['command-line']}}
+{{"Boot ID         : "}}{{json_output['boot-identifier']}}
+{{"Machine ID      : "}}{{json_output['machine-identifier']}}
+{{"Core File Found : "}}{{'present' if json_output['core-file-present'] else 'missing'}}
+{{"Crash Message   : "}}
+{{json_output['crash-message']}}

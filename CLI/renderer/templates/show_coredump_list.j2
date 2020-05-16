@@ -1,0 +1,12 @@
+{% if 'core-file-record' in json_output %}
+{{ 'TIME' | center(20) }}{{ 'PID'.rjust(10) }}{{ ' SIG'.rjust(3) }} {{ 'COREFILE' | center(8) }} {{ 'EXE' }}
+{% set record_dict = json_output['core-file-record'] %}
+{% for val in record_dict|reverse %}
+{% set exe = val['state']['executable'].split('/') %}
+{% set ticks = val['timestamp'] | int / (1000 * 1000) %}
+{% set datetime = datetimeformat(ticks) %}
+{{datetime}} {{val['state']['pid'].rjust(10) }} {{(val['state']['signal'] | string).rjust(3)}} {{('present' if val['state']['core-file-present'] else 'missing').ljust(8)}} {{exe[-1]}}
+{% endfor %}
+{% else %}
+No core dump files
+{% endif %}
