@@ -1100,7 +1100,21 @@ limitations under the License.
         name="VRF_NAME"
         pattern="^Vrf([a-zA-Z0-9_-]){1,12}$"
         ext_pattern="Vrf(string)"
-        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        help="VRF name (prefixed by Vrf, Max: 15 characters)"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="MGMT_OR_VRF_NAME"
+        method="regexp"
+        pattern="^(mgmt|Vrf[0-9A-Za-z_-]{1,12})"
+        help="VRF name (mgmt or prefixed by Vrf, Max: 15 characters)"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="INTF_TYPE"
+        method="select"
+        pattern="Ethernet Vlan PortChannel Management(eth)"
+        help="Interface type"
         />
     <!--=======================================================-->
     <PTYPE

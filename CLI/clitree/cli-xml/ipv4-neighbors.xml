@@ -34,35 +34,23 @@ limitations under the License.
 <!--=======================================================-->
 <!--           show/clear ip arp changes                   -->
 <!--=======================================================-->
-<PTYPE
-    name="INTF_TYPE"
-    method="select"
-    pattern="Ethernet Vlan PortChannel Management(eth)"
-    help="Interface type"/>
-
-<PTYPE
-    name="VRF_NAME"
-    method="regexp"
-    pattern="^(mgmt|Vrf[0-9A-Za-z_-]{1,12})"
-    help="vrf name"
-/>
 
 <VIEW name="enable-view">
 
 <!-- show ip arp <ip-addr> commands -->
     <COMMAND
-        help="show ARP commands"
+        help="Show ARP commands"
         name="show ip arp">
         <PARAM
             name="vrf"
-            help="ARP subcommands"
+            help="Show ARP entries of the given VRF"
             ptype="SUBCOMMAND"
             mode="subcommand"
             optional="true">
             <PARAM
                 name="vrf-name"
-                help="mgmt or prefixed by Vrf (Max size 15)"
-                ptype="VRF_NAME">
+                help="Show ARP entries of the given VRF"
+                ptype="MGMT_OR_VRF_NAME">
             </PARAM>
         </PARAM>
 
@@ -332,7 +320,7 @@ limitations under the License.
         name="clear ip arp">
         <PARAM
             name="cleararp-subcommands"
-            help="clear ARP subcommands"
+            help="Clear ARP subcommands"
             mode="switch"
             ptype="SUBCOMMAND"
             optional="true">
@@ -345,14 +333,14 @@ limitations under the License.
         </PARAM>
         <PARAM
             name="vrf"
-            help="ARP subcommands"
+            help="Clear ARP entries of the given VRF"
             ptype="SUBCOMMAND"
             mode="subcommand"
             optional="true">
             <PARAM
                 name="vrf-name"
-                help="mgmt or prefixed by Vrf (Max size 15)"
-                ptype="VRF_NAME">
+                help="Clear ARP entries of the given VRF"
+                ptype="MGMT_OR_VRF_NAME">
             </PARAM>
         </PARAM>
        <ACTION>
