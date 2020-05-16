@@ -7,7 +7,8 @@
         'spf_algo_executed_count': "0", 'all_lsa_count': "0", 'router_lsa_count': "0", 'router_lsa_checksum': "0", 'network_lsa_count': "0", 
         'network_lsa_checksum': "0", 'summary_lsa_count': "0", 'summary_lsa_checksum': "0", 'asbr_summary_lsa_count': "0",  
         'asbr_summary_lsa_checksum': "0", 'nssa_lsa_count': "0",'nssa_lsa_checksum': "0", 'opaque_link_lsa_count': "0", 'opaque_link_lsa_checksum': "0", 
-        'opaque_area_lsa_count': "0", 'opaque_lsa_checksum': "0", 'areas_info': "", 'area_exists':"False", 'abrtype': 'None' } %}
+        'opaque_area_lsa_count': "0", 'opaque_lsa_checksum': "0", 'areas_info': "", 'area_exists':"False", 'abrtype': 'None', 'vlink_count' : '0', 'stub_str':'',
+        'shortcut_str': 'Default', 'sbit_str': 'no' } %}
 {% set ospf_global_list = json_output  %}
 {% for list_elem in ospf_global_list %}
 {% if 'vrfName' in list_elem and list_elem['vrfName'] != 'default' %}
@@ -136,7 +137,19 @@ VRF Name: {{list_elem['vrfName']}}
 {% set area_list = vars.areas_info['area'] %}
 {% endif %}
 {% for areainfo in area_list %}
+    {% if vars.update({'backbone':' '})  %}{% endif %}
+    {% if vars.update({'sbit_str':'no'})  %}{% endif %}
+    {% if 'openconfig-ospfv2-ext:stub' in areainfo and 'state' in areainfo['openconfig-ospfv2-ext:stub']%}
+    {% set stubstate = areainfo['openconfig-ospfv2-ext:stub']['state'] %}
+    {% if 'enable' in stubstate and stubstate['enable'] == True %}
+    {% if vars.update({'stub_str':vars.stub_str + 'Stub'}) %}{% endif -%}
+    {% endif -%}
+    {% if 'no-summary' in stubstate and stubstate['no-summary'] == True %}
+    {% if vars.update({'stub_str':vars.stub_str + ', no summary'}) %}{% endif -%}
+    {% endif -%}
+    {% endif -%}
     {% if 'state' in areainfo %}
+    {% if vars.update({'vlink_count':'0'}) %}{% endif -%}
     {% if 'identifier' in areainfo %}
     {% if vars.update({'area_id':areainfo['identifier']}) %}{% endif %}
     {% if vars.update({'area_exists':'False'}) %}{% endif %}
@@ -151,8 +164,6 @@ VRF Name: {{list_elem['vrfName']}}
     {% endif %}
     {% if vars.area_id == '0.0.0.0' %}
     {% if vars.update({'backbone':'(Backbone)'})  %}{% endif %}
-    {% else %}
-    {% if vars.update({'backbone':' '})  %}{% endif %}
     {% endif %}
     {% if "openconfig-ospfv2-ext:interface-count" in areainfo['state'] %}
     {% if vars.update({'total_interface':areainfo['state']['openconfig-ospfv2-ext:interface-count']}) %}{% endif %}
@@ -217,16 +228,36 @@ VRF Name: {{list_elem['vrfName']}}
     {% if "openconfig-ospfv2-ext:opaque-link-lsa-checksum" in areainfo['state'] %}
     {% if vars.update({'opaque_link_lsa_checksum':areainfo['state']['openconfig-ospfv2-ext:opaque-link-lsa-checksum']}) %}{% endif %}
     {% endif %}
+    {% if "openconfig-ospfv2-ext:virtual-link-adjacency-count" in areainfo['state'] %}
+    {% if vars.update({'vlink_count':areainfo['state']['openconfig-ospfv2-ext:virtual-link-adjacency-count']}) %}{% endif %}
+    {% endif %}
+    {% if "openconfig-ospfv2-ext:shortcut" in areainfo['state'] %}
+    {% if areainfo['state']['openconfig-ospfv2-ext:shortcut'] == 'openconfig-ospfv2-ext:ENABLE' %}
+    {% if vars.update({'shortcut_str':'Enabled'}) %}{% endif %}
+    {% if vars.update({'sbit_str':'ok'}) %}{% endif %}
+    {% elif areainfo['state']['openconfig-ospfv2-ext:shortcut'] == 'openconfig-ospfv2-ext:DISABLE' %}
+    {% if vars.update({'shortcut_str':'Disabled'}) %}{% endif %}
+    {% elif areainfo['state']['openconfig-ospfv2-ext:shortcut'] == 'openconfig-ospfv2-ext:DEFAULT' %}
+    {% if vars.update({'shortcut_str':'Default'}) %}{% endif %}
+    {% endif %}
+    {% endif %}
+    {% if vars.stub_str != '' %}
+	{% if vars.shortcut_str != 'Default' %}	
+            {% if vars.update({'backbone':'(' + vars.stub_str + '; ' +  ')'})  %}{% endif %}
+        {% else %}
+            {% if vars.update({'backbone':'(' + vars.stub_str +  ')'})  %}{% endif %}
+	{% endif %}
+    {% endif -%}
 {% if vars.area_exists == "False" %}
  Area ID: {{'%s %s'|format(vars.area_id, vars.backbone)}}
 {% if vars.area_id != '0.0.0.0' %}
-   Shortcutting mode: Default, S-bit consensus: no
+   Shortcutting mode: {{vars.shortcut_str}}, S-bit consensus: {{vars.sbit_str}}
 {% endif %}
    Number of interfaces in this area: Total: {{'%d'|format(vars.total_interface)}} , Active: {{'%d'|format(vars.active_interface)}}
    Number of fully adjacent neighbors in this area: {{'%d'|format(vars.fully_adj_nbrs)}}
    Area has {{'%s'|format(vars.auth_type)}}
 {% if vars.area_id != '0.0.0.0' %}
-   Number of full virtual adjacencies going through this area: 0
+   Number of full virtual adjacencies going through this area: {{vars.vlink_count}}
 {% endif %}
    SPF algorithm executed {{'%s'|format(vars.spf_algo_executed_count)}} times
    Number of LSA {{'%s'|format(vars.all_lsa_count)}}
