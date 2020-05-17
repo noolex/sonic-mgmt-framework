@@ -35,16 +35,29 @@ limitations under the License.
     <COMMAND
         help="Show NDP commands"
         name="show ipv6 neighbors">
+
         <PARAM
             name="vrf"
             help="Show NDP entries of the given VRF"
-            ptype="SUBCOMMAND"
             mode="subcommand"
-            optional="true">
+            optional="true"
+            ptype="SUBCOMMAND">
             <PARAM
-                name="vrf-name"
-                help="Show NDP entries of the given VRF"
-                ptype="MGMT_OR_VRF_NAME">
+              name="vrf-name"
+              help="Show NDP entries of the given VRF"
+              mode="switch"
+              ptype="SUBCOMMAND">
+              <PARAM
+                  name="vrf-name"
+                  help="Show NDP entries of the given VRF"
+                  ptype="VRF_NAME">
+              </PARAM>
+              <PARAM
+                  name="mgmt"
+                  help="Show NDP entries of the management VRF"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
 
@@ -322,18 +335,32 @@ limitations under the License.
                     optional="true">
                 </PARAM>
         </PARAM>
+
         <PARAM
             name="vrf"
             help="Clear NDP entries of the given VRF"
-            ptype="SUBCOMMAND"
             mode="subcommand"
-            optional="true">
+            optional="true"
+            ptype="SUBCOMMAND">
             <PARAM
-                name="vrf-name"
-                help="Clear NDP entries of the given VRF"
-                ptype="MGMT_OR_VRF_NAME">
+              name="vrf-name"
+              help="Clear NDP entries of the given VRF"
+              mode="switch"
+              ptype="SUBCOMMAND">
+              <PARAM
+                  name="vrf-name"
+                  help="Clear NDP entries of the given VRF"
+                  ptype="VRF_NAME">
+              </PARAM>
+              <PARAM
+                  name="mgmt"
+                  help="Clear NDP entries of the management VRF"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
+
        <ACTION>
             python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 ip:${ip-addr} vrf:${vrf-name}&#xA;
        </ACTION>
