@@ -1,8 +1,7 @@
-{{json_output}}
 {% set vars = {'interface_name': "", 'mtu_str': '', 'network_type': '', 'remote_rtr_id' : ' '} %}
 {% set ospf_global_list = json_output  %}
 {% for list_elem in ospf_global_list %}
-{% if 'vrfName' in list_elem  and list_elem['vrfName'] != "default" %}
+{% if 'vrfName' in list_elem   %}
 VRF Name: {{list_elem['vrfName']}}
 {% endif -%}
 {% if 'interfacename' in list_elem %}

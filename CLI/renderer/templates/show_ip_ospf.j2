@@ -88,8 +88,8 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:pre-shutdown-enabled-secs' in list_elem['openconfig-network-instance:global_state']%}
 {% if vars.update({'preShutdownEnabledSecs':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:pre-shutdown-enabled-secs']}) %}{% endif -%}
 {% endif -%}
-{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:post-shutdown-enabled-secs' in list_elem['openconfig-network-instance:global_state']%}
-{% if vars.update({'postShutdownEnabledSecs':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:post-shutdown-enabled-secs']}) %}{% endif -%}
+{% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:post-start-enabled-secs' in list_elem['openconfig-network-instance:global_state']%}
+{% if vars.update({'postShutdownEnabledSecs':list_elem['openconfig-network-instance:global_state' ]['openconfig-ospfv2-ext:post-start-enabled-secs']}) %}{% endif -%}
 {% endif -%}
 {% if 'openconfig-network-instance:global_state' in list_elem and 'openconfig-ospfv2-ext:abr-type' in list_elem['openconfig-network-instance:global_state']%}
 {% if list_elem['openconfig-network-instance:global_state']['openconfig-ospfv2-ext:abr-type'] == 'openconfig-ospfv2-ext:CISCO' %}
