@@ -62,6 +62,11 @@ def invoke_api(func, args=[]):
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/log-adjacency-changes', vrfname=args[0])
         return api.delete(keypath)
 
+    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes_details':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/log-adjacency-changes', vrfname=args[0])
+        body = {"openconfig-network-instance:log-adjacency-changes": "BRIEF"}
+        return api.patch(keypath, body)
+
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_auto_cost_reference_bandwidth':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/openconfig-ospfv2-ext:auto-cost-reference-bandwidth', vrfname=args[0])
         body = {"openconfig-ospfv2-ext:auto-cost-reference-bandwidth": int(args[1])}
@@ -439,7 +444,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            importprotocol = "DIRECTLY_CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
