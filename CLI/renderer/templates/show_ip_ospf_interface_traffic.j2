@@ -29,6 +29,25 @@ VRF Name: {{list_elem['vrfName']}}
 {% endif -%}
 {% endfor -%}
 {% endif -%}
+
+
+
+{% if 'virtual-links' in areainfo and 'virtual-link' in areainfo['virtual-links'] %}
+{% set vlink_list = areainfo['virtual-links']['virtual-link'] %}
+{% for vlinkinfo in vlink_list %}
+{% if 'state' in vlinkinfo and 'openconfig-ospfv2-ext:message-statistics' in vlinkinfo['state'] %}
+{% set vlink_state = vlinkinfo['state'] %}
+{% set vstats = vlinkinfo['state']['openconfig-ospfv2-ext:message-statistics'] %}
+{% if vars.interface_name == "" or vars.interface_name == vlink_state['openconfig-ospfv2-ext:name'] %}
+{{'%-10s'|format(vlink_state['openconfig-ospfv2-ext:name'])}} {{'%8u'|format(vstats['hello-receive'])}}/{{'%-8u'|format(vstats['hello-transmit'])}} {{'%7u'|format(vstats['db-description-receive'])}}/{{'%-7u'|format(vstats['db-description-transmit'])}} {{'%7u'|format(vstats['ls-request-receive'])}}/{{'%-7u'|format(vstats['ls-request-transmit'])}} {{'%7u'|format(vstats['ls-update-receive'])}}/{{'%-7u'|format(vstats['ls-update-transmit'])}} {{'%7u'|format(vstats['ls-acknowledge-receive'])}}/{{'%-7u'|format(vstats['ls-acknowledge-transmit'])}}
+{% endif -%}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+
+
+
+
 {% endfor -%}
 {% endfor -%}
 {{' '}}
