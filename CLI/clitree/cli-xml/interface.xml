@@ -263,6 +263,49 @@ limitations under the License.
       <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}
  </ACTION>
     </COMMAND>
+    <COMMAND name="clear threshold"
+                 help="Clear threshold"
+                 ptype="SUBCOMMAND"
+                 >
+                 <PARAM name="breach"
+                        help="Clear threshold breach events"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand"
+                        >
+                        <PARAM
+                            name="eventid-switch"
+                            help="breach clear type all or eventId"
+                            ptype="SUBCOMMAND"
+                            mode="switch"
+                            >
+                            <PARAM
+                                name="all"
+                                help="Clear all threshold breaches"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                            </PARAM>
+                            <PARAM name="eventId"
+                                   help="Clear threshold breach of an eventId"
+                                   ptype="RANGE_0_65535">
+                            </PARAM>
+                            </PARAM>
+                            </PARAM>
+			<ACTION>python $SONIC_CLI_ROOT/sonic_cli_threshold.py rpc_sonic_threshold_clear_threshold_breach ${__full_line} </ACTION>
+			<DOCGEN>
+			<DESCRIPTION>
+				This command is used to clear all or a given threshold breach event(s) recorded by the system.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to clear all or a given threshold breach event(s) recorded by the system.
+			</USAGE>
+			<EXAMPLE
+				summary="Clear threshold breach">
+					sonic-cli# clear threshold breach all
+					sonic-cli# clear threshold breach eventId
+			</EXAMPLE>
+			</DOCGEN>
+	</COMMAND>
    </VIEW>
    <VIEW
        name="configure-view"
@@ -475,6 +518,29 @@ limitations under the License.
            </EXAMPLE>
 	</DOCGEN>
          </COMMAND>
+     <!-- no buffer-pool commands -->
+     <COMMAND
+         name="no buffer-pool"
+         help="Remove buffer-pool config"
+         />
+     <COMMAND name="no buffer-pool threshold"
+             help="Remove buffer-pool threshold config"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+                <ACTION builtin="clish_pyobj">sonic_cli_threshold delete_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list ${__full_line}</ACTION>
+                <DOCGEN>
+                <DESCRIPTION>
+                        This command can be used to remove buffer-pool threshold configured on ingress and egress buffers.
+                </DESCRIPTION>
+                <USAGE>
+                        Use this command to remove buffer-pool threshold configured on ingress and egress buffers.
+                </USAGE>
+                <EXAMPLE
+			summary="Removes previously configured buffer-pool threshold on ingress and egress buffers.">
+                                sonic(config)# no buffer-pool threshold
+                </EXAMPLE>
+                </DOCGEN>
+     </COMMAND>
      </VIEW>
 
      <VIEW
