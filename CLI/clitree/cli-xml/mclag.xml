@@ -117,6 +117,29 @@
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_mclag show_mclag_interface show_mclag_iface.j2 PortChannel${ifid} ${domain_id} </ACTION>
     </COMMAND>
+
+    <!--show mclag separate_ip interfaces -->
+    <COMMAND name="show mclag separate_ip_interfaces" help="Show mclag separate IP interface information">
+      <ACTION builtin="clish_pyobj">sonic_cli_mclag show_mclag_separate_ip show_mclag_separate_ip.j2  </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Show command to display Vlan interfaces on which MCLAG separate IP is configured.
+          </DESCRIPTION>
+          <USAGE>
+              sonic-cli# show mclag separate_ip_interfaces
+          </USAGE>
+          <EXAMPLE summary="show mclag separate_ip_interfaces">
+              sonic-cli# show mclag separate_ip_interfaces
+
+              Interface Name
+              ===================
+              Vlan10
+              ===================
+              Total count : 1
+              ===================
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
   </VIEW>
 
 </CLISH_MODULE>
