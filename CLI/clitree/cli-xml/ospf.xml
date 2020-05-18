@@ -150,9 +150,7 @@ limitations under the License.
       </PARAM>
       <ACTION>
       if test "${areacmdtype}" = "virtual-link"; then&#xA;
-        if test "${vlinkcmdtype}" = ""; then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link ${vrf-name} ${areaid} ${vlinkip} &#xA;
-        fi&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link ${vrf-name} ${areaid} ${vlinkip} &#xA;
         if test "${vlinkcmdtype}" = "dead-interval"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_dead_interval ${vrf-name} ${areaid} ${vlinkip} ${deadinterval} &#xA;
         fi&#xA;
