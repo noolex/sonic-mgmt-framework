@@ -38,7 +38,7 @@ RESTCONF_MD_INDEX	:= $(BUILD_DIR)/restconf_md/index.md
 include codegen.config
 
 YANGAPI_DIR     := $(TOPDIR)/build/yaml
-YANGAPI_SPECS   := $(shell find $(YANGAPI_DIR) -name '*.yaml')
+YANGAPI_SPECS   := $(shell find $(YANGAPI_DIR) -name '*.yaml' 2> /dev/null)
 YANGAPI_NAMES   := $(filter-out $(YANGAPI_EXCLUDES), $(basename $(notdir $(YANGAPI_SPECS))))
 YANGAPI_SERVERS := $(addsuffix /.yangapi_done, $(addprefix $(SERVER_CODEGEN_DIR)/, $(YANGAPI_NAMES)))
 
@@ -57,7 +57,6 @@ UIGEN_DIR  = $(TOPDIR)/tools/ui_gen
 UIGEN_SRCS = $(shell find $(UIGEN_DIR) -type f)
 
 JAVA   ?= java
-RMDIR  ?= rm -rf
 
 .PHONY: all clean cleanall go-server py-client
 
@@ -167,15 +166,15 @@ $(SERVER_DIST_INIT): | $$(@D)/.
 #======================================================================
 
 clean-server:
-	$(RMDIR) $(SERVER_DIST_DIR)
-	$(RMDIR) $(SERVER_CODEGEN_DIR)
-	rm -f $(SERVER_DIST_UI_HOME)
+	$(RM) -r $(SERVER_DIST_DIR)
+	$(RM) -r $(SERVER_CODEGEN_DIR)
+	$(RM) $(SERVER_DIST_UI_HOME)
 
 clean-client:
-	$(RMDIR) $(PY_CLIENT_CODEGEN_DIR)
+	$(RM) -r $(PY_CLIENT_CODEGEN_DIR)
 
 clean: clean-server clean-client
 
 cleanall: clean
-	rm -f $(CODEGEN_JAR)
+	$(RM) $(CODEGEN_JAR)
 
