@@ -1302,8 +1302,8 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <COMMAND name="description" help="Assign a string describing the neighbor">
-    <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING"/>  
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_description ${vrf-name} ${nbr-addr} ${String}</ACTION>
+    <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING"/>
+     <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/neighbors/neighbor=${nbr-addr}/config/description body={"openconfig-network-instance:description": "${String}"}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures a display string for a BGP neighbor
@@ -1926,7 +1926,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no description" help="Remove the string describing the neighbor or the peer-group">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" optional="true"/>  
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_description ${vrf-name} ${nbr-addr} ${String}</ACTION>
+     <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/neighbors/neighbor=${nbr-addr}/config/description</ACTION>
   </COMMAND>
   <COMMAND name="no ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks">
     <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true"/>
@@ -2033,7 +2033,7 @@ limitations under the License.
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <COMMAND name="description" help="Assign a string describing the neighbor">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING"/>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_description ${vrf-name} ${template-name} ${String}</ACTION>
+     <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/peer-groups/peer-group=${template-name}/config/description body={"openconfig-network-instance:description": "${String}"}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures a display string for a BGP peer-group
@@ -2636,7 +2636,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no description" help="Remove the string describing the neighbor or the peer-group">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" optional="true"/>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_description ${vrf-name} ${template-name} ${String}</ACTION>
+     <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/peer-groups/peer-group=${template-name}/config/description</ACTION>
   </COMMAND>
   <COMMAND name="no ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks">
     <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true"/>
