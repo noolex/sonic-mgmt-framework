@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+  <!--=========================================================================-->
+  <VIEW name="enable-view">
+
+    <!--show ecn -->
+    <COMMAND
+        name="show wred" help="Show configured WRED profiles"
+        mode="subcommand" ptype="SUBCOMMAND">
+      <PARAM name="name" help="Name of the WRED profile" optional='true' ptype="STRING_32"> </PARAM>
+      <ACTION>
+          if test "${name}" = "" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_wred.py get_openconfig_qos_ext_qos_wred_profiles show_wred.j2&#xA;
+          else&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_wred.py get_openconfig_qos_ext_qos_wred_profiles_wred_profile ${name} show_wred.j2&#xA;
+          fi&#xA;
+      </ACTION>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+
+  </VIEW>
+  <VIEW name="configure-view">
+    <!-- ecn -->
+    <COMMAND
+        name="wred"
+        help="ECN Configuration"
+        mode="subcommand"
+        ptype="SUBCOMMAND"
+        view="configure-prof-view"
+        viewid="prof_id=${name}"
+        >
+        <PARAM
+                name="name"
+                help="WRED Profile"
+                ptype="STRING_32"
+                >
+        </PARAM>
+        <ACTION builtin="clish_pyobj"> 
+            sonic_cli_wred patch_list_openconfig_qos_ext_qos_wred_profiles_wred_profile ${name} 
+        </ACTION>
+    </COMMAND>
+
+    <!-- no ecn -->
+    <COMMAND name="no wred" help="Unconfigure a WRED profile">
+      <PARAM name="name" help="Name of the WRED profile" ptype="STRING_32"> </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile=${name}
+        </ACTION>
+    </COMMAND>
+
+  </VIEW>
+
+<VIEW
+    name="configure-prof-view"
+    prompt="${SYSTEM_NAME}(conf-wred-${prof_id})# "
+    depth="2"
+    >
+    <!-- Inheritance -->
+    <NAMESPACE
+        ref="configure-view"
+        help="false"
+        completion="false"
+        />
+
+        <COMMAND
+            name="random-detect"
+            help="WRED configuration"/>
+        <COMMAND
+            name="random-detect color"
+            help="Specify WRED parameters"
+            mode="subcommand"
+            ptype="SUBCOMMAND">
+            <PARAM
+                name="color_select"
+                help="Select color"
+                mode="switch"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="green"
+                    help="Green drop precedence"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                    <MACRO name="WRED_THD_CONFIG" arg=""/>
+                </PARAM>
+<!--============= This is currently unsupported ===============================
+                <PARAM
+                    name="yellow"
+                    help="Yellow drop precedence"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                    <MACRO name="WRED_THD_CONFIG" arg=""/>
+                </PARAM>
+                <PARAM
+                    name="red"
+                    help="Red drop precedence"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                    <MACRO name="WRED_THD_CONFIG" arg=""/>
+                </PARAM>
+========================================================================= -->
+            </PARAM>
+            <ACTION>
+                if test "${color_select}" = "red" ; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red ${prof_id} ${min-threshold} ${max-threshold} ${max-drop-rate}&#xA;
+                elif test "${color_select}" = "green" ; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green ${prof_id} ${min-threshold} ${max-threshold} ${max-drop-rate}&#xA;
+                else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow ${prof_id} ${min-threshold} ${max-threshold} ${max-drop-rate}&#xA;
+                fi&#xA;
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no"
+            help="Delete WRED profile">
+        </COMMAND>
+        <COMMAND
+            name="no random-detect"
+            help="Delete WRED parameters">
+        </COMMAND>
+        <COMMAND
+            name="no random-detect color"
+            help="Specify WRED parameters"
+            mode="subcommand"
+            ptype="SUBCOMMAND">
+            <PARAM
+                name="color_select"
+                help="Select color"
+                mode="switch"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="green"
+                    help="Green drop precedence"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                </PARAM>
+<!--============= This is currently unsupported ===============================
+                <PARAM
+                    name="yellow"
+                    help="Yellow drop precedence"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                </PARAM>
+                <PARAM
+                    name="red"
+                    help="Red drop precedence"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                </PARAM>
+========================================================================= -->
+            </PARAM>
+            <ACTION>
+                if test "${color_select}" = "red" ; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_min_threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_max_threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_drop_rate ${prof_id}&#xA;
+                elif test "${color_select}" = "green" ; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_min_threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_max_threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_drop_rate ${prof_id}&#xA;
+                else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_min_threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_max_threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_drop_rate ${prof_id}&#xA;
+                fi&#xA;
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="random-detect ecn"
+            help="Configure ecn for the profile">
+            <PARAM
+                name="ecn"
+                help="Configure ecn mode"
+                ptype="ECN_LIMITED_OPTION" />
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_wred patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn ${prof_id} ${ecn}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no random-detect ecn"
+            help="Unconfigure ecn for the profile" >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_wred delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn ${prof_id}</ACTION>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>

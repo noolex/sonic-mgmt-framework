@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+  <VIEW name="enable-view">
+    <COMMAND name="show hosts" help="IP name servers">
+      <ACTION builtin="clish_pyobj">sonic_cli_dns get_sonic_dns_hosts</ACTION>
+    </COMMAND>
+  </VIEW>
+
+  <VIEW name="configure-view">
+    <COMMAND name="ip name-server"
+             help="Configure the name server address"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+      <PARAM name="nameserver"
+             help="Domain name server"
+             ptype="IPV4V6_ADDR">
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_server_address ${nameserver}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="ip name-server source-intf"
+             help="Configure source interface to pick the source IP, used for the DNS query"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+        <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
+          <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+        </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_global_config_source_address ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${instance}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip name-server"
+             help="Delete the name server address"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+      <PARAM name="nameserver"
+             help="Domain name server"
+             ptype="IPV4V6_ADDR">
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_dns delete_openconfig_dns_server_address ${nameserver}</ACTION>
+    </COMMAND>
+ 
+    <COMMAND name="no ip name-server source-intf"
+             help="Configure source interface to pick the source IP, used for the DNS query"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_dns delete_openconfig_dns_global_config_source_address</ACTION>
+    </COMMAND>
+     
+  </VIEW>
+
+</CLISH_MODULE>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.  
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE CLISH_MODULE [
+        <!ENTITY ACL_MAC_ADDR "^([0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{4}(\.[0-9a-fA-F]{4}){2})$">
+        ]>
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xsi:schemaLocation="https://raw.githubusercontent.com/project-arlo/sonic-mgmt-framework/master/src/CLI/clitree/scripts/sonic-clish.xsd">
+
+    <!--=================================  PTYPES =================================-->
+    <PTYPE name="ACL_MAC_ADDR" pattern="&ACL_MAC_ADDR;" help="MACADDRESS" preprocess="toupper"/>
+    <PTYPE name="ACL_MAC_ADDR_MASK" pattern="((&ACL_MAC_ADDR;)\/(&ACL_MAC_ADDR;))" help="MACADDRESS/MACMASK"
+           preprocess="toupper"/>
+    <PTYPE name="PCP_VALUE_MASK" pattern="[0-7](\/[0-7])?" help="VALUE[/MASK]"/>
+    <PTYPE name="PCP_VALUE" method="integer" pattern="0..7" help="0-7"/>
+    <PTYPE name="DEI_VALUE" method="integer" pattern="0..1" help="0-1"/>
+    <PTYPE name="ETHERTYPE_VALUE" pattern="0[xX]([6-9a-fA-F][0-9a-fA-A]{2}|[1-9a-fA-F][0-9a-fA-A]{3})" help="0x600-0xffff"/>
+    <PTYPE name="STRING_255" pattern="[^|]{1,255}" help="String (Max: 255 characters)"/>
+
+    <!--============================== EXEC MODE COMMANDS =======================-->
+    <VIEW name="enable-view">
+        <!--show xxx access-group -->
+        <COMMAND name="show mac access-group" help="Show MAC access-group information">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding ACL_L2</ACTION>
+        </COMMAND>
+        <COMMAND name="show ip access-group" help="Show IPv4 access-group information">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding ACL_IPV4</ACTION>
+        </COMMAND>
+        <COMMAND name="show ipv6 access-group" help="Show IPv6 access-group information">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding ACL_IPV6</ACTION>
+        </COMMAND>
+
+        <!--show xxx access-lists [NAME] -->
+        <COMMAND name="show mac access-lists" help="Show MAC access-lists information">
+            <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Show,MAC" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_L2 ${__params}</ACTION>
+        </COMMAND>
+        <COMMAND name="show ip access-lists" help="Show IPv4 access-lists information">
+            <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Show,IPv4" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_IPV4 ${__params}</ACTION>
+        </COMMAND>
+        <COMMAND name="show ipv6 access-lists" help="Show IPv6 access-lists information">
+            <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Show,IPv6" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_IPV6 ${__params}</ACTION>
+        </COMMAND>
+
+        <!-- clear counters xxx access-list -->
+        <COMMAND name="clear mac access-list" help="Clear MAC ACL counters" />
+        <COMMAND name="clear mac access-list counters" help="Clear MAC ACL counters">
+            <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Clear,MAC" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L2 ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="clear ip access-list" help="Clear IPv4 ACL counters" />
+        <COMMAND name="clear ip access-list counters" help="Clear IPv4 ACL counters">
+            <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Clear,IPv4" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L3 ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="clear ipv6 counters" help="Clear IPv6 ACL Counters" />
+        <COMMAND name="clear ipv6 access-list counters" help="Clear IPv6 ACL counters">
+            <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Clear,IPv6" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L3V6 ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--============================== INTERFACE ETHERNET MODE COMMANDS ======================-->
+    <VIEW name="configure-if-view">
+        <COMMAND name="mac" help="Configure MAC parameters"/>
+        <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
+    </VIEW>
+
+    <!--============================== INTERFACE PORTCHANNEL MODE COMMANDS ======================-->
+    <VIEW name="configure-lag-view">
+        <COMMAND name="mac" help="Configure MAC parameters"/>
+        <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
+    </VIEW>
+
+    <!--============================== INTERFACE VLAN MODE COMMANDS ======================-->
+    <VIEW name="configure-vlan-view">
+        <COMMAND name="mac" help="Configure MAC parameters"/>
+        <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
+    </VIEW>
+
+    <!--============================== CONFIG MODE COMMANDS ======================-->
+    <VIEW name="configure-view">
+        <!-- Global binding options -->
+
+        <!-- mac access-list -->
+        <COMMAND name="mac access-list" help="Configure MAC access-list" view="configure-mac-acl-view" viewid="name=${access-list-name}">
+            <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_L2</ACTION>
+        </COMMAND>
+        <!-- ip access-list -->
+        <COMMAND name="ip access-list" help="Configure IPv4 access-list" view="configure-acl-ipv4-view" viewid="name=${access-list-name}">
+            <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_IPV4</ACTION>
+        </COMMAND>
+        <!-- ipv6 access-list -->
+        <COMMAND name="ipv6 access-list" help="Configure IPv6 access-list" view="configure-ipv6-acl-view" viewid="name=${access-list-name}">
+            <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_IPV6</ACTION>
+        </COMMAND>
+
+        <!-- no mac access-list -->
+        <COMMAND name="no mac access-list" help="Delete MAC access-list">
+            <PARAM name="access-list-name" help="Name of the MAC access-list (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_L2</ACTION>
+        </COMMAND>
+        <!-- no ip access-list -->
+        <COMMAND name="no ip access-list" help="Delete IPv4 access-list">
+            <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_IPV4</ACTION>
+        </COMMAND>
+        <!-- no ipv6 access-list -->
+        <COMMAND name="no ipv6 access-list" help="Delete IPv6 access-list">
+            <PARAM name="access-list-name" help="Name of the IPv6 access-list (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_IPV6</ACTION>
+        </COMMAND>
+
+        <!-- Gloabl ACL Binding -->
+        <MACRO name="ACL-BINDING-OPTIONS" arg="Switch" />
+    </VIEW>
+
+    <VIEW name="configure-mac-acl-view" prompt="${SYSTEM_NAME}(config-mac-acl)# " depth="2">
+        <!-- Inheritance -->
+        <NAMESPACE ref="configure-view" help="false" completion="false"/>
+
+        <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_L2"/>
+
+        <COMMAND name="seq" help="Sequence number">
+            <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
+                <MACRO name="ACL-ACTION-OPTIONS"/>
+                <PARAM name="src-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
+                    <PARAM name="src-mac-addr-mask" help="Source MAC address and mask" ptype="ACL_MAC_ADDR_MASK"/>
+                    <PARAM name="src-mac-any" help="Any source MAC address" ptype="SUBCOMMAND" mode="subcommand"  value="any"/>
+                    <PARAM name="src-mac-host" help="source MAC address" ptype="SUBCOMMAND" mode="subcommand"  value="host">
+                        <PARAM name="src-mac-addr" help="Source MAC address value" ptype="ACL_MAC_ADDR"/>
+                    </PARAM>
+                </PARAM>
+
+                <PARAM name="dst-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
+                    <PARAM name="dst-mac-addr-mask" help="Destination MAC address and mask" ptype="ACL_MAC_ADDR_MASK"/>
+                    <PARAM name="dst-mac-any" help="Any destination MAC address" ptype="SUBCOMMAND" mode="subcommand" value="any"/>
+                    <PARAM name="dst-mac-host" help="Destination MAC address" ptype="SUBCOMMAND" mode="subcommand" value="host">
+                        <PARAM name="dst-mac-addr" help="Destination MAC address value" ptype="ACL_MAC_ADDR"/>
+                    </PARAM>
+                </PARAM>
+
+                <PARAM name="ethertype" help="Match packets using Ethertype value" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='"${action-options}" != "remark"'>
+                    <MACRO name="ACL-MAC-ETHERTYPE-OPTIONS" />
+                </PARAM>
+
+                <PARAM name="pcp" help="Match packets using PCP value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
+                    <PARAM name="pcp-options" help="" ptype="SUBCOMMAND" mode="switch">
+                        <MACRO name="ACL-MAC-PCP-VAL-OPTIONS" arg="PCP_VALUE_MASK,PCP value. (VALUE or MASK in range 0-7)"/>
+                    </PARAM>
+                </PARAM>
+
+                <PARAM name="dei" help="Match packets using DEI value" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
+                    <PARAM name="dei-val" help="DEI value (range 0-1)" ptype="DEI_VALUE"/>
+                </PARAM>
+
+                <MACRO name="RULE-COMMON-OPTIONS" arg=""/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_L2 ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <VIEW name="configure-acl-ipv4-view" prompt="${SYSTEM_NAME}(config-ipv4-acl)# " depth="2">
+        <!-- Inheritance -->
+        <NAMESPACE ref="configure-view" help="false" completion="false"/>
+
+        <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV4"/>
+
+        <COMMAND name="seq" help="Sequence number">
+            <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
+                <MACRO name="ACL-ACTION-OPTIONS"/>
+                <MACRO name="IP-PROTOCOL-OPTIONS" arg="icmp,ICMP,ip,IPv4" />
+                <MACRO name="IPADDRESS-OPTIONS" arg="src,source,Source,SRC,IP_ADDR_MASK,DOTTED_QUAD"/>
+                <MACRO name="L4-PORT-OPTIONS" arg="src,source,Source,SRC"/>
+                <MACRO name="IPADDRESS-OPTIONS" arg="dst,destination,Destination,DST,IP_ADDR_MASK,DOTTED_QUAD"/>
+                <MACRO name="L4-PORT-OPTIONS" arg="dst,destination,Destination,DST"/>
+                <MACRO name="IP-RULE-COMMON-OPTIONS" />
+                <MACRO name="TCP-FLAGS-OPTIONS" />
+                <MACRO name="ICMP-TYPE-CODE-OPTIONS" arg="icmp,1,ICMP"/>
+                <MACRO name="RULE-COMMON-OPTIONS"/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_IPV4 ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <VIEW name="configure-ipv6-acl-view" prompt="${SYSTEM_NAME}(config-ipv6-acl)# " depth="2">
+        <!-- Inheritance -->
+        <NAMESPACE ref="configure-view" help="false" completion="false"/>
+
+        <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV6"/>
+
+        <COMMAND name="seq" help="Sequence number">
+            <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
+                <MACRO name="ACL-ACTION-OPTIONS"/>
+                <MACRO name="IP-PROTOCOL-OPTIONS" arg="icmpv6,ICMPv6,ipv6,IPv6" />
+                <MACRO name="IPADDRESS-OPTIONS" arg="src,source,Source,SRC,IPV6_ADDR_MASK,IPV6_ADDR"/>
+                <MACRO name="L4-PORT-OPTIONS" arg="src,source,Source,SRC"/>
+                <MACRO name="IPADDRESS-OPTIONS" arg="dst,destination,Destination,DST,IPV6_ADDR_MASK,IPV6_ADDR"/>
+                <MACRO name="L4-PORT-OPTIONS" arg="dst,destination,Destination,DST"/>
+                <MACRO name="IP-RULE-COMMON-OPTIONS" />
+                <MACRO name="TCP-FLAGS-OPTIONS" />
+                <MACRO name="ICMP-TYPE-CODE-OPTIONS" arg="icmpv6,58,ICMPv6"/>
+                <MACRO name="RULE-COMMON-OPTIONS"/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_IPV6 ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>

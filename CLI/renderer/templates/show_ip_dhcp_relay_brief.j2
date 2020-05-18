@@ -1,0 +1,33 @@
+{% set vars = {'id': ""} %}
+{% set vars = {'helperAddress': ""} %}
+
+------------------------------------------------
+{{'%-18s'|format("Interface Name")}}{{'%-28s'|format("DHCP Helper Address")}}
+------------------------------------------------
+{% if 'openconfig-relay-agent:dhcp' in json_output %}
+    {% set interfaces_list = json_output['openconfig-relay-agent:dhcp'] %}
+    {% for key in interfaces_list %}
+        {% set interfaces = interfaces_list[key] %}
+            {% for interface in interfaces %}
+               {% set interfaceConfig = interfaces[interface] %}
+               {% for field in interfaceConfig %}
+                  {% if "id" in field %}
+                     {% if vars.update({'id':field['id']}) %}{% endif %}
+                  {% endif %}
+                  {% if "config" in field %}
+                     {% set helperAdr = field['config'] %}
+                     {% set ips = helperAdr['helper-address'] %}
+                     {% for ip in ips %}
+                     {% if vars.update({'helperAddress':ip}) %}{% endif %}
+                     {% if loop.index == 1 %}
+{{'%-18s'|format(vars.id)}}{{'%-28s'|format(vars.helperAddress)}}
+                     {% else %}
+                  {{'%-46s'|format(vars.helperAddress)}}
+                     {% endif %}
+                     {% endfor %}
+                  {% endif %}
+               {% endfor %}
+            {% endfor %}
+    {% endfor %}
+{% endif %}
+

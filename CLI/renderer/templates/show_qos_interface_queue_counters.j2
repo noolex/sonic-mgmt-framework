@@ -1,0 +1,15 @@
+{{'-------------------------------------------------------------------'}}
+{{'%-5s'|format("TxQ")}}{{'%-15s'|format("Counter/pkts")}}{{'%-15s'|format("Counter/bytes")}}{{'%-12s'|format("Drop/pkts")}}{{'%-12s'|format("Drop/bytes")}}
+{{'-------------------------------------------------------------------'}}
+{% if json_output %}
+{% set q_stats_info = json_output['openconfig-qos:state'] %}
+{% set queue = q_stats_info['name'] %}
+{% set qname = queue.split(':') %}
+{% set traffic_type = q_stats_info['openconfig-qos-ext:traffic-type'] %}
+{% set queue_name = traffic_type + qname[1] %}
+{% set packets = q_stats_info['transmit-pkts'] %}
+{% set bytes = q_stats_info['transmit-octets'] %}
+{% set droppedPackets = q_stats_info['dropped-pkts'] %}
+{% set droppedBytes = q_stats_info['openconfig-qos-ext:dropped-octets'] %}
+{{'%-5s'|format(queue_name)}}{{'%-15s'|format(packets)}}{{'%-15s'|format(bytes)}}{{'%-12s'|format(droppedPackets)}}{{'%-12s'|format(droppedBytes)}}
+{% endif %}

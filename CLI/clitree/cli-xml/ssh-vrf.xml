@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+    <VIEW name="enable-view">
+      <COMMAND help="show ssh-server on vrfs" name="show ssh-server">
+        <ACTION builtin="clish_nop"/>
+        <xi:include href="include/pipe.xml"/>
+      </COMMAND>
+      <COMMAND name="show ssh-server vrfs" help="Show ssh server VRF information">
+        <PARAM 
+            name = "vrf-name"
+            help = "Name of VRF"
+            ptype = "STRING_15"
+            optional = "true"
+            >
+        </PARAM>
+		<ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf get_openconfig_system_ssh_server_vrfs ${vrf-name} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>Shows list of VRFs on which ssh server is enabled</DESCRIPTION>
+            <EXAMPLE>
+                sonic# show ssh-server vrfs
+                            VRF Name                          Status
+                 -------------------------------- --------------------------------
+                            Vrf1                             enable
+                            Vrf34                            enable
+                            Vrf5                             enable
+
+                sonic# show ssh-server vrfs Vrf5
+                            VRF Name                          Status
+                 -------------------------------- --------------------------------
+                            Vrf5                             enable
+            </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+    </VIEW>
+
+    <VIEW name="configure-view">
+      <!-- ssh -->
+    <COMMAND name="ssh-server"
+             help="SSH server configuration"/>
+    <!-- vrf configuration commands -->
+    <COMMAND
+      name="ssh-server vrf"
+      help="enable ssh server on given VRF"
+      mode="subcommand"
+      ptype="SUBCOMMAND"
+      >
+      <PARAM
+        name="vrf-name"
+        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        ptype="STRING_15"
+        >
+      </PARAM>
+	  <ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf patch_openconfig_system_ssh_server_vrf ${vrf-name}</ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Enable ssh server on give VRF</DESCRIPTION>
+          <EXAMPLE>
+              sonic(config)# ssh-server vrf Vrf2
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- no vrf commands -->
+    <COMMAND name="no ssh-server"
+             help="SSH server configuration"/>
+    <COMMAND
+      name="no ssh-server vrf"
+      help="delete ssh server on given VRF"
+      mode="subcommand"
+      ptype="SUBCOMMAND"
+      >
+      <PARAM
+        name="vrf-name"
+        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        ptype="STRING_15"
+        >
+      </PARAM>
+	  <ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf delete_openconfig_system_ssh_server_vrf ${vrf-name}</ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Disable ssh server of given VRF</DESCRIPTION>
+          <EXAMPLE>
+              sonic(config)# no ssh-server vrf Vrf2
+              sonic(config)# 
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    </VIEW>
+
+</CLISH_MODULE>

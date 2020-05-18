@@ -1,0 +1,21 @@
+{{'-----------------------------------------------------------'}}
+{{'Attribute'.ljust(20)}} {{'Value/State'}}
+{{'-----------------------------------------------------------'}}
+{% if 'openconfig-platform:component' in json_output %}
+{% for component in json_output['openconfig-platform:component'] %}
+{% if 'state' in component %}
+{% for key, key_val in component['state'].items() %}
+{% if key == 'oper-status' %}
+{% set temp = key_val.split(':') %}
+{% if temp[temp|length - 1] is not none %}
+{% set  key_val = temp[temp|length - 1] %}
+{% endif %}
+{% endif %}
+{% if 'openconfig-platform-ext:' in key %}
+{% set key = key.split(':')[1] %}
+{% endif %}
+{{key.ljust(20)}}:{{key_val}}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
