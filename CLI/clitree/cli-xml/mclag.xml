@@ -11,8 +11,8 @@
   <VIEW name="configure-view">
     <COMMAND name="mclag" help="domain"> </COMMAND>
     <COMMAND name="mclag domain" help="Enter MCLAG Domain configuration mode" view="configure-mclag-view" viewid="id=${mclag-domain-id}">
-      <PARAM name="mclag-domain-id" help="Enter domain id" ptype="RANGE_1_4095"> </PARAM>
-      <ACTION builtin="clish_nop"/>
+      <PARAM name="mclag-domain-id" help="Domain Id" ptype="RANGE_1_4095"> </PARAM>
+	  <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_list_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list ${mclag-domain-id} </ACTION>
     </COMMAND>
     <COMMAND name="no mclag" help="domain"> </COMMAND>
     <COMMAND name="no mclag domain" help="Remove MCLAG Domain">
