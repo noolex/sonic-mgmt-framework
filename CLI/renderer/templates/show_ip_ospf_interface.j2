@@ -35,7 +35,7 @@ VRF Name: {{list_elem['vrfName']}}
 {% else %}
 {% if vars.update({'mtu_str':'enabled'}) %}{% endif -%}
 {% endif %}
-  MTU mismatch detection: {{vars.mtu_str}}
+  MTU mismatch detection: {{vars.mtu_str}} 
 {% if 'network-type' in interface_state %}
 {% if interface_state['network-type'] == 'openconfig-ospf-types:POINT_TO_POINT_NETWORK' %}
 {% if vars.update({'network_type':'POINTOPOINT'}) %}{% endif -%}
@@ -66,9 +66,14 @@ VRF Name: {{list_elem['vrfName']}}
 {% else %}
   Multicast group memberships: <None> 
 {% endif %}
-{% if 'hello-interval' in interface_timers_state and 'dead-interval' in interface_timers_state and 'openconfig-ospfv2-ext:wait-time' in interface_timers_state and 'retransmission-interval' in interface_timers_state and 'openconfig-ospfv2-ext:hello-due' in interface_timers_state %}
+{% if 'hello-interval' in interface_timers_state and 'dead-interval' in interface_timers_state and 'openconfig-ospfv2-ext:wait-time' in interface_timers_state and 'retransmission-interval' in interface_timers_state  %}
   Timer intervals configured, Hello {{'%d'|format(interface_timers_state['hello-interval']/1000)}}s, Dead {{interface_timers_state['dead-interval']}}s, Wait {{interface_timers_state['openconfig-ospfv2-ext:wait-time']}}s, Retransmit {{interface_timers_state['retransmission-interval']}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:hello-due' in interface_timers_state %}
     Hello due in {{interface_timers_state['openconfig-ospfv2-ext:hello-due']/1000}}s
+{% endif %}
+{% if 'passive' in interface_state %}
+    No Hellos (Passive interface)
 {% endif %}
 {% if 'openconfig-ospfv2-ext:neighbor-count' in interface_state and 'openconfig-ospfv2-ext:adjacency-count' in interface_state %}
   Neighbor Count is {{interface_state['openconfig-ospfv2-ext:neighbor-count']}}, Adjacent neighbor count is {{interface_state['openconfig-ospfv2-ext:adjacency-count']}}
@@ -118,7 +123,9 @@ VRF Name: {{list_elem['vrfName']}}
 {% endif -%}
   {{'  '}}Multicast group memberships: <None> 
   Timer intervals configured, Hello {{'%d'|format(vlink_state['openconfig-ospfv2-ext:hello-interval']/1000)}}s, Dead {{vlink_state['openconfig-ospfv2-ext:dead-interval']}}s, Wait {{vlink_state['openconfig-ospfv2-ext:wait-time']}}s, Retransmit {{vlink_state['openconfig-ospfv2-ext:retransmission-interval']}}
+{% if 'openconfig-ospfv2-ext:hello-due' in vlink_state %}
     Hello due in {{vlink_state['openconfig-ospfv2-ext:hello-due']/1000}}s
+{% endif %}
 {% if 'openconfig-ospfv2-ext:neighbor-count' in vlink_state and 'openconfig-ospfv2-ext:adjacency-count' in vlink_state %}
   Neighbor Count is {{vlink_state['openconfig-ospfv2-ext:neighbor-count']}}, Adjacent neighbor count is {{vlink_state['openconfig-ospfv2-ext:adjacency-count']}}
 {% endif %}
