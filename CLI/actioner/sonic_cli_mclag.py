@@ -250,6 +250,11 @@ def invoke(func, args):
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_TABLE')
         return aa.get(keypath)
 
+    if func == 'get_sonic_mclag_separate_ip_list':
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST')
+        #keypath = cc.Path('/restconf/data/openconfig-mclag:mclag/vlan-interfaces/vlan-interface')
+        return aa.get(keypath)
+
     #######################################
     # Get  APIs   - END
     #######################################
@@ -477,6 +482,24 @@ def mclag_show_mclag_brief(args):
 
     return
 
+#show mclag separate_ip_interfaces
+def mclag_show_mclag_separate_ip(args):
+
+    api_response = invoke("get_sonic_mclag_separate_ip_list", args)
+    response = {}
+    if api_response.ok():
+        response = api_response.content
+        if len(response) != 0:
+            show_cli_output(args[0], response)
+        else:
+            print("MCLAG separate IP interface not configured")
+
+    else:
+        #error response
+        print api_response
+        print api_response.error_message()
+
+    return
 
 def run(func, args):
 
@@ -485,14 +508,17 @@ def run(func, args):
         #show mclag brief command
         if func == 'show_mclag_brief':
             mclag_show_mclag_brief(args)
-            return
+            return 0
         if func == 'show_mclag_interface':
             mclag_show_mclag_interface(args)
-            return
+            return 0
+        if func == 'show_mclag_separate_ip':
+            mclag_show_mclag_separate_ip(args)
+            return 0
 
     except Exception as e:
             print sys.exc_value
-            return
+            return 1
 
 
     #config commands

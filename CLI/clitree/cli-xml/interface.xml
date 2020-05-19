@@ -1006,14 +1006,38 @@ limitations under the License.
       -->
 
     <COMMAND
-           name="mclag-seperate-ip"
-           help="Configure seperate IP on Vlan interface for L3 protocol support over MCLAG" >
+           name="mclag-separate-ip"
+           help="Configure separate IP on Vlan interface for L3 protocol support over MCLAG" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure separate IP on Vlan interface for L3 protocol support over MCLAG
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# mclag-separate-ip
+               </USAGE>
+               <EXAMPLE summary="mclag-separate-ip">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# mclag-separate-ip
+               </EXAMPLE>
+           </DOCGEN>
     </COMMAND>
     <COMMAND
-           name="no mclag-seperate-ip"
-           help="Unconfigure seperate IP on Vlan interface for L3 protocol support over MCLAG" >
+           name="no mclag-separate-ip"
+           help="Unconfigure separate IP on Vlan interface for L3 protocol support over MCLAG" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure separate IP on Vlan interface for L3 protocol support over MCLAG
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# no mclag-separate-ip
+               </USAGE>
+               <EXAMPLE summary="no mclag-separate-ip">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# no mclag-separate-ip
+               </EXAMPLE>
+           </DOCGEN>
     </COMMAND>
 </VIEW> <!-- End of Configure View for Vlan-->
 <VIEW
