@@ -35,6 +35,20 @@ def invoke(func, args):
     # Configure  MCLAG Domain Table - START
     #######################################
 
+    # Create MCLAG Domain
+    if (func == 'patch_list_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list'):
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}', domain_id=args[0])
+        body =  {
+            "sonic-mclag:MCLAG_DOMAIN_LIST": [
+            { 
+                    "domain_id": int(args[0])
+            }
+            ]
+        }
+        return aa.patch(keypath, body)
+
+
+
     #[un]configure local IP Address
     if (func == 'patch_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_source_ip' or
         func == 'delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_source_ip'):
@@ -492,26 +506,43 @@ def run(func, args):
         else:
             try:
                 error_data = api_response.content['ietf-restconf:errors']['error'][0]
+                err_app_tag = 'NOERROR'
+
+                if 'error-app-tag' in error_data: 
+                    err_app_tag = error_data['error-app-tag'] 
+
+                if err_app_tag is not 'NOERROR': 
+                    if err_app_tag == 'too-many-elements':
+                       if (func == 'patch_list_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list'):
+                         print('Error: MCLAG already configured')
+                         return 1
+
                 if 'error-message' in error_data:
                     err_msg = error_data['error-message'] 
                     if err_msg == 'Entry not found':
                         print("Entry not found")
+                        return 1
                     else:
                         print("Error: {}".format(str(api_response.error_message())))
                 elif 'error-type' in error_data and error_data['error-type'] == 'application':
                     if 'error-tag' in error_data and error_data['error-tag'] == 'invalid-value':
                         if func == 'delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list':
                             print("{}  Possibily Dependent MCLAG config not removed".format(str(api_response.error_message())))
+                            return 1
                     else:
                             print("Error: Application/CVL Failure {}".format(str(api_response.error_message())))
+                            return 1
                 else:
                     print("Error: {}".format(str(api_response.error_message())))
+                    return 1
             except Exception as e:
                 print("%Error: {}".format(str(e)))
+                return 1
     except Exception as e:
         print("%Error: {}".format(str(e)))
+        return 1
 
-    return
+    return 0
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
