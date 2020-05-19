@@ -1104,13 +1104,6 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
-        name="MGMT_OR_VRF_NAME"
-        method="regexp"
-        pattern="^(mgmt|Vrf[0-9A-Za-z_-]{1,12})"
-        help="VRF name (mgmt or prefixed by Vrf, Max: 15 characters)"
-        />
-    <!--=======================================================-->
-    <PTYPE
         name="INTF_TYPE"
         method="select"
         pattern="Ethernet Vlan PortChannel Management(eth)"
