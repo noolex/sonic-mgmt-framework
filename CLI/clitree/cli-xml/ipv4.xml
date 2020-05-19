@@ -141,14 +141,17 @@ limitations under the License.
 
     <COMMAND
         name="no ip address"
-	help="Interface Internet Protocol config commands"
-	>
-	<PARAM
-	    name="addr"
-            help="IP address"
-	    ptype="IP_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+        help="Delete IPv4 address(es) on the interface"
+        >
+        <PARAM
+            name="addr"
+            help="IPv4 address"
+            optional="true"
+            ptype="IP_ADDR_MASK"
+            />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True</ACTION>
     </COMMAND>
+
     <COMMAND
         name="ip dhcp-relay"
         help="Add DHCP relay on an interface" >
@@ -242,13 +245,14 @@ limitations under the License.
 
     <COMMAND
         name="no ip address"
-	help="Interface Internet Protocol config commands"
-	>
-	<PARAM
-	    name="addr"
-            help="IP address"
-	    ptype="IP_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+        help="Delete IPv4 address(es) on the interface"
+        >
+        <PARAM
+            name="addr"
+            help="IPv4 address"
+            optional="true"
+            ptype="IP_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_mgmt_if_ip ${iface} ${addr} True</ACTION>
     </COMMAND>
 </VIEW>
 
@@ -277,14 +281,15 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${vlan_name} ${addr}</ACTION>
       </COMMAND>
       <COMMAND
-         name="no ip address"
-         help="Interface Internet Protocol config commands"
-         >
-         <PARAM
+          name="no ip address"
+          help="Delete IPv4 address(es) on the interface"
+          >
+          <PARAM
              name="addr"
-             help="IP address"
-             ptype="IP_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+             help="IPv4 address"
+             optional="true"
+             ptype="IP_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_vlan_if_ip ${vlan_name} ${addr} True</ACTION>
       </COMMAND>
       <COMMAND
          name="ip dhcp-relay"
@@ -327,13 +332,14 @@ limitations under the License.
       </COMMAND>
       <COMMAND
          name="no ip address"
-         help="Interface Internet Protocol config commands"
+         help="Delete IPv4 address(es) on the interface"
          >
          <PARAM
              name="addr"
-             help="IP address"
-             ptype="IP_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+             help="IPv4 address"
+             optional="true"
+             ptype="IP_ADDR_MASK" />
+         <ACTION builtin="clish_pyobj">sonic_cli_if delete_po_if_ip ${po_name} ${addr} True</ACTION>
       </COMMAND>
       <COMMAND
          name="ip dhcp-relay"
@@ -418,13 +424,14 @@ limitations under the License.
       </COMMAND>
       <COMMAND
          name="no ip address"
-         help="Interface Internet Protocol config commands"
+         help="Delete IPv4 address(es) on the interface"
          >
          <PARAM
              name="addr"
-             help="IP address"
-             ptype="IP_ADDR" />
-            <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+             help="IPv4 address"
+             optional="true"
+             ptype="IP_ADDR_MASK" />
+         <ACTION builtin="clish_pyobj">sonic_cli_if delete_lo_if_ip ${lo_name} ${addr} True</ACTION>
       </COMMAND>
 </VIEW>
 </CLISH_MODULE>

@@ -28,35 +28,36 @@ limitations under the License.
 <!--=======================================================-->
 <!--           show/clear ipv6 neighbors changes           -->
 <!--=======================================================-->
-<PTYPE
-    name="INTF_TYPE"
-    method="select"
-    pattern="Ethernet Vlan PortChannel Management(eth)"
-    help="Interface type"/>
-
-<PTYPE
-    name="VRF_NAME"
-    method="regexp"
-    pattern="^(mgmt|Vrf[0-9A-Za-z_-]{1,12})"
-    help="vrf name"
-/>
 
 <VIEW name="enable-view">
 
 <!-- show ipv6 neighbors <ip-addr> commands -->
     <COMMAND
-        help="show NDP commands"
+        help="Show NDP commands"
         name="show ipv6 neighbors">
+
         <PARAM
             name="vrf"
-            help="NDP subcommands"
-            ptype="SUBCOMMAND"
+            help="Show NDP entries of the given VRF"
             mode="subcommand"
-            optional="true">
+            optional="true"
+            ptype="SUBCOMMAND">
             <PARAM
-                name="vrf-name"
-                help="mgmt or prefixed by Vrf (Max size 15)"
-                ptype="VRF_NAME">
+              name="vrf-name"
+              help="Show NDP entries of the given VRF"
+              mode="switch"
+              ptype="SUBCOMMAND">
+              <PARAM
+                  name="vrf-name"
+                  help="Show NDP entries of the given VRF"
+                  ptype="VRF_NAME">
+              </PARAM>
+              <PARAM
+                  name="mgmt"
+                  help="Show NDP entries of the management VRF"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
 
@@ -330,18 +331,32 @@ limitations under the License.
                     optional="true">
                 </PARAM>
         </PARAM>
+
         <PARAM
             name="vrf"
-            help="NDP subcommands"
-            ptype="SUBCOMMAND"
+            help="Clear NDP entries of the given VRF"
             mode="subcommand"
-            optional="true">
+            optional="true"
+            ptype="SUBCOMMAND">
             <PARAM
-                name="vrf-name"
-                help="mgmt or prefixed by Vrf (Max size 15)"
-                ptype="VRF_NAME">
+              name="vrf-name"
+              help="Clear NDP entries of the given VRF"
+              mode="switch"
+              ptype="SUBCOMMAND">
+              <PARAM
+                  name="vrf-name"
+                  help="Clear NDP entries of the given VRF"
+                  ptype="VRF_NAME">
+              </PARAM>
+              <PARAM
+                  name="mgmt"
+                  help="Clear NDP entries of the management VRF"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
+
        <ACTION>
             python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 ip:${ip-addr} vrf:${vrf-name}&#xA;
        </ACTION>
