@@ -151,7 +151,15 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_spf_config':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/config', vrfname=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/config/initial-delay', vrfname=args[0])
+        response = api.delete(keypath)
+        if response.ok() == False : return response
+
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/config/maximum-delay', vrfname=args[0])
+        response = api.delete(keypath)
+        if response.ok() == False : return response
+
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/config/openconfig-ospfv2-ext:throttle-delay', vrfname=args[0])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative':
@@ -720,6 +728,15 @@ def invoke_api(func, args=[]):
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_out':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/filter-list-out/config/name', vrfname=args[0], areaid=args[1])
+        return api.delete(keypath)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_config_shortcut':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/config/openconfig-ospfv2-ext:shortcut', vrfname=args[0], areaid=args[1])
+        body = {"openconfig-ospfv2-ext:shortcut": args[2].upper()}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_config_shortcut':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/config/openconfig-ospfv2-ext:shortcut', vrfname=args[0], areaid=args[1])
         return api.delete(keypath)
 
     #-------- Ospf interface cli handling start

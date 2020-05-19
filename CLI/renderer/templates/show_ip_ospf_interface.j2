@@ -1,7 +1,7 @@
-{% set vars = {'interface_name': ""} %}
+{% set vars = {'interface_name': "", 'mtu_str': '', 'network_type': '', 'remote_rtr_id' : ' '} %}
 {% set ospf_global_list = json_output  %}
 {% for list_elem in ospf_global_list %}
-{% if 'vrfName' in list_elem  and list_elem['vrfName'] != "default" %}
+{% if 'vrfName' in list_elem   %}
 VRF Name: {{list_elem['vrfName']}}
 {% endif -%}
 {% if 'interfacename' in list_elem %}
@@ -21,13 +21,39 @@ VRF Name: {{list_elem['vrfName']}}
 {% set interface_timers_state = interfaceinfo['timers']['state'] %}
 {% endif -%}
 {% if vars.interface_name == "" or vars.interface_name == interface_state['id'] %}
-{{interface_state['id']}} is {{interface_state['openconfig-ospfv2-ext:operational-state']}}
+{% if 'openconfig-ospfv2-ext:operational-state' in interface_state %}
+{{interface_state['id']}} is {{interface_state['openconfig-ospfv2-ext:operational-state'].lower()}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:index' in interface_state and 'openconfig-ospfv2-ext:mtu' in interface_state and 'openconfig-ospfv2-ext:bandwidth' in interface_state and 'openconfig-ospfv2-ext:if-flags' in interface_state %}
   ifindex {{interface_state['openconfig-ospfv2-ext:index']}}, MTU {{interface_state['openconfig-ospfv2-ext:mtu']}} bytes, BW {{interface_state['openconfig-ospfv2-ext:bandwidth']}} Mbit {{interface_state['openconfig-ospfv2-ext:if-flags']}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:address' in interface_state and 'openconfig-ospfv2-ext:address-len' in interface_state and 'openconfig-ospfv2-ext:broadcast-address' in interface_state and 'openconfig-ospfv2-ext:area-id' in interface_state %}
   Internet Address {{interface_state['openconfig-ospfv2-ext:address']}}/{{interface_state['openconfig-ospfv2-ext:address-len']}}, Broadcast {{interface_state['openconfig-ospfv2-ext:broadcast-address']}}, Area {{interface_state['openconfig-ospfv2-ext:area-id']}}
-  MTU mismatch detection: enabled
-  Router ID {{interface_state['openconfig-ospfv2-ext:router-id']}}, Network Type {{interface_state['openconfig-ospfv2-ext:ospf-interface-type'].upper()}}, Cost: {{interface_state['openconfig-ospfv2-ext:cost']}}
+{% endif %}
+{% if  'openconfig-ospfv2-ext:mtu-ignore' in interface_state and interface_state['openconfig-ospfv2-ext:mtu-ignore'] == True %}
+{% if vars.update({'mtu_str':'disabled'}) %}{% endif -%}
+{% else %}
+{% if vars.update({'mtu_str':'enabled'}) %}{% endif -%}
+{% endif %}
+  MTU mismatch detection: {{vars.mtu_str}}
+{% if 'network-type' in interface_state %}
+{% if interface_state['network-type'] == 'openconfig-ospf-types:POINT_TO_POINT_NETWORK' %}
+{% if vars.update({'network_type':'POINTOPOINT'}) %}{% endif -%}
+{% else %}
+{% if vars.update({'network_type':'BROADCAST'}) %}{% endif -%}
+{% endif %}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:router-id' in interface_state and 'openconfig-ospfv2-ext:cost' in interface_state %}
+  Router ID {{interface_state['openconfig-ospfv2-ext:router-id']}}, Network Type {{vars.network_type}}, Cost: {{interface_state['openconfig-ospfv2-ext:cost']}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:transmit-delay' in interface_state and 'openconfig-ospfv2-ext:adjacency-state' in interface_state and 'priority' in interface_state %}
   Transmit Delay is {{interface_state['openconfig-ospfv2-ext:transmit-delay']}} sec, State {{interface_state['openconfig-ospfv2-ext:adjacency-state']}}, Priority {{interface_state['priority']}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:backup-designated-router-id' in interface_state %}
   Backup Designated Router (ID) {{interface_state['openconfig-ospfv2-ext:backup-designated-router-id']}}, Interface Address {{interface_state['openconfig-ospfv2-ext:backup-designated-router-address']}}
+{% else %}
+  No backup designated router on this network
+{% endif %}
 {% if 'openconfig-ospfv2-ext:network-lsa-sequence-number' in interface_state %}
   Saved Network-LSA sequence number {{interface_state['openconfig-ospfv2-ext:network-lsa-sequence-number']}}
 {% endif -%}
@@ -38,14 +64,74 @@ VRF Name: {{list_elem['vrfName']}}
   Multicast group memberships: OSPFAllRouters
 {% endif -%}
 {% else %}
-  Multicast group memberships: 
+  Multicast group memberships: <None> 
 {% endif %}
+{% if 'hello-interval' in interface_timers_state and 'dead-interval' in interface_timers_state and 'openconfig-ospfv2-ext:wait-time' in interface_timers_state and 'retransmission-interval' in interface_timers_state and 'openconfig-ospfv2-ext:hello-due' in interface_timers_state %}
   Timer intervals configured, Hello {{'%d'|format(interface_timers_state['hello-interval']/1000)}}s, Dead {{interface_timers_state['dead-interval']}}s, Wait {{interface_timers_state['openconfig-ospfv2-ext:wait-time']}}s, Retransmit {{interface_timers_state['retransmission-interval']}}
     Hello due in {{interface_timers_state['openconfig-ospfv2-ext:hello-due']/1000}}s
+{% endif %}
+{% if 'openconfig-ospfv2-ext:neighbor-count' in interface_state and 'openconfig-ospfv2-ext:adjacency-count' in interface_state %}
   Neighbor Count is {{interface_state['openconfig-ospfv2-ext:neighbor-count']}}, Adjacent neighbor count is {{interface_state['openconfig-ospfv2-ext:adjacency-count']}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:bfd-state' in interface_state and interface_state['openconfig-ospfv2-ext:bfd-state'] == True %}
+  BFD: Detect Multiplier: 3, Min Rx interval: 300, Min Tx interval: 300
+{% endif %}
 {% endif -%}
 {% endfor -%}
 {% endif -%}
+
+
+
+{% if 'virtual-links' in areainfo and 'virtual-link' in areainfo['virtual-links'] %}
+{% set vlink_list = areainfo['virtual-links']['virtual-link'] %}
+{% for vlinkinfo in vlink_list %}
+{% if 'remote-router-id' in vlinkinfo %}
+{% if vars.update({'remote_rtr_id':vlinkinfo['remote-router-id']}) %}{% endif -%}
+{% endif %}
+{% if 'state' in vlinkinfo %}
+{% set vlink_state = vlinkinfo['state'] %}
+{% if vars.interface_name == "" or vars.interface_name == vlink_state['openconfig-ospfv2-ext:name'] %}
+{% if 'openconfig-ospfv2-ext:operational-state' in vlink_state %}
+{{vlink_state['openconfig-ospfv2-ext:name']}} is {{vlink_state['openconfig-ospfv2-ext:operational-state'].lower()}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:index' in vlink_state and 'openconfig-ospfv2-ext:mtu' in vlink_state and 'openconfig-ospfv2-ext:bandwidth' in vlink_state and 'openconfig-ospfv2-ext:if-flags' in vlink_state %}
+  ifindex {{vlink_state['openconfig-ospfv2-ext:index']}}, MTU {{vlink_state['openconfig-ospfv2-ext:mtu']}} bytes, BW {{vlink_state['openconfig-ospfv2-ext:bandwidth']}} Mbit {{vlink_state['openconfig-ospfv2-ext:if-flags']}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:address' in vlink_state and 'openconfig-ospfv2-ext:address-len' in vlink_state and 'openconfig-ospfv2-ext:area-id' in vlink_state %}
+  Internet Address {{vlink_state['openconfig-ospfv2-ext:address']}}/{{vlink_state['openconfig-ospfv2-ext:address-len']}}, Peer {{vars.remote_rtr_id}}, Area {{vlink_state['openconfig-ospfv2-ext:area-id']}}
+{% endif %}
+{% if  'openconfig-ospfv2-ext:mtu-ignore' in vlink_state and vlink_state['openconfig-ospfv2-ext:mtu-ignore'] == True %}
+{% if vars.update({'mtu_str':'disabled'}) %}{% endif -%}
+{% else %}
+{% if vars.update({'mtu_str':'enabled'}) %}{% endif -%}
+{% endif %}
+  MTU mismatch detection: {{vars.mtu_str}}
+{% if 'openconfig-ospfv2-ext:router-id' in vlink_state and 'openconfig-ospfv2-ext:cost' in vlink_state %}
+  Router ID {{vlink_state['openconfig-ospfv2-ext:router-id']}}, Network Type VIRTUALLINK, Cost: {{vlink_state['openconfig-ospfv2-ext:cost']}}
+{% endif %}
+{% if 'openconfig-ospfv2-ext:transmit-delay' in vlink_state and 'openconfig-ospfv2-ext:state' in vlink_state and 'priority' in vlink_state %}
+  Transmit Delay is {{vlink_state['openconfig-ospfv2-ext:transmit-delay']}} sec, State {{vlink_state['openconfig-ospfv2-ext:state']}}, Priority {{vlink_state['priority']}}
+{% endif %}
+  No backup designated router on this network
+{% if 'openconfig-ospfv2-ext:network-lsa-sequence-number' in vlink_state %}
+  Saved Network-LSA sequence number {{vlink_state['openconfig-ospfv2-ext:network-lsa-sequence-number']}}
+{% endif -%}
+  {{'  '}}Multicast group memberships: <None> 
+  Timer intervals configured, Hello {{'%d'|format(vlink_state['openconfig-ospfv2-ext:hello-interval']/1000)}}s, Dead {{vlink_state['openconfig-ospfv2-ext:dead-interval']}}s, Wait {{vlink_state['openconfig-ospfv2-ext:wait-time']}}s, Retransmit {{vlink_state['openconfig-ospfv2-ext:retransmission-interval']}}
+    Hello due in {{vlink_state['openconfig-ospfv2-ext:hello-due']/1000}}s
+{% if 'openconfig-ospfv2-ext:neighbor-count' in vlink_state and 'openconfig-ospfv2-ext:adjacency-count' in vlink_state %}
+  Neighbor Count is {{vlink_state['openconfig-ospfv2-ext:neighbor-count']}}, Adjacent neighbor count is {{vlink_state['openconfig-ospfv2-ext:adjacency-count']}}
+{% endif %}
+{% endif -%}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+
+
+
+
+
+
 {% endfor -%}
 {% endfor -%}
 {{' '}}

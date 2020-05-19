@@ -314,19 +314,19 @@ def get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list(ar
 
 def get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list(args):
 
-    if args[3] == 'queue' and args[0] == 'unicast':
+    if args[2] == 'queue' and args[3] == 'unicast':
         th_type = "q_shared_uni"
         renderer_template = "show_threshold_queue_unicast_config.j2"
-    if args[3] == 'queue' and args[0] == 'multicast':
+    if args[2] == 'queue' and args[3] == 'multicast':
         th_type = "q_shared_multi"
         renderer_template = "show_threshold_queue_multicast_config.j2"
-    elif args[3] == 'priority-group' and args[0] == 'shared':
+    elif args[2] == 'priority-group' and args[3] == 'shared':
         th_type = "pg_shared"
         renderer_template = "show_threshold_priority_group_config.j2"
-    elif args[3] == 'priority-group' and args[0] == 'headroom':
+    elif args[2] == 'priority-group' and args[3] == 'headroom':
         th_type = "pg_headroom"
         renderer_template = "show_threshold_priority_group_config.j2"
-    elif args[3] == 'queue' and args[0] == 'CPU':
+    elif args[2] == 'queue' and args[3] == 'CPU':
         th_type = "q_shared_multi_cpu"
         renderer_template = "show_threshold_cpu_queue.j2"
 

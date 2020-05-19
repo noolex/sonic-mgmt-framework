@@ -251,7 +251,7 @@ limitations under the License.
         <PARAM name="headroom" help="choose headroom as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="shared" help="choose shared as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}
  </ACTION>
     </COMMAND>
     <COMMAND name="show threshold queue" help="Show queue threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
@@ -260,7 +260,7 @@ limitations under the License.
         <PARAM name="multicast" help="choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="CPU" help="choose threshold cpu queue" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}
  </ACTION>
     </COMMAND>
    </VIEW>
@@ -547,7 +547,7 @@ limitations under the License.
         <COMMAND
             name="no speed"
             help="Set default speed config">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body = {"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body={"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
         </COMMAND>
         <COMMAND
             name="channel-group"

@@ -108,9 +108,9 @@ def invoke_api(func, args=[]):
                         [args[0], "rport=514", "source-ip=", "vrf="])
 
             uri_suffix = {
-                "remote-port": "/config/auth-port",
-                "source-address": "/config/source-address",
-                "vrf": "/config/openconfig-system-ext:vrf",
+                "remote-port": "/config/remote-port",
+                "source-ip": "/config/source-address",
+                "vrf-name": "/config/openconfig-system-ext:vrf-name",
             }
 
             path = path + uri_suffix.get(args[1], "Invalid Attribute")
@@ -168,16 +168,13 @@ def get_sonic_logging_servers(args=[]):
 def run(func, args):
     if func == 'get_openconfig_system_logging_servers':
         get_sonic_logging_servers()
-        return
+        return 0
 
     response = invoke_api(func, args)
 
     if response.ok():
         if response.content is not None:
-            # Get Command Output
-            api_response = response.content
-            if api_response is None:
-                print("%Error: Transaction Failure")
+            print("%Error: Transaction Failure")
     else:
         print(response.error_message())
 
