@@ -51,9 +51,6 @@ def invoke_api(func, args):
            val = (args[i].split(":", 1))[-1]
            val_name = (args[i].split(":", 1))[0]
 
-           if val_name == 'vrf' and val == "management":
-               val = "mgmt"
-
            if val:
                indata[val_name] = val
 
