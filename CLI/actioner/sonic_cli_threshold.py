@@ -236,6 +236,10 @@ def invoke_api(func, args):
 	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST={buffer},{threshold_buffer_type},{interface_name},{buffer_index_per_port}/threshold', buffer = args[2], threshold_buffer_type = args[4], interface_name = args[5], buffer_index_per_port = args[3] )
 	return api.delete(path)
 
+    elif func == 'delete_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list':
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/BUFFER_POOL_LIST')
+	return api.delete(path)
+
     elif func == 'patch_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list_threshold':
         pool_name = args[0]
 	config_db = ConfigDBConnector()
@@ -249,6 +253,12 @@ def invoke_api(func, args):
 	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/BUFFER_POOL_LIST={bufferpoolprefix},{pool_name}/threshold', bufferpoolprefix = 'BUFFER_POOL', pool_name = args[0] )
         body = { "sonic-threshold:threshold":  int(args[1]) }
         return api.patch(path, body)
+
+    elif func == 'rpc_sonic_threshold_clear_threshold_breach':
+	path = cc.Path('/restconf/operations/sonic-threshold:clear-threshold-breach')
+	body = { "sonic-threshold:input":  {"breach_event_id":args[3] }}
+	return api.post(path, body)
+
     else:
        body = {}
     return api.cli_not_implemented(func)

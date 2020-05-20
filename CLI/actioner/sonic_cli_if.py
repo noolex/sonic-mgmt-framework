@@ -245,7 +245,57 @@ def invoke_api(func, args=[]):
     elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config_prefix_length':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/config/prefix-length', name=args[0], index="0", ip=args[1])
         return api.delete(path)
-        
+       
+    elif func == 'delete_phy_if_ip':
+        if len(args) == 2:
+            if args[1] == "True":
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
+            else:
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+        else:
+            path = cc.Path('/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_IPADDR_LIST={portname},{ip_prefix}', portname=args[0], ip_prefix=args[1])
+        return api.delete(path)
+
+    elif func == 'delete_vlan_if_ip':
+        if len(args) == 2:
+            if args[1] == "True":
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
+            else:
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+        else:
+            path = cc.Path('/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_IPADDR_LIST={vlanName},{ip_prefix}', vlanName=args[0], ip_prefix= args[1])
+        return api.delete(path)
+
+    elif func == 'delete_po_if_ip':
+        if len(args) == 2:
+            if args[1] == "True":
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
+            else:
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+        else:
+            path = cc.Path('/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST={pch_name},{ip_prefix}', pch_name=args[0], ip_prefix = args[1])
+        return api.delete(path)
+
+    elif func == 'delete_mgmt_if_ip':
+        if len(args) == 2:
+            if args[1] == "True":
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
+            else:
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+        else:
+            path = cc.Path('/restconf/data/sonic-mgmt-interface:sonic-mgmt-interface/MGMT_INTERFACE/MGMT_INTERFACE_IPADDR_LIST={portname},{ip_prefix}', portname=args[0], ip_prefix=args[1])
+        return api.delete(path)
+
+    elif func == 'delete_lo_if_ip':
+        if len(args) == 2:
+            if args[1] == "True":
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
+            else:
+                path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+        else:
+            path = cc.Path('/restconf/data/sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_IPADDR_LIST={loIfName},{ip_prefix}', loIfName=args[0], ip_prefix=args[1])
+        return api.delete(path)
+ 
     elif func == 'get_openconfig_interfaces_interfaces_interface':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}', name=args[0])
         return api.get(path)
@@ -273,8 +323,8 @@ def invoke_api(func, args=[]):
         responseIntfTbl = api.get(path)
         if responseIntfTbl.ok():
             d.update(responseIntfTbl.content)
-            if len(responseIntfTbl.content) != 0:
-                tbl_key = "sonic-interface:INTF_TABLE_IPADDR_LIST"
+            tbl_key = "sonic-interface:INTF_TABLE_IPADDR_LIST"
+            if tbl_key in d:
                 d[tbl_key] = natsorted(d[tbl_key],key=lambda t: t["ifName"])
             if func == 'ip_interfaces_get':
                 filter_address(d, True)

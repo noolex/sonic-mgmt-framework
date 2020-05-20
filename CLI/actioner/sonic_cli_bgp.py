@@ -135,6 +135,8 @@ def generate_show_bgp_routes(args):
    vrf = "default"
    neighbour_ip = ''
    route_option = 'loc-rib'
+   querytype = None
+   rfilter = None
    i = 0
    for arg in args:
         if "vrf" == arg:
@@ -149,29 +151,92 @@ def generate_show_bgp_routes(args):
            ni = i+2 if "interface" == args[i+1] else i+1
            neighbour_ip = args[ni]
            route_option = args[ni+1]
+        elif "ip-addr" == arg:
+           querytype = 'IP-ADDR'
+        elif "community" == arg:
+           querytype = 'COMMUNITY-STRING'
+           aann = args[i+1]
+        elif "local-AS" == arg:
+           querytype = 'COMMUNITY-LOCAL-AS'
+        elif "no-advertise" == arg:
+           querytype = 'COMMUNITY-NO-ADVERTISE'
+        elif "no-export" == arg:
+           querytype = 'COMMUNITY-NO-EXPORT'
+        elif "no-peer" == arg:
+           querytype = 'COMMUNITY-NO-PEER'
+        elif "bestpath" == arg:
+           rfilter = 'BEST_PATH'
+        elif "multipath" == arg:
+           rfilter = 'MULTI_PATH'
+        elif "exact-match" == arg:
+           rfilter = arg
+        elif "route-map" == arg:
+           querytype = 'ROUTE-MAP'
+           rtmapname = args[i+1]
         else:
-           pass
+           if querytype == 'IP-ADDR':
+               ipstr = arg
+           else:
+               pass
         i = i + 1
    d = {}
    method = "rpc"
    if route_option == "loc-rib":
       if method == 'rpc':
          keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp')
-         body = {"sonic-bgp-show:input": {"vrf-name":vrf, "address-family":afisafi}}
+         inputs = {"vrf-name":vrf, "address-family":afisafi}
+         if querytype:
+             inputs['query-type'] = querytype
+             if querytype == 'IP-ADDR':
+                 inputs['ip-addr'] = ipstr
+                 if rfilter:
+                     inputs['path-type'] = rfilter
+             elif querytype == 'COMMUNITY-STRING':
+                 inputs['community-string'] = aann
+                 if "exact-match" == rfilter:
+                     inputs['community-str-exact-match'] = True
+             elif querytype == 'COMMUNITY-LOCAL-AS':
+                 if "exact-match" == rfilter:
+                     inputs['community-local-as-exact-match'] = True
+             elif querytype == 'COMMUNITY-NO-ADVERTISE':
+                 if "exact-match" == rfilter:
+                     inputs['community-no-advertise-exact-match'] = True
+             elif querytype == 'COMMUNITY-NO-EXPORT':
+                 if "exact-match" == rfilter:
+                     inputs['community-no-export-exact-match'] = True
+             elif querytype == 'COMMUNITY-NO-PEER':
+                 if "exact-match" == rfilter:
+                     inputs['community-no-peer-exact-match'] = True
+             elif querytype == 'ROUTE-MAP':
+                 inputs['route-map-name'] = rtmapname
+         body = {"sonic-bgp-show:input": inputs}
          response = api.post(keypath, body)
+         if not response:
+             # unknown error (bad imput?)
+             return 1
          if(response.ok()):
             d = response.content['sonic-bgp-show:output']['response']
-            if len(d) != 0 and "warning" not in d:
+            if len(d) != 0 and "warning" not in d and "Unknown command:" not in d:
                d = json.loads(d)
-               routes = d["routes"]
-               keys = sorted(routes,key=getPrefixAndLen)
-               temp = OrderedDict()
-               for key in keys:
-                   temp[key] = routes[key]
+               if querytype == 'IP-ADDR':
+                  prf = d.get("prefix")
+                  if not prf:
+                     # no routes
+                     return 0
+                  show_cli_output("show_bgp_ipaddr_routes_rpc.j2", d)
+               else:
+                  routes = d.get("routes")
+                  if not routes:
+                      # no routes
+                      return 0
+                  keys = sorted(routes,key=getPrefixAndLen)
+                  temp = OrderedDict()
+                  for key in keys:
+                      temp[key] = routes[key]
 
-               d["routes"] = temp
+                  d["routes"] = temp
 
-               show_cli_output("show_ip_bgp_routes_rpc.j2", d)
+                  show_cli_output("show_ip_bgp_routes_rpc.j2", d)
          else:
             print response.error_message()
             return 1
@@ -242,6 +307,26 @@ def generate_show_bgp_routes(args):
 
    return d
 
+def generate_show_bgp_vrf_all(args):
+    api = cc.ApiClient()
+    keypath = []
+    body = None
+
+    # Use SONIC model to get all configued VRF names
+    keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
+    sonic_vrfs = api.get(keypath)
+    if sonic_vrfs.ok():
+        args[5] = 'default'
+        d = generate_show_bgp_routes(args)
+        # then show bgp routes on remaining VRF
+        if 'sonic-vrf:VRF_LIST' in sonic_vrfs.content:
+            vrf_list = sonic_vrfs.content['sonic-vrf:VRF_LIST']
+            for vrf in vrf_list:
+               vrf_name = vrf['vrf_name']
+               if vrf_name != 'default':
+                   args[5] = vrf_name
+                   d = generate_show_bgp_routes(args)
+
 def generate_show_bgp_prefix_routes(args):
    api = cc.ApiClient()
    keypath = []
@@ -249,6 +334,7 @@ def generate_show_bgp_prefix_routes(args):
    afisafi = "IPV4_UNICAST"
    rib_type = "ipv4-unicast"
    vrf = "default"
+   rfilter = None
    i = 0
    for arg in args:
         if "vrf" == arg:
@@ -261,8 +347,15 @@ def generate_show_bgp_prefix_routes(args):
            rib_type = "ipv6-unicast"
         elif "prefix" == arg:
            prefix_ip = args[i+1]
+        elif "bestpath" == arg:
+           rfilter = arg
+        elif "multipath" == arg:
+           rfilter = arg
         else:
-           pass
+           if i > 0 and args[0] == 'ip-prefix':
+               prefix_ip = arg
+           else:
+               pass
         i = i + 1
    d = { 'vrf': vrf }
    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/config', name=vrf, identifier=IDENTIFIER,name1=NAME1)
@@ -273,6 +366,29 @@ def generate_show_bgp_prefix_routes(args):
        response1 = api.get(keypath)
        if(response1.ok()):
            if 'openconfig-rib-bgp-ext:route' in response1.content:
+               if "bestpath" == rfilter:
+                   rtList = response1.content['openconfig-rib-bgp-ext:route']
+                   for rt in rtList:
+                       prfpaths = rt.get('loc-rib-prefix-paths')
+                       pathCnt = 0
+                       if prfpaths:
+                           paths = prfpaths.get('paths')
+                           if paths:
+                               pathList = paths.get('path')
+                               pathCnt = len(pathList)
+                               if pathList and pathCnt > 1:
+                                   bestList = []
+                                   for path in pathList:
+                                       state = path.get('state')
+                                       if state:
+                                           if state.get('best-path') == True:
+                                              bestList.append(path)
+                                   if pathCnt > len(bestList):
+                                       paths['path'] = bestList
+                                       pathCnt = len(paths['path'])
+                           if pathCnt == 0:
+                               del rt['loc-rib-prefix-paths']
+
                d.update(response1.content)
                show_cli_output("show_ip_bgp_prefix_routes.j2", d)
    return d
@@ -309,6 +425,44 @@ def generate_show_bgp_peer_groups(args, show_all=False):
           show_cli_output("show_bgp_peer_group.j2", d)
 
    return d
+
+def generate_show_bgp_stats(args):
+   api = cc.ApiClient()
+   keypath = []
+   body = None
+   afisafi = "IPV4_UNICAST"
+   rib_type = "ipv4-unicast"
+   vrf = "default"
+   rfilter = None
+   i = 0
+   for arg in args:
+       if "vrf" == arg:
+          vrf = args[i+1]
+       elif "ipv4" == arg:
+          afisafi = "IPV4_UNICAST"
+          rib_type = "ipv4-unicast"
+       elif "ipv6" == arg:
+          afisafi = "IPV6_UNICAST"
+          rib_type = "ipv6-unicast"
+       else:
+          pass
+       i = i + 1
+   d = { 'vrf': vrf }
+   keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/config', name=vrf, identifier=IDENTIFIER,name1=NAME1)
+   response = api.get(keypath)
+   if(response.ok()):
+       keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp-statistics')
+       body = {"sonic-bgp-show:input": {"vrf-name":vrf, "address-family":afisafi}}
+       response = api.post(keypath, body)
+       if not response:
+           # unknown error (bad imput?)
+           return 1
+       if(response.ok()):
+          d = response.content['sonic-bgp-show:output']['response']
+          if len(d) != 0 and "warning" not in d:
+             d = json.loads(d)
+
+             show_cli_output("show_ip_bgp_stats_rpc.j2", d)
 
 
 def invoke_api(func, args=[]):
@@ -2622,6 +2776,35 @@ def parsePeergV6(vrf_name, template_name, cmd, args=[]):
         return 1
     return rc
 
+def parseGloblShow(vrf_name, cmd, args=[]):
+    if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
+        try:
+            pipe_idx = args.index('\|')
+            args = args[:pipe_idx]
+        except:
+            # no pipe
+            pass
+
+        if vrf_name == 'all':
+            generate_show_bgp_vrf_all(args)
+            return 0
+
+        if args[0] == 'statistics':
+            # FIXME: pending FRR json
+            #return generate_show_bgp_stats(args)
+            print cc.ApiClient().cli_not_implemented('(pending): {} {}'.format(cmd, args[0])).error_message()
+            return 1
+        elif args[0] == 'route-map':
+            # FIXME: pending FRR json
+            print cc.ApiClient().cli_not_implemented('(pending): {} {}'.format(cmd, args[0])).error_message()
+            return 1
+        elif args[0] == 'ip-prefix':
+            return generate_show_bgp_prefix_routes(args)
+        else:
+            return generate_show_bgp_routes(args)
+
+    print cc.ApiClient().cli_not_implemented(cmd).error_message()
+    return 1
 
 def invoke_parse(pycmd, args=[]):
     op = pycmd.split(':')[1]
@@ -2659,6 +2842,8 @@ def invoke_parse(pycmd, args=[]):
         return parsePeergV4(args[0], args[1], cmd, args[idx:])
     elif op == 'PgpV6':
         return parsePeergV6(args[0], args[1], cmd, args[idx:])
+    elif op == 'GblShow':
+        return parseGloblShow(args[0], cmd, args[idx:])
 
     print cc.ApiClient().cli_not_implemented(cmd).error_message()
     return 1

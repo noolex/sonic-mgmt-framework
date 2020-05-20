@@ -11,8 +11,10 @@
 {% set desc = value['state']['system-description'].split('\r\n')[1:] %}
 {{'    SysDescr:     '}}{{value['state']['system-description'].split('\r\n')[0]}}
 {{'    TTL:          '}}{{value['state']['ttl']}}
+{% if value['state']['management-address'] %}
 {{'    MgmtIP:       '}}{{value['state']['management-address'].split(',')[0]}}
 {{'    MgmtIP:       '}}{{value['state']['management-address'].split(',')[-1]}}
+{% endif %}
 {% for v in desc %}
 {{'                  '}}{{v}}
 {% endfor %}
