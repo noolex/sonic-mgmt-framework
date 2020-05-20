@@ -1,0 +1,40 @@
+{% set vars = {'vrfname': ""} %}
+{% set vars = {'totalRoutes': 0} %}
+{% set vars = {'totalFibs': 0} %}
+{% set vars = {'connectedRoutes': 0} %}
+{% set vars = {'connectedFibs': 0} %}
+{% set vars = {'ebgpRoutes': 0} %}
+{% set vars = {'ebgpFibs': 0} %}
+{% set vars = {'ibgpRoutes': 0} %}
+{% set vars = {'ibgpFibs': 0} %}
+{% if json_output %}
+{% if json_output is iterable %}
+{% set Sum = json_output %}
+{% if vars.update({'vrfname': "default"}) %}{% endif %}
+{% if 'vrfname' in Sum %}
+  {% if vars.update({'vrfname':Sum['vrfname']}) %}{% endif %}
+{% endif %}
+Route Source         Routes               FIB  (vrf {{vars.vrfname}})
+{% if 'connected' in Sum %}
+  {% if vars.update({'connectedRoutes':Sum['connected']["ribCount"]}) %}{% endif %}
+  {% if vars.update({'connectedFibs':Sum['connected']["fibCount"]}) %}{% endif %}
+connected            {{'%-21s'|format(vars.connectedRoutes)}}{{'%-18s'|format(vars.connectedFibs)}}
+{% endif %}
+{% if 'ebgp' in Sum %}
+  {% if vars.update({'ebgpRoutes':Sum['ebgp']["ribCount"]}) %}{% endif %}
+  {% if vars.update({'ebgpFibs':Sum['ebgp']["fibCount"]}) %}{% endif %}
+ebgp                 {{'%-21s'|format(vars.ebgpRoutes)}}{{'%-18s'|format(vars.ebgpFibs)}}
+{% endif %}
+{% if 'ibgp' in Sum %}
+  {% if vars.update({'ibgpRoutes':Sum['ibgp']["ribCount"]}) %}{% endif %}
+  {% if vars.update({'ibgpFibs':Sum['ibgp']["fibCount"]}) %}{% endif %}
+ibgp                 {{'%-21s'|format(vars.ibgpRoutes)}}{{'%-18s'|format(vars.ibgpFibs)}}
+{% endif %}
+{% if 'Total' in Sum %}
+  {% if vars.update({'totalRoutes':Sum['Total']["ribCount"]}) %}{% endif %}
+  {% if vars.update({'totalFibs':Sum['Total']["fibCount"]}) %}{% endif %}
+------
+Totals               {{'%-21s'|format(vars.totalRoutes)}}{{'%-18s'|format(vars.totalFibs)}}
+{% endif %}
+{% endif %}
+{% endif %}

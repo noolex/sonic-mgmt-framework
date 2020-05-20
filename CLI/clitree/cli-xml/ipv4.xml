@@ -46,40 +46,43 @@ limitations under the License.
     <COMMAND
         help="IP route information"
         name="show ip route">
+        <PARAM
+            name="vrf"
+            help="IP route information per vrf"
+            optional = "true"
+            order = "true"
+	    mode="subcommand"
+            ptype="SUBCOMMAND">
+	    <PARAM
+		help="VRF name"
+		name="vrfname"
+		ptype="STRING_15">
+            </PARAM>
+        </PARAM>
 	<PARAM
 	   name="route-cmd"
 	   help=""
 	   mode="switch"
 	   ptype="SUBCOMMAND"
-	   optional="true">
+	   optional="true"
+	   order="true">
            <PARAM
-              help="IP route information per vrf"
-              name="vrf"
-              optional = "true"
-	            mode="subcommand"
-              ptype="SUBCOMMAND">
-	           <PARAM
-		            help="VRF name"
-		            name="vrfname"
-		            ptype="STRING_15">
-                   <PARAM
-	                    help="Destination prefix"
-		                  name="prefix"
-		                  optional="true"
-		                  ptype="IP_ADDR_MASK">
-                   </PARAM>
-              </PARAM>
+	       name="prefix"
+	       help="Destination prefix"
+	       ptype="IP_ADDR_MASK">
            </PARAM>
            <PARAM
-               help="Destination prefix"
-	           optional="true"
-               name="prefix"
-               ptype="IP_ADDR_MASK">
+               name="summary"
+               help="Summary of all routes"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
            </PARAM>
         </PARAM>
         <ACTION>
             if test -n "${prefix}"; then&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 prefix ${prefix} ${__full_line}&#xA;
+            elif test -n "${summary}"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route_summary show_ip_route_summary_rpc.j2 ${__full_line}&#xA;
             else&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 ${__full_line}&#xA;
             fi&#xA;

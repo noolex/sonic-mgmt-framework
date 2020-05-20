@@ -12,9 +12,10 @@ def getPrefixAndLen(item):
 
 def invoke_api(func, args):
     body = None
-    vrfname = ""
-    prefix = ""
-    af = ""
+    vrfname = "default"
+    prefix = None
+    summary = None
+    af = "IPv4"
     api = cc.ApiClient()
     i = 0
     for arg in args:
@@ -26,12 +27,19 @@ def invoke_api(func, args):
            af = "IPv6"
         elif "prefix" == arg:
            prefix = args[i+1]
+        elif "summary" == arg:
+           summary = True
         else:
            pass
         i = i + 1
 
     keypath = cc.Path('/restconf/operations/sonic-ip-show:show-ip-route')
-    body = {"sonic-ip-show:input": { "vrf-name": vrfname, "family": af, "prefix": prefix}}
+    inputs = {"vrf-name":vrfname, "family":af}
+    if prefix:
+        inputs['prefix'] = prefix
+    if summary:
+        inputs['summary'] = summary
+    body = {"sonic-ip-show:input": inputs}
     response = api.post(keypath, body)
     return response
 
@@ -46,6 +54,13 @@ def run(func, args):
         d = response.content['sonic-ip-show:output']['response']
         if len(d) != 0 and "warning" not in d:
            d = json.loads(d)
+
+           if func == 'show_ip_route_summary':
+               if len(args) >= 6 and args[4] == 'vrf' and args[5] != 'default':
+                    d['vrfname'] = args[5]
+               show_cli_output(args[0], d)
+               return
+
            routes = d
            keys = sorted(routes,key=getPrefixAndLen)
            temp = OrderedDict()
