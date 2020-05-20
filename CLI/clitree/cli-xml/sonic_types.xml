@@ -1102,6 +1102,12 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="AUTH_TYPES"
+        pattern="((password|cert|jwt|none),?)*"
+        help="Authentication Types"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RL_RATE_TYPE"
         method="unsignedInteger"
         pattern="0..100000000"
