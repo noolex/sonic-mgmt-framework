@@ -46,17 +46,17 @@ limitations under the License.
                 <PARAM name="type" help="Show all policies using the policy type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="fbs-policy-type" help="policy type" ptype="SUBCOMMAND" mode="switch" test='"${fbs-policy-name}" = "type"'>
-                        <PARAM name="qos" help="Show all QoS Policies" ptype="SUBCOMMAND" mode="subcommand" />
-                        <PARAM name="monitoring" help="Show all monitoring policies" ptype="SUBCOMMAND" mode="subcommand" />
-                        <PARAM name="forwarding" help="Show all forwarding Policies" ptype="SUBCOMMAND" mode="subcommand" />
-                    </PARAM>
+                <PARAM name="qos" help="Show all QoS Policies" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="monitoring" help="Show all monitoring policies" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="forwarding" help="Show all forwarding Policies" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${fbs-policy-name} ${fbs-policy-type}</ACTION>
         </COMMAND>
 
         <!-- show classifier [NAME] [type acl|fields] -->
         <COMMAND name="show classifier" help="Show flow based services policy information">
-            <PARAM name="fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="fbs-class-name" help="Name of the classifier or 'match-type' to show all classifier based on a given match-type" ptype="STRING_63"/>
+            <PARAM name="fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="fbs-class-name" help="Name of the classifier" ptype="STRING_63"/>
                 <PARAM name="match-type" help="Show all classifiers using the match type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch" test='"${fbs-class-name}" = "match-type"'>
@@ -259,7 +259,7 @@ limitations under the License.
 
         <COMMAND name="match pcp" help="Match packets using PCP">
             <PARAM name="pcp-options" help="" ptype="SUBCOMMAND" mode="switch">
-                <MACRO name="ACL-MAC-PCP-VAL-OPTIONS" arg="PCP_VALUE,PCP value. (0-7 range)"/>
+                <MACRO name="ACL-MAC-PCP-VAL-OPTIONS" arg="mask-disable"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_pcp ${fbs-class-name} ${__params}</ACTION>
         </COMMAND>

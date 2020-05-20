@@ -28,6 +28,10 @@ paths:
         required: true
       responses:
         '204':
+          content:
+            application/yang-data+json:
+              schema:
+                $ref: '#/components/schemas/rpc_output_test_rpc_reboot'
           description: No Content
         '400':
           description: Bad request
@@ -51,6 +55,12 @@ paths:
       description: 'OperationId: rpc_test_rpc_get_reboot_info
 
         Retrieve parameters used in the last reboot operation.'
+      requestBody:
+        content:
+          application/yang-data+json:
+            schema:
+              $ref: '#/components/schemas/rpc_input_test_rpc_get_reboot_info'
+        required: true
       responses:
         '204':
           content:

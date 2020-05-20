@@ -83,7 +83,7 @@ limitations under the License.
             <PARAM name = "rangecmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" > 
               <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                  <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
+                  <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_0_16777215" />
                 </PARAM>
               </PARAM>
 <!--
@@ -150,9 +150,7 @@ limitations under the License.
       </PARAM>
       <ACTION>
       if test "${areacmdtype}" = "virtual-link"; then&#xA;
-        if test "${vlinkcmdtype}" = ""; then&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link ${vrf-name} ${areaid} ${vlinkip} &#xA;
-        fi&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link ${vrf-name} ${areaid} ${vlinkip} &#xA;
         if test "${vlinkcmdtype}" = "dead-interval"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_dead_interval ${vrf-name} ${areaid} ${vlinkip} ${deadinterval} &#xA;
         fi&#xA;
@@ -315,12 +313,7 @@ limitations under the License.
           </PARAM>
         </PARAM>
 
-        <PARAM name="shortcut" help=" Configure the area's shortcutting mode" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-          <PARAM name = "shortcuttype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-            <PARAM name="disable" help="Deconfigure disabled shortcutting through the area" ptype="SUBCOMMAND" mode="subcommand" />
-            <PARAM name="enable" help="Deconfigure enabled shortcutting through the area" ptype="SUBCOMMAND" mode="subcommand" />
-          </PARAM>
-        </PARAM>
+        <PARAM name="shortcut" help=" Configure the area's shortcutting mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
 
       </PARAM>
       <ACTION>
@@ -627,7 +620,11 @@ limitations under the License.
   <COMMAND name="no log-adjacency-changes" help="Log changes in adjacency state" >
     <PARAM name="detail" help="Log all state changes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
     <ACTION>
+    if test "${detail}" != ""; then&#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes_details ${vrf-name} &#xA;
+    else&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes ${vrf-name} &#xA;
+    fi&#xA;
     </ACTION>
   </COMMAND>
 
