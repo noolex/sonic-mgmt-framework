@@ -36,5 +36,8 @@ limitations under the License.
     <COMMAND name="show platform psusummary" help="Show platform PSU summary">
       <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_psu_summary platform_psusummary_show.j2 ${__full_line} </ACTION>
     </COMMAND>
+    <COMMAND name="show platform fanstatus" help="Show platform fan status">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_fan_status platform_fanstatus_show.j2 ${__full_line} </ACTION>
+    </COMMAND>
   </VIEW>
 </CLISH_MODULE>

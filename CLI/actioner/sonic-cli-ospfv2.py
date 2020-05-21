@@ -25,6 +25,21 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 
+def area_to_dotted(area):
+    areastr = "{}".format(area)
+    if areastr.isdigit():
+        areaInt = int(area)
+        
+        b0 = ((areaInt >> 24) & 0xff)
+        b1 = ((areaInt >> 16) & 0xff)
+        b2 = ((areaInt >> 8) & 0xff)
+        b3 = ((areaInt & 0xff))
+
+        areaDotted = "{}.{}.{}.{}".format(b0, b1, b2, b3)
+        return areaDotted
+    else :
+        return areastr
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
@@ -61,6 +76,11 @@ def invoke_api(func, args=[]):
     elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/log-adjacency-changes', vrfname=args[0])
         return api.delete(keypath)
+
+    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes_details':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/log-adjacency-changes', vrfname=args[0])
+        body = {"openconfig-network-instance:log-adjacency-changes": "BRIEF"}
+        return api.patch(keypath, body)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_auto_cost_reference_bandwidth':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/openconfig-ospfv2-ext:auto-cost-reference-bandwidth', vrfname=args[0])
@@ -414,7 +434,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            importprotocol = "DIRECTLY_CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
@@ -439,7 +459,7 @@ def invoke_api(func, args=[]):
         elif (args[1] == "kernel"):
             exportprotocol = "KERNEL"
         elif (args[1] == "connected"):
-            importprotocol = "DIRECTLY_CONNECTED"
+            exportprotocol = "DIRECTLY_CONNECTED"
         else:
             exportprotocol = "DEFAULT_ROUTE"
 
@@ -546,12 +566,12 @@ def invoke_api(func, args=[]):
 
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link':
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}', vrfname=args[0], areaid=args[1], linkid=args[2])
-        body = {"openconfig-network-instance:virtual-link": [ { "remote-router-id": args[2], "config": { "remote-router-id": args[2]} }]}
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}/config/openconfig-ospfv2-ext:enable', vrfname=args[0], areaid=args[1], linkid=args[2])
+        body = {"openconfig-ospfv2-ext:enable": True}
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}', vrfname=args[0], areaid=args[1], linkid=args[2])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}', vrfname=args[0], areaid=area_to_dotted(args[1]), linkid=args[2])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_dead_interval':
@@ -571,7 +591,6 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_hello_interval':
-
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}/config/openconfig-ospfv2-ext:hello-interval', vrfname=args[0], areaid=args[1], linkid=args[2])
         return api.delete(keypath)
 
@@ -650,7 +669,7 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}', vrfname=args[0], areaid=area_to_dotted(args[1]), addressprefix=args[2])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_advertise':
@@ -691,7 +710,7 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_networks_network':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/openconfig-ospfv2-ext:networks/network={addressprefix}', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/openconfig-ospfv2-ext:networks/network={addressprefix}', vrfname=args[0], areaid=area_to_dotted(args[1]), addressprefix=args[2])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist':

@@ -137,6 +137,7 @@ limitations under the License.
 			<EXAMPLE summary="Disable LLDP at global level">
 				sonic-cli(config)# lldp disable
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -154,6 +155,7 @@ limitations under the License.
 			<EXAMPLE summary="Enable LLDP at global level">
 				sonic-cli(config)# no lldp disable
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -176,6 +178,7 @@ limitations under the License.
 			<EXAMPLE summary="Configure LLDP hello time">
 				sonic-cli(config)# lldp hello-time 10 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -192,6 +195,7 @@ limitations under the License.
 			<EXAMPLE summary="Unconfigure LLDP hello time">
 				sonic-cli(config)# no lldp hello-time
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -216,6 +220,7 @@ limitations under the License.
 			<EXAMPLE summary="Configure LLDP multiplier">
 				sonic-cli(config)# lldp multiplier 6 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -232,6 +237,7 @@ limitations under the License.
 			<EXAMPLE summary="Unconfigure LLDP multiplier value">
 				sonic-cli(config)# no lldp multiplier 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -254,6 +260,7 @@ limitations under the License.
 			<EXAMPLE summary="Configure LLDP system name">
 				sonic-cli(config)# lldp system-name "BroadcomSonic"
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -270,6 +277,7 @@ limitations under the License.
 			<EXAMPLE summary="Unconfigure LLDP system name">
 				sonic-cli(config)# no lldp system-name 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -293,6 +301,7 @@ limitations under the License.
 			<EXAMPLE summary="Configure LLDP system description">
 				sonic-cli(config)# lldp system-description "Broadcom Sonic"
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -309,6 +318,7 @@ limitations under the License.
 			<EXAMPLE summary="Unconfigure LLDP system description">
 				sonic-cli(config)# no lldp system-description 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -333,6 +343,7 @@ limitations under the License.
 						or
 				sonic-cli(config)# lldp mode transmit
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -349,6 +360,7 @@ limitations under the License.
 			<EXAMPLE summary="Unconfigure LLDP mode">
 				sonic-cli(config)# no lldp mode 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -372,6 +384,7 @@ limitations under the License.
 				sonic-cli(config)# lldp suppress-tlv system-capabilities 
 				sonic-cli(config)# lldp suppress-tlv management-address 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -393,6 +406,7 @@ limitations under the License.
 			<EXAMPLE summary="Unconfigure LLDP ">
 				sonic-cli(config)# no lldp suppress-tlv system-capabilities 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 	</VIEW>
@@ -416,6 +430,7 @@ limitations under the License.
 				sonic-cli(config)# interface Ethernet 0
 				sonic-cli(conf-if-Ethernet0)# lldp disable
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -434,6 +449,7 @@ limitations under the License.
 				sonic-cli(config)# interface Ethernet 0
 				sonic-cli(conf-if-Ethernet0)# no lldp disable
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -458,6 +474,7 @@ limitations under the License.
 						or
 				sonic-cli(config)# lldp mode receive 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 
@@ -474,6 +491,7 @@ limitations under the License.
 			<EXAMPLE summary="Unconfigure LLDP mode">
 				sonic-cli(config)# no lldp mode 
 			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
 		

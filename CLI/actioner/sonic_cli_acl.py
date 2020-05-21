@@ -139,40 +139,35 @@ def __create_acl_rule_l2(args):
     if args[4] == 'host':
         body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(args[5])
         next_item = 6
-    elif '/' in args[4]:
-        mac, mask = args[4].split('/')
-        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(mac)
-        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac-mask"] = __format_mac_addr(mask)
-        next_item = 5
     elif args[4] == 'any':
         next_item = 5
     else:
-        raise SonicAclCLIError('Incorrect Source MAC Address')
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(args[4])
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac-mask"] = __format_mac_addr(args[5])
+        next_item = 6
 
     if args[next_item] == 'host':
         body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(args[next_item + 1])
         next_item += 2
-    elif '/' in args[next_item]:
-        mac, mask = args[next_item].split('/')
-        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(mac)
-        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac-mask"] = __format_mac_addr(mask)
-        next_item += 1
     elif args[next_item] == 'any':
         next_item += 1
     else:
-        raise SonicAclCLIError('Incorrect destination MAC Address')
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(args[next_item])
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac-mask"] = __format_mac_addr(args[next_item + 1])
+        next_item += 2
 
     while next_item < len(args):
         if args[next_item] == 'pcp':
             if args[next_item + 1] in pcp_map:
                 body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = pcp_map[args[next_item + 1]]
-            elif '/' in args[next_item + 1]:
-                val, mask = args[next_item + 1].split('/')
-                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = int(val)
-                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp-mask'] = int(mask)
+                next_item += 2
             else:
                 body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = int(args[next_item + 1])
-            next_item += 2
+                next_item += 2
+        elif args[next_item] == 'pcp-mask':
+            mask = int(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp-mask'] = mask
+            next_item = next_item + 2
         elif args[next_item] == 'dei':
             body["openconfig-acl:acl-entry"][0]["l2"]["config"]['dei'] = int(args[next_item + 1])
             next_item += 2
@@ -829,7 +824,7 @@ def __convert_mac_addr_to_user_fmt(acl_entry, rule_data, field):
             rule_data.append('host')
             rule_data.append(mac)
         else:
-            rule_data.append('{}/{}'.format(mac, mac_mask))
+            rule_data.append('{} {}'.format(mac, mac_mask))
     elif mac:
         rule_data.append('host')
         rule_data.append(mac)
@@ -857,11 +852,10 @@ def __convert_l2_rule_to_user_fmt(acl_entry, rule_data):
 
     try:
         pcp = acl_entry['l2']['state']['openconfig-acl-ext:pcp']
-        rule_data.append('pcp')
         if 'openconfig-acl-ext:pcp-mask' in acl_entry['l2']['state']:
-            rule_data.append(pcp_rev_map[pcp] + '/' + acl_entry['l2']['state']['openconfig-acl-ext:pcp-mask'])
+            rule_data.append('pcp {} pcp-mask {}'.format(pcp_rev_map[pcp], acl_entry['l2']['state']['openconfig-acl-ext:pcp-mask']))
         else:
-            rule_data.append(pcp_rev_map[pcp])
+            rule_data.append('pcp {}'.format(pcp_rev_map[pcp]))
     except KeyError:
         pass
 
