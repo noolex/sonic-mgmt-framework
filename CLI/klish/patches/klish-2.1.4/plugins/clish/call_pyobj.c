@@ -121,7 +121,7 @@ int pyobj_set_rest_token(const char *token) {
 
 int call_pyobj(char *cmd, const char *arg) {
     int ret_code = 0;
-    char *token[20];
+    char *token[128];
     char buf[1024]; 
     int i;
 
