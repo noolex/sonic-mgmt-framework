@@ -87,6 +87,10 @@ def invoke_api(func, args):
                                                "openconfig-system:tacacs": tconfig_body}] }
 
        return api.patch(path, body)
+    elif func == 'patch_sonic_tacacs_global_src_intf':
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-intf')
+       body = { "openconfig-system-ext:source-intf": args[0] if args[0] != 'Management0' else 'eth0' }
+       return api.patch(path, body)
     else:
        body = {}
 

@@ -3,12 +3,19 @@
 {{'---------------------------------------------------------'}}
 {% if json_output -%}
 {% set srcip = json_output['openconfig-system:config']['openconfig-system-ext:source-address'] %}
+{% set srcintf = json_output['openconfig-system:config']['openconfig-system-ext:source-intf'] %}
 {% set timeout = json_output['openconfig-system:config']['openconfig-system-ext:timeout'] %}
 {% set authtype = json_output['openconfig-system:config']['openconfig-system-ext:auth-type'] %}
 {% set key = json_output['openconfig-system:config']['openconfig-system-ext:secret-key'] %}
 
 {% if srcip -%}
 {{'source-ip  : '}}{{srcip}}
+{% endif %}
+{% if srcintf -%}
+{% if srcintf == "eth0" %}
+{% set srcintf = "Management0" %}
+{% endif %}
+{{'source-interface  : '}}{{srcintf}}
 {% endif %}
 {% if timeout -%}
 {{'timeout    : '}}{{timeout}}
