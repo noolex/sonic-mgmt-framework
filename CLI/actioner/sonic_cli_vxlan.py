@@ -153,7 +153,28 @@ def invoke(func, args):
                     return response
             else:
                 return aa.delete(keypath)
-    
+
+    if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_qos_mode'):
+        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0][6:])
+        print func
+        print args
+
+        dscp_val = 0
+        if (len(args) == 3):
+            dscp_val = int(args[2])
+
+        body = {
+                "sonic-vxlan:VXLAN_TUNNEL_LIST": [
+                    {
+                        "name":args[0][6:],
+                        "qos-mode":args[1],
+                        "dscp":dscp_val
+                    } 
+                ]
+        }
+
+        response = aa.patch(keypath,body)
+        return response 
 
     #[un]configure Tunnel Map
     if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list' or

@@ -214,12 +214,12 @@ limitations under the License.
              mode="subcommand"
              optional="true">
         <PARAM
-                name="vrf-fwitch"
+                name="vrf-switch"
                 help="VRF commands"
                 mode="switch"
                 ptype="SUBCOMMAND">
-          <PARAM name="management"
-                 help="management VRF name"
+          <PARAM name="mgmt"
+                 help="Management VRF name"
                  ptype="SUBCOMMAND"
                  mode="subcommand">
           </PARAM>

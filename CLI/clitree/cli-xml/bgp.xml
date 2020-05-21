@@ -25,6 +25,14 @@ limitations under the License.
     <!--=======================================================-->
 
 <VIEW name="enable-view">
+  <COMMAND name="show bgp ipv4" help="IPv4 information-New">
+    <MACRO name="NEW_BGP_SHW_OPTIONS" arg="4,"></MACRO>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${__full_line}</ACTION>
+  </COMMAND>
+  <COMMAND name="show bgp ipv6" help="IPv6 information-New">
+    <MACRO name="NEW_BGP_SHW_OPTIONS" arg="6,V6"></MACRO>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${__full_line}</ACTION>
+  </COMMAND>
   <COMMAND name="show ip bgp" help="BGP information">
     <PARAM name="bgp subcommands" help="BGP subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
        <MACRO name="IP_BGP_SUB_CMDS" arg=""></MACRO>
@@ -144,14 +152,14 @@ limitations under the License.
     <PARAM name="clear_bgp_subcommands" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch">
         <MACRO name="CLEAR_BGP_COMMON_OPTIONS_SUB_CMDS" arg=""></MACRO>
         <MACRO name="CLEAR_IPV4_BGP_ADDR_OPTIONS_SUB_CMDS" arg=""></MACRO>
-        <MACRO name="CLEAR_IPV6_BGP_ADDR_OPTIONS_SUB_CMDS" arg=""></MACRO>
+        <MACRO name="CLEAR_IPV6_BGP_ADDR_SUB_CMDS" arg=""></MACRO>
         <MACRO name="CLEAR_IP_BGP_SUB_CMDS" arg=""></MACRO>
         <PARAM name="vrf" help="BGP VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true">
          <PARAM name="vrf-name" help="VRF Name" ptype="STRING_15" default="default">
            <PARAM name="ip_subcommands" help="IP subcommands" ptype="SUBCOMMAND" mode="switch">
                <MACRO name="CLEAR_BGP_COMMON_OPTIONS_SUB_CMDS" arg=""></MACRO>
                <MACRO name="CLEAR_IPV4_BGP_ADDR_OPTIONS_SUB_CMDS" arg=""></MACRO>
-               <MACRO name="CLEAR_IPV6_BGP_ADDR_OPTIONS_SUB_CMDS" arg=""></MACRO>
+               <MACRO name="CLEAR_IPV6_BGP_ADDR_SUB_CMDS" arg=""></MACRO>
                <MACRO name="CLEAR_IP_BGP_SUB_CMDS" arg=""></MACRO>
            </PARAM>
          </PARAM>
@@ -1302,8 +1310,8 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <COMMAND name="description" help="Assign a string describing the neighbor">
-    <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING"/>  
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_description ${vrf-name} ${nbr-addr} ${String}</ACTION>
+    <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING"/>
+     <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/neighbors/neighbor=${nbr-addr}/config/description body={"openconfig-network-instance:description": "${String}"}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures a display string for a BGP neighbor
@@ -1926,7 +1934,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no description" help="Remove the string describing the neighbor or the peer-group">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" optional="true"/>  
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_description ${vrf-name} ${nbr-addr} ${String}</ACTION>
+     <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/neighbors/neighbor=${nbr-addr}/config/description</ACTION>
   </COMMAND>
   <COMMAND name="no ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks">
     <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true"/>
@@ -2033,7 +2041,7 @@ limitations under the License.
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <COMMAND name="description" help="Assign a string describing the neighbor">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING"/>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_description ${vrf-name} ${template-name} ${String}</ACTION>
+     <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/peer-groups/peer-group=${template-name}/config/description body={"openconfig-network-instance:description": "${String}"}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures a display string for a BGP peer-group
@@ -2636,7 +2644,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no description" help="Remove the string describing the neighbor or the peer-group">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" optional="true"/>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config_description ${vrf-name} ${template-name} ${String}</ACTION>
+     <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/peer-groups/peer-group=${template-name}/config/description</ACTION>
   </COMMAND>
   <COMMAND name="no ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks">
     <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true"/>
