@@ -55,7 +55,7 @@ limitations under the License.
   <PTYPE
      name="AAA_AUTH_TYPE"
      method="select"
-     pattern="pap(pap) chap(chap) mschap(mschap)"
+     pattern="pap(pap) chap(chap) mschap(mschap) login(login)"
      help=""
   />
 <!--=======================================================-->
