@@ -1177,6 +1177,27 @@ limitations under the License.
         help=""
         />
     <!--=======================================================-->
+       <PTYPE
+        name="CIR_PIR_KBPS"
+        method="integer"
+        pattern="0..400000000"
+        help=""
+        />
+    <!--=======================================================-->
+       <PTYPE
+        name="BURST"
+        method="integer"
+        pattern="0..100000"
+        help=""
+        />
+    <!--=======================================================-->
+       <PTYPE
+        name="PORT_SEQ"
+        method="integer"
+        pattern="255"
+        help=""
+        />
+    <!--=======================================================-->
         <PTYPE
         name="RANGE_0_47"
         method="integer"
