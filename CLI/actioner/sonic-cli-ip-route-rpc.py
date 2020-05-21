@@ -10,11 +10,12 @@ def getPrefixAndLen(item):
     ip = netaddr.IPNetwork(item)
     return (ip.value, ip.prefixlen)
 
+ShowOpts = [ "summary", "bgp", "connected", "static" ]
 def invoke_api(func, args):
     body = None
     vrfname = "default"
     prefix = None
-    summary = None
+    options = None
     af = "IPv4"
     api = cc.ApiClient()
     i = 0
@@ -27,8 +28,8 @@ def invoke_api(func, args):
            af = "IPv6"
         elif "prefix" == arg:
            prefix = args[i+1]
-        elif "summary" == arg:
-           summary = True
+        elif arg in ShowOpts:
+           options = arg
         else:
            pass
         i = i + 1
@@ -37,8 +38,8 @@ def invoke_api(func, args):
     inputs = {"vrf-name":vrfname, "family":af}
     if prefix:
         inputs['prefix'] = prefix
-    if summary:
-        inputs['summary'] = summary
+    elif options:
+        inputs[options] = True
     body = {"sonic-ip-show:input": inputs}
     response = api.post(keypath, body)
     return response

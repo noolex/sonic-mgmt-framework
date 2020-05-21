@@ -77,6 +77,24 @@ limitations under the License.
                mode="subcommand"
                ptype="SUBCOMMAND">
            </PARAM>
+           <PARAM
+               name="bgp"
+               help="Border Gateway Protocol (BGP)"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+           </PARAM>
+           <PARAM
+               name="connected"
+               help="Connected routes (directly attached subnet or host)"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+           </PARAM>
+           <PARAM
+               name="static"
+               help="Statically configured routes"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+           </PARAM>
         </PARAM>
         <ACTION>
             if test -n "${prefix}"; then&#xA;

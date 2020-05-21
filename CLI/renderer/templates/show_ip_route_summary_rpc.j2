@@ -3,6 +3,8 @@
 {% set vars = {'totalFibs': 0} %}
 {% set vars = {'connectedRoutes': 0} %}
 {% set vars = {'connectedFibs': 0} %}
+{% set vars = {'staticRoutes': 0} %}
+{% set vars = {'staticFibs': 0} %}
 {% set vars = {'ebgpRoutes': 0} %}
 {% set vars = {'ebgpFibs': 0} %}
 {% set vars = {'ibgpRoutes': 0} %}
@@ -19,6 +21,11 @@ Route Source         Routes               FIB  (vrf {{vars.vrfname}})
   {% if vars.update({'connectedRoutes':Sum['connected']["ribCount"]}) %}{% endif %}
   {% if vars.update({'connectedFibs':Sum['connected']["fibCount"]}) %}{% endif %}
 connected            {{'%-21s'|format(vars.connectedRoutes)}}{{'%-18s'|format(vars.connectedFibs)}}
+{% endif %}
+{% if 'static' in Sum %}
+  {% if vars.update({'staticRoutes':Sum['static']["ribCount"]}) %}{% endif %}
+  {% if vars.update({'staticFibs':Sum['static']["fibCount"]}) %}{% endif %}
+static               {{'%-21s'|format(vars.staticRoutes)}}{{'%-18s'|format(vars.staticFibs)}}
 {% endif %}
 {% if 'ebgp' in Sum %}
   {% if vars.update({'ebgpRoutes':Sum['ebgp']["ribCount"]}) %}{% endif %}
