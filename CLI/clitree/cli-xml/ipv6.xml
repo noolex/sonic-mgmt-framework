@@ -55,12 +55,14 @@ limitations under the License.
 
     <COMMAND
         name="no ipv6 address"
-        help="IPv6 address" >
+        help="Delete IPv6 address(es) on the interface" >
         <PARAM
             name="addr"
             help="IPv6 address"
-            ptype="IPV6_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+            optional="true"
+            ptype="IPV6_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} False</ACTION>
+
     </COMMAND>
     <COMMAND
         name="ipv6 dhcp-relay"
@@ -107,12 +109,14 @@ limitations under the License.
 
     <COMMAND
         name="no ipv6 address"
-        help="IPv6 address" >
+        help="Delete IPv6 address(es) on the interface" >
         <PARAM
             name="addr"
             help="IPv6 address"
-            ptype="IPV6_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+            optional="true"
+            ptype="IPV6_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_mgmt_if_ip ${iface} ${addr} False</ACTION>
+
     </COMMAND>
 </VIEW>
 
@@ -144,12 +148,13 @@ limitations under the License.
 
     <COMMAND
         name="no ipv6 address"
-        help="IPv6 address" >
+        help="Delete IPv6 address(es) on the interface" >
         <PARAM
             name="addr"
             help="IPv6 address"
-            ptype="IPV6_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+            optional="true"
+            ptype="IPV6_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_po_if_ip ${po_name} ${addr} False</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -202,12 +207,13 @@ limitations under the License.
 
       <COMMAND
           name="no ipv6 address"
-          help="IPv6 address" >
+          help="Delete IPv6 address(es) on the interface" >
           <PARAM
               name="addr"
               help="IPv6 address"
-              ptype="IPV6_ADDR" />
-         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
+              optional="true"
+              ptype="IPV6_ADDR_MASK" />
+          <ACTION builtin="clish_pyobj">sonic_cli_if delete_vlan_if_ip ${vlan_name} ${addr} False</ACTION>
       </COMMAND>
       <COMMAND
         name="ipv6 dhcp-relay"
@@ -258,13 +264,13 @@ limitations under the License.
 
       <COMMAND
           name="no ipv6 address"
-          help="IPv6 address" >
+          help="Delete IPv6 address(es) on the interface" >
           <PARAM
               name="addr"
               help="IPv6 address"
-              ptype="IPV6_ADDR" />
-          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/addresses/address=${addr}/config/prefix-length</ACTION>
-
+              optional="true"
+              ptype="IPV6_ADDR_MASK" />
+          <ACTION builtin="clish_pyobj">sonic_cli_if delete_lo_if_ip ${lo_name} ${addr} False</ACTION>
       </COMMAND>
 
       <COMMAND

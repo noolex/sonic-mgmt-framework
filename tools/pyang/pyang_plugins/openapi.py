@@ -620,7 +620,7 @@ def handle_rpc(child, actXpath, pathstr):
     verbPath = swaggerDict["paths"][verbPathStr][verb]
     
     # Request payload
-    if len(input_payload[child.i_module.i_modulename + ':input']['properties']) > 0:
+    if len(input_payload[child.i_module.i_modulename + ':input']) > 0:
         verbPath["requestBody"] = OrderedDict()
         verbPath["requestBody"]["content"] = OrderedDict()   
         verbPath["requestBody"]["required"] = True        
@@ -631,7 +631,7 @@ def handle_rpc(child, actXpath, pathstr):
 
     # Response payload
     verbPath["responses"] = copy.deepcopy(merge_two_dicts(responses, verb_responses["rpc"]))        
-    if len(output_payload[child.i_module.i_modulename + ':output']['properties']) > 0: 
+    if len(output_payload[child.i_module.i_modulename + ':output']) > 0: 
         verbPath["responses"]["204"]["content"] = OrderedDict()
         verbPath["responses"]["204"]["content"]["application/yang-data+json"] = OrderedDict()
         verbPath["responses"]["204"]["content"]["application/yang-data+json"]["schema"] = OrderedDict()    

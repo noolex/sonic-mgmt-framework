@@ -16,7 +16,7 @@ def invoke(func, args):
     aa = cc.ApiClient()
 
     if func == 'rpc_sonic_port_breakout_breakout_dependencies':
-        interface = "Ethernet" + args[1]
+        interface = args[1]
 
         path = cc.Path('/restconf/operations/sonic-port-breakout:breakout_dependencies')
         body = {"sonic-port-breakout:input": {"ifname": interface}}
@@ -27,7 +27,7 @@ def invoke(func, args):
             print("Not supported currently")
             interface = ""
         else:
-            interface = "Ethernet" + args[1]
+            interface = args[1]
         path = cc.Path('/restconf/data/openconfig-platform:components/component=%s/port/openconfig-platform-port:breakout-mode/config'%interface)
         return aa.get(path)
     else:
@@ -52,8 +52,7 @@ def run(func, args):
                 response = api_response.content
                 if 'openconfig-platform-port:config' in response.keys():
                    value = response.pop('openconfig-platform-port:config')
-                   interface = "Ethernet{}".format(args[1])
-                   response[interface] = value
+                   response[args[1]] = value
                    if value is not None:
                        show_cli_output(args[0], response)
                    else:

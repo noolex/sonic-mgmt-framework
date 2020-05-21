@@ -39,7 +39,7 @@ limitations under the License.
         </ACTION>
       </COMMAND>
 
-      <COMMAND name="show ip vrf management" help="Show management VRF information">
+      <COMMAND name="show ip vrf mgmt" help="Show management VRF information">
         <ACTION 
           builtin="clish_pyobj">sonic_cli_vrf get_openconfig_network_instance_network_instances_network_instances show_vrf.j2 mgmt
         </ACTION>
@@ -48,7 +48,7 @@ limitations under the License.
 
     <VIEW name="configure-view">
     <!-- vrf configuration commands -->
-    <COMMAND name="ip vrf management" help="Management VRF configuration" mode="subcommand" ptype="SUBCOMMAND">
+    <COMMAND name="ip vrf mgmt" help="Management VRF configuration" mode="subcommand" ptype="SUBCOMMAND">
       <ACTION 
         builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=mgmt body={ "openconfig-network-instance:network-instance": [ { "name": "mgmt", "config" : { "name": "mgmt", "type": "L3VRF", "enabled": true } } ] }
       </ACTION> 
@@ -73,7 +73,7 @@ url=/restconf/data/openconfig-network-instance:network-instances/network-instanc
     </COMMAND>
 
     <!-- no vrf commands -->
-    <COMMAND name="no ip vrf management" help="Delete management VRF" mode="subcommand" ptype="SUBCOMMAND">
+    <COMMAND name="no ip vrf mgmt" help="Delete management VRF" mode="subcommand" ptype="SUBCOMMAND">
       <ACTION 
         builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=mgmt
       </ACTION>

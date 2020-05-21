@@ -50,33 +50,42 @@ def invoke_api(func, args):
        for i in range(len(args)):
            val = (args[i].split(":", 1))[-1]
            val_name = (args[i].split(":", 1))[0]
+
            if val:
                indata[val_name] = val
-       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/servers/server={address}/tacacs/config', address=args[0])
+
        if "port" in indata:
-         body = {
+         tconfig_body = {
            "openconfig-system:config": {
              "port": int(indata['port']),
            }
          }
+
        if "key" in indata:
-         if body:
-             body["openconfig-system:config"]["secret-key"] = indata['key']
+         if tconfig_body:
+             tconfig_body["openconfig-system:config"]["secret-key"] = indata['key']
          else:
-           body = {
+           tconfig_body = {
              "openconfig-system:config": {
                "secret-key": indata['key']
              }
            }
-       api.patch(path, body)
-       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/servers/server={address}/config', address=args[0])
-       body = {
-           "openconfig-system:config": {
+
+       config_body = {
              "timeout": int(indata['timeout']),
              "openconfig-system-ext:auth-type": indata['authtype'],
              "openconfig-system-ext:priority": int(indata['priority'])
-          }
        }
+
+       if "vrf" in indata:
+           config_body["openconfig-system-ext:vrf"] = indata['vrf']
+
+
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/servers/server')
+       body = { "openconfig-system:server": [{ "openconfig-system:address": args[0],
+                                               "openconfig-system:config": config_body,
+                                               "openconfig-system:tacacs": tconfig_body}] }
+
        return api.patch(path, body)
     else:
        body = {}
@@ -98,6 +107,8 @@ def get_sonic_tacacs_server_api(args):
                     api_response_data['address'] = server_list[i]['address']
                     api_response_data['authtype'] = server_list[i]['config']['openconfig-system-ext:auth-type']
                     api_response_data['priority'] = server_list[i]['config']['openconfig-system-ext:priority']
+                    if 'openconfig-system-ext:vrf' in server_list[i]['config']:
+                        api_response_data['vrf'] = server_list[i]['config']['openconfig-system-ext:vrf']
                     api_response_data['timeout'] = server_list[i]['config']['timeout']
                     if 'tacacs' in server_list[i]:
                         tac_cfg = {}

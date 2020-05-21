@@ -27,7 +27,7 @@ import cli_log as log
 from sonic_cli_acl import pcp_map
 from sonic_cli_acl import dscp_map
 from natsort import natsorted
-
+#import pdb
 
 fbs_client = cc.ApiClient()
 TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
@@ -129,7 +129,7 @@ def __match_mac_address(addr_type, args):
                       classifier_name=args[0], addr_type=addr_type)
 
     if 'mac' == args[1]:
-        value = args[2] if args[2] != 'host' else args[3]
+        value = "{}/{}".format(args[2], args[3]) if args[2] != 'host' else args[3]
         value = value.split('/')
         for idx in range(len(value)):
             value[idx] = __format_mac_addr(value[idx])
@@ -662,19 +662,94 @@ def show_policy_summary(args):
 
 
 def show_policy(args):
-    print('Not implemented')
+    policy_name = ""
+    match_type = ""
+    if len(args) > 1 and args[1] == 'qos':
+        match_type = "QOS"
+    elif len(args) > 1 and args[1] == 'monitoring':
+        match_type = "MONITORING"
+    elif len(args) > 1 and args[1] == 'forwarding':
+        match_type = "FORWARDING"
+    else:
+        policy_name = args[0]
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_policy')
+    body    = { "sonic-flow-based-services:input": { "POLICY_NAME": policy_name, "TYPE": match_type } }
+    return fbs_client.post(keypath, body)
 
 
 def show_classifier(args):
-    print('Not implemented')
-
+    class_name = ""
+    match_type = ""
+    if len(args) > 1 and args[1] == 'acl':
+        match_type = "ACL"
+    elif len(args) > 1 and args[1] == 'fields':
+        match_type = "FIELDS"
+    else:
+        class_name = args[0]
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_classifier')
+    body    = { "sonic-flow-based-services:input": { "CLASSIFIER_NAME": class_name, "MATCH_TYPE": match_type } }
+    return fbs_client.post(keypath, body)
 
 def show_details_by_policy(args):
-    print('Not implemented')
+    policy_name= ""
+    interface_name= ""
+    if len(args) >= 1:
+        policy_name = 'policy ' + args[0]
+    if len(args) > 2 and args[1] == 'interface':
+        interface_name = "interface " + args[2]
+        if len(args) > 3:
+            interface_name = interface_name + args[3]
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
+    body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": policy_name, "MATCH_SUB_TYPE": interface_name} }
+    return fbs_client.post(keypath, body)
 
 
 def show_details_by_interface(args):
-    print('Not implemented')
+    interface_name = ""
+    policy_type = ""
+    last_arg_index = 0
+    if len(args) >= 1: 
+        interface_name = 'interface ' + args[0]
+        if len(args) > 1 and args[1] != 'type':
+            interface_name = interface_name + args[1]
+            last_arg_index = 1
+            
+    if len(args) > (last_arg_index + 1) and args[last_arg_index+1] == 'type':
+        policy_type = 'type ' + args[last_arg_index+2]
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
+    body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": interface_name, "MATCH_SUB_TYPE": policy_type } }
+    return fbs_client.post(keypath, body)
+
+def clear_details_by_policy(args):
+    policy_name= ""
+    interface_name= ""
+    if len(args) >= 1:
+        policy_name = 'policy ' + args[0]
+    if len(args) > 2 and args[1] == 'interface':
+        interface_name = "interface " + args[2]
+        if len(args) > 3:
+            interface_name = interface_name + args[3]
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
+    body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": policy_name, "MATCH_SUB_TYPE": interface_name} }
+    return fbs_client.post(keypath, body)
+
+
+def clear_details_by_interface(args):
+    interface_name = ""
+    policy_type = ""
+    last_arg_index = 0
+    if len(args) >= 1: 
+        interface_name = 'interface ' + args[0]
+        if len(args) > 1 and args[1] != 'type':
+            interface_name = interface_name + args[1]
+            last_arg_index = 1
+            
+    if len(args) > (last_arg_index + 1) and args[last_arg_index+1] == 'type':
+        policy_type = 'type ' + args[last_arg_index+2]
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
+    body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": interface_name, "MATCH_SUB_TYPE": policy_type } }
+    return fbs_client.post(keypath, body)
+
 
 
 ########################################################################################################################
@@ -767,21 +842,72 @@ def handle_show_policy_summary_response(response, args, op_str):
         if response.status_code != 404:
             print(response.error_message())
 
+def policy_util_form_ip_nexthop_list(if_name, remote_if_list):
+    ip_nexthop_dict = {}
+    ip_nexthop_list = []
+    return ip_nexthop_dict, ip_nexthop_list
 
 def handle_show_policy_response(response, args, op_str):
-    pass
-
+    if response.ok():
+        if response.content is not None:
+            output = response.content
+            if len(output) != 0:
+                #print output["sonic-flow-based-services:output"]
+                show_cli_output('show_policy.j2',  output["sonic-flow-based-services:output"])
+    elif response.status_code != '404':
+        print(response.error_message())
 
 def handle_show_classifier_response(response, args, op_str):
-    pass
+    if response.ok():
+        if response.content is not None:
+            output = response.content
+            if len(output) != 0:
+                show_cli_output('show_classifier.j2', output["sonic-flow-based-services:output"]["MATCHING_CLASSIFIER_TABLE_LIST"])
+    elif response.status_code != '404':
+        print(response.error_message())
 
 
 def handle_show_details_by_policy_response(response, args, op_str):
-    pass
+    if response.ok():
+        if response.content is not None:
+            output = response.content
+            if len(output) != 0:
+                show_cli_output('show_service_policy.j2', output["sonic-flow-based-services:output"])
+    elif response.status_code != '404':
+        print(response.error_message())
 
 
 def handle_show_details_by_interface_response(response, args, op_str):
-    pass
+    if response.ok():
+        if response.content is not None:
+            output = response.content
+            if len(output) != 0:
+                show_cli_output('show_service_policy.j2', output["sonic-flow-based-services:output"])
+    elif response.status_code != '404':
+        print(response.error_message())
+
+
+def handle_clear_details_by_policy_response(response, args, op_str):
+    if response.ok():
+        if response.content is not None:
+            output = response.content
+            #if len(output) != 0:
+            #    print output["sonic-flow-based-services:output"]
+    elif response.status_code != '404':
+        print(response.error_message())
+
+
+def handle_clear_details_by_interface_response(response, args, op_str):
+    if response.ok():
+        if response.content is not None:
+            output = response.content
+            #if len(output) != 0:
+            #    print output["sonic-flow-based-services:output"]
+    elif response.status_code != '404':
+        print(response.error_message())
+
+
+
 
 
 ########################################################################################################################
@@ -841,7 +967,9 @@ request_handlers = {
     'show_classifier': show_classifier,
     'show_policy_summary': show_policy_summary,
     'show_details_by_policy': show_details_by_policy,
-    'show_details_by_interface': show_details_by_interface
+    'show_details_by_interface': show_details_by_interface,
+    'clear_details_by_policy': clear_details_by_policy,
+    'clear_details_by_interface': clear_details_by_interface
 }
 
 
@@ -898,7 +1026,9 @@ response_handlers = {
     'show_classifier': handle_show_classifier_response,
     'show_policy_summary': handle_show_policy_summary_response,
     'show_details_by_policy': handle_show_details_by_policy_response,
-    'show_details_by_interface': handle_show_details_by_interface_response
+    'show_details_by_interface': handle_show_details_by_interface_response,
+    'clear_details_by_policy': handle_clear_details_by_policy_response,
+    'clear_details_by_interface': handle_clear_details_by_interface_response
 }
 
 

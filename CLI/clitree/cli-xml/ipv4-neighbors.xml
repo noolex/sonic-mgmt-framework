@@ -34,35 +34,36 @@ limitations under the License.
 <!--=======================================================-->
 <!--           show/clear ip arp changes                   -->
 <!--=======================================================-->
-<PTYPE
-    name="INTF_TYPE"
-    method="select"
-    pattern="Ethernet Vlan PortChannel Management(eth)"
-    help="Interface type"/>
-
-<PTYPE
-    name="VRF_NAME"
-    method="regexp"
-    pattern="^(mgmt|Vrf[0-9A-Za-z_-]{1,12})"
-    help="vrf name"
-/>
 
 <VIEW name="enable-view">
 
 <!-- show ip arp <ip-addr> commands -->
     <COMMAND
-        help="show ARP commands"
+        help="Show ARP commands"
         name="show ip arp">
+
         <PARAM
             name="vrf"
-            help="ARP subcommands"
-            ptype="SUBCOMMAND"
+            help="Show ARP entries of the given VRF"
             mode="subcommand"
-            optional="true">
+            optional="true"
+            ptype="SUBCOMMAND">
             <PARAM
-                name="vrf-name"
-                help="mgmt or prefixed by Vrf (Max size 15)"
-                ptype="VRF_NAME">
+              name="vrf-name"
+              help="Show ARP entries of the given VRF"
+              mode="switch"
+              ptype="SUBCOMMAND">
+              <PARAM
+                  name="vrf-name"
+                  help="Show ARP entries of the given VRF"
+                  ptype="VRF_NAME">
+              </PARAM>
+              <PARAM
+                  name="mgmt"
+                  help="Show ARP entries of the management VRF"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
 
@@ -332,7 +333,7 @@ limitations under the License.
         name="clear ip arp">
         <PARAM
             name="cleararp-subcommands"
-            help="clear ARP subcommands"
+            help="Clear ARP subcommands"
             mode="switch"
             ptype="SUBCOMMAND"
             optional="true">
@@ -343,16 +344,29 @@ limitations under the License.
                     optional="true">
                 </PARAM>
         </PARAM>
+
         <PARAM
             name="vrf"
-            help="ARP subcommands"
-            ptype="SUBCOMMAND"
+            help="Clear ARP entries of the given VRF"
             mode="subcommand"
-            optional="true">
+            optional="true"
+            ptype="SUBCOMMAND">
             <PARAM
-                name="vrf-name"
-                help="mgmt or prefixed by Vrf (Max size 15)"
-                ptype="VRF_NAME">
+              name="vrf-name"
+              help="Clear ARP entries of the given VRF"
+              mode="switch"
+              ptype="SUBCOMMAND">
+              <PARAM
+                  name="vrf-name"
+                  help="Clear ARP entries of the given VRF"
+                  ptype="VRF_NAME">
+              </PARAM>
+              <PARAM
+                  name="mgmt"
+                  help="Clear ARP entries of the management VRF"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
        <ACTION>
@@ -433,7 +447,7 @@ limitations under the License.
 <VIEW name="configure-view">
 	<!-- ip arp timeout -->
 	<COMMAND name="ip arp" help="Configure ARP" ptype="SUBCOMMAND" mode="subcommand">
-		<PARAM name="timeout" help="Set ARP timeout value" ptype="SUBCOMMAND" mode="subcommand"> 
+		<PARAM name="timeout" help="Set ARP timeout value" ptype="SUBCOMMAND" mode="subcommand">
 			<PARAM name="value" help="Timeout in seconds" ptype="NEIGH_TIMEOUT"> </PARAM>
 		</PARAM>
 
@@ -446,7 +460,7 @@ limitations under the License.
 				Use this command to configure IPv4 ARP cache entry timeout.
 			</USAGE>
 			<EXAMPLE summary="Configure IPv4 ARP timeout">
-				sonic-cli(config)# ip arp timeout 200 
+				sonic-cli(config)# ip arp timeout 200
 			</EXAMPLE>
 		</DOCGEN>
 	</COMMAND>
@@ -455,7 +469,7 @@ limitations under the License.
 	<COMMAND name="no ip arp" help="Unconfigure IPv4 ARP" ptype="SUBCOMMAND" mode="subcommand">
 		<PARAM name="timeout" help="Unset ARP timeout value" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
 		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-neighbors.py del_ipv4_arp_timeout &#xA; </ACTION>
-		
+
 		<DOCGEN>
 			<DESCRIPTION>
 				Unconfigures ARP cache entry timeout value and sets it to Default Value.
