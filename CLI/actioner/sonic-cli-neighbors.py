@@ -306,7 +306,7 @@ def process_sonic_nbrs(response):
                            'intfName':ifName,
                            'egressPort':egressPort
                         }
-        if (rcvdVrfName == vrfName || rcvdVrfName == "all"):
+        if (rcvdVrfName == vrfName) or (rcvdVrfName == "all"):
             if (rcvdMacAddr == macAddr):
                 outputList.append(nbrEntry)
             elif (rcvdIpAddr == ipAddr.lower()):
