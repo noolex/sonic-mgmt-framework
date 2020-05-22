@@ -87,7 +87,7 @@ limitations under the License.
             <PARAM name = "local-address" help = "Configure local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "localaddress" help = "" ptype = "SUBCOMMAND" mode="switch" >
                     <PARAM name = "local_ipv4" help = "IPv4 local address" ptype = "IP_ADDR" default="null" > </PARAM>
-                    <PARAM name = "loacl_ipv6" help = "IPv6 local address" ptype = "IPV6_ADDR" default="null"> </PARAM>
+                    <PARAM name = "local_ipv6" help = "IPv6 local address" ptype = "IPV6_ADDR" default="null"> </PARAM>
                 </PARAM>
             </PARAM>
             <PARAM name = "interface" help = "Interface information" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 

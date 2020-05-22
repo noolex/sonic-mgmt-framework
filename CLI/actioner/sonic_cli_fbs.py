@@ -27,7 +27,8 @@ import cli_log as log
 from sonic_cli_acl import pcp_map
 from sonic_cli_acl import dscp_map
 from natsort import natsorted
-#import pdb
+import sonic_cli_acl
+
 
 fbs_client = cc.ApiClient()
 TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
@@ -129,7 +130,7 @@ def __match_mac_address(addr_type, args):
                       classifier_name=args[0], addr_type=addr_type)
 
     if 'mac' == args[1]:
-        value = args[2] if args[2] != 'host' else args[3]
+        value = "{}/{}".format(args[2], args[3]) if args[2] != 'host' else args[3]
         value = value.split('/')
         for idx in range(len(value)):
             value[idx] = __format_mac_addr(value[idx])
@@ -673,7 +674,7 @@ def show_policy(args):
     else:
         policy_name = args[0]
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_policy')
-    body    = { "sonic-flow-based-services:input": { "POLICY_NAME": policy_name, "TYPE": match_type } }
+    body = {"sonic-flow-based-services:input": {"POLICY_NAME": policy_name, "TYPE": match_type}}
     return fbs_client.post(keypath, body)
 
 
@@ -684,11 +685,12 @@ def show_classifier(args):
         match_type = "ACL"
     elif len(args) > 1 and args[1] == 'fields':
         match_type = "FIELDS"
-    else:
+    elif len(args) == 1:
         class_name = args[0]
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_classifier')
-    body    = { "sonic-flow-based-services:input": { "CLASSIFIER_NAME": class_name, "MATCH_TYPE": match_type } }
+    body = {"sonic-flow-based-services:input": {"CLASSIFIER_NAME": class_name, "MATCH_TYPE": match_type}}
     return fbs_client.post(keypath, body)
+
 
 def show_details_by_policy(args):
     policy_name= ""
@@ -749,7 +751,6 @@ def clear_details_by_interface(args):
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
     body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": interface_name, "MATCH_SUB_TYPE": policy_type } }
     return fbs_client.post(keypath, body)
-
 
 
 ########################################################################################################################
@@ -857,12 +858,16 @@ def handle_show_policy_response(response, args, op_str):
     elif response.status_code != '404':
         print(response.error_message())
 
+
 def handle_show_classifier_response(response, args, op_str):
     if response.ok():
         if response.content is not None:
             output = response.content
             if len(output) != 0:
-                show_cli_output('show_classifier.j2', output["sonic-flow-based-services:output"]["MATCHING_CLASSIFIER_TABLE_LIST"])
+                show_cli_output('show_classifier.j2',
+                                output["sonic-flow-based-services:output"]["MATCHING_CLASSIFIER_TABLE_LIST"],
+                                ip_proto_to_keyword=sonic_cli_acl.ip_proto_to_keyword,
+                                tcp_flags_to_keyword=sonic_cli_acl.tcp_flags_to_keyword)
     elif response.status_code != '404':
         print(response.error_message())
 
