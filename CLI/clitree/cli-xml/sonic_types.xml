@@ -402,13 +402,13 @@ limitations under the License.
         name="UINT16"
         method="integer"
         pattern="0..65535"
-        help="&lt;0-65535&gt;"
+        help="&lt;0..65535&gt;"
         />
     <!--=======================================================-->
     <PTYPE
         name="UINT"
         pattern="[0-9]+"
-        help="&lt;0-255&gt;"
+        help="&lt;0..255&gt;"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1064,7 +1064,7 @@ limitations under the License.
     <PTYPE
         name="VLAN_INTERFACE"
         method="regexp_select"
-        ext_pattern="Vlan(1-4094)"
+        ext_pattern="Vlan(1..4094)"
         pattern="&VLAN_ALL_INTF;"
         help="VlanNUM"
         />
@@ -1072,7 +1072,7 @@ limitations under the License.
     <PTYPE
         name="PO_INTERFACE"
         method="regexp_select"
-        ext_pattern="PortChannel(1-128)"
+        ext_pattern="PortChannel(1..128)"
         pattern="&PO_ALL_INTF;"
         help="PortChannelNUM"
          />
@@ -1080,7 +1080,7 @@ limitations under the License.
     <PTYPE
 	name="LOOPBACK_INTERFACE"
 	method="regexp_select"
-	ext_pattern="Loopback(0-16383)"
+	ext_pattern="Loopback(0..16383)"
 	pattern="&LOOPB_INTF;"
 	help=""
 	/>
@@ -1126,6 +1126,13 @@ limitations under the License.
         method="select"
         pattern="Ethernet Vlan PortChannel Management(eth)"
         help="Interface type"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="VTEP_NAME"
+        pattern="^vtep([a-zA-Z0-9_-]){1,59}$"
+        ext_pattern="vtep(string)"
+        help="Name of VTEP (Max size 63, prefixed by vtep)"
         />
     <!--=======================================================-->
     <PTYPE
