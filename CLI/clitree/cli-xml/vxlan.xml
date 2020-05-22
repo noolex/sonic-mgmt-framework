@@ -265,7 +265,7 @@
             <PARAM
                 name="vxlan-if-name"
                 help="VTEP Name"
-                ptype="STRING_63"
+                ptype="VTEP_NAME"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj"> sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list ${vxlan-if-name}
@@ -276,7 +276,7 @@
                 </DESCRIPTION>
                 <USAGE>
                     (config)# no interface vxlan VTEPNAME
-                    VTEPNAME - string
+                    VTEPNAME - string prefixed with 'vtep'
                 </USAGE>
                 <EXAMPLE summary="Unconfigure Vxlan VTEP">
                     sonic(config)# no interface vxlan vtep1
@@ -293,7 +293,7 @@
             <PARAM
                 name="vxlan-if-name"
                 help="VTEP Name"
-                ptype="STRING_63"
+                ptype="VTEP_NAME"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list ${vxlan-if-name}
@@ -304,7 +304,7 @@
                 </DESCRIPTION>
                 <USAGE>
                     (config)# interface vxlan VTEPNAME
-                    VTEPNAME - string
+                    VTEPNAME - string prefixed with 'vtep'
                 </USAGE>
                 <EXAMPLE summary="configuration mode for vxlan">
                     sonic(config)# interface vxlan vtep1
