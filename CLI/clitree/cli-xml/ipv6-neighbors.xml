@@ -364,6 +364,12 @@ limitations under the License.
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>
+              <PARAM
+                  name="all"
+                  help="Clear NDP entries from all VRFs"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
 
