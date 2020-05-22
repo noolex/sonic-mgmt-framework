@@ -363,8 +363,12 @@ def set_neighbors(keypath, body, del_req):
 
 def show_neighbors(keypath, args):
     outputList = []
-
     rendererScript = "arp_show.j2"
+
+    rcvdFamily = inputDict.get('family')
+    if rcvdFamily == "IPv6":
+        rendererScript = "arp_show_v6.j2"
+
     summary = inputDict.get('summary')
     if summary is not None:
         rendererScript = "arp_summary_show.j2"
