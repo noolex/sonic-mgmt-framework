@@ -1,35 +1,44 @@
-384a385,386
+384a385,388
 > 	char *ext_pattern = clish_xmlnode_fetch_attr(element, "ext_pattern");
 >         char *ext_help = clish_xmlnode_fetch_attr(element, "ext_help");
-404c406
+> 	char *alt_ext_pattern = clish_xmlnode_fetch_attr(element, "alt_ext_pattern");
+> 	char *alt_pattern = clish_xmlnode_fetch_attr(element, "alt_pattern");
+404c408,409
 < 		name, help, pattern, method, preprocess);
 ---
-> 		name, help, pattern, method, preprocess, ext_pattern, ext_help);
-645c647
+> 		name, help, pattern, method, preprocess, ext_pattern, ext_help,
+> 		alt_ext_pattern, alt_pattern);
+412a418,421
+>         clish_xml_release(ext_pattern);
+>         clish_xml_release(ext_help);
+>         clish_xml_release(alt_ext_pattern);
+> 	clish_xml_release(alt_pattern);
+645c654
 < 		clish_shell__set_idle_timeout(shell, to);
 ---
 > 		clish_shell__set_timeout(shell, to);
-712a715,717
+712a722,724
 > 	char *view = clish_xmlnode_fetch_attr(element, "view");
 >         char *viewid = clish_xmlnode_fetch_attr(element, "viewid");
 > 
-763c768
+763c775,776
 < 			CLISH_PTYPE_METHOD_REGEXP, CLISH_PTYPE_PRE_NONE);
 ---
-> 			CLISH_PTYPE_METHOD_REGEXP, CLISH_PTYPE_PRE_NONE, NULL, NULL);
-782a788
+> 			CLISH_PTYPE_METHOD_REGEXP, CLISH_PTYPE_PRE_NONE, NULL, NULL,
+> 			NULL, NULL);
+782a796
 > 
-789c795
+789c803
 < 		clish_param__set_defval(param, defval);
 ---
 > 		clish_param__set_default(param, defval);
-843a850,855
+843a858,863
 > 	if (view)
 > 		clish_param__set_viewname(param, view);
 > 
 > 	if (viewid)
 > 		clish_param__set_viewid(param, viewid);
 > 
-859a872,873
+859a880,881
 >         clish_xml_release(view);
 >         clish_xml_release(viewid);
