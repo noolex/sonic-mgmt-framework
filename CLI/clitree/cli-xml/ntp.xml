@@ -199,7 +199,7 @@ limitations under the License.
     <COMMAND name="no ntp vrf"
              help="Disable NTP on VRF">
       <ACTION
-        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/vrf
+        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:vrf
       </ACTION>
     </COMMAND>
 
