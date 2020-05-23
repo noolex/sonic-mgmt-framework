@@ -76,11 +76,18 @@ dscp_map = {
     "voice-admit": 44,
 }
 
+TCP_FLAGS_LIST = ["fin", "not-fin", "syn", "not-syn", "rst", "not-rst", "psh", "not-psh", "ack", "not-ack", "urg",
+                  "not-urg", "ece", "not-ece", "cwr", "not-cwr"]
+TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
+TCP_FLAG_VALUES_REV = {}
+
 proto_number_rev_map = {val: key for key, val in proto_number_map.items()}
 ethertype_rev_map = {val: key for key, val in ethertype_map.items()}
 pcp_rev_map = {val: key for key, val in pcp_map.items()}
 dscp_rev_map = {val: key for key, val in dscp_map.items()}
 acl_client = cc.ApiClient()
+for tcp_flag, tcp_flag_val in TCP_FLAG_VALUES.items():
+    TCP_FLAG_VALUES_REV[tcp_flag_val] = tcp_flag
 
 
 class SonicAclCLIError(RuntimeError):
@@ -139,40 +146,35 @@ def __create_acl_rule_l2(args):
     if args[4] == 'host':
         body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(args[5])
         next_item = 6
-    elif '/' in args[4]:
-        mac, mask = args[4].split('/')
-        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(mac)
-        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac-mask"] = __format_mac_addr(mask)
-        next_item = 5
     elif args[4] == 'any':
         next_item = 5
     else:
-        raise SonicAclCLIError('Incorrect Source MAC Address')
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac"] = __format_mac_addr(args[4])
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["source-mac-mask"] = __format_mac_addr(args[5])
+        next_item = 6
 
     if args[next_item] == 'host':
         body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(args[next_item + 1])
         next_item += 2
-    elif '/' in args[next_item]:
-        mac, mask = args[next_item].split('/')
-        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(mac)
-        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac-mask"] = __format_mac_addr(mask)
-        next_item += 1
     elif args[next_item] == 'any':
         next_item += 1
     else:
-        raise SonicAclCLIError('Incorrect destination MAC Address')
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac"] = __format_mac_addr(args[next_item])
+        body["openconfig-acl:acl-entry"][0]["l2"]["config"]["destination-mac-mask"] = __format_mac_addr(args[next_item + 1])
+        next_item += 2
 
     while next_item < len(args):
         if args[next_item] == 'pcp':
             if args[next_item + 1] in pcp_map:
                 body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = pcp_map[args[next_item + 1]]
-            elif '/' in args[next_item + 1]:
-                val, mask = args[next_item + 1].split('/')
-                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = int(val)
-                body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp-mask'] = int(mask)
+                next_item += 2
             else:
                 body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp'] = int(args[next_item + 1])
-            next_item += 2
+                next_item += 2
+        elif args[next_item] == 'pcp-mask':
+            mask = int(args[next_item + 1])
+            body["openconfig-acl:acl-entry"][0]["l2"]["config"]['pcp-mask'] = mask
+            next_item = next_item + 2
         elif args[next_item] == 'dei':
             body["openconfig-acl:acl-entry"][0]["l2"]["config"]['dei'] = int(args[next_item + 1])
             next_item += 2
@@ -829,7 +831,7 @@ def __convert_mac_addr_to_user_fmt(acl_entry, rule_data, field):
             rule_data.append('host')
             rule_data.append(mac)
         else:
-            rule_data.append('{}/{}'.format(mac, mac_mask))
+            rule_data.append('{} {}'.format(mac, mac_mask))
     elif mac:
         rule_data.append('host')
         rule_data.append(mac)
@@ -857,11 +859,10 @@ def __convert_l2_rule_to_user_fmt(acl_entry, rule_data):
 
     try:
         pcp = acl_entry['l2']['state']['openconfig-acl-ext:pcp']
-        rule_data.append('pcp')
         if 'openconfig-acl-ext:pcp-mask' in acl_entry['l2']['state']:
-            rule_data.append(pcp_rev_map[pcp] + '/' + acl_entry['l2']['state']['openconfig-acl-ext:pcp-mask'])
+            rule_data.append('pcp {} pcp-mask {}'.format(pcp_rev_map[pcp], acl_entry['l2']['state']['openconfig-acl-ext:pcp-mask']))
         else:
-            rule_data.append(pcp_rev_map[pcp])
+            rule_data.append('pcp {}'.format(pcp_rev_map[pcp]))
     except KeyError:
         pass
 
@@ -992,10 +993,15 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
         log.log_debug("Cache present")
         __deep_copy(output, cache[acl_name])
 
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/{stage}-acl-sets/{stage}-acl-set={setname},{acltype}',
-                      id=intf_name, stage=stage.lower(), setname=acl_name, acltype=acl_type)
-    response = acl_client.get(keypath)
-    if response.ok():
+    user_acl_type = __convert_oc_acl_type_to_user_fmt(acl_type)
+    output[user_acl_type][acl_name]['stage'] = stage.capitalize()
+    if intf_name != "CtrlPlane":
+        keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/{stage}-acl-sets/{stage}-acl-set={setname},{acltype}',
+                          id=intf_name, stage=stage.lower(), setname=acl_name, acltype=acl_type)
+        response = acl_client.get(keypath)
+        if not response.ok():
+            raise SonicAclCLIError("{}".format(response.error_message()))
+
         log.log_debug(response.content)
         acl_set = response.content['openconfig-acl:{}-acl-set'.format(stage.lower())][0]
         user_acl_type = __convert_oc_acl_type_to_user_fmt(acl_set['type'])
@@ -1004,15 +1010,13 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
             output[user_acl_type][acl_name]['rules'][acl_entry['sequence-id']]['packets'] = acl_entry['state']['matched-packets']
             output[user_acl_type][acl_name]['rules'][acl_entry['sequence-id']]['octets'] = acl_entry['state']['matched-octets']
 
-        render_dict = dict()
-        if intf_name != "Switch":
-            render_dict["interface {}".format(intf_name)] = output
-        else:
-            render_dict[intf_name] = output
-
-        show_cli_output('show_access_list_intf.j2', render_dict)
+    render_dict = dict()
+    if intf_name != "Switch":
+        render_dict["interface {}".format(intf_name)] = output
     else:
-        raise SonicAclCLIError("{}".format(response.error_message()))
+        render_dict[intf_name] = output
+
+    show_cli_output('show_access_list_intf.j2', render_dict)
 
 
 def __process_acl_counters_request_by_name_and_inf(response, args):
@@ -1129,12 +1133,10 @@ def handle_get_all_acl_binding_response(response, args):
         resp_content = response.content
         if bool(resp_content):
             for intf_data in resp_content["sonic-acl:ACL_BINDING_TABLE_LIST"]:
-                if intf_data["intfname"] != render_data.keys():
+                if intf_data["intfname"] not in render_data.keys():
                     if_bind_list = list()
-                    render_data[intf_data["intfname"]] = if_bind_list
                 else:
                     if_bind_list = render_data[intf_data["intfname"]]
-
 
                 if "L2" in intf_data.keys():
                     aclname = intf_data["L2"]
@@ -1153,6 +1155,8 @@ def handle_get_all_acl_binding_response(response, args):
                     if aclname.endswith("ACL_IPV6"):
                         aclname = aclname[:-9]
                     if_bind_list.append(tuple([intf_data["stage"].capitalize(), "IPV6", aclname]))
+
+                render_data[intf_data["intfname"]] = if_bind_list
 
             # TODO Sort the data in the order Eth->Po->Vlan->Switch
             log.log_debug(str(render_data))
@@ -1205,9 +1209,16 @@ response_handlers = {
 def run(op_str, args):
     try:
         log.log_debug(str(args))
-        resp = request_handlers[op_str](args)
+        correct_args = list()
+        for arg in args:
+            if arg == "|" or arg == "\\|":
+                break
+            else:
+                correct_args.append(arg)
+        log.log_debug(str(correct_args))
+        resp = request_handlers[op_str](correct_args)
         if resp:
-            return response_handlers[op_str](resp, args)
+            return response_handlers[op_str](resp, correct_args)
     except SonicAclCLIError as e:
         print("%Error: {}".format(e.message))
         return -1
@@ -1221,3 +1232,35 @@ def run(op_str, args):
 
 if __name__ == '__main__':
     run(sys.argv[1], sys.argv[2:])
+
+
+
+#
+# Jinja2 functions
+#
+def ip_proto_to_keyword(proto):
+    if proto == 6 or proto == '6':
+        return 'tcp'
+    if proto == 17 or proto == '17':
+        return 'udp'
+    if proto == 1 or proto == '1':
+        return 'icmp'
+    if proto == 58 or proto == '58':
+        return 'icmpv6'
+
+    return str(proto)
+
+
+def tcp_flags_to_keyword(value):
+    tcp_flags, tcp_flags_mask = value.split('/')
+    tcp_flags = int(tcp_flags, 0)
+    tcp_flags_mask = int(tcp_flags_mask, 0)
+    flags_str = ''
+    for i in range(0, 8):
+        if tcp_flags_mask & (1 << i):
+            if tcp_flags & (1 << i):
+                flags_str = flags_str + ' ' + TCP_FLAG_VALUES_REV[1 << i]
+            else:
+                flags_str = flags_str + ' not-' + TCP_FLAG_VALUES_REV[1 << i]
+
+    return flags_str.strip()

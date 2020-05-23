@@ -27,17 +27,38 @@ Neighbor ID     Pri State           Dead Time Address         Interface         
 {% for neighborinfo in neighbor_list %}
 {% if vars.interface_name == "" or vars.interface_name == neighborinfo['interface-name'] %}
 {% if vars.update({'dr_status':""}) %}{% endif -%}
-{% if neighborinfo['neighbor-address'] == neighborinfo['designated-router'] %}
+{% if 'neighbor-address' in  neighborinfo and 'designated-router' in neighborinfo and  neighborinfo['neighbor-address'] == neighborinfo['designated-router'] %}
 {% if vars.update({'dr_status':"DR"}) %}{% endif -%}
-{% elif neighborinfo['neighbor-address'] == neighborinfo['backup-designated-router'] %}
+{% elif 'backup-designated-router' in neighborinfo and neighborinfo['neighbor-address'] == neighborinfo['backup-designated-router'] %}
 {% if vars.update({'dr_status':"Backup"}) %}{% endif -%}
 {% else %}
 {% if vars.update({'dr_status':"DROther"}) %}{% endif -%}
 {% endif -%}
+{% if 'dead-time' in neighborinfo %}
 {% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif -%}
+{% endif -%}
+{% if 'adjacency-state' in neighborinfo %}
 {% if vars.update({'nbr_state':neighborinfo['adjacency-state'].split(':')[1]}) %}{% endif -%}
-{% if vars.update({'nbr_state':vars.nbr_state|capitalize}) %}{% endif -%}
-{{'%-15s'|format(neighborinfo['neighbor-id'])}} {{'%3s'|format(neighborinfo['priority'])}} {{'%-15s'|format(vars.nbr_state + '/' + vars.dr_status)}} {{'%9s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}} {{'%-15s'|format(neighborinfo['neighbor-address'])}} {{'%-20s'|format(neighborinfo['interface-name'] + ':' + neighborinfo['interface-address'])}} {{'%5s'|format(neighborinfo['retransmit-summary-queue-length'])}} {{'%5s'|format(neighborinfo['link-state-request-queue-length'])}} {{'%5s'|format(neighborinfo['database-summary-queue-length'])}}
+{% set neighbor_state = " " %}
+{% if vars.nbr_state == "FULL" %}
+{% set neighbor_state = "Full" %}
+{% elif vars.nbr_state == "INIT" %}
+{% set neighbor_state = "Init"  %}
+{% elif vars.nbr_state == "DOWN" %}
+{% set neighbor_state = "Down"  %}
+{% elif vars.nbr_state == "ATTEMPT" %}
+{% set neighbor_state = "Attempt"  %}
+{% elif vars.nbr_state == "TWO_WAY" %}
+{% set neighbor_state = "2-Way"  %}
+{% elif vars.nbr_state == "EXCHANGE" %}
+{% set neighbor_state = "Exchange"  %}
+{% elif vars.nbr_state == "EXSTART" %}
+{% set neighbor_state = "ExStart"  %}
+{% elif vars.nbr_state == "LOADING" %}
+{% set neighbor_state = "Loading"  %}
+{% endif -%}
+{% endif -%}
+{{'%-15s'|format(neighborinfo['neighbor-id'])}} {{'%3s'|format(neighborinfo['priority'])}} {{'%-15s'|format(neighbor_state + '/' + vars.dr_status)}} {{'%9s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}} {{'%-15s'|format(neighborinfo['neighbor-address'])}} {{'%-20s'|format(neighborinfo['interface-name'] + ':' + neighborinfo['interface-address'])}} {{'%5s'|format(neighborinfo['retransmit-summary-queue-length'])}} {{'%5s'|format(neighborinfo['link-state-request-queue-length'])}} {{'%5s'|format(neighborinfo['database-summary-queue-length'])}}
 {% endif -%}
 {% endfor -%}
 {% endif -%}

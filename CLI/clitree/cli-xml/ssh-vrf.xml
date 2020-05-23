@@ -23,7 +23,7 @@ limitations under the License.
     http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
     <VIEW name="enable-view">
-      <COMMAND help="show ssh-server on vrfs" name="show ssh-server">
+      <COMMAND help="show ssh-server on vrf" name="show ssh-server">
         <ACTION builtin="clish_nop"/>
         <xi:include href="include/pipe.xml"/>
       </COMMAND>
@@ -39,7 +39,7 @@ limitations under the License.
         <DOCGEN>
             <DESCRIPTION>Shows list of VRFs on which ssh server is enabled</DESCRIPTION>
             <EXAMPLE>
-                sonic# show ssh-server vrfs
+                sonic# show ssh-server vrf all
                             VRF Name                          Status
                  -------------------------------- --------------------------------
                             Vrf1                             enable

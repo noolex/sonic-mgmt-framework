@@ -52,8 +52,7 @@ def run(func, args):
                 response = api_response.content
                 if 'openconfig-platform-port:config' in response.keys():
                    value = response.pop('openconfig-platform-port:config')
-                   interface = "Ethernet{}".format(args[1])
-                   response[interface] = value
+                   response[args[1]] = value
                    if value is not None:
                        show_cli_output(args[0], response)
                    else:

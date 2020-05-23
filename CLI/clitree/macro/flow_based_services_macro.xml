@@ -32,7 +32,9 @@
         <PARAM name="address-types" help="address-types" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="mac" help="Match on arg1 MAC address" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM name="arg1-mac-addr-options-switch" help="" ptype="SUBCOMMAND" mode="switch">
-                    <PARAM name="arg1-mac-addr-mask" help="arg2 MAC address and mask" ptype="ACL_MAC_ADDR_MASK"/>
+                    <PARAM name="arg1-mac-addr" help="arg2 MAC address" ptype="ACL_MAC_ADDR">
+                        <PARAM name="arg1-mac-mask" help="arg2 MAC address mask" ptype="ACL_MAC_ADDR"/>
+                    </PARAM>
                     <PARAM name="arg1-mac-host" help="arg2 MAC address" ptype="SUBCOMMAND" mode="subcommand"  value="host">
                         <PARAM name="arg1-mac-addr" help="arg2 MAC address value" ptype="ACL_MAC_ADDR"/>
                     </PARAM>

@@ -7,12 +7,6 @@
     <!-- **************************************************** -->
     <!-- *  Traceroute Options                              * -->
     <!-- **************************************************** -->
-    <PTYPE
-        name="VRF_NAME"
-        method="regexp"
-        pattern="^(Vrf[0-9A-Za-z_-]{1,12})"
-        help="VRF name"
-    />
     <VIEW name="enable-view">
         <COMMAND name="traceroute"
                  help="Print the route packets take to the host"
@@ -33,7 +27,7 @@
                  args="traceroute-option"
                  args_help="Traceroute options(--help for help)">
                  <PARAM name="vrf-name"
-                        help="Traceroute using given VRF name (max 15 char)"
+                        help="Traceroute using given VRF name"
                         ptype="VRF_NAME" />
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute.py vrf ${vrf-name} ${traceroute-option} 2>/dev/stdout</ACTION>
         </COMMAND>
@@ -57,7 +51,7 @@
                  args="traceroute6-option"
                  args_help="Traceroute6 options(--help for help)">
                  <PARAM name="vrf-name"
-                        help="Traceroute6 using given VRF name (max 15 char)"
+                        help="Traceroute6 using given VRF name"
                         ptype="VRF_NAME" />
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-traceroute6.py vrf ${vrf-name} ${traceroute6-option} 2>/dev/stdout</ACTION>
         </COMMAND>

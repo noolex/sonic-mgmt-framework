@@ -76,7 +76,7 @@ def get_helper_adr_str(args):
               ipAdrStr += i
               ipAdrStr += ","
         elif (args[2] == 'ipv6'):
-           if not ((i.find("::") == -1)):
+           if not ((i.find(":") == -1)):
               ipAdrStr += i
               ipAdrStr += ","
 
@@ -321,7 +321,8 @@ def invoke_api(func, args=[]):
         if responseIntfTbl.ok():
             d.update(responseIntfTbl.content)
             tbl_key = "sonic-interface:INTF_TABLE_IPADDR_LIST"
-            d[tbl_key] = natsorted(d[tbl_key],key=lambda t: t["ifName"])
+            if tbl_key in d:
+                d[tbl_key] = natsorted(d[tbl_key],key=lambda t: t["ifName"])
             if func == 'ip_interfaces_get':
                 filter_address(d, True)
             else:
@@ -438,7 +439,7 @@ def invoke_api(func, args=[]):
         MaxHopCount = ""
         for index,i in  enumerate(args):
                 #Find the ipv6 address from the list of args
-                if not ((i.find("::") == -1)):
+                if not ((i.find(":") == -1)):
                    #Insert the found v4 address in the body
                    body1["openconfig-relay-agent:helper-address"].insert(j,args[index])
                    j += 1
