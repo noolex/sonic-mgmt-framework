@@ -118,8 +118,8 @@ limitations under the License.
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION builtin="clish_pyobj">
-                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${intf_name} ${dscp_tc_map_name}
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${intf_name} ${dscp_tc_map_name}
             </ACTION>
         </COMMAND>
 
@@ -127,6 +127,27 @@ limitations under the License.
         <COMMAND name="no dscp-to-tc-map" help="Unconfigure a DSCP to TC map">
             <ACTION builtin="clish_restcl">
                 oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="dot1p-to-tc-map"
+            help="DOT1P to TC map configuration">
+           <PARAM
+               name="dot1p_tc_map_name"
+               help="DOT1P to TC map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${intf_name} ${dot1p_tc_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no dot1p-to-tc-map" help="Unconfigure a DOT1P to TC map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group
             </ACTION>
         </COMMAND>
 

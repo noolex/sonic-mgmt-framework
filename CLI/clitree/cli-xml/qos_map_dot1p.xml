@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+  <VIEW name="configure-view">
+    <!-- maps -->
+    <COMMAND
+        name="dot1p-tc-map"
+        help="QoS DOT1P-to-TC Map Configuration"
+        mode="subcommand"
+        ptype="SUBCOMMAND"
+        view="configure-dot1p-tc-map-view"
+        viewid="map_name=${name}"
+        >
+        <PARAM
+           name="name"
+           help="Name of the map"
+           ptype="STRING_32"
+           >
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=PATCH
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map=${name}
+            body={"openconfig-qos-maps-ext:dot1p-map": [{"name": "${name}"}]}
+        </ACTION>
+    </COMMAND>
+
+    <!-- no maps -->
+    <COMMAND name="no dot1p-tc-map" help="Unconfigure a dot1p-tc map">
+      <PARAM name="name" help="Name of the map" ptype="STRING_32"> </PARAM>
+        <ACTION builtin="clish_restcl"> 
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map=${name}
+        </ACTION>
+    </COMMAND>
+  </VIEW>
+
+
+  <VIEW
+    name="configure-dot1p-tc-map-view"
+    prompt="${SYSTEM_NAME}(conf-dot1p-tc-map-${map_name})# "
+    depth="2"
+    >
+    <!-- Inheritance -->
+    <NAMESPACE
+        ref="configure-view"
+        help="false"
+        completion="false"
+        />
+
+     <COMMAND name="dot1p" help="DOT1P value" mode="subcommand" ptype="SUBCOMMAND" >
+        <PARAM name="dot1p" help="dot1p value" ptype="STRING_32" >
+            <PARAM name="traffic-class" help="Traffic Class" mode="subcommand" ptype="SUBCOMMAND" >
+                <PARAM name="tc" help="Traffic-class value" ptype="STRING_32" >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=PATCH
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map=${map_name}/dot1p-map-entries/dot1p-map-entry=${dot1p}
+            body={"openconfig-qos-maps-ext:dot1p-map-entry": [{"dot1p":${dot1p}, "config": {"fwd_group": "${tc}"}}]}
+        </ACTION>
+      </COMMAND>
+
+      <!-- no dot1p-->
+      <COMMAND name="no dot1p" help="Unconfigure a mapping">
+        <PARAM name="dot1p" help="dot1p value" ptype="STRING_32" >
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map=${map_name}/dot1p-map-entries/dot1p-map-entry=${dot1p}
+        </ACTION>
+      </COMMAND>
+  </VIEW>
+
+
+  <VIEW name="enable-view">
+
+    <!--show dot1p-map -->
+    <COMMAND name="show dot1p-tc-map" help="Show configured dot1p-tc-map">
+      <PARAM name="name" help="Name of the dot1p-tc-map" ptype="STRING_32"> </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_qos_map get_openconfig_qos_dot1p_tc_map ${name} 
+        </ACTION>
+    </COMMAND>
+  </VIEW>
+
+ </CLISH_MODULE>
