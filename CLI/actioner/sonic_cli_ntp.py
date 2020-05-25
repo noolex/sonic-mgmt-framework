@@ -36,8 +36,6 @@ def invoke_api(func, args=[]):
     ntp_data = {}
 
     if func == 'get_ntp_global':
-        print("MMZZ-1")
-        print(args)
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
         api_response = api.get(keypath)
@@ -51,8 +49,6 @@ def invoke_api(func, args=[]):
             show_cli_output(args[0], ntp_data)
 
     elif func == 'get_ntp_server':
-        print("MMZZ-2")
-        print(args)
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers/server')
         api_response = api.get(keypath)
@@ -66,8 +62,6 @@ def invoke_api(func, args=[]):
             show_cli_output(args[0], ntp_data)
 
     elif func == 'get_ntp_associations':
-        print("MMZZ-3")
-        print(args)
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers/server')
         api_response = api.get(keypath)
@@ -81,8 +75,6 @@ def invoke_api(func, args=[]):
             show_cli_output(args[0], ntp_data)
 
     elif func == 'set_ntp_source':
-        print("MMZZ-6")
-        print(args)
 
         ntp_src = None
         ip_src = args[0].split("=")[1]
