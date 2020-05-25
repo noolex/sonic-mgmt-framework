@@ -666,7 +666,7 @@ def run(func, args):
             elif func == 'rpc_interface_counters' and 'sonic-counters:output' in api_response:
                 value = api_response['sonic-counters:output']
                 if value["status"] != 0:
-                    print value["status-detail"]
+                    print("%Error: Internal error.")
                     return 1
                 if 'interfaces' in value:
                     interfaces = value['interfaces']
