@@ -430,6 +430,81 @@ limitations under the License.
         fi
     </ACTION>
     </COMMAND>
+</VIEW>
 
+<VIEW name="configure-view">
+<!--====================mac add command======================-->
+    <COMMAND
+        name="mac-address"
+        help="Add static mac"
+        >
+    </COMMAND>
+    <COMMAND
+        name="mac-address add"
+        help="Add static mac" >
+        <PARAM name="address" help="" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="mac-address" help="mac address" ptype="MAC_ADDR">
+                <PARAM name="vlan" help="" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="vlan-id" help="vlan id" ptype="VLAN_ID">
+                        <PARAM
+                            name="if-subcommands"
+                            help="Interface subcommands"
+                            mode="switch"
+                            ptype="SUBCOMMAND"
+                            >
+                            <PARAM
+                                name="Ethernet"
+                                help="Ethernet IEEE 802.3"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                                <PARAM
+                                    name="phy-if-id"
+                                    help="Physical interface"
+                                    ptype="UINT"
+                                    >
+                                </PARAM>
+                            </PARAM>
+                            <PARAM
+                                name="PortChannel"
+                                help="Port-channel ID"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                                <PARAM
+                                    name="port-channel-id"
+                                    help="Port-channel id"
+                                    ptype="LAG_ID"
+                                    >
+                                </PARAM>
+                            </PARAM>
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+        </PARAM>
+    <ACTION>
+        if test "${if-subcommand}" = "PortChannel"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id} PortChannel${port-channel-id}&#xA;
+        else&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id} Ethernet${phy-if-id}&#xA;
+        fi&#xA;
+    </ACTION>
+    </COMMAND>
+    <COMMAND
+        name="mac-address del"
+        help="Delete static mac" >
+        <PARAM name="address" help="" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="mac-address" help="mac address" ptype="MAC_ADDR">
+                <PARAM name="vlan" help="" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="vlan-id" help="vlan id" ptype="VLAN_ID">
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+        </PARAM>
+    <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-mac.py del_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id}&#xA;
+    </ACTION>
+    </COMMAND>
 </VIEW>
 </CLISH_MODULE>
