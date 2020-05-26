@@ -44,6 +44,16 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={ifname}/oper_status', ifname=args[0])
         return api.get(path)
 
+    if func == 'patch_sonic_portchannel_sonic_portchannel_portchannel_global':
+        keypath = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL')
+        body = collections.defaultdict(dict)
+        if args[0] == "graceful_shutdown_mode" and args[1] == "enable":
+            body = {"sonic-portchannel:PORTCHANNEL_GLOBAL":{"PORTCHANNEL_GLOBAL_LIST":[{"keyleaf": "GLOBAL","graceful_shutdown_mode":"enable"}]}}
+            return api.patch(keypath, body)
+        elif args[0] == "graceful_shutdown_mode" and args[1] == "disable":
+            body = {"sonic-portchannel:PORTCHANNEL_GLOBAL":{"PORTCHANNEL_GLOBAL_LIST":[{"keyleaf": "GLOBAL","graceful_shutdown_mode":"disable"}]}}
+            return api.patch(keypath, body)
+
     return api.cli_not_implemented(func)
 
 def run(func, args):
