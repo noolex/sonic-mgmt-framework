@@ -65,17 +65,19 @@ def get_keypath(func,args):
         keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_TABLE')
     elif func == 'rpc_sonic_clear_neighbors':
         keypath = cc.Path('/restconf/operations/sonic-neighbor:clear-neighbors')
-        body = {"sonic-neighbor:input":{"family": rcvdFamily, "ip": rcvdIpAddr, "ifname": rcvdIntfName, "vrf": rcvdVrf}}
-
-    elif func == 'set_ipv4_arp_timeout': 
+        if rcvdVrf == "all":
+            body = {"sonic-neighbor:input":{"family": rcvdFamily, "ip": rcvdIpAddr, "ifname": rcvdIntfName, "all_vrfs": True}}
+        else:
+            body = {"sonic-neighbor:input":{"family": rcvdFamily, "ip": rcvdIpAddr, "ifname": rcvdIntfName, "vrf": rcvdVrf}}
+    elif func == 'set_ipv4_arp_timeout':
         keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv4_arp_timeout')
         body = {"sonic-neighbor:ipv4_arp_timeout": int(args[0])}
-    elif func == 'set_ipv6_nd_cache_expiry': 
+    elif func == 'set_ipv6_nd_cache_expiry':
         keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv6_nd_cache_expiry')
         body = {"sonic-neighbor:ipv6_nd_cache_expiry": int(args[0])}
-    elif func == 'del_ipv4_arp_timeout': 
+    elif func == 'del_ipv4_arp_timeout':
         keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv4_arp_timeout')
-    elif func == 'del_ipv6_nd_cache_expiry': 
+    elif func == 'del_ipv6_nd_cache_expiry':
         keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv6_nd_cache_expiry')
 
     return keypath, body
@@ -127,7 +129,7 @@ def build_mac_list():
             macDict[key] = intf
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "%Error: Internal error"
+        print "% Error: Internal error"
 
 def get_egress_port(ifName, macAddr):
     global isMacDictAvailable
@@ -156,7 +158,7 @@ def isMgmtVrfEnabled():
 
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "%Error: Internal error"
+        print "% Error: Internal error"
 
     return False
 
@@ -207,7 +209,7 @@ def build_vrf_list():
 
         except Exception as e:
             log.syslog(log.LOG_ERR, str(e))
-            print "%Error: Internal error"
+            print "% Error: Internal error"
 
     if isMgmtVrfEnabled():
         vrfDict["eth0"] = "mgmt"
@@ -306,7 +308,7 @@ def process_sonic_nbrs(response):
                            'intfName':ifName,
                            'egressPort':egressPort
                         }
-        if (rcvdVrfName == vrfName):
+        if (rcvdVrfName == vrfName) or (rcvdVrfName == "all"):
             if (rcvdMacAddr == macAddr):
                 outputList.append(nbrEntry)
             elif (rcvdIpAddr == ipAddr.lower()):
@@ -328,7 +330,7 @@ def clear_neighbors(keypath, body):
     if apiResponse.ok():
         response = apiResponse.content
     else:
-        print "%Error: Internal error"
+        print "% Error: Internal error"
         return
 
     if 'sonic-neighbor:output' in response.keys():
@@ -363,8 +365,12 @@ def set_neighbors(keypath, body, del_req):
 
 def show_neighbors(keypath, args):
     outputList = []
-
     rendererScript = "arp_show.j2"
+
+    rcvdFamily = inputDict.get('family')
+    if rcvdFamily == "IPv6":
+        rendererScript = "arp_show_v6.j2"
+
     summary = inputDict.get('summary')
     if summary is not None:
         rendererScript = "arp_summary_show.j2"
@@ -380,7 +386,7 @@ def show_neighbors(keypath, args):
         if apiResponse.ok():
             response = apiResponse.content
         else:
-            print "%Error: Internal error"
+            print "% Error: Internal error"
             return
 
         if response is None:
@@ -394,7 +400,7 @@ def show_neighbors(keypath, args):
         show_cli_output(rendererScript, outputList)
     except Exception as e:
         # system/network error
-        print "%Error: Internal error"
+        print "% Error: Internal error"
 
 def process_args(args):
   global inputDict

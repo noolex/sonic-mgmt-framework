@@ -64,6 +64,12 @@ limitations under the License.
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>
+              <PARAM
+                  name="all"
+                  help="Show ARP entries from all VRFs"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
 
@@ -359,6 +365,12 @@ limitations under the License.
               <PARAM
                   name="mgmt"
                   help="Clear ARP entries of the management VRF"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
+              <PARAM
+                  name="all"
+                  help="Clear ARP entries from all VRFs"
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>
