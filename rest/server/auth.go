@@ -21,22 +21,15 @@ package server
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"net/http"
 	"os/user"
 	"strings"
 
 	"github.com/Azure/sonic-mgmt-common/translib"
 	"github.com/golang/glog"
-	"github.com/msteinert/pam"
 	"golang.org/x/crypto/ssh"
 )
 
-type UserCredential struct {
-	Username string
-	Password string
-}
 type UserAuth map[string]bool
 
 func (i UserAuth) String() string {
@@ -113,38 +106,6 @@ func NewUserAuth(enabledModes ...string) UserAuth {
 	return auth
 }
 
-//PAM conversation handler.
-func (u UserCredential) PAMConvHandler(s pam.Style, msg string) (string, error) {
-
-	switch s {
-	case pam.PromptEchoOff:
-		return u.Password, nil
-	case pam.PromptEchoOn:
-		return u.Password, nil
-	case pam.ErrorMsg:
-		return "", nil
-	case pam.TextInfo:
-		return "", nil
-	default:
-		return "", errors.New("unrecognized conversation message style")
-	}
-}
-
-// PAMAuthenticate performs PAM authentication for the user credentials provided
-func (u UserCredential) PAMAuthenticate() error {
-	tx, err := pam.StartFunc("login", u.Username, u.PAMConvHandler)
-	if err != nil {
-		return err
-	}
-	return tx.Authenticate(0)
-}
-
-func PAMAuthUser(u string, p string) error {
-
-	cred := UserCredential{u, p}
-	err := cred.PAMAuthenticate()
-	return err
-}
 func GetUserRoles(usr *user.User) ([]string, error) {
 	// Get user roles from DB
 	tlUser, errDb := translib.GetUser(usr.Username)
@@ -193,7 +154,6 @@ func UserPwAuth(username string, passwd string) (bool, error) {
 	 * /etc of host with /etc of container. For now disable this and use ssh
 	 * for authentication.
 	 */
-	// err := PAMAuthUser(username, passwd)
 
 	//Use ssh for authentication.
 	config := &ssh.ClientConfig{
@@ -212,8 +172,3 @@ func UserPwAuth(username string, passwd string) (bool, error) {
 	return true, nil
 }
 
-// isWriteOperation checks if the HTTP request is a write operation
-func isWriteOperation(r *http.Request) bool {
-	m := r.Method
-	return m == "POST" || m == "PUT" || m == "PATCH" || m == "DELETE"
-}
