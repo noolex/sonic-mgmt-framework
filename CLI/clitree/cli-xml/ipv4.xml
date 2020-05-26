@@ -170,7 +170,7 @@ limitations under the License.
             optional="true"
             ptype="IP_ADDR_MASK"
             />
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface_uri} ${addr} True</ACTION>
     </COMMAND>
 
     <COMMAND

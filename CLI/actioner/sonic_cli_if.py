@@ -323,8 +323,8 @@ def invoke_api(func, args=[]):
         responseIntfTbl = api.get(path)
         if responseIntfTbl.ok():
             d.update(responseIntfTbl.content)
-            if len(responseIntfTbl.content) != 0:
-                tbl_key = "sonic-interface:INTF_TABLE_IPADDR_LIST"
+            tbl_key = "sonic-interface:INTF_TABLE_IPADDR_LIST"
+            if tbl_key in d:
                 d[tbl_key] = natsorted(d[tbl_key],key=lambda t: t["ifName"])
             if func == 'ip_interfaces_get':
                 filter_address(d, True)
