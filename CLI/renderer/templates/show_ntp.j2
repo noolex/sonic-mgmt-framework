@@ -1,7 +1,7 @@
 {% set vars = {'source': ""} %}
 {% set vars = {'vrf': ""} %}
 {% set vars = {'address': ""} %}
-{% set vars = {'sel-mode': ""} %}
+{% set vars = {'selMode': ""} %}
 {% set vars = {'remote': ""} %}
 {% set vars = {'refid': ""} %}
 {% set vars = {'st': ""} %}
@@ -44,7 +44,7 @@
         {% for server in server_list %}
             {% if "state" in server %} 
                 {% set assoc_info = server["state"] %}
-                {% if vars.update({'sel-mode':assoc_info["openconfig-system-ext:selMode"]}) %}{% endif %}
+                {% if vars.update({'selMode':assoc_info["openconfig-system-ext:selMode"]}) %}{% endif %}
                 {% if vars.update({'remote':assoc_info["address"]}) %}{% endif %}
                 {% if vars.update({'refid':assoc_info["openconfig-system-ext:refid"]}) %}{% endif %}
                 {% if "stratum" in assoc_info %}
