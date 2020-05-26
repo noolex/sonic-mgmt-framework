@@ -134,7 +134,7 @@
 >         clish_ptype_t *ptype = NULL;
 >         clish_ptype_method_e method = CLISH_PTYPE_METHOD_REGEXP;
 > 
-346,359c436,530
+346,359c436,532
 < 	/* Find out the function API */
 < 	/* CLISH_SYM_API_SIMPLE */
 < 	if (clish_sym__get_api(sym) == CLISH_SYM_API_SIMPLE) {
@@ -245,7 +245,9 @@
 >                         result = func(context, script, out);
 >                 }
 >         }
-377c548
+> 
+> 	log_user_command(shell, context->commandstr, result);
+377c550
 < 	lub_string_free(script);
 ---
 > 	if (script) lub_string_free(script);
