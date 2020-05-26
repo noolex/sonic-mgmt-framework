@@ -156,19 +156,19 @@
             {{ 'operational cir' }} {{ op_cir  }} cbs {{ op_cbs  }} pir {{ op_pir }} pbs {{ op_pbs  }}
           {% endif %}
 
-          {% if ("CONFORMED_PACKET_COUNT" in flow_state) and (flow_state["CONFORMED_PACKET_COUNT"] != 0) %}
+          {% if ("CONFORMED_PACKET_COUNT" in flow_state)  %}
             {{ 'conformed ' }} {{ flow_state["CONFORMED_PACKET_COUNT"] }} packets {{ flow_state["CONFORMED_BYTE_COUNT"]  }} {{ 'bytes action' }}  {{ flow_state["CONFORMED_PACKET_ACTION"]  }}
           {% endif %}
 
-          {% if ("EXCEED_PACKET_COUNT" in flow_state) and (flow_state["EXCEED_PACKET_COUNT"] != 0) %}
+          {% if ("EXCEED_PACKET_COUNT" in flow_state)  %}
             {{ 'exceed ' }} {{ flow_state["EXCEED_PACKET_COUNT"] }} packets    {{ flow_state["EXCEED_BYTE_COUNT"] }} {{ 'bytes action' }} {{ flow_state["EXCEED_PACKET_ACTION"]  }}
           {% endif %}
 
-          {% if ("VIOLATED_PACKET_COUNT" in flow_state) and (flow_state["VIOLATED_PACKET_COUNT"] != 0) %}
+          {% if ("VIOLATED_PACKET_COUNT" in flow_state)  %}
             {{ 'violated ' }} {{ flow_state["VIOLATED_PACKET_COUNT"] }} packets {{ flow_state["VIOLATED_BYTE_COUNT"]  }} {{ 'bytes action' }} {{ flow_state["VIOLATED_PACKET_ACTION"]  }} 
           {% endif %}
 
-          {% if ("FBS_PACKET_COUNT" in flow_state) and (flow_state["FBS_PACKET_COUNT"] != 0) %}
+          {% if ("FBS_PACKET_COUNT" in flow_state) %}
         {{ 'Packet matches:' }} {{ flow_state["FBS_PACKET_COUNT"] }} frames {{ flow_state["FBS_BYTE_COUNT"]  }} {{ 'bytes' }}
         {% endif %}  
        {% endif %}

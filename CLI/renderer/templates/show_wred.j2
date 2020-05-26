@@ -6,9 +6,9 @@
 {% set vars = {'green_max_threshold': ""} %}
 {% set vars = {'yellow_max_threshold': ""} %}
 {% set vars = {'red_max_threshold': ""} %}
-{% set vars = {'green_drop_rate': ""} %}
-{% set vars = {'yellow_drop_rate': ""} %}
-{% set vars = {'red_drop_rate': ""} %}
+{% set vars = {'green_drop_probability': ""} %}
+{% set vars = {'yellow_drop_probability': ""} %}
+{% set vars = {'red_drop_probability': ""} %}
 {% if json_output -%}
 {% for key_json in json_output %}
     {% if key_json == "openconfig-qos-ext:wred-profiles" %}
@@ -28,9 +28,9 @@
     {% if vars.update({'green_max_threshold':wred_cfg["green_max_threshold"]}) %}{% endif %}
     {% if vars.update({'yellow_max_threshold':wred_cfg["yellow_max_threshold"]}) %}{% endif %}
     {% if vars.update({'red_max_threshold':wred_cfg["red_max_threshold"]}) %}{% endif %}
-    {% if vars.update({'green_drop_rate':wred_cfg["green_drop_rate"]}) %}{% endif %}
-    {% if vars.update({'yellow_drop_rate':wred_cfg["yellow_drop_rate"]}) %}{% endif %}
-    {% if vars.update({'red_drop_rate':wred_cfg["red_drop_rate"]}) %}{% endif %}
+    {% if vars.update({'green_drop_probability':wred_cfg["green_drop_probability"]}) %}{% endif %}
+    {% if vars.update({'yellow_drop_probability':wred_cfg["yellow_drop_probability"]}) %}{% endif %}
+    {% if vars.update({'red_drop_probability':wred_cfg["red_drop_probability"]}) %}{% endif %}
 ---------------------------------------------------
 Profile                : {{ vars.name }}
 {% if vars.ecn %}
@@ -42,8 +42,8 @@ green-min-threshold    : {{ vars.green_min_threshold }}
 {% if vars.green_max_threshold %}
 green-max-threshold    : {{ vars.green_max_threshold }}
 {% endif %}
-{% if vars.green_drop_rate %}
-greep-drop-rate        : {{ vars.green_drop_rate }}
+{% if vars.green_drop_probability %}
+green-drop-probability : {{ vars.green_drop_probability }}
 {% endif %}
 {% if vars.yellow_min_threshold %}
 yellow-min-threshold   : {{ vars.yellow_min_threshold }}
@@ -51,8 +51,8 @@ yellow-min-threshold   : {{ vars.yellow_min_threshold }}
 {% if vars.yellow_max_threshold %}
 yellow-max-threshold   : {{ vars.yellow_max_threshold }}
 {% endif %}
-{% if vars.yellow_drop_rate %}
-yellow-drop-rate       : {{ vars.yellow_drop_rate }}
+{% if vars.yellow_drop_probability %}
+yellow-drop-probability: {{ vars.yellow_drop_probability }}
 {% endif %}
 {% if vars.red_min_threshold %}
 red-min-threshold      : {{ vars.red_min_threshold }}
@@ -60,8 +60,8 @@ red-min-threshold      : {{ vars.red_min_threshold }}
 {% if vars.red_max_threshold %}
 red-max-threshold      : {{ vars.red_max_threshold }}
 {% endif %}
-{% if vars.red_drop_rate %}
-red-drop-rate          : {{ vars.red_drop_rate }}
+{% if vars.red_drop_probability %}
+red-drop-probability   : {{ vars.red_drop_probability }}
 {% endif %}
 {% endfor %}
 {% endfor %}
