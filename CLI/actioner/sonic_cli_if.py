@@ -127,6 +127,11 @@ def invoke_api(func, args=[]):
         if fallback != "":
             body["openconfig-interfaces:interface"][0]["openconfig-if-aggregate:aggregation"]["config"].update( {"openconfig-interfaces-ext:fallback": True} )
 
+        # Configure Fast Rate
+        fast_rate = args[4].split("=")[1]
+        if fast_rate != "":
+            body["openconfig-interfaces:interface"][0]["openconfig-if-aggregate:aggregation"]["config"].update( {"openconfig-interfaces-ext:fast_rate": True} )
+
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}', name=args[0])
         return api.patch(path, body)
 

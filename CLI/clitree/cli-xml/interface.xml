@@ -405,8 +405,16 @@ limitations under the License.
                 optional="true"
                 > 
          </PARAM>
+         <PARAM
+                name="fast_rate"
+                help="LACP Fast Rate Interval"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                optional="true"
+                >
+         </PARAM>
 
-         <ACTION builtin="clish_pyobj">sonic_cli_if portchannel_config PortChannel${lag-id} mode=${PoMode} min-links=${min-links-value} fallback=${fallback}</ACTION>
+         <ACTION builtin="clish_pyobj">sonic_cli_if portchannel_config PortChannel${lag-id} mode=${PoMode} min-links=${min-links-value} fallback=${fallback} fast_rate=${fast_rate}</ACTION>
     </COMMAND>
 
     <COMMAND
