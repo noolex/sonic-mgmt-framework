@@ -26,7 +26,52 @@ limitations under the License.
         <ACTION>echo -n "${phy-if-name}" | sed 's#/#%2f#g'</ACTION>
     </VAR>
 
+    <VIEW name="hidden-view">
+        <COMMAND
+            name="show interface Ethernet"
+            help=""
+            ptype="SUBCOMMAND"
+            mode="subcommand">
+            <PARAM
+                name="iface_num"
+                help="Ethernet interface number"
+                ptype="UINT"
+                optional="true">
+            </PARAM>
+            <ACTION>
+                if test "${iface_num}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Ethernet${iface_num} show_interface_id.j2
+${__full_line}&#xA;
+            fi&#xA;
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="show interface Eth"
+            help=""
+            ptype="SUBCOMMAND"
+            mode="subcommand">
+            <PARAM
+                name="iface_num"
+                help="Ethernet interface number"
+                ptype="ETH_PHY_SLOT_PORT_SUBPORT"
+                optional="true">
+            </PARAM>
+            <ACTION>
+                if test "${iface_num}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Eth${iface_num} show_interface_id.j2
+${__full_line}&#xA;
+                fi&#xA;
+            </ACTION>
+        </COMMAND>
+    </VIEW>
+
     <VIEW name="enable-view">
+    <NAMESPACE ref="hidden-view" help="false" completion="false"/>
     <!--show interface -->
     <COMMAND
          name="show interface"

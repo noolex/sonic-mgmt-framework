@@ -150,6 +150,8 @@ limitations under the License.
   <xs:attribute name="ext_pattern" type="stringType" use="optional"/>
   <xs:attribute name="preprocess" type="stringType" use="optional"/>
   <xs:attribute name="ext_help" type="xs:string" use="optional"/>
+  <xs:attribute name="alt_pattern" type="stringType" use="optional"/>
+  <xs:attribute name="alt_ext_pattern" type="stringType" use="optional"/>
 </xs:attributeGroup>
 
 
