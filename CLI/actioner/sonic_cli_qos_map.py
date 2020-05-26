@@ -18,22 +18,23 @@ def invoke(func, args=[]):
 
 def run(func, args):
 
-    response = invoke(func, args)
+    try:
+       response = invoke(func, args)
 
-    if response.ok():
-        if response.content is not None:
-            api_response = response.content
-            
-            #print api_response
+       if response.ok():
+          if response.content is not None:
+             api_response = response.content
 
-            if api_response is None:
-                print("Failed")
-            else:
+             if api_response is None:
+                print("%Error: Internal error")
+             else:
                 if func == 'get_openconfig_qos_dscp_tc_map':
-                     show_cli_output("show_qos_map.j2", api_response)
+                   show_cli_output("show_qos_map.j2", api_response)
+        else:
+            print response.error_message()
+    except Exception as e:
+        print("% Error: Internal error: " + str(e))
 
-    else:
-        print response.error_message()
 
 
 

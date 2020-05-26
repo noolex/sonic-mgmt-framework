@@ -10,7 +10,7 @@
   {% if map_info %}
       {% set entries = map_info['dscp-map-entry'] %}
       {% for entry in entries %}
-        {{ entry['dscp']}}   {{entry['config']['fwd_group']}}
+        {{ entry['dscp']}}   {{entry['config']['fwd-group']}}
       {% endfor %}
   {% endif %}
 

@@ -27,21 +27,21 @@ def invoke(func, args=[]):
         return api.patch(path, body)
     elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
-        body = {"openconfig-qos-ext:config" : {"green_min_threshold" : args[1],
-                                               "green_max_threshold" : args[2],
-                                               "green_drop_probability" : args[3]} }
+        body = {"openconfig-qos-ext:config" : {"green-min-threshold" : args[1],
+                                               "green-max-threshold" : args[2],
+                                               "green-drop-probability" : args[3]} }
         return api.patch(path, body)
     elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
-        body = {"openconfig-qos-ext:config" : {"yellow_min_threshold" : args[1],
-                                               "yellow_max_threshold" : args[2],
-                                               "yellow_drop_probability" : args[3]} }
+        body = {"openconfig-qos-ext:config" : {"yellow-min-threshold" : args[1],
+                                               "yellow-max-threshold" : args[2],
+                                               "yellow-drop-probability" : args[3]} }
         return api.patch(path, body)
     elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
-        body = {"openconfig-qos-ext:config" : {"red_min_threshold" : args[1],
-                                               "red_max_threshold" : args[2],
-                                               "red_drop_probability" : args[3]} }
+        body = {"openconfig-qos-ext:config" : {"red-min-threshold" : args[1],
+                                               "red-max-threshold" : args[2],
+                                               "red-drop-probability" : args[3]} }
         return api.patch(path, body)
     elif func[0:PARAM_PATCH_PREFIX_LEN] == PARAM_PATCH_PREFIX:
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config/'+func[PARAM_PATCH_PREFIX_LEN:], name=args[0])
