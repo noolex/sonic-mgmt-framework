@@ -556,7 +556,11 @@ func TestProcessGET(t *testing.T) {
 func TestProcessGET_query(t *testing.T) {
 	w := httptest.NewRecorder()
 	Process(w, prepareRequest(t, "GET", "/api-tests:sample?depth=10", ""))
-	verifyResponseData(t, w, 200, jsonObj{"depth": 10})
+	if restconfCapabilities.depth {
+		verifyResponseData(t, w, 200, jsonObj{"depth": 10})
+	} else {
+		verifyResponse(t, w, 400)
+	}
 }
 
 func TestProcessGET_query_error(t *testing.T) {
