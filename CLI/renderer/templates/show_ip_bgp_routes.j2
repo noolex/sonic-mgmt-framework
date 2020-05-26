@@ -45,7 +45,6 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 {% if routeList %}
 {% for route in routeList %}
 {% for key in route %}
-  {% if vars.update({'members':''}) %} {% endif %}
   {% if vars.update({'prefix':route["prefix"]}) %}{% endif %}
   {% if "state" in key %}
     {% if vars.update({'validRoute':route["state"]["valid-route"]}) %}{% endif %}
