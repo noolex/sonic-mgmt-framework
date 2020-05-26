@@ -48,7 +48,7 @@ limitations under the License.
           <DESCRIPTION>
             This command creates map to associates set of DSCP(Differentiated Services Code Point)
             to Traffic classes. This map used to assign a traffic class to data packets on the 
-            basis of the received packet’s DSCP field.
+            basis of the received packets DSCP field.
           </DESCRIPTION>
           <USAGE>
              Use this command to create DSCP to Traffic class entires map.
@@ -153,10 +153,14 @@ limitations under the License.
 
     <!--show dscp-map -->
     <COMMAND name="show dscp-tc-map" help="Show configured dscp-tc-map">
-      <PARAM name="name" help="Name of the dscp-tc-map" ptype="STRING_32"> </PARAM>
-        <ACTION builtin="clish_pyobj">
-            sonic_cli_qos_map get_openconfig_qos_dscp_tc_map ${name} 
-        </ACTION>
+      <PARAM name="name" help="Name of the dscp-tc-map" ptype="STRING_32" optional="true"> </PARAM>
+      <ACTION>
+          if test "${name}" = "" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_qos_map.py get_openconfig_qos_maps_ext_qos_dscp_maps show_qos_map.j2&#xA;
+          else&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_qos_map.py get_openconfig_qos_maps_ext_qos_dscp_maps_dscp_map ${name} show_qos_map.j2&#xA;
+          fi&#xA;
+      </ACTION>
     </COMMAND>
   </VIEW>
 

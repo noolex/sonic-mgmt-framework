@@ -10,11 +10,19 @@ from rpipe_utils import pipestr
 
 def invoke(func, args=[]):
     api = cc.ApiClient()
-    if func == 'get_openconfig_qos_dscp_tc_map' :
+    if func == 'get_openconfig_qos_maps_ext_qos_dscp_maps' :
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps')
+        return api.get(path)
+
+    if func == 'get_openconfig_qos_maps_ext_qos_dscp_maps_dscp_map' :
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map={name}', name=args[0])
         return api.get(path)
 
-    if func == 'get_openconfig_qos_dot1p_tc_map' :
+    if func == 'get_openconfig_qos_maps_ext_qos_dot1p_maps' :
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps')
+        return api.get(path)
+
+    if func == 'get_openconfig_qos_maps_ext_qos_dot1p_maps_dot1p_map' :
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map={name}', name=args[0])
         return api.get(path)
 
@@ -32,11 +40,16 @@ def run(func, args):
              if api_response is None:
                 print("%Error: Internal error")
              else:
-                if func == 'get_openconfig_qos_dscp_tc_map':
-                   show_cli_output("show_qos_map.j2", api_response)
-                if func == 'get_openconfig_qos_dot1p_tc_map':
-                   show_cli_output("show_qos_map_dot1p.j2", api_response)
-        else:
+                if func == 'get_openconfig_qos_maps_ext_qos_dscp_maps_dscp_map':
+                     show_cli_output(args[1], api_response)
+                elif func == 'get_openconfig_qos_maps_ext_qos_dscp_maps':
+                     show_cli_output(args[0], api_response)
+                elif func == 'get_openconfig_qos_maps_ext_qos_dot1p_maps_dot1p_map':
+                     show_cli_output(args[1], api_response)
+                elif func == 'get_openconfig_qos_maps_ext_qos_dot1p_maps':
+                     show_cli_output(args[0], api_response)
+
+       else:
             print response.error_message()
     except Exception as e:
         print("% Error: Internal error: " + str(e))
