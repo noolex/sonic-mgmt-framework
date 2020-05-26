@@ -129,7 +129,7 @@ def build_mac_list():
             macDict[key] = intf
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "%Error: Internal error"
+        print "% Error: Internal error"
 
 def get_egress_port(ifName, macAddr):
     global isMacDictAvailable
@@ -158,7 +158,7 @@ def isMgmtVrfEnabled():
 
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "%Error: Internal error"
+        print "% Error: Internal error"
 
     return False
 
@@ -209,7 +209,7 @@ def build_vrf_list():
 
         except Exception as e:
             log.syslog(log.LOG_ERR, str(e))
-            print "%Error: Internal error"
+            print "% Error: Internal error"
 
     if isMgmtVrfEnabled():
         vrfDict["eth0"] = "mgmt"
@@ -330,7 +330,7 @@ def clear_neighbors(keypath, body):
     if apiResponse.ok():
         response = apiResponse.content
     else:
-        print "%Error: Internal error"
+        print "% Error: Internal error"
         return
 
     if 'sonic-neighbor:output' in response.keys():
@@ -386,7 +386,7 @@ def show_neighbors(keypath, args):
         if apiResponse.ok():
             response = apiResponse.content
         else:
-            print "%Error: Internal error"
+            print "% Error: Internal error"
             return
 
         if response is None:
@@ -400,7 +400,7 @@ def show_neighbors(keypath, args):
         show_cli_output(rendererScript, outputList)
     except Exception as e:
         # system/network error
-        print "%Error: Internal error"
+        print "% Error: Internal error"
 
 def process_args(args):
   global inputDict
