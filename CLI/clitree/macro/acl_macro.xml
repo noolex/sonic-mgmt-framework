@@ -21,7 +21,7 @@ limitations under the License.
             <PARAM name="deny" help="Drop traffic in data plane" ptype="SUBCOMMAND" mode="subcommand"/>
             <PARAM name="permit" help="Allow traffic in control and data plane" ptype="SUBCOMMAND" mode="subcommand"/>
             <PARAM name="remark" help="Set remark or description for rule" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="remark-val" help="Remark or description for rule" ptype="STRING_255"/>
+                <PARAM name="remark-val" help="Remark or description for rule" ptype="ACL_REMARK"/>
             </PARAM>
         </PARAM>
     </MACRODEF>
@@ -90,7 +90,7 @@ limitations under the License.
             <PARAM name="vlan-val" help="VLAN ID value (range 1-4094)" ptype="VLAN_RANGE"/>
         </PARAM>
         <PARAM name="remark" help="Set remark or description for rule" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${action-options}" != "remark"'>
-            <PARAM name="remark-val" help="Remark or description for rule" ptype="STRING_255"/>
+            <PARAM name="remark-val" help="Remark or description for rule" ptype="ACL_REMARK"/>
         </PARAM>
     </MACRODEF>
 
@@ -138,7 +138,7 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="remark" help="Set remark or description for ACL">
-            <PARAM name="remark-val" help="Remark or description for ACL" ptype="STRING_255"/>
+            <PARAM name="remark-val" help="Remark or description for ACL" ptype="ACL_REMARK"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl set_acl_remark ${name} arg1 ${__params}</ACTION>
         </COMMAND>
 
@@ -215,7 +215,11 @@ limitations under the License.
         <PARAM name="pcp-vo" help="Voice, &lt; 10 ms latency and jitter (5)" ptype="SUBCOMMAND" mode="subcommand" value="vo"/>
         <PARAM name="pcp-ic" help="Internetwork control (6)" ptype="SUBCOMMAND" mode="subcommand" value="ic"/>
         <PARAM name="pcp-nc" help="Network control (7)" ptype="SUBCOMMAND" mode="subcommand" value="nc"/>
-        <PARAM name="pcp-val" help="arg2" ptype="arg1"/>
+        <PARAM name="pcp-val" help="PCP value. (range 0-7)" ptype="PCP_VALUE">
+            <PARAM name="pcp-mask" help="PCP value mask" ptype="SUBCOMMAND" mode="subcommand" optional="true" test='"mask" = "arg1"'>
+                <PARAM name="pcp-val-mask" help="PCP value mask (range 0-7)" ptype="PCP_VALUE"/>
+            </PARAM>
+        </PARAM>
     </MACRODEF>
 
     <MACRODEF name="ACL-SHOW-CLEAR-COMMAND-OPTIONS">

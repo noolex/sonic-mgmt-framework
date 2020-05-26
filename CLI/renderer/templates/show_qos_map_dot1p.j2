@@ -1,0 +1,20 @@
+{% if json_output %}
+{% set map_list = json_output['openconfig-qos-maps-ext:dot1p-map'] %}
+{% for map in map_list %}
+        {{'DOT1P-TC-MAP: '}}{{map['name']}}
+        {{'----------------'}}
+
+
+  {% set map_info = map['dot1p-map-entries'] %}
+  
+  {% if map_info %}
+      {% set entries = map_info['dot1p-map-entry'] %}
+      {% for entry in entries %}
+        {{ entry['dot1p']}}   {{entry['config']['fwd_group']}}
+      {% endfor %}
+  {% endif %}
+
+        {{'----------------'}}
+
+{% endfor %}
+{% endif %}

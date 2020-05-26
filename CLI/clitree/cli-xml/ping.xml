@@ -7,13 +7,6 @@
     <!-- *********************************************************** -->
     <!-- *  Ping Options                                           * -->
     <!-- *********************************************************** -->
-    <PTYPE
-        name="VRF_NAME"
-        method="regexp"
-        pattern="^(Vrf[0-9A-Za-z_-]{1,12})"
-        help="VRF name"
-    />
-
     <VIEW name="enable-view">
         <COMMAND name="ping"
                  help="Send ICMP ECHO_REQUEST to network hosts"
@@ -34,7 +27,7 @@
                  args="ping-vrf-option"
                  args_help="Ping options(-h  for help)">
                  <PARAM name="vrf-name"
-                        help="Ping using given VRF name (max 15 char)"
+                        help="Ping using given VRF name"
                         ptype="VRF_NAME"/>
                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf ${vrf-name} ${ping-vrf-option} 2>/dev/stdout</ACTION>
         </COMMAND>
@@ -58,7 +51,7 @@
                  args="ping-vrf-option"
                  args_help="Ping options(-h  for help)">
                  <PARAM name="vrf-name"
-                        help="Ping6 using given VRF name (max 15 char)"
+                        help="Ping6 using given VRF name"
                         ptype="VRF_NAME"/>
                  <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf ${vrf-name} ${ping-vrf-option} 2>/dev/stdout</ACTION>
         </COMMAND>

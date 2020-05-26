@@ -28,6 +28,8 @@ from base64 import b64decode
 urllib3.disable_warnings()
 
 PSU_CNT = 2
+PSU_FAN_CNT = 1
+FAN_CNT = 10
 
 def convert4BytesToStr(b):
     return unpack('>f', b64decode(b))[0]
@@ -76,7 +78,37 @@ def run(func, args):
                 psuName = response.content['openconfig-platform:component'][0]['name']
                 psuInfo[psuName] = response.content['openconfig-platform:component'][0]
                 decodePsuStats(psuInfo[psuName])
+                for j in range(1, PSU_FAN_CNT + 1):
+                    path = cc.Path('/restconf/data/openconfig-platform:components/component=PSU {} FAN {}'.format(i, j))
+                    response = aa.get(path)
+                    if not response.ok():
+                        print response.error_message()
+                        return
+                    if (len(response.content) == 0 or
+                        not ('openconfig-platform:component' in response.content) or
+                        len(response.content['openconfig-platform:component']) == 0 or
+                        not ('name' in response.content['openconfig-platform:component'][0])):
+                        continue
+                    fanName = response.content['openconfig-platform:component'][0]['name']
+                    psuInfo[psuName][fanName] = response.content['openconfig-platform:component'][0]
             show_cli_output(template, psuInfo)
+        elif func == 'get_openconfig_platform_components_component_fan_status':
+            template = sys.argv[2]
+            fanInfo = OrderedDict()
+            for i in range(1, FAN_CNT + 1):
+                path = cc.Path('/restconf/data/openconfig-platform:components/component=FAN %s'%i)
+                response = aa.get(path)
+                if not response.ok():
+                    print response.error_message()
+                    return
+                if (len(response.content) == 0 or
+                    not ('openconfig-platform:component' in response.content) or
+                    len(response.content['openconfig-platform:component']) == 0 or
+                    not ('name' in response.content['openconfig-platform:component'][0])):
+                    continue
+                fanName = response.content['openconfig-platform:component'][0]['name']
+                fanInfo[fanName] = response.content['openconfig-platform:component'][0]
+            show_cli_output(template, fanInfo)
     except Exception as e:
         print("%Error: Transaction Failure")
         return

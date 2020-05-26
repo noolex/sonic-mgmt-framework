@@ -14,6 +14,10 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map={name}', name=args[0])
         return api.get(path)
 
+    if func == 'get_openconfig_qos_dot1p_tc_map' :
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map={name}', name=args[0])
+        return api.get(path)
+
     return api.cli_not_implemented(func)
 
 def run(func, args):
@@ -30,13 +34,12 @@ def run(func, args):
              else:
                 if func == 'get_openconfig_qos_dscp_tc_map':
                    show_cli_output("show_qos_map.j2", api_response)
+                if func == 'get_openconfig_qos_dot1p_tc_map':
+                   show_cli_output("show_qos_map_dot1p.j2", api_response)
         else:
             print response.error_message()
     except Exception as e:
         print("% Error: Internal error: " + str(e))
-
-
-
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

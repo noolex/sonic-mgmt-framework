@@ -26,14 +26,14 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 {% for key in routeList %}
   {% if vars.update({'prefix':key}) %}{% endif %}
   {% set route = routeList[key] %}
-  {% if vars.update({'asPath':''}) %} {% endif %}
+  {% if vars.update({'asPath':''}) %}{% endif %}
     {% for path in route %}
        {% if vars.update({'locPref':path["localpref"]}) %}{% endif %}
        {% if vars.update({'weight':path["weight"]}) %}{% endif %}
        {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
        {% if vars.update({'origin':path["origin"]}) %}{% endif %}
        {% if vars.update({'bestRoute':path["bestpath"]}) %}{% endif %}
-       {% if vars.update({'asPath': path['aspath']}) %} {% endif %}
+       {% if vars.update({'asPath': path['aspath']}) %}{% endif %}
        {% if vars.update({'med':path['med']}) %}{% endif %}
        {% set nexthops = path["nexthops"] %}
        {% for nexthop in nexthops %}
@@ -57,9 +57,9 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 {% if vars.update({'bestRoute':""}) %}{% endif %}
 {% endif %}
 {% if loop.index == 1 %}
-{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(vars.prefix)}}{{'%-20s'|format(vars.nxtHop)}}{{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%s'|format(vars.asPath)}} {{vars.origin}}
+{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(vars.prefix)}}{{'%-19s'|format(vars.nxtHop)}} {{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%-3s'|format(vars.asPath)}} {{vars.origin}}
 {% else %}
-{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(" ")}}{{'%-20s'|format(vars.nxtHop)}}{{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%s'|format(vars.asPath)}} {{vars.origin}}
+{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(" ")}}{{'%-19s'|format(vars.nxtHop)}} {{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%-3s'|format(vars.asPath)}} {{vars.origin}}
 {% endif %}
 {% endfor %}
 {% endfor %}

@@ -27,7 +27,7 @@ limitations under the License.
     <!--show interface -->
     <COMMAND
          name="show interface"
-         help="Show Interface info"
+         help="Show interface info"
          >
          <PARAM
              name="if-subcommands"
@@ -38,7 +38,7 @@ limitations under the License.
              <!-- show interface counters -->
              <PARAM
                  name="counters"
-                 help="Counters for Physical Interfaces"
+                 help="Counters for physical interfaces"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
@@ -46,7 +46,7 @@ limitations under the License.
              <!-- show interface Ethernet [<id>] -->
              <PARAM
                  name="Ethernet"
-                 help="Physical Interface"
+                 help="Physical interface"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
@@ -61,13 +61,13 @@ limitations under the License.
 	         <!-- show interface PortChannel-->
 	         <PARAM
                  name="PortChannel"
-                 help="PortChannel Interface"
+                 help="PortChannel interface"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
                  <PARAM
                     name="po-id"
-                    help="Port Channel ID"
+                    help="PortChannel ID"
                     ptype="LAG_ID"
                     optional="true"
                     >
@@ -76,7 +76,7 @@ limitations under the License.
              <!-- show interface Management -->
              <PARAM
                  name="Management"
-                 help="Management Interface"
+                 help="Management interface"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
@@ -91,7 +91,7 @@ limitations under the License.
              <!-- show interface Vlan-->
              <PARAM
                  name="Vlan"
-                 help="Vlan Interface"
+                 help="VLAN interface"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
@@ -105,7 +105,7 @@ limitations under the License.
            <!-- show interface Loopback-->
            <PARAM
                  name="Loopback"
-                 help="Loopback Interface"
+                 help="Loopback interface"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
@@ -167,13 +167,13 @@ limitations under the License.
 
    <COMMAND
        name="show Vlan"
-       help="Show Vlan commands"
+       help="Show VLAN commands"
        ptype="SUBCOMMAND"
        mode="subcommand"
        >
        <PARAM
            name="id"
-           help="Vlan identifier"
+           help="VLAN identifier"
            ptype="VLAN_ID"
            optional="true"
            >
@@ -188,7 +188,7 @@ limitations under the License.
        >
        <PARAM
            name="id"
-           help="Vlan identifier"
+           help="VLAN identifier"
            ptype="VLAN_ID"
            optional="true"
            >
@@ -263,6 +263,49 @@ limitations under the License.
       <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
  </ACTION>
     </COMMAND>
+    <COMMAND name="clear threshold"
+                 help="Clear threshold"
+                 ptype="SUBCOMMAND"
+                 >
+                 <PARAM name="breach"
+                        help="Clear threshold breach events"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand"
+                        >
+                        <PARAM
+                            name="eventid-switch"
+                            help="breach clear type all or eventId"
+                            ptype="SUBCOMMAND"
+                            mode="switch"
+                            >
+                            <PARAM
+                                name="all"
+                                help="Clear all threshold breaches"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                            </PARAM>
+                            <PARAM name="eventId"
+                                   help="Clear threshold breach of an eventId"
+                                   ptype="RANGE_0_65535">
+                            </PARAM>
+                            </PARAM>
+                            </PARAM>
+			<ACTION>python $SONIC_CLI_ROOT/sonic_cli_threshold.py rpc_sonic_threshold_clear_threshold_breach ${__full_line} </ACTION>
+			<DOCGEN>
+			<DESCRIPTION>
+				This command is used to clear all or a given threshold breach event(s) recorded by the system.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to clear all or a given threshold breach event(s) recorded by the system.
+			</USAGE>
+			<EXAMPLE
+				summary="Clear threshold breach">
+					sonic-cli# clear threshold breach all
+					sonic-cli# clear threshold breach eventId
+			</EXAMPLE>
+			</DOCGEN>
+	</COMMAND>
    </VIEW>
    <VIEW
        name="configure-view"
@@ -279,14 +322,14 @@ limitations under the License.
         >
         <PARAM
                 name="phy-if-name"
-                help="Physical interface"
+                help="Enter Physical interface global configuration"
                 ptype="PHY_INTERFACE"
                 view="configure-if-view"
                 viewid="iface=${phy-if-name}"
         />
         <PARAM
                 name="vlan-if-name"
-                help="Vlan identifier"
+                help="Enter VLAN global configuration"
                 ptype="VLAN_INTERFACE"
                 view="configure-vlan-view"
                 viewid="vlan_name=${vlan-if-name}"
@@ -297,7 +340,7 @@ limitations under the License.
 
      <COMMAND
          name="interface Management"
-         help="Management Interface commands"
+         help="Management interface commands"
          view="configure-if-mgmt-view"
          viewid="iface=eth${mgmt-if-id}"
          mode="subcommand"
@@ -305,7 +348,7 @@ limitations under the License.
          >
          <PARAM
              name="mgmt-if-id"
-             help="Management interface"
+             help="Enter Management interface global configuration"
              ptype="MGMT_INTF_ID"
              >
          </PARAM>
@@ -314,7 +357,7 @@ limitations under the License.
 
     <COMMAND
         name="interface PortChannel"
-        help="Port channel Interface Configuration"
+        help="PortChannel interface configuration"
         mode="subcommand"
         ptype="SUBCOMMAND"
         view="configure-lag-view"
@@ -322,7 +365,7 @@ limitations under the License.
         >
         <PARAM
                 name="lag-id"
-                help="PortChannel identifier"
+                help="Enter PortChannel interface global configuration"
                 ptype="LAG_ID"
                 >
         </PARAM>
@@ -368,7 +411,7 @@ limitations under the License.
 
     <COMMAND
         name="interface Loopback"
-        help="Loopback Interface Configuration"
+        help="Loopback interface configuration"
         mode="subcommand"
         ptype="SUBCOMMAND"
         view="configure-lo-view"
@@ -376,7 +419,7 @@ limitations under the License.
         >
         <PARAM
                 name="lo-id"
-                help="Loopback identifier"
+                help="Enter Loopback interface global configuration"
                 ptype="LO_ID"
                 >
         </PARAM>
@@ -390,13 +433,13 @@ limitations under the License.
          />
      <COMMAND
          name="no interface Vlan"
-         help="Delete Vlan"
+         help="Delete VLAN"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
          <PARAM
              name="vlan-id"
-             help="Vlan identifier(1-4094)"
+             help="VLAN identifier"
              ptype="VLAN_ID"
              >
          </PARAM>
@@ -475,6 +518,29 @@ limitations under the License.
            </EXAMPLE>
 	</DOCGEN>
          </COMMAND>
+     <!-- no buffer-pool commands -->
+     <COMMAND
+         name="no buffer-pool"
+         help="Remove buffer-pool config"
+         />
+     <COMMAND name="no buffer-pool threshold"
+             help="Remove buffer-pool threshold config"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+                <ACTION builtin="clish_pyobj">sonic_cli_threshold delete_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list ${__full_line}</ACTION>
+                <DOCGEN>
+                <DESCRIPTION>
+                        This command can be used to remove buffer-pool threshold configured on ingress and egress buffers.
+                </DESCRIPTION>
+                <USAGE>
+                        Use this command to remove buffer-pool threshold configured on ingress and egress buffers.
+                </USAGE>
+                <EXAMPLE
+			summary="Removes previously configured buffer-pool threshold on ingress and egress buffers.">
+                                sonic(config)# no buffer-pool threshold
+                </EXAMPLE>
+                </DOCGEN>
+     </COMMAND>
      </VIEW>
 
      <VIEW
@@ -497,13 +563,13 @@ limitations under the License.
             help="NAT Zone">
             <PARAM
                 name="zone"
-                help="NAT zone of the interface"
+                help="NAT Zone of the interface"
                 ptype="RANGE_NAT_ZONE" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-interfaces-ext:nat-zone/config/nat-zone body={"openconfig-interfaces-ext:nat-zone": ${zone}}</ACTION>
         </COMMAND>
         <COMMAND
             name="no nat-zone"
-            help="Remove Nat Zone on an interface" >
+            help="Remove NAT Zone on an interface" >
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
         </COMMAND>
 
@@ -547,7 +613,7 @@ limitations under the License.
         <COMMAND
             name="no speed"
             help="Set default speed config">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body = {"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body={"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
         </COMMAND>
         <COMMAND
             name="channel-group"
@@ -891,13 +957,13 @@ limitations under the License.
             help="NAT Zone">
             <PARAM
                 name="zone"
-                help="NAT zone of the vlan"
+                help="NAT Zone of the VLAN"
                 ptype="RANGE_NAT_ZONE" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone body={"openconfig-interfaces-ext:nat-zone": ${zone}}</ACTION>
         </COMMAND>
         <COMMAND
             name="no nat-zone"
-            help="Remove Nat Zone on a vlan" >
+            help="Remove NAT Zone on a VLAN" >
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
         </COMMAND>
 
@@ -906,14 +972,14 @@ limitations under the License.
             help="Configure MTU">
             <PARAM
                 name="mtu"
-                help="MTU of the Vlan interface"
+                help="MTU of the VLAN interface"
                 ptype="RANGE_MTU"
             />
           <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
        </COMMAND>
        <COMMAND
             name="no mtu"
-            help="Remove MTU of Vlan interface">
+            help="Remove MTU of VLAN interface">
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/mtu body={"openconfig-interfaces:mtu": 9100}</ACTION>
       </COMMAND>
       <COMMAND
@@ -940,14 +1006,38 @@ limitations under the License.
       -->
 
     <COMMAND
-           name="mclag-seperate-ip"
-           help="Configure seperate IP on Vlan interface for L3 protocol support over MCLAG" >
+           name="mclag-separate-ip"
+           help="Configure separate IP on Vlan interface for L3 protocol support over MCLAG" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure separate IP on Vlan interface for L3 protocol support over MCLAG
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# mclag-separate-ip
+               </USAGE>
+               <EXAMPLE summary="mclag-separate-ip">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# mclag-separate-ip
+               </EXAMPLE>
+           </DOCGEN>
     </COMMAND>
     <COMMAND
-           name="no mclag-seperate-ip"
-           help="Unconfigure seperate IP on Vlan interface for L3 protocol support over MCLAG" >
+           name="no mclag-separate-ip"
+           help="Unconfigure separate IP on Vlan interface for L3 protocol support over MCLAG" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure separate IP on Vlan interface for L3 protocol support over MCLAG
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# no mclag-separate-ip
+               </USAGE>
+               <EXAMPLE summary="no mclag-separate-ip">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# no mclag-separate-ip
+               </EXAMPLE>
+           </DOCGEN>
     </COMMAND>
 </VIEW> <!-- End of Configure View for Vlan-->
 <VIEW
@@ -967,13 +1057,13 @@ limitations under the License.
             help="NAT Zone">
             <PARAM
                 name="zone"
-                help="NAT zone of the port channel"
+                help="NAT Zone of the PortChannel"
                 ptype="RANGE_NAT_ZONE" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone body={"openconfig-interfaces-ext:nat-zone": ${zone}}</ACTION>
         </COMMAND>
         <COMMAND
             name="no nat-zone"
-            help="Remove Nat Zone on a port channel" >
+            help="Remove NAT Zone on a PortChannel" >
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
         </COMMAND>
 
@@ -1173,7 +1263,7 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="no mtu"
-            help="Set Default MTU (1500)">
+            help="Set default MTU (1500)">
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/mtu body={"openconfig-interfaces:mtu": 1500}</ACTION>
         </COMMAND>
         <COMMAND

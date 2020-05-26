@@ -34,4 +34,20 @@
 {% endfor %}
 {% endif %}
 {% endif %}
+{% for i in range(1, 10) %}
+{% set fan_name = psu_name + ' FAN ' + i|string %}
+{% if fan_name in psu_info %}
+{% if 'fan' in psu_info[fan_name] %}
+{% if 'state' in psu_info[fan_name]['fan'] %}
+{% if 'openconfig-platform-fan:speed' in psu_info[fan_name]['fan']['state'] %}
+    {{'fan-speed (RPM)'.ljust(20)}} {{psu_info[fan_name]['fan']['state']['openconfig-platform-fan:speed']}}
+{% endif %}
+{% if 'openconfig-platform-ext:direction' in psu_info[fan_name]['fan']['state'] %}
+    {{'fan-direction'.ljust(20)}} {{psu_info[fan_name]['fan']['state']['openconfig-platform-ext:direction']}}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endfor %}
+
 {% endfor %}
