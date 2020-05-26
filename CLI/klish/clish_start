@@ -13,7 +13,7 @@ export LD_LIBRARY_PATH=/usr/local/lib:$SONIC_CLI_ROOT/.libs:$LD_LIBRARY_PATH
 export PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin:$SONIC_CLI_ROOT
 
 ALIAS=$(sonic-cfggen -d -v "DEVICE_METADATA['localhost']['aliasMode']")
-if [ $ALIAS == 'true' ]; then
+if [ "$ALIAS" = 'true' ]; then
     export SONIC_CLI_IFACE_MODE=alias
 fi
 
