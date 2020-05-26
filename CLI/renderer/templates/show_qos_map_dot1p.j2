@@ -10,7 +10,7 @@
   {% if map_info %}
       {% set entries = map_info['dot1p-map-entry'] %}
       {% for entry in entries %}
-        {{ entry['dot1p']}}   {{entry['config']['fwd_group']}}
+        {{ entry['dot1p']}}   {{entry['config']['fwd-group']}}
       {% endfor %}
   {% endif %}
 
