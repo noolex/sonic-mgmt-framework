@@ -236,11 +236,11 @@ def invoke_api(func, args):
 	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST={buffer},{threshold_buffer_type},{interface_name},{buffer_index_per_port}/threshold', buffer = args[2], threshold_buffer_type = args[4], interface_name = args[5], buffer_index_per_port = args[3] )
 	return api.delete(path)
 
-    elif func == 'delete_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list':
-	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/BUFFER_POOL_LIST')
+    elif func == 'delete_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list':
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST')
 	return api.delete(path)
 
-    elif func == 'patch_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list_threshold':
+    elif func == 'patch_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list_threshold':
         pool_name = args[0]
 	config_db = ConfigDBConnector()
 	config_db.connect()
@@ -250,7 +250,7 @@ def invoke_api(func, args):
 	if pool_name not in buffer_pool_name_to_oid_map:
 		print("Invalid pool name, please configure a valid pool name")
 		return False
-	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/BUFFER_POOL_LIST={bufferpoolprefix},{pool_name}/threshold', bufferpoolprefix = 'BUFFER_POOL', pool_name = args[0] )
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST={pool_name}/threshold', pool_name = args[0] )
         body = { "sonic-threshold:threshold":  int(args[1]) }
         return api.patch(path, body)
 
@@ -302,15 +302,15 @@ def get_threshold_breach_event_reports(args):
     show_cli_output("show_threshold_breach_event_reports.j2", api_response)
 
 
-def get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list(args):
+def get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list(args):
     api_response = {}
     api = cc.ApiClient()
-    path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/BUFFER_POOL_LIST')
+    path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST')
     response = api.get(path)
 
     if response.ok():
         if response.content:
-            api_response = response.content['sonic-threshold:BUFFER_POOL_LIST']
+            api_response = response.content['sonic-threshold:THRESHOLD_BUFFERPOOL_TABLE_LIST']
             for i in range(len(api_response)):
                 if 'pool_name' not in api_response[i] and 'threshold' not in api_response[i]:
                    print("Failed : Required mandatory parameters are not found")
@@ -363,8 +363,8 @@ if __name__ == '__main__':
 
      if func == 'get_threshold_breach_event_reports':
         get_threshold_breach_event_reports(sys.argv[2:])
-     elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list':
-        get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list(sys.argv[2:])
+     elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list':
+        get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list(sys.argv[2:])
      elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list':
         get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list(sys.argv[2:])
      else:
