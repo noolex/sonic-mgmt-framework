@@ -46,6 +46,7 @@ MTU {{po_intf['mtu']}}
 
 
 {% if 'state' in intf %}
+
 LACP mode {{intf['state']['lacp-mode']}} interval {{intf['state']['interval']}} priority {{intf['state']['system-priority']}} address {{intf['state']['system-id-mac']}}
 
 {% else %}
