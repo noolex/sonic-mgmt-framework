@@ -48,7 +48,12 @@
                     {% endif %}
                     {% if "SET_INTERFACE" in flow_data %}
                         {% for intf in flow_data["SET_INTERFACE"] %}
-                            {{- '      set interface'}} {{ intf["INTF_NAME"] }}{% if "PRIORITY" in intf %} {{ 'priority'}} {{ intf["PRIORITY"] }}{% endif %}{{"\n"}}
+                            {% set is_selected = "" %}
+                            {% set selected = flow_data["STATE"]["FORWARDING_SELECTED"] %}
+                            {% if (selected["INTERFACE"] == intf["IP_ADDRESS"]) and (selected.get("PRIORITY", "") == intf.get("PRIORITY", "")) %}
+                                {% set is_selected=" (Selected)" %}
+                            {% endif %}
+                            {{- '      set interface'}} {{ intf["INTERFACE"] }}{% if "PRIORITY" in intf %} {{ 'priority'}} {{ intf["PRIORITY"] }}{% endif %}{{is_selected}}{{"\n"}}
                         {% endfor %}
                     {% endif %}
                     {% if "DEFAULT_PACKET_ACTION" in flow_data %}
