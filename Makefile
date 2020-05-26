@@ -26,7 +26,6 @@ MGMT_COMMON_DIR := $(abspath ../sonic-mgmt-common)
 
 GO      ?= /usr/local/go/bin/go
 GOPATH  ?= /tmp/go
-RMDIR   ?= rm -rf
 INSTALL := /usr/bin/install
 
 MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
@@ -34,7 +33,7 @@ MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
 GO_MOD   = go.mod
 GO_DEPS  = vendor/.done
 
-export TOPDIR MGMT_COMMON_DIR GO GOPATH RMDIR
+export TOPDIR MGMT_COMMON_DIR GO GOPATH 
 
 .PHONY: all
 all: rest cli ham
@@ -49,7 +48,7 @@ $(GO_DEPS): $(GO_MOD)
 	touch  $@
 
 go-deps-clean:
-	$(RMDIR) vendor
+	$(RM) -r vendor
 
 cli: 
 	$(MAKE) -C CLI
@@ -72,13 +71,11 @@ rest: $(GO_DEPS) models
 
 # Special target for local compilation of REST server binary.
 # Compiles models, translib and cvl schema from sonic-mgmt-common
-rest-server: rest-clean
-	$(MAKE) -C $(MGMT_COMMON_DIR)/models
-	TOPDIR=$(MGMT_COMMON_DIR) $(MAKE) -C $(MGMT_COMMON_DIR)/cvl/schema
-	$(MAKE) -C $(MGMT_COMMON_DIR)/translib ocbinds/ocbinds.go
+rest-server: go-deps-clean
+	$(MAKE) -C $(MGMT_COMMON_DIR)
 	$(MAKE) rest
 
-rest-clean: go-deps-clean
+rest-clean: go-deps-clean models-clean
 	$(MAKE) -C rest clean
 
 .PHONY: models
@@ -126,8 +123,10 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 
 clean: rest-clean models-clean
 	(cd ham; ./build.sh clean)
-	$(RMDIR) debian/.debhelper
+	git check-ignore debian/* | xargs -r $(RM) -r
+	$(RM) -r $(BUILD_DIR)
 
 cleanall: clean
-	$(RMDIR) $(BUILD_DIR)
+	git clean -fX tools CLI
+	$(RM) tools/swagger_codegen/swagger-codegen*.jar
 

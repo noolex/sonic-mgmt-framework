@@ -189,15 +189,15 @@ limitations under the License.
                                >
                             </PARAM>
                          </PARAM>
-                         <PARAM
-                            name="CPU"
-                            help="Watermark for interface multicast queues"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            >
-                         </PARAM>
                      </PARAM>
                      </PARAM>
+                 </PARAM>
+                 <PARAM
+                     name="CPU"
+                     help="Watermark for CPU queues"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+		             >
                  </PARAM>
                </PARAM>
              </PARAM>
@@ -286,16 +286,15 @@ limitations under the License.
                                 >
                             </PARAM>
                          </PARAM>
-                         <PARAM
-                            name="CPU"
-                            help="Persistent-Watermark for interface multicast queues"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                          </PARAM>
                      </PARAM>
                      </PARAM>
+                 </PARAM>
+                 <PARAM
+                     name="CPU"
+                     help="Persistent-Watermark for CPU queues"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+		             >
                  </PARAM>
                </PARAM>
              </PARAM>
@@ -327,7 +326,7 @@ limitations under the License.
                   fi&#xA;
               fi&#xA;
           elif test "${queue-subcommands}" = "watermark"; then&#xA;
-	      if test "${queue-type-subcommands}" = "unicast"; then&#xA;
+	          if test "${queue-type-subcommands}" = "unicast"; then&#xA;
                  if test "${intf-type-subcommands}" = ""; then&#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_uc_watermark.j2&#xA;
                  else&#xA;
@@ -337,16 +336,16 @@ limitations under the License.
                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_uc_watermark.j2&#xA;
                     fi&#xA;   
                  fi&#xA;   
-              else&#xA;
+	          elif test "${queue-type-subcommands}" = "multicast"; then&#xA;
                  if test "${intf-type-subcommands}" = ""; then&#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_mc_watermark.j2&#xA;
                  else&#xA;
                     if test "${intf-type-subcommands}" = "Ethernet"; then&#xA;
                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_mc_watermark.j2&#xA;
-                    else&#xA;
-                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_cpu_mc_watermark.j2&#xA;
                     fi&#xA;   
                  fi&#xA;   
+	          elif test "${queue-type-subcommands}" = "CPU"; then&#xA;
+                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_cpu_watermark.j2&#xA;
               fi&#xA;   
           elif test "${queue-subcommands}" = "persistent-watermark"; then&#xA;
               if test "${queue-type-subcommands}" = "unicast"; then&#xA;
@@ -359,21 +358,84 @@ limitations under the License.
                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_uc_persistent_watermark.j2&#xA;
                     fi&#xA;   
                  fi&#xA;   
-              else&#xA;
+              elif test "${queue-type-subcommands}" = "multicast"; then&#xA;
                  if test "${intf-type-subcommands}" = ""; then&#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces show_qos_mc_persistent_watermark.j2&#xA;
                  else&#xA;
                     if test "${intf-type-subcommands}" = "Ethernet"; then&#xA;
                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues Ethernet${phy-if-id} show_qos_interface_mc_persistent_watermark.j2&#xA;
-                    else&#xA;
-                       python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_cpu_mc_persistent_watermark.j2&#xA;
                     fi&#xA;   
                  fi&#xA;   
+              elif test "${queue-type-subcommands}" = "CPU"; then&#xA;
+                  python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_cpu_persistent_watermark.j2&#xA;
               fi&#xA;   
           elif test "${queue-subcommands}" = "buffer-threshold-breaches"; then&#xA;
               python $SONIC_CLI_ROOT/sonic_cli_qos.py get_list_openconfig_qos_ext_qos_threshold_breaches_breach &#xA;
           fi&#xA;
       </ACTION>
+      <DOCGEN>
+         <DESCRIPTION>
+           This command displays queue counters, watermarks, persistent-watermarks and breaches etc.
+         </DESCRIPTION>
+         <USAGE>
+           Use this command to display queue counters, watermarks, persistent-watermarks and breches etc.
+           There are various CLI options available to display infomration for queue, interface and all interfaces.
+           - show queue counters (interfcae Ethernet|CPU [ifname] (queue [id]))
+             This command will display all queue counters
+           - show queue (watermark|persitent-watermark) (unicast| multicast|CPU) (interfcae Ethernet [ifname]))
+             This command will display all queue watermarks
+         </USAGE>
+         <EXAMPLE summary="Below are some of the sample outputs of show queue command">
+         sonic# show queue counters
+         -------------------------------------------------------------------
+         Port        TxQ  Counter/pkts   Counter/bytes  Drop/pkts   Drop/bytes
+         -------------------------------------------------------------------
+         Ethernet0   UC0  0              0              0           0
+         Ethernet0   UC1  0              0              0           0
+         Ethernet0   UC2  0              0              0           0
+         Ethernet0   UC3  0              0              0           0
+         Ethernet0   UC4  0              0              0           0
+         Ethernet0   UC5  0              0              0           0
+         Ethernet0   UC6  0              0              0           0
+         Ethernet0   UC7  0              0              0           0
+         Ethernet0   MC8  0              0              0           0
+         Ethernet0   MC9  0              0              0           0
+         Ethernet0   MC10 0              0              0           0
+         Ethernet0   MC11 0              0              0           0
+         Ethernet0   MC12 0              0              0           0
+         Ethernet0   MC13 0              0              0           0
+         Ethernet0   MC14 0              0              0           0
+         Ethernet0   MC15 0              0              0           0
+
+         sonic# show queue watermark unicast
+         Egress queue watermark per unicast queue:
+         -------------------------------------------------------------------
+         Port        UC0  UC1  UC2  UC3  UC4  UC5  UC6  UC7
+         -------------------------------------------------------------------
+         Ethernet0   0    0    0    0    0    0    0    0
+         Ethernet4   0    0    0    0    0    0    0    0
+         Ethernet8   0    0    0    0    0    0    0    0
+         Ethernet12  0    0    0    0    0    0    0    0
+         Ethernet16  0    0    0    0    0    0    0    0
+         Ethernet20  0    0    0    0    0    0    0    0
+         Ethernet24  0    0    0    0    0    0    0    0
+        
+         sonic# show queue persistent-watermark multicast
+         Egress queue persistent watermark per multicast queue:
+         -------------------------------------------------------------------
+         Port        MC8  MC9  MC10 MC11 MC12 MC13 MC14 MC15
+         -------------------------------------------------------------------
+         Ethernet0   0    0    0    0    0    0    0    0
+         Ethernet4   0    0    0    0    0    0    0    0
+         Ethernet8   0    0    0    0    0    0    0    0
+         Ethernet12  0    0    0    0    0    0    0    0
+         Ethernet16  0    0    0    0    0    0    0    0
+         Ethernet20  0    0    0    0    0    0    0    0
+         Ethernet24  0    0    0    0    0    0    0    0
+         Ethernet28  0    0    0    0    0    0    0    0
+
+         </EXAMPLE>
+      </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
     <COMMAND name="show priority-group" help="Show priority group information">
@@ -566,6 +628,42 @@ limitations under the License.
               fi&#xA;   
           fi
       </ACTION>
+      <DOCGEN>
+         <DESCRIPTION>
+           This command displays priroity group shared/headroom watermarks and persistent-watermarks.
+         </DESCRIPTION>
+         <USAGE>
+           Use this command to display priority group watermarks, persistent-watermarks etc.
+           There are various CLI options available to display infomration for shared, headroom and interface watermarks.
+           - show priority-group (watermark|persitent-watermark) (shared | headroom ) (interfcae Ethernet [ifname]))
+             This command will display priority groups shared/headroom watermars.
+         </USAGE>
+         <EXAMPLE summary="Below are some of the sample outputs of show priority-group command">
+         sonic# show priority-group watermark shared
+         Ingress shared pool watermark per PG:
+         -------------------------------------------------------------------
+         Port        PG0  PG1  PG2  PG3  PG4  PG5  PG6  PG7
+         -------------------------------------------------------------------
+         Ethernet0   0    0    0    0    0    0    0    0
+         Ethernet4   0    0    0    0    0    0    0    0
+         Ethernet8   0    0    0    0    0    0    0    0
+         Ethernet12  0    0    0    0    0    0    0    0
+         Ethernet16  0    0    0    0    0    0    0    0
+        
+         sonic# show priority-group persistent-watermark headroom
+         Ingress headroom persistent watermark per PG:
+         -------------------------------------------------------------------
+         Port        PG0  PG1  PG2  PG3  PG4  PG5  PG6  PG7
+         -------------------------------------------------------------------
+         Ethernet0   0    0    0    0    0    0    0    0
+         Ethernet4   0    0    0    0    0    0    0    0
+         Ethernet8   0    0    0    0    0    0    0    0
+         Ethernet12  0    0    0    0    0    0    0    0
+         Ethernet16  0    0    0    0    0    0    0    0
+         Ethernet20  0    0    0    0    0    0    0    0
+         Ethernet24  0    0    0    0    0    0    0    0
+         </EXAMPLE>
+      </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
   </VIEW>

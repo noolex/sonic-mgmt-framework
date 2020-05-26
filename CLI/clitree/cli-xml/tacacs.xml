@@ -55,22 +55,22 @@ limitations under the License.
   <PTYPE
      name="AAA_AUTH_TYPE"
      method="select"
-     pattern="pap(pap) chap(chap) mschap(mschap)"
+     pattern="pap(pap) chap(chap) mschap(mschap) login(login)"
      help=""
   />
 <!--=======================================================-->
 
   <VIEW name="enable-view">
     <COMMAND name="show tacacs-server" 
-             help="Show tacacs info"/>
+             help="Show TACACS info"/>
     <COMMAND name="show tacacs-server global" 
-             help="Show tacacs global configuration" 
+             help="Show TACACS global configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION builtin="clish_pyobj">sonic_cli_tacacs get_sonic_tacacs_global show_tacacs_global.j2</ACTION>
     </COMMAND>
     <COMMAND name="show tacacs-server host" 
-             help="Show tacacs server configuration" 
+             help="Show TACACS server configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <PARAM name="address" 
@@ -85,7 +85,7 @@ limitations under the License.
   <VIEW name="configure-view">
     <!-- tacacs -->
     <COMMAND name="tacacs-server"
-             help="TACACS server Configuration"/>
+             help="TACACS server configuration"/>
 
     <!-- tacacs src-ip -->
     <COMMAND name="tacacs-server source-ip"
@@ -198,12 +198,12 @@ limitations under the License.
       </PARAM>
 
       <PARAM name="priority"
-             help="server priority"
+             help="Server priority"
              ptype="SUBCOMMAND"
              mode="subcommand"
              optional="true">
         <PARAM name="priority-val"
-               help="server priority"
+               help="Server priority"
                ptype="TACACS_PRIORITY">
         </PARAM>
       </PARAM>
@@ -214,12 +214,12 @@ limitations under the License.
              mode="subcommand"
              optional="true">
         <PARAM
-                name="vrf-fwitch"
+                name="vrf-switch"
                 help="VRF commands"
                 mode="switch"
                 ptype="SUBCOMMAND">
-          <PARAM name="management"
-                 help="management VRF name"
+          <PARAM name="mgmt"
+                 help="Management VRF name"
                  ptype="SUBCOMMAND"
                  mode="subcommand">
           </PARAM>

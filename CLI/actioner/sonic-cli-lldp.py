@@ -121,24 +121,29 @@ def run(fn, args):
                 response = api_response
                 if 'openconfig-lldp:interfaces' in response.keys():
                     if not response['openconfig-lldp:interfaces']:
-                        return
+                        return 0
                     neigh_list = response['openconfig-lldp:interfaces']['interface']
                     if neigh_list is None:
-                        return
+                        return 0
                     show_cli_output(args[0], neigh_list)
                 elif 'openconfig-lldp:interface' in response.keys():
                     neigh = response['openconfig-lldp:interface']  # [0]['neighbors']['neighbor']
                     if neigh is None:
-                        return
+                        return 0
                     show_cli_output(args[0],neigh)
                 else:
                     print("Failed")
+                    return -1 
     else:
-        print response.error_message()
+        print(response.error_message())
+        return -1
+    return 0
 
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
     func = sys.argv[1]
 
-    run(func, sys.argv[2:])
+    status = run(func, sys.argv[2:])
+    if status != 0:
+        sys.exit(0)

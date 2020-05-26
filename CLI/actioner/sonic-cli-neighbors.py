@@ -133,7 +133,7 @@ def build_mac_list():
             if intf is None:
                 continue
 
-            key = "Vlan" + str(vlan) + "-" + mac
+            key = "Vlan" + str(vlan) + "-" + mac.lower()
             macDict[key] = intf
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
@@ -213,9 +213,6 @@ def build_vrf_list():
                     continue
 
                 vrfName = intf.get('vrf_name')
-                #if vrfName is None:
-                #    vrfName = ""
-
                 vrfDict[portName] = vrfName
 
         except Exception as e:
@@ -271,7 +268,11 @@ def process_oc_nbrs(response):
 def process_sonic_nbrs(response):
     outputList  = []
     rcvdVrfName = inputDict.get('vrf')
+
     rcvdIpAddr  = inputDict.get('ip')
+    if rcvdIpAddr is not None:
+	    rcvdIpAddr = rcvdIpAddr.lower()
+
     rcvdMacAddr = inputDict.get('mac')
     rcvdFamily  = inputDict.get('family')
 
@@ -318,7 +319,7 @@ def process_sonic_nbrs(response):
         if (rcvdVrfName == vrfName):
             if (rcvdMacAddr == macAddr):
                 outputList.append(nbrEntry)
-            elif (rcvdIpAddr == ipAddr):
+            elif (rcvdIpAddr == ipAddr.lower()):
                 outputList.append(nbrEntry)
             elif (rcvdIpAddr is None and rcvdMacAddr is None):
                 outputList.append(nbrEntry)

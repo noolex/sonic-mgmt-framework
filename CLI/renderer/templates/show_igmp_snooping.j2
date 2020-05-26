@@ -6,8 +6,8 @@
 {% set igmps_intfs =  json_output['openconfig-network-instance-deviation:interface'] %}
 {%endif%}
 {% for igmps_intf in igmps_intfs %}
-{% if igmps_intf['config'] is not none %}
-{% set igmps_config = igmps_intf['config'] %}
+{% if igmps_intf['state'] is not none %}
+{% set igmps_config = igmps_intf['state'] %}
 {% if igmps_config['enabled'] is defined and igmps_config['enabled'] == true %}
 {% set vlan_name = igmps_config['name'] %}
 {% set vlan_id = vlan_name.split('Vlan')[1] %}

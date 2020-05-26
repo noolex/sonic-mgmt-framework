@@ -11,8 +11,6 @@
 {% set vars = {'weight': "0"} %}
 {% set vars = {'numpaths': "0"} %}
 {% set vars = {'bestpaths': "0"} %}
-{% set numpaths = 0 %}
-{% set bestpaths = 0 %}
 {% set vars = {'validRoute': False} %}
 {% set vars = {'bestRoute': False} %}
 {% set vars = {'time': "0"} %}
@@ -34,29 +32,28 @@
         {% if routeList %}
          {% for route in routeList %}
          {% if vars.update({'prefix':route["prefix"]}) %}{% endif %}
-         {% if not "loc-rib-prefix-paths" in route %} {% break %} {% endif %}
+         {% if not "loc-rib-prefix-paths" in route %}{% break %}{% endif %}
          {% set prefixPathsList = route["loc-rib-prefix-paths"] %}
          {% set pathsList = prefixPathsList["paths"] %}
          {% if pathsList %}
           {% set pathList = pathsList["path"] %}
           {% if pathList %}
             {% for path in pathList %}
-               {% set numpaths = numpaths + 1 %}
+               {% set pathindex = loop.index %}
                {% for key in path %}
                  {% if "state" in key %}
-                    {% if vars.update({'validRoute':False}) %} {% endif %}
-                    {% if vars.update({'bestRoute':False}) %} {% endif %}
+                    {% if vars.update({'validRoute':False}) %}{% endif %}
+                    {% if vars.update({'bestRoute':False}) %}{% endif %}
                     {% if vars.update({'validRoute':path["state"]["valid-route"]}) %}{% endif %}
                     {% if vars.update({'bestRoute':path["state"]["best-path"]}) %}{% endif %}
                     {% if vars.update({'pathId':path["state"]["path-id"]}) %}{% endif %}
                     {% if vars.update({'routerId':path["state"]["remote-router-id"]}) %}{% endif %}
                     {% if vars.bestRoute == True %}
-                      {% set bestpaths = bestpaths + 1 %}
-                      {% if vars.update({'bestpaths': bestpaths}) %}{% endif %}
+                      {% if vars.update({'bestpaths': pathindex}) %}{% endif %}
                     {% endif %}
                  {% endif %}
                {% endfor %}
-               {% if vars.update({'numpaths': numpaths}) %}{% endif %}
+               {% if vars.update({'numpaths': loop.index}) %}{% endif %}
             {% endfor %}
           {% endif %}
          {% endif %}
@@ -84,28 +81,18 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
          {% set pathList = pathsList["path"] %}
          {% if pathList %}
             {% for path in pathList %}
-               {% if vars.update({'members':''}) %} {% endif %}
-               {% if vars.update({'communities':''}) %} {% endif %}
+               {% if vars.update({'members':''}) %}{% endif %}
+               {% if vars.update({'communities':''}) %}{% endif %}
                {% if vars.update({'weight':"0"}) %}{% endif %}
                {% for key in path %}
                  {% if "state" in key %}
                     {% if vars.update({'neighbor':path["state"]["origin"]}) %}{% endif %}
                     {% if vars.update({'time':path["state"]["last-modified"]}) %}{% endif %}
-                    {% if vars.update({'validRoute':False}) %} {% endif %}
-                    {% if vars.update({'bestRoute':False}) %} {% endif %}
+                    {% if vars.update({'validRoute':False}) %}{% endif %}
+                    {% if vars.update({'bestRoute':False}) %}{% endif %}
                     {% if vars.update({'validRoute':path["state"]["valid-route"]}) %}{% endif %}
                     {% if vars.update({'bestRoute':path["state"]["best-path"]}) %}{% endif %}
                     {% if vars.update({'pathId':path["state"]["path-id"]}) %}{% endif %}
-                    {% if vars.validRoute == True %}
-                       {% if vars.update({'validRoute':"valid"}) %}{% endif %}
-                    {% else %}
-                       {% if vars.update({'validRoute':""}) %}{% endif %}
-                    {% endif %}
-                    {% if vars.bestRoute == True %}
-                      {% if vars.update({'bestRoute':"best"}) %}{% endif %}
-                    {% else %}
-                      {% if vars.update({'bestRoute':""}) %}{% endif %}
-                    {% endif %}
                  {% endif %}
                  {% if "attr-sets" in key %}
                     {% set attr_sets = path[key] %}
@@ -133,7 +120,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                              {% endfor %}
                           {% endif %}
                         {% endfor %}
-                        {% if vars.update({'members': temp|join(" ")}) %} {% endif %}
+                        {% if vars.update({'members': temp|join(" ")}) %}{% endif %}
                        {% endif %}
                     {% endif %}
                     {% if "community" in attr_sets %}
@@ -143,15 +130,14 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                             {%  do temp.append(community) %}
                        {% endfor %}
                     {% endif %}
-                    {% if vars.update({'communities': temp|join(" ")}) %} {% endif %}
+                    {% if vars.update({'communities': temp|join(" ")}) %}{% endif %}
                  {% endif %}
                {% endfor %}
- 
 {{'  %s'|format(vars.members)}}
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
-{{'      Origin '}}{{ vars.origin }}{{', '}}{{vars.validRoute}}{% if vars.bestRoute == 'best' %}{{', '}}{{vars.bestRoute}}{% endif %}{{'\n'}}
-{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}
-{{'      Last update: '}} {{datetimeformat(vars.time)|string}}{{'\n'}}
+{{'      Origin '}}{{ vars.origin }}{% if vars.validRoute == True %}{{', valid'}}{% endif %}{% if vars.bestRoute == True %}{{', best'}}{% endif %}{{'\n'}}
+{% if vars.communities != '' %}{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}{% endif %}
+{{'      Last update: '}}{{datetimeformat(vars.time)|string}}{{'\n'}}
             {% endfor %}
          {% endif %}
          {% endif %}

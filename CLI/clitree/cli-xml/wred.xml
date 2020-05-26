@@ -18,11 +18,34 @@
           fi&#xA;
       </ACTION>
       <xi:include href="include/pipe.xml"/>
+      <DOCGEN>
+        <DESCRIPTION>
+          This command displays WRED profiles configured on the device.
+        </DESCRIPTION>
+        <USAGE>
+          User configures WRED profiles to use it in interface queues.
+          This command enables users to display the WRED profiles configured on this device.
+          User can provide WRED profile name optional CLI key to display only that profile.
+          If profile name is not specified, all profiles will be displayed by this command.
+        </USAGE>
+        <EXAMPLE summary="The following command displays all WRED profiles
+          configured in device">
+          sonic# show wred
+          ---------------------------------------------------
+          Profile                : tet
+          ---------------------------------------------------
+          Profile                : wred-green
+          ecn                    : ecn_all
+          green-min-threshold    : 100
+          green-max-threshold    : 200
+          greep-drop-rate        : 50
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
   </VIEW>
   <VIEW name="configure-view">
-    <!-- ecn -->
+    <!-- WRED -->
     <COMMAND
         name="wred"
         help="ECN Configuration"
@@ -40,15 +63,42 @@
         <ACTION builtin="clish_pyobj"> 
             sonic_cli_wred patch_list_openconfig_qos_ext_qos_wred_profiles_wred_profile ${name} 
         </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command creates WRED profile
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to create WRED profile.
+          </USAGE>
+          <EXAMPLE summary="The following command creates WRED profile named
+        wred-green">
+            sonic# configure terminal
+            sonic(config)# wred wred-green
+          </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
-    <!-- no ecn -->
+    <!-- no WRED -->
     <COMMAND name="no wred" help="Unconfigure a WRED profile">
       <PARAM name="name" help="Name of the WRED profile" ptype="STRING_32"> </PARAM>
         <ACTION builtin="clish_restcl">
             oper=DELETE
             url=/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile=${name}
         </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command deletes WRED profile
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to delete WRED profile.
+          </USAGE>
+          <EXAMPLE summary="The following command deletes WRED profile named
+           wred-green">
+            sonic# configure terminal
+            sonic(config)# no wred wred-green
+          </EXAMPLE>
+        </DOCGEN>
+
     </COMMAND>
 
   </VIEW>
@@ -114,6 +164,19 @@
                     python $SONIC_CLI_ROOT/sonic_cli_wred.py patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow ${prof_id} ${min-threshold} ${max-threshold} ${max-drop-rate}&#xA;
                 fi&#xA;
             </ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+               This command to configure WRED minimum, maximum thresholds
+               and drop probability for color green.
+              </DESCRIPTION>
+              <USAGE>
+                Use this command to configure WRED minimum, maximum and drop probability for green color packets.
+              </USAGE>
+              <EXAMPLE summary="The following command to configure WRED thresholds for green color 
+        packets">
+                sonic(conf-wred-wred-green)# random-detect color green minimum-threshold 100 maximum-threshold 200 drop-probability 50
+             </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
         <COMMAND
             name="no"
@@ -161,17 +224,30 @@
                 if test "${color_select}" = "red" ; then&#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_min_threshold ${prof_id} WaitShow &#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_max_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_drop_rate ${prof_id}&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_drop_probability ${prof_id}&#xA;
                 elif test "${color_select}" = "green" ; then&#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_min_threshold ${prof_id} WaitShow &#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_max_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_drop_rate ${prof_id}&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_drop_probability ${prof_id}&#xA;
                 else&#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_min_threshold ${prof_id} WaitShow &#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_max_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_drop_rate ${prof_id}&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_drop_probability ${prof_id}&#xA;
                 fi&#xA;
             </ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+               This command to unconfigure WRED minimum, maximum thresholds
+               and drop probability for color green.
+              </DESCRIPTION>
+              <USAGE>
+                Use this command to unconfigure WRED minimum, maximum and drop probability for green color packets.
+              </USAGE>
+              <EXAMPLE summary="The following command to unconfigure WRED thresholds for green color 
+        packets">
+                sonic(conf-wred-wred-green)# no random-detect color green
+             </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
         <COMMAND
             name="random-detect ecn"
@@ -182,12 +258,37 @@
                 ptype="ECN_LIMITED_OPTION" />
             <ACTION builtin="clish_pyobj">
                 sonic_cli_wred patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn ${prof_id} ${ecn}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+               This command to enable ECN based on color.
+               This commands support options as none/green/all.
+               Option "none" to disable ECN. Option "green" for ECN for green color alone. 
+               Option "all" to enable ECN on all configured colors.
+              </DESCRIPTION>
+              <USAGE>
+                Use this command to configure ECN for color.
+              </USAGE>
+              <EXAMPLE summary="The following command to enable ECN for green color packets">
+                sonic(conf-wred-wred-green)# random-detect ecn green
+             </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
         <COMMAND
             name="no random-detect ecn"
             help="Unconfigure ecn for the profile" >
         <ACTION builtin="clish_pyobj">
             sonic_cli_wred delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn ${prof_id}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+               This command to disbale ECN.
+              </DESCRIPTION>
+              <USAGE>
+                Use this command to disable ECN.
+              </USAGE>
+              <EXAMPLE summary="The following command to disable ECN">
+                sonic(conf-wred-wred-green)#no random-detect ecn
+             </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>

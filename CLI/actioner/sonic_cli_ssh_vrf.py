@@ -29,7 +29,7 @@ def get_ssh_server_vrfs(vrf_name):
     api = cc.ApiClient()
     vrf = {}
     vrf_data = {}
-    if vrf_name:
+    if vrf_name != 'all':
         keypath = cc.Path('/restconf/data/openconfig-system:system/ssh-server/openconfig-system-ext:ssh-server-vrfs/ssh-server-vrf={name}', name=vrf_name)
     else:
         keypath = cc.Path('/restconf/data/openconfig-system:system/ssh-server/openconfig-system-ext:ssh-server-vrfs')
@@ -60,7 +60,7 @@ def invoke_api(func, args=[]):
             vrf = args[0]
         vrf_data = get_ssh_server_vrfs(vrf)
         if vrf_data.ok() and (len(vrf_data.content) != 0):
-            if vrf:
+            if vrf != 'all':
                 show_cli_output("show_ssh_server_vrf.j2", vrf_data['openconfig-system-ext:ssh-server-vrf'])
             else:
                 vrf_data1 = vrf_data['openconfig-system-ext:ssh-server-vrfs']
