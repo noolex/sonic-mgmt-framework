@@ -52,7 +52,7 @@
                 {% else %}
                     {% if vars.update({'st':""}) %}{% endif %}
                 {% endif %}
-                {% if vars.update({'t':assoc_info["openconfig-system-ext:typeOfPeer"]}) %}{% endif %}
+                {% if vars.update({'t':assoc_info["openconfig-system-ext:PeerType"]}) %}{% endif %}
                 {% if "openconfig-system-ext:now" in assoc_info %}
                     {% if vars.update({'when':'%d'|format(assoc_info["openconfig-system-ext:now"])}) %}{% endif %}
                 {% else %}
