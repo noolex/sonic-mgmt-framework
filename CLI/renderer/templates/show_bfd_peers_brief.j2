@@ -3,7 +3,15 @@
 {% set vars = {'peerAddress': ""} %}
 {% set vars = {'status': ""} %}
 {% set vars = {'vrf': ""} %}
-{{'Session Count:'}}
+{% set count = namespace(value=0) %}
+{% if 'openconfig-bfd-ext:bfd-state' in json_output %}
+    {% set sessions_list = json_output['openconfig-bfd-ext:bfd-state'] %}
+    {% for key in sessions_list %}
+        {% set sessions = sessions_list[key] %}
+        {% set count.value = count.value + sessions | length %}
+    {% endfor %}
+{% endif %}
+Session Count: {{ count.value }}
 {{'%-10s %-41s %-41s %-14s %-8s'|format("SessionId", "LocalAddress", "PeerAddress", "Status", "Vrf")}}
 {{'%-10s %-41s %-41s %-14s %-8s'|format("=========", "============", "===========", "======", "===")}}
 
