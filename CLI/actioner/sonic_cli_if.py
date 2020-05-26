@@ -578,6 +578,15 @@ def invoke_api(func, args=[]):
         else:
            path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}', id=args[1])
         return api.get(path)
+    elif func == 'rpc_interface_counters':
+        keypath = cc.Path('/restconf/operations/sonic-counters:interface_counters')
+        if not len(args) > 1:
+            body = {"sonic-counters:input":{"prefix-match":"Ethernet"}}
+        else:
+            body = {"sonic-counters:input":{"prefix-match":args[1]}}
+        return api.post(keypath, body)
+
+
         
     return api.cli_not_implemented(func)
  
@@ -595,7 +604,6 @@ def getId(item):
     return ifName
 
 def getSonicId(item):
-
     prfx = "Ethernet"
     state_dict = item
     ifName = state_dict['ifname']
@@ -655,6 +663,19 @@ def run(func, args):
                 if 'PORT_TABLE_LIST' in value:
                     tup = value['PORT_TABLE_LIST']
                     value['PORT_TABLE_LIST'] =  sorted(tup, key=getSonicId)
+            elif func == 'rpc_interface_counters' and 'sonic-counters:output' in api_response:
+                value = api_response['sonic-counters:output']
+                if value["status"] != 0:
+                    print("%Error: Internal error.")
+                    return 1
+                if 'interfaces' in value:
+                    interfaces = value['interfaces']
+                    if 'interface' in interfaces:
+                        tup = interfaces['interface']
+                        prfx = "Ethernet"
+                        if len(args) > 1:
+                            prfx = args[1]
+                        value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: int(item[0][len(prfx):]))
 
             if api_response is None:
                 print("Failed")
@@ -677,6 +698,8 @@ def run(func, args):
                 elif func == 'get_openconfig_relay_agent_relay_agent_detail':
                     show_cli_output(args[0], api_response)
                 elif func == 'get_openconfig_relay_agent_relay_agent_detail_dhcpv6':
+                    show_cli_output(args[0], api_response)
+                elif func == 'rpc_interface_counters':
                     show_cli_output(args[0], api_response)
 
 
