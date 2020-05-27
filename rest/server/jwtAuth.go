@@ -61,13 +61,11 @@ func tokenResp(w http.ResponseWriter, r *http.Request, username string, roles []
 	token := jwtToken{Token: generateJWT(username, roles, exp_tm), TokenType: "Bearer", ExpIn: int64(JwtValidInt / time.Second)}
 	resp, err := json.Marshal(token)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		status, data, ctype := prepareErrorResponse(httpError(http.StatusUnauthorized, err.Error()), r)
-		w.Header().Set("Content-Type", ctype)
-		w.WriteHeader(status)
-		w.Write(data)
+		glog.Errorf("Failed to marshal token: %v; err=%v", token, err)
+		writeErrorResponse(w, r, err)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(resp)
 }
@@ -94,7 +92,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if auth_success == false {
+	if !auth_success {
 		//Check if they are using user/password based auth
 		err := json.NewDecoder(r.Body).Decode(&creds)
 		if err != nil {
@@ -102,8 +100,9 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		auth_success, err = UserPwAuth(creds.Username, creds.Password)
+		auth_success, _ = UserPwAuth(creds.Username, creds.Password)
 	}
+
 	if auth_success {
 		usr, err := user.Lookup(creds.Username)
 		if err == nil {
@@ -114,12 +113,9 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	status, data, ctype := prepareErrorResponse(httpError(http.StatusUnauthorized, ""), r)
-	w.Header().Set("Content-Type", ctype)
-	w.WriteHeader(status)
-	w.Write(data)
-	return
 
+	// Authentication for JWT token failed!
+	writeErrorResponse(w, r, httpError(http.StatusUnauthorized, ""))
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
@@ -127,10 +123,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := GetContext(r)
 	token, err := JwtAuthenAndAuthor(r, ctx)
 	if err != nil {
-		status, data, ctype := prepareErrorResponse(httpError(http.StatusUnauthorized, ""), r)
-		w.Header().Set("Content-Type", ctype)
-		w.WriteHeader(status)
-		w.Write(data)
+		writeErrorResponse(w, r, err)
 		return
 	}
 
@@ -138,13 +131,12 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	jwt.ParseWithClaims(token.Token, claims, func(token *jwt.Token) (interface{}, error) {
 		return hmacSampleSecret, nil
 	})
-	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > JwtRefreshInt {
-		status, data, ctype := prepareErrorResponse(httpError(http.StatusBadRequest, ""), r)
-		w.Header().Set("Content-Type", ctype)
-		w.WriteHeader(status)
-		w.Write(data)
+
+	if time.Until(time.Unix(claims.ExpiresAt, 0)) > JwtRefreshInt {
+		writeErrorResponse(w, r, httpError(http.StatusBadRequest, "Refresh request too soon"))
 		return
 	}
+
 	tokenResp(w, r, claims.Username, claims.Roles)
 
 }

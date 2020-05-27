@@ -5,15 +5,3 @@ Memory Reserved: {{json_output['memory']}}
 {% set mem_val = json_output['allocated-memory'] | int / (1024 * 1024) %}
 Memory Allocated: {{mem_val | round | int}}M
 Maximum number of Kernel Core files Stored: {{json_output['max-dumps']}}
-{% if 'kdump-record' in json_output %}
-Record Key           Filename
--------------------------------------------------------------
-{% set record_dict = json_output['kdump-record'] %}
-{% for val in record_dict|reverse %}
-{% set record = loop.index | string %}
-{{record.rjust(6)}} {{val['id'].ljust(12)}} {{val['vmcore-diagnostic-message-file']}}
-                    {{val['vmcore']}}
-{% endfor %}
-{% else %}
-No kernel core dump files
-{% endif %}

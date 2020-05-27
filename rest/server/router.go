@@ -172,6 +172,7 @@ func (t *routeTree) add(parentPrefix, path string, rr *routeRegInfo) {
 	}
 }
 
+/*
 // getNode returns the routeNode object for given path in routeTree.
 // Returns nil if path is not found.
 func (t *routeTree) getNode(path string) *routeNode {
@@ -183,6 +184,7 @@ func (t *routeTree) getNode(path string) *routeNode {
 
 	return node.subpaths.getNode(next)
 }
+*/
 
 // match resolves the routeNode for a request path.
 func (t *routeTree) match(path string, m *routeMatchInfo) *routeNode {
@@ -398,7 +400,7 @@ func (rs *routeStore) addServiceRoutes() {
 
 	// Redirect "/ui" to "/ui/index.html"
 	router.Methods("GET").Path("/ui").
-		Handler(http.RedirectHandler("/ui/index.html", 301))
+		Handler(http.RedirectHandler("/ui/index.html", http.StatusMovedPermanently))
 
 	//Allow POST for user/pass auth and or GET for cert auth.
 	router.Methods("POST", "GET").Path("/authenticate").Handler(
