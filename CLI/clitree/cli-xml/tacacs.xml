@@ -275,7 +275,7 @@ limitations under the License.
     <COMMAND name="no tacacs-server source-interface"
              help="Unconfigure global source interface for TACACS">
       <ACTION
-          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-intf
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-interface
       </ACTION>
     </COMMAND>
 
