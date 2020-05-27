@@ -86,11 +86,9 @@ limitations under the License.
                   <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_0_16777215" />
                 </PARAM>
               </PARAM>
-<!--
               <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
               </PARAM>
--->
               <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "rangenetworkprefix" help = "Network prefix to be announced instead of range" ptype = "IP_ADDR_MASK" /> 
@@ -274,11 +272,7 @@ limitations under the License.
               <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               </PARAM>
-<!--
-              <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
-              </PARAM>
--->
+              <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
             </PARAM>
