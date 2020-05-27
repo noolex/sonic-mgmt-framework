@@ -91,7 +91,7 @@ ${__full_line}&#xA;
                  mode="subcommand"
                  >
              </PARAM>
-             <!-- show interface Ethernet[<id>] -->
+             <!-- show interface Ethernet [<id>] -->
              <PARAM
                  name="phy-if-name"
                  help="Physical Interface"
@@ -196,10 +196,10 @@ ${__full_line}&#xA;
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Loopback${lo-id} show_interface_loopback.j2 ${__full_line}&#xA;
             fi&#xA;
         else&#xA;
-            if test "${phy-if-name}" = ""; then&#xA;
+            if test "${phy-if-id}" = ""; then&#xA;
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
             else&#xA;
-            python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface ${phy-if-name} show_interface_id.j2 ${__full_line}&#xA;
+            python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Ethernet${phy-if-id} show_interface_id.j2 ${__full_line}&#xA;
             fi&#xA;
         fi
    </ACTION>
@@ -445,8 +445,16 @@ ${__full_line}&#xA;
                 optional="true"
                 > 
          </PARAM>
+         <PARAM
+                name="fast_rate"
+                help="LACP Fast Rate Interval"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                optional="true"
+                >
+         </PARAM>
 
-         <ACTION builtin="clish_pyobj">sonic_cli_if portchannel_config PortChannel${lag-id} mode=${PoMode} min-links=${min-links-value} fallback=${fallback}</ACTION>
+         <ACTION builtin="clish_pyobj">sonic_cli_if portchannel_config PortChannel${lag-id} mode=${PoMode} min-links=${min-links-value} fallback=${fallback} fast_rate=${fast_rate}</ACTION>
     </COMMAND>
 
     <COMMAND

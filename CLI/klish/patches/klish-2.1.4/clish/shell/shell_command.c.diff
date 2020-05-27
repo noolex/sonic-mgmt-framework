@@ -88,6 +88,10 @@
 >                                                 lub_argv__get_count(argv)-1));
 >                 }
 > 
+105c159
+< 			argv, &idx, completion, index + idx);
+---
+> 			argv, &idx, completion, index + idx, NULL, NULL);
 120c174,178
 < 				result = clish_param__get_value(param);
 ---

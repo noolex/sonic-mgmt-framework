@@ -69,6 +69,16 @@ def invoke(func, args):
     if func == 'get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries', name='default')
         return aa.get(keypath)
+    elif func == 'add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', 
+                name='default', macaddress=args[0], vlan=args[1])
+        body = {"entry": [{"mac-address": args[0], "vlan": int(args[1]), "interface": {"interface-ref": {"config": {"interface": args[2], "subinterface": 0}}}}]}
+        return aa.patch(keypath, body)
+    elif func == 'del_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', 
+                name='default', macaddress=args[0], vlan=args[1])
+        body = {"entry": [{"mac-address": args[0], "vlan": int(args[1])}]}
+        return aa.delete(keypath, body)
     elif func == 'rpc_sonic_fdb_clear_fdb':
         keypath = cc.Path('/restconf/operations/sonic-fdb:clear_fdb')
         body = {"sonic-fdb:input": { args[0]: args[1]}}
