@@ -588,10 +588,7 @@ def invoke_api(func, args=[]):
         return api.get(path)
     elif func == 'rpc_interface_counters':
         keypath = cc.Path('/restconf/operations/sonic-counters:interface_counters')
-        if not len(args) > 1:
-            body = {"sonic-counters:input":{"prefix-match":"Ethernet"}}
-        else:
-            body = {"sonic-counters:input":{"prefix-match":args[1]}}
+        body = {}
         return api.post(keypath, body)
     return api.cli_not_implemented(func)
 
@@ -682,10 +679,9 @@ def run(func, args):
                     interfaces = value['interfaces']
                     if 'interface' in interfaces:
                         tup = interfaces['interface']
-                        prfx = "Ethernet"
-                        if len(args) > 1:
-                            prfx = args[1]
-                        value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: int(item[0][len(prfx):]))
+                        prfxStIdx = {"Ethernet":1000, "PortChannel": 2000,}
+
+                        value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: [prfxStIdx[prfx] + int(item[0][len(prfx):]) for prfx in prfxStIdx.keys() if item[0].startswith(prfx)])
 
             if api_response is None:
                 print("Failed")
