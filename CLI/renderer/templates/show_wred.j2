@@ -34,7 +34,7 @@
 ---------------------------------------------------
 Profile                : {{ vars.name }}
 {% if vars.ecn %}
-ecn                    : {{ vars.ecn }}
+ecn                    : {{ vars.ecn|lower }}
 {% endif %}
 {% if vars.green_min_threshold %}
 green-min-threshold    : {{ vars.green_min_threshold }}

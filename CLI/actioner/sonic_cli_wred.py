@@ -29,19 +29,27 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
         body = {"openconfig-qos-ext:config" : {"green-min-threshold" : args[1],
                                                "green-max-threshold" : args[2],
-                                               "green-drop-probability" : args[3]} }
+                                               "green-drop-probability" : args[3],
+                                               "wred-green-enable" : True} }
         return api.patch(path, body)
     elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
         body = {"openconfig-qos-ext:config" : {"yellow-min-threshold" : args[1],
                                                "yellow-max-threshold" : args[2],
-                                               "yellow-drop-probability" : args[3]} }
+                                               "yellow-drop-probability" : args[3],
+                                               "wred-yellow-enable" : True} }
         return api.patch(path, body)
     elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
         body = {"openconfig-qos-ext:config" : {"red-min-threshold" : args[1],
                                                "red-max-threshold" : args[2],
-                                               "red-drop-probability" : args[3]} }
+                                               "red-drop-probability" : args[3],
+                                               "wred-red-enable" : True} }
+        return api.patch(path, body)
+    elif 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config/ecn', name=args[0])
+        ecn = args[1].upper()
+        body = { "openconfig-qos-ext:"+func[PARAM_PATCH_PREFIX_LEN:] :  ecn }
         return api.patch(path, body)
     elif func[0:PARAM_PATCH_PREFIX_LEN] == PARAM_PATCH_PREFIX:
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config/'+func[PARAM_PATCH_PREFIX_LEN:], name=args[0])
@@ -56,29 +64,25 @@ def invoke(func, args=[]):
 
 def run(func, args):
 
-    response = invoke(func, args)
+    try:
+       response = invoke(func, args)
 
-    if response.ok():
-        if response.content is not None:
-            api_response = response.content
-            
-            #print api_response
-            #print sys.argv[2:]
-
-            if api_response is None:
-                print("Failed")
-            else:
+       if response.ok():
+          if response.content is not None:
+             api_response = response.content
+             if api_response is None:
+                print("%Error: Internal error")
+             else:
                 if func == 'get_openconfig_qos_ext_qos_wred_profiles_wred_profile':
                      show_cli_output(args[1], api_response)
                 elif func == 'get_openconfig_qos_ext_qos_wred_profiles':
                      show_cli_output(args[0], api_response)
                 else:
                      return
-
-    else:
-        print response.error_message()
-
-
+       else:
+          print response.error_message()
+    except Exception as e:
+        print("% Error: Internal error: " + str(e))
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
