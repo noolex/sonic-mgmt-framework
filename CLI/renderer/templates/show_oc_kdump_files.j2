@@ -1,0 +1,12 @@
+{% if 'kdump-record' in json_output %}
+Record Key           Filename
+-------------------------------------------------------------
+{% set record_dict = json_output['kdump-record'] %}
+{% for val in record_dict|reverse %}
+{% set record = loop.index | string %}
+{{record.rjust(6)}} {{val['state']['id'].ljust(12)}} {{val['state']['vmcore-diagnostic-message-file']}}
+                    {{val['state']['vmcore']}}
+{% endfor %}
+{% else %}
+No kernel core dump files
+{% endif %}

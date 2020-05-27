@@ -28,11 +28,7 @@ import (
 )
 
 func isSkipValidation(t reflect.Type) bool {
-	if t == reflect.TypeOf([]int32{}) {
-		return true
-	}
-
-	return false
+	return (t == reflect.TypeOf([]int32{}))
 }
 
 // RequestValidate performas payload validation of request body.

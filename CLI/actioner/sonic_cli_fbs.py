@@ -27,6 +27,7 @@ import cli_log as log
 from sonic_cli_acl import pcp_map
 from sonic_cli_acl import dscp_map
 from natsort import natsorted
+import sonic_cli_acl
 
 
 fbs_client = cc.ApiClient()
@@ -129,7 +130,7 @@ def __match_mac_address(addr_type, args):
                       classifier_name=args[0], addr_type=addr_type)
 
     if 'mac' == args[1]:
-        value = args[2] if args[2] != 'host' else args[3]
+        value = "{}/{}".format(args[2], args[3]) if args[2] != 'host' else args[3]
         value = value.split('/')
         for idx in range(len(value)):
             value[idx] = __format_mac_addr(value[idx])
@@ -320,7 +321,7 @@ def clear_match_layer4_port(args):
 
         return fbs_client.put(keypath, data)
     else:
-        print('Error:{}'.format(response.error_message()))
+        print(response.error_message())
 
 
 def __convert_tcp_flags(flags):
@@ -521,7 +522,7 @@ def set_policer_action(args):
             print('%Error: Unknown argument {}'.format(args[index]))
             return
 
-        data[key] = int(value)
+        data[key] = value
         index += 2
 
     body["POLICY_SECTIONS_TABLE_LIST"] = [data]
@@ -547,7 +548,7 @@ def clear_policer_action(args):
 
         return fbs_client.put(keypath, data)
     else:
-        print('Error:{}'.format(response.error_message()))
+        print(response.error_message())
 
 
 def set_mirror_session_action(args):
@@ -662,19 +663,84 @@ def show_policy_summary(args):
 
 
 def show_policy(args):
-    print('Not implemented')
+    body = {"sonic-flow-based-services:input": {}}
+    if len(args) > 1:
+        body = {"sonic-flow-based-services:input": {"TYPE": args[1].upper()}}
+    elif len(args) == 1:
+        policy_name = args[0]
+        body = {"sonic-flow-based-services:input": {"POLICY_NAME": policy_name}}
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_policy')
+    return fbs_client.post(keypath, body)
 
 
 def show_classifier(args):
-    print('Not implemented')
+    body = {"sonic-flow-based-services:input": {}}
+    if len(args) > 1:
+        body = {"sonic-flow-based-services:input": {"MATCH_TYPE": args[1].upper()}}
+    elif len(args) == 1:
+        body = {"sonic-flow-based-services:input": {"CLASSIFIER_NAME": args[0]}}
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_classifier')
+    return fbs_client.post(keypath, body)
 
 
 def show_details_by_policy(args):
-    print('Not implemented')
+    body = {"sonic-flow-based-services:input": dict()}
+    if len(args) > 0:
+        body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
+    if len(args) > 1:
+        if args[1] == "interface":
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+        else:
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
+    return fbs_client.post(keypath, body)
 
 
 def show_details_by_interface(args):
-    print('Not implemented')
+    body = {"sonic-flow-based-services:input": dict()}
+    if args[0] == "Switch":
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+        if len(args) == 3:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[2]
+    else:
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
+        if len(args) == 4:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[3]
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
+    return fbs_client.post(keypath, body)
+
+
+def clear_details_by_policy(args):
+    body = {"sonic-flow-based-services:input": dict()}
+    if len(args) > 0:
+        body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
+    if len(args) > 1:
+        if args[1] == "interface":
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+        else:
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
+    return fbs_client.post(keypath, body)
+
+
+def clear_details_by_interface(args):
+    body = {"sonic-flow-based-services:input": dict()}
+    if args[0] == "Switch":
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+        if len(args) == 3:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[2]
+    else:
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
+        if len(args) == 4:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[3]
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
+    return fbs_client.post(keypath, body)
 
 
 ########################################################################################################################
@@ -711,6 +777,7 @@ def handle_generic_delete_response(response, args, op_str):
         return -1
     else:
         return 0
+
 
 def __natsort_intf_prio(ifname):
     if ifname[0].startswith('Ethernet'):
@@ -768,25 +835,134 @@ def handle_show_policy_summary_response(response, args, op_str):
             print(response.error_message())
 
 
+def policy_util_form_ip_nexthop_list(if_name, remote_if_list):
+    ip_nexthop_dict = {}
+    ip_nexthop_list = []
+    return ip_nexthop_dict, ip_nexthop_list
+
+
 def handle_show_policy_response(response, args, op_str):
-    pass
+    if response.ok():
+        if response.content is not None and bool(response.content):
+            render_data = OrderedDict()
+
+            output = response.content["sonic-flow-based-services:output"]["POLICY_LIST"]
+            policy_names = []
+            data = dict()
+            for entry in output:
+                policy_names.append(entry["POLICY_NAME"])
+                data[entry["POLICY_NAME"]] = entry
+
+            policy_names = natsorted(policy_names)
+            for name in policy_names:
+                render_data[name] = OrderedDict()
+                policy_data = data[name]
+                render_data[name]["TYPE"] = policy_data["TYPE"].lower()
+                render_data[name]["DESCRIPTION"] = policy_data.get("DESCRIPTION", "")
+
+                render_data[name]["FLOWS"] = OrderedDict()
+                flows = dict()
+                for flow in policy_data.get("FLOWS", list()):
+                    flows[flow["PRIORITY"]] = flow
+
+                flow_keys = natsorted(flows.keys(), reverse=True)
+                for flow in flow_keys:
+                    render_data[name]["FLOWS"][flow] = flows[flow]
+
+                render_data[name]["APPLIED_INTERFACES"] = policy_data.get("APPLIED_INTERFACES", [])
+            show_cli_output('show_policy.j2', render_data)
+    else:
+        print(response.error_message())
 
 
 def handle_show_classifier_response(response, args, op_str):
-    pass
+    if response.ok():
+        if response.content is not None and bool(response.content):
+            output = response.content["sonic-flow-based-services:output"]["CLASSIFIER_LIST"]
+            render_data = OrderedDict()
+            output_dict = dict()
+            for entry in output:
+                output_dict[entry["CLASSIFIER_NAME"]] = entry
+            sorted_keys = natsorted(output_dict.keys())
+            for key in sorted_keys:
+                render_data[key] = output_dict[key]
+
+            # TODO Sort references also
+            show_cli_output('show_classifier.j2',
+                            render_data,
+                            mac_addr_to_user_fmt=sonic_cli_acl.mac_addr_to_user_fmt,
+                            ip_addr_to_user_fmt=sonic_cli_acl.convert_ip_addr_to_user_fmt,
+                            ip_proto_to_user_fmt=sonic_cli_acl.ip_protocol_to_user_fmt,
+                            tcp_flags_to_user_fmt=sonic_cli_acl.tcp_flags_to_user_fmt)
+    else:
+        print(response.error_message())
 
 
-def handle_show_details_by_policy_response(response, args, op_str):
-    pass
+def handle_show_service_policy_details_response(response, args, op_str):
+    if response.ok():
+        if response.content is not None and bool(response.content):
+            output = response.content["sonic-flow-based-services:output"]["INTERFACES"]
+            render_data = OrderedDict()
+            output_dict = dict()
+            for entry in output:
+                output_dict[entry["INTERFACE_NAME"]] = entry
+
+            # sort by intf name
+            sorted_intfs = natsorted(output_dict.keys(), key=__natsort_intf_prio)
+            for intf_name in sorted_intfs:
+                intf_data = output_dict[intf_name]
+                render_data[intf_name] = OrderedDict()
+
+                # Assume ingress and egress. Will not be displayed if not present
+                render_data[intf_name]["ingress"] = OrderedDict()
+                render_data[intf_name]["egress"] = OrderedDict()
+
+                for policy_data in intf_data["APPLIED_POLICIES"]:
+                    # Sort policies applied by ingress and egress
+                    for stage in ["INGRESS", "EGRESS"]:
+                        policy_names = list()
+                        data = dict()
+                        if policy_data["STAGE"] == stage:
+                            policy_names.append(policy_data["POLICY_NAME"])
+                            data[policy_data["POLICY_NAME"]] = policy_data
+
+                        policy_names = natsorted(policy_names)
+                        for name in policy_names:
+                            policy_sort_data = OrderedDict()
+                            policy_data = data[name]
+                            policy_sort_data["TYPE"] = policy_data["TYPE"].lower()
+                            policy_sort_data["DESCRIPTION"] = policy_data.get("DESCRIPTION", "")
+                            policy_sort_data["FLOWS"] = OrderedDict()
+                            flows = dict()
+                            for flow in policy_data.get("FLOWS", list()):
+                                flows[flow["PRIORITY"]] = flow
+
+                            # Sort Policy flows by priority
+                            flow_keys = natsorted(flows.keys(), reverse=True)
+                            for flow in flow_keys:
+                                policy_sort_data["FLOWS"][flow] = flows[flow]
+
+                            render_data[intf_name][stage.lower()][name] = policy_sort_data
+
+            # Finally render the sorted data
+            show_cli_output('show_service_policy.j2', render_data)
+    else:
+        print(response.error_message())
 
 
-def handle_show_details_by_interface_response(response, args, op_str):
-    pass
+def handle_clear_details_by_policy_response(response, args, op_str):
+    if not response.ok():
+        print(response.error_message())
 
 
-########################################################################################################################
+def handle_clear_details_by_interface_response(response, args, op_str):
+    if not response.ok():
+        print(response.error_message())
+
+
+# ######################################################################################################################
 #
-########################################################################################################################
+# #######################################################################################################################
 
 request_handlers = {
     'create_policy': create_policy,
@@ -841,7 +1017,9 @@ request_handlers = {
     'show_classifier': show_classifier,
     'show_policy_summary': show_policy_summary,
     'show_details_by_policy': show_details_by_policy,
-    'show_details_by_interface': show_details_by_interface
+    'show_details_by_interface': show_details_by_interface,
+    'clear_details_by_policy': clear_details_by_policy,
+    'clear_details_by_interface': clear_details_by_interface
 }
 
 
@@ -897,8 +1075,10 @@ response_handlers = {
     'show_policy': handle_show_policy_response,
     'show_classifier': handle_show_classifier_response,
     'show_policy_summary': handle_show_policy_summary_response,
-    'show_details_by_policy': handle_show_details_by_policy_response,
-    'show_details_by_interface': handle_show_details_by_interface_response
+    'show_details_by_policy': handle_show_service_policy_details_response,
+    'show_details_by_interface': handle_show_service_policy_details_response,
+    'clear_details_by_policy': handle_clear_details_by_policy_response,
+    'clear_details_by_interface': handle_clear_details_by_interface_response
 }
 
 

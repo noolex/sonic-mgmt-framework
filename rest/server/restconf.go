@@ -35,6 +35,11 @@ const restconfPathPrefix = "/restconf/"
 const restconfDataPathPrefix = "/restconf/data/"
 const restconfOperPathPrefix = "/restconf/operations/"
 
+// restconfCapabilities defines server capabilities
+var restconfCapabilities struct {
+	depth bool // depth query parameter
+}
+
 func init() {
 
 	// Metadata discovery handler
@@ -97,8 +102,10 @@ func capabilityHandler(w http.ResponseWriter, r *http.Request) {
 	c.Capabilities.Capability = append(c.Capabilities.Capability,
 		"urn:ietf:params:restconf:capability:defaults:1.0?basic-mode=report-all")
 
-	c.Capabilities.Capability = append(c.Capabilities.Capability,
-		"urn:ietf:params:restconf:capability:depth:1.0")
+	if restconfCapabilities.depth {
+		c.Capabilities.Capability = append(c.Capabilities.Capability,
+			"urn:ietf:params:restconf:capability:depth:1.0")
+	}
 
 	var data []byte
 	if strings.HasSuffix(r.URL.Path, "/capabilities") {
@@ -146,6 +153,10 @@ func parseRestconfQueryParams(args *translibArgs, r *http.Request) error {
 // parseDepthParam parses query parameter value for "depth" parameter.
 // See https://tools.ietf.org/html/rfc8040#section-4.8.2
 func parseDepthParam(v []string, r *http.Request) (uint, error) {
+	if !restconfCapabilities.depth {
+		return 0, httpError(http.StatusBadRequest, "Unsupported query parameter '%s'", "depth")
+	}
+
 	if r.Method != "GET" && r.Method != "HEAD" {
 		return 0, httpError(http.StatusBadRequest,
 			"%s does not support 'depth' query parameter", r.Method)

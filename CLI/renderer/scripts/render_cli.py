@@ -127,8 +127,10 @@ def write(t_str):
             else:
                 q = _write(s_str)
             if q:
-                break
-def show_cli_output(template_file, response):
+                return True
+    return False
+
+def show_cli_output(template_file, response, **kwargs):
     # Create the jinja2 environment.
     # Notice the use of trim_blocks, which greatly helps control whitespace.
 
@@ -150,5 +152,5 @@ def show_cli_output(template_file, response):
         pipestr().write(full_cmd.split())
 
     if response:
-        t_str = (j2_env.get_template(template_file).render(json_output=response))
-        write(t_str)
+        t_str = (j2_env.get_template(template_file).render(json_output=response, **kwargs))
+        return write(t_str)

@@ -105,8 +105,9 @@
 #include "../shared/utils.h"      /* strneq(), startswith(), cpy2buf(), join() */
 
 #include "missing-memfd_create.h" /* memfd_create() if missing from sys/mman.h */
-#include "name_service_proxy.h"   /* name_service_proxy_c, dispatcher */
+#include "name_service_proxy.h"   /* name_service_proxy_c */
 #include "SYSLOG.h"               /* SYSLOG(), SYSLOG_CONDITIONAL*/
+
 
 //##############################################################################
 // Local configuration parameters
@@ -161,7 +162,7 @@ static void read_cmdline()
         }
 
         // Delete trailing spaces, tabs, and newline chars.
-        char * p = &buffer[strcspn(buffer, "\n\r")];
+        char * p = &buffer[strcspn(buffer, "\n\r") - 1];
         while ((p >= buffer) && (*p == ' ' || *p == '\t' || *p == '\0'))
         {
             *p-- = '\0';
@@ -245,6 +246,27 @@ static uint64_t get_now_nsec()
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
     return (now.tv_sec * 1000000000ULL) + now.tv_nsec;
+}
+
+static DBus::Connection  & get_dbusconn()
+{
+    static DBus::Connection  * conn_p = nullptr;
+    if (conn_p == nullptr)
+    {
+        // DBus::BusDispatcher is a "main loop" construct that
+        // handles (i.e. dispatched) DBus messages. This should
+        // be defined as a singleton to avoid memory leaks.
+        static DBus::BusDispatcher dispatcher;
+
+        // DBus::default_dispatcher must be initialized before DBus::Connection.
+        DBus::default_dispatcher = &dispatcher;
+
+        static DBus::Connection conn = DBus::Connection::SystemBus();
+
+        conn_p = &conn;
+    }
+
+    return *conn_p;
 }
 
 
@@ -380,9 +402,7 @@ enum nss_status _nss_ham_getpwnam_r(const char    * name,
 
     try
     {
-        DBus::default_dispatcher   = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::Connection      conn = DBus::Connection::SystemBus();
-        name_service_proxy_c  ns(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        name_service_proxy_c  ns(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
         ham_data = ns.getpwnam(name);
     }
     catch (DBus::Error & ex)
@@ -446,9 +466,7 @@ enum nss_status _nss_ham_getpwuid_r(uid_t           uid,
 
     try
     {
-        DBus::default_dispatcher   = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::Connection      conn = DBus::Connection::SystemBus();
-        name_service_proxy_c  ns(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        name_service_proxy_c  ns(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
         ham_data = ns.getpwuid(uid);
     }
     catch (DBus::Error & ex)
@@ -502,9 +520,7 @@ enum nss_status _nss_ham_setpwent(void)
 
         try
         {
-            DBus::default_dispatcher   = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-            DBus::Connection      conn = DBus::Connection::SystemBus();
-            name_service_proxy_c  ns(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+            name_service_proxy_c  ns(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
             contents = ns.getpwcontents();
         }
         catch (DBus::Error & ex)
@@ -760,9 +776,7 @@ enum nss_status _nss_ham_getgrnam_r(const char    * name,
 
     try
     {
-        DBus::default_dispatcher   = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::Connection      conn = DBus::Connection::SystemBus();
-        name_service_proxy_c  ns(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        name_service_proxy_c  ns(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
         ham_data = ns.getgrnam(name);
     }
     catch (DBus::Error & ex)
@@ -821,9 +835,7 @@ enum nss_status _nss_ham_getgrgid_r(gid_t           gid,
 
     try
     {
-        DBus::default_dispatcher   = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::Connection      conn = DBus::Connection::SystemBus();
-        name_service_proxy_c  ns(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        name_service_proxy_c  ns(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
         ham_data = ns.getgrgid(gid);
     }
     catch (DBus::Error & ex)
@@ -874,9 +886,7 @@ enum nss_status _nss_ham_setgrent(void)
 
         try
         {
-            DBus::default_dispatcher   = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-            DBus::Connection      conn = DBus::Connection::SystemBus();
-            name_service_proxy_c  ns(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+            name_service_proxy_c  ns(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
             contents = ns.getgrcontents();
         }
         catch (DBus::Error & ex)
@@ -1078,9 +1088,7 @@ enum nss_status _nss_ham_getspnam_r(const char    * name,
 
     try
     {
-        DBus::default_dispatcher   = &dispatcher; // DBus::default_dispatcher must be initialized before DBus::Connection.
-        DBus::Connection      conn = DBus::Connection::SystemBus();
-        name_service_proxy_c  ns(conn, DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
+        name_service_proxy_c  ns(get_dbusconn(), DBUS_BUS_NAME_BASE, DBUS_OBJ_PATH_BASE);
         ham_data = ns.getspnam(name);
     }
     catch (DBus::Error & ex)

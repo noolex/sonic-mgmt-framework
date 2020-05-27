@@ -121,7 +121,7 @@ int pyobj_set_rest_token(const char *token) {
 
 int call_pyobj(char *cmd, const char *arg) {
     int ret_code = 0;
-    char *token[20];
+    char *token[128];
     char buf[1024]; 
     int i;
 
@@ -144,6 +144,8 @@ int call_pyobj(char *cmd, const char *arg) {
     name = PyBytes_FromString(token[0]);
     module = PyImport_Import(name);
     if (module == NULL) {
+        lub_dump_printf("%%Error: Internal error.\n");
+        syslog(LOG_WARNING, "clish_pyobj: Failed to load module %s", token[0]);
         pyobj_handle_error();
         Py_XDECREF(name);
         PyGILState_Release(gstate);

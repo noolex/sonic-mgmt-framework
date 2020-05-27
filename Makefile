@@ -26,7 +26,6 @@ MGMT_COMMON_DIR := $(abspath ../sonic-mgmt-common)
 
 GO      ?= /usr/local/go/bin/go
 GOPATH  ?= /tmp/go
-RMDIR   ?= rm -rf
 INSTALL := /usr/bin/install
 
 MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
@@ -34,7 +33,7 @@ MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
 GO_MOD   = go.mod
 GO_DEPS  = vendor/.done
 
-export TOPDIR MGMT_COMMON_DIR GO GOPATH RMDIR
+export TOPDIR MGMT_COMMON_DIR GO GOPATH 
 
 .PHONY: all
 all: rest cli ham
@@ -48,8 +47,10 @@ $(GO_DEPS): $(GO_MOD)
 	$(MGMT_COMMON_DIR)/patches/apply.sh vendor
 	touch  $@
 
+go-deps: $(GO_DEPS)
+
 go-deps-clean:
-	$(RMDIR) vendor
+	$(RM) -r vendor
 
 cli: 
 	$(MAKE) -C CLI
@@ -98,17 +99,14 @@ install:
 	$(INSTALL) -d $(DESTDIR)/usr/bin/
 	cp -rf $(TOPDIR)/build/rest_server/dist/ui/ $(DESTDIR)/rest_ui/
 	cp -rf $(TOPDIR)/build/cli $(DESTDIR)/usr/sbin/
-	rsync -a --exclude="test" --exclude="docs" build/swagger_client_py $(DESTDIR)/usr/sbin/lib/
+	rsync -a --exclude="test" --exclude="docs" build/openapi_client_py $(DESTDIR)/usr/sbin/lib/
 	
-	$(INSTALL) -d $(DESTDIR)/etc/dbus-1/system.d
 	$(INSTALL) -d $(DESTDIR)/lib/systemd/system
 	
 	# Scripts for Host Account Management (HAM)
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/etc/dbus-1/system.d/* $(DESTDIR)/etc/dbus-1/system.d/
-	$(INSTALL) -d $(DESTDIR)/etc/sonic/hamd/
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/etc/sonic/hamd/*      $(DESTDIR)/etc/sonic/hamd/
+	rsync --archive --verbose --no-owner --no-group $(TOPDIR)/ham/hamd/etc $(DESTDIR)
 	$(INSTALL) -D $(TOPDIR)/ham/hamd/lib/systemd/system/*  $(DESTDIR)/lib/systemd/system/
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/usr/bin/*             $(DESTDIR)/usr/bin/
+
 	$(INSTALL) -D $(TOPDIR)/ham/hamd/hamd     $(DESTDIR)/usr/sbin/.
 	$(INSTALL) -D $(TOPDIR)/ham/hamctl/hamctl $(DESTDIR)/usr/bin/.
 	$(INSTALL) -d $(DESTDIR)/lib/x86_64-linux-gnu/
@@ -127,8 +125,11 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 
 clean: rest-clean models-clean
 	(cd ham; ./build.sh clean)
-	git check-ignore debian/* | xargs -r $(RMDIR)
+	git check-ignore debian/* | xargs -r $(RM) -r
+	$(RM) -r debian/.debhelper
+	$(RM) -r $(BUILD_DIR)
 
 cleanall: clean
-	$(RMDIR) $(BUILD_DIR)
+	git clean -fX tools CLI
+	$(RM) tools/swagger_codegen/swagger-codegen*.jar
 

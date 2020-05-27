@@ -9,7 +9,7 @@ import (
 func BasicAuthenAndAuthor(r *http.Request, rc *RequestContext) error {
 
 	username, passwd, authOK := r.BasicAuth()
-	if authOK == false {
+	if !authOK {
 		glog.Errorf("[%s] User info not present", rc.ID)
 		return httpError(http.StatusUnauthorized, "")
 	}
@@ -17,7 +17,7 @@ func BasicAuthenAndAuthor(r *http.Request, rc *RequestContext) error {
 	glog.Infof("[%s] Received user=%s", rc.ID, username)
 
 	auth_success, err := UserPwAuth(username, passwd)
-	if auth_success == false {
+	if !auth_success {
 		glog.Infof("[%s] Failed to authenticate; %v", rc.ID, err)
 		return httpError(http.StatusUnauthorized, "")
 	}
