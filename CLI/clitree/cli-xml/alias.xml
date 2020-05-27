@@ -34,7 +34,7 @@ limitations under the License.
             mode="subcommand"
             >
         </PARAM>
-     <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST=localhost/aliasMode body={"sonic-device-metadata:aliasMode": true}</ACTION>
+     <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST=localhost/intf_naming_mode body={"sonic-device-metadata:intf_naming_mode": "alias"}</ACTION>
      </COMMAND>
 
      <COMMAND
@@ -48,7 +48,7 @@ limitations under the License.
             mode="subcommand"
             >
         </PARAM>
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST=localhost/aliasMode</ACTION>
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST=localhost/intf_naming_mode</ACTION>
      </COMMAND>
 
    </VIEW>

@@ -37,7 +37,7 @@ def invoke_api(func, args=[]):
 
     # Get Alias Mode
     if func == 'get_sonic_device_metadata_sonic_device_metadata_device_metadata_device_metadata_list_aliasmode':
-        path = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/aliasMode', name="localhost")
+        path = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode', name="localhost")
         return api.get(path)
 
     else:
@@ -52,7 +52,7 @@ def run(func, args):
                 # Get Command Output
                 api_response = response.content
                 if not api_response:
-                    api_response = {'sonic-device-metadata:aliasMode': False}
+                    api_response = {'sonic-device-metadata:intf_naming_mode': "native"}
                 show_cli_output(args[0], api_response)
  
     except Exception as e:

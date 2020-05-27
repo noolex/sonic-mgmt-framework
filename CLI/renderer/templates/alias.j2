@@ -1,10 +1,10 @@
-{% set alias = "disabled" %}
+{% set mode = "native" %}
 
-{% if 'sonic-device-metadata:aliasMode' in json_output %}
-{% if json_output['sonic-device-metadata:aliasMode'] == True %}
-{% set alias = "enabled" %}
+{% if 'sonic-device-metadata:intf_naming_mode' in json_output %}
+{% if json_output['sonic-device-metadata:intf_naming_mode'] == "alias" %}
+{% set mode = "alias" %}
 {% endif %}
 {% endif %}
 
-Alias mode is {{alias}}
+Interface naming mode is {{mode}}
 
