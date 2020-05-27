@@ -251,7 +251,7 @@ limitations under the License.
         <PARAM name="headroom" help="choose headroom as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="shared" help="choose shared as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
  </ACTION>
     </COMMAND>
     <COMMAND name="show threshold queue" help="Show queue threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
@@ -260,7 +260,7 @@ limitations under the License.
         <PARAM name="multicast" help="choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="CPU" help="choose threshold cpu queue" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
  </ACTION>
     </COMMAND>
     <COMMAND name="clear threshold"
@@ -1375,5 +1375,45 @@ limitations under the License.
 		</EXAMPLE>
 		</DOCGEN>
 	</COMMAND>
+    <COMMAND
+            name="scheduler-policy"
+            help="Scheduler Policy configuration">
+           <PARAM
+               name="sp_name"
+               help="Scheduler Policy name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION builtin="clish_pyobj"> sonic_cli_qos patch_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${cpu_ifname} ${sp_name}
+            </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    This command is used to configure scheduler policy of CPU interface.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to configure scheduler policy of CPU interface.
+                </USAGE>
+                <EXAMPLE summary="Configure scheduler policy of CPU interface.">
+                    sonic(conf-if-CPU)# scheduler-policy scheduler.cpu
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
+        <ACTION builtin="clish_restcl">
+             oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${cpu_ifname}/output/scheduler-policy/config/name
+        </ACTION>
+    	<DOCGEN>
+		<DESCRIPTION>
+			This command can be used to delete scheduler policy of an CPU interface .
+		</DESCRIPTION>
+		<USAGE>
+			Use this command to delete previously configured scheduler policy of an CPU interface.
+		</USAGE>
+		<EXAMPLE summary="Clear scheduler policy of an interface.">
+                sonic(conf-if-CPU)#no scheduler-policy
+			</EXAMPLE>
+		</DOCGEN>
+        </COMMAND>
 </VIEW>
 </CLISH_MODULE>
