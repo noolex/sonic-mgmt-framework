@@ -40,6 +40,16 @@ def get_keypath(func,args):
     rcvdIntfName = inputDict.get('intf')
     if rcvdIntfName == None:
         rcvdIntfName = ""
+    elif rcvdIntfName == "phy-if-name":
+        rcvdIntfName = inputDict.get('phyIf')
+    elif rcvdIntfName == "vlan-if-name":
+        rcvdIntfName = inputDict.get('vlanIf')
+    elif rcvdIntfName == "po-if-name":
+        rcvdIntfName = inputDict.get('poIf')
+    elif rcvdIntfName == "mgmt-if-name":
+        rcvdIntfName = inputDict.get('mgmtIf')
+    else:
+        rcvdIntfName = inputDict.get('intf')
 
     rcvdIpAddr = inputDict.get('ip')
     if rcvdIpAddr == None:

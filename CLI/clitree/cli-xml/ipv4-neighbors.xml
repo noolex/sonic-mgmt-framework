@@ -314,17 +314,39 @@ limitations under the License.
         help="clear ARP entries for this interface"
         name="clear ip arp interface">
         <PARAM
-            name="if-type"
-            help=""
-            ptype="INTF_TYPE">
-            <PARAM
-                name="if-id"
-                help="Numeric ID for the given interface type"
-                ptype="UINT">
+            name="interface-switch"
+            help="interface type"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+            <PARAM 
+                name="phy-if-name"
+                help="Clear Ethernet interface ARP entries"
+                ptype="PHY_INTERFACE"
+                >
             </PARAM>
+            <PARAM 
+                name="mgmt-if-name"
+                help="Clear Management interface ARP entries"
+                ptype="MGMT_INTERFACE"
+                >
+            </PARAM>
+            <PARAM 
+                name="po-if-name"
+                help="Clear PortChannel interface ARP entries"
+                ptype="PO_INTERFACE"
+                >
+            </PARAM>
+            <PARAM 
+                name="vlan-if-name"
+                help="Clear Vlan interface ARP entries"
+                ptype="VLAN_INTERFACE"
+                >
+            </PARAM>
+            
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 intf:${if-type}${if-id}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 intf:${interface-switch} phyIf:${phy-if-name} mgmtIf:eth0 vlanIf:${vlan-if-name} poIf:${po-if-name}&#xA;
         </ACTION>
     </COMMAND>
 

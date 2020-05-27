@@ -19,6 +19,11 @@ limitations under the License.
 <!ENTITY MAX_MTU         "9216">
 <!ENTITY ETH_PHY_NUM     "([0-9]|[1-9]([0-9])*)">
 <!ENTITY ETH_ALL_INTF    "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM;$)))">
+<!ENTITY SLOT            "([1])">
+<!ENTITY PORT            "([1-9]|[1-9][0-9]|[1-9][0-9][0-9])">
+<!ENTITY SUB_PORT        "([1-9]|[1-9][0-9])">
+<!ENTITY ETH_PHY_NUM_ALIAS     "(&SLOT;/&PORT;|&SLOT;/&PORT;/&SUB_PORT;)">
+<!ENTITY ETH_ALL_INTF_ALIAS    "(^[eE]([t]|(th))?\s*(&ETH_PHY_NUM_ALIAS;$))">
 <!ENTITY VLAN_NUM        "(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])">
 <!ENTITY VLAN_ALL_INTF   "(^[vV]([l]|(lan))?\s*&VLAN_NUM;$)">
 <!ENTITY VLAN_RNG        "(&VLAN_NUM;-&VLAN_NUM;)">
@@ -1057,8 +1062,19 @@ limitations under the License.
         name="PHY_INTERFACE"
         method="regexp_select"
         ext_pattern="Ethernet(port)"
+        alt_ext_pattern="Eth(slot/port[/subport])"
         pattern="&ETH_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_ALIAS;"
         help="EthernetNUM"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="ETH_PHY_SLOT_PORT_SUBPORT"
+        method="regexp_select"
+        ext_pattern="(slot/port[/subport])"
+        help="EthernetSLOTPORT"
+        pattern="&ETH_PHY_NUM_ALIAS;"
         />
     <!--=======================================================-->
     <PTYPE

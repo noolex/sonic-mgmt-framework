@@ -157,7 +157,7 @@ limitations under the License.
             name="addr"
             help="IP address with mask"
             ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${iface} ${addr}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${iface_uri} ${addr}</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -170,7 +170,7 @@ limitations under the License.
             optional="true"
             ptype="IP_ADDR_MASK"
             />
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface_uri} ${addr} True</ACTION>
     </COMMAND>
 
     <COMMAND

@@ -306,17 +306,38 @@ limitations under the License.
         help="clear NDP entries for this interface"
         name="clear ipv6 neighbors interface">
         <PARAM
-            name="if-type"
-            help=""
-            ptype="INTF_TYPE">
+            name="interface-switch"
+            help="interface type"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
             <PARAM
-                name="if-id"
-                help="Numeric ID for the given interface type"
-                ptype="UINT">
+                name="phy-if-name"
+                help="Clear Ethernet interface NDP entries"
+                ptype="PHY_INTERFACE"
+                >
+            </PARAM>
+            <PARAM
+                name="mgmt-if-name"
+                help="Clear Management interface NDP entries"
+                ptype="MGMT_INTERFACE"
+                >
+            </PARAM>
+            <PARAM
+                name="po-if-name"
+                help="Clear PortChannel interface NDP entries"
+                ptype="PO_INTERFACE"
+                >
+            </PARAM>
+            <PARAM
+                name="vlan-if-name"
+                help="Clear Vlan interface NDP entries"
+                ptype="VLAN_INTERFACE"
+                >
             </PARAM>
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 intf:${if-type}${if-id}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 intf:${interface-switch} phyIf:${phy-if-name} mgmtIf:eth0 vlanIf:${vlan-if-name} poIf:${po-if-name}&#xA;
         </ACTION>
     </COMMAND>
 

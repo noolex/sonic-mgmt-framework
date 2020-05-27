@@ -22,8 +22,56 @@ limitations under the License.
     xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
     http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
+    <VAR name="phyifname" dynamic="true">
+        <ACTION>echo -n "${phy-if-name}" | sed 's#/#%2f#g'</ACTION>
+    </VAR>
+
+    <VIEW name="hidden-view">
+        <COMMAND
+            name="show interface Ethernet"
+            help=""
+            ptype="SUBCOMMAND"
+            mode="subcommand">
+            <PARAM
+                name="iface_num"
+                help="Ethernet interface number"
+                ptype="UINT"
+                optional="true">
+            </PARAM>
+            <ACTION>
+                if test "${iface_num}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Ethernet${iface_num} show_interface_id.j2
+${__full_line}&#xA;
+            fi&#xA;
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="show interface Eth"
+            help=""
+            ptype="SUBCOMMAND"
+            mode="subcommand">
+            <PARAM
+                name="iface_num"
+                help="Ethernet interface number"
+                ptype="ETH_PHY_SLOT_PORT_SUBPORT"
+                optional="true">
+            </PARAM>
+            <ACTION>
+                if test "${iface_num}" = ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Eth${iface_num} show_interface_id.j2
+${__full_line}&#xA;
+                fi&#xA;
+            </ACTION>
+        </COMMAND>
+    </VIEW>
 
     <VIEW name="enable-view">
+    <NAMESPACE ref="hidden-view" help="false" completion="false"/>
     <!--show interface -->
     <COMMAND
          name="show interface"
@@ -45,18 +93,10 @@ limitations under the License.
              </PARAM>
              <!-- show interface Ethernet [<id>] -->
              <PARAM
-                 name="Ethernet"
-                 help="Physical interface"
-                 ptype="SUBCOMMAND"
-                 mode="subcommand"
+                 name="phy-if-name"
+                 help="Physical Interface"
+                 ptype="PHY_INTERFACE"
                  >
-                 <PARAM
-                    name="phy-if-id"
-                    help="Physical interface"
-                    ptype="UINT"
-                    optional="true"
-                    >
-                 </PARAM>
              </PARAM>
 	         <!-- show interface PortChannel-->
 	         <PARAM
@@ -156,10 +196,10 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Loopback${lo-id} show_interface_loopback.j2 ${__full_line}&#xA;
             fi&#xA;
         else&#xA;
-            if test "${phy-if-id}" = ""; then&#xA;
+            if test "${phy-if-name}" = ""; then&#xA;
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
             else&#xA;
-            python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Ethernet${phy-if-id} show_interface_id.j2 ${__full_line}&#xA;
+            python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface ${phy-if-name} show_interface_id.j2 ${__full_line}&#xA;
             fi&#xA;
         fi
    </ACTION>
@@ -325,7 +365,7 @@ limitations under the License.
                 help="Enter Physical interface global configuration"
                 ptype="PHY_INTERFACE"
                 view="configure-if-view"
-                viewid="iface=${phy-if-name}"
+                viewid="iface=${phy-if-name};iface_uri=${phyifname}"
         />
         <PARAM
                 name="vlan-if-name"
@@ -588,12 +628,12 @@ limitations under the License.
                 name="desc"
                 help="Textual description of the interface"
                 ptype="STRING" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
             help="Remove description" >
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
         </COMMAND>
         <COMMAND
             name="mtu"
@@ -602,12 +642,12 @@ limitations under the License.
                 name="mtu"
                 help="MTU of the interface"
                 ptype="RANGE_MTU" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
         </COMMAND>
         <COMMAND
             name="no mtu"
             help="Remove MTU">
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/mtu body={"openconfig-interfaces:mtu": 9100}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/mtu body={"openconfig-interfaces:mtu": 9100}</ACTION>
         </COMMAND>
         <COMMAND
             name="speed"
@@ -616,12 +656,12 @@ limitations under the License.
                 name="speed"
                 help="Speed config of the interface"
                 ptype="INTF_SPEED" />
-            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface} ${speed}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface_uri} ${speed}</ACTION>
         </COMMAND>
         <COMMAND
             name="no speed"
             help="Set default speed config">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body={"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/port-speed body = {"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
         </COMMAND>
         <COMMAND
             name="channel-group"
@@ -634,23 +674,23 @@ limitations under the License.
                 ptype="LAG_ID"
             >
         </PARAM>
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id body={"openconfig-if-aggregate:aggregate-id": "${lag-id}"}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id body={"openconfig-if-aggregate:aggregate-id": "${lag-id}"}</ACTION>
         </COMMAND>
 
         <COMMAND
             name="no channel-group"
             help="Remove from PortChannel group">
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id</ACTION>
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id</ACTION>
         </COMMAND>
         <COMMAND
             name="shutdown"
             help="Disable the interface">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
         </COMMAND>
         <COMMAND
             name="no shutdown"
             help="Enable the interface">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
         </COMMAND>
 
         <COMMAND
@@ -675,7 +715,7 @@ limitations under the License.
                     ptype="VLAN_ID"
                     />
             </PARAM>
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config body={"openconfig-vlan:config": {"interface-mode": "ACCESS", "access-vlan": ${vlan-id}}}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config body={"openconfig-vlan:config": {"interface-mode": "ACCESS", "access-vlan": ${vlan-id}}}</ACTION>
         </COMMAND>
 
         <COMMAND
@@ -703,26 +743,26 @@ limitations under the License.
                         />
                 </PARAM>
             </PARAM>
-             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config ${iface} TRUNK ${vlan_id_list}</ACTION>
+             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config ${iface_uri} TRUNK ${vlan_id_list}</ACTION>
        </COMMAND>
 
        <COMMAND name="sflow" help="Interface sFlow settings"/>
        <COMMAND name="sflow sampling-rate" help="Set sampling-rate" ptype="SUBCOMMAND" mode="subcommand">
             <PARAM name="rate" help="Sampling rate" ptype="SFLOW_SAMPLING_RATE"/>
-            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface}/sample_rate body={"sonic-sflow:sample_rate": ${rate}}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/sample_rate body={"sonic-sflow:sample_rate": ${rate}}</ACTION>
        </COMMAND>
 
        <COMMAND name="sflow enable" help="Enable sflow" ptype="SUBCOMMAND" mode="subcommand">
-            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface}/admin_state body={"sonic-sflow:admin_state": "up"}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/admin_state body={"sonic-sflow:admin_state": "up"}</ACTION>
        </COMMAND>
 
        <COMMAND name="no sflow" help="Interface sFlow settings"/>
        <COMMAND name="no sflow enable" help="Disable sflow">
-            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface}/admin_state body={"sonic-sflow:admin_state": "down"}</ACTION>
+            <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/admin_state body={"sonic-sflow:admin_state": "down"}</ACTION>
        </COMMAND>
 
        <COMMAND name="no sflow sampling-rate" help="Set sampling rate to default" ptype="SUBCOMMAND" mode="subcommand">
-            <ACTION builtin="clish_restcl">oper=DELETE url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface}/sample_rate</ACTION>
+            <ACTION builtin="clish_restcl">oper=DELETE url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/sample_rate</ACTION>
        </COMMAND>
 
        <COMMAND name="no switchport" help="Remove switchport paramaters"/>
@@ -739,7 +779,7 @@ limitations under the License.
                 mode="subcommand"
                 >
             </PARAM>
-            <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan</ACTION>
+            <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan</ACTION>
         </COMMAND>
 
         <COMMAND
@@ -767,7 +807,7 @@ limitations under the License.
                 />
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans ${iface} TRUNK ${vlan_id_list}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans ${iface_uri} TRUNK ${vlan_id_list}</ACTION>
         </COMMAND>
 	<COMMAND name="threshold" help="Configure priority-group/queue threshold on an interface."/>
 	<COMMAND name="threshold priority-group"
