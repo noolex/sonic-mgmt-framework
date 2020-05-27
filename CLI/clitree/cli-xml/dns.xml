@@ -43,7 +43,7 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_server_address ${nameserver}</ACTION>
     </COMMAND>
 
-    <COMMAND name="ip name-server source-intf"
+    <COMMAND name="ip name-server source-interface"
              help="Configure source interface to pick the source IP, used for the DNS query"
              ptype="SUBCOMMAND"
              mode="subcommand">
@@ -68,7 +68,7 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_dns delete_openconfig_dns_server_address ${nameserver}</ACTION>
     </COMMAND>
  
-    <COMMAND name="no ip name-server source-intf"
+    <COMMAND name="no ip name-server source-interface"
              help="Configure source interface to pick the source IP, used for the DNS query"
              ptype="SUBCOMMAND"
              mode="subcommand">

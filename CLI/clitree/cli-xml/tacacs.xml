@@ -102,7 +102,7 @@ limitations under the License.
     </COMMAND>
 
     <!-- tacacs src-intf -->
-    <COMMAND name="tacacs-server source-intf"
+    <COMMAND name="tacacs-server source-interface"
              help="Configure source interface to pick the source IP, used for the TACACS+ packets"
              ptype="SUBCOMMAND"
              mode="subcommand">
@@ -272,7 +272,7 @@ limitations under the License.
       </ACTION>
     </COMMAND>
 
-    <COMMAND name="no tacacs-server source-intf"
+    <COMMAND name="no tacacs-server source-interface"
              help="Unconfigure global source interface for TACACS">
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-intf
