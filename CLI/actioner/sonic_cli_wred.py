@@ -46,7 +46,7 @@ def invoke(func, args=[]):
                                                "red-drop-probability" : args[3],
                                                "wred-red-enable" : True} }
         return api.patch(path, body)
-    elif 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn':
+    elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config/ecn', name=args[0])
         ecn = args[1].upper()
         body = { "openconfig-qos-ext:"+func[PARAM_PATCH_PREFIX_LEN:] :  ecn }
@@ -58,7 +58,6 @@ def invoke(func, args=[]):
     elif func[0:PARAM_DELETE_PREFIX_LEN] == PARAM_DELETE_PREFIX:
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config/'+func[PARAM_DELETE_PREFIX_LEN:], name=args[0])
         return api.delete(path)
-
     return api.cli_not_implemented(func)
 
 
