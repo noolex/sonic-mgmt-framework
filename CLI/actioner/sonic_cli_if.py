@@ -643,12 +643,6 @@ def getSonicId(item):
     return _name_to_val(ifName)
 
 def run(func, args):
-<<<<<<< HEAD
-
-||||||| merged common ancestors
-   
-=======
->>>>>>> origin/broadcom_sonic_3.x_share
     if func == 'rpc_relay_clear':
         if not (args[0].startswith("Ethernet") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
            print("%Error: Invalid Interface")
