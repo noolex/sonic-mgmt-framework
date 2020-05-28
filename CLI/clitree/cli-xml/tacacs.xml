@@ -87,20 +87,6 @@ limitations under the License.
     <COMMAND name="tacacs-server"
              help="TACACS server configuration"/>
 
-    <!-- tacacs src-ip -->
-    <COMMAND name="tacacs-server source-ip"
-             help="Configure global source ip for TACACS"
-             ptype="SUBCOMMAND"
-             mode="subcommand">
-      <PARAM name="src-ip"
-             help=""
-             ptype="IPV4V6_ADDR">
-      </PARAM>
-      <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-address body={"openconfig-system-ext:source-address": "${src-ip}"}
-      </ACTION>
-    </COMMAND>
-
     <!-- tacacs src-intf -->
     <COMMAND name="tacacs-server source-interface"
              help="Configure source interface to pick the source IP, used for the TACACS+ packets"
@@ -262,13 +248,6 @@ limitations under the License.
       </PARAM>
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/servers/server=${address}/tacacs/config
-      </ACTION>
-    </COMMAND>
-
-    <COMMAND name="no tacacs-server source-ip"
-             help="Unconfigure global source ip for TACACS">
-      <ACTION
-          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-address
       </ACTION>
     </COMMAND>
 
