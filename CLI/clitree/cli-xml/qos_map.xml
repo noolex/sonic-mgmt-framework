@@ -44,6 +44,20 @@ limitations under the License.
             url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map=${name}
             body={"openconfig-qos-maps-ext:dscp-map": [{"name": "${name}"}]}
         </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command creates map to associates set of DSCP(Differentiated Services Code Point)
+            to Traffic classes. This map used to assign a traffic class to data packets on the 
+            basis of the received packets DSCP field.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to create DSCP to Traffic class entires map.
+          </USAGE>
+          <EXAMPLE summary="The following command creates DSCP to Traffic class entrie map.">
+            sonic# configure terminal
+            sonic(config)# dscp-tc-map dscp-map
+          </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <!-- no maps -->
@@ -53,9 +67,20 @@ limitations under the License.
             oper=DELETE
             url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map=${name}
         </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command delete DSCP to Traffic class entires map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to delete DSCP to Traffic class entries map.
+          </USAGE>
+          <EXAMPLE summary="The following command delete DSCP to Traffic class entries map">
+            sonic# configure terminal
+            sonic(config)# no dscp-tc-map dscp-map
+          </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
   </VIEW>
-
 
   <VIEW
     name="configure-dscp-tc-map-view"
@@ -70,27 +95,56 @@ limitations under the License.
         />
 
      <COMMAND name="dscp" help="DSCP value" mode="subcommand" ptype="SUBCOMMAND" >
-        <PARAM name="dscp" help="dscp value" ptype="STRING_32" >
+        <PARAM name="dscp" help="DSCP value (0-63)" ptype="RANGE_0_63" >
             <PARAM name="traffic-class" help="Traffic Class" mode="subcommand" ptype="SUBCOMMAND" >
-                <PARAM name="tc" help="Traffic-class value" ptype="STRING_32" >
+                <PARAM name="tc" help="Traffic-class value" ptype="RANGE_0_7" >
                 </PARAM>
             </PARAM>
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
             url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map=${map_name}/dscp-map-entries/dscp-map-entry=${dscp}
-            body={"openconfig-qos-maps-ext:dscp-map-entry": [{"dscp":${dscp}, "config": {"fwd_group": "${tc}"}}]}
+            body={"openconfig-qos-maps-ext:dscp-map-entry": [{"dscp":${dscp}, "config": {"fwd-group": "${tc}"}}]}
         </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command to add DSCP to Traffic class entry in map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to add entry to map DSCP to Traffic class.
+          </USAGE>
+          <EXAMPLE summary="The following command add entry to map DSCP to Traffic class">
+            sonic# configure terminal
+            sonic(config)# dscp 1 traffic-class 0
+            sonic(config)# dscp 2 traffic-class 0
+            sonic(config)# dscp 3 traffic-class 1
+          </EXAMPLE>
+        </DOCGEN>
+
       </COMMAND>
 
       <!-- no dscp-->
       <COMMAND name="no dscp" help="Unconfigure a mapping">
-        <PARAM name="dscp" help="dscp value" ptype="STRING_32" >
+        <PARAM name="dscp" help="DSCP value (0-63)" ptype="RANGE_0_63" >
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=DELETE
             url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map=${map_name}/dscp-map-entries/dscp-map-entry=${dscp}
         </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command to delete DSCP to Traffic class entry in map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to delete entry to map DSCP to Traffic class.
+          </USAGE>
+          <EXAMPLE summary="The following command delete entry to map DSCP to Traffic class">
+            sonic# configure terminal
+            sonic(config)# no dscp 1
+            sonic(config)# no dscp 2
+            sonic(config)# no dscp 3
+          </EXAMPLE>
+        </DOCGEN>
       </COMMAND>
   </VIEW>
 
@@ -99,10 +153,14 @@ limitations under the License.
 
     <!--show dscp-map -->
     <COMMAND name="show dscp-tc-map" help="Show configured dscp-tc-map">
-      <PARAM name="name" help="Name of the dscp-tc-map" ptype="STRING_32"> </PARAM>
-        <ACTION builtin="clish_pyobj">
-            sonic_cli_qos_map get_openconfig_qos_dscp_tc_map ${name} 
-        </ACTION>
+      <PARAM name="name" help="Name of the dscp-tc-map" ptype="STRING_32" optional="true"> </PARAM>
+      <ACTION>
+          if test "${name}" = "" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_qos_map.py get_openconfig_qos_maps_ext_qos_dscp_maps show_qos_map.j2&#xA;
+          else&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_qos_map.py get_openconfig_qos_maps_ext_qos_dscp_maps_dscp_map ${name} show_qos_map.j2&#xA;
+          fi&#xA;
+      </ACTION>
     </COMMAND>
   </VIEW>
 
