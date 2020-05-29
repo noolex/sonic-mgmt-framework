@@ -324,6 +324,10 @@ def get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshol
 
 def get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list(args):
 
+    if args[0] == 'do':
+        args[2] = args[3]
+        args[3] = args[4]
+
     if args[2] == 'queue' and args[3] == 'unicast':
         th_type = "q_shared_uni"
         renderer_template = "show_threshold_queue_unicast_config.j2"
