@@ -14,6 +14,7 @@ def invoke_api(func, args):
     body = None
     vrfname = ""
     prefix = ""
+    protocol_name = ""
     af = ""
     api = cc.ApiClient()
     i = 0
@@ -26,12 +27,14 @@ def invoke_api(func, args):
            af = "IPv6"
         elif "prefix" == arg:
            prefix = args[i+1]
+        elif "ospf" == arg:
+           protocol_name = "ospf"
         else:
            pass
         i = i + 1
 
     keypath = cc.Path('/restconf/operations/sonic-ip-show:show-ip-route')
-    body = {"sonic-ip-show:input": { "vrf-name": vrfname, "family": af, "prefix": prefix}}
+    body = {"sonic-ip-show:input": { "vrf-name": vrfname, "family": af, "prefix": prefix, "protocol-name": protocol_name}}
     response = api.post(keypath, body)
     return response
 
