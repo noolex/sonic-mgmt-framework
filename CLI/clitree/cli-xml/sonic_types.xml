@@ -977,6 +977,20 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_60_600"
+        method="integer"
+        pattern="60..600"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_31_60000"
+        method="integer"
+        pattern="31..60000"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_1_5000"
         method="integer"
         pattern="1..5000"
@@ -1225,6 +1239,13 @@ limitations under the License.
         name="RANGE_0_47"
         method="integer"
         pattern="0..47"
+        help=""
+        />
+    <!--=======================================================-->
+        <PTYPE
+        name="RANGE_1_180"
+        method="integer"
+        pattern="1..180"
         help=""
         />
     <!--=======================================================-->
