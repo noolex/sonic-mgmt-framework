@@ -670,7 +670,7 @@ def show_policy(args):
         policy_name = args[0]
         body = {"sonic-flow-based-services:input": {"POLICY_NAME": policy_name}}
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show-policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-policy')
     return fbs_client.post(keypath, body)
 
 
@@ -681,7 +681,7 @@ def show_classifier(args):
     elif len(args) == 1:
         body = {"sonic-flow-based-services:input": {"CLASSIFIER_NAME": args[0]}}
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show-classifier')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-classifier')
     return fbs_client.post(keypath, body)
 
 
@@ -695,7 +695,7 @@ def show_details_by_policy(args):
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show-service-policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)
 
 
@@ -710,7 +710,7 @@ def show_details_by_interface(args):
         if len(args) == 4:
             body["sonic-flow-based-services:input"]["TYPE"] = args[3]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show-service-policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)
 
 
