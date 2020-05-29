@@ -306,13 +306,13 @@ limitations under the License.
              name="addr"
              help="IPv6 address with mask"
              ptype="IPV6_ADDR_MASK" />
-      <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${vlan_name} ${addr}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_routed_vlan_ipv6_addresses_address_config ${vlan_name} ${addr}</ACTION>
       </COMMAND>
 
       <COMMAND
           name="ipv6 enable"
           help="Enable IPv6" >
-          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
+          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
       </COMMAND>
 
       <COMMAND
@@ -341,7 +341,7 @@ limitations under the License.
       <COMMAND
           name="no ipv6 enable"
           help="Disable IPv6" >
-          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
+          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/config/enabled </ACTION>
       </COMMAND>
     <COMMAND
         name="ipv6 neighbor"
