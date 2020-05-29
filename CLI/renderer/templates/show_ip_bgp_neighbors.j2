@@ -129,10 +129,10 @@
                 {% set n_messages = n_state['messages'] %}
                 {{-'                         Sent        Rcvd\n'}}
                 {{-'    Opens:'.ljust(25)-}}
-                {{-(n_messages['sent']['openconfig-bgp-ext:OPEN']|string).ljust(12)-}}
-                {{-(n_messages['received']['openconfig-bgp-ext:OPEN']|string)}}{{'\n'}}
-                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:OPEN']|int %}
-                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:OPEN']|int %}
+                {{-(n_messages['sent']['openconfig-bgp-ext:open']|string).ljust(12)-}}
+                {{-(n_messages['received']['openconfig-bgp-ext:open']|string)}}{{'\n'}}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:open']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:open']|int %}
                 {{-'    Notifications:'.ljust(25)-}}
                 {{-(n_messages['sent']['NOTIFICATION']|string).ljust(12)-}}
                 {{-(n_messages['received']['NOTIFICATION']|string)}}{{'\n'}}
@@ -144,20 +144,20 @@
                 {% set n_sent = n_sent + n_messages['sent']['UPDATE']|int %}
                 {% set n_rcvd = n_rcvd + n_messages['received']['UPDATE']|int %}
                 {{-'    Keepalive:'.ljust(25)-}}
-                {{-(n_messages['sent']['openconfig-bgp-ext:KEEPALIVE']|string).ljust(12)-}}
-                {{-(n_messages['received']['openconfig-bgp-ext:KEEPALIVE']|string)}}{{'\n'}}
-                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:KEEPALIVE']|int %}
-                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:KEEPALIVE']|int %}
+                {{-(n_messages['sent']['openconfig-bgp-ext:keepalive']|string).ljust(12)-}}
+                {{-(n_messages['received']['openconfig-bgp-ext:keepalive']|string)}}{{'\n'}}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:keepalive']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:keepalive']|int %}
                 {{-'    Route Refresh:'.ljust(25)-}}
-                {{-(n_messages['sent']['openconfig-bgp-ext:ROUTE-REFRESH']|string).ljust(12)-}}
-                {{-(n_messages['received']['openconfig-bgp-ext:ROUTE-REFRESH']|string)}}{{'\n'}}
-                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:ROUTE-REFRESH']|int %}
-                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:ROUTE-REFRESH']|int %}
+                {{-(n_messages['sent']['openconfig-bgp-ext:route-refresh']|string).ljust(12)-}}
+                {{-(n_messages['received']['openconfig-bgp-ext:route-refresh']|string)}}{{'\n'}}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:route-refresh']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:route-refresh']|int %}
                 {{-'    Capability:'.ljust(25)-}}
-                {{-(n_messages['sent']['openconfig-bgp-ext:CAPABILITY']|string).ljust(12)-}}
-                {{-(n_messages['received']['openconfig-bgp-ext:CAPABILITY']|string)}}{{'\n'}}
-                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:CAPABILITY']|int %}
-                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:CAPABILITY']|int %}
+                {{-(n_messages['sent']['openconfig-bgp-ext:capability']|string).ljust(12)-}}
+                {{-(n_messages['received']['openconfig-bgp-ext:capability']|string)}}{{'\n'}}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:capability']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:capability']|int %}
                 {{-'    Total:'.ljust(25)-}}
                 {{-(n_sent|string).ljust(12)-}}
                 {{-(n_rcvd|string)}}
