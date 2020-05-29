@@ -92,12 +92,12 @@ limitations under the License.
                 </PARAM>
                 <PARAM
                     name="ecmp"
-                    help="Configure ECMP mode"
+                    help="Configure ECMP"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
                     <PARAM
-                        name="reblance"
+                        name="rebalance"
                         help="Enable ECMP rebalance"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
@@ -135,10 +135,6 @@ limitations under the License.
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
-                    <PARAM
-                        help="Range 60-600 seconds"
-                        name="jpi"
-                        ptype="RANGE_60_600"></PARAM>
                 </PARAM>
                 <PARAM
                     name="keep-alive-timer"
@@ -146,10 +142,6 @@ limitations under the License.
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
-                    <PARAM
-                        help="Range 31-60000 seconds"
-                        name="kat"
-                        ptype="RANGE_31_60000"></PARAM>
                 </PARAM>
                 <PARAM
                     name="ssm"
@@ -163,10 +155,6 @@ limitations under the License.
                         ptype="SUBCOMMAND"
                         mode="subcommand"
                         optional="true">
-                        <PARAM
-                            help="Prefix list name"
-                            name="plst-name"
-                            ptype="STRING"></PARAM>
                     </PARAM>
                 </PARAM>
                 <PARAM
@@ -176,7 +164,7 @@ limitations under the License.
                     mode="subcommand"
                     optional="true">
                     <PARAM
-                        name="reblance"
+                        name="rebalance"
                         help="Enable ECMP rebalance"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
@@ -187,22 +175,30 @@ limitations under the License.
         </COMMAND>
     </VIEW>
 
-    <!-- ================ -->
-    <!-- Interface Config -->
-    <!-- ================ -->
-
+    <!-- =============== -->
+    <!-- Ethernet Config -->
+    <!-- =============== -->
     <VIEW name="configure-if-view">
         <MACRO name="BIND-INTF-TO-PIM" arg="${iface}"></MACRO>
     </VIEW>
 
+    <!-- ================== -->
+    <!-- PortChannel Config -->
+    <!-- ================== -->
     <VIEW name="configure-lag-view">
         <MACRO name="BIND-INTF-TO-PIM" arg="${po_name}"></MACRO>
     </VIEW>
 
+    <!-- =========== -->
+    <!-- VLAN Config -->
+    <!-- =========== -->
     <VIEW name="configure-vlan-view">
         <MACRO name="BIND-INTF-TO-PIM" arg="${vlan_name}"></MACRO>
     </VIEW>
 
+    <!-- =============== -->
+    <!-- Loopback Config -->
+    <!-- =============== -->
     <VIEW name="configure-lo-view">
         <MACRO name="BIND-INTF-TO-PIM" arg="${lo_name}"></MACRO>
     </VIEW>
