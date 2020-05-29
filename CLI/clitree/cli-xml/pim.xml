@@ -14,41 +14,42 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <CLISH_MODULE
     xmlns="http://www.dellemc.com/sonic/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xi="http://www.w3.org/2001/XInclude"
     xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
-    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
+    <VIEW name="enable-view">
 
-<VIEW name="enable-view">
-</VIEW>
+    </VIEW>
 
-<VIEW name="configure-view">
-    <COMMAND
-        name="ip pim"
-        help="PIM configuration">
-        <PARAM
-            name="vrf"
-            help="VRF name"
-            mode="subcommand"
-            optional="true"
-            ptype="SUBCOMMAND">
+    <!-- ============= -->
+    <!-- Global Config -->
+    <!-- ============= -->
+    <VIEW name="configure-view">
+        <COMMAND
+            name="ip pim"
+            help="PIM configuration">
             <PARAM
-                name="vrf-name"
-                help="Configure PIM for the given VRF name"
-                ptype="VRF_NAME">
+                name="vrf"
+                help="VRF name"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help="Configure PIM for the given VRF name"
+                    ptype="VRF_NAME"></PARAM>
             </PARAM>
-        </PARAM>
-        <PARAM
-            name="filter"
-            help="Pick one command among following options"
-            optional="true"
-            mode="switch"
-            order="true"
-            ptype="SUBCOMMAND">
+            <PARAM
+                name="filter"
+                help="Pick one command among following options"
+                optional="true"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
                 <PARAM
                     name="join-prune-interval"
                     help="Join prune interval in seconds"
@@ -58,8 +59,7 @@ limitations under the License.
                     <PARAM
                         help="Range 60-600 seconds"
                         name="jpi"
-                        ptype="RANGE_60_600">
-                    </PARAM>
+                        ptype="RANGE_60_600"></PARAM>
                 </PARAM>
                 <PARAM
                     name="keep-alive-timer"
@@ -70,8 +70,7 @@ limitations under the License.
                     <PARAM
                         help="Range 31-60000 seconds"
                         name="kat"
-                        ptype="RANGE_31_60000">
-                    </PARAM>
+                        ptype="RANGE_31_60000"></PARAM>
                 </PARAM>
                 <PARAM
                     name="ssm"
@@ -86,11 +85,10 @@ limitations under the License.
                         mode="subcommand"
                         optional="true">
                         <PARAM
-                                help="Prefix list name"
-                                name="plst-name"
-                                ptype="STRING">
-                        </PARAM>
-                     </PARAM>
+                            help="Prefix list name"
+                            name="plst-name"
+                            ptype="STRING"></PARAM>
+                    </PARAM>
                 </PARAM>
                 <PARAM
                     name="ecmp"
@@ -103,37 +101,34 @@ limitations under the License.
                         help="Enable ECMP rebalance"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
-                        optional="true">
-                     </PARAM>
+                        optional="true"></PARAM>
                 </PARAM>
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-<!-- no ip pim -->
-    <COMMAND
-        name="no ip pim"
-        help="PIM configuration">
-        <PARAM
-            name="vrf"
-            help="VRF name"
-            mode="subcommand"
-            optional="true"
-            ptype="SUBCOMMAND">
-            <PARAM
-                name="vrf-name"
-                help="Configure PIM for the given VRF name"
-                ptype="VRF_NAME">
             </PARAM>
-        </PARAM>
-        <PARAM
-            name="filter"
-            help="Pick one command among following options"
-            optional="true"
-            mode="switch"
-            order="true"
-            ptype="SUBCOMMAND">
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <!-- no ip pim -->
+        <COMMAND
+            name="no ip pim"
+            help="PIM configuration">
+            <PARAM
+                name="vrf"
+                help="VRF name"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help="Configure PIM for the given VRF name"
+                    ptype="VRF_NAME"></PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="Pick one command among following options"
+                optional="true"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
                 <PARAM
                     name="join-prune-interval"
                     help="Join prune interval in seconds"
@@ -143,8 +138,7 @@ limitations under the License.
                     <PARAM
                         help="Range 60-600 seconds"
                         name="jpi"
-                        ptype="RANGE_60_600">
-                    </PARAM>
+                        ptype="RANGE_60_600"></PARAM>
                 </PARAM>
                 <PARAM
                     name="keep-alive-timer"
@@ -155,8 +149,7 @@ limitations under the License.
                     <PARAM
                         help="Range 31-60000 seconds"
                         name="kat"
-                        ptype="RANGE_31_60000">
-                    </PARAM>
+                        ptype="RANGE_31_60000"></PARAM>
                 </PARAM>
                 <PARAM
                     name="ssm"
@@ -171,11 +164,10 @@ limitations under the License.
                         mode="subcommand"
                         optional="true">
                         <PARAM
-                                help="Prefix list name"
-                                name="plst-name"
-                                ptype="STRING">
-                        </PARAM>
-                     </PARAM>
+                            help="Prefix list name"
+                            name="plst-name"
+                            ptype="STRING"></PARAM>
+                    </PARAM>
                 </PARAM>
                 <PARAM
                     name="ecmp"
@@ -188,397 +180,30 @@ limitations under the License.
                         help="Enable ECMP rebalance"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
-                        optional="true">
-                     </PARAM>
+                        optional="true"></PARAM>
                 </PARAM>
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
+            </PARAM>
+            <ACTION></ACTION>
+        </COMMAND>
+    </VIEW>
 
-</VIEW>
+    <!-- ================ -->
+    <!-- Interface Config -->
+    <!-- ================ -->
 
-<!-- ======== -->
-<!-- Ethernet -->
-<!-- ======== -->
-<VIEW name="configure-if-view">
-    <COMMAND
-        name="ip pim"
-        help="Enable PIM on interface">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
+    <VIEW name="configure-if-view">
+        <MACRO name="BIND-INTF-TO-PIM" arg="${iface}"></MACRO>
+    </VIEW>
 
-    <COMMAND
-        name="ip pim sparse-mode"
-        help="Enable PIM sparse-mode">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
+    <VIEW name="configure-lag-view">
+        <MACRO name="BIND-INTF-TO-PIM" arg="${po_name}"></MACRO>
+    </VIEW>
 
-    <COMMAND
-        name="ip pim drpriority"
-        help="Set the designated router (DR) priority">
-        <PARAM
-            help="Range 1_4294967295"
-            name="drprio"
-            ptype="RANGE_1_4294967295">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
+    <VIEW name="configure-vlan-view">
+        <MACRO name="BIND-INTF-TO-PIM" arg="${vlan_name}"></MACRO>
+    </VIEW>
 
-    <COMMAND
-        name="ip pim hello"
-        help="Set the hello interval for PIM">
-        <PARAM
-            help="Range 1 to 180 in seconds"
-            name="pim-hello"
-            ptype="RANGE_1_180">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim bfd"
-        help="Enable BFD on PIM">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-<!-- no ip pim -->
-    <COMMAND
-        name="no ip pim"
-        help="Disable PIM on interface">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim sparse-mode"
-        help="Disable PIM sparse-mode">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim drpriority"
-        help="Clear the designated router (DR) priority">
-        <PARAM
-            help="Range 1_4294967295"
-            name="drprio"
-            ptype="RANGE_1_4294967295">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim hello"
-        help="Clear the hello interval for PIM">
-        <PARAM
-            help="Range 1 to 180 in seconds"
-            name="pim-hello"
-            ptype="RANGE_1_180">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim bfd"
-        help="Disable BFD on PIM">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-</VIEW>
-
-<!-- ======= -->
-<!--   LAG   -->
-<!-- ======= -->
-<VIEW name="configure-lag-view">
-    <COMMAND
-        name="ip pim"
-        help="Enable PIM on interface">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim sparse-mode"
-        help="Enable PIM sparse-mode">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim drpriority"
-        help="Set the designated router (DR) priority">
-        <PARAM
-            help="Range 1_4294967295"
-            name="drprio"
-            ptype="RANGE_1_4294967295">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim hello"
-        help="Set the hello interval for PIM">
-        <PARAM
-            help="Range 1 to 180 in seconds"
-            name="pim-hello"
-            ptype="RANGE_1_180">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim bfd"
-        help="Enable BFD on PIM">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-<!-- no ip pim -->
-    <COMMAND
-        name="no ip pim"
-        help="Disable PIM on interface">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim sparse-mode"
-        help="Disable PIM sparse-mode">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim drpriority"
-        help="Clear the designated router (DR) priority">
-        <PARAM
-            help="Range 1_4294967295"
-            name="drprio"
-            ptype="RANGE_1_4294967295">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim hello"
-        help="Clear the hello interval for PIM">
-        <PARAM
-            help="Range 1 to 180 in seconds"
-            name="pim-hello"
-            ptype="RANGE_1_180">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim bfd"
-        help="Disable BFD on PIM">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-</VIEW>
-
-<!-- ====== -->
-<!--  VLAN  -->
-<!-- ====== -->
-<VIEW name="configure-vlan-view">
-    <COMMAND
-        name="ip pim"
-        help="Enable PIM on interface">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim sparse-mode"
-        help="Enable PIM sparse-mode">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim drpriority"
-        help="Set the designated router (DR) priority">
-        <PARAM
-            help="Range 1_4294967295"
-            name="drprio"
-            ptype="RANGE_1_4294967295">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim hello"
-        help="Set the hello interval for PIM">
-        <PARAM
-            help="Range 1 to 180 in seconds"
-            name="pim-hello"
-            ptype="RANGE_1_180">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim bfd"
-        help="Enable BFD on PIM">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-<!-- no ip pim -->
-    <COMMAND
-        name="no ip pim"
-        help="Disable PIM on interface">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim sparse-mode"
-        help="Disable PIM sparse-mode">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim drpriority"
-        help="Clear the designated router (DR) priority">
-        <PARAM
-            help="Range 1_4294967295"
-            name="drprio"
-            ptype="RANGE_1_4294967295">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim hello"
-        help="Clear the hello interval for PIM">
-        <PARAM
-            help="Range 1 to 180 in seconds"
-            name="pim-hello"
-            ptype="RANGE_1_180">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim bfd"
-        help="Disable BFD on PIM">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-</VIEW>
-
-<!-- ======== -->
-<!-- Loopback -->
-<!-- ======== -->
-<VIEW name="configure-lo-view">
-    <COMMAND
-        name="ip pim"
-        help="Enable PIM on interface">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim sparse-mode"
-        help="Enable PIM sparse-mode">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim drpriority"
-        help="Set the designated router (DR) priority">
-        <PARAM
-            help="Range 1_4294967295"
-            name="drprio"
-            ptype="RANGE_1_4294967295">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim hello"
-        help="Set the hello interval for PIM">
-        <PARAM
-            help="Range 1 to 180 in seconds"
-            name="pim-hello"
-            ptype="RANGE_1_180">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="ip pim bfd"
-        help="Enable BFD on PIM">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-<!-- no ip pim -->
-    <COMMAND
-        name="no ip pim"
-        help="Disable PIM on interface">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim sparse-mode"
-        help="Disable PIM sparse-mode">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim drpriority"
-        help="Clear the designated router (DR) priority">
-        <PARAM
-            help="Range 1_4294967295"
-            name="drprio"
-            ptype="RANGE_1_4294967295">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim hello"
-        help="Clear the hello interval for PIM">
-        <PARAM
-            help="Range 1 to 180 in seconds"
-            name="pim-hello"
-            ptype="RANGE_1_180">
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no ip pim bfd"
-        help="Disable BFD on PIM">
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-</VIEW>
+    <VIEW name="configure-lo-view">
+        <MACRO name="BIND-INTF-TO-PIM" arg="${lo_name}"></MACRO>
+    </VIEW>
 </CLISH_MODULE>

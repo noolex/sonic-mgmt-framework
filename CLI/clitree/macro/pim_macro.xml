@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<ROOT>
+    <MACRODEF name="BIND-INTF-TO-PIM">
+        <COMMAND
+            name="ip pim"
+            help="Enable PIM on interface">
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="ip pim sparse-mode"
+            help="Enable PIM sparse-mode">
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="ip pim drpriority"
+            help="Set the designated router (DR) priority">
+            <PARAM
+                help="Range 1_4294967295"
+                name="drprio"
+                ptype="RANGE_1_4294967295"></PARAM>
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="ip pim hello"
+            help="Set the hello interval for PIM">
+            <PARAM
+                help="Range 1 to 180 in seconds"
+                name="pim-hello"
+                ptype="RANGE_1_180"></PARAM>
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="ip pim bfd"
+            help="Enable BFD on PIM">
+            <ACTION></ACTION>
+        </COMMAND>
+
+
+        <!-- no ip pim -->
+        <COMMAND
+            name="no ip pim"
+            help="Disable PIM on interface">
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="no ip pim sparse-mode"
+            help="Disable PIM sparse-mode">
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="no ip pim drpriority"
+            help="Clear the designated router (DR) priority">
+            <PARAM
+                help="Range 1_4294967295"
+                name="drprio"
+                ptype="RANGE_1_4294967295"></PARAM>
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="no ip pim hello"
+            help="Clear the hello interval for PIM">
+            <PARAM
+                help="Range 1 to 180 in seconds"
+                name="pim-hello"
+                ptype="RANGE_1_180"></PARAM>
+            <ACTION></ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="no ip pim bfd"
+            help="Disable BFD on PIM">
+            <ACTION></ACTION>
+        </COMMAND>
+    </MACRODEF>
+</ROOT>
