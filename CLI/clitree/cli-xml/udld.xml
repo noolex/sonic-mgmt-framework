@@ -363,7 +363,9 @@
         <COMMAND name="udld" help="UDLD interface configuration subcommands"/>
         <COMMAND name="no udld" help="UDLD interface configuration subcommands"/>
         <COMMAND name = "udld enable"
-            help = "Enable UDLD at interface level">
+            help = "Enable UDLD at interface level"
+            command_tables="sonic-udld:sonic-udld/UDLD_PORT/ifname={name}"
+            dbpath="sonic-udld:sonic-udld/UDLD_PORT/admin_enable=true">
             <ACTION builtin="clish_pyobj">sonic_cli_udld post_list_sonic_udld_sonic_udld_udld_port_udld_port_list ${iface}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -396,7 +398,9 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "udld aggressive"
-            help = "Enable aggressive mode UDLD at interface level">
+            help = "Enable aggressive mode UDLD at interface level"
+            command_tables="sonic-udld:sonic-udld/UDLD_PORT/ifname={name}"
+            dbpath="sonic-udld:sonic-udld/UDLD_PORT/aggressive=true">
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_port_udld_port_list_aggressive true ${iface}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
