@@ -339,22 +339,44 @@ def invoke_api(func, args=[]):
         responsePortTbl = api.get(path)
         if responsePortTbl.ok():
             d.update(responsePortTbl.content)
+	
+	path = cc.Path('/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST')
+        responseIntfVrfTbl =  api.get(path)
+        if responseIntfVrfTbl.ok():
+            d.update(responseIntfVrfTbl.content)
 
+	
         path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST')
         responsePortTbl = api.get(path)
         if responsePortTbl.ok():
             d.update(responsePortTbl.content)
-
+	
+	path = cc.Path('/restconf/data/sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST')
+        responseLoopVrfTbl =  api.get(path)
+        if responseLoopVrfTbl.ok():
+            d.update(responseLoopVrfTbl.content)
+	
         path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/LAG_TABLE/LAG_TABLE_LIST')
         responseLagTbl = api.get(path)
         if responseLagTbl.ok():
             d.update(responseLagTbl.content)
+	
+	path = cc.Path('/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST')
+        responseLagVrfTbl =  api.get(path)
+        if responseLagVrfTbl.ok():
+            d.update(responseLagVrfTbl.content)
 
         path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN_TABLE/VLAN_TABLE_LIST')
         responseVlanTbl =  api.get(path)
         if responseVlanTbl.ok():
             d.update(responseVlanTbl.content)
-        return d
+        
+	path = cc.Path('/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST')
+        responseVlanVrfTbl =  api.get(path)
+        if responseVlanVrfTbl.ok():
+            d.update(responseVlanVrfTbl.content)
+
+	return d
         
     # Add members to port-channel
     elif func == 'patch_openconfig_if_aggregate_interfaces_interface_ethernet_config_aggregate_id':
