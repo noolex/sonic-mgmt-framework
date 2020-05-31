@@ -2,6 +2,7 @@ package transformer
 
 import (
 	"errors"
+    "strings"
 	_"fmt"
 	"reflect"
 	_ "strconv"
@@ -28,6 +29,9 @@ func getIpRoot (inParams XfmrParams) (*ocbinds.OpenconfigNetworkInstance_Network
 	if len(niName) == 0 {
 		return nil, "", "", errors.New("vrf name is missing")
 	}
+    if !((niName == "default") || (niName == "mgmt") || (strings.HasPrefix(niName, "Vrf"))) {
+		return nil, "", "", errors.New("vrf name is invalid for AFT tables get operation")
+    }
 
 	deviceObj := (*inParams.ygRoot).(*ocbinds.Device)
 	netInstsObj := deviceObj.NetworkInstances
@@ -280,6 +284,7 @@ var DbToYang_ipv4_route_get_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams
 	var prefix string
 
     aftsObj, niName, prefix, err = getIpRoot(inParams)
+    
     _ = niName
 
     if (err != nil) {
@@ -303,6 +308,10 @@ var DbToYang_ipv4_route_get_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams
    	if outputJson, err = exec_vtysh_cmd(cmd); err == nil {
 
    		for prfxKey, prfxVal := range outputJson {
+            if outError, ok := outputJson["warning"] ; ok {
+                log.Errorf ("\"%s\" VTYSH-cmd execution failed with error-msg ==> \"%s\" !!", cmd, outError)
+                return errors.New("Operational error")
+            }
 
    			err = fill_ipv4_entry(prfxVal.([]interface{}), prfxKey, aftsObjIpv4)
 
@@ -345,6 +354,10 @@ var DbToYang_ipv6_route_get_xfmr SubTreeXfmrDbToYang = func (inParams XfmrParams
    	if outputJson, err = exec_vtysh_cmd(cmd); err == nil {
 
    		for prfxKey, prfxVal := range outputJson {
+            if outError, ok := outputJson["warning"] ; ok {
+                log.Errorf ("\"%s\" VTYSH-cmd execution failed with error-msg ==> \"%s\" !!", cmd, outError)
+                return errors.New("Operational error")
+            }
 
    			err = fill_ipv6_entry(prfxVal.([]interface{}), prfxKey, aftsObjIpv6)
 

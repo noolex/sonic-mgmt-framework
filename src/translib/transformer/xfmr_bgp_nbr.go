@@ -249,6 +249,8 @@ var DbToYang_bgp_nbr_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrParams) (m
     log.Info("DbToYang_bgp_nbr_tbl_key: ", entry_key)
 
     nbrKey := strings.Split(entry_key, "|")
+    if len(nbrKey) < 2 {return rmap, nil}
+
     nbrName:= nbrKey[1]
 
     rmap["neighbor-address"] = nbrName
@@ -384,6 +386,8 @@ var DbToYang_bgp_nbr_address_fld_xfmr FieldXfmrDbtoYang = func(inParams XfmrPara
 
     entry_key := inParams.key
     nbrAddrKey := strings.Split(entry_key, "|")
+    if len(nbrAddrKey) < 2 {return result, nil}
+
     nbrAddr:= nbrAddrKey[1]
 
     result["neighbor-address"] = nbrAddr
@@ -406,6 +410,7 @@ var DbToYang_bgp_nbr_afi_safi_name_fld_xfmr FieldXfmrDbtoYang = func(inParams Xf
 
     entry_key := inParams.key
     nbrAfKey := strings.Split(entry_key, "|")
+    if len(nbrAfKey) < 3 {return result, nil}
 
     switch nbrAfKey[2] {
         case "ipv4_unicast":
@@ -502,6 +507,7 @@ var DbToYang_bgp_af_nbr_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrParams)
     log.Info("DbToYang_bgp_af_nbr_tbl_key: ", entry_key)
 
     nbrAfKey := strings.Split(entry_key, "|")
+    if len(nbrAfKey) < 3 {return rmap, nil}
 
     switch nbrAfKey[2] {
         case "ipv4_unicast":
@@ -614,6 +620,7 @@ var DbToYang_bgp_af_nbr_proto_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrP
     log.Info("DbToYang_bgp_af_nbr_proto_tbl_key_xfmr: ", entry_key)
 
     nbrAfKey := strings.Split(entry_key, "|")
+    if len(nbrAfKey) < 3 {return rmap, nil}
 
     switch nbrAfKey[2] {
         case "ipv4_unicast":

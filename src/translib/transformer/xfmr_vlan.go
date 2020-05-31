@@ -96,15 +96,21 @@ func dbToYangFillVlanEntry(ocVlansVlan *ocbinds.OpenconfigNetworkInstance_Networ
         return errors.New("Operational Error")
     }
 
+    var config ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Vlans_Vlan_Config
     var state ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Vlans_Vlan_State
 
+    ygot.BuildEmptyTree(&config)
     ygot.BuildEmptyTree(&state)
     state.Name = &vlanName
+    config.Name = &vlanName
     // convert to uint16
     state.VlanId = &vlanId
+    config.VlanId = &vlanId
     state.Status = ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Vlans_Vlan_Config_Status_UNSET
+    config.Status = ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Vlans_Vlan_Config_Status_UNSET
 
     ocVlansVlan.State = &state
+    ocVlansVlan.Config = &config
     return dbToYangFillVlanMemberEntry(ocVlansVlan, vlanName, dbVal)
 }
 
@@ -122,7 +128,7 @@ var DbToYang_netinst_vlans_subtree_xfmr SubTreeXfmrDbToYang = func (inParams Xfm
         return err
     }
 
-    if strings.HasPrefix(niName, "Vrf") {
+    if !((niName == "default") || (strings.HasPrefix(niName, "Vlan"))) {
         return nil
     }
 

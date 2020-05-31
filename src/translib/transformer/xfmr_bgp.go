@@ -158,6 +158,7 @@ func exec_raw_vtysh_cmd (vtysh_cmd string) (string, error) {
 
 
 func init () {
+    XlateFuncBind("bgp_gbl_tbl_xfmr", bgp_gbl_tbl_xfmr)
     XlateFuncBind("YangToDb_bgp_gbl_tbl_key_xfmr", YangToDb_bgp_gbl_tbl_key_xfmr)
     XlateFuncBind("DbToYang_bgp_gbl_tbl_key_xfmr", DbToYang_bgp_gbl_tbl_key_xfmr)
     XlateFuncBind("YangToDb_bgp_local_asn_fld_xfmr", YangToDb_bgp_local_asn_fld_xfmr)
@@ -179,6 +180,44 @@ func init () {
     XlateFuncBind("rpc_clear_bgp", rpc_clear_bgp)
     XlateFuncBind("rpc_show_bgp", rpc_show_bgp)
 }
+
+var bgp_gbl_tbl_xfmr TableXfmrFunc = func (inParams XfmrParams)  ([]string, error) {
+    var tblList, nil_tblList []string
+
+    log.Info("bgp_gbl_tbl_xfmr: ", inParams.uri)
+    pathInfo := NewPathInfo(inParams.uri)
+
+    vrf := pathInfo.Var("name")
+    bgpId := pathInfo.Var("identifier")
+    protoName := pathInfo.Var("name#2")
+
+    if len(pathInfo.Vars) <  3 {
+        err := errors.New("Invalid Key length");
+        log.Info("Invalid Key length", len(pathInfo.Vars))
+        return nil_tblList, err
+    }
+
+    if len(vrf) == 0 {
+        err_str := "VRF name is missing"
+        err := errors.New(err_str); log.Info(err_str)
+        return nil_tblList, err
+    }
+    if strings.Contains(bgpId,"BGP") == false {
+        err_str := "BGP ID is missing"
+        err := errors.New(err_str); log.Info(err_str)
+        return nil_tblList, err
+    }
+    if len(protoName) == 0 {
+        err_str := "Protocol Name is Missing"
+        err := errors.New(err_str); log.Info(err_str)
+        return nil_tblList, err
+    }
+
+    tblList = append(tblList, "BGP_GLOBALS")
+
+    return tblList, nil
+}
+
 
 func bgp_global_get_local_asn(d *db.DB , niName string, tblName string) (string, error) {
     var err error
@@ -465,7 +504,7 @@ var YangToDb_bgp_gbl_afi_safi_addr_field_xfmr FieldXfmrYangToDb = func(inParams 
 var DbToYang_bgp_dyn_neigh_listen_field_xfmr FieldXfmrDbtoYang = func(inParams XfmrParams) (map[string]interface{}, error) {
     rmap := make(map[string]interface{})
     var err error
-    
+
     entry_key := inParams.key
     log.Info("DbToYang_bgp_dyn_neigh_listen_key_xfmr: ", entry_key)
 

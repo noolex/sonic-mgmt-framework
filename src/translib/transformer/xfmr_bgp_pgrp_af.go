@@ -39,6 +39,8 @@ var DbToYang_bgp_pgrp_afi_safi_name_fld_xfmr FieldXfmrDbtoYang = func(inParams X
 
     entry_key := inParams.key
     pgrpAfKey := strings.Split(entry_key, "|")
+    if len(pgrpAfKey) < 3 {return result, nil}
+
 	pgrpAfName := ""
 
 	switch pgrpAfKey[2] {
@@ -134,6 +136,8 @@ var DbToYang_bgp_af_pgrp_tbl_key_xfmr KeyXfmrDbToYang = func(inParams XfmrParams
     log.Info("DbToYang_bgp_af_pgrp_tbl_key: ", entry_key)
 
     afPgrpKey := strings.Split(entry_key, "|")
+    if len(afPgrpKey) < 3 {return rmap, nil}
+
 	afName := ""
 
 	switch afPgrpKey[2] {
@@ -244,6 +248,8 @@ var DbToYang_bgp_af_pgrp_proto_tbl_key_xfmr KeyXfmrDbToYang = func(inParams Xfmr
     log.Info("DbToYang_bgp_af_pgrp_proto_tbl_key_xfmr: ", entry_key)
 
     afPgrpKey := strings.Split(entry_key, "|")
+    if len(afPgrpKey) < 3 {return rmap, nil}
+
 	afName := ""
 
 	switch afPgrpKey[2] {

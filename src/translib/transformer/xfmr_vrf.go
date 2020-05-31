@@ -463,7 +463,7 @@ var DbToYang_network_instance_table_key_xfmr KeyXfmrDbToYang = func(inParams Xfm
         log.Info("DbToYang_network_instance_table_key_xfmr: ", inParams.key)
 
          if (inParams.key != "") {
-                if ((inParams.key == "default") || (strings.HasPrefix(inParams.key, "Vrf"))) {
+                if ((inParams.key == "default") || (strings.HasPrefix(inParams.key, "Vrf")) || (strings.HasPrefix(inParams.key, "Vlan"))) {
                         res_map["name"] = inParams.key
                 } else if (strings.HasPrefix(inParams.key, "vrf_global")) {
                         res_map["name"] = "mgmt"

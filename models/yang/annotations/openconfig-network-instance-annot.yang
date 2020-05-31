@@ -159,7 +159,7 @@ module openconfig-network-instance-annot {
 
     deviation /oc-netinst:network-instances/oc-netinst:network-instance/oc-netinst:protocols/oc-netinst:protocol/oc-netinst:bgp {
         deviate add {
-            sonic-ext:table-name "BGP_GLOBALS";
+            sonic-ext:table-transformer "bgp_gbl_tbl_xfmr";
         }
     }
 
