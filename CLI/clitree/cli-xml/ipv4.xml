@@ -46,7 +46,6 @@ limitations under the License.
     <COMMAND
         help="IP route information"
         name="show ip route">
-<<<<<<< HEAD
         <PARAM
             name="vrf"
             help="IP route information per vrf"
@@ -84,93 +83,17 @@ limitations under the License.
                mode="subcommand"
                ptype="SUBCOMMAND">
            </PARAM>
-||||||| merged common ancestors
-	<PARAM
-	   name="route-cmd"
-	   help=""
-	   mode="switch"
-	   ptype="SUBCOMMAND"
-	   optional="true">
-=======
-    <PARAM
-        name="route-cmd"
-        help=""
-        mode="switch"
-        ptype="SUBCOMMAND"
-        optional="true">
->>>>>>> origin/broadcom_sonic_3.x_share
            <PARAM
-<<<<<<< HEAD
                name="connected"
                help="Connected routes (directly attached subnet or host)"
                mode="subcommand"
                ptype="SUBCOMMAND">
-||||||| merged common ancestors
-              help="IP route information per vrf"
-              name="vrf"
-              optional = "true"
-	            mode="subcommand"
-              ptype="SUBCOMMAND">
-	           <PARAM
-		            help="VRF name"
-		            name="vrfname"
-		            ptype="STRING_15">
-                   <PARAM
-	                    help="Destination prefix"
-		                  name="prefix"
-		                  optional="true"
-		                  ptype="IP_ADDR_MASK">
-                   </PARAM>
-              </PARAM>
-=======
-               help="IP route information per vrf"
-               name="vrf"
-               optional = "true"
-               mode="subcommand"
-               ptype="SUBCOMMAND">
-               <PARAM
-                   help="VRF name"
-                   name="vrfname"
-                   ptype="STRING_15">
-                   <PARAM name="proto_or_prefix"
-                       help =""
-                       mode="switch"
-                       ptype="SUBCOMMAND"
-                       optional="true"> 
-                       <PARAM
-                           help="Open Shortest Path First (OSPFv2)"
-                           optional="true"
-                           name="ospf"
-                           mode="subcommand"
-                           ptype="SUBCOMMAND">
-                       </PARAM>
-                       <PARAM
-                           help="Destination prefix"
-                           name="prefix"
-                           optional="true"
-                           ptype="IP_ADDR_MASK">
-                       </PARAM>
-                   </PARAM>
-               </PARAM>
->>>>>>> origin/broadcom_sonic_3.x_share
            </PARAM>
            <PARAM
-<<<<<<< HEAD
                name="static"
                help="Statically configured routes"
                mode="subcommand"
                ptype="SUBCOMMAND">
-||||||| merged common ancestors
-               help="Destination prefix"
-	           optional="true"
-               name="prefix"
-               ptype="IP_ADDR_MASK">
-=======
-               help="Destination prefix"
-               optional="true"
-               name="prefix"
-               ptype="IP_ADDR_MASK">
->>>>>>> origin/broadcom_sonic_3.x_share
            </PARAM>
            <PARAM
                help="Open Shortest Path First (OSPFv2)"
