@@ -46,7 +46,6 @@ limitations under the License.
             <PARAM
                 name="filter"
                 help="Pick one command among following options"
-                optional="true"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
@@ -54,8 +53,7 @@ limitations under the License.
                     name="join-prune-interval"
                     help="Join prune interval in seconds"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
+                    mode="subcommand">
                     <PARAM
                         help="Range 60-600 seconds"
                         name="jpi"
@@ -65,8 +63,7 @@ limitations under the License.
                     name="keep-alive-timer"
                     help="Keep alive timer in seconds"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
+                    mode="subcommand">
                     <PARAM
                         help="Range 31-60000 seconds"
                         name="kat"
@@ -76,17 +73,15 @@ limitations under the License.
                     name="ssm"
                     help="Configure SSM mode"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
+                    mode="subcommand">
                     <PARAM
                         name="prefix-list-name"
                         help="Configure prefix list name"
                         ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        optional="true">
+                        mode="subcommand">
                         <PARAM
                             help="Prefix list name"
-                            name="plst-name"
+                            name="pln"
                             ptype="STRING"></PARAM>
                     </PARAM>
                 </PARAM>
@@ -94,17 +89,17 @@ limitations under the License.
                     name="ecmp"
                     help="Configure ECMP"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
+                    mode="subcommand">
                     <PARAM
                         name="rebalance"
                         help="Enable ECMP rebalance"
                         ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        optional="true"></PARAM>
+                        mode="subcommand"></PARAM>
                 </PARAM>
             </PARAM>
-            <ACTION></ACTION>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_pim.py vrf:${vrf-name} jpi:${jpi} kat:${kat} pln:${pln} ecmp:${ecmp} rebalance:${rebalance} 2>/dev/stdout
+            </ACTION>
         </COMMAND>
 
         <!-- no ip pim -->
@@ -115,8 +110,8 @@ limitations under the License.
                 name="vrf"
                 help="VRF name"
                 mode="subcommand"
-                optional="true"
-                ptype="SUBCOMMAND">
+                ptype="SUBCOMMAND"
+                optional="true">
                 <PARAM
                     name="vrf-name"
                     help="Configure PIM for the given VRF name"
@@ -125,7 +120,6 @@ limitations under the License.
             <PARAM
                 name="filter"
                 help="Pick one command among following options"
-                optional="true"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
@@ -133,42 +127,36 @@ limitations under the License.
                     name="join-prune-interval"
                     help="Join prune interval in seconds"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
+                    mode="subcommand">
                 </PARAM>
                 <PARAM
                     name="keep-alive-timer"
                     help="Keep alive timer in seconds"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
+                    mode="subcommand">
                 </PARAM>
                 <PARAM
                     name="ssm"
                     help="Configure SSM mode"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
+                    mode="subcommand">
                     <PARAM
                         name="prefix-list-name"
                         help="Configure prefix list name"
                         ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        optional="true">
+                        mode="subcommand">
                     </PARAM>
                 </PARAM>
                 <PARAM
                     name="ecmp"
                     help="Configure ECMP mode"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
+                    mode="subcommand">
                     <PARAM
                         name="rebalance"
                         help="Enable ECMP rebalance"
                         ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        optional="true"></PARAM>
+                        mode="subcommand"></PARAM>
                 </PARAM>
             </PARAM>
             <ACTION></ACTION>
