@@ -13,10 +13,21 @@ def getPrefixAndLen(item):
 ShowOpts = [ "summary", "bgp", "connected", "static" ]
 def invoke_api(func, args):
     body = None
+<<<<<<< HEAD
     vrfname = "default"
     prefix = None
     options = None
     af = "IPv4"
+||||||| merged common ancestors
+    vrfname = ""
+    prefix = ""
+    af = ""
+=======
+    vrfname = ""
+    prefix = ""
+    protocol_name = ""
+    af = ""
+>>>>>>> origin/broadcom_sonic_3.x_share
     api = cc.ApiClient()
     i = 0
     for arg in args:
@@ -28,19 +39,31 @@ def invoke_api(func, args):
            af = "IPv6"
         elif "prefix" == arg:
            prefix = args[i+1]
+<<<<<<< HEAD
         elif arg in ShowOpts:
            options = arg
+||||||| merged common ancestors
+=======
+        elif "ospf" == arg:
+           protocol_name = "ospf"
+>>>>>>> origin/broadcom_sonic_3.x_share
         else:
            pass
         i = i + 1
 
     keypath = cc.Path('/restconf/operations/sonic-ip-show:show-ip-route')
+<<<<<<< HEAD
     inputs = {"vrf-name":vrfname, "family":af}
     if prefix:
         inputs['prefix'] = prefix
     elif options:
         inputs[options] = True
     body = {"sonic-ip-show:input": inputs}
+||||||| merged common ancestors
+    body = {"sonic-ip-show:input": { "vrf-name": vrfname, "family": af, "prefix": prefix}}
+=======
+    body = {"sonic-ip-show:input": { "vrf-name": vrfname, "family": af, "prefix": prefix, "protocol-name": protocol_name}}
+>>>>>>> origin/broadcom_sonic_3.x_share
     response = api.post(keypath, body)
     return response
 

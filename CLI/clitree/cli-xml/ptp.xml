@@ -6,13 +6,13 @@
 		help="Hexadecimal range (0x0-0xf)"
 		/>
 	<PTYPE
-		name="RANGE_2_255"
+		name="PTP_RANGE_2_255"
 		method="integer"
 		pattern="2..255"
 		help=""
 		/>
 	<PTYPE
-		name="RANGE_0_127"
+		name="PTP_RANGE_0_127"
 		method="integer"
 		pattern="0..127"
 		help=""
@@ -185,7 +185,7 @@
 			</DOCGEN>
 		</COMMAND>
 		<COMMAND name="ptp domain" help="PTP domain">
-			<PARAM name="ptp_domain" help="Enter PTP domain value" ptype="RANGE_0_127"/>
+			<PARAM name="ptp_domain" help="Enter PTP domain value" ptype="PTP_RANGE_0_127"/>
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_default_ds_domain_number 0 ${ptp_domain}
 			</ACTION>
@@ -275,7 +275,7 @@
 			</DOCGEN>
 		</COMMAND>
 		<COMMAND name="ptp announce-timeout" help="PTP announce timeout">
-			<PARAM name="ptp_announce_timeout" help="Enter PTP announce timeout value" ptype="RANGE_2_255"/>
+			<PARAM name="ptp_announce_timeout" help="Enter PTP announce timeout value" ptype="PTP_RANGE_2_255"/>
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_port_ds_list_announce_receipt_timeout 0 ${ptp_announce_timeout}
 			</ACTION>
