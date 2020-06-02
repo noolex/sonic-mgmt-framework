@@ -118,7 +118,7 @@
         {% endfor %}
       {% endif %}
     {% endfor %}
-{% if 'Ethernet' in vars.name %}
+{% if 'Eth' in vars.name %}
 {{ vars.name }} is {{ vars.admin_state|lower() }}, line protocol is {{vars.oper_state|lower() }}
 Hardware is Eth
 {% if vars.description %}
