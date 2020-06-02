@@ -36,7 +36,7 @@ def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
     # Get Alias Mode
-    if func == 'get_sonic_device_metadata_sonic_device_metadata_device_metadata_device_metadata_list_aliasmode':
+    if func == 'get_sonic_device_metadata_sonic_device_metadata_device_metadata_device_metadata_list_intf_naming_mode':
         path = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode', name="localhost")
         return api.get(path)
 

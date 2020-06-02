@@ -24,12 +24,12 @@ limitations under the License.
        name="configure-view"
        >
      <COMMAND
-        name="alias"
-        help="Interface alias"
+        name="interface-naming"
+        help="Interface naming"
         >
         <PARAM 
-            name="enable" 
-            help="Enable interface alias mode " 
+            name="standard" 
+            help="Enable interface naming standard mode" 
             ptype="SUBCOMMAND" 
             mode="subcommand"
             >
@@ -38,12 +38,12 @@ limitations under the License.
      </COMMAND>
 
      <COMMAND
-        name="no alias"
-        help="Interface alias"
+        name="no interface-naming"
+        help="Interface naming"
         >
         <PARAM 
-            name="enable" 
-            help="Disable interface alias mode " 
+            name="standard" 
+            help="Disable interface naming standard mode" 
             ptype="SUBCOMMAND" 
             mode="subcommand"
             >
@@ -54,8 +54,8 @@ limitations under the License.
    </VIEW>
 
   <VIEW name="enable-view">
-    <COMMAND name="show alias" help="Show interface alias mode">
-      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-alias.py get_sonic_device_metadata_sonic_device_metadata_device_metadata_device_metadata_list_aliasmode alias.j2 ${__full_line} </ACTION>
+    <COMMAND name="show interface-naming" help="Show interface naming mode">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-alias.py get_sonic_device_metadata_sonic_device_metadata_device_metadata_device_metadata_list_intf_naming_mode alias.j2 ${__full_line} </ACTION>
     </COMMAND>
   </VIEW>
 </CLISH_MODULE>
