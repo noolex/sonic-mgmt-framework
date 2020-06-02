@@ -29,7 +29,6 @@ limitations under the License.
         help="show audit commands"
         name="show audit"
         >
-    <ACTION builtin="clish_nop"/>
     </COMMAND>
 
     <!-- show audit log -->
@@ -37,7 +36,7 @@ limitations under the License.
         help="show first 100 records of audit log"
         name="show audit log">
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-audit-log-rpc.py show_audit_log show_audit_log_rpc.j2 ${__full_line};
+            python $SONIC_CLI_ROOT/sonic-cli-audit-log-rpc.py rpc_sonic_auditlog_show_auditlog ${__full_line};
         </ACTION>
     </COMMAND>
 </VIEW>
