@@ -876,7 +876,7 @@ def handle_show_policy_response(response, args, op_str):
                 render_data[name]["FLOWS"] = OrderedDict()
                 flows = dict()
                 for flow in policy_data.get("FLOWS", list()):
-                    flows[flow["PRIORITY"]] = flow
+                    flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
 
                 flow_keys = natsorted(flows.keys(), reverse=True)
                 for flow in flow_keys:
@@ -948,7 +948,7 @@ def handle_show_service_policy_details_response(response, args, op_str):
                             policy_sort_data["FLOWS"] = OrderedDict()
                             flows = dict()
                             for flow in policy_data.get("FLOWS", list()):
-                                flows[flow["PRIORITY"]] = flow
+                                flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
 
                             # Sort Policy flows by priority
                             flow_keys = natsorted(flows.keys(), reverse=True)
