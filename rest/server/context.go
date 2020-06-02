@@ -79,6 +79,7 @@ const (
 	statsContextKey
 	routerConfigContextKey
 	routeMatchContextKey
+	cliConnectionContextKey
 )
 
 // Request Id generator

@@ -47,6 +47,8 @@ $(GO_DEPS): $(GO_MOD)
 	$(MGMT_COMMON_DIR)/patches/apply.sh vendor
 	touch  $@
 
+go-deps: $(GO_DEPS)
+
 go-deps-clean:
 	$(RM) -r vendor
 
@@ -124,6 +126,7 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 clean: rest-clean models-clean
 	(cd ham; ./build.sh clean)
 	git check-ignore debian/* | xargs -r $(RM) -r
+	$(RM) -r debian/.debhelper
 	$(RM) -r $(BUILD_DIR)
 
 cleanall: clean

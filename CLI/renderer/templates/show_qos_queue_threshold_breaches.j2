@@ -5,13 +5,13 @@
 {% set breach_list = json_output['openconfig-qos-ext:breach'] %}
 {% for breach in breach_list %}
 
-  {% set buffer = breach['buffer'] %}
-  {% set type = breach['type'] %}
-  {% set port = breach['port'] %}
-  {% set index = breach['index'] %}
-  {% set breach_value = breach['breach-value'] %}
-  {% set counter = breach['counter'] %}
-  {% set timestamp = breach['time-stamp'] %}
+  {% set buffer = breach['state']['buffer'] %}
+  {% set type = breach['state']['type'] %}
+  {% set port = breach['state']['port'] %}
+  {% set index = breach['state']['index'] %}
+  {% set breach_value = breach['state']['breach-value'] %}
+  {% set counter = breach['state']['counter'] %}
+  {% set timestamp = breach['state']['time-stamp'] %}
 
   {% if buffer == "queue" %}
     {% set queue_type = "UC" %}

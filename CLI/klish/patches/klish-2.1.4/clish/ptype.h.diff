@@ -34,7 +34,7 @@
 < 	lub_argv_t *matches, const char *text);
 ---
 > 	lub_argv_t *matches, const char *text, const char *penultimate_text);
-95c108,125
+95c108,126
 < 	const char *pattern, clish_ptype_method_e method);
 ---
 > 	const char *pattern, clish_ptype_method_e method, const char *alt_pattern);
@@ -55,3 +55,4 @@
 > int clish_ptype_select__get_help(const clish_ptype_t *instance, clish_help_t *help, const char *pval);
 > void clish_ptype__set_usename(clish_ptype_t * instance, help_type_t val);
 > extern bool nos_use_alt_name(void);
+> char *clish_ptype_method_select__get_name(const clish_ptype_t *instance,unsigned int index);

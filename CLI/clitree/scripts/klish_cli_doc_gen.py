@@ -5,6 +5,7 @@ try:
     from StringIO import StringIO ## for Python 2
 except ImportError:
     from io import StringIO ## for Python 3
+from lxml import etree
 
 # set up global logger
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -25,6 +26,7 @@ class CliDoc:
     viewsSoupDict = OrderedDict()
     ptyperoot = None
     feature_to_cli = OrderedDict()
+    pytypesDict = dict()
 
     """
     Implementation for CLI document generator
@@ -59,8 +61,13 @@ class CliDoc:
         ptypeFp = StringIO()
         ptypeFp.write("<ptyperoot>")  
         for model in models:
+            has_ptype = False
             with open(model, "r") as fp:
                 soup = BeautifulSoup(fp, "xml")
+
+                if soup.find('PTYPE'):
+                    has_ptype = True
+
                 if model not in CliDoc.modelsDict:
                     CliDoc.modelsDict[model] = soup
                     for command in soup.select('COMMAND[view]'):
@@ -71,7 +78,20 @@ class CliDoc:
 
                     for ptype in soup.find_all('PTYPE'):
                         ptypeFp.write(str(ptype))                      
-        
+            
+            if has_ptype:
+                parser = etree.XMLParser(remove_blank_text=True, resolve_entities=False)
+                root = etree.parse(model, parser)
+                PTYPE_EXPR = ".//{http://www.dellemc.com/sonic/XMLSchema}PTYPE"
+                
+                for ptype in root.findall(PTYPE_EXPR):
+                    p_name = ptype.attrib['name']
+                    if p_name not in CliDoc.pytypesDict:
+                        CliDoc.pytypesDict[p_name] = str(model) + ': ' + str(ptype.sourceline)
+                    else:
+                        log.warning("Redefinition of PTYPE: %s at %s first defined at %s" \
+                            % ( p_name, str(model) + ': ' + str(ptype.sourceline), CliDoc.pytypesDict[p_name]))
+
         ptypeFp.write("</ptyperoot>")
         ptype_root = BeautifulSoup(ptypeFp.getvalue(), "xml")        
         CliDoc.ptyperoot = ptype_root.ptyperoot
@@ -164,7 +184,7 @@ class CliDoc:
         retrieved_param_value = CliDoc.get_param_value(param_tag, cli_string, paramerDescList)
         if len(retrieved_param_value) > 0:
             if optional:
-                cli_string = cli_string + ' [' + retrieved_param_value + ' ]'
+                cli_string = cli_string + ' [' + retrieved_param_value
             else:
                 cli_string = cli_string + retrieved_param_value
 
@@ -184,6 +204,9 @@ class CliDoc:
         if len(paramsList) > 1 and param_tag.parent.name != "PARAM":
             cli_string = cli_string + ' }'
         
+        if optional:
+            cli_string = cli_string + ' ]'
+
         return cli_string
 
     @staticmethod
@@ -456,12 +479,9 @@ class CliDoc:
                     feature_key_set.add(feature_key)
 
             for content_key in sorted (commandsGuideDict.keys()):
-                # if  content_key == "activate":
-                #     import pdb; pdb.set_trace()
                 for cmd_entry in commandsGuideDict[content_key]:
                     contents = cmd_entry['fp'].getvalue()
                     cmd_view = cmd_entry['view_name']
-                    #contents = commandsGuideDict[content_key].getvalue()
                     noForm = 'no ' + content_key
                     if noForm in CliDoc.noformCmdSoupDict:
                         noCmdFp = StringIO()

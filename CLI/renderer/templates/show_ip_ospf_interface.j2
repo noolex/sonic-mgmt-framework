@@ -102,8 +102,8 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'openconfig-ospfv2-ext:index' in vlink_state and 'openconfig-ospfv2-ext:mtu' in vlink_state and 'openconfig-ospfv2-ext:bandwidth' in vlink_state and 'openconfig-ospfv2-ext:if-flags' in vlink_state %}
   ifindex {{vlink_state['openconfig-ospfv2-ext:index']}}, MTU {{vlink_state['openconfig-ospfv2-ext:mtu']}} bytes, BW {{vlink_state['openconfig-ospfv2-ext:bandwidth']}} Mbit {{vlink_state['openconfig-ospfv2-ext:if-flags']}}
 {% endif %}
-{% if 'openconfig-ospfv2-ext:address' in vlink_state and 'openconfig-ospfv2-ext:address-len' in vlink_state and 'openconfig-ospfv2-ext:area-id' in vlink_state %}
-  Internet Address {{vlink_state['openconfig-ospfv2-ext:address']}}/{{vlink_state['openconfig-ospfv2-ext:address-len']}}, Peer {{vars.remote_rtr_id}}, Area {{vlink_state['openconfig-ospfv2-ext:area-id']}}
+{% if 'openconfig-ospfv2-ext:address' in vlink_state and 'openconfig-ospfv2-ext:address-len' in vlink_state and 'openconfig-ospfv2-ext:area-id' in vlink_state and 'openconfig-ospfv2-ext:peer-address' in vlink_state %}
+  Internet Address {{vlink_state['openconfig-ospfv2-ext:address']}}/{{vlink_state['openconfig-ospfv2-ext:address-len']}}, Peer {{vlink_state['openconfig-ospfv2-ext:peer-address']}}, Area {{vlink_state['openconfig-ospfv2-ext:area-id']}}
 {% endif %}
 {% if  'openconfig-ospfv2-ext:mtu-ignore' in vlink_state and vlink_state['openconfig-ospfv2-ext:mtu-ignore'] == True %}
 {% if vars.update({'mtu_str':'disabled'}) %}{% endif -%}

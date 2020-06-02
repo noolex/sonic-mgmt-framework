@@ -83,7 +83,7 @@ BGP peer-group {{'%s'| format(vars.pg_name)}}{{'%s' |format(rAS)}}
    {% set mems =  pg['openconfig-bgp-ext:members-state']['member'] %}
   Peer-group members:
    {% for mem in mems %}
-   {{ mem['neighbor'] }} {{ mem['state'] }}
+   {{ mem['neighbor'] }} {{ mem['state']['state'] }}
    {% endfor %}
    {% endif %}
 {% endif %}
