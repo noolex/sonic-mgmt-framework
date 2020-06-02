@@ -455,6 +455,19 @@ def clear_dscp_remarking_action(args):
     return fbs_client.delete(keypath)
 
 
+def set_traffic_class_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_TC',
+                      policy_name=args[0], classifier_name=args[1])
+    body = {'SET_TC': int(args[2])}
+    return fbs_client.patch(keypath, body)
+
+
+def clear_traffic_class_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_TC',
+                      policy_name=args[0], classifier_name=args[1])
+    return fbs_client.delete(keypath)
+
+
 def set_policer_action(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
                       policy_name=args[0], classifier_name=args[1])
@@ -1003,6 +1016,8 @@ request_handlers = {
     'clear_pcp_remarking_action': clear_pcp_remarking_action,
     'set_dscp_remarking_action': set_dscp_remarking_action,
     'clear_dscp_remarking_action': clear_dscp_remarking_action,
+    'set_traffic_class_action': set_traffic_class_action,
+    'clear_traffic_class_action': clear_traffic_class_action,
     'set_policer_action': set_policer_action,
     'clear_policer_action': clear_policer_action,
     'set_mirror_session_action': set_mirror_session_action,
@@ -1062,6 +1077,8 @@ response_handlers = {
     'clear_pcp_remarking_action': handle_generic_delete_response,
     'set_dscp_remarking_action': handle_generic_set_response,
     'clear_dscp_remarking_action': handle_generic_delete_response,
+    'set_traffic_class_action': handle_generic_set_response,
+    'clear_traffic_class_action': handle_generic_delete_response,
     'set_policer_action': handle_generic_set_response,
     'clear_policer_action': handle_generic_delete_response,
     'set_mirror_session_action': handle_generic_set_response,
