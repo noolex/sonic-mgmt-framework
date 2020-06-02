@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"net/http"
@@ -13,7 +14,7 @@ import (
 
 func CliUserAuthenAndAuthor(r *http.Request, rc *RequestContext) error {
 
-	netConn := r.Context().Value("http-conn")
+	netConn := r.Context().Value(cliConnectionContextKey)
 
 	unixConn, ok := netConn.(*net.UnixConn)
 	if !ok {
@@ -62,4 +63,10 @@ func CliUserAuthenAndAuthor(r *http.Request, rc *RequestContext) error {
 
 	glog.Infof("[%s] Authorization passed for user=%s, roles=%s", rc.ID, rc.Auth.User, rc.Auth.Roles)
 	return nil
+}
+
+// CLIConnectionContextFactory is context factory function for CLI server.
+// To be set as http.Server.ConnContext value while setting up unix socket server for CLI.
+func CLIConnectionContextFactory(ctx context.Context, c net.Conn) context.Context {
+	return context.WithValue(ctx, cliConnectionContextKey, c)
 }

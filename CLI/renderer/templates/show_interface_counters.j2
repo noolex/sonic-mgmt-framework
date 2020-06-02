@@ -41,7 +41,7 @@
             {% if vars.update({'out_discards':interface["state"]["counters"]["out-discards"]}) %}{% endif %}
         {% endif %}
     {% endfor %}
-{% if 'Ethernet' in vars.name %}
+{% if 'Eth' in vars.name %}
 {{'%-15s'|format(vars.name)}}{{'%-10s'|format(vars.oper_state)}}{{'%-20s'|format(vars.in_packets)}}{{'%-10s'|format(vars.in_errors)}}{{'%-10s'|format(vars.in_discards)}}{{'%-15s'|format(vars.in_oversize)}}{{'%-20s'|format(vars.out_packets)}}{{'%-10s'|format(vars.out_errors)}}{{'%-10s'|format(vars.out_discards)}}{{'%-15s'|format(vars.out_oversize)}}
 {% endif %}
 {% endfor %}

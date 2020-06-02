@@ -86,11 +86,9 @@ limitations under the License.
                   <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_0_16777215" />
                 </PARAM>
               </PARAM>
-<!--
               <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
               </PARAM>
--->
               <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "rangenetworkprefix" help = "Network prefix to be announced instead of range" ptype = "IP_ADDR_MASK" /> 
@@ -274,11 +272,7 @@ limitations under the License.
               <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               </PARAM>
-<!--
-              <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
-              </PARAM>
--->
+              <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
             </PARAM>
@@ -734,43 +728,42 @@ limitations under the License.
           <PARAM name="standard" help="Standard behavior (RFC2328)" ptype="SUBCOMMAND" mode="subcommand" />
         </PARAM>
       </PARAM>
+      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "routerid" help = "OSPF router-id in IP address format" ptype = "IP_ADDR" />
+      </PARAM>
 <!--
       <PARAM name="opaque-lsa" help="Enable the Opaque-LSA capability (rfc2370)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
--->
-      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-        <PARAM name = "routerid" help = "OSPF router-id in IP address format" ptype = "IP_ADDR" /> 
-      </PARAM>
       <PARAM name="write-multiplier" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
         <PARAM name = "writemaxinterface" help = "Maximum number of interface serviced per write" ptype = "RANGE_1_100" /> 
       </PARAM>
+-->
     </PARAM>
     <ACTION> 
       if test "${ospf_cmd}" = "abr-type"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_abr_type ${vrf-name} ${abrtype} &#xA;
       fi&#xA;
+      if test "${ospf_cmd}" = "router-id"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id ${vrf-name} ${routerid} &#xA;
+      fi&#xA;
 <!--
       if test "${ospf_cmd}" = "opaque-lsa"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_opaque_lsa_capability ${vrf-name} &#xA;
       fi&#xA;
--->
-      if test "${ospf_cmd}" = "router-id"; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id ${vrf-name} ${routerid} &#xA;
-      fi&#xA;
-
       if test "${ospf_cmd}" = "write-multiplier"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} ${writemaxinterface} &#xA;
       fi&#xA;
+-->
     </ACTION>
   </COMMAND>
 
   <COMMAND name="no ospf" help="OSPF specific commands" >
     <PARAM name = "ospf_cmd" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="abr-type" help="OSPF network prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
 <!--
       <PARAM name="opaque-lsa" help="Enable the Opaque-LSA capability (rfc2370)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
--->
-      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       <PARAM name="write-multiplier" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
     </PARAM>
     <ACTION>
       if test "${ospf_cmd}" = "abr-type"; then&#xA;
@@ -779,9 +772,11 @@ limitations under the License.
       if test "${ospf_cmd}" = "router-id"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id ${vrf-name} &#xA;
       fi&#xA;
+<!--
       if test "${ospf_cmd}" = "write-multiplier"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} &#xA;
       fi&#xA;
+-->
     </ACTION>
   </COMMAND>
 

@@ -3,7 +3,12 @@
 {% if schedulers %}
 {% set scheduler_list = schedulers['scheduler'] %}
 {% for scheduler in scheduler_list %}
+{% if scheduler['sequence'] != "255" %}
   {{' Scheduler: '}}{{scheduler['sequence']}}
+{% endif %}
+{% if scheduler['sequence'] == "255" %}
+  {{' Scheduler: '}}{{'port'}}
+{% endif %}
 
   {% set config = scheduler['config'] %}
   {% if config %}

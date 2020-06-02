@@ -35,7 +35,7 @@ fi
 
 # Setup database config file path
 if [ -z $DB_CONFIG_PATH ]; then
-    export DB_CONFIG_PATH=$TOPDIR/../../dockers/docker-database/database_config.json
+    export DB_CONFIG_PATH=$MGMT_COMMON_DIR/tools/test/database_config.json
 fi
 
 # LD_LIBRARY_PATH for CVL

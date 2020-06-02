@@ -222,17 +222,20 @@
             </PARAM>
             <ACTION>
                 if test "${color_select}" = "red" ; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_min_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_max_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red_drop_probability ${prof_id}&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_wred-red-enable ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red-min-threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red-max-threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_red-drop-probability ${prof_id}&#xA;
                 elif test "${color_select}" = "green" ; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_min_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_max_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green_drop_probability ${prof_id}&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_wred-green-enable ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green-min-threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green-max-threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green-drop-probability ${prof_id}&#xA;
                 else&#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_min_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_max_threshold ${prof_id} WaitShow &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow_drop_probability ${prof_id}&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_wred-yellow-enable ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow-min-threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow-max-threshold ${prof_id} WaitShow &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_wred.py delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_yellow-drop-probability ${prof_id}&#xA;
                 fi&#xA;
             </ACTION>
             <DOCGEN>
@@ -257,7 +260,8 @@
                 help="Configure ecn mode"
                 ptype="ECN_LIMITED_OPTION" />
             <ACTION builtin="clish_pyobj">
-                sonic_cli_wred patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn ${prof_id} ${ecn}</ACTION>
+                sonic_cli_wred patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_ecn ${prof_id} ${ecn}
+            </ACTION>
             <DOCGEN>
               <DESCRIPTION>
                This command to enable ECN based on color.

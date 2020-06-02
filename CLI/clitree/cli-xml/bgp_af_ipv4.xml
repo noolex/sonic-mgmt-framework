@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2019 Dell, Inc.  
+Copyright 2019 Dell, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
---> 
+-->
 
 <CLISH_MODULE
     xmlns="http://www.dellemc.com/sonic/XMLSchema"
@@ -27,6 +27,9 @@ limitations under the License.
 <VIEW name="configure-router-bgp-ipv4-view" prompt="${SYSTEM_NAME}(config-router-bgp-af)# " depth="3">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
+   <COMMAND name="show configuration" help="show bgp configuration">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_configuration configure-router-bgp-nbr-ipv4 vrf-name=${vrf-name} neighbor=${nbr-addr} afi_safi=ipv4_unicast </ACTION>
+    </COMMAND>
   <COMMAND name="redistribute" help="Redistribute information from another routing protocol">
     <PARAM name="protocol" help="protocol" mode="switch" ptype="SUBCOMMAND">
       <PARAM name="connected" help="Connected Routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -116,7 +119,7 @@ limitations under the License.
         <USAGE>
           This command can be used by users and network administrators to
           statically inject routes into BGP. User can use route-map optional
-          parameter to modify/set the various attributes of the route. 
+          parameter to modify/set the various attributes of the route.
         </USAGE>
         <EXAMPLE summary="Creates a network 10.10.0.0/16 which will be announced
           to all BGP neighbors">
@@ -170,7 +173,7 @@ limitations under the License.
         aggregate address will be advertised by BGP. "as-set" option will make
         sure that AS Path of individual aggregated routes are also included in
         the resulting aggregate route. "route-map" option gives user a finer
-        control over the route's attributes 
+        control over the route's attributes
       </USAGE>
       <EXAMPLE summary="This configuration example setup the aggregate-address
         under ipv4 address-family">
@@ -192,7 +195,7 @@ limitations under the License.
     <DOCGEN>
       <DESCRIPTION>
         This command changes distance value of BGP. The command allows finer
-        control to change the distance values for external routes, internal 
+        control to change the distance values for external routes, internal
         routes and local routes separately
       </DESCRIPTION>
       <USAGE>
@@ -227,7 +230,7 @@ limitations under the License.
         Use this command to configure route flap dampening feature for BGP
         routes. Route flap dampening algorithm is compatible with RFC 2439. The
         use of this command is not recommended nowadays. Currently
-        implementation works only for IPv4 address family 
+        implementation works only for IPv4 address family
       </USAGE>
       <EXAMPLE summary="The below configuration example enables route-flap
         dampeninmg feature">
@@ -259,7 +262,7 @@ limitations under the License.
         sonic(config)# router bgp 100
         sonic(config-router-bgp)# address-family ipv4 unicast
         sonic(config-router-bgp-af)# import vrf Vrf1
-                        or 
+                        or
         sonic(config-router-bgp-af)# import vrf route-map map1
       </EXAMPLE>
     </DOCGEN>
@@ -332,7 +335,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-nbr-view" help="false" completion="false" />
-  <COMMAND name="activate" help="Enable the Address Family for this Neighbor">
+  <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/admin_status=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_enabled ${vrf-name} ${nbr-addr} IPV4_UNICAST True</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -355,10 +358,10 @@ limitations under the License.
         </EXAMPLE>
       </DOCGEN>
   </COMMAND>
-  <COMMAND name="allowas-in" help="Allow local AS number in as-path">
+  <COMMAND name="allowas-in" help="Allow local AS number in as-path" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/allow_as_in=true">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
-      <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
+      <PARAM name="value" help="as-number" ptype="RANGE_1_10" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/allow_as_count"/>
+      <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/allow_as_origin=true"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value} origin:${origin}</ACTION>
     <DOCGEN>
@@ -385,7 +388,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-map" help="Name of the route map">
+  <COMMAND name="route-map" help="Name of the route map" render_command_cb="bgp_af_ipv4_route_map">
     <PARAM name="route-name-str" help="route map name" ptype="STRING">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -416,7 +419,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="addpath-tx-all-paths" help="Use addpath to advertise all paths to a neighbor">
+  <COMMAND name="addpath-tx-all-paths" help="Use addpath to advertise all paths to a neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/tx_add_paths=tx_all_paths">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_add_paths_config_tx_add_paths ${vrf-name} ${nbr-addr} IPV4_UNICAST TX_ALL_PATHS</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -424,7 +427,7 @@ limitations under the License.
        </DESCRIPTION>
        <USAGE>
         Use this command for BGP add path feature configuration. This command
-        allows all BGP paths to be advertised to a neighbor 
+        allows all BGP paths to be advertised to a neighbor
        </USAGE>
       <EXAMPLE summary="Following command configures BGP to advertise
         all paths to a neighbor">
@@ -437,7 +440,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="addpath-tx-bestpath-per-AS" help="Use addpath to advertise the bestpath per each neighboring AS">
+  <COMMAND name="addpath-tx-bestpath-per-AS" help="Use addpath to advertise the bestpath per each neighboring AS" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/tx_add_paths=tx_best_path_per_as">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_add_paths_config_tx_add_paths ${vrf-name} ${nbr-addr} IPV4_UNICAST TX_BEST_PATH_PER_AS</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -445,7 +448,7 @@ limitations under the License.
        </DESCRIPTION>
        <USAGE>
         Use this command for BGP add path feature configuration. This command
-        allows best BGP path to be advertised to a neighbor 
+        allows best BGP path to be advertised to a neighbor
        </USAGE>
       <EXAMPLE summary="Following command configures BGP to advertise best path to a neighbor">
         sonic# configure terminal
@@ -457,7 +460,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="as-override" help="Override ASNs in outbound updates if aspath equals remote-as">
+  <COMMAND name="as-override" help="Override ASNs in outbound updates if aspath equals remote-as" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/as_overide=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_as_override ${vrf-name} ${nbr-addr} IPV4_UNICAST True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -479,9 +482,9 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="attribute-unchanged" help="BGP attribute is propagated unchanged to this neighbor">
-    <PARAM name="as-path" help="As-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <PARAM name="med" help="Med attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
+    <PARAM name="as-path" help="As-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/unchanged_as_path=true"/>
+    <PARAM name="med" help="Med attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/as_overide=true"/>
+    <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/unchanged_nexthop=true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; as-path:${as-path} med:${med} next-hop:${next-hop}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -508,9 +511,9 @@ limitations under the License.
   <COMMAND name="capability orf" help="Advertise ORF capability to the peer"/>
   <COMMAND name="capability orf prefix-list" help="Advertise prefixlist ORF capability to this neighbor">
     <PARAM name="capopt" help="Capabilities" mode="switch" ptype="SUBCOMMAND">
-      <PARAM name="send" help="Capability to RECEIVE the ORF from this neighbor" mode="subcommand" ptype="SUBCOMMAND"/>
-      <PARAM name="receive" help="Capability to SEND the ORF to this neighbor" mode="subcommand" ptype="SUBCOMMAND"/>
-      <PARAM name="both" help="Capability to SEND and RECEIVE the ORF to/from this neighbor" mode="subcommand" ptype="SUBCOMMAND"/>
+      <PARAM name="send" help="Capability to RECEIVE the ORF from this neighbor" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/cap_orf=send"/>
+      <PARAM name="receive" help="Capability to SEND the ORF to this neighbor" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/cap_orf=receive"/>
+      <PARAM name="both" help="Capability to SEND and RECEIVE the ORF to/from this neighbor" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/cap_orf=both"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_capability_orf_config_orf_type ${vrf-name} ${nbr-addr} IPV4_UNICAST ${capopt}</ACTION>
     <DOCGEN>
@@ -535,8 +538,8 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="default-originate" help="Originate default route to this neighbor">
-    <PARAM name="route-map" help="Route-map to specify criteria to originate default" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="rtemap" help="Route-map name" ptype="STRING"/>
+    <PARAM name="route-map" help="Route-map to specify criteria to originate default" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/send_default_route=true">
+      <PARAM name="rtemap" help="Route-map name" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/default_rmap"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; route-map:${route-map} rtemap:${rtemap}</ACTION>
     <DOCGEN>
@@ -586,8 +589,8 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="next-hop-self" help="Disable the next hop calculation for this neighbor">
-    <PARAM name="force" help="Set the next hop to self for reflected routes" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
+  <COMMAND name="next-hop-self" help="Disable the next hop calculation for this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/nhself=true">
+    <PARAM name="force" help="Set the next hop to self for reflected routes" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/nexthop_self_force=true"/>
      <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; force:${force}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -609,7 +612,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="prefix-list" help="Filter updates to/from this neighbor">
+  <COMMAND name="prefix-list" help="Filter updates to/from this neighbor" render_command_cb="bgp_nbr_ipv4_prefix_list">
     <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -636,9 +639,9 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="remove-private-AS" help="Remove private ASNs in outbound updates">
-    <PARAM name="all" help="Apply to all AS numbers" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
-    <PARAM name="replace-AS" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
+  <COMMAND name="remove-private-AS" help="Remove private ASNs in outbound updates" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/remove_private_as_enabled=true">
+    <PARAM name="all" help="Apply to all AS numbers" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/remove_private_as_all=true"/>
+    <PARAM name="replace-AS" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/replace_private_as=true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; all:${all} replace-AS:${replace-AS}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -646,7 +649,7 @@ limitations under the License.
         outbound BGP updates to neighbor
        </DESCRIPTION>
        <USAGE>
-        Use this command at the boundary of your BGP network to remove 
+        Use this command at the boundary of your BGP network to remove
         the internal/private AS numbers from outbound route updates. User can
         optionally choose to replace private AS number by local AS number.
        </USAGE>
@@ -661,7 +664,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-reflector-client" help="Configure a neighbor as Route Reflector client">
+  <COMMAND name="route-reflector-client" help="Configure a neighbor as Route Reflector client" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/rrclient=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${nbr-addr} IPV4_UNICAST True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -683,7 +686,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-server-client" help="Configure a neighbor as Route Server client">
+  <COMMAND name="route-server-client" help="Configure a neighbor as Route Server client" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/route_server_client=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${nbr-addr} IPV4_UNICAST True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -705,12 +708,12 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="send-community" help="Send Community attribute to this neighbor">
     <PARAM name="comtype" help="Send options" mode="switch" ptype="SUBCOMMAND">
-      <PARAM name="standard" help="Send Standard Community attributes" mode="subcommand" ptype="SUBCOMMAND"/>
-      <PARAM name="extended" help="Send Extended Community attributes" mode="subcommand" ptype="SUBCOMMAND"/>
-      <PARAM name="both" help="Send Standard and Extended Community attributes" mode="subcommand" ptype="SUBCOMMAND"/>
-      <PARAM name="large" help="Send large Community attributes" mode="subcommand" ptype="SUBCOMMAND"/>
-      <PARAM name="all" help="Send all Community attributes" mode="subcommand" ptype="SUBCOMMAND"/> 
-      <PARAM name="none" help="Do not send Community attributes" mode="subcommand" ptype="SUBCOMMAND"/> 
+      <PARAM name="standard" help="Send Standard Community attributes" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/send_community=standard"/>
+      <PARAM name="extended" help="Send Extended Community attributes" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/send_community=extended"/>
+      <PARAM name="both" help="Send Standard and Extended Community attributes" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/send_community=both"/>
+      <PARAM name="large" help="Send large Community attributes" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/send_community=large"/>
+      <PARAM name="all" help="Send all Community attributes" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/send_community=all"/>
+      <PARAM name="none" help="Do not send Community attributes" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/send_community=none"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_send_community ${vrf-name} ${nbr-addr} IPV4_UNICAST ${comtype}</ACTION>
     <DOCGEN>
@@ -734,7 +737,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="soft-reconfiguration" help="Per neighbor soft reconfiguration">
-    <PARAM name="inbound" help="Allow inbound soft reconfiguration for this neighbor" mode="subcommand" ptype="SUBCOMMAND">
+    <PARAM name="inbound" help="Allow inbound soft reconfiguration for this neighbor" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/soft_reconfiguration_in=true">
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${nbr-addr} IPV4_UNICAST True</ACTION>
     <DOCGEN>
@@ -758,7 +761,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="unsuppress-map" help="Route-map to selectively unsuppress suppressed routes">
-    <PARAM name="map" help="Name of route map" ptype="STRING">
+    <PARAM name="map" help="Name of route map" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/unsuppress_map_name">
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_unsuppress_map_name ${vrf-name} ${nbr-addr} IPV4_UNICAST ${map}</ACTION>
     <DOCGEN>
@@ -781,7 +784,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="weight" help="Set default weight for routes from this neighbor">
-    <PARAM name="val" help="Default weight" ptype="RANGE_0_65535"/>
+    <PARAM name="val" help="Default weight" ptype="RANGE_0_65535" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/weight"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_weight ${vrf-name} ${nbr-addr} IPV4_UNICAST ${val}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -806,12 +809,12 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="maximum-prefix" help="Maximum number of prefixes to accept from this peer">
-    <PARAM name="max-prefix-val" help="Maximum no. of prefix limit" ptype="RANGE_1_4294967295">
-      <PARAM name="threshold-val" help="Threshold value (%) at which to generate a warning msg" ptype="PERCENT_1" default="0" order="true" optional="true"/>
+    <PARAM name="max-prefix-val" help="Maximum no. of prefix limit" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/max_prefix_limit">
+      <PARAM name="threshold-val" help="Threshold value (%) at which to generate a warning msg" ptype="PERCENT_1" default="0" order="true" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/max_prefix_warning_threshold"/>
       <PARAM name="maxpfopt" help="Maximum limit options" mode="switch" ptype="SUBCOMMAND" order="true" optional="true">
-        <PARAM name="warning-only" help="Only give warning message when limit is exceeded" mode="subcommand" ptype="SUBCOMMAND"/>
+        <PARAM name="warning-only" help="Only give warning message when limit is exceeded" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/max_prefix_warning_only=true"/>
         <PARAM name="restart" help="Restart bgp connection after limit is exceeded" mode="subcommand" ptype="SUBCOMMAND">
-           <PARAM name="interval" help="Restart interval in minutes" ptype="RANGE_1_65535"/>
+           <PARAM name="interval" help="Restart interval in minutes" ptype="RANGE_1_65535" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/max_prefix_restart_interval"/>
         </PARAM>
       </PARAM>
     </PARAM>
@@ -988,7 +991,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value} origin:${origin}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
-        This command allows neighbors in a BGP peer-group to accept as-path 
+        This command allows neighbors in a BGP peer-group to accept as-path
         with it's own AS number present in it.
        </DESCRIPTION>
        <USAGE>
@@ -1048,9 +1051,9 @@ limitations under the License.
        </DESCRIPTION>
        <USAGE>
         Use this command for BGP add path feature configuration. This command
-        allows all BGP paths to be advertised to neighbors in a peer-group 
+        allows all BGP paths to be advertised to neighbors in a peer-group
        </USAGE>
-      <EXAMPLE summary="Following command configures BGP to advertise all paths 
+      <EXAMPLE summary="Following command configures BGP to advertise all paths
         to neighbors in a peer-group">
         sonic# configure terminal
         sonic(config)# router bgp 100
@@ -1069,7 +1072,7 @@ limitations under the License.
        </DESCRIPTION>
        <USAGE>
         Use this command for BGP add path feature configuration. This command
-        allows best BGP path to be advertised to neighbors in a peer-group 
+        allows best BGP path to be advertised to neighbors in a peer-group
        </USAGE>
       <EXAMPLE summary="Following command configures BGP to advertise best path
         to neighbors in a peer-group">
@@ -1112,11 +1115,11 @@ limitations under the License.
         next-hop, med) unchanged to neighbors in a peer-group
        </DESCRIPTION>
        <USAGE>
-        Use this command to propagate BGP route attributes unchanged to 
-        neighbors in a peer-group. User can control which attributes (as-path, 
+        Use this command to propagate BGP route attributes unchanged to
+        neighbors in a peer-group. User can control which attributes (as-path,
         next-hop, med) will be propagated unchanged.
        </USAGE>
-      <EXAMPLE summary="Following command configures BGP to propagate next-hop 
+      <EXAMPLE summary="Following command configures BGP to propagate next-hop
         and as-path unchanged to neighbors in a peer-group">
         sonic# configure terminal
         sonic(config)# router bgp 100
@@ -1142,7 +1145,7 @@ limitations under the License.
        </DESCRIPTION>
        <USAGE>
         Use this command to advertise Outbound Route Filtering capability to
-        neighbors in a peer-group. This capability can be enabled in inbound 
+        neighbors in a peer-group. This capability can be enabled in inbound
         and outbound direction separately
        </USAGE>
       <EXAMPLE summary="Following command enables BGP to advertise ORF
@@ -1264,7 +1267,7 @@ limitations under the License.
         outbound BGP updates to neighbors in a peer-group
        </DESCRIPTION>
        <USAGE>
-        Use this command at the boundary of your BGP network to remove 
+        Use this command at the boundary of your BGP network to remove
         the internal/private AS numbers from outbound route updates. User can
         optionally choose to replace private AS number by local AS number.
        </USAGE>
@@ -1357,7 +1360,7 @@ limitations under the License.
        </DESCRIPTION>
        <USAGE>
         Use this command to store routes received (RIB-In) from BGP neighbors in
-        a peer-group. These stored routes could be used to refresh the Loc-RIB in 
+        a peer-group. These stored routes could be used to refresh the Loc-RIB in
         future as needed. If inbound policy changes, these stored routes will be used to
         generate LocRIB after applying the modified inbound policy.
        </USAGE>
@@ -1404,8 +1407,8 @@ limitations under the License.
        </DESCRIPTION>
        <USAGE>
         Use this command to assign a default weight to BGP routes received from
-        neighbors in this peer-group. Weight parameter is used in BGP route 
-        selection process.  So, configuring weight may influence the outcome of 
+        neighbors in this peer-group. Weight parameter is used in BGP route
+        selection process.  So, configuring weight may influence the outcome of
         the route selection process
        </USAGE>
       <EXAMPLE summary="Following command configures a default weight of 25 for
@@ -1431,7 +1434,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; threshold-val:${threshold-val} warning-only:${warning-only} restart:${restart} max-prefix-val:${max-prefix-val} maxpfopt:${maxpfopt} interval:${interval}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
-        This command configures the maximum number of prefix to accept from 
+        This command configures the maximum number of prefix to accept from
         BGP neighbors in a peer-group.
        </DESCRIPTION>
        <USAGE>
