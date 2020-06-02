@@ -388,16 +388,16 @@ limitations under the License.
         <COMMAND name="no set dscp" help="Clear DSCP remarking">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_dscp_remarking_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
         </COMMAND>
-<!--
+
         <COMMAND name="set traffic-class" help="Set traffic class">
-            <PARAM name="tc-value" help="Traffic class value (0-7)"  ptype="PCP_VALUE" />
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_traffic_class_value ${fbs-policy-name} ${fbs-class-name} ${tc-value}</ACTION>
+            <PARAM name="tc-value" help="Traffic class value (0-7)" ptype="PCP_VALUE" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_traffic_class_action ${fbs-policy-name} ${fbs-class-name} ${tc-value}</ACTION>
         </COMMAND>
 
         <COMMAND name="no set traffic-class" help="Clear traffic class">
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_traffic_class_value ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_traffic_class_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
         </COMMAND>
--->
+
         <COMMAND name="police" help="Set rate limiting parameters">
             <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
