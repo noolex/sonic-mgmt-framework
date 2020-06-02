@@ -87,18 +87,19 @@ limitations under the License.
     <COMMAND name="tacacs-server"
              help="TACACS server configuration"/>
 
-    <!-- tacacs src-ip -->
-    <COMMAND name="tacacs-server source-ip"
-             help="Configure global source ip for TACACS"
+    <!-- tacacs src-intf -->
+    <COMMAND name="tacacs-server source-interface"
+             help="Configure source interface to pick the source IP, used for the TACACS+ packets"
              ptype="SUBCOMMAND"
              mode="subcommand">
-      <PARAM name="src-ip"
-             help=""
-             ptype="IPV4V6_ADDR">
-      </PARAM>
-      <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-address body={"openconfig-system-ext:source-address": "${src-ip}"}
-      </ACTION>
+        <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
+          <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+        </PARAM>
+          <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_sonic_tacacs_global_src_intf ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${instance} </ACTION>
     </COMMAND>
 
     <!-- tacacs timeout -->
@@ -231,7 +232,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${management}${default}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${mgmt}${default}</ACTION>
     </COMMAND>
 
     <!-- no tacacs server -->
@@ -250,10 +251,10 @@ limitations under the License.
       </ACTION>
     </COMMAND>
 
-    <COMMAND name="no tacacs-server source-ip"
-             help="Unconfigure global source ip for TACACS">
+    <COMMAND name="no tacacs-server source-interface"
+             help="Unconfigure global source interface for TACACS">
       <ACTION
-          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-address
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-interface
       </ACTION>
     </COMMAND>
 

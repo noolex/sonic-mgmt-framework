@@ -20,7 +20,6 @@
 package main
 
 import (
-	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"flag"
@@ -101,7 +100,7 @@ func main() {
 				profRunning = false
 			} else {
 				prof = profile.Start()
-				defer prof.Stop()
+				//defer prof.Stop()
 				profRunning = true
 			}
 		}
@@ -212,11 +211,7 @@ func spawnUnixListener() {
 
 	localServer := &http.Server{
 		Handler: handler,
-		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
-			// Save the connection in the request context for use
-			// in the CLI user authentication flow
-			return context.WithValue(ctx, "http-conn", c)
-		},
+		ConnContext: server.CLIConnectionContextFactory,
 	}
 
 	go func() {

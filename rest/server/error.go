@@ -177,35 +177,41 @@ func toErrorEntry(err error, r *http.Request) (status int, errInfo errorEntry) {
 	case tlerr.InternalError:
 		errInfo.Message = e.Error()
 		errInfo.Path = e.Path
+		errInfo.AppTag = e.AppTag
 
 	case tlerr.NotSupportedError:
 		status = http.StatusMethodNotAllowed
 		errInfo.Tag = errtagOperationNotSupported
 		errInfo.Message = e.Error()
 		errInfo.Path = e.Path
+		errInfo.AppTag = e.AppTag
 
 	case tlerr.InvalidArgsError:
 		status = http.StatusBadRequest
 		errInfo.Tag = errtagInvalidValue
 		errInfo.Message = e.Error()
 		errInfo.Path = e.Path
+		errInfo.AppTag = e.AppTag
 
 	case tlerr.NotFoundError:
 		status = http.StatusNotFound
 		errInfo.Tag = errtagInvalidValue
 		errInfo.Message = e.Error()
 		errInfo.Path = e.Path
+		errInfo.AppTag = e.AppTag
 
 	case tlerr.AlreadyExistsError:
 		status = http.StatusConflict
 		errInfo.Tag = errtagResourceDenied
 		errInfo.Message = e.Error()
 		errInfo.Path = e.Path
+		errInfo.AppTag = e.AppTag
 
 	case tlerr.AuthorizationError:
 		status = http.StatusForbidden
 		errInfo.Message = "Client is not authorized to perform this operation"
 		errInfo.Path = e.Path
+		errInfo.AppTag = e.AppTag
 		errInfo.Tag = errtagAccessDenied
 
 	}

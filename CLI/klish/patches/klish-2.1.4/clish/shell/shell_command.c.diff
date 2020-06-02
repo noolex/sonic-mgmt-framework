@@ -88,7 +88,14 @@
 >                                                 lub_argv__get_count(argv)-1));
 >                 }
 > 
-120c174,178
+105c159
+< 			argv, &idx, completion, index + idx);
+---
+> 			argv, &idx, completion, index + idx, NULL, NULL);
+116a171,172
+> 			if (BOOL_TRUE == clish_param__get_hidden(param))
+> 				continue;
+120c176,180
 < 				result = clish_param__get_value(param);
 ---
 > 
@@ -96,7 +103,7 @@
 >                 		if (CLISH_PTYPE_METHOD_REGEXP_SELECT != 
 > 						clish_ptype__get_method(ptype))
 > 					result = clish_param__get_value(param);
-140,141c198,205
+140,141c200,207
 < 			if ((ptype = clish_param__get_ptype(param)))
 < 				clish_ptype_word_generator(ptype, matches, text);
 ---
@@ -108,7 +115,7 @@
 >                 		}
 > 
 > 			}
-144a209,211
+144a211,213
 > 		if(penultimate_text)
 >                         lub_string_free((char *)penultimate_text);
 > 

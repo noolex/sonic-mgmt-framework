@@ -1,122 +1,50 @@
 {% if json_output %}
-
-  {% if "MATCHING_POLICY_TABLE_LIST" is in json_output %}
-  {% set matching_policy_list = json_output["MATCHING_POLICY_TABLE_LIST"] %}
-  {% endif %}
-
-  {% if matching_policy_list %}
-
-   {% for policy_name in matching_policy_list %}
-
-    {% if "TYPE" in matching_policy_list[policy_name] %}
-        {% set match_type = matching_policy_list[policy_name]["TYPE"] %}
-    {% endif %}
-
-    {{'Policy'}} {{ policy_name }} {{ 'type' }} {{  match_type }}
-    {{'Descrition:'}} {{ matching_policy_list[policy_name]["DESCRIPTION"] }}
-
-    {% if ("REF_CLASS_LIST" in matching_policy_list[policy_name]) and (matching_policy_list[policy_name]["REF_CLASS_LIST"] is not none) %}
-
-        {% for referring_class in matching_policy_list[policy_name]["REF_CLASS_LIST"] %}
-
-        {{ 'Flow ' }} {{ referring_class["CLASS_NAME"] }} {{ 'at priority' }} {{ referring_class["PRIORITY"] }} 
-        {{ 'Descrition: ' }} {{ referring_class["DESCRIPTION"] }}  
-
-          {% if match_type == "QOS" %}
-            {% if ("SET_PCP" in referring_class) and (referring_class["SET_PCP"] != 0) %}
-            {{ 'set-cp' }} {{ referring_class["SET_PCP"] }}
+    {% for policy_name in json_output %}
+        {{- 'Policy' }} {{ policy_name }} {{ 'Type' }} {{  json_output[policy_name]["TYPE"] }}{{ "\n" }}
+        {{- '  Description:'}} {{ json_output[policy_name]["DESCRIPTION"] }}
+        {% for flow_prio in json_output[policy_name]["FLOWS"] %}
+            {% set flow_data = json_output[policy_name]["FLOWS"][flow_prio] %}
+            {{- '  Flow' }} {{ flow_data["CLASS_NAME"] }} {{ 'at priority' }} {{ flow_data["PRIORITY"] }}{{ "\n" }}
+            {{- '    Description:' }} {{ flow_data.get("DESCRIPTION", "") }}
+            {% if "SET_PCP" in flow_data %}
+                {{- '    set-pcp' }} {{ flow_data["SET_PCP"] }}
             {% endif %}
-
-            {% if ("SET_DSCP" in referring_class) and (referring_class["SET_DSCP"] != 0) %}
-            {{ 'set-DSCP' }} {{ referring_class["SET_DSCP"] }}
+            {% if "SET_DSCP" in flow_data %}
+                {{- '    set-dscp' }} {{ flow_data["SET_DSCP"] }}
             {% endif %}
-
-            {% set police_set = 0 %}
-            {% set cir = 0 %}
-            {% set cbs = 0 %}
-            {% set pir = 0 %}
-            {% set bs = 0 %}
-            {% if ("SET_POLICER_CIR" in referring_class) and (referring_class["SET_POLICER_CIR"] != 0) %}
-            {% set cir = referring_class["SET_POLICER_CIR"] %}
-            {% set police_set = 1 %}
+            {% if ( ("SET_POLICER_CIR" in flow_data) or ("SET_POLICER_CBS" in flow_data) or ("SET_POLICER_PIR" in flow_data) or ("SET_POLICER_PBS" in flow_data) ) %}
+                {{- '   ' }} police cir {{ flow_data.get("SET_POLICER_CIR", 0) }} cbs {{ flow_data.get("SET_POLICER_CBS", 0)  }} pir {{ flow_data.get("SET_POLICER_PIR", 0)  }} pbs {{ flow_data.get("SET_POLICER_PBS", 0)  }}
             {% endif %}
-
-            {% if ("SET_POLICER_CBS" in referring_class) and (referring_class["SET_POLICER_CBS"] != 0) %}
-            {% set cbs = referring_class["SET_POLICER_CBS"] %}
-            {% set police_set = 1 %}
+            {% if "SET_MIRROR_SESSION" in flow_data %}
+                {{- '    set mirror-session' }} {{ flow_data["SET_MIRROR_SESSION"] }}
             {% endif %}
-
-            {% if ("SET_POLICER_PIR" in referring_class) and (referring_class["SET_POLICER_PIR"] != 0) %}
-            {% set pir = referring_class["SET_POLICER_PIR"] %}
-            {% set police_set = 1 %}
+            {% if "SET_IP_NEXTHOP" in flow_data %}
+                {% for nhop in flow_data["SET_IP_NEXTHOP"] %}
+                    {{- '    set ip nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{"\n"}}
+                {% endfor %}
             {% endif %}
-
-            {% if ("SET_POLICER_PBS" in referring_class) and (referring_class["SET_POLICER_PBS"] != 0) %}
-            {% set pbs = referring_class["SET_POLICER_PBS"] %}
-            {% set police_set = 1 %}
+            {% if "SET_IPV6_NEXTHOP" in flow_data %}
+                {% for nhop in flow_data["SET_IPV6_NEXTHOP"] %}
+                    {{- '    set ip nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{"\n"}}
+                {% endfor %}
             {% endif %}
-
-            {% if (police_set != 0) %}
-            {{ 'police cir' }} {{ cir  }} cbs {{ cbs  }} pir {{ pir  }} pbs {{ pbs  }}
+            {% if "SET_INTERFACE" in flow_data %}
+                {% for intf in flow_data["SET_INTERFACE"] %}
+                    {{- '    set interface'}} {{ intf["INTERFACE"] }}{% if "PRIORITY" in intf %} {{ 'priority'}} {{ intf["PRIORITY"] }}{% endif %}{{"\n"}}
+                {% endfor %}
             {% endif %}
-
-          {% elif match_type == "MONITORING"  %} 
-            {% if ("SET_MIRROR_SESSION" in referring_class) and (referring_class["SET_MIRROR_SESSION"]) %}
-            {{ 'set mirror-session' }} {{ referring_class["SET_MIRROR_SESSION"] }}
+            {% if "DEFAULT_PACKET_ACTION" in flow_data %}
+                {{- '    set interface null'}}
             {% endif %}
-
-          {% elif match_type == "FORWARDING"  %}
-            {% if ("SET_INTERFACE" in referring_class) and (referring_class["SET_INTERFACE"]) %}
-            {{ 'set interface' }} {{ referring_class["SET_INTERFACE"] }}
-            {% endif %}
-
-            {% if ("IP_NEXTHOP_LIST" in referring_class) and (referring_class["IP_NEXTHOP_LIST"]) %}
-            {% for nhop in referring_class["IP_NEXTHOP_LIST"] %}
-            {% set nhop_string = 'set ip nexthop ' + nhop["NEXTHOP"] %}
-            {% if ("VRF" in nhop) and (nhop["VRF"]) %}
-            {% set nhop_string = nhop_string + ' vrf ' +  nhop["VRF"] %}
-            {% endif %}
-            {% if ("PRIORITY" in nhop) and (nhop["PRIORITY"] != 0) %}
-            {% set nhop_string = nhop_string + ' priority ' +  (nhop["PRIORITY"] | string) %}
-            {% endif %}
-            {{ nhop_string }}
-            {% endfor %}
-            {% endif %}
-
-            {% if ("IPV6_NEXTHOP_LIST" in referring_class) and (referring_class["IPV6_NEXTHOP_LIST"]) %}
-            {% for nhop in referring_class["IPV6_NEXTHOP_LIST"] %}
-            {% set nhop_string = 'set ip nexthop ' + nhop["NEXTHOP"] %}
-            {% if ("VRF" in nhop) and (nhop["VRF"]) %}
-            {% set nhop_string = nhop_string + ' vrf ' +  nhop["VRF"] %}
-            {% endif %}
-            {% if ("PRIORITY" in nhop) and (nhop["PRIORITY" != 0]) %}
-            {% set nhop_string = nhop_string + ' priority ' +  (nhop["PRIORITY"] | string) %}
-            {% endif %}
-            {{ nhop_string }}
-            {% endfor %}
-            {% endif %}
-
-
-            {% if ("SET_IPV6_NEXTHOP" in referring_class) and (referring_class["SET_IPV6_NEXTHOP"]) %}
-            {{ 'set ipv6-nexthop' }} {{ referring_class["SET_IPV6_NEXTHOP"] }}
-            {% endif %}
-          {% endif %}
-
         {% endfor %}
-    {% endif %}
-    {% if ("APPLIED_PORT_LIST" in matching_policy_list[policy_name]) and
-        ((matching_policy_list[policy_name]["APPLIED_PORT_LIST"]) is not none ) %}
-    {{ 'Applied to' }}
-        {% for applied_port in matching_policy_list[policy_name]["APPLIED_PORT_LIST"] %}
-        {% if ("POLICY_BIND_PORT" in applied_port ) and ("POLICY_BIND_DIR" in applied_port) and (applied_port["POLICY_BIND_PORT"] != "" ) %}
-            {{ applied_port["POLICY_BIND_PORT"]  }}  {{ 'at' }} {{ applied_port["POLICY_BIND_DIR"] }}
+        {% if "APPLIED_INTERFACES" in json_output[policy_name] %}
+            {{- '  Applied to' }}
+            {% for port_data in json_output[policy_name]["APPLIED_INTERFACES"] %}
+                {{- "   " }} {{ port_data["INTERFACE_NAME"] }} at {{ port_data["STAGE"].capitalize() }}
+            {% endfor %}
         {% endif %}
-        {% endfor %}
-    {% endif %}
-
-
-   {% endfor %}
-
-  {% endif %}
-
+        {% if policy_name != json_output.keys()|last %}
+            {{ "\n" }}
+        {% endif %}
+    {% endfor %}
 {% endif %}
