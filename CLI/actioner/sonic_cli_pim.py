@@ -32,6 +32,17 @@ def get_keypath(func,args):
     keypath = None
     body = None
 
+    vrfName = inputDict.get('vrf')
+    if vrfName == None or vrfName == "":
+        vrfName = "default"
+
+    if func == 'patch_openconfig_pim_ext_network_instances_network_instance_protocols_protocol_pim_global_config':
+        path='/restconf/data/openconfig-network-instance:network-instances/network-instance=' + vrfName + '/protocols/protocol=PIM,pim/pim/global'
+        keypath = cc.Path(path)
+        if inputDict.get('jpi') is not None:
+            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": { "join-prune-interval": float(inputDict.get('jpi'))}}}
+        elif inputDict.get('kat') is not None:
+            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": { "keep-alive-timer": float(inputDict.get('kat'))}}}
     return keypath, body
 
 def process_args(args):
@@ -45,22 +56,26 @@ def process_args(args):
             tmp[1] = None
         inputDict[tmp[0]] = tmp[1]
 
-def run(args):
+def run(func, args):
     global inputDict
     status = 0
-    func=""
 
     process_args(args)
-    print("Input dict: ", inputDict)
 
     # create a body block
     keypath, body = get_keypath(func, args)
+    if keypath is None:
+        print("% Error: Internal error")
+        return 1
 
-    inputDict = {}
-    return status
+    if (func == 'patch_openconfig_pim_ext_network_instances_network_instance_protocols_protocol_pim_global_config'):
+        apiClient.patch(keypath, body)
+
+    return 0
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
-    status = run(sys.argv[1:])
+    status = run(sys.argv[1], sys.argv[2:])
+    inputDict = {}
     if status != 0:
         sys.exit(0)
