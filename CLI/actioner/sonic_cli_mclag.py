@@ -119,6 +119,19 @@ def invoke(func, args):
         else:
             return aa.delete(keypath)
 
+	#[un]configure mclag system Mac
+    if (func == 'patch_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_mclag_system_mac' or
+        func == 'delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_mclag_system_mac'):
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}/mclag_system_mac', domain_id=args[0])
+
+        if (func.startswith("patch") is True):
+            body = {
+                "sonic-mclag:mclag_system_mac": args[1]
+            }
+            return aa.patch(keypath, body)
+        else:
+            return aa.delete(keypath)
+	
     #delete MCLAG Domain 
     if (func == 'delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list'):
         api_response = invoke("get_sonic_mclag_sonic_mclag", args[1:])
