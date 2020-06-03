@@ -119,10 +119,6 @@ limitations under the License.
              help="NTP server address"
              mode="switch"
              ptype="SUBCOMMAND">
-        <PARAM name="ip"
-               help="NTP source IPv4/IPv6 address"
-               ptype="IPV4V6_ADDR">
-        </PARAM>
         <PARAM name="interface"
                help="Interface name"
                mode="subcommand"
@@ -173,7 +169,7 @@ limitations under the License.
     <COMMAND name="no ntp source"
              help="Delete NTP source IP address">
       <ACTION
-        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/ntp-source-address
+        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface
       </ACTION>
     </COMMAND>
 

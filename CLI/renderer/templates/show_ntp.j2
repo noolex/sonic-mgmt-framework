@@ -1,7 +1,7 @@
 {% set vars = {'source': ""} %}
 {% set vars = {'vrf': ""} %}
 {% set vars = {'address': ""} %}
-{% set vars = {'selMode': ""} %}
+{% set vars = {'selmode': ""} %}
 {% set vars = {'remote': ""} %}
 {% set vars = {'refid': ""} %}
 {% set vars = {'st': ""} %}
@@ -21,7 +21,7 @@
         {{-"\n"}}
         {{-"----------------------------------------------"}}
         {% set global_info = json_output['global'] %}
-        {% if vars.update({'source':global_info["ntp-source-address"]}) %}{% endif %}
+        {% if vars.update({'source':global_info["openconfig-system-ext:ntp-source-interface"]}) %}{% endif %}
         {% if vars.update({'vrf':global_info["openconfig-system-ext:vrf"]}) %}{% endif %}
         {{-'NTP source:'.ljust(20)}}{{vars.source}}
         {{-"\n"}}
@@ -44,7 +44,7 @@
         {% for server in server_list %}
             {% if "state" in server %} 
                 {% set assoc_info = server["state"] %}
-                {% if vars.update({'selMode':assoc_info["openconfig-system-ext:selMode"]}) %}{% endif %}
+                {% if vars.update({'selmode':assoc_info["openconfig-system-ext:selmode"]}) %}{% endif %}
                 {% if vars.update({'remote':assoc_info["address"]}) %}{% endif %}
                 {% if vars.update({'refid':assoc_info["openconfig-system-ext:refid"]}) %}{% endif %}
                 {% if "stratum" in assoc_info %}
@@ -52,7 +52,7 @@
                 {% else %}
                     {% if vars.update({'st':""}) %}{% endif %}
                 {% endif %}
-                {% if vars.update({'t':assoc_info["openconfig-system-ext:PeerType"]}) %}{% endif %}
+                {% if vars.update({'t':assoc_info["openconfig-system-ext:peertype"]}) %}{% endif %}
                 {% if "openconfig-system-ext:now" in assoc_info %}
                     {% if vars.update({'when':'%d'|format(assoc_info["openconfig-system-ext:now"])}) %}{% endif %}
                 {% else %}
@@ -68,25 +68,25 @@
                 {% else %}
                     {% if vars.update({'reach':""}) %}{% endif %}
                 {% endif %}
-                {% if "openconfig-system-ext:PeerDelay" in assoc_info %}
-                    {% set pdy = assoc_info["openconfig-system-ext:PeerDelay"] %}
+                {% if "openconfig-system-ext:peerdelay" in assoc_info %}
+                    {% set pdy = assoc_info["openconfig-system-ext:peerdelay"] %}
                     {% if vars.update({'delay':'%0.3f'|format((pdy|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'delay':""}) %}{% endif %}
                 {% endif %}
-                {% if "openconfig-system-ext:PeerOffset" in assoc_info %}
-                    {% set pos = assoc_info["openconfig-system-ext:PeerOffset"] %}
+                {% if "openconfig-system-ext:peeroffset" in assoc_info %}
+                    {% set pos = assoc_info["openconfig-system-ext:peeroffset"] %}
                     {% if vars.update({'offset':'%0.3f'|format((pos|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'offset':""}) %}{% endif %}
                 {% endif %}
-                {% if "openconfig-system-ext:PeerJitter" in assoc_info %}
-                    {% set pjt = assoc_info["openconfig-system-ext:PeerJitter"] %}
+                {% if "openconfig-system-ext:peerjitter" in assoc_info %}
+                    {% set pjt = assoc_info["openconfig-system-ext:peerjitter"] %}
                     {% if vars.update({'jitter':'%0.3f'|format((pjt|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'jitter':""}) %}{% endif %}
                 {% endif %}
-{{'%-1s'|format(vars.selMode)}}{{'%-20s'|format(vars.remote)}} {{'%-16s'|format(vars.refid)}} {{'%-4s'|format(vars.st)}} {{'%-2s'|format(vars.t)}} {{'%-6s'|format(vars.when)}} {{'%-6s'|format(vars.poll)}} {{'%-6s'|format(vars.reach)}} {{'%-6s'|format(vars.delay)}} {{'%-12s'|format(vars.offset)}} {{'%-12s'|format(vars.jitter)-}}
+{{'%-1s'|format(vars.selmode)}}{{'%-20s'|format(vars.remote)}} {{'%-16s'|format(vars.refid)}} {{'%-4s'|format(vars.st)}} {{'%-2s'|format(vars.t)}} {{'%-6s'|format(vars.when)}} {{'%-6s'|format(vars.poll)}} {{'%-6s'|format(vars.reach)}} {{'%-6s'|format(vars.delay)}} {{'%-12s'|format(vars.offset)}} {{'%-12s'|format(vars.jitter)-}}
             {% endif %}
         {% endfor %}
 {{-"\n"}}

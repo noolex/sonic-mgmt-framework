@@ -102,7 +102,7 @@ def invoke_api(func, args=[]):
             return False
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
-        body = { "openconfig-system:config" : { "ntp-source-address" : ntp_src } }
+        body = { "openconfig-system:config" : { "openconfig-system-ext:ntp-source-interface" : ntp_src } }
         api_response = api.patch(keypath, body)
         if not api_response.ok():
             # error response
