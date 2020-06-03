@@ -67,13 +67,9 @@
     {% endif %}
 
     {{- '  Referenced in flows:' }}
-    {% if "REF_POLICY_LIST" in class_data %}
-    {% if class_data["REF_POLICY_LIST"] is not none %}
-        {% for referring_policy in class_data["REF_POLICY_LIST"] %}
-            {{- '    policy' }} {{ referring_policy["POLICY_NAME"] }} at priority {{ referring_policy["PRIORITY"] }}
-        {% endfor %}
-    {% endif %}
-    {% endif %}
+    {% for referring_policy in class_data.get("REFERENCES", []) %}
+        {{- '    policy' }} {{ referring_policy["POLICY_NAME"] }} at priority {{ referring_policy["PRIORITY"] }}
+    {% endfor %}
     {% if class_name != last_elem %}
         {{ "\n" }}
     {% endif %}
