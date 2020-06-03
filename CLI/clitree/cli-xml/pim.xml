@@ -99,7 +99,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_openconfig_pim_ext_network_instances_network_instance_protocols_protocol_pim_global_config vrf:${vrf-name} jpi:${jpi} kat:${kat} pln:${pln} ecmp:${ecmp} rebalance:${rebalance} 2>/dev/stdout
+                sonic_cli_pim patch_pim_global_config vrf:${vrf-name} jpi:${jpi} kat:${kat} pln:${pln} ecmp:${ecmp} rebalance:${rebalance} 2>/dev/stdout
             </ACTION>
         </COMMAND>
 

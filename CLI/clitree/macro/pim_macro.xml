@@ -20,13 +20,14 @@ limitations under the License.
         <COMMAND
             name="ip pim"
             help="Enable PIM on interface">
-            <ACTION></ACTION>
         </COMMAND>
 
         <COMMAND
             name="ip pim sparse-mode"
             help="Enable PIM sparse-mode">
-            <ACTION></ACTION>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim patch_pim_interface_config_mode intf:arg1 2>/dev/stdout
+            </ACTION>
         </COMMAND>
 
         <COMMAND
@@ -36,7 +37,9 @@ limitations under the License.
                 help="Range 1_4294967295"
                 name="drprio"
                 ptype="RANGE_1_4294967295"></PARAM>
-            <ACTION></ACTION>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim patch_pim_interface_config_drprio intf:arg1 drprio:${drprio} 2>/dev/stdout
+            </ACTION>
         </COMMAND>
 
         <COMMAND

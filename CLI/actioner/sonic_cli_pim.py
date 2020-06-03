@@ -31,19 +31,80 @@ apiClient = cc.ApiClient()
 def get_keypath(func,args):
     keypath = None
     body = None
+    path_prefix = '/restconf/data/openconfig-network-instance:network-instances/network-instance='
+    intf = ""
+    vrf = ""
 
-    vrfName = inputDict.get('vrf')
-    if vrfName == None or vrfName == "":
-        vrfName = "default"
+    #global config
+    if func == 'patch_pim_global_config':
+        #get vrf, needed for keypath
+        vrf = inputDict.get('vrf')
+        if vrf == None or vrf == "":
+            vrf = "default"
 
-    if func == 'patch_openconfig_pim_ext_network_instances_network_instance_protocols_protocol_pim_global_config':
-        path='/restconf/data/openconfig-network-instance:network-instances/network-instance=' + vrfName + '/protocols/protocol=PIM,pim/pim/global'
+        #generate keypath
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/global'
         keypath = cc.Path(path)
+
+        #generate body based on the input
         if inputDict.get('jpi') is not None:
-            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": { "join-prune-interval": float(inputDict.get('jpi'))}}}
+            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"join-prune-interval": float(inputDict.get('jpi'))}}}
         elif inputDict.get('kat') is not None:
-            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": { "keep-alive-timer": float(inputDict.get('kat'))}}}
+            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"keep-alive-timer": float(inputDict.get('kat'))}}}
+
+    #interface level config
+    if func.startswith('patch_pim_interface'):
+        #get interface, needed for VRF lookup and keypath
+        intf = inputDict.get('intf')
+        if intf is None:
+            return None, None
+
+        #get vrf, needed for keypath
+        vrf=get_vrf(intf)
+
+    if func == 'patch_pim_interface_config_mode':
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
+        keypath = cc.Path(path)
+        body ={"mode": "PIM_MODE_SPARSE"}
+
+    if func == 'patch_pim_interface_config_drprio':
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
+        keypath = cc.Path(path)
+        body ={"dr-priority": float(inputDict.get('drprio'))}
+
     return keypath, body
+
+def get_vrf(intf):
+    request = ''
+
+    if intf.startswith('Ethernet'):
+        request = '/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST=' + intf + '/vrf_name'
+    elif intf.startswith('Vlan'):
+        request = '/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST=' + intf + '/vrf_name'
+    elif intf.startswith('PortChannel'):
+        request =  '/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST=' + intf + '/vrf_name'
+    else:
+        return 'default'
+
+    keypath = cc.Path(request)
+
+    try:
+        response = apiClient.get(keypath)
+        if response is  None:
+            return 'default'
+
+        response = response.content
+        if response is  None:
+            return 'default'
+
+        vrf = response.get('sonic-interface:vrf_name')
+        if vrf is None or vrf == '':
+            return 'default'
+        return vrf
+
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print "% Error: Internal error"
 
 def process_args(args):
   global inputDict
@@ -68,7 +129,7 @@ def run(func, args):
         print("% Error: Internal error")
         return 1
 
-    if (func == 'patch_openconfig_pim_ext_network_instances_network_instance_protocols_protocol_pim_global_config'):
+    if func.startswith("patch"):
         apiClient.patch(keypath, body)
 
     return 0
