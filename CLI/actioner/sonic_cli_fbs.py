@@ -1102,9 +1102,16 @@ response_handlers = {
 def run(op_str, args):
     try:
         log.log_debug(str(args))
-        resp = request_handlers[op_str](args)
+        correct_args = list()
+        for arg in args:
+            if arg == "|" or arg == "\\|":
+                break
+            else:
+                correct_args.append(arg)
+        log.log_debug(str(correct_args))
+        resp = request_handlers[op_str](correct_args)
         if resp:
-            return response_handlers[op_str](resp, args, op_str)
+            return response_handlers[op_str](resp, correct_args, op_str)
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))
