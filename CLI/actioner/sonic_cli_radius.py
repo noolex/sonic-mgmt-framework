@@ -30,6 +30,7 @@ SYSTEM='/restconf/data/openconfig-system:system/'
 AAA=SYSTEM+'aaa/'
 SERVER_GROUPS=AAA+'server-groups/'
 RADIUS_SERVER_GROUP=SERVER_GROUPS+'server-group=RADIUS/'
+RADIUS_CONFIG=RADIUS_SERVER_GROUP+'openconfig-aaa-radius-ext:radius/config/'
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
@@ -42,9 +43,15 @@ def invoke_api(func, args=[]):
         body = { "openconfig-system-ext:source-address": args[0] }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_nas_ip_address':
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'config/openconfig-system-ext:nas-ip-address')
-        body = { "openconfig-system-ext:nas-ip-address": args[0] }
+        keypath = cc.Path(RADIUS_CONFIG + 'nas-ip-address')
+        body = { "openconfig-aaa-radius-ext:nas-ip-address": args[0] }
+        return api.patch(keypath, body)
+    elif func == 'patch_openconfig_radius_global_config_statistics':
+        keypath = cc.Path(RADIUS_CONFIG + 'statistics')
+        if args[0] == 'enable':
+            body = { "openconfig-aaa-radius-ext:statistics": True}
+        else:
+            body = { "openconfig-aaa-radius-ext:statistics": False}
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_timeout':
         keypath = cc.Path(RADIUS_SERVER_GROUP +
@@ -52,9 +59,8 @@ def invoke_api(func, args=[]):
         body = { "openconfig-system-ext:timeout": int(args[0]) }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_retransmit':
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'config/openconfig-system-ext:retransmit-attempts')
-        body = { "openconfig-system-ext:retransmit-attempts": int(args[0])}
+        keypath = cc.Path(RADIUS_CONFIG + 'retransmit-attempts')
+        body = { "openconfig-aaa-radius-ext:retransmit-attempts": int(args[0])}
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_key':
         keypath = cc.Path(RADIUS_SERVER_GROUP +
@@ -138,12 +144,10 @@ def invoke_api(func, args=[]):
             'config/openconfig-system-ext:source-address')
         return api.delete(keypath)
     elif func == 'delete_openconfig_radius_global_config_nas_ip_address':
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'config/openconfig-system-ext:nas-ip-address')
+        keypath = cc.Path(RADIUS_CONFIG + 'nas-ip-address')
         return api.delete(keypath)
     elif func == 'delete_openconfig_radius_global_config_retransmit':
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'config/openconfig-system-ext:retransmit-attempts')
+        keypath = cc.Path(RADIUS_CONFIG + 'retransmit-attempts')
         return api.delete(keypath)
     elif func == 'delete_openconfig_radius_global_config_key':
         keypath = cc.Path(RADIUS_SERVER_GROUP +
@@ -207,6 +211,11 @@ def invoke_api(func, args=[]):
 
         keypath = cc.Path(path, address=args[0])
         return api.delete(keypath)
+    # Clear RADIUS statistics
+    elif func == 'rpc_sonic_clear_radius_statistics':
+        path = cc.Path('/restconf/operations/sonic-system-radius:clear-radius')
+        body = {}
+        return api.post(path,body)
     else:
         body = {}
 
@@ -216,15 +225,16 @@ def get_sonic_radius_global():
     api_response = {} 
     api = cc.ApiClient()
     
-    path = cc.Path(RADIUS_SERVER_GROUP+'config')
+    path = cc.Path(RADIUS_SERVER_GROUP)
     response = api.get(path)
     if response.ok():
         if response.content:
             api_response = response.content
 
     show_cli_output("show_radius_global.j2", api_response)
+    return api_response
 
-def get_sonic_radius_servers(args=[]):
+def get_sonic_radius_servers(args=[], globals={}):
     api_response = {}
     api = cc.ApiClient()
 
@@ -293,11 +303,53 @@ def get_sonic_radius_servers(args=[]):
 
         show_cli_output("show_radius_server.j2", api_response)
 
+    statistics = 'False'
+    if ('openconfig-system:server-group' in globals) and \
+       ('openconfig-aaa-radius-ext:radius' in globals['openconfig-system:server-group'][0]) and \
+       ('config' in globals['openconfig-system:server-group'][0]['openconfig-aaa-radius-ext:radius']) and \
+       ('statistics' in globals['openconfig-system:server-group'][0]['openconfig-aaa-radius-ext:radius']['config']):
+        statistics = globals['openconfig-system:server-group'][0]['openconfig-aaa-radius-ext:radius']['config']['statistics']
+
+    if statistics != True:
+        return
+
+    api_response['header'] = 'True'
+    show_cli_output("show_radius_statistics.j2", api_response)
+
+    for server in response.content['openconfig-system:servers']['server']:
+        api_response.clear()
+        api_response['header'] = 'False'
+        if 'address' in server:
+            api_response['address'] = server['address']
+        if 'radius' not in server or \
+           'state' not in server['radius'] or \
+           'counters' not in server['radius']['state']:
+            continue
+        counters = server['radius']['state']['counters']
+        if 'access-accepts' in counters:
+            api_response['access-accepts'] = counters['access-accepts']
+        if 'access-rejects' in counters:
+            api_response['access-rejects'] = counters['access-rejects']
+        if 'openconfig-aaa-radius-ext:access-requests' in counters:
+            api_response['access-requests'] = counters['openconfig-aaa-radius-ext:access-requests']
+        if 'openconfig-aaa-radius-ext:retried-access-requests' in counters:
+            api_response['retried-access-requests'] = counters['openconfig-aaa-radius-ext:retried-access-requests']
+        if 'timeout-access-requests' in counters:
+            api_response['timeout-access-requests'] = counters['timeout-access-requests']
+        if 'openconfig-aaa-radius-ext:access-challenges' in counters:
+            api_response['access-challenges'] = counters['openconfig-aaa-radius-ext:access-challenges']
+        if 'openconfig-aaa-radius-ext:bad-authenticators' in counters:
+            api_response['bad-authenticators'] = counters['openconfig-aaa-radius-ext:bad-authenticators']
+        if 'openconfig-aaa-radius-ext:invalid-packets' in counters:
+            api_response['invalid-packets'] = counters['openconfig-aaa-radius-ext:invalid-packets']
+
+        show_cli_output("show_radius_statistics.j2", api_response)
+
 
 def run(func, args):
     if func == 'get_sonic_radius':
-        get_sonic_radius_global()
-        get_sonic_radius_servers()
+        global_response = get_sonic_radius_global()
+        get_sonic_radius_servers(globals=global_response)
         return
 
     response = invoke_api(func, args)
@@ -317,8 +369,8 @@ if __name__ == '__main__':
     func = sys.argv[1]
 
     if func == 'get_sonic_radius':
-        get_sonic_radius_global()
-        get_sonic_radius_servers(sys.argv[2:])
+        global_response = get_sonic_radius_global()
+        get_sonic_radius_servers(sys.argv[2:], globals=global_response)
     else:
         run(func, sys.argv[2:])
 

@@ -81,6 +81,14 @@ limitations under the License.
         >
     <ACTION builtin="clish_pyobj">sonic_cli_radius get_sonic_radius</ACTION>
     </COMMAND>
+    <COMMAND
+        name="clear radius-server"
+        help="Clear RADIUS commands" />
+    <COMMAND
+        name="clear radius-server statistics"
+        help="Clear RADIUS statistics">
+    <ACTION builtin="clish_pyobj">sonic_cli_radius rpc_sonic_clear_radius_statistics</ACTION>
+    </COMMAND>
 </VIEW>
 
 <!-- Config mode -->
@@ -115,6 +123,19 @@ limitations under the License.
             >
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_nas_ip_address ${nas_ip}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server statistics"
+        help="Configure global enable statistics collection for RADIUS"
+        >
+        <PARAM
+            name="enable"
+            help="enable/disable RADIUS statistics collection"
+            ptype="ENA_DISA"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_statistics ${enable}</ACTION>
     </COMMAND>
 
     <COMMAND
