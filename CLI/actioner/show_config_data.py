@@ -18,6 +18,7 @@
 
 from show_config_bgp import *
 from show_config_interface import *
+from show_config_authentication import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -25,7 +26,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
+['configure', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
 
 
 render_filelst  = {}
@@ -38,6 +39,7 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'interface_portchannel'   : show_interface_portchannel,
                   'if_lag_mclag'            : show_if_lag_mclag,
                   'interface_management'    : show_interface_management,
-                  'if_management_autoneg'   : show_if_management_autoneg    
+                  'if_management_autoneg'   : show_if_management_autoneg,
+                  'tacacs_server_source_if' : show_tacacs_source_if
  } 
 

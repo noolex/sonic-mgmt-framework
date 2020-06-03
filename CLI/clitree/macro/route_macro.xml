@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2020 Dell, Inc.  
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+
+<ROOT>
+
+<MACRODEF name="STATIC_ROUTE_DIST_CFG"> 
+     <PARAM name="pref" help="Route preference" ptype="RANGE_1_255" optional="true"></PARAM> 
+</MACRODEF>
+
+<MACRODEF name ="STATIC_ROUTE_INTF_CFG">
+     <PARAM name="interface" help="Select an interface" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="ifname" help="Interface-type number i.e Ethernet 12" ptype="PHY_VL_PO_INTERFACE">
+                <PARAM help="switch subcommand" name="type_v" mode="switch" ptype="SUBCOMMAND" optional="true">
+                      <PARAM help="Set nexthop-vrf" name="nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand">
+                            <PARAM name="next-hop-vrf" help="Name of next-hop-vrf" ptype="VRF_NAME">
+                                  <PARAM name="pref" help="Route preference" ptype="RANGE_1_255" optional="true"></PARAM>
+                            </PARAM>
+                      </PARAM>
+                      <PARAM name="pref" help="Route preference" ptype="RANGE_1_255" optional="true"></PARAM>
+                 </PARAM>
+          </PARAM>
+     </PARAM>
+</MACRODEF>
+
+<MACRODEF name ="STATIC_ROUTE_INTF_DEL">
+     <PARAM name="interface" help="Select an interface" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ifname" help="Interface-type number i.e Ethernet 12" ptype="PHY_VL_PO_INTERFACE">
+                <PARAM name="nexthop-vrf" help="Select nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                      <PARAM name="next-hop-vrf" help="Name of  next-hop-vrf" ptype="VRF_NAME"> </PARAM>
+                </PARAM>
+           </PARAM>
+     </PARAM>
+</MACRODEF>
+
+<MACRODEF name="STATIC-ROUTE-DEL">
+         <PARAM name="prefix" help="Destination prefix" ptype="IParg1_ADDR_MASK">
+            <PARAM name="route-target" help="Route target" ptype="SUBCOMMAND" mode="switch">
+                 <MACRO name="STATIC_ROUTE_INTF_DEL" arg=""/>
+                 <PARAM name="blackhole" help="Silently discard pkts when matched" mode="subcommand"  ptype="SUBCOMMAND">
+                 </PARAM>
+                 <PARAM name="next-hop-addr" help="Set next-hop address" ptype="IParg1_ADDR">
+                      <PARAM help="switch subcommand" name="type" mode="switch" ptype="SUBCOMMAND" optional="true">
+                           <MACRO name="STATIC_ROUTE_INTF_DEL" arg=""/>
+                           <PARAM name="nexthop-vrf" help="Select nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand">
+                               <PARAM name="next-hop-vrf" help="Name of  next-hop-vrf" ptype="VRF_NAME">
+                               </PARAM>
+                           </PARAM>
+                      </PARAM>
+                 </PARAM>
+            </PARAM>
+         </PARAM>
+</MACRODEF>
+
+<MACRODEF name="STATIC-ROUTE-CFG">
+         <PARAM name="prefix" help="Destination prefix" ptype="IParg1_ADDR_MASK">
+            <PARAM name="route-target" help="Route target" ptype="SUBCOMMAND" mode="switch" >
+                <MACRO name="STATIC_ROUTE_INTF_CFG" arg=""/>
+                 <PARAM name="blackhole" help="Silently discard pkts when matched" mode="subcommand"  ptype="SUBCOMMAND">
+                      <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+                 </PARAM>
+                 <PARAM name="next-hop-addr" help="Set next-hop address" ptype="IParg1_ADDR">
+                      <PARAM help="switch subcommand" name="type" mode="switch" ptype="SUBCOMMAND" optional="true">
+                           <MACRO name="STATIC_ROUTE_INTF_CFG" arg=""/>
+                           <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+                           <PARAM name="nexthop-vrf" help="Select nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand">
+                               <PARAM name="next-hop-vrf" help="Name of  next-hop-vrf" ptype="VRF_NAME">
+                                   <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+                               </PARAM>
+                           </PARAM>
+                      </PARAM>
+                 </PARAM>
+            </PARAM>
+         </PARAM>
+</MACRODEF>
+</ROOT>
+

@@ -91,7 +91,8 @@ limitations under the License.
   <xs:attribute name="render_view_cb" type="stringType" use="optional"/>
   <xs:attribute name="data_and_render_cb" type="stringType" use="optional"/>
   <xs:attribute name="command_tables" type="stringType" use="optional"/>
-  <xs:attribute name="db_flag" type="stringType" use="optional"/>  
+  <xs:attribute name="db_flag" type="stringType" use="optional"/>
+  <xs:attribute name="command_keys" type="stringType" use="optional"/>
 </xs:attributeGroup>
 
 <xs:attributeGroup name="paramAttr">
