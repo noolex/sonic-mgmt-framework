@@ -87,6 +87,7 @@ def get_helper_adr_str(args):
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
+
     # handle interfaces using the 'switch' mode
     if func == 'if_config':
         if args[0] == 'phy-if-name' or args[0] == 'vlan-if-name':
@@ -404,30 +405,6 @@ def invoke_api(func, args=[]):
             body = { "openconfig-interfaces-ext:fallback": False }
         return api.patch(path, body)
 
-    # Configure static ARP
-    elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-neighbors/ip-neighbor={name1},{sip}', name=args[0], index="0", name1=args[0],sip=args[1])
-        #body = collections.defaultdict(dict)
-        body = {"ip-neighbor":[{"static-intf":args[0],"static-ip":args[1],"config":{"neigh":args[2]}}]}
-        return api.patch(path, body)
-
-    # Delete static ARP
-    elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-neighbors/ip-neighbor={name1},{sip}', name=args[0], index="0",name1=args[0],sip=args[1])
-        return api.delete(path)
-
-    # Configure static ND
-    elif func == 'patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/openconfig-interfaces-ext:ip-neighbors/ip-neighbor={name1},{sip}', name=args[0], index="0", name1=args[0],sip=args[1])
-        #body = collections.defaultdict(dict)
-        body = {"ip-neighbor":[{"static-intf":args[0],"static-ip":args[1],"config":{"neigh":args[2]}}]}
-        return api.patch(path, body)
-
-    # Delete static ND
-    elif func == 'delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/openconfig-interfaces-ext:ip-neighbors/ip-neighbor={name1},{sip}', name=args[0], index="0",name1=args[0],sip=args[1])
-        return api.delete(path)
- 
     # Config IPv4 Unnumbered interface
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_unnumbered_interface_ref_config_interface':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0], index="0")
@@ -648,6 +625,7 @@ def getSonicId(item):
     return ifutils.name_to_int_val(ifName)
 
 def run(func, args):
+   
     if func == 'rpc_relay_clear':
         if not (args[0].startswith("Ethernet") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
            print("%Error: Invalid Interface")
