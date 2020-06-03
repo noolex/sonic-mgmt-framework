@@ -267,7 +267,7 @@
 < 			if (clish_pargv_find_arg(pargv, clish_param__get_name(param))) {
 ---
 > 			if (clish_pargv_find_arg(pargv, clish_param__get_name(param))) { 
-187a383,473
+187a383,471
 > 					} else {
 > 						/*  For CLISH_PTYPE_REGEXP_SELECT method, we try to match the
 > 						 *  input arg against a PARAM. If it is not matching we try
@@ -289,7 +289,6 @@
 > 									arg = lub_argv__get_arg(argv, *idx);
 > 									lub_string_cat(&arg2, arg);
 > 									arg = arg2;
-> 									index++;
 > 									validated = arg ?
 > 									clish_param_validate(cparam, arg) : NULL;
 > 									if(!validated)
@@ -298,7 +297,6 @@
 > 										So revert to old arg itself to try matching to 
 > 										next param*/
 > 										(*idx)--;
-> 										index--;
 > 										arg = arg_backup;
 > 										lub_string_free(arg2);
 > 										arg2 = NULL;
@@ -359,7 +357,7 @@
 > 									*strmatchLen = strmatch;
 >                                                         }
 > 						}
-192a479,551
+192a477,547
 > 				/*  For CLISH_PTYPE_REGEXP_SELECT method, we try to match the
 > 				 *  input arg against a PARAM. If it is not matching we try
 > 				 *  concatenating the next arg to this arg and try matching
@@ -379,7 +377,6 @@
 > 							arg = lub_argv__get_arg(argv, *idx);
 > 							lub_string_cat(&arg2, arg);
 > 							arg = arg2;
-> 							index++;
 > 							validated = arg ?
 > 							clish_param_validate(param, arg) : NULL;
 > 							if(!validated)
@@ -388,7 +385,6 @@
 > 								So revert to old arg itself to try matching to 
 > 								next param*/
 > 								(*idx)--;
-> 								index--;
 > 							}
 > 						}
 > 						if(!validated) {
@@ -433,7 +429,7 @@
 > 							*strmatchLen = strmatch;
 >                                         }
 > 				}
-203,204c562,566
+203,204c558,562
 < 					clish_pargv_insert(pargv, param,
 < 						validated);
 ---
@@ -442,25 +438,25 @@
 > 						lub_string_free(validated);
 > 						return CLISH_BAD_PARAM;
 > 					}
-220c582
+220c578
 < 							argv, idx, last, need_index);
 ---
 > 							argv, idx, last, need_index, errP, strmatchLen);
-250c613,615
+250c608,610
 < 					else
 ---
 > 					else {
 > 						clish_pargv_insert(pargv, param,
 > 								   clish_param__get_name(param));
-251a617
+251a612
 > 					}
-275c641
+275c636
 < 			(*idx <= argc) && (index >= paramc)) {
 ---
 > 			(*idx <= argc) && (index >= paramc) && (need_index != 0)) {
-296d661
+296d656
 < 			char *enc = NULL;
-301,304c666
+301,304c661
 < 			/* Escape quote and backslash */
 < 			enc = lub_string_encode(arg, lub_string_esc_quoted);
 < 			lub_string_cat(&args, enc);

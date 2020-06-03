@@ -284,8 +284,7 @@ limitations under the License.
 	</DOCGEN>
     </COMMAND>
     <COMMAND name="show threshold buffer-pool" help="Show buffer-pool configuration" ptype="SUBCOMMAND" mode="subcommand">
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list ${__full_line}
- </ACTION>
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list ${__full_line}</ACTION>
     </COMMAND>
     <COMMAND name="show threshold priority-group" help="Show priority-group threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="threshold_buffer_type" help="choose from shared, headroom." mode="switch" ptype="SUBCOMMAND">
@@ -354,18 +353,23 @@ limitations under the License.
      <COMMAND
         name="interface"
         help="Select an interface"
+        db_flag="SEP_CLI"
+        view_keys="name=*|name=*"
+        view_tables="sonic-port:sonic-port/PORT/ifname={name}|sonic-vlan:sonic-vlan/VLAN/name={name}"
         >
         <PARAM
                 name="if-switch"
                 help="Interface commands"
                 mode="switch"
                 ptype="STRING"
+                db_flag="SEP_CLI"
         >
         <PARAM
                 name="phy-if-name"
                 help="Enter Physical interface global configuration"
                 ptype="PHY_INTERFACE"
                 view="configure-if-view"
+                dbpath="sonic-port:sonic-port/PORT/ifname"
                 viewid="iface=${phy-if-name};iface_uri=${phyifname}"
         />
         <PARAM
@@ -373,6 +377,7 @@ limitations under the License.
                 help="Enter VLAN global configuration"
                 ptype="VLAN_INTERFACE"
                 view="configure-vlan-view"
+                dbpath="sonic-vlan:sonic-vlan/VLAN/name"
                 viewid="vlan_name=${vlan-if-name}"
         />
         </PARAM>
@@ -384,6 +389,9 @@ limitations under the License.
          help="Management interface commands"
          view="configure-if-mgmt-view"
          viewid="iface=eth${mgmt-if-id}"
+         view_keys="name=*"
+         view_tables="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/ifname={name}"
+         render_command_cb="interface_management"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -403,6 +411,9 @@ limitations under the License.
         ptype="SUBCOMMAND"
         view="configure-lag-view"
         viewid="po_id=po${lag-id};po_name=PortChannel${lag-id};"
+        view_keys="name=*"
+        view_tables="sonic-portchannel:sonic-portchannel/PORTCHANNEL/name={name}"
+        render_command_cb="interface_portchannel"
         >
         <PARAM
                 name="lag-id"
@@ -410,41 +421,41 @@ limitations under the License.
                 ptype="LAG_ID"
                 >
         </PARAM>
-        <PARAM 
-                name="mode" 
-                help="PortChannel Mode" 
-                ptype="SUBCOMMAND" 
-                mode="subcommand" 
+        <PARAM
+                name="mode"
+                help="PortChannel Mode"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
                 optional="true"
                 >
-                <PARAM 
-                        name="PoMode" 
-                        help="" 
+                <PARAM
+                        name="PoMode"
+                        help=""
                         ptype="PO_MODE"
-                        > 
+                        >
                 </PARAM>
         </PARAM>
-        <PARAM 
-                name="min-links" 
-                help="Minimum links" 
-                ptype="SUBCOMMAND" 
-                mode="subcommand" 
+        <PARAM
+                name="min-links"
+                help="Minimum links"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
                 optional="true"
                 >
-                <PARAM 
-                        name="min-links-value" 
-                        help="Minimum links value" 
+                <PARAM
+                        name="min-links-value"
+                        help="Minimum links value"
                         ptype="MIN_LINK"
-                        > 
+                        >
                 </PARAM>
         </PARAM>
-        <PARAM 
-                name="fallback" 
-                help="LACP Fallback" 
-                ptype="SUBCOMMAND" 
-                mode="subcommand" 
+        <PARAM
+                name="fallback"
+                help="LACP Fallback"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
                 optional="true"
-                > 
+                >
          </PARAM>
          <PARAM
                 name="fast_rate"
@@ -465,6 +476,9 @@ limitations under the License.
         ptype="SUBCOMMAND"
         view="configure-lo-view"
         viewid="lo_id=lo${lo-id};lo_name=Loopback${lo-id};"
+        view_keys="name=*"
+        view_tables="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/loIfName={name}"
+        render_command_cb="interface_loopback"
         >
         <PARAM
                 name="lo-id"
@@ -531,6 +545,8 @@ limitations under the License.
          viewid="cpu_ifname=CPU"
          mode="subcommand"
          ptype="SUBCOMMAND"
+         view_keys="name=CPU"
+         view_tables="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer={buffer}, threshold_buffer_type={threshold} interface_name={name}, buffer_index_per_port={port}"
          >
          <ACTION builtin="clish_nop"></ACTION>
      </COMMAND>
@@ -550,8 +566,7 @@ limitations under the License.
                        help="threshold value"
                        ptype="PERCENT_1">
                 </PARAM>
-	<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list_threshold ${__params}
-	</ACTION>
+	<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list_threshold ${__params}</ACTION>
 	<DOCGEN>
            <DESCRIPTION>
                    this command is to configure buffer pool threshold on ingress/egress buffers pools-lossy/lossless.
@@ -576,7 +591,7 @@ limitations under the License.
              help="Remove buffer-pool threshold config"
              ptype="SUBCOMMAND"
              mode="subcommand">
-                <ACTION builtin="clish_pyobj">sonic_cli_threshold delete_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list ${__full_line}</ACTION>
+                <ACTION builtin="clish_pyobj">sonic_cli_threshold delete_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list ${__full_line}</ACTION>
                 <DOCGEN>
                 <DESCRIPTION>
                         This command can be used to remove buffer-pool threshold configured on ingress and egress buffers.
@@ -609,10 +624,12 @@ limitations under the License.
 
         <COMMAND
             name="nat-zone"
-            help="NAT Zone">
+            help="NAT Zone"
+            command_tables="sonic-interface:sonic-interface/INTERFACE/portname={name}">
             <PARAM
                 name="zone"
                 help="NAT Zone of the interface"
+                dbpath="sonic-interface:sonic-interface/INTERFACE/nat_zone"
                 ptype="RANGE_NAT_ZONE" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-interfaces-ext:nat-zone/config/nat-zone body={"openconfig-interfaces-ext:nat-zone": ${zone}}</ACTION>
         </COMMAND>
@@ -628,6 +645,7 @@ limitations under the License.
             <PARAM
                 name="desc"
                 help="Textual description of the interface"
+                dbpath="sonic-port:sonic-port/PORT/description"
                 ptype="STRING" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
         </COMMAND>
@@ -642,6 +660,7 @@ limitations under the License.
             <PARAM
                 name="mtu"
                 help="MTU of the interface"
+                dbpath="sonic-port:sonic-port/PORT/mtu"
                 ptype="RANGE_MTU" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
         </COMMAND>
@@ -656,6 +675,7 @@ limitations under the License.
             <PARAM
                 name="speed"
                 help="Speed config of the interface"
+                dbpath="sonic-port:sonic-port/PORT/speed"
                 ptype="INTF_SPEED" />
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface_uri} ${speed}</ACTION>
         </COMMAND>
@@ -666,7 +686,9 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="channel-group"
+            render_command_cb="if_channel_group"
             help="Configure PortChannel parameters"
+            command_tables="sonic-portchannel:sonic-portchannel/PORTCHANNEL_MEMBER/name={vname},ifname={name}"
             >
             <!-- channel-group <number> -->
             <PARAM
@@ -685,7 +707,8 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="shutdown"
-            help="Disable the interface">
+            help="Disable the interface"
+            dbpath="sonic-port:sonic-port/PORT/admin_status=down">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
         </COMMAND>
         <COMMAND
@@ -697,12 +720,14 @@ limitations under the License.
         <COMMAND
             name="switchport"
             help="Configure switchport parameters"
-            />
+             />
         <COMMAND
             name="switchport access"
             help="Set access mode characteristics of the interface"
             ptype="SUBCOMMAND"
             mode="subcommand"
+            render_command_cb="if_switchport_access"
+            command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/name={vname},ifname={name}"
             >
             <PARAM
                 name="Vlan"
@@ -724,6 +749,8 @@ limitations under the License.
             help="Configure trunking parameters on an interface"
             ptype="SUBCOMMAND"
             mode="subcommand"
+            render_command_cb="if_switchport_trunk"
+            command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/name={vname},ifname={name}"            
             >
             <PARAM
                 name="allowed"
@@ -748,12 +775,12 @@ limitations under the License.
        </COMMAND>
 
        <COMMAND name="sflow" help="Interface sFlow settings"/>
-       <COMMAND name="sflow sampling-rate" help="Set sampling-rate" ptype="SUBCOMMAND" mode="subcommand">
-            <PARAM name="rate" help="Sampling rate" ptype="SFLOW_SAMPLING_RATE"/>
+       <COMMAND name="sflow sampling-rate" help="Set sampling-rate" ptype="SUBCOMMAND" mode="subcommand"  command_tables="sonic-sflow:sonic-sflow/SFLOW_SESSION/ifname={name}">
+            <PARAM name="rate" help="Sampling rate" ptype="SFLOW_SAMPLING_RATE" dbpath="sonic-sflow:sonic-sflow/SFLOW_SESSION/sample_rate"/>
             <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/sample_rate body={"sonic-sflow:sample_rate": ${rate}}</ACTION>
        </COMMAND>
 
-       <COMMAND name="sflow enable" help="Enable sflow" ptype="SUBCOMMAND" mode="subcommand">
+       <COMMAND name="sflow enable" help="Enable sflow" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-sflow:sonic-sflow/SFLOW_SESSION/ifname={name}" dbpath="sonic-sflow:sonic-sflow/SFLOW_SESSION/admin_state=up">
             <ACTION builtin="clish_restcl">oper=PATCH url= /restconf/data/sonic-sflow:sonic-sflow/SFLOW_SESSION/SFLOW_SESSION_LIST=${iface_uri}/admin_state body={"sonic-sflow:admin_state": "up"}</ACTION>
        </COMMAND>
 
@@ -812,10 +839,11 @@ limitations under the License.
         </COMMAND>
 	<COMMAND name="threshold" help="Configure priority-group/queue threshold on an interface."/>
 	<COMMAND name="threshold priority-group"
-		 help="Configure priority-group thresholds" ptype="SUBCOMMAND" mode="subcommand">
+		 help="Configure priority-group thresholds" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer={buffer}, threshold_buffer_type={threshold}, interface_name={name}, buffer_index_per_port={port}" dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer=priority-group">
 		<PARAM name="PG-Index"
 			help="PG Index value"
-			ptype="RANGE_0_7">
+			ptype="RANGE_0_7"
+      dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer_index_per_port">
 		</PARAM>
 		<PARAM
 			name="threshold_buffer_type"
@@ -826,19 +854,22 @@ limitations under the License.
                        name="headroom"
                        help="choose headroom as threshold buffer type"
                        ptype="SUBCOMMAND"
-                       mode="subcommand">
+                       mode="subcommand"
+                       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/threshold_buffer_type=headroom">
 		</PARAM>
 		<PARAM
                        name="shared"
                        help="choose shared as threshold buffer type"
                        ptype="SUBCOMMAND"
-                       mode="subcommand">
+                       mode="subcommand"
+                       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/threshold_buffer_type=shared">
 		</PARAM>
 		</PARAM>
 		<PARAM
 		       name="threshold_value"
 		       help="Threshold value"
-		       ptype="PERCENT_1">
+		       ptype="PERCENT_1"
+           dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/threshold">
                 </PARAM>
 	    <ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line} ${iface}</ACTION>
 		<DOCGEN>
@@ -855,11 +886,12 @@ limitations under the License.
 		</DOCGEN>
 	</COMMAND>
 	<COMMAND name="threshold queue"
-		 help="Configure queue thresholds" ptype="SUBCOMMAND" mode="subcommand">
+		 help="Configure queue thresholds" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer={buffer}, threshold_buffer_type={threshold},interface_name={name}, buffer_index_per_port={port}" dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer=queue">
 		<PARAM
                        name="queue_index"
                        help="queue_index value"
-                       ptype="RANGE_0_7">
+                       ptype="RANGE_0_7"
+                       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer_index_per_port">
                 </PARAM>
 	        <PARAM
 			name="queue_buffer_type"
@@ -870,19 +902,22 @@ limitations under the License.
 			name="unicast"
 			help="choose unicast as queue_buffer_type"
 			ptype="SUBCOMMAND"
-			mode="subcommand">
+			mode="subcommand"
+      dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/threshold_buffer_type=unicast">
 		</PARAM>
 		<PARAM
                        name="multicast"
                        help="choose multicast as queue_buffer_type"
                        ptype="SUBCOMMAND"
-                       mode="subcommand">
+                       mode="subcommand"
+                       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/threshold_buffer_type=multicast">
 		</PARAM>
                 </PARAM>
 		<PARAM
 		       name="threshold_value"
 		       help="Threshold value"
-		       ptype="PERCENT_1">
+		       ptype="PERCENT_1"
+           dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/threshold">
                 </PARAM>
 		<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line} ${iface} </ACTION>
 		<DOCGEN>
@@ -971,11 +1006,13 @@ limitations under the License.
       />
       <COMMAND
             name="nat-zone"
-            help="NAT Zone">
+            help="NAT Zone"
+            command_tables="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/loIfName={name}">
             <PARAM
                 name="zone"
                 help="NAT zone of the interface"
-                ptype="RANGE_NAT_ZONE" />
+                ptype="RANGE_NAT_ZONE" 
+                dbpath="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/nat_zone"/>
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone body={"openconfig-interfaces-ext:nat-zone": ${zone}}</ACTION>
         </COMMAND>
         <COMMAND
@@ -1003,11 +1040,13 @@ limitations under the License.
 
       <COMMAND
             name="nat-zone"
-            help="NAT Zone">
+            help="NAT Zone"
+            command_tables="sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/vlanName={name}">
             <PARAM
                 name="zone"
                 help="NAT Zone of the VLAN"
-                ptype="RANGE_NAT_ZONE" />
+                ptype="RANGE_NAT_ZONE" 
+                dbpath="sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/nat_zone"/>
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone body={"openconfig-interfaces-ext:nat-zone": ${zone}}</ACTION>
         </COMMAND>
         <COMMAND
@@ -1023,6 +1062,7 @@ limitations under the License.
                 name="mtu"
                 help="MTU of the VLAN interface"
                 ptype="RANGE_MTU"
+                dbpath="sonic-vlan:sonic-vlan/VLAN/mtu"
             />
           <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
        </COMMAND>
@@ -1033,7 +1073,9 @@ limitations under the License.
       </COMMAND>
       <COMMAND
         name="neigh_suppress"
-        help="Enable ARP and ND Suppression">
+        help="Enable ARP and ND Suppression"
+        command_tables="sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/name={name}"
+        dbpath="sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/suppress=on">
         <ACTION builtin="clish_pyobj">sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list ${vlan_name}</ACTION>
       </COMMAND>
       <COMMAND
@@ -1056,7 +1098,9 @@ limitations under the License.
 
     <COMMAND
            name="mclag-separate-ip"
-           help="Configure separate IP on Vlan interface for L3 protocol support over MCLAG" >
+           help="Configure separate IP on Vlan interface for L3 protocol support over MCLAG"
+           command_tables="sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/if_name={name}"
+           dbpath="sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/unique_ip=enable" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -1103,11 +1147,13 @@ limitations under the License.
 
         <COMMAND
             name="nat-zone"
-            help="NAT Zone">
+            help="NAT Zone"
+            command_tables="sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/pch_name={name}">
             <PARAM
                 name="zone"
                 help="NAT Zone of the PortChannel"
-                ptype="RANGE_NAT_ZONE" />
+                ptype="RANGE_NAT_ZONE" 
+                dbpath="sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/nat_zone"/>
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone body={"openconfig-interfaces-ext:nat-zone": ${zone}}</ACTION>
         </COMMAND>
         <COMMAND
@@ -1126,7 +1172,8 @@ limitations under the License.
            help="Set access mode characteristics of the interface"
            ptype="SUBCOMMAND"
            mode="subcommand"
-           >
+           command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/name={vname},ifname={name}"
+           render_command_cb="if_switchport_access">
            <PARAM
                name="Vlan"
                help="Set VLAN when interface is in access mode"
@@ -1147,6 +1194,8 @@ limitations under the License.
            help="Configure trunking parameters on an interface"
            ptype="SUBCOMMAND"
            mode="subcommand"
+           command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/name={vname},ifname={name}"           
+           render_command_cb="if_switchport_trunk"           
            >
            <PARAM
                name="allowed"
@@ -1229,7 +1278,8 @@ limitations under the License.
         <PARAM
             name="mtu"
             help="MTU of the interface"
-            ptype="RANGE_MTU" />
+            ptype="RANGE_MTU" 
+            dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/mtu"/>
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
     </COMMAND>
     <COMMAND
@@ -1239,18 +1289,22 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="shutdown"
-        help="Disable the interface">
+        help="Disable the interface"
+        dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/admin_status=down">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
     </COMMAND>
     <COMMAND
         name="no shutdown"
-        help="Enable the interface">
+        help="Enable the interface"
+        dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/admin_status=up">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
     </COMMAND>
 
     <COMMAND
            name="mclag"
-           help="Configure MCLAG interface" >
+           help="Configure MCLAG interface" 
+           command_tables="sonic-mclag:sonic-mclag/MCLAG_INTERFACE=if_name={name},domain_id={id}"
+           render_command_cb="if_lag_mclag">
            <PARAM name="domain_id" help="mclag domain id" ptype="RANGE_1_4095" />
            <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_sonic_mclag_mclag_interface_mclag_interface_list ${domain_id} ${po_name} </ACTION>
     </COMMAND>
@@ -1279,7 +1333,8 @@ limitations under the License.
             />
         <COMMAND
             name="shutdown"
-            help="Disable the interface">
+            help="Disable the interface"
+            dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/admin_status=down">
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
         </COMMAND>
         <COMMAND
@@ -1293,7 +1348,8 @@ limitations under the License.
             <PARAM
                 name="desc"
                 help="Textual description of the interface"
-                ptype="STRING" />
+                ptype="STRING"
+                dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/description" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
         </COMMAND>
         <COMMAND
@@ -1307,7 +1363,8 @@ limitations under the License.
             <PARAM
                 name="mtu"
                 help="MTU of the interface"
-                ptype="MGMT_RANGE_MTU" />
+                ptype="MGMT_RANGE_MTU" 
+                dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/mtu" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/mtu body={"openconfig-interfaces:mtu": ${mtu}}</ACTION>
         </COMMAND>
         <COMMAND
@@ -1317,11 +1374,13 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="autoneg"
-            help="Configure autoneg">
+            help="Configure autoneg"
+            render_command_cb="if_management_autoneg" >
             <PARAM
                 name="autoneg"
                 help="Autoneg config of the interface"
-                ptype="ON_OFF" />
+                ptype="ON_OFF" 
+                dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/autoneg=true" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/auto-negotiate  body={"openconfig-if-ethernet:auto-negotiate": true}</ACTION>
         </COMMAND>
         <COMMAND
@@ -1335,7 +1394,8 @@ limitations under the License.
             <PARAM
                 name="speed"
                 help="Speed config of the interface"
-                ptype="MGMT_INTF_SPEED" />
+                ptype="MGMT_INTF_SPEED" 
+                dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/speed" />
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface} ${speed}</ACTION>
         </COMMAND>
         <COMMAND
@@ -1361,22 +1421,26 @@ limitations under the License.
 	     name="threshold queue"
 	     help="Configure queue buffer threshold on CPU interface."
 	     ptype="SUBCOMMAND"
-             mode="subcommand">
-		<PARAM
+       mode="subcommand"
+       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer=queue">
+		    <PARAM
                        name="cpu_queue_index"
                        help="cpu_queue_index value"
-                       ptype="RANGE_0_47">
+                       ptype="RANGE_0_47"
+                       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/buffer_index_per_port">
                 </PARAM>
-		<PARAM
+		            <PARAM
                        name="multicast"
                        help="choose multicast as queue buffer type on CPU interface"
                        ptype="SUBCOMMAND"
-                       mode="subcommand">
+                       mode="subcommand"
+                       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/threshold_buffer_type=multicast">
                 </PARAM>
 		<PARAM
 		       name="threshold_value"
 		       help="Threshold value"
-		       ptype="PERCENT_1">
+		       ptype="PERCENT_1"
+           dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/threshold">
                 </PARAM>
 		<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold ${__full_line}  ${cpu_ifname}</ACTION>
 		<DOCGEN>

@@ -670,7 +670,7 @@ def show_policy(args):
         policy_name = args[0]
         body = {"sonic-flow-based-services:input": {"POLICY_NAME": policy_name}}
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-policy')
     return fbs_client.post(keypath, body)
 
 
@@ -681,7 +681,7 @@ def show_classifier(args):
     elif len(args) == 1:
         body = {"sonic-flow-based-services:input": {"CLASSIFIER_NAME": args[0]}}
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_classifier')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-classifier')
     return fbs_client.post(keypath, body)
 
 
@@ -695,7 +695,7 @@ def show_details_by_policy(args):
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)
 
 
@@ -710,7 +710,7 @@ def show_details_by_interface(args):
         if len(args) == 4:
             body["sonic-flow-based-services:input"]["TYPE"] = args[3]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)
 
 
@@ -724,7 +724,7 @@ def clear_details_by_policy(args):
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
 
 
@@ -739,7 +739,7 @@ def clear_details_by_interface(args):
         if len(args) == 4:
             body["sonic-flow-based-services:input"]["TYPE"] = args[3]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
 
 
@@ -846,7 +846,7 @@ def handle_show_policy_response(response, args, op_str):
         if response.content is not None and bool(response.content):
             render_data = OrderedDict()
 
-            output = response.content["sonic-flow-based-services:output"]["POLICY_LIST"]
+            output = response.content["sonic-flow-based-services:output"]["POLICIES"]
             policy_names = []
             data = dict()
             for entry in output:
@@ -878,7 +878,7 @@ def handle_show_policy_response(response, args, op_str):
 def handle_show_classifier_response(response, args, op_str):
     if response.ok():
         if response.content is not None and bool(response.content):
-            output = response.content["sonic-flow-based-services:output"]["CLASSIFIER_LIST"]
+            output = response.content["sonic-flow-based-services:output"]["CLASSIFIERS"]
             render_data = OrderedDict()
             output_dict = dict()
             for entry in output:

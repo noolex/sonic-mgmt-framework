@@ -26,10 +26,10 @@ import cli_client as cc
 from netaddr import *
 from scripts.render_cli import show_cli_output
 import subprocess
-import re
 import syslog
 import traceback
 from natsort import natsorted
+import sonic_intf_utils as ifutils
 
 import urllib3
 urllib3.disable_warnings()
@@ -352,22 +352,44 @@ def invoke_api(func, args=[]):
         responsePortTbl = api.get(path)
         if responsePortTbl.ok():
             d.update(responsePortTbl.content)
+	
+	path = cc.Path('/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST')
+        responseIntfVrfTbl =  api.get(path)
+        if responseIntfVrfTbl.ok():
+            d.update(responseIntfVrfTbl.content)
 
+	
         path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST')
         responsePortTbl = api.get(path)
         if responsePortTbl.ok():
             d.update(responsePortTbl.content)
-
+	
+	path = cc.Path('/restconf/data/sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST')
+        responseLoopVrfTbl =  api.get(path)
+        if responseLoopVrfTbl.ok():
+            d.update(responseLoopVrfTbl.content)
+	
         path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/LAG_TABLE/LAG_TABLE_LIST')
         responseLagTbl = api.get(path)
         if responseLagTbl.ok():
             d.update(responseLagTbl.content)
+	
+	path = cc.Path('/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST')
+        responseLagVrfTbl =  api.get(path)
+        if responseLagVrfTbl.ok():
+            d.update(responseLagVrfTbl.content)
 
         path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN_TABLE/VLAN_TABLE_LIST')
         responseVlanTbl =  api.get(path)
         if responseVlanTbl.ok():
             d.update(responseVlanTbl.content)
-        return d
+        
+	path = cc.Path('/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST')
+        responseVlanVrfTbl =  api.get(path)
+        if responseVlanVrfTbl.ok():
+            d.update(responseVlanVrfTbl.content)
+
+	return d
         
     # Add members to port-channel
     elif func == 'patch_openconfig_if_aggregate_interfaces_interface_ethernet_config_aggregate_id':
@@ -628,32 +650,15 @@ def invoke_api(func, args=[]):
         return api.post(keypath, body)
     return api.cli_not_implemented(func)
 
-def _name_to_val(ifName):
-    tk = ifName.split('.')
-    plist = re.findall(r'\d+', tk[0])
-    val = 0
-    if len(plist) == 1:  #ex: Ethernet40
-       val = int(plist[0]) * 10000
-    elif len(plist) == 2:  #ex: Eth1/5
-       val= int(plist[0]+plist[1].zfill(3)+'000000')
-    elif len(plist) == 3:  #ex: Eth1/5/2
-       val= int(plist[0]+plist[1].zfill(3)+plist[2].zfill(2)+'0000')
-
-    if len(tk) == 2:   #ex: 2345 in Eth1/1.2345
-       val += int(tk[1])
-
-    syslog.syslog(syslog.LOG_DEBUG, "{}: {}".format(ifName, val))
-    return val
-
 def getId(item):
     state_dict = item['state']
     ifName = state_dict['name']
-    return _name_to_val(ifName)
+    return ifutils.name_to_int_val(ifName)
 
 def getSonicId(item):
     state_dict = item
     ifName = state_dict['ifname']
-    return _name_to_val(ifName)
+    return ifutils.name_to_int_val(ifName)
 
 def run(func, args):
     if func == 'rpc_relay_clear':
@@ -714,9 +719,7 @@ def run(func, args):
                     interfaces = value['interfaces']
                     if 'interface' in interfaces:
                         tup = interfaces['interface']
-                        prfxStIdx = {"Ethernet":1000, "PortChannel": 2000,}
-
-                        value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: [prfxStIdx[prfx] + int(item[0][len(prfx):]) for prfx in prfxStIdx.keys() if item[0].startswith(prfx)])
+                        value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: [ifutils.name_to_int_val(item[0])])
 
             if api_response is None:
                 print("Failed")

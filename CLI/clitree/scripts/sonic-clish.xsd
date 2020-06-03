@@ -84,6 +84,15 @@ limitations under the License.
   <xs:attribute name="release" type="stringType" use="optional"/>
   <xs:attribute name="example" type="stringType" use="optional"/>
   <xs:attribute name="render_view" type="stringType" use="optional"/>
+  <xs:attribute name="view_keys" type="stringType" use="optional"/>
+  <xs:attribute name="view_tables" type="stringType" use="optional"/>
+  <xs:attribute name="dbpath" type="stringType" use="optional"/>
+  <xs:attribute name="render_command_cb" type="stringType" use="optional"/>
+  <xs:attribute name="render_view_cb" type="stringType" use="optional"/>
+  <xs:attribute name="data_and_render_cb" type="stringType" use="optional"/>
+  <xs:attribute name="command_tables" type="stringType" use="optional"/>
+  <xs:attribute name="db_flag" type="stringType" use="optional"/>
+  <xs:attribute name="command_keys" type="stringType" use="optional"/>
 </xs:attributeGroup>
 
 <xs:attributeGroup name="paramAttr">
@@ -108,6 +117,8 @@ limitations under the License.
   <xs:attribute name="hidden" type="stringType" use="optional"/>
   <xs:attribute name="completion" type="stringType" use="optional"/>
   <xs:attribute name="access" type="stringType" use="optional"/>
+  <xs:attribute name="dbpath" type="stringType" use="optional"/>
+  <xs:attribute name="db_flag" type="stringType" use="optional"/>    
 </xs:attributeGroup>
 
 <xs:attributeGroup name="exampleAttr">
