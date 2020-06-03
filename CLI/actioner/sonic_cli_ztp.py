@@ -22,13 +22,13 @@ def invoke(func, args):
         if 'no' in args:
             body = {
                      "openconfig-ztp:config": {
-                     "admin_mode":False
+                     "admin-mode":False
                      }
                     }
         else:
             body = {
                      "openconfig-ztp:config": {
-                     "admin_mode":True
+                     "admin-mode":True
                      }
                     }
         return aa.patch(path,body)
