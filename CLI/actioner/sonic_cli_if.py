@@ -640,7 +640,7 @@ def invoke_api(func, args=[]):
 def getId(item):
     state_dict = item['state']
     ifName = state_dict['name']
-    return ifutils.name_to_val(ifName)
+    return ifutils.name_to_int_val(ifName)
 
 def getSonicId(item):
     state_dict = item
