@@ -65,14 +65,7 @@ Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
      {% if vars.update({'installed':"#"}) %}{% endif %}
   {% endif %}
   {% set nexthops = route["nexthops"] %}
-  {% set ns = namespace(recursive=False) %}
   {% for nexthop in nexthops %}
-     {% if nexthop["recursive"] %}
-         {% set ns.recursive = True %}
-     {% elif ns.recursive %}
-         {% set ns.recursive = False %}
-         {% continue %}
-     {% endif %}
      {% if vars.update({'active':nexthop["active"]}) %}{% endif %}
      {% if vars.update({'fib':nexthop["fib"]}) %}{% endif %}
      {% if vars.fib == True %}
@@ -88,7 +81,11 @@ Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
          {% if vars.directlyConnected == True %}
              {% if vars.update({'gateway':"Direct"}) %}{% endif %}
          {% else %}
-             {% if vars.update({'gateway': 'via ' + nexthop['ip']}) %}{% endif %}
+             {% if nexthop["recursive"] %}
+                 {% if vars.update({'gateway': 'via ' + nexthop['ip'] + ' (recursive)'}) %}{% endif %}
+             {% else %}
+                 {% if vars.update({'gateway': 'via ' + nexthop['ip']}) %}{% endif %}
+             {% endif %}
          {% endif %}
          {% if nexthop['vrf'] %}
              {% set temp = nexthop['interfaceName'] %}
