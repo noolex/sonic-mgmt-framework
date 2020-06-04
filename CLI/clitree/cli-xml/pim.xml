@@ -125,13 +125,15 @@ limitations under the License.
                 order="true"
                 ptype="SUBCOMMAND">
                 <PARAM
-                    name="join-prune-interval"
+                    name="jpi"
+                    value="join-prune-interval"
                     help="Join prune interval in seconds"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
                 <PARAM
-                    name="keep-alive-timer"
+                    name="kat"
+                    value="keep-alive-timer"
                     help="Keep alive timer in seconds"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
@@ -142,7 +144,8 @@ limitations under the License.
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
-                        name="prefix-list-name"
+                        name="pln"
+                        value="prefix-list-name"
                         help="Configure prefix list name"
                         ptype="SUBCOMMAND"
                         mode="subcommand">
