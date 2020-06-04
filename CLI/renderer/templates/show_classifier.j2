@@ -17,7 +17,7 @@
     {% endif %}
     {% endif %}
     {% if "ETHER_TYPE" in class_data %}
-        {{- '    ether-type' }} {{ class_data["ETHER_TYPE"] }}
+        {{- '    ethertype' }} {{ class_data["ETHER_TYPE"] }}
     {% endif %}
     {% if "SRC_MAC" in class_data %}
         {{- '    src-mac' }} {{ mac_addr_to_user_fmt(class_data["SRC_MAC"]) }}
@@ -26,7 +26,7 @@
         {{- '    dst-mac' }} {{ mac_addr_to_user_fmt(class_data["DST_MAC"]) }}
     {% endif %}
     {% if "VLAN" in class_data %}
-        {{ '-    vlan' }} {{ class_data["VLAN"] }}
+        {{- '    vlan' }} {{ class_data["VLAN"] }}
     {% endif %}
     {% if "PCP" in class_data %}
         {{- '    pcp' }} {{ class_data["PCP"] }}
@@ -35,7 +35,7 @@
         {{- '    dei' }} {{ class_data["DEI"] }}
     {% endif %}
     {% if "IP_PROTOCOL" in class_data %}
-        {{- '    ip-proto' }} {{ ip_proto_to_user_fmt(class_data["IP_PROTOCOL"]) }}
+        {{- '    ip protocol' }} {{ ip_proto_to_user_fmt(class_data["IP_PROTOCOL"]) }}
     {% endif %}
     {% if "SRC_IP" in class_data %}
         {{- '    src-ip' }} {{ ip_addr_to_user_fmt(class_data["SRC_IP"], True) }}
