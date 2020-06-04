@@ -22,6 +22,9 @@ def invoke(func, args=[]):
     if func == 'get_openconfig_qos_qos_interfaces':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces')
         return api.get(path)
+    if func == 'get_openconfig_qos_qos_interfaces_interface_maps':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
+        return api.get(path)
     if func == 'get_list_openconfig_qos_ext_qos_threshold_breaches_breach':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:threshold-breaches/breach')
         return api.get(path)
@@ -45,6 +48,10 @@ def invoke(func, args=[]):
     if func == 'get_openconfig_qos_qos_interface_scheduler_policy_config':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/scheduler-policy/config', interface_id=args[0])
         return api.get(path)
+    if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
+        body = {"openconfig-qos-maps-ext:config": { "dscp-to-forwarding-group": args[1]} }
+        return api.patch(path, body)
 
     return api.cli_not_implemented(func)
 
@@ -114,6 +121,8 @@ def run(func, args):
             elif func == 'get_openconfig_qos_qos_queues_queue':
                 show_cli_output('show_qos_queue_config.j2', response)
             elif func == 'get_openconfig_qos_qos_interface_scheduler_policy_config':
+                show_cli_output('show_qos_interface_config.j2', response)
+            elif func == 'get_openconfig_qos_qos_interfaces_interface_maps':
                 show_cli_output('show_qos_interface_config.j2', response)
 
     else:

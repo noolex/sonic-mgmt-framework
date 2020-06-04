@@ -1,0 +1,36 @@
+{{'-----------------------------------------------------------------------'}}
+{{'Fan'.ljust(15)}}{{'Status'.ljust(15)}}{{'Speed (RPM)'.ljust(20)}}{{'Direction'.ljust(20)}}
+{{'-----------------------------------------------------------------------'}}
+
+{% for fan_name, fan_info in json_output.items() %}
+{% set description = 'None' %}
+{% if 'state' in fan_info %}
+{% if 'oper-status' in fan_info['state'] %}
+{% set oper_status = fan_info['state']['oper-status'] %}
+{% if 'openconfig-platform-types:' in oper_status %}
+{% set oper_status = oper_status.split(':')[1] %}
+{% endif %}
+{% endif %}
+{% if 'name' in fan_info['state'] %}
+{% set description = fan_info['state']['name'] %}
+{% endif %}
+{% endif %}
+
+{% set direction = 'None' %}
+{% set speed = 0 %}
+
+{% if 'fan' in fan_info %}
+{% if 'state' in fan_info['fan'] %}
+{% if 'openconfig-platform-ext:direction' in fan_info['fan']['state'] %}
+{% set direction = fan_info['fan']['state']['openconfig-platform-ext:direction'] %}
+{% endif %}
+
+{% if 'openconfig-platform-fan:speed' in fan_info['fan']['state'] %}
+{% set speed = fan_info['fan']['state']['openconfig-platform-fan:speed'] %}
+{% endif %}
+
+{% endif %}
+{% endif %}
+{{fan_name.ljust(15)}}{{oper_status.ljust(15)}}{{'%d'.ljust(18) | format(speed|int)}}{{direction}}
+{% endfor %}
+

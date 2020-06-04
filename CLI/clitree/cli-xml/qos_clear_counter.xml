@@ -237,6 +237,24 @@ limitations under the License.
              </PARAM>
          </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_clear_qos clear_qos ${__full_line}</ACTION>
+      <DOCGEN>
+         <DESCRIPTION>
+           This command clears queue counters, watermarks, persistent-watermarks and breaches etc.
+         </DESCRIPTION>
+         <USAGE>
+           Use this command to clear queue counters, watermarks, persistent-watermarks and breches etc.
+           There are various CLI options available toclear infomration for queue, interface and all interfaces.
+           - clear queue counters (interfcae Ethernet|CPU [ifname] (queue [id]))
+             This command will display all queue counters
+           - clear queue (watermark|persitent-watermark) (unicast| multicast) (interfcae Ethernet|CPU [ifname]))
+             This command will display all queue watermarks
+         </USAGE>
+         <EXAMPLE summary="Below are some of the sample clear commands">
+         sonic# clear queue counters interface Ethernet 0 queue 0
+         sonic# clear queue watermark unicast
+         sonic# clear queue persistent-watermark multicast interface Ethernet 0
+         </EXAMPLE>
+      </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
     <COMMAND name="clear priority-group" help="Clear priority group counters">
@@ -398,6 +416,21 @@ limitations under the License.
              </PARAM>
          </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_clear_qos clear_qos ${__full_line}</ACTION>
+      <DOCGEN>
+         <DESCRIPTION>
+           This command clears priority-group watermarks, persistent-watermarks and breaches etc.
+         </DESCRIPTION>
+         <USAGE>
+           Use this command to clear priority-group watermarks, persistent-watermarks and breches etc.
+           There are various CLI options available to clear infomration for unicast/multicast on priority-group, interface.
+           - clear priority-group (watermark|persitent-watermark) (headoom|shared) (interfcae Ethernet [ifname]))
+             This command will display all queue watermarks
+         </USAGE>
+         <EXAMPLE summary="Below are some of the sample clear commands">
+         sonic# clear priority-group watermark shared interface Ethernet 0
+         sonic# clear priority-group persistent-watermark headroom
+         </EXAMPLE>
+      </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
   </VIEW>

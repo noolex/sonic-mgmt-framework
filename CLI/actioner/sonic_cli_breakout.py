@@ -9,6 +9,7 @@ import cli_client as cc
 import re
 import urllib3
 import string
+from collections import OrderedDict 
 urllib3.disable_warnings()
 
 def invoke(func, args):
@@ -29,7 +30,20 @@ def invoke(func, args):
         else:
             interface = args[1]
         path = cc.Path('/restconf/data/openconfig-platform:components/component=%s/port/openconfig-platform-port:breakout-mode/config'%interface)
-        return aa.get(path)
+        config_resp = aa.get(path)
+        path = cc.Path('/restconf/data/sonic-port-breakout:sonic-port-breakout/PORT_BREAKOUT/PORT_BREAKOUT_LIST=%s/status'%interface)
+        state_resp = aa.get(path)
+        if config_resp.ok() and config_resp.content:
+            if state_resp.ok() and state_resp.content:
+                config_resp.content["openconfig-platform-port:config"].update(state_resp.content)
+            else:
+                config_resp.content["openconfig-platform-port:config"]["sonic-port-breakout:status"] = "Completed"
+        elif state_resp.ok() and state_resp.content:
+	    state_resp.content["openconfig-platform-port:config"] = OrderedDict()
+       	    state_resp.content["openconfig-platform-port:config"]["sonic-port-breakout:status"]=state_resp.content.pop('sonic-port-breakout:status')
+            return state_resp
+        return config_resp
+
     else:
         interface = args[0]
         speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "1x40G":"SPEED_40GB",
