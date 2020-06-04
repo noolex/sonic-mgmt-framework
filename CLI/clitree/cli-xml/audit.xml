@@ -23,20 +23,32 @@ limitations under the License.
     xmlns:xi="http://www.w3.org/2001/XInclude"
     xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+<!--=======================================================-->
+  <PTYPE
+     name="AUDIT_SHOW_TYPE"
+     method="select"
+     pattern="all(all) brief(brief)"
+     help=""
+  />
+<!--=======================================================-->
 
 <VIEW name="enable-view">
-    <COMMAND
-        help="show audit commands"
-        name="show audit"
-        >
-    </COMMAND>
-
     <!-- show audit log -->
     <COMMAND
-        help="show first 100 records of audit log"
-        name="show audit log">
+        name="show audit"
+        help="Display audit commands"/>
+    <COMMAND
+        name="show audit log"
+        help="Display audit log"
+        mode="subcommand"
+        ptype="SUBCOMMAND">
+        <PARAM name="stype"
+            help="Display either all or subset of audit log"
+            ptype="AUDIT_SHOW_TYPE"
+            optional="true">
+        </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-audit-log-rpc.py rpc_sonic_auditlog_show_auditlog ${__full_line};
+            python $SONIC_CLI_ROOT/sonic-cli-audit-log-rpc.py ${stype} rpc_sonic_auditlog_show_auditlog;
         </ACTION>
     </COMMAND>
 </VIEW>

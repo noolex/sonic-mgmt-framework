@@ -7,12 +7,15 @@ import cli_client as cc
 
 def run(func, args):
     aa = cc.ApiClient()
+
     if func == 'rpc_sonic_auditlog_show_auditlog':
         keypath = cc.Path('/restconf/operations/sonic-auditlog:show-auditlog')
-        body = { "sonic-auditlog:input": {} }
+        if (itype == "all"):
+            body = { "sonic-auditlog:input": {"content-type" : "all"} }
+        else:
+            body = { "sonic-auditlog:input": {"content-type" : "brief"} }
         response = aa.post(keypath, body)
         if response.ok():
-            print("AUDIT LOG")
             print(response.content["sonic-show-auditlog:output"]["audit-content"])
         else:
             print "%Error: Transaction Failure "
@@ -22,7 +25,12 @@ def run(func, args):
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)
-    func = sys.argv[1]
-
-    run(func, sys.argv[2:])
+    if (len(sys.argv) == 2) :
+        func = sys.argv[1]
+        itype = "brief"
+        run(func, sys.argv[1:])
+    else:
+        itype = sys.argv[1]
+        func = sys.argv[2]
+        run(func, sys.argv[2:])
 
