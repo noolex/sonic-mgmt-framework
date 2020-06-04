@@ -216,7 +216,10 @@
         <COMMAND name="udld" help="UDLD configuration subcommands"/>
         <COMMAND name="no udld" help="UDLD configuration subcommands"/>
         <COMMAND name = "udld enable"
-            help = "Enable UDLD at global level">
+            help = "Enable UDLD at global level"
+            command_tables="sonic-udld:sonic-udld/UDLD/id={id}"
+            command_keys="id=GLOBAL"
+            dbpath="sonic-udld:sonic-udld/UDLD/id=GLOBAL">
             <ACTION builtin="clish_pyobj">sonic_cli_udld post_list_sonic_udld_sonic_udld_udld_udld_list</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -246,7 +249,10 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "udld aggressive"
-            help = "Enable aggressive UDLD mode at global level">
+            help = "Enable aggressive UDLD mode at global level"
+            command_tables="sonic-udld:sonic-udld/UDLD/id={id}"
+            command_keys="id=GLOBAL"
+            dbpath="sonic-udld:sonic-udld/UDLD/aggressive=true">
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_udld_list_aggressive true</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -279,11 +285,14 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "udld message-time"
-            help = "Configure UDLD message time value in seconds (1 - 30 sec)">
+            help = "Configure UDLD message time value in seconds (1 - 30 sec)"
+            command_tables="sonic-udld:sonic-udld/UDLD/id={id}"
+            command_keys="id=GLOBAL">
             <PARAM
                 name="msg-time"
                 help="Message time value (Range 1 - 30 seconds)"
                 ptype="UDLD_MSG_TIME_TYPE"
+                dbpath="sonic-udld:sonic-udld/UDLD/msg_time"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_udld_list_msg_time ${msg-time}</ACTION>
@@ -318,11 +327,14 @@
         </COMMAND>
 
         <COMMAND name = "udld multiplier"
-            help = "Configure UDLD multiplier value (3 - 10)">
+            help = "Configure UDLD multiplier value (3 - 10)"
+            command_tables="sonic-udld:sonic-udld/UDLD/id={id}"
+            command_keys="id=GLOBAL">
             <PARAM
                 name="multiplier"
                 help="Multiplier value (Range 3 - 10)"
                 ptype="UDLD_MULTIPLIER_TYPE"
+                dbpath="sonic-udld:sonic-udld/UDLD/multiplier"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_udld_list_multiplier ${multiplier}</ACTION>

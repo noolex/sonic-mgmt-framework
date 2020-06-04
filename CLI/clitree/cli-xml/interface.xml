@@ -284,8 +284,7 @@ limitations under the License.
 	</DOCGEN>
     </COMMAND>
     <COMMAND name="show threshold buffer-pool" help="Show buffer-pool configuration" ptype="SUBCOMMAND" mode="subcommand">
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list ${__full_line}
- </ACTION>
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list ${__full_line}</ACTION>
     </COMMAND>
     <COMMAND name="show threshold priority-group" help="Show priority-group threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="threshold_buffer_type" help="choose from shared, headroom." mode="switch" ptype="SUBCOMMAND">
@@ -567,8 +566,7 @@ limitations under the License.
                        help="threshold value"
                        ptype="PERCENT_1">
                 </PARAM>
-	<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list_threshold ${__params}
-	</ACTION>
+	<ACTION builtin="clish_pyobj">sonic_cli_threshold patch_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list_threshold ${__params}</ACTION>
 	<DOCGEN>
            <DESCRIPTION>
                    this command is to configure buffer pool threshold on ingress/egress buffers pools-lossy/lossless.
@@ -593,7 +591,7 @@ limitations under the License.
              help="Remove buffer-pool threshold config"
              ptype="SUBCOMMAND"
              mode="subcommand">
-                <ACTION builtin="clish_pyobj">sonic_cli_threshold delete_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list ${__full_line}</ACTION>
+                <ACTION builtin="clish_pyobj">sonic_cli_threshold delete_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list ${__full_line}</ACTION>
                 <DOCGEN>
                 <DESCRIPTION>
                         This command can be used to remove buffer-pool threshold configured on ingress and egress buffers.

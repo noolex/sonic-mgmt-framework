@@ -58,6 +58,7 @@ ATTR_VIEW = "view"
 ATTR_VIEW_KEYS = "view_keys"
 ATTR_VIEW_TABLES = "view_tables"
 ATTR_COMMAND_TABLES = "command_tables"
+ATTR_COMMAND_KEYS = "command_keys"
 ATTR_DB_PATH = "dbpath"
 ATTR_DB_TABLE = "dbtable"
 ATTR_OPTIONAL = 'optional'
@@ -110,15 +111,19 @@ klish_xml_dir = "..\\cli-xml"
 
 #FILE_LIST = ['interface.xml', 'udld.xml', 'storm_control.xml', 'configure_mode.xml']
 
+FILE_LIST = ['udld.xml', 'tacacs.xml', 'configure_mode.xml']
+
 FILE_TREE_MAP = {}
 PARENT_NODE_SEP_CLI_CHILD_MAP = {}
 
 NODE_VIEW_KEYS_LIST_MAP= {}
 NODE_VIEW_TABLES_LIST_MAP = {}
 NODE_COMMAND_TABLES_LIST_MAP = {}
+NODE_COMMAND_KEYS_LIST_MAP = {}
 NODE_DB_AND_RENDER_LIST_MAP = {}
 NODE_RENDER_VIEW_CB_LIST_MAP = {}
 NODE_RENDER_CMD_CB_LIST_MAP = {}
+
 
 CMD_TARGET_VIEW_MAP = {}
 
@@ -214,6 +219,26 @@ def get_command_tables(node_tag):
 
 
 
+def get_command_keys(node_tag):
+
+    """Return the command tables to be picked in the current iteration
+       from the command"""
+
+    command_keys = ''
+
+    if ATTR_COMMAND_KEYS in node_tag.attrs:
+        if node_tag not in NODE_COMMAND_KEYS_LIST_MAP:
+            command_keys_str = node_tag[ATTR_COMMAND_KEYS]
+            command_keys_list = command_keys_str.split(VIEW_ATTR_DELIMITER)
+            NODE_COMMAND_KEYS_LIST_MAP.update({node_tag : command_keys_list})
+
+        command_keys = NODE_COMMAND_KEYS_LIST_MAP[node_tag].pop(0)
+        if len(NODE_COMMAND_KEYS_LIST_MAP[node_tag]) == 0:
+            NODE_COMMAND_KEYS_LIST_MAP.pop(node_tag, None)
+
+    return command_keys
+
+
 
 def get_db_and_render_cb(node_tag):
 
@@ -297,7 +322,8 @@ def process_view_tag(view_name, view_tag):
 
                     add_dict_entry(view_tag, command_tag, field1_str, target_view, \
                         get_view_keys(command_tag), get_view_tables(command_tag), \
-                        get_command_tables(command_tag), db_render_cb, render_view_cb, render_cmd_cb, DICT_FILE)
+                        get_command_keys(command_tag), get_command_tables(command_tag),\
+                        db_render_cb, render_view_cb, render_cmd_cb, DICT_FILE)
                     # Check if PARAM tag has view configured
                     if target_view:
                         process_view_name(target_view)
@@ -335,7 +361,8 @@ def process_view_tag(view_name, view_tag):
 
                 add_dict_entry(view_tag, command_tag, field1_str, target_view, \
                        get_view_keys(command_tag), get_view_tables(command_tag), \
-                       get_command_tables(command_tag), db_render_cb, render_view_cb, render_cmd_cb, DICT_FILE)
+                       get_command_keys(command_tag), get_command_tables(command_tag), \
+                       db_render_cb, render_view_cb, render_cmd_cb, DICT_FILE)
 
                 if target_view:
                     process_view_name(target_view)
@@ -664,12 +691,13 @@ def get_command_view(view_tag, target_view):
 
 
 def add_dict_entry(view_tag, cmd_tag, field1str, target_view, view_keys, \
-                    view_tables, command_tables, db_render_cb, render_view_cb, render_cmd_cb, dictfile):
+                   view_tables, command_keys, command_tables, db_render_cb, \
+                   render_view_cb, render_cmd_cb, dictfile):
 
     command_view = get_command_view(view_tag, target_view)
 
     dict_entry=field1str + FIELD_DELIMITER + view_keys + \
-               FIELD_DELIMITER + view_tables + FIELD_DELIMITER + command_tables + \
+               FIELD_DELIMITER + view_tables + FIELD_DELIMITER + command_keys + FIELD_DELIMITER + command_tables + \
                FIELD_DELIMITER + db_render_cb + FIELD_DELIMITER + render_view_cb + \
                FIELD_DELIMITER + render_cmd_cb + FIELD_DELIMITER + command_view + '\n'
 
@@ -715,8 +743,8 @@ if __name__ == "__main__":
     for model in models:
         fname = os.path.basename(model)
         with open(model, "r") as fp:
-            soup = BeautifulSoup(fp, "xml")
-            log.debug('M: File to be parsed: {}' .format(model))
-            FILE_TREE_MAP.update({fname:soup})
+                soup = BeautifulSoup(fp, "xml")
+                log.debug('M: File to be parsed: {}' .format(model))
+                FILE_TREE_MAP.update({fname:soup})
 
     process_view_name(CONFIG_VIEW_STR)

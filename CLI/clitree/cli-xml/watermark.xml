@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+<VIEW name="enable-view">
+<COMMAND
+        name="show watermark"
+        help="show watermark commands"/>
+	<COMMAND name="show watermark interval" help="Show watermark snapshot interval" ptype="SUBCOMMAND" mode="subcommand">
+	<ACTION builtin="clish_pyobj">sonic_cli_watermark get_list_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list ${__full_line}</ACTION>
+        <DOCGEN>
+        <DESCRIPTION>
+                     This command is used to display watermark snapshot interval configured in the system.
+        </DESCRIPTION>
+        <USAGE>
+                     Use this command to display watermark snapshot interval configured in the system.
+        </USAGE>
+        <EXAMPLE
+                     summary="Show watermark interval">
+                              sonic-cli# show watermark interval
+                                         Snapshot interval : 220 seconds
+        </EXAMPLE>
+        </DOCGEN>
+	</COMMAND>
+	<COMMAND name="show watermark telemetry" help="Show watermark telemetry interval" ptype="SUBCOMMAND" mode="subcommand">
+		<PARAM name="interval" help="watermark telemetry interval" ptype="SUBCOMMAND" mode="subcommand"></PARAM>
+	<ACTION builtin="clish_pyobj">sonic_cli_watermark get_list_sonic_watermark_sonic_watermark_watermark_table_watermark_table_list ${__full_line}</ACTION>
+	<DOCGEN>
+        <DESCRIPTION>
+                     This command is used to display watermark telemetry interval configured in the system.
+        </DESCRIPTION>
+        <USAGE>
+                     Use this command to display watermark telemetry interval configured in the system.
+        </USAGE>
+        <EXAMPLE
+                     summary="Show watermark telemetry interval">
+                              sonic-cli# show watermark telemetry interval
+					 Telemetry interval : 220 seconds	
+        </EXAMPLE>
+        </DOCGEN>
+        </COMMAND>
+</VIEW>
+
+<VIEW name="configure-view">
+	<COMMAND
+	        name="watermark"
+		help="Configure watermark"
+		>
+     </COMMAND>
+
+	<COMMAND name="watermark interval"
+		help="Configure watermark snapshot interval"
+		ptype="SUBCOMMAND"
+		mode="subcommand">
+                <PARAM name="interval_value" help="Configure watermark snapshot interval value" ptype="RANGE_1_600"> </PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_watermark patch_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list_interval ${__full_line}</ACTION>
+	<DOCGEN>
+        <DESCRIPTION>
+                     This command is used to configure snapshot watermark interval.
+        </DESCRIPTION>
+        <USAGE>
+                     Use this command to configure sanpshot watermark interval.
+        </USAGE>
+        <EXAMPLE
+                     summary="Config watermark interval">
+                              sonic(config)# watermark interval 77 
+        </EXAMPLE>
+        </DOCGEN>
+	</COMMAND>
+	<COMMAND name="watermark telemetry"
+             help="Configure watermark telemetry interval"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+		<PARAM name="interval" help="watermark telemetry interval" ptype="SUBCOMMAND" mode="subcommand"></PARAM>
+		<PARAM name="interval_value" help="Configure watermark telemetry interval value" ptype="RANGE_1_600"> </PARAM>
+	        <ACTION builtin="clish_pyobj">sonic_cli_watermark patch_sonic_watermark_sonic_watermark_watermark_table_watermark_table_list_interval ${__full_line}</ACTION>
+	<DOCGEN>
+        <DESCRIPTION>
+                     This command is used to configure watermark telemetry interval.
+        </DESCRIPTION>
+        <USAGE>
+                     Use this command to configure watermark telemetry interval.
+        </USAGE>
+        <EXAMPLE
+                     summary="Config watermark telemetry interval">
+                              sonic(config)# watermark telemetry interval 88 
+        </EXAMPLE>
+        </DOCGEN>
+        </COMMAND>
+     <COMMAND
+	        name="no watermark"
+		help="Remove watermark intervals"/>
+		<COMMAND name="no watermark interval"
+			 help="Remove watermark snapshot interval"
+			 ptype="SUBCOMMAND"
+			 mode="subcommand">
+		<ACTION builtin="clish_pyobj">sonic_cli_watermark delete_list_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list ${__full_line}</ACTION>
+	<DOCGEN>
+        <DESCRIPTION>
+                     This command is used to remove snapshot watermark interval configured.
+        </DESCRIPTION>
+        <USAGE>
+                     Use this command to remove snapshot watermark interval configured.
+        </USAGE>
+        <EXAMPLE
+                     summary="Remove Config watermark interval">
+                              sonic(config)# no watermark interval 66 
+        </EXAMPLE>
+        </DOCGEN>
+		</COMMAND>
+		<COMMAND name="no watermark telemetry"
+             		 help="Remove watermark telemetry interval"
+             		 ptype="SUBCOMMAND"
+             		 mode="subcommand">
+				<PARAM name="interval" help="watermark telemetry interval" ptype="SUBCOMMAND" mode="subcommand"></PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_watermark delete_list_sonic_watermark_sonic_watermark_watermark_table_watermark_table_list ${__full_line}</ACTION>
+	<DOCGEN>
+        <DESCRIPTION>
+                     This command is used to remove watermark telemetry interval configured.
+        </DESCRIPTION>
+        <USAGE>
+                     Use this command to remove telemetry watermark interval configured.
+        </USAGE>
+        <EXAMPLE
+                     summary="Remove Config watermark telemetry interval">
+                              sonic(config)# no watermark telemetry interval 44 
+        </EXAMPLE>
+        </DOCGEN>
+		</COMMAND>
+</VIEW>
+</CLISH_MODULE>
