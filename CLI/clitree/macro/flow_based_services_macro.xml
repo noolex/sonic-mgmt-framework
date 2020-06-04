@@ -138,7 +138,7 @@
     </MACRODEF>
 
     <MACRODEF name="FBS-NEXT-HOP-PRIORITY">
-        <PARAM name="priority" help="Priority of the Next hop" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+        <PARAM name="priority" help="Priority of the Next hop" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${egress-intf-options}" != "null"'>
             <PARAM name="priority-value" help="Priority value" ptype="RANGE_1_65535"/>
         </PARAM>
     </MACRODEF>

@@ -61,6 +61,10 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/counters', name=args[0])
         return api.get(path)
 
+    if func == 'get_sonic_portchannel_sonic_portchannel_portchannel_global_portchannel_global_list':
+        path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL/PORTCHANNEL_GLOBAL_LIST=GLOBAL')
+        return api.get(path)
+
     return api.cli_not_implemented(func)
     
 
@@ -175,17 +179,34 @@ def get_counters(api_response):
     except Exception as e:
         print("Exception when calling get_counters : %s\n" %(e))
 
+def get_global_config_data():
+
+    try:
+        lacp_func = 'get_sonic_portchannel_sonic_portchannel_portchannel_global_portchannel_global_list'
+
+        args = []
+        value = {}
+        api_response = invoke_api(lacp_func, args)
+        if api_response.ok():
+            response = api_response.content
+            if response is not None:
+                if 'sonic-portchannel:PORTCHANNEL_GLOBAL_LIST' in response.keys():
+                    value = response['sonic-portchannel:PORTCHANNEL_GLOBAL_LIST']
+
+    except Exception as e:
+        print("Exception when calling get_global_config_data : %s\n" %(e))
+
+    return value
 
 def run():
     
     api_response = get_lag_data()
     api_response1 = get_lacp_data()
     get_counters(api_response)
-    
+    global_config_response = get_global_config_data()
 
     # Combine Outputs
-    response = {"portchannel": api_response, "lacp": api_response1}
-    
+    response = {"portchannel": api_response, "lacp": api_response1, "global": global_config_response}
     if sys.argv[1] == "get_all_portchannels":
         template_file = sys.argv[2]
     else:

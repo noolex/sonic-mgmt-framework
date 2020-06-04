@@ -26,10 +26,10 @@ import cli_client as cc
 from netaddr import *
 from scripts.render_cli import show_cli_output
 import subprocess
-import re
 import syslog
 import traceback
 from natsort import natsorted
+import sonic_intf_utils as ifutils
 
 import urllib3
 urllib3.disable_warnings()
@@ -87,6 +87,7 @@ def get_helper_adr_str(args):
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
+
     # handle interfaces using the 'switch' mode
     if func == 'if_config':
         if args[0] == 'phy-if-name' or args[0] == 'vlan-if-name':
@@ -404,30 +405,6 @@ def invoke_api(func, args=[]):
             body = { "openconfig-interfaces-ext:fallback": False }
         return api.patch(path, body)
 
-    # Configure static ARP
-    elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-neighbors/ip-neighbor={name1},{sip}', name=args[0], index="0", name1=args[0],sip=args[1])
-        #body = collections.defaultdict(dict)
-        body = {"ip-neighbor":[{"static-intf":args[0],"static-ip":args[1],"config":{"neigh":args[2]}}]}
-        return api.patch(path, body)
-
-    # Delete static ARP
-    elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-neighbors/ip-neighbor={name1},{sip}', name=args[0], index="0",name1=args[0],sip=args[1])
-        return api.delete(path)
-
-    # Configure static ND
-    elif func == 'patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/openconfig-interfaces-ext:ip-neighbors/ip-neighbor={name1},{sip}', name=args[0], index="0", name1=args[0],sip=args[1])
-        #body = collections.defaultdict(dict)
-        body = {"ip-neighbor":[{"static-intf":args[0],"static-ip":args[1],"config":{"neigh":args[2]}}]}
-        return api.patch(path, body)
-
-    # Delete static ND
-    elif func == 'delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/openconfig-interfaces-ext:ip-neighbors/ip-neighbor={name1},{sip}', name=args[0], index="0",name1=args[0],sip=args[1])
-        return api.delete(path)
- 
     # Config IPv4 Unnumbered interface
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_unnumbered_interface_ref_config_interface':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0], index="0")
@@ -637,34 +614,18 @@ def invoke_api(func, args=[]):
         return api.post(keypath, body)
     return api.cli_not_implemented(func)
 
-def _name_to_val(ifName):
-    tk = ifName.split('.')
-    plist = re.findall(r'\d+', tk[0])
-    val = 0
-    if len(plist) == 1:  #ex: Ethernet40
-       val = int(plist[0]) * 10000
-    elif len(plist) == 2:  #ex: Eth1/5
-       val= int(plist[0]+plist[1].zfill(3)+'000000')
-    elif len(plist) == 3:  #ex: Eth1/5/2
-       val= int(plist[0]+plist[1].zfill(3)+plist[2].zfill(2)+'0000')
-
-    if len(tk) == 2:   #ex: 2345 in Eth1/1.2345
-       val += int(tk[1])
-
-    syslog.syslog(syslog.LOG_DEBUG, "{}: {}".format(ifName, val))
-    return val
-
 def getId(item):
     state_dict = item['state']
     ifName = state_dict['name']
-    return _name_to_val(ifName)
+    return ifutils.name_to_int_val(ifName)
 
 def getSonicId(item):
     state_dict = item
     ifName = state_dict['ifname']
-    return _name_to_val(ifName)
+    return ifutils.name_to_int_val(ifName)
 
 def run(func, args):
+   
     if func == 'rpc_relay_clear':
         if not (args[0].startswith("Ethernet") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
            print("%Error: Invalid Interface")
@@ -723,9 +684,7 @@ def run(func, args):
                     interfaces = value['interfaces']
                     if 'interface' in interfaces:
                         tup = interfaces['interface']
-                        prfxStIdx = {"Ethernet":1000, "PortChannel": 2000,}
-
-                        value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: [prfxStIdx[prfx] + int(item[0][len(prfx):]) for prfx in prfxStIdx.keys() if item[0].startswith(prfx)])
+                        value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: [ifutils.name_to_int_val(item[0])])
 
             if api_response is None:
                 print("Failed")

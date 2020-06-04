@@ -455,6 +455,19 @@ def clear_dscp_remarking_action(args):
     return fbs_client.delete(keypath)
 
 
+def set_traffic_class_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_TC',
+                      policy_name=args[0], classifier_name=args[1])
+    body = {'SET_TC': int(args[2])}
+    return fbs_client.patch(keypath, body)
+
+
+def clear_traffic_class_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_TC',
+                      policy_name=args[0], classifier_name=args[1])
+    return fbs_client.delete(keypath)
+
+
 def set_policer_action(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
                       policy_name=args[0], classifier_name=args[1])
@@ -670,7 +683,7 @@ def show_policy(args):
         policy_name = args[0]
         body = {"sonic-flow-based-services:input": {"POLICY_NAME": policy_name}}
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-policy')
     return fbs_client.post(keypath, body)
 
 
@@ -681,7 +694,7 @@ def show_classifier(args):
     elif len(args) == 1:
         body = {"sonic-flow-based-services:input": {"CLASSIFIER_NAME": args[0]}}
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_classifier')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-classifier')
     return fbs_client.post(keypath, body)
 
 
@@ -695,7 +708,7 @@ def show_details_by_policy(args):
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)
 
 
@@ -710,7 +723,7 @@ def show_details_by_interface(args):
         if len(args) == 4:
             body["sonic-flow-based-services:input"]["TYPE"] = args[3]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)
 
 
@@ -724,7 +737,7 @@ def clear_details_by_policy(args):
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
 
 
@@ -739,7 +752,7 @@ def clear_details_by_interface(args):
         if len(args) == 4:
             body["sonic-flow-based-services:input"]["TYPE"] = args[3]
 
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
 
 
@@ -846,7 +859,7 @@ def handle_show_policy_response(response, args, op_str):
         if response.content is not None and bool(response.content):
             render_data = OrderedDict()
 
-            output = response.content["sonic-flow-based-services:output"]["POLICY_LIST"]
+            output = response.content["sonic-flow-based-services:output"]["POLICIES"]
             policy_names = []
             data = dict()
             for entry in output:
@@ -863,7 +876,7 @@ def handle_show_policy_response(response, args, op_str):
                 render_data[name]["FLOWS"] = OrderedDict()
                 flows = dict()
                 for flow in policy_data.get("FLOWS", list()):
-                    flows[flow["PRIORITY"]] = flow
+                    flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
 
                 flow_keys = natsorted(flows.keys(), reverse=True)
                 for flow in flow_keys:
@@ -878,7 +891,7 @@ def handle_show_policy_response(response, args, op_str):
 def handle_show_classifier_response(response, args, op_str):
     if response.ok():
         if response.content is not None and bool(response.content):
-            output = response.content["sonic-flow-based-services:output"]["CLASSIFIER_LIST"]
+            output = response.content["sonic-flow-based-services:output"]["CLASSIFIERS"]
             render_data = OrderedDict()
             output_dict = dict()
             for entry in output:
@@ -935,7 +948,7 @@ def handle_show_service_policy_details_response(response, args, op_str):
                             policy_sort_data["FLOWS"] = OrderedDict()
                             flows = dict()
                             for flow in policy_data.get("FLOWS", list()):
-                                flows[flow["PRIORITY"]] = flow
+                                flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
 
                             # Sort Policy flows by priority
                             flow_keys = natsorted(flows.keys(), reverse=True)
@@ -1003,6 +1016,8 @@ request_handlers = {
     'clear_pcp_remarking_action': clear_pcp_remarking_action,
     'set_dscp_remarking_action': set_dscp_remarking_action,
     'clear_dscp_remarking_action': clear_dscp_remarking_action,
+    'set_traffic_class_action': set_traffic_class_action,
+    'clear_traffic_class_action': clear_traffic_class_action,
     'set_policer_action': set_policer_action,
     'clear_policer_action': clear_policer_action,
     'set_mirror_session_action': set_mirror_session_action,
@@ -1062,6 +1077,8 @@ response_handlers = {
     'clear_pcp_remarking_action': handle_generic_delete_response,
     'set_dscp_remarking_action': handle_generic_set_response,
     'clear_dscp_remarking_action': handle_generic_delete_response,
+    'set_traffic_class_action': handle_generic_set_response,
+    'clear_traffic_class_action': handle_generic_delete_response,
     'set_policer_action': handle_generic_set_response,
     'clear_policer_action': handle_generic_delete_response,
     'set_mirror_session_action': handle_generic_set_response,
@@ -1085,9 +1102,16 @@ response_handlers = {
 def run(op_str, args):
     try:
         log.log_debug(str(args))
-        resp = request_handlers[op_str](args)
+        correct_args = list()
+        for arg in args:
+            if arg == "|" or arg == "\\|":
+                break
+            else:
+                correct_args.append(arg)
+        log.log_debug(str(correct_args))
+        resp = request_handlers[op_str](correct_args)
         if resp:
-            return response_handlers[op_str](resp, args, op_str)
+            return response_handlers[op_str](resp, correct_args, op_str)
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))
