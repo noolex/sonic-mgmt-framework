@@ -35,7 +35,7 @@ def get_keypath(func,args):
     intf = ""
     vrf = ""
 
-    #global config
+    #patch global config
     if func == 'patch_pim_global_config':
         #get vrf, needed for keypath
         vrf = inputDict.get('vrf')
@@ -52,7 +52,25 @@ def get_keypath(func,args):
         elif inputDict.get('kat') is not None:
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"keep-alive-timer": float(inputDict.get('kat'))}}}
 
-    #interface level config
+    #del global config
+    if func == 'del_pim_global_config':
+        #get vrf, needed for keypath
+        vrf = inputDict.get('vrf')
+        if vrf == None or vrf == "":
+            vrf = "default"
+
+        #generate keypath
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/global'
+
+        #generate del request based on the input
+        if inputDict.get('jpi') is not None:
+            path = path + "openconfig-pim-ext:config/join-prune-interval"
+        elif inputDict.get('kat') is not None:
+            path = path + "openconfig-pim-ext:config/keep-alive-timer"
+
+        keypath = cc.Path(path)
+
+    #interface level config common code
     if func.startswith('patch_pim_interface'):
         #get interface, needed for VRF lookup and keypath
         intf = inputDict.get('intf')
@@ -62,15 +80,24 @@ def get_keypath(func,args):
         #get vrf, needed for keypath
         vrf=get_vrf(intf)
 
-    if func == 'patch_pim_interface_config_mode':
+    #patch/delete interface level config
+    if func.endswith('config_mode'):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
         keypath = cc.Path(path)
-        body ={"mode": "PIM_MODE_SPARSE"}
+        if func.startswith('patch'):
+            body ={"mode": "PIM_MODE_SPARSE"}
 
-    if func == 'patch_pim_interface_config_drprio':
+    if func.endswith('config_drprio'):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
         keypath = cc.Path(path)
-        body ={"dr-priority": float(inputDict.get('drprio'))}
+        if func.startswith('patch'):
+            body = {"dr-priority": float(inputDict.get('drprio'))}
+
+    if func.endswith('config_hello'):
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
+        keypath = cc.Path(path)
+        if func.startswith('patch'):
+            body = {"hello-interval": float(inputDict.get('hello'))}
 
     return keypath, body
 
@@ -131,6 +158,8 @@ def run(func, args):
 
     if func.startswith("patch"):
         apiClient.patch(keypath, body)
+    if func.startswith("del"):
+        apiClient.delete(keypath)
 
     return 0
 
