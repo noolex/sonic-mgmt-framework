@@ -108,24 +108,24 @@ def invoke(func, args):
         keypath, body = generate_ipprefix_uri(args, 1)
         return aa.delete(keypath)
 
-    elif func == 'ip_prefix_show_all':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets')
-        return aa.get(keypath)
-
     elif func == 'ip_prefix_show_specific':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={name}',name=args[1])
-        return aa.get(keypath)
-
-    elif func == 'ipv6_prefix_show_all':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets')
+        if len(args) > 1:
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={name}',name=args[1])
+        else:
+            # show all
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets')
         return aa.get(keypath)
 
     elif func == 'ipv6_prefix_show_specific':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={name}',name=args[1])
+        if len(args) > 1:
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={name}',name=args[1])
+        else:
+            # show all
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets')
         return aa.get(keypath)
 
     else:
-    	return aa.cli_not_implemented(func)
+        return aa.cli_not_implemented(func)
 
 
 def run(func, args):
@@ -138,12 +138,12 @@ def run(func, args):
             api_response = response.content
             if api_response is None:
                 print("Failed")
-                return 
-	    #print api_response
-	    show_cli_output(args[0], api_response)
+                return
+            #print api_response
+            show_cli_output(args[0], api_response)
     else:
         print response.error_message()
-	return
+        return
   except Exception as e:
     print "%Error: " + str(e)
 
