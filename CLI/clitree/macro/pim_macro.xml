@@ -84,12 +84,14 @@ limitations under the License.
             name="ip pim bfd"
             help="Enable BFD on PIM">
             <ACTION builtin="clish_pyobj">
+                sonic_cli_pim patch_pim_interface_config_bfd intf:arg1 2>/dev/stdout
             </ACTION>
         </COMMAND>
         <COMMAND
             name="no ip pim bfd"
             help="Disable BFD on PIM">
             <ACTION builtin="clish_pyobj">
+                sonic_cli_pim del_pim_interface_config_bfd intf:arg1 2>/dev/stdout
             </ACTION>
         </COMMAND>
     </MACRODEF>

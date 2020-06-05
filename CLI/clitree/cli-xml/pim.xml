@@ -75,7 +75,7 @@ limitations under the License.
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
-                        name="prefix-list-name"
+                        name="prefix-list"
                         help="Configure prefix list name"
                         ptype="SUBCOMMAND"
                         mode="subcommand">
@@ -145,7 +145,7 @@ limitations under the License.
                     mode="subcommand">
                     <PARAM
                         name="pln"
-                        value="prefix-list-name"
+                        value="prefix-list"
                         help="Configure prefix list name"
                         ptype="SUBCOMMAND"
                         mode="subcommand">

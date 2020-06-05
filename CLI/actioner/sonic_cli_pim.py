@@ -51,6 +51,12 @@ def get_keypath(func,args):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"join-prune-interval": float(inputDict.get('jpi'))}}}
         elif inputDict.get('kat') is not None:
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"keep-alive-timer": float(inputDict.get('kat'))}}}
+        elif inputDict.get('pln') is not None:
+            body = {"openconfig-network-instance:global": {"ssm": {"config": {"ssm-ranges": inputDict.get('pln')}}}}
+        elif inputDict.get('ecmp') is not None:
+            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-enabled": True}}}
+        elif inputDict.get('rebalance') is not None:
+            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-rebalance-enabled": True}}}
 
     #del global config
     if func == 'del_pim_global_config':
@@ -64,9 +70,15 @@ def get_keypath(func,args):
 
         #generate del request based on the input
         if inputDict.get('jpi') is not None:
-            path = path + "openconfig-pim-ext:config/join-prune-interval"
+            path = path + "/openconfig-pim-ext:config/join-prune-interval"
         elif inputDict.get('kat') is not None:
-            path = path + "openconfig-pim-ext:config/keep-alive-timer"
+            path = path + "/openconfig-pim-ext:config/keep-alive-timer"
+        elif inputDict.get('pln') is not None:
+            path = path + "/ssm/config/ssm-ranges"
+        elif inputDict.get('ecmp') is not None:
+            path = path + "openconfig-pim-ext:config/ecmp-enabled"
+        elif inputDict.get('kat') is not None:
+            path = path + "openconfig-pim-ext:config/ecmp-rebalance-enabled"
 
         keypath = cc.Path(path)
 
@@ -98,6 +110,12 @@ def get_keypath(func,args):
         keypath = cc.Path(path)
         if func.startswith('patch'):
             body = {"hello-interval": float(inputDict.get('hello'))}
+
+    if func.endswith('config_bfd'):
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
+        keypath = cc.Path(path)
+        if func.startswith('patch'):
+            body = {"bfd-enabled": True}
 
     return keypath, body
 
