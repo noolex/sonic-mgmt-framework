@@ -16,6 +16,7 @@
 {% set vars = {'time': "0"} %}
 {% set vars = {'members': ""} %}
 {% set vars = {'communities': ""} %}
+{% set vars = {'extcommunities': ""} %}
 {% if json_output -%}
   {% for key in json_output %}
     {% if "openconfig-network-instance:config" in key %}
@@ -83,6 +84,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
             {% for path in pathList %}
                {% if vars.update({'members':''}) %}{% endif %}
                {% if vars.update({'communities':''}) %}{% endif %}
+               {% if vars.update({'extcommunities':''}) %}{% endif %}
                {% if vars.update({'weight':"0"}) %}{% endif %}
                {% for key in path %}
                  {% if "state" in key %}
@@ -125,18 +127,28 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                     {% endif %}
                     {% if "community" in attr_sets %}
                        {% set community_list = attr_sets['community'] %}
-                       {% set temp = [] %}
+                       {% set temp1 = [] %}
                        {% for community in community_list %}
-                            {%  do temp.append(community) %}
+                            {%  do temp1.append(community) %}
                        {% endfor %}
                     {% endif %}
-                    {% if vars.update({'communities': temp|join(" ")}) %}{% endif %}
+                    {% if vars.update({'communities': temp1|join(" ")}) %}{% endif %}
+                    {% if "ext-community" in attr_sets %}
+                       {% set ext_community_list = attr_sets['ext-community'] %}
+                       {% set temp2 = [] %}
+                       {% for ext_community in ext_community_list %}
+                            {%  do temp2.append(ext_community) %}
+                       {% endfor %}
+                    {% endif %}
+                    {% if vars.update({'extcommunities': temp2|join(" ")}) %}{% endif %}
+
                  {% endif %}
                {% endfor %}
 {{'  %s'|format(vars.members)}}
 {{'    %s'|format(vars.neighbor)}} from {{'%-1s'|format(vars.nxtHop)}} ({{'%-1s'|format(vars.routerId)}})
-{{'      Origin '}}{{ vars.origin }}{% if vars.validRoute == True %}{{', valid'}}{% endif %}{% if vars.bestRoute == True %}{{', best'}}{% endif %}{{'\n'}}
+{{'      Origin '}}{{ vars.origin }}{% if vars.med %}{{', metric'}} {{ vars.med }}{% endif %}{% if vars.locPref %}{{', localpref'}} {{ vars.locPref }}{% endif %}{% if vars.validRoute == True %}{{', valid'}}{% endif %}{% if vars.bestRoute == True %}{{', best'}}{% endif %}{{'\n'}}
 {% if vars.communities != '' %}{{'      Community: '}}{{'%s'|format(vars.communities)}}{{'\n'}}{% endif %}
+{% if vars.extcommunities != '' %}{{'      Extended Community: '}}{{'%s'|format(vars.extcommunities)}}{{'\n'}}{% endif %}
 {{'      Last update: '}}{{datetimeformat(vars.time)|string}}{{'\n'}}
             {% endfor %}
          {% endif %}
