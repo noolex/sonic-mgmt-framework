@@ -22,6 +22,17 @@ def run(func, args):
             print(response.error_message())
             print(response.status_code)
 
+    if func == 'rpc_sonic_auditlog_clear_auditlog':
+        keypath = cc.Path('/restconf/operations/sonic-auditlog:clear-auditlog')
+        body = { "sonic-auditlog:input": {""} }
+        response = aa.post(keypath, body)
+        if response.ok():
+            print("%Success: audit log is cleared.")
+        else:
+            print "%Error: Transaction Failure "
+            print(response.error_message())
+            print(response.status_code)
+
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)

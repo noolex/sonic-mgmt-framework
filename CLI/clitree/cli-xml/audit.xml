@@ -33,12 +33,9 @@ limitations under the License.
 <!--=======================================================-->
 
 <VIEW name="enable-view">
-    <!-- show audit log -->
+    <!-- show audit-log -->
     <COMMAND
-        name="show audit"
-        help="Display audit commands"/>
-    <COMMAND
-        name="show audit log"
+        name="show audit-log"
         help="Display audit log"
         mode="subcommand"
         ptype="SUBCOMMAND">
@@ -51,6 +48,16 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-audit-log-rpc.py ${stype} rpc_sonic_auditlog_show_auditlog;
         </ACTION>
     </COMMAND>
+
+    <!-- clear audit-log -->
+    <COMMAND 
+        name="clear audit-log" 
+        help="Clear audit log" >
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic-cli-audit-log-rpc.py rpc_sonic_auditlog_clear_auditlog; 
+        </ACTION>
+    </COMMAND>
+
 </VIEW>
 </CLISH_MODULE>
 
