@@ -43,7 +43,7 @@ limitations under the License.
         help="Count keyword"
         >
     <ACTION> 
-        python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac_count.j2 count 
+        python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_ext_network_instances_network_instance_fdb_state show_mac_count.j2 count
     </ACTION>
     </COMMAND>
 

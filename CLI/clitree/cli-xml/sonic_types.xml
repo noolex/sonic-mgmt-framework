@@ -89,6 +89,15 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="PHY_VL_PO_INTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(Port) PortChannel(1-128) Vlan(1-4093) "
+        ext_help="(Ethernet interface type) (PortChannel interface type) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF;|&VLAN_ALL_INTF;|&PO_ALL_INTF;"
+        help="Interface Type - Ranges"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="MIN_LINK"
         method="integer"
         pattern="1..255"

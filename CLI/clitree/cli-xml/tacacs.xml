@@ -91,7 +91,10 @@ limitations under the License.
     <COMMAND name="tacacs-server source-interface"
              help="Configure source interface to pick the source IP, used for the TACACS+ packets"
              ptype="SUBCOMMAND"
-             mode="subcommand">
+             mode="subcommand"
+             command_keys="type=global"
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/type={type}"
+             render_command_cb="tacacs_server_source_if">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
           <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
@@ -106,10 +109,13 @@ limitations under the License.
     <COMMAND name="tacacs-server timeout"
              help="Configure global timeout for TACACS"
              ptype="SUBCOMMAND"
-             mode="subcommand">
+             mode="subcommand"
+             command_keys="type=global"
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/type={type}">
       <PARAM name="timeout"
              help="timeout (default: 5)"
-             ptype="TACACS_TIMEOUT">
+             ptype="TACACS_TIMEOUT"
+             dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/timeout">
       </PARAM>
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:timeout body={"openconfig-system-ext:timeout": ${timeout}}
@@ -120,10 +126,13 @@ limitations under the License.
     <COMMAND name="tacacs-server auth-type"
              help="Configure global authentication type for TACACS"
              ptype="SUBCOMMAND"
-             mode="subcommand">
+             mode="subcommand"
+             command_keys="type=global"
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/type={type}">
       <PARAM name="auth-type"
              help="Authentication type (default: pap)"
-             ptype="AAA_AUTH_TYPE">
+             ptype="AAA_AUTH_TYPE"
+             dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/auth_type">
       </PARAM>
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:auth-type body={"openconfig-system-ext:auth-type": "${auth-type}"}
@@ -134,10 +143,13 @@ limitations under the License.
     <COMMAND name="tacacs-server key"
              help="Configure global shared secret for TACACS"
              ptype="SUBCOMMAND"
-             mode="subcommand">
+             mode="subcommand"
+             command_keys="type=global"
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/type={type}">
       <PARAM name="secret-key"
              help=""
-             ptype="TACACS_KEY">
+             ptype="TACACS_KEY"
+             dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/passkey">
       </PARAM>
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:secret-key body={ "openconfig-system-ext:secret-key": "${secret-key}"}
@@ -148,10 +160,12 @@ limitations under the License.
     <COMMAND name="tacacs-server host"
              help="Configure a server for TACACS"
              ptype="SUBCOMMAND"
-             mode="subcommand">
+             mode="subcommand"
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/ipaddress={addr}">
       <PARAM name="host"
              help="Hostname or IP address of TACACS+ server"       
-             ptype="STRING">
+             ptype="STRING"
+             dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/ipaddress">
       </PARAM>
 
       <PARAM name="port"
@@ -161,7 +175,8 @@ limitations under the License.
              optional="true">
         <PARAM name="port-val"
                help="server Port"
-               ptype="TACACS_AUTH_PORT">
+               ptype="TACACS_AUTH_PORT"
+               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/tcp_port">
         </PARAM>
       </PARAM>
 
@@ -172,7 +187,8 @@ limitations under the License.
              optional="true">
         <PARAM name="timeout-val"
                help="server timeout"
-               ptype="TACACS_TIMEOUT">
+               ptype="TACACS_TIMEOUT"
+               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/timeout">
         </PARAM>
       </PARAM>
 
@@ -183,7 +199,8 @@ limitations under the License.
              optional="true">
         <PARAM name="key-val"
                help="server key"
-               ptype="TACACS_KEY">
+               ptype="TACACS_KEY"
+               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/passkey">
         </PARAM>
       </PARAM>
 
@@ -194,7 +211,8 @@ limitations under the License.
              optional="true">
         <PARAM name="type-val"
                help="server authentication type"
-               ptype="AAA_AUTH_TYPE">
+               ptype="AAA_AUTH_TYPE"
+               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/auth_type">
         </PARAM>
       </PARAM>
 
@@ -205,12 +223,13 @@ limitations under the License.
              optional="true">
         <PARAM name="priority-val"
                help="Server priority"
-               ptype="TACACS_PRIORITY">
+               ptype="TACACS_PRIORITY"
+               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/priority">
         </PARAM>
       </PARAM>
 
       <PARAM name="vrf"
-             help="Management VRF"
+             help="VRF name"
              ptype="SUBCOMMAND"
              mode="subcommand"
              optional="true">
@@ -222,12 +241,14 @@ limitations under the License.
           <PARAM name="mgmt"
                  help="Management VRF name"
                  ptype="SUBCOMMAND"
-                 mode="subcommand">
+                 mode="subcommand"
+                 dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/vrf=mgmt">
           </PARAM>
           <PARAM name="default"
                  help="default VRF name"
                  ptype="SUBCOMMAND"
-                 mode="subcommand">
+                 mode="subcommand"
+                 dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/vrf=default">
           </PARAM>
         </PARAM>
       </PARAM>

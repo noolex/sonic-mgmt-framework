@@ -39,12 +39,13 @@ CLI_XML_VIEW_MAP = {}
 CONFIG_VIEW_CMD_IDX =0
 CONFIG_VIEW_TABLE_KEYS_IDX=1
 CONFIG_VIEW_TABLES_IDX=2
-CONFIG_VIEW_CMD_TABLES_IDX=3
-CONFIG_VIEW_DB_RENDER_IDX=4
-CONFIG_VIEW_RENDER_VIEW_IDX=5
-CONFIG_VIEW_RENDER_CMD_IDX=6
-CONFIG_VIEW_NAME_IDX=7
-CONFIG_VIEW_IDX_LEN=8
+CONFIG_VIEW_SEC_TABLE_KEYS_IDX=3
+CONFIG_VIEW_CMD_TABLES_IDX=4
+CONFIG_VIEW_DB_RENDER_IDX=5
+CONFIG_VIEW_RENDER_VIEW_IDX=6
+CONFIG_VIEW_RENDER_CMD_IDX=7
+CONFIG_VIEW_NAME_IDX=8
+CONFIG_VIEW_IDX_LEN=9
 
 NODE_ELEM_NAME_IDX =0
 NODE_ELEM_DBPATH_IDX =1
@@ -71,7 +72,7 @@ jinja_loader = {}
 CMDS_STRING = ''
 
 
-def cache_view_commands(command_list, depth, ctxt):
+def cache_view_commands(command_list, indent, ctxt):
     global CMDS_STRING
 
     log.debug("command_list {}" .format(command_list))
@@ -79,10 +80,11 @@ def cache_view_commands(command_list, depth, ctxt):
     for idx, command in enumerate(command_list):
 
         if command:
-            if len(CMDS_STRING) == 0:
-                CMDS_STRING = '\n'
-            indent = depth
-            if ctxt and idx ==0:
+            if CMDS_STRING =='':
+                fmtst = (' ' *indent) + '!'
+                CMDS_STRING = '\n' + fmtst
+                CMDS_STRING += '\n'
+            elif (ctxt and idx ==0):
                 fmtst = (' ' *indent) + '!'
                 CMDS_STRING += fmtst
                 CMDS_STRING += '\n'
@@ -191,29 +193,34 @@ class cli_xml_view:
 
         #List of command lines from DB.txt
         self.view_cmd_list = []
+        self.primary_table = ""
+        self.dbpathstr = ""
 
         #All table keys for this view. for e.g. for config-router-bgp: vrfname=*, ip-prfx=*
         #Data represented as "view-keys" tag in the xml.
         self.table_keys = collections.OrderedDict()
         for keyVal in command_line[CONFIG_VIEW_TABLE_KEYS_IDX].split(','):
             if len(keyVal.split("=")) != 2:
-               log.warning("cli_xml_view init: Invalid key format {}" .format(keyVal))
+               log.warning("cli_xml_view init: Invalid key format; skip this key {}" .format(keyVal))
                continue
 
             self.table_keys.update({keyVal.split("=")[0]:keyVal.split("=")[1]})
 
         #List of all tables to be accessed for this view. This aggregated while parsing every command for the view.
         #Primary table is added to this list.
-        self.table_list = command_line[CONFIG_VIEW_TABLES_IDX].split(';')
+
+        table_lst = command_line[CONFIG_VIEW_TABLES_IDX].split(';')
+
+        #remove empty string from list
+        self.table_list = list(filter(None, table_lst))
 
         if len(self.table_list) == 0:
-            log.error("cli_xml_view init: table list length zero for view {}" .format(self.name))
+            log.warn("cli_xml_view init: table list length zero for view {}" .format(self.name))
         else:
             #Primary table for this view. for e.g. "sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name={vrf-name}"
             #Data represented as "view_table" tag in the xml.
             self.primary_table =self.table_list[0]
-
-        self.dbpathstr = '/'.join(self.primary_table.split('/', 2)[:2])
+            self.dbpathstr = '/'.join(self.primary_table.split('/', 2)[:2])
 
         log.debug("name: {}, table_keys: {}, primary_table: {} dbpathstr {} tablelist" \
                 .format(self.name, self.table_keys, self.primary_table, self.dbpathstr, self.table_list))
@@ -224,6 +231,51 @@ class cli_xml_view:
         for cmd in self.view_cmd_list:
             log.info("\t{}" .format(self.view_cmd_list))
             log.info('---------------------------------------------------------')
+
+    #only config-view case.
+    def process_view_commands_no_table(self, indent):
+            
+        log.debug('ENTER view {} ' .format(self.name))
+        if len(self.view_cmd_list) is 0:
+            return CMD_SUCCESS
+
+        for cmd in  self.view_cmd_list:
+            ret, is_view_rendered = process_command(self, None, self.table_list, None, self.dbpathstr,\
+                                                False, cmd, indent)
+        #Process child views.
+
+        if view_dependency.get(self.name) is not None:
+
+            #form the keys for the dependency view tables.
+            for view in view_dependency[self.name]:
+            #     #get keys from parent
+
+                view_key_values = collections.OrderedDict()
+                cli_view = CLI_XML_VIEW_MAP.get(view)
+                if cli_view == None:
+                    continue
+
+                view_keys = cli_view.table_keys
+                log.info("Preparing for child view: {}, child view keys: {}, parent view: {}, parent member keys: {} " \
+                 .format(view, view_keys, self.name,  member_keys))
+
+                for key, value in view_keys.items():
+                    # set default key value to wildcard
+                    # check if key has a value or a dbpath to parent member key name.
+                    view_key_values.update({key.lstrip():"*"})
+                    if value and value != "*":
+                        keypath_list = value.split('/')
+                        if len(keypath_list) > 1:
+                            log.warn("no table member to get key value {} ". format(self.name))
+                            pass
+                        else:
+                            view_key_values.update({key.lstrip():keypath_list[0]})
+
+                log.info("Preparing for child view {}, child view keys {} " .format(cli_view.name, view_key_values))
+                cmd_status = cli_view.process_view_commands(view_key_values, indent+1)
+
+        log.debug(' Exit.view {}, status {}' .format(self.name, CMD_SUCCESS))
+        return CMD_SUCCESS
 
 
     #Process the primary view table records using the provided keys.
@@ -284,7 +336,7 @@ class cli_xml_view:
             if skip_record == True:
                 continue
 
-            #process first command, if succcess continue others othewise
+            #process first command, if success continue others othewise
             #return to process next context.
 
             ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
@@ -302,7 +354,7 @@ class cli_xml_view:
                         ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
                                                         False, cmd, indent +1)
 
-                #call this function in loop for child views.
+                #Process child views.
 
                 if view_dependency.get(self.name) is not None:
 
@@ -352,12 +404,11 @@ class cli_xml_view:
 
         if len(self.table_list) > 0:
             log.info("table list {}" .format(self.table_list))
+            cmd_status= self.process_view_commands(table_keys, depth)            
         else:
-            log.warn("table list empty for {}, next view" .format(self.name))
-            return cmd_status
-
-        cmd_status= self.process_view_commands(table_keys, depth)
-#            is_primary_table = False
+            log.warn("table list empty for {}, next view, maybe command views" .format(self.name))            
+            cmd_status= self.process_view_commands_no_table(depth)     
+   
         log.debug(os.linesep)
 
         return cmd_status
@@ -368,10 +419,13 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
 
     render_tables = {}
     view_tables = {}
-    log.debug("Enter: view: {}, \nmember: {}, \nview_table_list: {}, member_keys: {}, dbpathstr: {} is_view_fist_cmd: {}, \ncmd_line: {}"\
-                            .format(view.name, view_member, table_list, member_keys, dbpathstr, is_view_first_cmd, cmd_line))
+    log.debug("Enter: view: {}, \nmember: {}, \nview_table_list: {}, member_keys: {}, dbpathstr: {} is_view_fist_cmd: {}"\
+                            .format(view.name, view_member, table_list, member_keys, dbpathstr, is_view_first_cmd))
 
     #split command attributes
+
+    if member_keys is None:
+        member_keys = {}
 
     cmd_list = []
     cmd_line_parts = cmd_line.split(":::")
@@ -385,26 +439,28 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
 
     #update tables only for render_view
     if not db_render_callback:
-        cmd_tables_list = table_list
         #Get additional tables for view and command rendering
-        #add view_member
-        view_tables.update({view.primary_table:view_member})
+        #add view_member. if view_member not present it must
+        # to process view_command without primary table.
+        if view_member:
+            view_tables.update({view.primary_table:view_member})
 
-        #For render templates strip keys from the table path, create another dict
-        #to pass to render templates
+            #For render templates strip keys from the table path, create another dict
+            #to pass to render templates
 
-        table_name = ('/').join(view.primary_table.split('/')[:-1])
-        log.debug('Adding view table {} to view_tables list' .format(table_name))
-        render_tables.update({table_name: view_member})
+            table_name = ('/').join(view.primary_table.split('/')[:-1])
+            log.debug('Adding view table {} to view_tables list' .format(table_name))
+            render_tables.update({table_name: view_member})
 
         ## Add keys for primary table
-        for table_path in table_list[1:]:
-           response = get_rest_table(table_path)
+        if table_list and len(table_list) >1 :
+            for table_path in table_list[1:]:
+                response = get_rest_table(table_path)
 
-           if response is not None:
-               table_name = ('/').join(table_path.split('/')[:-1])
-               log.debug('Adding view table {} to view_tables list' .format(table_name))
-               render_tables.update({table_name: response})
+                if response is not None:
+                    table_name = ('/').join(table_path.split('/')[:-1])
+                    log.debug('Adding view table {} to view_tables list' .format(table_name))
+                    render_tables.update({table_name: response})
 
     #Get command related tables
 
@@ -424,16 +480,17 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
         if idx == 0:
             #if first command table same as view table,
             #ignore command table
-            if dbpathstr in cmd_table_path:
-                log.warning("Command table same as primary view table, process only member provided from primary view table ")
+            if dbpathstr and dbpathstr in cmd_table_path:
+                log.warning("Command table same as primary view table, process only member provided from primary view table {}, {}"\
+                 .format(dbpathstr, cmd_table_path) )
                 break
             cmd_table_present = True
             # new dbpathstr and keys from cmd table
             dbpathstr = '/'.join(cmd_table_path.split('/', 2)[:2])
 
-            if len(member_keys) ==0:
-                log.info(" No keys for table {}, skip to next command. Exit status {}" .format(cmd_table_path, CMD_FAIL))
-                return CMD_FAIL, False
+            if member_keys and len(member_keys) ==0:
+                log.info(" No view keys for table {} " .format(cmd_table_path))
+
 
         if not db_render_callback:
             response = get_rest_table(cmd_table_path)
@@ -451,6 +508,25 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
                 log.warn('Response none for table  {}' .format(cmd_table_path))
 
             log.debug('Final view_tables list members {}' .format(view_tables.keys()))
+
+    #get command keys from tag if present.
+
+    if cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX]:
+        log.debug('cmd_keys tag {}' .format(cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX]))
+        for cmd_key in cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX].split(','):
+            cmd_key_lst = cmd_key.split("=")
+            if len(cmd_key_lst) != 2:
+                log.warning("Invalid key format; skip this key {}, view_name {}, key_tag {}" \
+                    .format(cmd_key, view.name, cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX]))
+                continue
+            #remove invalid keys
+            key = cmd_key_lst[0].lstrip()
+            value = cmd_key_lst[1].rstrip()
+
+            if value is None or value is '*' or len(value.split('/')) >1:
+                log.warning("command key invalid {} for view {}, skip key " .format(cmd_key, view))
+                continue
+            member_keys.update({key:value})
 
 
     if db_render_callback:
@@ -483,7 +559,7 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
         return cmd_status, False
 
 
-    if  cmd_table_present == False:
+    if  cmd_table_present == False and view_member:
 
         cmdlst, cmdfound = process_cmd(view_member, dbpathstr, cmd_table_list, view_tables, member_keys, cmd_line)
         if cmdfound:
@@ -494,8 +570,8 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
 
     elif cmd_table is not None:
         #loop through cmd table
-        #check cmd keys, if none of the keys are present,
-        log.info("processing command_table {}" .format(cmd_table))
+
+        log.info("processing command_table {}, member_keys {}" .format(cmd_table, member_keys))
         cmd_table_keys =get_view_table_keys(cmd_table_path)
         filter_keys = collections.OrderedDict()
         for table_key, table_key_val in cmd_table_keys.items():
@@ -513,7 +589,6 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
         for cmd_member in cmd_table:
             #update dbpathstr to new table
             #Match the keys
-            #if none of keys match continue, otherwise process cmd.
 
             skip_record = False
             for filter_key, filter_key_value in filter_keys.items():
