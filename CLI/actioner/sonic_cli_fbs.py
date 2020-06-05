@@ -455,6 +455,19 @@ def clear_dscp_remarking_action(args):
     return fbs_client.delete(keypath)
 
 
+def set_traffic_class_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_TC',
+                      policy_name=args[0], classifier_name=args[1])
+    body = {'SET_TC': int(args[2])}
+    return fbs_client.patch(keypath, body)
+
+
+def clear_traffic_class_action(args):
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_TC',
+                      policy_name=args[0], classifier_name=args[1])
+    return fbs_client.delete(keypath)
+
+
 def set_policer_action(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
                       policy_name=args[0], classifier_name=args[1])
@@ -863,7 +876,7 @@ def handle_show_policy_response(response, args, op_str):
                 render_data[name]["FLOWS"] = OrderedDict()
                 flows = dict()
                 for flow in policy_data.get("FLOWS", list()):
-                    flows[flow["PRIORITY"]] = flow
+                    flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
 
                 flow_keys = natsorted(flows.keys(), reverse=True)
                 for flow in flow_keys:
@@ -935,7 +948,7 @@ def handle_show_service_policy_details_response(response, args, op_str):
                             policy_sort_data["FLOWS"] = OrderedDict()
                             flows = dict()
                             for flow in policy_data.get("FLOWS", list()):
-                                flows[flow["PRIORITY"]] = flow
+                                flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
 
                             # Sort Policy flows by priority
                             flow_keys = natsorted(flows.keys(), reverse=True)
@@ -1003,6 +1016,8 @@ request_handlers = {
     'clear_pcp_remarking_action': clear_pcp_remarking_action,
     'set_dscp_remarking_action': set_dscp_remarking_action,
     'clear_dscp_remarking_action': clear_dscp_remarking_action,
+    'set_traffic_class_action': set_traffic_class_action,
+    'clear_traffic_class_action': clear_traffic_class_action,
     'set_policer_action': set_policer_action,
     'clear_policer_action': clear_policer_action,
     'set_mirror_session_action': set_mirror_session_action,
@@ -1062,6 +1077,8 @@ response_handlers = {
     'clear_pcp_remarking_action': handle_generic_delete_response,
     'set_dscp_remarking_action': handle_generic_set_response,
     'clear_dscp_remarking_action': handle_generic_delete_response,
+    'set_traffic_class_action': handle_generic_set_response,
+    'clear_traffic_class_action': handle_generic_delete_response,
     'set_policer_action': handle_generic_set_response,
     'clear_policer_action': handle_generic_delete_response,
     'set_mirror_session_action': handle_generic_set_response,
@@ -1085,9 +1102,16 @@ response_handlers = {
 def run(op_str, args):
     try:
         log.log_debug(str(args))
-        resp = request_handlers[op_str](args)
+        correct_args = list()
+        for arg in args:
+            if arg == "|" or arg == "\\|":
+                break
+            else:
+                correct_args.append(arg)
+        log.log_debug(str(correct_args))
+        resp = request_handlers[op_str](correct_args)
         if resp:
-            return response_handlers[op_str](resp, args, op_str)
+            return response_handlers[op_str](resp, correct_args, op_str)
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))

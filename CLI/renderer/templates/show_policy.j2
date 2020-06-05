@@ -12,6 +12,9 @@
             {% if "SET_DSCP" in flow_data %}
                 {{- '    set-dscp' }} {{ flow_data["SET_DSCP"] }}
             {% endif %}
+            {% if "SET_TC" in flow_data %}
+                {{- '    set-traffic-class' }} {{ flow_data["SET_TC"] }}
+            {% endif %}
             {% if ( ("SET_POLICER_CIR" in flow_data) or ("SET_POLICER_CBS" in flow_data) or ("SET_POLICER_PIR" in flow_data) or ("SET_POLICER_PBS" in flow_data) ) %}
                 {{- '   ' }} police cir {{ flow_data.get("SET_POLICER_CIR", 0) }} cbs {{ flow_data.get("SET_POLICER_CBS", 0)  }} pir {{ flow_data.get("SET_POLICER_PIR", 0)  }} pbs {{ flow_data.get("SET_POLICER_PBS", 0)  }}
             {% endif %}
