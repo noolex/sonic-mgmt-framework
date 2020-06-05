@@ -15,9 +15,8 @@
 {% if json_output %}
 {% if json_output is iterable %}
 Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
-        > - selected route, * - FIB route, q - queued route, r - rejected route, # - not installed in hardware
-      {{'%-29s'|format("Destination")}}{{'%-48s'|format("Gateway")}}{{'%-17s'|format("Dist/Metric")}}{{'%-12s'|format("Uptime")}}
-----------------------------------------------------------------------------------------------------------
+      {{' %-29s'|format("Destination")}}{{'%-55s'|format("Gateway")}}{{'%-14s'|format("Dist/Metric")}}{{'%-12s'|format("Uptime")}}
+-------------------------------------------------------------------------------------------------------------------
 {% set routeList = json_output %}
 {% if routeList %}
 {% for key in routeList %}
@@ -74,19 +73,34 @@ Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
      {% else %}
         {% if vars.update({'fib':""}) %}{% endif %}
      {% endif %}
-     {% if vars.update({'directlyConnected':nexthop["directlyConnected"]}) %}{% endif %}
-     {% if vars.directlyConnected == True %}
-        {% if vars.update({'gateway':"Direct"}) %}{% endif %}
+     {% if nexthop["unreachable"] and nexthop["blackhole"] %}
+         {% if vars.update({'gateway':"Unreachable (blackhole)"}) %}{% endif %}
+         {% if vars.update({'interface':""}) %}{% endif %}
      {% else %}
-        {% if vars.update({'gateway': 'via ' + nexthop['ip']}) %}{% endif %}
+         {% if vars.update({'directlyConnected':nexthop["directlyConnected"]}) %}{% endif %}
+         {% if vars.directlyConnected == True %}
+             {% if vars.update({'gateway':"Direct"}) %}{% endif %}
+         {% else %}
+             {% if nexthop["recursive"] %}
+                 {% if vars.update({'gateway': 'via ' + nexthop['ip'] + ' (recursive)'}) %}{% endif %}
+             {% else %}
+                 {% if vars.update({'gateway': 'via ' + nexthop['ip']}) %}{% endif %}
+             {% endif %}
+         {% endif %}
+         {% if nexthop['vrf'] %}
+             {% set temp = nexthop['interfaceName'] %}
+             {% set temp1 = nexthop['vrf'] %}
+             {% if vars.update({'interface': temp | string() + '(vrf '+ temp1 | string() + ')'}) %}{% endif %}
+         {% else %}
+             {% if vars.update({'interface':nexthop['interfaceName']}) %}{% endif %}
+         {% endif %}
      {% endif %}
-     {% if vars.update({'interface':nexthop['interfaceName']}) %}{% endif %}
      {% set temp = vars.distance |string() + "/" + vars.metric | string() %}
-     {% set codes = vars.protocol + vars.selected + vars.fib + vars.queued + vars.rejected + vars.installed %}
+     {% set codes = vars.protocol %}
      {% if loop.index == 1 %}
-{{'%-6s'|format(codes)}}{{'%-29s'|format(vars.prefix)}}{{'%-30s'|format(vars.gateway)}}{{'%-18s'|format(vars.interface)}}{{'%-17s'|format(temp)}}{{'%-12s'|format(vars.uptime)}}
+{{' %-6s'|format(codes)}}{{'%-29s'|format(vars.prefix)}}{{'%-30s'|format(vars.gateway)}}{{'%-25s'|format(vars.interface)}}{{'%-14s'|format(temp)}}{{'%-12s'|format(vars.uptime)}}
      {% else %}
-{{'%-35s'|format(" ")}}{{'%-30s'|format(vars.gateway)}}{{'%-18s'|format(vars.interface)}}{{'%-17s'|format(" ")}}
+{{'%-36s'|format(" ")}}{{'%-30s'|format(vars.gateway)}}{{'%-25s'|format(vars.interface)}}{{'%-17s'|format(" ")}}
      {% endif %}
   {% endfor %}
   {% endfor %}

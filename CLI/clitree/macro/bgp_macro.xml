@@ -162,6 +162,12 @@ limitations under the License.
         </PARAM>
     </MACRODEF>
 
+    <MACRODEF name="CLEAR_IPV6_BGP_ADDR_SUB_CMDS">
+        <PARAM name="neighbor-ipv6" help="BGP neighbor address to clear" ptype="IPV6_ADDR" optional="true">
+           <MACRO name="CLEAR_BGP_INOUT_SUB_CMDS" arg=""></MACRO>
+        </PARAM>
+    </MACRODEF>
+
     <MACRODEF name="CLEAR_IPV6_BGP_ADDR_OPTIONS_SUB_CMDS">
         <PARAM name="neighbor-ipv6" help="BGP neighbor address to clear" ptype="IPV6_ADDR" optional="true">
            <MACRO name="CLEAR_BGP_INOUT_SUB_CMDS" arg=""></MACRO>

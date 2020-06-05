@@ -25,6 +25,37 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 
+def area_to_dotted(area):
+    areastr = "{}".format(area)
+    if areastr.isdigit():
+        areaInt = int(area)
+        
+        b0 = ((areaInt >> 24) & 0xff)
+        b1 = ((areaInt >> 16) & 0xff)
+        b2 = ((areaInt >> 8) & 0xff)
+        b3 = ((areaInt & 0xff))
+
+        areaDotted = "{}.{}.{}.{}".format(b0, b1, b2, b3)
+        return areaDotted
+    else :
+        return areastr
+
+def cli_to_db_protocol_map(cli_protocol):
+    db_protocol = None
+    protocol_map = { "ospf" : "OSPF",
+                     "bgp" : "BGP",
+                     "static" : "STATIC", 
+                     "kernel": "KERNEL",
+                     "connected" : "DIRECTLY_CONNECTED",
+                     "table" : "DEFAULT_ROUTE" }
+
+    if cli_protocol != None :
+        if cli_protocol in protocol_map.keys() :
+            db_protocol = protocol_map[cli_protocol]
+  
+    return db_protocol
+
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
@@ -61,6 +92,11 @@ def invoke_api(func, args=[]):
     elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/log-adjacency-changes', vrfname=args[0])
         return api.delete(keypath)
+
+    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes_details':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/log-adjacency-changes', vrfname=args[0])
+        body = {"openconfig-network-instance:log-adjacency-changes": "BRIEF"}
+        return api.patch(keypath, body)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_auto_cost_reference_bandwidth':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/openconfig-ospfv2-ext:auto-cost-reference-bandwidth', vrfname=args[0])
@@ -151,7 +187,15 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_spf_config':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/config', vrfname=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/config/initial-delay', vrfname=args[0])
+        response = api.delete(keypath)
+        if response.ok() == False : return response
+
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/config/maximum-delay', vrfname=args[0])
+        response = api.delete(keypath)
+        if response.ok() == False : return response
+
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/config/openconfig-ospfv2-ext:throttle-delay', vrfname=args[0])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative':
@@ -226,49 +270,21 @@ def invoke_api(func, args=[]):
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distance/config/external', vrfname=args[0])
         return api.delete(keypath)
 
-    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_route_map':
-        importprotocol = None
-       
-        if (args[1] == "ospf"):
-            importprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            importprotocol = "BGP"
-        elif (args[1] == "static"):
-            importprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            importprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            importprotocol = "DIRECTLY_CONNECTED"
-        elif (args[1] == "table"):
-            importprotocol = "DEFAULT_ROUTE"
-
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/route-map', vrfname=args[0], protocol=importprotocol)
-        body = {"openconfig-ospfv2-ext:route-map": (args[2])}
-        return api.patch(keypath, body)
-
-    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_route_map':
-        importprotocol = None
-
-        if (args[1] == "ospf"):
-            importprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            importprotocol = "BGP"
-        elif (args[1] == "static"):
-            importprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            importprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            importprotocol = "DIRECTLY_CONNECTED"
-        elif (args[1] == "table"):
-            importprotocol = "DEFAULT_ROUTE"
-
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/route-map', vrfname=args[0], protocol=importprotocol)
-        return api.delete(keypath)
-
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_import':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list=DEFAULT_ROUTE,IMPORT/config', vrfname=args[0])
         body = { "openconfig-ospfv2-ext:config": { "protocol": "DEFAULT_ROUTE", "direction": "IMPORT" }}
         return api.patch(keypath, body)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_access_list':
+        exportprotocol = cli_to_db_protocol_map(args[1])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config/access-list', vrfname=args[0], protocol=exportprotocol)
+        body = {"openconfig-ospfv2-ext:access-list": (args[2])}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_access_list':
+        exportprotocol = cli_to_db_protocol_map(args[1])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config/access-list', vrfname=args[0], protocol=exportprotocol)
+        return api.delete(keypath)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_import':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list=DEFAULT_ROUTE,IMPORT', vrfname=args[0])
@@ -317,164 +333,70 @@ def invoke_api(func, args=[]):
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/config/openconfig-ospfv2-ext:default-metric', vrfname=args[0])
         return api.delete(keypath)
 
-    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export':
-        exportprotocol = None
-        if (args[1] == "ospf"):
-            exportprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            exportprotocol = "BGP"
-        elif (args[1] == "static"):
-            exportprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            exportprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            exportprotocol = "DIRECTLY_CONNECTED"
-        else:
-            exportprotocol = "DEFAULT_ROUTE"
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import':
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config', vrfname=args[0], protocol=exportprotocol)
-        body = { "openconfig-ospfv2-ext:config": { "protocol": exportprotocol, "direction": "EXPORT" }}
+        importprotocol = cli_to_db_protocol_map(args[1])
+
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config', vrfname=args[0], protocol=importprotocol)
+        body = { "openconfig-ospfv2-ext:config": { "protocol": importprotocol, "direction": "IMPORT" }}
         return api.patch(keypath, body)
 
-    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export':
-        exportprotocol = None
-        if (args[1] == "ospf"):
-            exportprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            exportprotocol = "BGP"
-        elif (args[1] == "static"):
-            exportprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            exportprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            exportprotocol = "DIRECTLY_CONNECTED"
-        else:
-            exportprotocol = "DEFAULT_ROUTE"
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import':
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT', vrfname=args[0], protocol=exportprotocol)
+        importprotocol = cli_to_db_protocol_map(args[1])
+
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT', vrfname=args[0], protocol=importprotocol)
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric':
-        exportprotocol = None
 
-        if (args[1] == "ospf"):
-            exportprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            exportprotocol = "BGP"
-        elif (args[1] == "static"):
-            exportprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            exportprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            exportprotocol = "DIRECTLY_CONNECTED"
-        else:
-            exportprotocol = "DEFAULT_ROUTE"
+        importprotocol = cli_to_db_protocol_map(args[1])
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config/metric', vrfname=args[0], protocol=exportprotocol)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/metric', vrfname=args[0], protocol=importprotocol)
         body = {"openconfig-ospfv2-ext:metric": int(args[2])}
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric':
-        exportprotocol = None
 
-        if (args[1] == "ospf"):
-            exportprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            exportprotocol = "BGP"
-        elif (args[1] == "static"):
-            exportprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            exportprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            exportprotocol = "DIRECTLY_CONNECTED"
-        else:
-            exportprotocol = "DEFAULT_ROUTE"
+        importprotocol = cli_to_db_protocol_map(args[1])
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config/metric', vrfname=args[0], protocol=exportprotocol)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/metric', vrfname=args[0], protocol=importprotocol)
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type':
-        exportprotocol = None
         metrictype = None
 
-        if (args[1] == "ospf"):
-            exportprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            exportprotocol = "BGP"
-        elif (args[1] == "static"):
-            exportprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            exportprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            importprotocol = "DIRECTLY_CONNECTED"
-        else:
-            exportprotocol = "DEFAULT_ROUTE"
+        importprotocol = cli_to_db_protocol_map(args[1])
 
         if ("1" == args[2]):
             metrictype = "TYPE_1"
         else:
             metrictype = "TYPE_2"
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config/metric-type', vrfname=args[0], protocol=exportprotocol)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/metric-type', vrfname=args[0], protocol=importprotocol)
         body = {"openconfig-ospfv2-ext:metric-type": metrictype}
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric_type':
-        exportprotocol = None
 
-        if (args[1] == "ospf"):
-            exportprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            exportprotocol = "BGP"
-        elif (args[1] == "static"):
-            exportprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            exportprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            importprotocol = "DIRECTLY_CONNECTED"
-        else:
-            exportprotocol = "DEFAULT_ROUTE"
+        importprotocol = cli_to_db_protocol_map(args[1])
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config/metric-type', vrfname=args[0], protocol=exportprotocol)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/metric-type', vrfname=args[0], protocol=importprotocol)
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map':
-        exportprotocol = None
 
-        if (args[1] == "ospf"):
-            exportprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            exportprotocol = "BGP"
-        elif (args[1] == "static"):
-            exportprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            exportprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            exportprotocol = "DIRECTLY_CONNECTED"
-        else:
-            exportprotocol = "DEFAULT_ROUTE"
+        importprotocol = cli_to_db_protocol_map(args[1])
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config/route-map', vrfname=args[0], protocol=exportprotocol)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/route-map', vrfname=args[0], protocol=importprotocol)
         body = {"openconfig-ospfv2-ext:route-map": args[2]}
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_route_map':
-        exportprotocol = None
 
-        if (args[1] == "ospf"):
-            exportprotocol = "OSPF"
-        elif (args[1] == "bgp"):
-            exportprotocol = "BGP"
-        elif (args[1] == "static"):
-            exportprotocol = "STATIC"
-        elif (args[1] == "kernel"):
-            exportprotocol = "KERNEL"
-        elif (args[1] == "connected"):
-            exportprotocol = "DIRECTLY_CONNECTED"
-        else:
-            exportprotocol = "DEFAULT_ROUTE"
+        importprotocol = cli_to_db_protocol_map(args[1])
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},EXPORT/config/route-map', vrfname=args[0], protocol=exportprotocol)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/openconfig-ospfv2-ext:route-distribution-policies/distribute-list={protocol},IMPORT/config/route-map', vrfname=args[0], protocol=importprotocol)
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_always':
@@ -538,12 +460,12 @@ def invoke_api(func, args=[]):
 
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link':
 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}', vrfname=args[0], areaid=args[1], linkid=args[2])
-        body = {"openconfig-network-instance:virtual-link": [ { "remote-router-id": args[2], "config": { "remote-router-id": args[2]} }]}
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}/config/openconfig-ospfv2-ext:enable', vrfname=args[0], areaid=args[1], linkid=args[2])
+        body = {"openconfig-ospfv2-ext:enable": True}
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}', vrfname=args[0], areaid=args[1], linkid=args[2])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}', vrfname=args[0], areaid=area_to_dotted(args[1]), linkid=args[2])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_dead_interval':
@@ -563,7 +485,6 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_virtual_links_virtual_link_config_hello_interval':
-
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}/config/openconfig-ospfv2-ext:hello-interval', vrfname=args[0], areaid=args[1], linkid=args[2])
         return api.delete(keypath)
 
@@ -642,7 +563,7 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/ranges/range={addressprefix}', vrfname=args[0], areaid=area_to_dotted(args[1]), addressprefix=args[2])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_advertise':
@@ -683,7 +604,7 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_networks_network':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/openconfig-ospfv2-ext:networks/network={addressprefix}', vrfname=args[0], areaid=args[1], addressprefix=args[2])
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/openconfig-ospfv2-ext:networks/network={addressprefix}', vrfname=args[0], areaid=area_to_dotted(args[1]), addressprefix=args[2])
         return api.delete(keypath)
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist':
@@ -720,6 +641,15 @@ def invoke_api(func, args=[]):
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_filterlist_out':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/global/inter-area-propagation-policies/openconfig-ospfv2-ext:inter-area-policy={areaid}/filter-list-out/config/name', vrfname=args[0], areaid=args[1])
+        return api.delete(keypath)
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_config_shortcut':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/config/openconfig-ospfv2-ext:shortcut', vrfname=args[0], areaid=args[1])
+        body = {"openconfig-ospfv2-ext:shortcut": args[2].upper()}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_config_shortcut':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/config/openconfig-ospfv2-ext:shortcut', vrfname=args[0], areaid=args[1])
         return api.delete(keypath)
 
     #-------- Ospf interface cli handling start

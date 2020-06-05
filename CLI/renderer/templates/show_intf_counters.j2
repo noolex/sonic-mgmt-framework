@@ -1,0 +1,48 @@
+{% set vars = {'name': ""} %}
+{% set vars = {'oper_state': ""} %}
+{% set vars = {'in_packets': ""} %}
+{% set vars = {'in_errors': ""} %}
+{% set vars = {'in_discards': ""} %}
+{% set vars = {'out_packets': ""} %}
+{% set vars = {'out_errors': ""} %}
+{% set vars = {'out_discards': ""} %}
+{% set vars = {'in_oversize':""} %}
+{% set vars = {'out_oversize':""} %}
+{% if json_output -%}
+------------------------------------------------------------------------------------------------------------------------------------
+{{'%-15s'|format("Interface")}}{{'%-10s'|format("State")}}{{'%-20s'|format("RX_OK")}}{{'%-10s'|format("RX_ERR")}}{{'%-10s'|format("RX_DRP")}}{{'%-15s'|format("RX_OVERSIZE")}}{{'%-20s'|format("TX_OK")}}{{'%-10s'|format("TX_ERR")}}{{'%-10s'|format("TX_DRP")}}{{'%-15s'|format("TX_OVERSIZE")}}
+------------------------------------------------------------------------------------------------------------------------------------
+{% for key_json in json_output %}
+    {% if "interfaces" in json_output[key_json] %}
+        {% set interface_list = json_output[key_json]["interfaces"] %}
+        {% if "interface" in interface_list %}
+            {% set interfaces = json_output[key_json]["interfaces"]["interface"] %}
+            {% for interface in interfaces %}
+                {% set key = interface[0] %}
+                {% set interface = interface[1] %}
+                {% if 'state' in interface %}
+                    {% set state = interface['state'] %}
+                    {% if vars.update({'name':key}) %}{% endif %}
+                    {% if state["oper-status"] =='DOWN' %}
+                        {% if vars.update({'oper_state':'D'}) %}{% endif %}
+                    {% else %}
+                        {% if vars.update({'oper_state':'U'}) %}{% endif %}
+                    {% endif %}
+                    {% if 'counters' in state %}
+                        {% set counters = state['counters'] %}
+                        {% if vars.update({'in_packets':interface["state"]["counters"]["in-pkts"]}) %}{% endif %}
+                        {% if vars.update({'in_errors':interface["state"]["counters"]["in-errors"]}) %}{% endif %}
+                        {% if vars.update({'in_discards':interface["state"]["counters"]["in-discards"]}) %}{% endif %}
+                        {% if vars.update({'out_packets':interface["state"]["counters"]["out-pkts"]}) %}{% endif %}
+                        {% if vars.update({'out_errors':interface["state"]["counters"]["out-errors"]}) %}{% endif %}
+                        {% if vars.update({'out_discards':interface["state"]["counters"]["out-discards"]}) %}{% endif %}
+                        {% if vars.update({'in_oversize':interface["state"]["counters"]["in-oversize-frames"]}) %}{% endif %}
+                        {% if vars.update({'out_oversize':interface["state"]["counters"]["out-oversize-frames"]}) %}{% endif %}
+{{'%-15s'|format(vars.name)}}{{'%-10s'|format(vars.oper_state)}}{{'%-20s'|format(vars.in_packets)}}{{'%-10s'|format(vars.in_errors)}}{{'%-10s'|format(vars.in_discards)}}{{'%-15s'|format(vars.in_oversize)}}{{'%-20s'|format(vars.out_packets)}}{{'%-10s'|format(vars.out_errors)}}{{'%-10s'|format(vars.out_discards)}}{{'%-15s'|format(vars.out_oversize)}}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+{% endif %}

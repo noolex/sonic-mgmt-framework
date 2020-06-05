@@ -11,7 +11,6 @@
             <PARAM name="Vlan" help="Vlan interface" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM name="vlan-if-id" help="Vlan interface id" ptype="VLAN_ID"/>
             </PARAM>
-            <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
         </PARAM>
     </MACRODEF>
 
@@ -32,7 +31,9 @@
         <PARAM name="address-types" help="address-types" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="mac" help="Match on arg1 MAC address" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM name="arg1-mac-addr-options-switch" help="" ptype="SUBCOMMAND" mode="switch">
-                    <PARAM name="arg1-mac-addr-mask" help="arg2 MAC address and mask" ptype="ACL_MAC_ADDR_MASK"/>
+                    <PARAM name="arg1-mac-addr" help="arg2 MAC address" ptype="ACL_MAC_ADDR">
+                        <PARAM name="arg1-mac-mask" help="arg2 MAC address mask" ptype="ACL_MAC_ADDR"/>
+                    </PARAM>
                     <PARAM name="arg1-mac-host" help="arg2 MAC address" ptype="SUBCOMMAND" mode="subcommand"  value="host">
                         <PARAM name="arg1-mac-addr" help="arg2 MAC address value" ptype="ACL_MAC_ADDR"/>
                     </PARAM>
@@ -137,7 +138,7 @@
     </MACRODEF>
 
     <MACRODEF name="FBS-NEXT-HOP-PRIORITY">
-        <PARAM name="priority" help="Priority of the Next hop" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+        <PARAM name="priority" help="Priority of the Next hop" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='"${egress-intf-options}" != "null"'>
             <PARAM name="priority-value" help="Priority value" ptype="RANGE_1_65535"/>
         </PARAM>
     </MACRODEF>

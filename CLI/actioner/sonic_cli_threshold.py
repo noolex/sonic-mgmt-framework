@@ -236,7 +236,11 @@ def invoke_api(func, args):
 	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST={buffer},{threshold_buffer_type},{interface_name},{buffer_index_per_port}/threshold', buffer = args[2], threshold_buffer_type = args[4], interface_name = args[5], buffer_index_per_port = args[3] )
 	return api.delete(path)
 
-    elif func == 'patch_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list_threshold':
+    elif func == 'delete_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list':
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST')
+	return api.delete(path)
+
+    elif func == 'patch_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list_threshold':
         pool_name = args[0]
 	config_db = ConfigDBConnector()
 	config_db.connect()
@@ -246,9 +250,15 @@ def invoke_api(func, args):
 	if pool_name not in buffer_pool_name_to_oid_map:
 		print("Invalid pool name, please configure a valid pool name")
 		return False
-	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/BUFFER_POOL_LIST={bufferpoolprefix},{pool_name}/threshold', bufferpoolprefix = 'BUFFER_POOL', pool_name = args[0] )
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST={pool_name}/threshold', pool_name = args[0] )
         body = { "sonic-threshold:threshold":  int(args[1]) }
         return api.patch(path, body)
+
+    elif func == 'rpc_sonic_threshold_clear_threshold_breach':
+	path = cc.Path('/restconf/operations/sonic-threshold:clear-threshold-breach')
+	body = { "sonic-threshold:input":  {"breach_event_id":args[3] }}
+	return api.post(path, body)
+
     else:
        body = {}
     return api.cli_not_implemented(func)
@@ -292,15 +302,15 @@ def get_threshold_breach_event_reports(args):
     show_cli_output("show_threshold_breach_event_reports.j2", api_response)
 
 
-def get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list(args):
+def get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list(args):
     api_response = {}
     api = cc.ApiClient()
-    path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/BUFFER_POOL_LIST')
+    path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST')
     response = api.get(path)
 
     if response.ok():
         if response.content:
-            api_response = response.content['sonic-threshold:BUFFER_POOL_LIST']
+            api_response = response.content['sonic-threshold:THRESHOLD_BUFFERPOOL_TABLE_LIST']
             for i in range(len(api_response)):
                 if 'pool_name' not in api_response[i] and 'threshold' not in api_response[i]:
                    print("Failed : Required mandatory parameters are not found")
@@ -314,19 +324,23 @@ def get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list(ar
 
 def get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list(args):
 
-    if args[3] == 'queue' and args[0] == 'unicast':
+    if args[0] == 'do':
+        args[2] = args[3]
+        args[3] = args[4]
+
+    if args[2] == 'queue' and args[3] == 'unicast':
         th_type = "q_shared_uni"
         renderer_template = "show_threshold_queue_unicast_config.j2"
-    if args[3] == 'queue' and args[0] == 'multicast':
+    if args[2] == 'queue' and args[3] == 'multicast':
         th_type = "q_shared_multi"
         renderer_template = "show_threshold_queue_multicast_config.j2"
-    elif args[3] == 'priority-group' and args[0] == 'shared':
+    elif args[2] == 'priority-group' and args[3] == 'shared':
         th_type = "pg_shared"
         renderer_template = "show_threshold_priority_group_config.j2"
-    elif args[3] == 'priority-group' and args[0] == 'headroom':
+    elif args[2] == 'priority-group' and args[3] == 'headroom':
         th_type = "pg_headroom"
         renderer_template = "show_threshold_priority_group_config.j2"
-    elif args[3] == 'queue' and args[0] == 'CPU':
+    elif args[2] == 'queue' and args[3] == 'CPU':
         th_type = "q_shared_multi_cpu"
         renderer_template = "show_threshold_cpu_queue.j2"
 
@@ -353,8 +367,8 @@ if __name__ == '__main__':
 
      if func == 'get_threshold_breach_event_reports':
         get_threshold_breach_event_reports(sys.argv[2:])
-     elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list':
-        get_list_sonic_threshold_sonic_threshold_threshold_table_buffer_pool_list(sys.argv[2:])
+     elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list':
+        get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list(sys.argv[2:])
      elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list':
         get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list(sys.argv[2:])
      else:

@@ -22,7 +22,7 @@ import json
 from rpipe_utils import pipestr
 from render_cli import show_cli_output
 import cli_client as cc
-
+import re
 import urllib3
 urllib3.disable_warnings()
 
@@ -64,6 +64,28 @@ def getId(item):
     if ifname.startswith(prfx):
         return int(ifname[len(prfx):])
     return ifname
+
+def _name_to_val(ifName):
+    tk = ifName.split('.')
+    plist = re.findall(r'\d+', tk[0])
+    val = 0
+    if len(plist) == 1:  #ex: Ethernet40
+       val = int(plist[0]) * 10000
+    elif len(plist) == 2:  #ex: Eth1/5
+       val= int(plist[0]+plist[1].zfill(3)+'000000')
+    elif len(plist) == 3:  #ex: Eth1/5/2
+       val= int(plist[0]+plist[1].zfill(3)+plist[2].zfill(2)+'0000')
+
+    if len(tk) == 2:   #ex: 2345 in Eth1/1.2345
+       val += int(tk[1])
+
+    #syslog.syslog(syslog.LOG_DEBUG, "{}: {}".format(ifName, val))
+    return val
+
+def getSonicId(item):
+    state_dict = item
+    ifName = state_dict['ifname']
+    return _name_to_val(ifName)
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
@@ -145,7 +167,7 @@ def run(func, args):
 
         if func == 'get_sonic_sflow_sonic_sflow_sflow_session_table':
             sess_lst = get_session_list(response.content, 'SFLOW_SESSION_TABLE')
-            sess_lst = sorted(sess_lst, key=getId)
+            sess_lst = sorted(sess_lst, key=getSonicId)
             show_cli_output(args[0], sess_lst)
 
         elif func == 'get_sonic_sflow_sonic_sflow':

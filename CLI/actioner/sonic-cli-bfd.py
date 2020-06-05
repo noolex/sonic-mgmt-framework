@@ -51,12 +51,8 @@ def invoke_api(func, args=[]):
 
     #Patch cases
     if func == 'patch_openconfig_bfd_ext_bfd_sessions_single_hop':
-	if len(args) == 3:
-	    print("%Error: Interface must be configured for single-hop peer")
-	    exit(1)
-
-        if args[2] != "default" and args[1] == "null":
-            print("%Error: Interface must be configured for non-default vrf")
+        if args[1] == "null":
+            print("%Error: Interface must be configured for single-hop peer")
             exit(1)
 
         keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:sessions/single-hop={address},{interfacename},{vrfname},{localaddress}/enabled', address=args[0], interfacename=args[1], vrfname=args[2],localaddress=args[3])
@@ -188,6 +184,7 @@ def run(func, args):
 				print("Failed")
 		else:
 			print(response.error_message())
+                        sys.exit(1)
 
 if __name__ == '__main__':
 

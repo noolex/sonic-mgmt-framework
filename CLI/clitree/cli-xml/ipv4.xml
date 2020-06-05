@@ -35,7 +35,7 @@ limitations under the License.
     <!-- show ip interfaces -->
     <COMMAND
         name="show ip interfaces"
-        help="IP Info of Interfaces"
+        help="IP information of interfaces"
         >
     <ACTION>
        python $SONIC_CLI_ROOT/sonic_cli_if.py ip_interfaces_get show_ip_interfaces_sonic.j2 ${__full_line}
@@ -46,40 +46,68 @@ limitations under the License.
     <COMMAND
         help="IP route information"
         name="show ip route">
+        <PARAM
+            name="vrf"
+            help="IP route information per vrf"
+            optional = "true"
+            order = "true"
+	    mode="subcommand"
+            ptype="SUBCOMMAND">
+	    <PARAM
+		help="VRF name"
+		name="vrfname"
+		ptype="STRING_15">
+            </PARAM>
+        </PARAM>
 	<PARAM
 	   name="route-cmd"
 	   help=""
 	   mode="switch"
 	   ptype="SUBCOMMAND"
-	   optional="true">
+	   optional="true"
+	   order="true">
            <PARAM
-              help="IP route information per vrf"
-              name="vrf"
-              optional = "true"
-	            mode="subcommand"
-              ptype="SUBCOMMAND">
-	           <PARAM
-		            help="VRF name"
-		            name="vrfname"
-		            ptype="STRING_15">
-                   <PARAM
-	                    help="Destination prefix"
-		                  name="prefix"
-		                  optional="true"
-		                  ptype="IP_ADDR_MASK">
-                   </PARAM>
-              </PARAM>
+	       name="prefix"
+	       help="Destination prefix"
+	       ptype="IP_ADDR_MASK">
            </PARAM>
            <PARAM
-               help="Destination prefix"
-	           optional="true"
-               name="prefix"
-               ptype="IP_ADDR_MASK">
+               name="summary"
+               help="Summary of all routes"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+           </PARAM>
+           <PARAM
+               name="bgp"
+               help="Border Gateway Protocol (BGP)"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+           </PARAM>
+           <PARAM
+               name="connected"
+               help="Connected routes (directly attached subnet or host)"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+           </PARAM>
+           <PARAM
+               name="static"
+               help="Statically configured routes"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+           </PARAM>
+           <PARAM
+               help="Open Shortest Path First (OSPFv2)"
+               optional="true"
+               name="ospf"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
            </PARAM>
         </PARAM>
         <ACTION>
             if test -n "${prefix}"; then&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 prefix ${prefix} ${__full_line}&#xA;
+            elif test -n "${summary}"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route_summary show_ip_route_summary_rpc.j2 ${__full_line}&#xA;
             else&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 ${__full_line}&#xA;
             fi&#xA;
@@ -125,8 +153,8 @@ limitations under the License.
     />
     <COMMAND
         name="no ip"
-	    help="Interface Internet Protocol config commands"
-	>
+        help="Interface Internet Protocol config commands"
+    >
     </COMMAND>
 
     <COMMAND
@@ -136,19 +164,22 @@ limitations under the License.
             name="addr"
             help="IP address with mask"
             ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${iface} ${addr}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${iface_uri} ${addr}</ACTION>
     </COMMAND>
 
     <COMMAND
         name="no ip address"
-	help="Interface Internet Protocol config commands"
-	>
-	<PARAM
-	    name="addr"
-            help="IP address"
-	    ptype="IP_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+        help="Delete IPv4 address(es) on the interface"
+        >
+        <PARAM
+            name="addr"
+            help="IPv4 address"
+            optional="true"
+            ptype="IP_ADDR_MASK"
+            />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface_uri} ${addr} True</ACTION>
     </COMMAND>
+
     <COMMAND
         name="ip dhcp-relay"
         help="Add DHCP relay on an interface" >
@@ -169,38 +200,38 @@ limitations under the License.
             help="Donor Interface Name"
             ptype="LOOPBACK_INTERFACE" />
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
-		<DOCGEN>
-			<DESCRIPTION>
-				Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
-			</DESCRIPTION>
-			<USAGE>
-				Use this command to configure IPv4 unnumbered interface at the interface level.
-			</USAGE>
-			<EXAMPLE summary="Configure IPv4 unnumbered interface">
-				sonic-cli(config)# interface Ethernet 0
-				sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
-			</EXAMPLE>
-		</DOCGEN>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IPv4 unnumbered interface at the interface level.
+            </USAGE>
+            <EXAMPLE summary="Configure IPv4 unnumbered interface">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
         name="no ip unnumbered"
-	    help="Unconfigure IPv4 unnumbered interface" >
+        help="Unconfigure IPv4 unnumbered interface" >
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface</ACTION>
 
-		<DOCGEN>
-			<DESCRIPTION>
-				Unconfigure IPv4 unnumbered interface.
-			</DESCRIPTION>
-			<USAGE>
-				Use this command to unconfigure IPv4 unnumbered interface at the interface level.
-			</USAGE>
-			<EXAMPLE summary="Unconfigure IPv4 unnumbered interface">
-				sonic-cli(config)# interface Ethernet 0
-				sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
-				sonic-cli(conf-if-Ethernet0)# no ip unnumbered
-			</EXAMPLE>
-		</DOCGEN>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure IPv4 unnumbered interface.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure IPv4 unnumbered interface at the interface level.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure IPv4 unnumbered interface">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
+                sonic-cli(conf-if-Ethernet0)# no ip unnumbered
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 </VIEW>
 
@@ -216,7 +247,7 @@ limitations under the License.
     <COMMAND
         name="no ip"
         help="Interface Internet Protocol config commands"
-	>
+    >
     </COMMAND>
 
     <COMMAND
@@ -242,13 +273,14 @@ limitations under the License.
 
     <COMMAND
         name="no ip address"
-	help="Interface Internet Protocol config commands"
-	>
-	<PARAM
-	    name="addr"
-            help="IP address"
-	    ptype="IP_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+        help="Delete IPv4 address(es) on the interface"
+        >
+        <PARAM
+            name="addr"
+            help="IPv4 address"
+            optional="true"
+            ptype="IP_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_mgmt_if_ip ${iface} ${addr} True</ACTION>
     </COMMAND>
 </VIEW>
 
@@ -277,14 +309,15 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${vlan_name} ${addr}</ACTION>
       </COMMAND>
       <COMMAND
-         name="no ip address"
-         help="Interface Internet Protocol config commands"
-         >
-         <PARAM
+          name="no ip address"
+          help="Delete IPv4 address(es) on the interface"
+          >
+          <PARAM
              name="addr"
-             help="IP address"
-             ptype="IP_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+             help="IPv4 address"
+             optional="true"
+             ptype="IP_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_vlan_if_ip ${vlan_name} ${addr} True</ACTION>
       </COMMAND>
       <COMMAND
          name="ip dhcp-relay"
@@ -327,13 +360,14 @@ limitations under the License.
       </COMMAND>
       <COMMAND
          name="no ip address"
-         help="Interface Internet Protocol config commands"
+         help="Delete IPv4 address(es) on the interface"
          >
          <PARAM
              name="addr"
-             help="IP address"
-             ptype="IP_ADDR" />
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+             help="IPv4 address"
+             optional="true"
+             ptype="IP_ADDR_MASK" />
+         <ACTION builtin="clish_pyobj">sonic_cli_if delete_po_if_ip ${po_name} ${addr} True</ACTION>
       </COMMAND>
       <COMMAND
          name="ip dhcp-relay"
@@ -357,18 +391,18 @@ limitations under the License.
              ptype="LOOPBACK_INTERFACE" />
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
 
-		<DOCGEN>
-			<DESCRIPTION>
-				Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
-			</DESCRIPTION>
-			<USAGE>
-				Use this command to configure IPv4 unnumbered interface at the interface level.
-			</USAGE>
-			<EXAMPLE summary="Configure IPv4 unnumbered interface">
-				sonic-cli(config)# interface PortChannel 1 
-				sonic-cli(conf-if-po1)# ip unnumbered Loopback1
-			</EXAMPLE>
-		</DOCGEN>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IPv4 unnumbered interface at the interface level.
+            </USAGE>
+            <EXAMPLE summary="Configure IPv4 unnumbered interface">
+                sonic-cli(config)# interface PortChannel 1 
+                sonic-cli(conf-if-po1)# ip unnumbered Loopback1
+            </EXAMPLE>
+        </DOCGEN>
      </COMMAND>
 
      <COMMAND
@@ -376,19 +410,19 @@ limitations under the License.
          help="Unconfigure IPv4 unnumbered interface" >
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface</ACTION>
 
-		<DOCGEN>
-			<DESCRIPTION>
-				Unconfigure IPv4 unnumbered interface.
-			</DESCRIPTION>
-			<USAGE>
-				Use this command to unconfigure IPv4 unnumbered interface at the interface level.
-			</USAGE>
-			<EXAMPLE summary="Unconfigure IPv4 unnumbered interface">
-				sonic-cli(config)# interface PortChannel 1 
-				sonic-cli(conf-if-po1)# ip unnumbered Loopback1
-				sonic-cli(conf-if-po1)# no ip unnumbered
-			</EXAMPLE>
-		</DOCGEN>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure IPv4 unnumbered interface.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure IPv4 unnumbered interface at the interface level.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure IPv4 unnumbered interface">
+                sonic-cli(config)# interface PortChannel 1 
+                sonic-cli(conf-if-po1)# ip unnumbered Loopback1
+                sonic-cli(conf-if-po1)# no ip unnumbered
+            </EXAMPLE>
+        </DOCGEN>
      </COMMAND>
 </VIEW>
 
@@ -418,13 +452,14 @@ limitations under the License.
       </COMMAND>
       <COMMAND
          name="no ip address"
-         help="Interface Internet Protocol config commands"
+         help="Delete IPv4 address(es) on the interface"
          >
          <PARAM
              name="addr"
-             help="IP address"
-             ptype="IP_ADDR" />
-            <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/addresses/address=${addr}/config/prefix-length</ACTION>
+             help="IPv4 address"
+             optional="true"
+             ptype="IP_ADDR_MASK" />
+         <ACTION builtin="clish_pyobj">sonic_cli_if delete_lo_if_ip ${lo_name} ${addr} True</ACTION>
       </COMMAND>
 </VIEW>
 </CLISH_MODULE>

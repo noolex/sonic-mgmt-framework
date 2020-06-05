@@ -1,0 +1,3 @@
+Memory Reserved: {{json_output['memory']}}
+{% set mem_val = json_output['allocated-memory'] | int / (1024 * 1024) %}
+Memory Allocated: {{mem_val | round | int}}M

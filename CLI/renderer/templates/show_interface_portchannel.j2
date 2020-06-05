@@ -1,4 +1,11 @@
-{% set mode, minlinks, fallback = "LACP", "1", "Disabled" %}
+{% set mode, minlinks, fallback, gracefulshutdown = "LACP", "1", "Disabled", "Disabled" %}
+
+{% set global = json_output['global'][0] %}
+{% if global %}
+{% if global['graceful_shutdown_mode'] == 'enable' %}
+{% set gracefulshutdown = "Enabled" %}
+{% endif %}
+{% endif %}
 
 {% if json_output['portchannel']['sonic-portchannel:LAG_TABLE'] and json_output['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] %}
 {% for po_intf in json_output['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] %}
@@ -28,6 +35,9 @@ Minimum number of links to bring PortChannel up is {{minlinks}}
 {% if mode == "LACP" %}
 Fallback: {{fallback}}
 {% endif %}
+
+Graceful shutdown: {{gracefulshutdown}}
+
 MTU {{po_intf['mtu']}}
 
 {% endif %}
@@ -46,6 +56,7 @@ MTU {{po_intf['mtu']}}
 
 
 {% if 'state' in intf %}
+
 LACP mode {{intf['state']['lacp-mode']}} interval {{intf['state']['interval']}} priority {{intf['state']['system-priority']}} address {{intf['state']['system-id-mac']}}
 
 {% else %}

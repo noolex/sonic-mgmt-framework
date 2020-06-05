@@ -1,11 +1,21 @@
 {% if json_output %}
   {% set sp_config = json_output['openconfig-qos:config'] %}
-  {% set sp_name = '' %}
-  {% if sp_config %} 
+  {% if sp_config %}
     {% set sp_name = sp_config['name'] %}
+    {% if sp_name %}
+      {{'    scheduler policy: '}}{{sp_name}}
+    {% endif %}
   {% endif %}
 
-  {{'interface config:'}}
-  {{'    scheduler policy: '}}{{sp_name}}
+  {% set map_config = json_output['openconfig-qos-maps-ext:config'] %}
+  {% if map_config %}
+  {% if map_config['dscp-to-forwarding-group'] %}
+      {{'    dscp-to-tc-map: '}}{{map_config['dscp-to-forwarding-group']}}
+  {% endif %}
+  {% if map_config['dot1p-to-forwarding-group'] %}
+      {{'    dot1p-to-tc-map: '}}{{map_config['dot1p-to-forwarding-group']}}
+  {% endif %}
+  {% endif %}
+
 
 {% endif %}

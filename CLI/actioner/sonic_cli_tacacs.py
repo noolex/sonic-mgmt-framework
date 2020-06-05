@@ -51,9 +51,6 @@ def invoke_api(func, args):
            val = (args[i].split(":", 1))[-1]
            val_name = (args[i].split(":", 1))[0]
 
-           if val_name == 'vrf' and val == "management":
-               val = "mgmt"
-
            if val:
                indata[val_name] = val
 
@@ -89,6 +86,10 @@ def invoke_api(func, args):
                                                "openconfig-system:config": config_body,
                                                "openconfig-system:tacacs": tconfig_body}] }
 
+       return api.patch(path, body)
+    elif func == 'patch_sonic_tacacs_global_src_intf':
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-interface')
+       body = { "openconfig-system-ext:source-interface": args[0] if args[0] != 'Management0' else 'eth0' }
        return api.patch(path, body)
     else:
        body = {}
