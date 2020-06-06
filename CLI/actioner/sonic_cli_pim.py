@@ -53,10 +53,11 @@ def get_keypath(func,args):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"keep-alive-timer": float(inputDict.get('kat'))}}}
         elif inputDict.get('pln') is not None:
             body = {"openconfig-network-instance:global": {"ssm": {"config": {"ssm-ranges": inputDict.get('pln')}}}}
-        elif inputDict.get('ecmp') is not None:
-            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-enabled": True}}}
+        #as rebalance is a child of ecmp, check it first
         elif inputDict.get('rebalance') is not None:
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-rebalance-enabled": True}}}
+        elif inputDict.get('ecmp') is not None:
+            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-enabled": True}}}
 
     #del global config
     if func == 'del_pim_global_config':
@@ -75,10 +76,11 @@ def get_keypath(func,args):
             path = path + "/openconfig-pim-ext:config/keep-alive-timer"
         elif inputDict.get('pln') is not None:
             path = path + "/ssm/config/ssm-ranges"
+        #as rebalance is a child of ecmp, check it first
+        elif inputDict.get('rebalance') is not None:
+            path = path + "/openconfig-pim-ext:config/ecmp-rebalance-enabled"
         elif inputDict.get('ecmp') is not None:
-            path = path + "openconfig-pim-ext:config/ecmp-enabled"
-        elif inputDict.get('kat') is not None:
-            path = path + "openconfig-pim-ext:config/ecmp-rebalance-enabled"
+            path = path + "/openconfig-pim-ext:config/ecmp-enabled"
 
         keypath = cc.Path(path)
 
