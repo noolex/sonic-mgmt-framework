@@ -85,7 +85,7 @@ def get_keypath(func,args):
         keypath = cc.Path(path)
 
     #interface level config common code
-    if func.startswith('patch_pim_interface'):
+    if 'patch_pim_interface_config' in func:
         #get interface, needed for VRF lookup and keypath
         intf = inputDict.get('intf')
         if intf is None:
@@ -102,19 +102,19 @@ def get_keypath(func,args):
             body ={"mode": "PIM_MODE_SPARSE"}
 
     if func.endswith('config_drprio'):
-        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/dr-priority'
         keypath = cc.Path(path)
         if func.startswith('patch'):
             body = {"dr-priority": float(inputDict.get('drprio'))}
 
     if func.endswith('config_hello'):
-        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/hello-interval'
         keypath = cc.Path(path)
         if func.startswith('patch'):
             body = {"hello-interval": float(inputDict.get('hello'))}
 
     if func.endswith('config_bfd'):
-        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/bfd-enabled'
         keypath = cc.Path(path)
         if func.startswith('patch'):
             body = {"bfd-enabled": True}
