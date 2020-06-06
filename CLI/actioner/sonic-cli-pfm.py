@@ -24,6 +24,7 @@ from render_cli import show_cli_output
 from collections import OrderedDict
 from struct import unpack
 from base64 import b64decode
+import sonic_intf_utils as ifutils
 
 urllib3.disable_warnings()
 
@@ -109,6 +110,71 @@ def run(func, args):
                 fanName = response.content['openconfig-platform:component'][0]['name']
                 fanInfo[fanName] = response.content['openconfig-platform:component'][0]
             show_cli_output(template, fanInfo)
+        elif func == 'get_openconfig_platform_components_component_transceiver_status':
+            if_name = sys.argv[2]
+            template = sys.argv[3]
+            xcvrInfo = OrderedDict()
+            summary = False
+            if_list = []
+
+            if if_name in ["Ethernet_SUMMARY", "Ethernet_ALL"]:
+                summary = (True if (if_name == "Ethernet_SUMMARY") else False)
+                # Get list of ports
+                path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT/PORT_LIST')
+                response = aa.get(path)
+                if not response.ok():
+                    print(response.content)
+                    return
+                try:
+                    for d in response.content['sonic-port:PORT_LIST']:
+                        if_list.append(d['ifname'])
+                except:
+                    return
+            else:
+                # Singleton
+                if_list.append(if_name)
+
+            for nm in if_list:
+                n = nm
+                if '/' in nm:
+                    n = nm.replace('/', '%2F')
+                path = cc.Path('/restconf/data/openconfig-platform:components/component=' + n)
+                response = aa.get(path)
+                try:
+                    xcvrInfo[nm] = response.content['openconfig-platform:component'][0]
+                except:
+                    xcvrInfo[nm] = {}
+
+            # Clean up the data
+            cli_dict = OrderedDict()
+            for val in sorted(xcvrInfo.keys(),  key=lambda x: ifutils.name_to_int_val(x)):
+                d2 = OrderedDict()
+                try:
+                    d = xcvrInfo[val]['openconfig-platform-transceiver:transceiver']['state']
+                    for k  in d:
+                        a = k
+                        b = d[k]
+                        if ':' in k:
+                            a = k.split(':')[1]
+                        if ':' in d[k]:
+                            b = d[k].split(':')[1]
+                        if a in ['connector-type', 'form-factor']:
+                            b = b.replace('_CONNECTOR', '')
+                            b = b.replace('_PLUS', '+')
+                            b = b.replace('_', '-')
+
+                        d2[a] = b
+                except:
+                    d2.update( {'present':'NOT-PRESENT' })
+                cli_dict[val] = (val,d2)
+            try:
+                if summary:
+                    show_cli_output(template, (True, cli_dict))
+                else:
+                    for k in cli_dict:
+                        show_cli_output(template, (False, cli_dict[k]))
+            except Exception as e:
+                pass
     except Exception as e:
         print("%Error: Transaction Failure")
         return
