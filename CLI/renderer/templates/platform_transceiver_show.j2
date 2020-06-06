@@ -1,0 +1,57 @@
+{% raw %}
+    
+{% endraw %}
+{% if json_output[0] == False %}
+{% set if_name = json_output[1][0] %}
+{{if_name}}
+{{'---------------------------------------------------------------------'}}
+{{'Attribute'.ljust(25)}}:  {{'Value/State'}}
+{{'---------------------------------------------------------------------'}}
+{% for key, val in json_output[1][1].items() %}
+
+{% set k = key %}
+{% if k in ["max-port-power", "max-module-power"] %}
+{% set k = k + "(Watts)"%}
+{% endif %}
+{% if "length" in k %}
+{% set k = k + "(m)"%}
+{% endif %}
+{{k.ljust(25)}}:  {{val}}
+{% endfor %}
+
+{% else %}
+
+{{'---------------------------------------------------------------------------------------------------------'}}
+{{'Interface'.ljust(13)}}{{'Name'.ljust(40)}}{{'Vendor'.ljust(17)}}{{'Part No.'.ljust(17)}}{{'Serial No.'.ljust(16)}}
+{{'---------------------------------------------------------------------------------------------------------'}}
+{% for if_name, attrs in json_output[1].items() %}
+
+
+{% set display_name = 'N/A' %}
+{% set vendor_name = 'N/A'%}
+{% set vendor_pn = 'N/A' %}
+{% set vendor_sn = 'N/A'%}
+
+
+{% if 'display-name' in attrs[1] %}
+{% set display_name = attrs[1]['display-name'] %}
+{% endif %}
+{% if 'vendor' in attrs[1] %}
+{% set vendor_name = attrs[1]['vendor'] %}
+{% endif %}
+{% if 'vendor-part' in attrs[1] %}
+{% set vendor_pn = attrs[1]['vendor-part'] %}
+{% endif %}
+{% if 'serial-no' in attrs[1] %}
+{% set vendor_sn = attrs[1]['serial-no'] %}
+{% endif %}
+
+{{if_name.ljust(13)}}{{display_name.ljust(40)}}{{vendor_name.ljust(17)}}{{vendor_pn.ljust(17)}}{{vendor_sn.ljust(16)}}
+
+{% endfor %}
+{% endif %}
+
+{% raw %}
+    
+{% endraw %}
+
