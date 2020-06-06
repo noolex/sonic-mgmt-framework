@@ -24,7 +24,6 @@ limitations under the License.
         <COMMAND
             name="no ip pim"
             help="Disable PIM on interface">
-            <ACTION></ACTION>
         </COMMAND>
 
         <COMMAND

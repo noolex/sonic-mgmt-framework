@@ -114,7 +114,7 @@ def get_keypath(func,args):
             body = {"hello-interval": float(inputDict.get('hello'))}
 
     if func.endswith('config_bfd'):
-        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/bfd-enabled'
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/openconfig-pim-ext:bfd-enabled'
         keypath = cc.Path(path)
         if func.startswith('patch'):
             body = {"bfd-enabled": True}
@@ -174,6 +174,7 @@ def run(func, args):
     keypath, body = get_keypath(func, args)
     if keypath is None:
         print("% Error: Internal error")
+        inputDict = {}
         return 1
 
     if func.startswith("patch"):
@@ -181,11 +182,11 @@ def run(func, args):
     if func.startswith("del"):
         apiClient.delete(keypath)
 
+    inputDict = {}
     return 0
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
     status = run(sys.argv[1], sys.argv[2:])
-    inputDict = {}
     if status != 0:
         sys.exit(0)
