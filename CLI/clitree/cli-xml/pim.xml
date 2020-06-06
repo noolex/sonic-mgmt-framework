@@ -191,10 +191,4 @@ limitations under the License.
         <MACRO name="BIND-INTF-TO-PIM" arg="${vlan_name}"></MACRO>
     </VIEW>
 
-    <!-- =============== -->
-    <!-- Loopback Config -->
-    <!-- =============== -->
-    <VIEW name="configure-lo-view">
-        <MACRO name="BIND-INTF-TO-PIM" arg="${lo_name}"></MACRO>
-    </VIEW>
 </CLISH_MODULE>
