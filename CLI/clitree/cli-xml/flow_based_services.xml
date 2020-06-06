@@ -42,6 +42,7 @@ limitations under the License.
                 <PARAM name="qos" help="Show all QoS Policies" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="monitoring" help="Show all monitoring policies" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="forwarding" help="Show all forwarding Policies" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Show all CoPP policies" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
         </COMMAND>
@@ -55,6 +56,7 @@ limitations under the License.
             <PARAM name="show-fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-class-name}" = "match-type"'>
                 <PARAM name="acl" help="Show classifier which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
                 <PARAM name="fields" help="Show classifier which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Show classifier which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${show-fbs-class-name} ${show-fbs-class-type}</ACTION>
         </COMMAND>
@@ -134,7 +136,7 @@ limitations under the License.
         <COMMAND name="policy" help="Configure flow based services policy" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}">
             <PARAM name="fbs-policy-name" help="Name of the policy (Max size 63)" ptype="STRING_63"/>
             <MACRO name="FBS-POLICY-TYPES" arg="false" />
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_policy ${fbs-policy-name} ${fbs-policy-type}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_policy_${fbs-policy-type} ${fbs-policy-name} ${fbs-policy-type}</ACTION>
         </COMMAND>
 
         <COMMAND name="no policy" help="Delete flow based services policy">
@@ -150,9 +152,10 @@ limitations under the License.
                     <PARAM name="fields" help="Classifier using L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand">
                         <PARAM name="match-all" help="Match all fields" ptype="SUBCOMMAND" mode="subcommand"/>
                     </PARAM>
+                    <PARAM name="copp" help="Classifier using CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_classifier ${fbs-class-name} ${fbs-class-type}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_classifier_${fbs-class-type} ${fbs-class-name} ${fbs-class-type}</ACTION>
         </COMMAND>
 
         <COMMAND name="no classifier" help="Delete flow based services classifier">
@@ -185,12 +188,12 @@ limitations under the License.
             <PARAM name="priority" help="Flow priority in the policy" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                 <PARAM name="fbs-flow-priority" help="Priority value." ptype="FLOW_PRIORITY" />
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_flow ${fbs-policy-name} ${fbs-class-name} ${fbs-flow-priority}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_flow_${fbs-policy-type} ${fbs-policy-name} ${fbs-class-name} ${fbs-flow-priority}</ACTION>
         </COMMAND>
 
         <COMMAND name="no class" help="Delete flow classification and its actions">
             <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_flow ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_flow_${fbs-class-type} ${fbs-policy-name} ${fbs-class-name}</ACTION>
         </COMMAND>
     </VIEW>
 
@@ -354,6 +357,27 @@ limitations under the License.
     </VIEW>
 
     <!--===================================================================================-->
+    <!--                            Classifier view for CoPP match-type                     -->
+    <!--===================================================================================-->
+    <VIEW name="configure-copp-classifier-view" prompt="${SYSTEM_NAME}(config-classifier)# " depth="2">
+        <NAMESPACE ref="configure-view" help="false" completion="false"/>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="match" help="Add match criteria"/>
+        <COMMAND name="no match" help="Delete match criteria"/>
+
+        <MACRO name="CLASSIFIER-DESCRIPTION"/>
+
+        <COMMAND name="match protocol" help="Match using access-list">
+            <PARAM name="trap-id" help="Name of the trap id" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_match_protocol ${fbs-class-name} ${trap-id}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no match protocol" help="Delete match using access-list">
+            <PARAM name="trap-id" help="Name of the trap id" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_match_protocol ${fbs-class-name} ${trap-id}</ACTION>
+        </COMMAND>
+    </VIEW>
+    <!--===================================================================================-->
     <!--                            Flow view for QoS actions                              -->
     <!--===================================================================================-->
     <VIEW name="configure-qos-flow-view" prompt="${SYSTEM_NAME}(config-policy-flow)# " depth="3">
@@ -507,6 +531,20 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_egress_interface_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
         </COMMAND>
     </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Flow view for CoPP actions                              -->
+    <!--===================================================================================-->
+    <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="set" help="Set parameters" />
+
+        <COMMAND name="set copp-action" help="Binds a CoPP action group to the classifier">
+            <PARAM name="copp-action-name" help="Name of the CoPP action group (Max size 63)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_action_group ${fbs-policy-name} ${fbs-class-name} ${copp-action-name}</ACTION>
+        </COMMAND>
+    </VIEW>
+
 
     <!--===================================================================================-->
     <!--                            Policy binding CLIs for Ethernet                       -->

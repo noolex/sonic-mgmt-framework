@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2020 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE CLISH_MODULE [
+        <!ENTITY FBS_MAC_ADDR "[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{4}(\.[0-9a-fA-F]{4}){2}">
+        <!ENTITY UINT_32_RANGE "([1-9][0-9]{0,8})|([1-3][0-9]{9})|(4[0-1][0-9]{8})|(42[0-8][0-9]{7})|(429[0-3][0-9]{6})|(4294[0-8][0-9]{5})|(42949[0-5][0-9]{4})|(429496[0-6][0-9]{3})|(4294967[0-1][0-9]{2})|(42949672[0-8][0-9])|(429496729[0-5])">
+        ]>
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xsi:schemaLocation="https://raw.githubusercontent.com/project-arlo/sonic-mgmt-framework/master/src/CLI/clitree/scripts/sonic-clish.xsd">
+
+    <!--=================================  PTYPES =================================-->
+    <PTYPE name="COPP_RANGE_0_1023" method="integer" pattern="0..1023" help=""/>
+    <PTYPE name="COPP_TRAP_ACTION" method="select" pattern="drop(DROP) forward(FORWARD) copy(COPY) copy_cancel(COPY_CANCEL) trap(TRAP) log(LOG) deny(DENY) transit(TRANSIT)" help=""/>
+    <PTYPE name="COPP_RANGE_0_47" method="integer" pattern="0..47" help=""/>
+    <PTYPE name="COPP_METER_TYPE" method="select" pattern="pps(PACKETS) bps(BYTES)" help=""/>
+    <PTYPE name="COPP_MODE" method="select" pattern="sr_tcm(SR_TCM) tr_tcm(TR_TCM) storm(STORM)" help=""/>
+
+    <!--============================== EXEC MODE COMMANDS =======================-->
+    <VIEW name="enable-view">
+		<!-- show copp protocols -->
+		<COMMAND name="show copp" help="Show CoPP information">
+            <PARAM name="copp-protocols-or-groups" help="" ptype="SUBCOMMAND" mode="switch" optional="false">
+				<PARAM name="classifiers" help="Displays the list of configured CoPP classifiers" ptype="SUBCOMMAND" mode="subcommand"/>
+				<PARAM name="protocols" help="Displays the list of supported CoPP protocols" ptype="SUBCOMMAND" mode="subcommand"/>
+				<PARAM name="actions" help="Dumps the configured CoPP action groups" ptype="SUBCOMMAND" mode="subcommand"/>
+				<PARAM name="policy" help="Dumps the configured CoPP policy copp-system-policy" ptype="SUBCOMMAND" mode="subcommand"/>
+			</PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_copp_protocols ${copp-protocols-or-groups}</ACTION>
+		</COMMAND>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Config Mode commands                                   -->
+    <!--===================================================================================-->
+    <VIEW name="configure-view">
+        <COMMAND name="copp-action" help="Configure a CoPP action group" view="copp-action-view"
+                 viewid="copp-action-name=${copp-action-name}">
+            <PARAM name="copp-action-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
+			<ACTION builtin="clish_pyobj">sonic_cli_fbs create_copp_action ${copp-action-name}</ACTION>
+        </COMMAND>
+        <COMMAND name="no copp-action" help="Delete a CoPP action group">
+            <PARAM name="copp-action-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
+			<ACTION builtin="clish_pyobj">sonic_cli_fbs delete_copp_action ${copp-action-name}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <VIEW name="copp-action-view" prompt="${SYSTEM_NAME}(config-action)# " depth="2">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="set" help="Set parameters" />
+        <COMMAND name="no set" help="Remove/Disable QoS actions" />
+
+        <COMMAND name="set trap-action" help="Set CoPP trap action">
+            <PARAM name="trap-action-value" help="CoPP trap action" ptype="COPP_TRAP_ACTION" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_trap_action ${copp-action-name} ${trap-action-value}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set trap-action" help="Clear CoPP trap action">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_trap_action ${copp-action-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="set trap-queue" help="Set CoPP queue id">
+            <PARAM name="queue-id-value" help="Queue ID value (0-47)" ptype="COPP_RANGE_0_47" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_queue_id_action ${copp-action-name} ${queue-id-value}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set trap-queue" help="Clear CoPP queue id">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_queue_id_action ${copp-action-name} </ACTION>
+        </COMMAND>
+
+        <COMMAND name="set trap-priority" help="Set CoPP trap priority">
+            <PARAM name="trap-priority-value" help="Trap priority value (0-1023)" ptype="COPP_RANGE_0_1023" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_trap_priority_action ${copp-action-name} ${trap-priority-value}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no set trap-priority" help="Clear CoPP trap priority">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_copp_trap_priority_action ${copp-action-name} </ACTION>
+        </COMMAND>
+
+        <COMMAND name="police" help="Set rate limiting parameters">
+            <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                </PARAM>
+				<PARAM name="meter-type" help="CoPP meter type" ptype="SUBCOMMAND" mode="subcommand" >
+                    <PARAM name="meter-type-value" help="meter type value" ptype="COPP_METER_TYPE"/>
+                </PARAM>
+				<PARAM name="mode" help="CoPP mode" ptype="SUBCOMMAND" mode="subcommand" >
+                    <PARAM name="mode-value" help="mode value" ptype="COPP_MODE"/>
+					<PARAM name="green" help="Green trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+						<PARAM name="green-value" help="green trap action" ptype="COPP_TRAP_ACTION"/>
+					</PARAM>
+					<PARAM name="yellow" help="Yellow trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+						<PARAM name="yellow-value" help="yellow trap action" ptype="COPP_TRAP_ACTION"/>
+					</PARAM>
+					<PARAM name="red" help="Red trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+						<PARAM name="red-value" help="red trap action" ptype="COPP_TRAP_ACTION"/>
+					</PARAM>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_policer_action ${copp-action-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no police" help="Clear or reset rate limiting parameters">
+            <PARAM name="meter-type" help="Clear meter-type" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="cir" help="Clear committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="cbs" help="Clear committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="pir" help="Clear peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="pbs" help="Clear peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="mode" help="Clear mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="red" help="Clear meter-type" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="yellow" help="Clear mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="green" help="Clear mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_copp_policer_action ${copp-action-name} ${__params}</ACTION>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>
