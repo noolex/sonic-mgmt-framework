@@ -85,7 +85,7 @@ def get_keypath(func,args):
         keypath = cc.Path(path)
 
     #interface level config common code
-    if 'patch_pim_interface_config' in func:
+    if 'pim_interface_config' in func:
         #get interface, needed for VRF lookup and keypath
         intf = inputDict.get('intf')
         if intf is None:
