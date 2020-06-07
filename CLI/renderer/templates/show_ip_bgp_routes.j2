@@ -10,6 +10,7 @@
 {% set vars = {'validRoute': False} %}
 {% set vars = {'bestRoute': False} %}
 {% set vars = {'members': ""} %}
+{% set count = namespace(value=0) %}
 {% if json_output -%}
 {% for key in json_output %}
 {% if "openconfig-network-instance:global" in key %}
@@ -44,17 +45,38 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 {% endif %}
 {% if routeList %}
 {% for route in routeList %}
+{% set count.value = count.value + 1 %}
 {% for key in route %}
-  {% if vars.update({'members':''}) %} {% endif %}
   {% if vars.update({'prefix':route["prefix"]}) %}{% endif %}
   {% if "state" in key %}
-    {% if vars.update({'validRoute':route["state"]["valid-route"]}) %}{% endif %}
-    {% if vars.update({'bestRoute':route["state"]["best-path"]}) %}{% endif %}
-    {% if vars.update({'pathId':route["state"]["path-id"]}) %}{% endif %}
+    {% if route["state"]["valid-route"] %}
+        {% set temp = route["state"]["valid-route"] %}
+        {% if temp %}
+            {% if vars.update({'validRoute':"*"}) %}{% endif %}
+        {% else %}
+            {% if vars.update({'validRoute':""}) %}{% endif %}
+        {% endif %}
+    {% endif %}
+    {% if route["state"]["best-path"] %}
+        {% set temp = route["state"]["best-path"] %}
+        {% if temp %}
+            {% if vars.update({'bestRoute':">"}) %}{% endif %}
+        {% else %}
+            {% if vars.update({'bestRoute':""}) %}{% endif %}
+        {% endif %}
+    {% endif %}
   {% endif %}
   {% if "openconfig-bgp-ext:attr-sets" in key %}
     {% set attr_sets = route[key] %}
-    {% if vars.update({'origin':attr_sets["origin"]}) %}{% endif %}
+    {% if attr_sets["origin"] %}
+        {% if attr_sets["origin"] == 'IGP' %}
+            {% if vars.update({'origin':"i"}) %}{% endif %}
+        {% elif attr_sets["origin"] == 'EGP' %}
+            {% if vars.update({'origin':"e"}) %}{% endif %}
+        {% else %}
+            {% if vars.update({'origin':"?"}) %}{% endif %}
+        {% endif %}
+    {% endif %}
     {% if vars.update({'nxtHop':attr_sets["next-hop"]}) %}{% endif %}
     {% if vars.update({'med':attr_sets["med"]}) %}{% endif %}
     {% if vars.update({'locPref':attr_sets["local-pref"]}) %}{% endif %}
@@ -73,29 +95,15 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
               {% endif %}
          {% endfor %}
          {% if vars.update({'members': temp|join(" ")}) %} {% endif %}
-      {% endif %}
+       {% endif %}
+     {% else %}
+       {% if vars.update({'members': ("   ")}) %} {% endif %}
     {% endif %}
   {% endif %}
-  {% if vars.origin == 'IGP' %}
-    {% if vars.update({'origin':"i"}) %}{% endif %}
-  {% elif vars.origin == 'EGP' %}
-    {% if vars.update({'origin':"e"}) %}{% endif %}
-  {% else %}
-    {% if vars.update({'origin':"?"}) %}{% endif %}
-  {% endif %}
 {% endfor %}
-{% if vars.validRoute == True %}
-{% if vars.update({'validRoute':"*"}) %}{% endif %}
-{% else %}
-{% if vars.update({'validRoute':""}) %}{% endif %}
-{% endif %}
-{% if vars.bestRoute == True %}
-{% if vars.update({'bestRoute':">"}) %}{% endif %}
-{% else %}
-{% if vars.update({'bestRoute':""}) %}{% endif %}
-{% endif %}
 {{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(vars.prefix)}}{{'%-20s'|format(vars.nxtHop)}}{{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%s'|format(vars.members)}} {{vars.origin}}
 {% endfor %}
+{{'\nTotal number of prefixes %s\n'|format(count.value)}}
 {% endif %}
 {% endfor %}
 {% endif %}

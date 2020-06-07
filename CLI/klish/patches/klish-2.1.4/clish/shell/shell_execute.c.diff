@@ -124,17 +124,36 @@
 >                 }
 >         }
 >    	
-306c391,392
+299a385,402
+> static int clish_shell_exec_sym_api(const clish_sym_t *sym, clish_hook_action_fn_t *func,
+> 	       				clish_context_t *context, char *script, char **out)	
+> {
+> 	int result = -1;
+> 	/* CLISH_SYM_API_SIMPLE */
+> 	if (clish_sym__get_api(sym) == CLISH_SYM_API_SIMPLE) {
+> 		result = ((clish_hook_action_fn_t *)func)(context, script, out);
+> 	/* CLISH_SYM_API_STDOUT and output is not needed */
+> 	} else if ((clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) && (!out)) {
+> 		result = ((clish_hook_oaction_fn_t *)func)(context, script);
+> 	/* CLISH_SYM_API_STDOUT and outpus is needed */
+> 	} else if (clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) {
+> 		result = clish_shell_exec_oaction((clish_hook_oaction_fn_t *)func,
+> 							context, script, out);
+> 	}
+> 	return result;
+> }
+> 
+306c409,410
 < 	const void *func = NULL; /* We don't know the func API at this time */
 ---
 > 	clish_hook_action_fn_t *func = NULL;
 > 
-308a395,398
+308a413,416
 > 	clish_parg_t *parg = NULL;
 >         clish_ptype_t *ptype = NULL;
 >         clish_ptype_method_e method = CLISH_PTYPE_METHOD_REGEXP;
 > 
-346,359c436,530
+346,359c454,548
 < 	/* Find out the function API */
 < 	/* CLISH_SYM_API_SIMPLE */
 < 	if (clish_sym__get_api(sym) == CLISH_SYM_API_SIMPLE) {
@@ -153,7 +172,7 @@
 > 	parg = (clish_parg_t*)clish_shell__get_parg(context);
 > 	if (!parg || !(ptype = (clish_ptype_t *)clish_parg__get_ptype(parg)))
 > 	{
->                 result = func(context, script, out);
+> 		result = clish_shell_exec_sym_api(sym, func, context, script, out);
 > 	} else {
 >                 method = clish_ptype__get_method(ptype);
 >                 if (method == CLISH_PTYPE_METHOD_REGEXP_SELECT)
@@ -228,7 +247,7 @@
 >                                 res = NULL;
 >                         }
 > 
->             		  result = func(context, script, out);
+> 			result = clish_shell_exec_sym_api(sym, func, context, script, out);
 >                         isEthernet = BOOL_FALSE;
 >                         lub_string_free(res);
 > 
@@ -242,10 +261,10 @@
 >                 		value = NULL;
 >             		}
 >                 } else {
->                         result = func(context, script, out);
+> 			result = clish_shell_exec_sym_api(sym, func, context, script, out);
 >                 }
 >         }
-377c548
+377c566
 < 	lub_string_free(script);
 ---
 > 	if (script) lub_string_free(script);

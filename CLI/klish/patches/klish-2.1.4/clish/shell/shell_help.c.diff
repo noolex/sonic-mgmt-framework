@@ -22,6 +22,10 @@
 < 	clish_pargv_status_e status = CLISH_LINE_OK;
 ---
 > 	clish_pargv_status_t status = CLISH_LINE_OK;
+74c86
+< 		argv, &idx, completion, index);
+---
+> 		argv, &idx, completion, index, NULL, NULL);
 80a93
 > 		const clish_parg_t *parg;
 84a98,104
