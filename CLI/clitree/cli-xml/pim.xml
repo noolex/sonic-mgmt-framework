@@ -174,7 +174,7 @@ limitations under the License.
     <!-- Ethernet Config -->
     <!-- =============== -->
     <VIEW name="configure-if-view">
-        <MACRO name="BIND-INTF-TO-PIM" arg="${iface}"></MACRO>
+        <MACRO name="BIND-INTF-TO-PIM" arg="${iface_uri}"></MACRO>
     </VIEW>
 
     <!-- ================== -->
