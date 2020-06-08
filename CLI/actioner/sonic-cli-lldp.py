@@ -31,6 +31,12 @@ def convertTlv(s):
     elif s == "system-capabilities":
         return "SYSTEM_CAPABILITIES"
 
+def convertMode(s):
+    if s == "receive":
+        return "RECEIVE"
+    elif s == "transmit":
+        return "TRANSMIT"
+
 def invoke_api(fn, args):
     api = cc.ApiClient()
     body = None
@@ -78,7 +84,7 @@ def invoke_api(fn, args):
         return api.delete(keypath, body)
     elif fn == 'set_mode':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/config/openconfig-lldp-ext:mode')
-        body = { "openconfig-lldp-ext:mode": args[0]}
+        body = { "openconfig-lldp-ext:mode": convertMode(args[0])}
         return api.patch(keypath, body)
     elif fn == 'del_mode':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/config/openconfig-lldp-ext:mode')
@@ -99,7 +105,7 @@ def invoke_api(fn, args):
         return api.delete(keypath, body)
     elif fn == 'set_lldp_intf_mode':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/openconfig-lldp-ext:mode', name=args[0])
-        body = { "openconfig-lldp-ext:mode": args[1]} 
+        body = { "openconfig-lldp-ext:mode": convertMode(args[1])} 
         return api.patch(keypath, body)
     elif fn == 'del_lldp_intf_mode':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/openconfig-lldp-ext:mode', name=args[0])
