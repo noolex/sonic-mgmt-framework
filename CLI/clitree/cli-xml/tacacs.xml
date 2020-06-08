@@ -229,7 +229,7 @@ limitations under the License.
       </PARAM>
 
       <PARAM name="vrf"
-             help="Management VRF"
+             help="VRF name"
              ptype="SUBCOMMAND"
              mode="subcommand"
              optional="true">
@@ -248,7 +248,7 @@ limitations under the License.
                  help="default VRF name"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
-                 dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/vrf=defaut">
+                 dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/vrf=default">
           </PARAM>
         </PARAM>
       </PARAM>
