@@ -46,7 +46,7 @@
                             {% if (selected["IP_ADDRESS"] == nhop["IP_ADDRESS"]) and (selected.get("VRF", "") == nhop.get("VRF", "")) and (selected.get("PRIORITY", "") == nhop.get("PRIORITY", "")) %}
                                 {% set is_selected=" (Selected)" %}
                             {% endif %}
-                            {{- '      set ip nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{is_selected}}{{"\n"}}
+                            {{- '      set ipv6 nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{is_selected}}{{"\n"}}
                         {% endfor %}
                     {% endif %}
                     {% if "SET_INTERFACE" in flow_data %}
