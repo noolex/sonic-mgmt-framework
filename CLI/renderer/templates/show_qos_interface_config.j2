@@ -15,6 +15,12 @@
   {% if map_config['dot1p-to-forwarding-group'] %}
       {{'    dot1p-to-tc-map: '}}{{map_config['dot1p-to-forwarding-group']}}
   {% endif %}
+  {% if map_config['forwarding-group-to-dscp'] %}
+      {{'    tc-to-dscp-map: '}}{{map_config['forwarding-group-to-dscp']}}
+  {% endif %}
+  {% if map_config['forwarding-group-to-dot1p'] %}
+      {{'    tc-to-dot1p-map: '}}{{map_config['forwarding-group-to-dot1p']}}
+  {% endif %}
   {% endif %}
 
 
