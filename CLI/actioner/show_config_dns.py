@@ -8,18 +8,18 @@ def show_dns_source_if(render_tables):
             intf = dns_inst['src_intf']
             if intf.startswith('Ethernet'):
                intf_split = intf.split('Ethernet')
-               cmd_str = cmd_prfx + 'Ethernet ' + intf_split[1]
+               cmd_str = cmd_prfx + 'Ethernet' + intf_split[1]
             elif intf.startswith('Vlan'):
                intf_split = intf.split('Vlan')
-               cmd_str = cmd_prfx + 'Vlan ' + intf_split[1]
+               cmd_str = cmd_prfx + 'Vlan' + intf_split[1]
             elif intf.startswith('PortChannel'):
                intf_split = intf.split('PortChannel')
-               cmd_str = cmd_prfx +  'PortChannel ' + intf_split[1]
+               cmd_str = cmd_prfx +  'PortChannel' + intf_split[1]
             elif intf.startswith('Loopback'):
                intf_split = intf.split('Loopback')
-               cmd_str = cmd_prfx +  'Loopback ' + intf_split[1]
+               cmd_str = cmd_prfx +  'Loopback' + intf_split[1]
             elif intf.startswith('eth0'):
-               cmd_str = cmd_prfx +  'Management 0'
+               cmd_str = cmd_prfx +  'Management0'
             else:
                pass
 
