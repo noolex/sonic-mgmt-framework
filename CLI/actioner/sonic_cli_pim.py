@@ -124,7 +124,7 @@ def get_keypath(func,args):
 def get_vrf(intf):
     request = ''
 
-    if intf.startswith('Ethernet'):
+    if intf.lower().startswith('e'):
         request = '/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST=' + intf + '/vrf_name'
     elif intf.startswith('Vlan'):
         request = '/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST=' + intf + '/vrf_name'
