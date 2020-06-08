@@ -1157,7 +1157,6 @@ limitations under the License.
         name="VTEP_NAME"
         pattern="^vtep([a-zA-Z0-9_-]){1,59}$"
         ext_pattern="vtep(string)"
-        help="Name of VTEP (Max size 63, prefixed by vtep)"
         />
     <!--=======================================================-->
     <PTYPE
