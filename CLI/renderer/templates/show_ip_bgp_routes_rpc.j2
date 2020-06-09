@@ -37,7 +37,9 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
        {% if vars.update({'med':path['med']}) %}{% endif %}
        {% set nexthops = path["nexthops"] %}
        {% for nexthop in nexthops %}
-         {% if vars.update({'nxtHop':nexthop['ip']}) %}{% endif %}
+         {% if nexthop['used'] %}
+             {% if vars.update({'nxtHop':nexthop['ip']}) %}{% endif %}
+         {% endif %}
        {% endfor %}
   {% if vars.origin == 'IGP' %}
     {% if vars.update({'origin':"i"}) %}{% endif %}
