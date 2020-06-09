@@ -34,29 +34,29 @@ limitations under the License.
     <VIEW name="enable-view">
         <!-- show policy [NAME] | [type qos|monitoring|forwarding] -->
         <COMMAND name="show policy" help="Show flow based services policy information">
-            <PARAM name="fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="fbs-policy-name" help="Show policy information using policy name (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="show-fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="show-fbs-policy-name" help="Show policy information using policy name (Max size 63)" ptype="STRING_63"/>
                 <PARAM name="type" help="Show all policies using the policy type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
-            <PARAM name="fbs-policy-type" help="policy type" ptype="SUBCOMMAND" mode="switch" test='"${fbs-policy-name}" = "type"'>
+            <PARAM name="show-fbs-policy-type" help="policy type" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-policy-name}" = "type"'>
                 <PARAM name="qos" help="Show all QoS Policies" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="monitoring" help="Show all monitoring policies" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="forwarding" help="Show all forwarding Policies" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${fbs-policy-name} ${fbs-policy-type}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
         </COMMAND>
 
         <!-- show classifier [NAME] [type acl|fields] -->
         <COMMAND name="show classifier" help="Show flow based services policy information">
-            <PARAM name="fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="fbs-class-name" help="Name of the classifier" ptype="STRING_63"/>
+            <PARAM name="show-fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="show-fbs-class-name" help="Name of the classifier" ptype="STRING_63"/>
                 <PARAM name="match-type" help="Show all classifiers using the match type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
-            <PARAM name="fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch" test='"${fbs-class-name}" = "match-type"'>
+            <PARAM name="show-fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-class-name}" = "match-type"'>
                 <PARAM name="acl" help="Show classifier which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
                 <PARAM name="fields" help="Show classifier which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${fbs-class-name} ${fbs-class-type}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${show-fbs-class-name} ${show-fbs-class-type}</ACTION>
         </COMMAND>
 
         <COMMAND name="show service-policy" help="Show applied Flow based services policies" />
