@@ -24,7 +24,7 @@ def run(func, args):
 
     if func == 'rpc_sonic_auditlog_clear_auditlog':
         keypath = cc.Path('/restconf/operations/sonic-auditlog:clear-auditlog')
-        body = { "sonic-auditlog:input": {""} }
+        body = { "sonic-auditlog:input": "" }
         response = aa.post(keypath, body)
         if response.ok():
             print("%Success: audit log is cleared.")
