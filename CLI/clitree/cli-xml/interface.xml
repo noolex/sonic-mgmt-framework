@@ -67,7 +67,7 @@ limitations under the License.
             <PARAM
                name="iface_num"
                help="Physical Interface"
-               ptype="UINT8"
+               ptype="UINT"
                optional="true">
             </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${phy-if-ethernet-name}" </ACTION>
