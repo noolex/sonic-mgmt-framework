@@ -1,0 +1,53 @@
+{% set vars = {'totalAdvertisements': ""} %}
+{% set vars = {'totalPrefixes': ""} %}
+{% set vars = {'averagePrefixLen': ""} %}
+{% set vars = {'unaggrPrefixes': ""} %}
+{% set vars = {'maxAggrPrefixes': ""} %}
+{% set vars = {'aggrAdvertisements': ""} %}
+{% set vars = {'addrSpaceAdvertised': ""} %}
+{% set vars = {'addrSpaceAdvertisedPercent': ""} %}
+{% set vars = {'addrSpaceAdvertisedLen8eq': ""} %}
+{% set vars = {'addrSpaceAdvertisedLen24eq': ""} %}
+{% set vars = {'aspathCount': ""} %}
+{% set vars = {'maxAspathHops': ""} %}
+{% set vars = {'averageAspathLength': ""} %}
+{% set vars = {'maxAspathSize': ""} %}
+{% set vars = {'averageAspathSize': ""} %}
+{% set vars = {'highestAsn': ""} %}
+{% if json_output -%}
+  {% set globalStats = json_output %}
+  {% if vars.update({'totalAdvertisements':globalStats["totalAdvertisements"]}) %} {% endif %}
+  {% if vars.update({'totalPrefixes':globalStats["totalPrefixes"]}) %} {% endif %}
+  {% if vars.update({'averagePrefixLen':globalStats["averagePrefixLen"]}) %} {% endif %}
+  {% if vars.update({'unaggrPrefixes':globalStats["unaggrPrefixes"]}) %} {% endif %}
+  {% if vars.update({'maxAggrPrefixes':globalStats["maxAggrPrefixes"]}) %} {% endif %}
+  {% if vars.update({'aggrAdvertisements':globalStats["aggrAdvertisements"]}) %} {% endif %}
+  {% if vars.update({'addrSpaceAdvertised':globalStats["addrSpaceAdvertised"]}) %} {% endif %}
+  {% if vars.update({'addrSpaceAdvertisedPercent':globalStats["addrSpaceAdvertisedPercent"]}) %} {% endif %}
+  {% if vars.update({'addrSpaceAdvertisedLen8eq':globalStats["addrSpaceAdvertisedLen8eq"]}) %} {% endif %}
+  {% if vars.update({'addrSpaceAdvertisedLen24eq':globalStats["addrSpaceAdvertisedLen24eq"]}) %} {% endif %}
+  {% if vars.update({'aspathCount':globalStats["aspathCount"]}) %} {% endif %}
+  {% if vars.update({'maxAspathHops':globalStats["maxAspathHops"]}) %} {% endif %}
+  {% if vars.update({'averageAspathLength':globalStats["averageAspathLength"]}) %} {% endif %}
+  {% if vars.update({'maxAspathSize':globalStats["maxAspathSize"]}) %} {% endif %}
+  {% if vars.update({'averageAspathSize':globalStats["averageAspathSize"]}) %} {% endif %}
+  {% if vars.update({'highestAsn':globalStats["highestAsn"]}) %} {% endif %}
+BGP IPv4 Unicast RIB statistics
+Total Advertisements          : {{'%12s'|format(vars.totalAdvertisements)}}
+Total Prefixes                : {{'%12s'|format(vars.totalPrefixes)}}
+Average prefix length         : {{'%12s'|format(vars.averagePrefixLen)}}
+Unaggregateable prefixes      : {{'%12s'|format(vars.unaggrPrefixes)}}
+Maximum aggregateable prefixes: {{'%12s'|format(vars.maxAggrPrefixes)}}
+BGP Aggregate advertisements  : {{'%12s'|format(vars.aggrAdvertisements)}}
+Address space advertised      : {{'%12s'|format(vars.addrSpaceAdvertised)}}
+                  % announced : {{'%12s'|format(vars.addrSpaceAdvertisedPercent)}}
+                /8 equivalent : {{'%12s'|format(vars.addrSpaceAdvertisedLen8eq)}}
+               /24 equivalent : {{'%12s'|format(vars.addrSpaceAdvertisedLen24eq)}}
+
+Advertisements with paths     : {{'%12s'|format(vars.aspathCount)}}
+Longest AS-Path (hops)        : {{'%12s'|format(vars.maxAspathHops)}}
+Average AS-Path length (hops) : {{'%12s'|format(vars.averageAspathLength)}}
+Largest AS-Path (bytes)       : {{'%12s'|format(vars.maxAspathSize)}}
+Average AS-Path size (bytes)  : {{'%12s'|format(vars.averageAspathSize)}}
+Highest public ASN            : {{'%12s'|format(vars.highestAsn)}}
+{% endif %}                                                                 

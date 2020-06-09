@@ -212,12 +212,16 @@ def generate_show_bgp_routes(args):
          body = {"sonic-bgp-show:input": inputs}
          response = api.post(keypath, body)
          if not response:
-             # unknown error (bad imput?)
+             # unknown error (bad input?)
              return 1
          if(response.ok()):
             d = response.content['sonic-bgp-show:output']['response']
             if len(d) != 0 and "warning" not in d and "Unknown command:" not in d:
-               d = json.loads(d)
+               try:
+                  d = json.loads(d)
+               except:
+                  # unknown or missing output
+                  return 1
                if querytype == 'IP-ADDR':
                   prf = d.get("prefix")
                   if not prf:
@@ -455,14 +459,18 @@ def generate_show_bgp_stats(args):
        body = {"sonic-bgp-show:input": {"vrf-name":vrf, "address-family":afisafi}}
        response = api.post(keypath, body)
        if not response:
-           # unknown error (bad imput?)
+           # unknown error (bad input?)
            return 1
        if(response.ok()):
           d = response.content['sonic-bgp-show:output']['response']
           if len(d) != 0 and "warning" not in d:
-             d = json.loads(d)
+             try:
+                d = json.loads(d)
+             except:
+                # unknown or missing output
+                return 1
 
-             show_cli_output("show_ip_bgp_stats_rpc.j2", d)
+             show_cli_output("show_bgp_stats_rpc.j2", d)
 
 
 def invoke_api(func, args=[]):
@@ -2790,14 +2798,7 @@ def parseGloblShow(vrf_name, cmd, args=[]):
             return 0
 
         if args[0] == 'statistics':
-            # FIXME: pending FRR json
-            #return generate_show_bgp_stats(args)
-            print cc.ApiClient().cli_not_implemented('(pending): {} {}'.format(cmd, args[0])).error_message()
-            return 1
-        elif args[0] == 'route-map':
-            # FIXME: pending FRR json
-            print cc.ApiClient().cli_not_implemented('(pending): {} {}'.format(cmd, args[0])).error_message()
-            return 1
+            return generate_show_bgp_stats(args)
         elif args[0] == 'ip-prefix':
             return generate_show_bgp_prefix_routes(args)
         else:

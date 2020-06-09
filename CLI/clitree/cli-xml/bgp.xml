@@ -237,7 +237,7 @@ limitations under the License.
       depth="2">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <COMMAND name="show configuration" help="show bgp configuration">
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_configuration configure-router-bgp vrf-name=${vrf-name} </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp view_keys="vrf-name=${vrf-name}"</ACTION>
   </COMMAND>
 
   <COMMAND name="router-id" help="Override configured router identifier">
@@ -1316,7 +1316,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp nbr configuration">
-     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_configuration configure-router-bgp-nbr vrf-name=${vrf-name} neighbor=${nbr-addr} </ACTION>
+     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr view_keys="vrf-name=${vrf-name},neighbor=${nbr-addr}"</ACTION>
    </COMMAND>
   <COMMAND name="description" help="Assign a string describing the neighbor">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/name"/>
