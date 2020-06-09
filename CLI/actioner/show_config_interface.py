@@ -40,10 +40,10 @@ def show_if_switchport_trunk(render_tables):
               if 'ifname' in vlan_member:
 	         if ifname_key == vlan_member['ifname'] and vlan_member['tagging_mode']=='tagged':
                    vlan_id = vlan_member['name'].lstrip('Vlan')
-                   if len(vlan_lst) > 0: 
+                   if vlan_lst: 
                        vlan_lst += ","
                    vlan_lst += vlan_id   
-    if len(vlan_lst) > 0:
+    if vlan_lst:
        cmd_str = 'switchport trunk allowed Vlan ' + vlan_lst
 
     return 'CB_SUCCESS', cmd_str
