@@ -22,7 +22,9 @@ def invoke(func, args):
         path = cc.Path('/restconf/operations/sonic-port-breakout:breakout_dependencies')
         body = {"sonic-port-breakout:input": {"ifname": interface}}
         return aa.post(path, body)
-        
+    elif func == 'rpc_sonic_port_breakout_breakout_capabilities':
+        path = cc.Path('/restconf/operations/sonic-port-breakout:breakout_capabilities')
+        return aa.post(path, body)
     elif func == 'get_openconfig_platform_port_components_component_port_breakout_mode_config':
         if len(args)<2:
             print("Not supported currently")

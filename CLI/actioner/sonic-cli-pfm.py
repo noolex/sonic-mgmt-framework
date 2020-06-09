@@ -28,10 +28,6 @@ import sonic_intf_utils as ifutils
 
 urllib3.disable_warnings()
 
-PSU_CNT = 2
-PSU_FAN_CNT = 1
-FAN_CNT = 10
-
 def convert4BytesToStr(b):
     return unpack('>f', b64decode(b))[0]
 
@@ -65,7 +61,7 @@ def run(func, args):
             func == 'get_openconfig_platform_components_component_psu_summary'):
             template = sys.argv[2]
             psuInfo = OrderedDict()
-            for i in range(1, PSU_CNT + 1):
+            for i in xrange(1, sys.maxsize):
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=PSU %s'%i)
                 response = aa.get(path)
                 if not response.ok():
@@ -74,12 +70,13 @@ def run(func, args):
                 if (len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
+                    len(response.content['openconfig-platform:component'][0]) < 2 or
                     not ('name' in response.content['openconfig-platform:component'][0])):
-                    continue
+                    break
                 psuName = response.content['openconfig-platform:component'][0]['name']
                 psuInfo[psuName] = response.content['openconfig-platform:component'][0]
                 decodePsuStats(psuInfo[psuName])
-                for j in range(1, PSU_FAN_CNT + 1):
+                for j in xrange(1, sys.maxsize):
                     path = cc.Path('/restconf/data/openconfig-platform:components/component=PSU {} FAN {}'.format(i, j))
                     response = aa.get(path)
                     if not response.ok():
@@ -88,15 +85,16 @@ def run(func, args):
                     if (len(response.content) == 0 or
                         not ('openconfig-platform:component' in response.content) or
                         len(response.content['openconfig-platform:component']) == 0 or
+                        len(response.content['openconfig-platform:component'][0]) < 2 or
                         not ('name' in response.content['openconfig-platform:component'][0])):
-                        continue
+                        break
                     fanName = response.content['openconfig-platform:component'][0]['name']
                     psuInfo[psuName][fanName] = response.content['openconfig-platform:component'][0]
             show_cli_output(template, psuInfo)
         elif func == 'get_openconfig_platform_components_component_fan_status':
             template = sys.argv[2]
             fanInfo = OrderedDict()
-            for i in range(1, FAN_CNT + 1):
+            for i in xrange(1, sys.maxsize):
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=FAN %s'%i)
                 response = aa.get(path)
                 if not response.ok():
@@ -105,8 +103,9 @@ def run(func, args):
                 if (len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
+                    len(response.content['openconfig-platform:component'][0]) < 2 or
                     not ('name' in response.content['openconfig-platform:component'][0])):
-                    continue
+                    break
                 fanName = response.content['openconfig-platform:component'][0]['name']
                 fanInfo[fanName] = response.content['openconfig-platform:component'][0]
             show_cli_output(template, fanInfo)
@@ -175,6 +174,27 @@ def run(func, args):
                         show_cli_output(template, (False, cli_dict[k]))
             except Exception as e:
                 pass
+        elif func == 'get_openconfig_platform_components_component_temperature':
+            template = sys.argv[2]
+            tempInfo = OrderedDict()
+            for i in xrange(1, sys.maxsize):
+                path = cc.Path('/restconf/data/openconfig-platform:components/component=TEMP %s'%i)
+                response = aa.get(path)
+                if not response.ok():
+                    print response.error_message()
+                    return
+                if (len(response.content) == 0 or
+                    not ('openconfig-platform:component' in response.content) or
+                    len(response.content['openconfig-platform:component']) == 0 or
+                    not ('state' in response.content['openconfig-platform:component'][0])):
+                    break
+                tempName = response.content['openconfig-platform:component'][0]['state']['name']
+		if 'temperature' in response.content['openconfig-platform:component'][0]['state']:
+                    tempInfo[tempName] = response.content['openconfig-platform:component'][0]['state']['temperature']
+                else:
+                    tempInfo[tempName] = OrderedDict()
+            tempInfo = OrderedDict(sorted(tempInfo.items()))
+            show_cli_output(template, tempInfo)
     except Exception as e:
         print("%Error: Transaction Failure")
         return

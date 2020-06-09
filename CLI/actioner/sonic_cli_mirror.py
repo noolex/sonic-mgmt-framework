@@ -47,7 +47,7 @@ def invoke(func, args):
             entry["src_port"] = args.source
 
         if args.direction is not '':
-            entry["direction"] = args.direction
+            entry["direction"] = args.direction.upper()
 
         if args.destination == "erspan":
             if args.dst_ip is not '':
@@ -125,6 +125,10 @@ def show(args):
     else:
         print("Session state info not found")
         return
+
+    for session in session_list:
+        if 'direction' in session:
+            session['direction']=session['direction'].lower()
 
     if args.session is not '':
         session_found = "0"

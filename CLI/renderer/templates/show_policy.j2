@@ -28,7 +28,7 @@
             {% endif %}
             {% if "SET_IPV6_NEXTHOP" in flow_data %}
                 {% for nhop in flow_data["SET_IPV6_NEXTHOP"] %}
-                    {{- '    set ip nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{"\n"}}
+                    {{- '    set ipv6 nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{"\n"}}
                 {% endfor %}
             {% endif %}
             {% if "SET_INTERFACE" in flow_data %}

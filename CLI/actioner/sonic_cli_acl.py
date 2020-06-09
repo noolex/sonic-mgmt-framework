@@ -743,9 +743,9 @@ def convert_ip_addr_to_user_fmt(ip_addr, ipv4=True):
 
     if ip_addr.endswith(pl):
         ip_addr = ip_addr.replace(pl, '')
-        return "host {}".format(ip_addr)
+        return "host {}".format(ip_addr).lower()
     else:
-        return ip_addr
+        return ip_addr.lower()
 
 
 def __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, ipv4=True):
@@ -821,7 +821,9 @@ def __convert_oc_mac_addr_to_user_fmt(acl_entry, rule_data, field):
     mac_mask = None
     try:
         mac = acl_entry['l2']['state'][field]
+        mac = mac.lower()
         mac_mask = acl_entry['l2']['state'][field + '-mask']
+        mac_mask = mac_mask.lower()
     except KeyError:
         pass
 
@@ -1262,9 +1264,9 @@ def mac_addr_to_user_fmt(mac_val):
         mac_mask = 'FF:FF:FF:FF:FF:FF'
 
     if mac_mask == 'FF:FF:FF:FF:FF:FF':
-        return "host " + mac_addr
+        return "host " + mac_addr.lower()
     else:
-        return "{}/{}".format(mac_addr, mac_mask)
+        return "{}/{}".format(mac_addr, mac_mask).lower()
 
 
 def ip_protocol_to_user_fmt(val):

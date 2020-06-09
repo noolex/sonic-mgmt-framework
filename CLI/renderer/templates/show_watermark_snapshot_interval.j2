@@ -1,6 +1,6 @@
 {% if json_output %}
- {% set watermark_interval_info = json_output[0]["interval"] %}
- {{'Snapshot interval : '}}{{watermark_interval_info}}{{' seconds'}}
+
+{% set watermark_interval_info = json_output[0]["interval"] %}
+ {{'Snapshot interval: '}}{{watermark_interval_info}}{{' second(s)'}}
+
 {% endif %}
-
-
