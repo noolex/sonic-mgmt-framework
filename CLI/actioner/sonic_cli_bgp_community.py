@@ -297,7 +297,7 @@ def run(func, args):
             # Get Command Output
             api_response = response.content
             if api_response is None:
-                print("Failed")
+                print ("%Error: Internal error.")
                 return
             #print api_response
             show_cli_output(args[0], api_response)
@@ -305,7 +305,7 @@ def run(func, args):
         print response.error_message()
         return
   except Exception as e:
-    print "%Error: " + str(e)
+    print ("%Error: Internal error.")
 
   return
 

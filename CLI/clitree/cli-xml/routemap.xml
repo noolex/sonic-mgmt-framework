@@ -157,7 +157,7 @@ limitations under the License.
           <PARAM name="value" help="VPN extended community" ptype="AA_NN_IPADDR_NN"/>
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_routemap patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_ext_community ${name} ${seq_num} ${extcommunity-opt} ${value} ADD </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_routemap patch_bgp_actions_set_ext_community ${name} ${seq_num} ${extcommunity-opt} ${value} ADD </ACTION>
   </COMMAND>
 
   <COMMAND name="set metric" help="Metric value for destination routing protocol">

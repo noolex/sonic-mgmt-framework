@@ -69,11 +69,11 @@ def invoke_api(func, args=[]):
             keypath = cc.Path(uri, name=args[0], name1=args[1])
             body = {"openconfig-routing-policy-ext:asn-list":args[2]}
             return api.patch(keypath, body)
-        elif attr == 'openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community':
+        elif attr == 'bgp_actions_set_community':
             keypath = cc.Path(uri, name=args[0], name1=args[1])
             body = { "openconfig-bgp-policy:set-community": { "config" : { "method":"INLINE", "options": "ADD" if 'additive' in args[4:] else args[3]}, "inline": {"config": {"communities":[args[2]]}}}}
             return api.patch(keypath, body)
-        elif attr == 'openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_ext_community':
+        elif attr == 'bgp_actions_set_ext_community':
             keypath = cc.Path(uri, name=args[0], name1=args[1])
             if "rt" == args[2]:
                 body = { "openconfig-bgp-policy:set-ext-community": { "config" : { "method":"INLINE", "options":args[4]}, "inline": {"config": {"communities":["route-target:"+args[3]]}}}}
@@ -120,36 +120,36 @@ def invoke_api(func, args=[]):
 
         elif attr == 'no_set_extcommunity':
             if len(args) == 2:
-                return invoke_api("delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_ext_community", args[0:2])
+                return invoke_api("delete_bgp_actions_set_ext_community", args[0:2])
             else:
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_ext_community", args[0:5] + [ "REMOVE" ])
+                return invoke_api("patch_bgp_actions_set_ext_community", args[0:5] + [ "REMOVE" ])
 
         elif attr == 'set_community':
             replace_add = [ 'REPLACE', 'additive' ] if args[-1] == 'additive' else [ 'REPLACE' ]
             if args[2] == "comm-num":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + args[3:4] + replace_add)
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + args[3:4] + replace_add)
             elif args[2] == "local-AS":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT_SUBCONFED" ] + replace_add)
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT_SUBCONFED" ] + replace_add)
             elif args[2] == "no-advertise":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ "NO_ADVERTISE" ] + replace_add)
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_ADVERTISE" ] + replace_add)
             elif args[2] == "no-export":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT" ] + replace_add)
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT" ] + replace_add)
             elif args[2] == "no-peer":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ "NOPEER" ] + replace_add)
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NOPEER" ] + replace_add)
 
         elif attr == 'no_set_community':
             if args[2] == "comm-opt:":
-                return invoke_api("delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2])
+                return invoke_api("delete_bgp_actions_set_community", args[0:2])
             elif args[2] == "comm-opt:comm-num":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ args[3], "REMOVE" ])
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ args[3], "REMOVE" ])
             elif args[2] == "comm-opt:local-AS":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT_SUBCONFED", "REMOVE" ])
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT_SUBCONFED", "REMOVE" ])
             elif args[2] == "comm-opt:no-advertise":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ "NO_ADVERTISE", "REMOVE" ])
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_ADVERTISE", "REMOVE" ])
             elif args[2] == "comm-opt:no-export":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT", "REMOVE" ])
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT", "REMOVE" ])
             elif args[2] == "comm-opt:no-peer":
-                return invoke_api("patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_community", args[0:2] + [ "NOPEER", "REMOVE" ])
+                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NOPEER", "REMOVE" ])
 
     return api.cli_not_implemented(func)
 
@@ -161,7 +161,7 @@ def run(func, args):
             # Get Command Output
             api_response = response.content
             if api_response is None:
-                print("Failed")
+                print ("%Error: Internal error.")
                 sys.exit(1)
             show_cli_output(args[0], api_response)
     else:
