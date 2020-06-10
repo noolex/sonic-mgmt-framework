@@ -26,20 +26,21 @@ Neighbor ID     Pri State           Dead Time Address         Interface         
 {% if 'openconfig-ospfv2-ext:neighbors-list' in interfaceinfo and 'neighbor' in interfaceinfo['openconfig-ospfv2-ext:neighbors-list'] %}
 {% set neighbor_list = interfaceinfo['openconfig-ospfv2-ext:neighbors-list']['neighbor'] %}
 {% for neighborinfo in neighbor_list %}
-{% if vars.interface_name == "" or vars.interface_name == neighborinfo['interface-name'] %}
+{% if 'state' in neighborinfo %}
+{% if vars.interface_name == "" or vars.interface_name == neighborinfo['state']['interface-name'] %}
 {% if vars.update({'dr_status':""}) %}{% endif -%}
-{% if 'neighbor-address' in  neighborinfo and 'designated-router' in neighborinfo and  neighborinfo['neighbor-address'] == neighborinfo['designated-router'] %}
+{% if 'neighbor-address' in  neighborinfo and 'designated-router' in neighborinfo['state'] and  neighborinfo['neighbor-address'] == neighborinfo['state']['designated-router'] %}
 {% if vars.update({'dr_status':"DR"}) %}{% endif -%}
-{% elif 'backup-designated-router' in neighborinfo and neighborinfo['neighbor-address'] == neighborinfo['backup-designated-router'] %}
+{% elif 'backup-designated-router' in neighborinfo['state'] and neighborinfo['neighbor-address'] == neighborinfo['state']['backup-designated-router'] %}
 {% if vars.update({'dr_status':"Backup"}) %}{% endif -%}
 {% else %}
 {% if vars.update({'dr_status':"DROther"}) %}{% endif -%}
 {% endif -%}
-{% if 'dead-time' in neighborinfo %}
-{% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif -%}
+{% if 'dead-time' in neighborinfo['state'] %}
+{% if vars.update({'number':neighborinfo['state']['dead-time'] | float}) %}{% endif -%}
 {% endif -%}
-{% if 'adjacency-state' in neighborinfo %}
-{% if vars.update({'nbr_state':neighborinfo['adjacency-state'].split(':')[1]}) %}{% endif -%}
+{% if 'adjacency-state' in neighborinfo['state'] %}
+{% if vars.update({'nbr_state':neighborinfo['state']['adjacency-state'].split(':')[1]}) %}{% endif -%}
 {% set neighbor_state = " " %}
 {% if vars.nbr_state == "FULL" %}
 {% set neighbor_state = "Full" %}
@@ -59,7 +60,18 @@ Neighbor ID     Pri State           Dead Time Address         Interface         
 {% set neighbor_state = "Loading"  %}
 {% endif -%}
 {% endif -%}
-{{'%-15s'|format(neighborinfo['neighbor-id'])}} {{'%3s'|format(neighborinfo['priority'])}} {{'%-15s'|format(neighbor_state + '/' + vars.dr_status)}} {{'%9s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}} {{'%-15s'|format(neighborinfo['neighbor-address'])}} {{'%-20s'|format(neighborinfo['interface-name'] + ':' + neighborinfo['interface-address'])}} {{'%5s'|format(neighborinfo['retransmit-summary-queue-length'])}} {{'%5s'|format(neighborinfo['link-state-request-queue-length'])}} {{'%5s'|format(neighborinfo['database-summary-queue-length'])}}
+{% if vars.number < 60000 %}
+{% if vars.update({'number':'%0.3f'| format(vars.number/1000|float)}) %}{% endif -%}
+{% else %}
+{% if vars.update({'number':vars.number/1000}) %}{% endif -%}
+{% if vars.number/86400 > 1 %}
+{% if vars.update({'number':'%dd%dh%dm%d'|format(vars.number/86400, (vars.number%86400)/3600, ((vars.number%86400)%3600)/60, ((vars.number%86400)%3600)%60 )}) %}{% endif -%}
+{% else %}
+{% if vars.update({'number':'%dh%dm%d'|format((vars.number%86400)/3600, ((vars.number%86400)%3600)/60, ((vars.number%86400)%3600)%60 )}) %}{% endif -%}
+{% endif %}
+{% endif %}
+{{'%-15s'|format(neighborinfo['neighbor-id'])}} {{'%3s'|format(neighborinfo['state']['priority'])}} {{'%-15s'|format(neighbor_state + '/' + vars.dr_status)}} {{'%9s'|format(vars.number + 's')}} {{'%-15s'|format(neighborinfo['neighbor-address'])}} {{'%-20s'|format(neighborinfo['state']['interface-name'] + ':' + neighborinfo['state']['interface-address'])}} {{'%5s'|format(neighborinfo['state']['retransmit-summary-queue-length'])}} {{'%5s'|format(neighborinfo['state']['link-state-request-queue-length'])}} {{'%5s'|format(neighborinfo['state']['database-summary-queue-length'])}}
+{% endif -%}
 {% endif -%}
 {% endfor -%}
 {% endif -%}
@@ -76,20 +88,21 @@ Neighbor ID     Pri State           Dead Time Address         Interface         
 {% if 'openconfig-ospfv2-ext:neighbors-list' in vlink_state and 'neighbor' in vlink_state['openconfig-ospfv2-ext:neighbors-list'] %}
 {% set neighbor_list = vlink_state['openconfig-ospfv2-ext:neighbors-list']['neighbor'] %}
 {% for neighborinfo in neighbor_list %}
-{% if vars.interface_name == "" or vars.interface_name == neighborinfo['interface-name'] %}
+{% if 'state' in neighborinfo %}
+{% if vars.interface_name == "" or vars.interface_name == neighborinfo['state']['interface-name'] %}
 {% if vars.update({'dr_status':""}) %}{% endif -%}
-{% if 'neighbor-address' in  neighborinfo and 'designated-router' in neighborinfo and  neighborinfo['neighbor-address'] == neighborinfo['designated-router'] %}
+{% if 'neighbor-address' in  neighborinfo and 'designated-router' in neighborinfo['state'] and  neighborinfo['neighbor-address'] == neighborinfo['state']['designated-router'] %}
 {% if vars.update({'dr_status':"DR"}) %}{% endif -%}
-{% elif 'backup-designated-router' in neighborinfo and neighborinfo['neighbor-address'] == neighborinfo['backup-designated-router'] %}
+{% elif 'backup-designated-router' in neighborinfo['state'] and neighborinfo['neighbor-address'] == neighborinfo['state']['backup-designated-router'] %}
 {% if vars.update({'dr_status':"Backup"}) %}{% endif -%}
 {% else %}
 {% if vars.update({'dr_status':"DROther"}) %}{% endif -%}
 {% endif -%}
-{% if 'dead-time' in neighborinfo %}
-{% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif -%}
+{% if 'dead-time' in neighborinfo['state'] %}
+{% if vars.update({'number':neighborinfo['state']['dead-time'] | float}) %}{% endif -%}
 {% endif -%}
-{% if 'adjacency-state' in neighborinfo %}
-{% if vars.update({'nbr_state':neighborinfo['adjacency-state'].split(':')[1]}) %}{% endif -%}
+{% if 'adjacency-state' in neighborinfo['state'] %}
+{% if vars.update({'nbr_state':neighborinfo['state']['adjacency-state'].split(':')[1]}) %}{% endif -%}
 {% set neighbor_state = " " %}
 {% if vars.nbr_state == "FULL" %}
 {% set neighbor_state = "Full" %}
@@ -109,7 +122,18 @@ Neighbor ID     Pri State           Dead Time Address         Interface         
 {% set neighbor_state = "Loading"  %}
 {% endif -%}
 {% endif -%}
-{{'%-15s'|format(neighborinfo['neighbor-id'])}} {{'%3s'|format(neighborinfo['priority'])}} {{'%-15s'|format(neighbor_state + '/' + vars.dr_status)}} {{'%9s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}} {{'%-15s'|format(neighborinfo['neighbor-address'])}} {{'%-20s'|format(neighborinfo['interface-name'])}} {{'%5s'|format(neighborinfo['retransmit-summary-queue-length'])}} {{'%5s'|format(neighborinfo['link-state-request-queue-length'])}} {{'%5s'|format(neighborinfo['database-summary-queue-length'])}}
+{% if vars.number < 60000 %}
+{% if vars.update({'number':'%0.3f'| format(vars.number/1000|float)}) %}{% endif -%}
+{% else %}
+{% if vars.update({'number':vars.number/1000}) %}{% endif -%}
+{% if vars.number/86400 > 1 %}
+{% if vars.update({'number':'%dd%dh%dm%d'|format(vars.number/86400, (vars.number%86400)/3600, ((vars.number%86400)%3600)/60, ((vars.number%86400)%3600)%60 )}) %}{% endif -%}
+{% else %}
+{% if vars.update({'number':'%dh%dm%d'|format((vars.number%86400)/3600, ((vars.number%86400)%3600)/60, ((vars.number%86400)%3600)%60 )}) %}{% endif -%}
+{% endif %}
+{% endif %}
+{{'%-15s'|format(neighborinfo['neighbor-id'])}} {{'%3s'|format(neighborinfo['state']['priority'])}} {{'%-15s'|format(neighbor_state + '/' + vars.dr_status)}} {{'%9s'|format(vars.number + 's')}} {{'%-15s'|format(neighborinfo['neighbor-address'])}} {{'%-20s'|format(neighborinfo['state']['interface-name'])}} {{'%5s'|format(neighborinfo['state']['retransmit-summary-queue-length'])}} {{'%5s'|format(neighborinfo['state']['link-state-request-queue-length'])}} {{'%5s'|format(neighborinfo['state']['database-summary-queue-length'])}}
+{% endif -%}
 {% endif -%}
 {% endfor -%}
 {% endif -%}

@@ -28,13 +28,6 @@
         pattern="^(((([0-9]+[MG])?(-([0-9]+[MG])?):)?[0-9]+[MG],?)+)$"
         />
 
-    <PTYPE
-        name="RANGE_5_100"
-        method="integer"
-        pattern="5..100"
-        help="Number of lines retrieved from kernel log file"
-        />
-
   <!--MODE : config terminal -->
     <VIEW name="configure-view">
         <COMMAND name="kdump" help="kdump command">

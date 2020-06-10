@@ -511,7 +511,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="default-metric" help="Set metric of redistributed routes" >
-    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_1_16777214" />
+    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_0_16777214" />
     <ACTION>
     python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_config_default_metric ${vrf-name} ${defaultmetric} &#xA;
     </ACTION>
