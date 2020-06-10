@@ -49,6 +49,8 @@ export SONIC_CLI_ROOT=$CLISOURCE/actioner
 
 export RENDERER_TEMPLATE_PATH=$CLISOURCE/renderer/templates
 
+export SHOW_CONFIG_TOOLS=$CLIBUILD/render-templates
+
 #export CLISH_PATH=$CLISOURCE/clitree/cli-xml
 export CLISH_PATH=$CLIBUILD/command-tree
 

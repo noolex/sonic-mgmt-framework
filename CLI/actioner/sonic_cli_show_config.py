@@ -59,7 +59,7 @@ CMD_SUCCESS = "CMD_SUCCESS"
 CB_FAIL = "CB_FAIL"
 CB_SUCCESS = "CB_SUCCESS"
 
-RENDERER_TEMPLATE_PATH="/usr/sbin/cli/render-templates"
+RENDERER_TEMPLATE_PATH=os.getenv("RENDERER_TEMPLATE_PATH", "/usr/sbin/cli/render-templates")
 FORMAT_FILE = "DB.txt"
 
 
@@ -96,13 +96,9 @@ def get_rendered_template_output(template_file, response, render_view):
     # Create the jinja2 environment.
     # Notice the use of trim_blocks, which greatly helps control whitespace.
     t_str = ""
-    #template_path = os.getenv(RENDERER_TEMPLATE_PATH)
-    #erint ("template_path
-    #template_path = os.path.abspath(os.path.join(THIS_DIR, "../render-templates"))
     loader = None
     if template_file  not in jinja_loader:
 
-        template_path = os.getenv(RENDERER_TEMPLATE_PATH)
         template_path = os.path.join(RENDERER_TEMPLATE_PATH,"showrunning")
         j2_env = Environment(loader=FileSystemLoader(template_path),extensions=['jinja2.ext.do','jinja2.ext.loopcontrols'])
         j2_env.trim_blocks = True
@@ -740,8 +736,8 @@ def show_view(func, args = []):
 def run(func = '', args=[]):
     global format_read
     if format_read == False:
-        template_path = os.getenv(RENDERER_TEMPLATE_PATH)
-        format_file =template_path = os.path.join(RENDERER_TEMPLATE_PATH, FORMAT_FILE)
+        template_path = os.getenv('SHOW_CONFIG_TOOLS', RENDERER_TEMPLATE_PATH)
+        format_file = os.path.join(template_path, FORMAT_FILE)
 
         log.debug("format_file {}" .format(format_file))
         read_cli_format_file(format_file)
