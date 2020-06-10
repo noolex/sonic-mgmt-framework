@@ -660,6 +660,7 @@ var DbToYang_network_instance_route_distinguisher_field_xfmr KeyXfmrDbToYang = f
 /* YangToDb subtree transformer for network instance interface binding */
 var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[string]map[string]db.Value, error) {
         var err error
+        var errStr string
         res_map := make(map[string]map[string]db.Value)
 
         log.Infof("YangToDb_network_instance_interface_binding_subtree_xfmr: ygRoot %v uri %v", inParams.ygRoot, inParams.uri)
@@ -697,6 +698,22 @@ var YangToDb_network_instance_interface_binding_subtree_xfmr SubTreeXfmrYangToDb
         }
 
         intTbl := IntfTypeTblMap[intf_type]
+
+        /* For non-delete op,  make sure the interface is already created */
+        if (inParams.oper != DELETE){
+
+                port_tbl_name, _ := getPortTableNameByDBId(intTbl, inParams.curDb)
+
+                _, err := inParams.d.GetMapAll(&db.TableSpec{Name:port_tbl_name+"|"+intfId})
+                if err != nil {
+                        errStr = "Interface " + intfId + " is not configured"
+                        log.Info("YangToDb_network_instance_interface_binding_subtree_xfmr: ", errStr,
+                                 "tbl ", port_tbl_name)
+                        err = tlerr.InvalidArgsError{Format: errStr}
+                        return res_map, err
+                }
+        }
+
         intf_tbl_name, _ :=  getIntfTableNameByDBId(intTbl, inParams.curDb)
 
         /* Check if interface already has VRF association */
