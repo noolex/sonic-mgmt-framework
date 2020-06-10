@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+  <VIEW name="configure-view">
+    <!-- maps -->
+    <COMMAND
+        name="tc-dscp-map"
+        help="QoS TC-to-DSCP Map Configuration"
+        mode="subcommand"
+        ptype="SUBCOMMAND"
+        view="configure-tc-dscp-map-view"
+        viewid="map_name=${name}"
+        >
+        <PARAM
+           name="name"
+           help="Name of the map"
+           ptype="STRING_32"
+           >
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=PATCH
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${name}
+            body={"openconfig-qos-maps-ext:forwarding-group-dscp-map": [{"name": "${name}"}]}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command creates map to associates set of TC(Traffic Class) to
+            DSCP(Differentiated Services Code Point).
+            This map is used to Remark the DSCP field in egress packets
+            on the basis of the internal Traffic Class.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to create Traffic class to DSCP entries map.
+          </USAGE>
+          <EXAMPLE summary="The following command creates Traffic class to DSCP entries map.">
+            sonic# configure terminal
+            sonic(config)# tc-dscp-map tc_dscp
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <!-- no maps -->
+    <COMMAND name="no tc-dscp-map" help="Unconfigure a tc-dscp map">
+      <PARAM name="name" help="Name of the map" ptype="STRING_32"> </PARAM>
+        <ACTION builtin="clish_restcl"> 
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${name}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command delete Traffic class to DSCP entires map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to delete Traffic class to DSCP entries map.
+          </USAGE>
+          <EXAMPLE summary="The following command deletes Traffic class to DSCP entries map">
+            sonic# configure terminal
+            sonic(config)# no tc-dscp-map tc_dscp
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+  </VIEW>
+
+  <VIEW
+    name="configure-tc-dscp-map-view"
+    prompt="${SYSTEM_NAME}(conf-tc-dscp-map-${map_name})# "
+    depth="2"
+    >
+    <!-- Inheritance -->
+    <NAMESPACE
+        ref="configure-view"
+        help="false"
+        completion="false"
+        />
+
+     <COMMAND name="traffic-class" help="Internal Traffic Class (TC)" mode="subcommand" ptype="SUBCOMMAND" >
+         <PARAM name="tc" help="Traffic-class value" ptype="RANGE_0_7" >
+            <PARAM name="dscp" help="DSCP" mode="subcommand" ptype="SUBCOMMAND" >
+                <PARAM name="dscp-val" help="DSCP value (0-63)" ptype="RANGE_0_63" >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=PATCH
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${map_name}/forwarding-group-dscp-map-entries/forwarding-group-dscp-map-entry="${tc}"
+            body={"openconfig-qos-maps-ext:forwarding-group-dscp-map-entry": [{"fwd-group":"${tc}", "config": {"dscp": ${dscp-val}}}]}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command to add Traffic class to DSCP entry in map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to add entry to Traffic class to DSCP map.
+          </USAGE>
+          <EXAMPLE summary="The following command add entry to Traffic class to DSCP map">
+            sonic# configure terminal
+            sonic(config)# tc-dscp-map tc_dscp
+            sonic(conf-tc-dscp-map-tc_dscp)# traffic-class 0 dscp 0
+            sonic(conf-tc-dscp-map-tc_dscp)# traffic-class 1 dscp 10
+            sonic(conf-tc-dscp-map-tc_dscp)# traffic-class 3 dscp 29
+          </EXAMPLE>
+        </DOCGEN>
+
+      </COMMAND>
+
+      <!-- no dscp-->
+      <COMMAND name="no traffic-class" help="Unconfigure a mapping">
+        <PARAM name="tc" help="TC value (0-7)" ptype="RANGE_0_7" >
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${map_name}/forwarding-group-dscp-map-entries/forwarding-group-dscp-map-entry="${tc}"
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command to delete Traffic class to DSCP entry in map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to delete entry from Traffic class to DSCP map.
+          </USAGE>
+          <EXAMPLE summary="The following command deletes entry from Traffic class to DSCP map">
+            sonic# configure terminal
+            sonic(config)# tc-dscp-map tc_dscp
+            sonic(conf-tc-dscp-map-tc_dscp)# no traffic-class 0
+            sonic(conf-tc-dscp-map-tc_dscp)# no traffic-class 1
+            sonic(conf-tc-dscp-map-tc_dscp)# no traffic-class 3
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+  </VIEW>
+
+
+  <VIEW name="enable-view">
+
+    <!--show dscp-map -->
+    <COMMAND name="show tc-dscp-map" help="Show configured tc-dscp-map">
+      <PARAM name="name" help="Name of the tc-dscp-map" ptype="STRING_32" optional="true"> </PARAM>
+      <ACTION>
+          if test "${name}" = "" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_qos_map.py get_openconfig_qos_maps_ext_qos_forwarding_group_dscp_maps show_qos_map_tc_dscp.j2&#xA;
+          else&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_qos_map.py get_openconfig_qos_maps_ext_qos_forwarding_group_dscp_maps_forwarding_group_dscp_map ${name} show_qos_map_tc_dscp.j2&#xA;
+          fi&#xA;
+      </ACTION>
+    </COMMAND>
+  </VIEW>
+
+ </CLISH_MODULE>
