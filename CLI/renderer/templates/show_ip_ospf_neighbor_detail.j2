@@ -20,12 +20,13 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'openconfig-ospfv2-ext:neighbors-list' in interfaceinfo and 'neighbor' in interfaceinfo['openconfig-ospfv2-ext:neighbors-list'] %}
 {% set neighbor_list = interfaceinfo['openconfig-ospfv2-ext:neighbors-list']['neighbor'] %}
 {% for neighborinfo in neighbor_list %}
-{% if vars.interface_name == "" or vars.interface_name == neighborinfo['interface-name'] %}
-{% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif %}
-{% if vars.update({'change_time':neighborinfo['last-established-time'] | int}) %}{% endif %}
+{% if 'state' in neighborinfo %}
+{% if vars.interface_name == "" or vars.interface_name == neighborinfo['state']['interface-name'] %}
+{% if vars.update({'number':neighborinfo['state']['dead-time'] | float}) %}{% endif %}
+{% if vars.update({'change_time':neighborinfo['state']['last-established-time'] | int}) %}{% endif %}
 {% if vars.update({'change_time':vars.change_time/1000}) %}{% endif %}
-{% if 'adjacency-state' in neighborinfo %}
-{% if vars.update({'nbr_state':neighborinfo['adjacency-state'].split(':')[1]}) %}{% endif -%}
+{% if 'adjacency-state' in neighborinfo['state'] %}
+{% if vars.update({'nbr_state':neighborinfo['state']['adjacency-state'].split(':')[1]}) %}{% endif -%}
 {% set neighbor_state = " " %}
 {% if vars.nbr_state == "FULL" %}
 {% set neighbor_state = "Full" %}
@@ -46,37 +47,38 @@ VRF Name: {{list_elem['vrfName']}}
 {% endif -%}
 {% endif -%}
  Neighbor {{neighborinfo['neighbor-id']}}, interface address {{neighborinfo['neighbor-address']}}
-    In the area {{neighborinfo['area-id']}} via interface {{neighborinfo['interface-name']}}
-    Neighbor priority is {{neighborinfo['priority']}}, State is {{neighbor_state}}, {{neighborinfo['state-changes']}} state changes
+    In the area {{neighborinfo['state']['area-id']}} via interface {{neighborinfo['state']['interface-name']}}
+    Neighbor priority is {{neighborinfo['state']['priority']}}, State is {{neighbor_state}}, {{neighborinfo['state']['state-changes']}} state changes
     Most recent state change statistics:
       Progressive change {{'%dh%dm%ds'|format(vars.change_time/3600, (vars.change_time%3600)/60,((vars.change_time%3600)%60)) }} ago
-    DR is {{neighborinfo['designated-router']}}, BDR is {{neighborinfo['backup-designated-router']}}
-    Options {{neighborinfo['option-value']}} {{neighborinfo['optional-capabilities']}}
+    DR is {{neighborinfo['state']['designated-router']}}, BDR is {{neighborinfo['state']['backup-designated-router']}}
+    Options {{neighborinfo['state']['option-value']}} {{neighborinfo['state']['optional-capabilities']}}
     Dead timer due in {{'%s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}}
-    Database Summary List {{neighborinfo['database-summary-queue-length']}}
-    Link State Request List {{neighborinfo['link-state-request-queue-length']}}
-    Link State Retransmission List {{neighborinfo['retransmit-summary-queue-length']}}
-{% if neighborinfo['thread-inactivity-timer'] == True %}
+    Database Summary List {{neighborinfo['state']['database-summary-queue-length']}}
+    Link State Request List {{neighborinfo['state']['link-state-request-queue-length']}}
+    Link State Retransmission List {{neighborinfo['state']['retransmit-summary-queue-length']}}
+{% if neighborinfo['state']['thread-inactivity-timer'] == True %}
     Thread Inactivity Timer on
 {% else %}
     Thread Inactivity Timer off
 {% endif %}
     Thread Database Description Retransmision off
-{% if neighborinfo['thread-ls-request-retransmission'] == True %}
+{% if neighborinfo['state']['thread-ls-request-retransmission'] == True %}
     Thread Link State Request Retransmission on
 {% else %}
     Thread Link State Request Retransmission off
 {% endif %}
-{% if neighborinfo['thread-ls-update-retransmission'] == True %}
+{% if neighborinfo['state']['thread-ls-update-retransmission'] == True %}
     Thread Link State Update Retransmission on
 {% else %}
     Thread Link State Update Retransmission off
 {% endif %}
-{% if 'bfd-state' in neighborinfo %}
+{% if 'bfd-state' in neighborinfo['state']%}
   {{'  '}}
-    BFD: Type: {{neighborinfo['bfd-peer-type']}}
+    BFD: Type: {{neighborinfo['state']['bfd-peer-type']}}
       Detect Multiplier: 3, Min Rx interval: 300, Min Tx interval: 300
-      Status: {{neighborinfo['bfd-status']}}, Last update:{{neighborinfo['bfd-peer-last-update-time']}}
+      Status: {{neighborinfo['state']['bfd-status']}}, Last update:{{neighborinfo['state']['bfd-peer-last-update-time']}}
+{% endif %}
 {% endif %}
 {% endif %}
 {{' '}}
@@ -98,12 +100,13 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'openconfig-ospfv2-ext:neighbors-list' in vlink_state and 'neighbor' in vlink_state['openconfig-ospfv2-ext:neighbors-list'] %}
 {% set neighbor_list = vlink_state['openconfig-ospfv2-ext:neighbors-list']['neighbor'] %}
 {% for neighborinfo in neighbor_list %}
-{% if vars.interface_name == "" or vars.interface_name == neighborinfo['interface-name'] %}
-{% if vars.update({'number':neighborinfo['dead-time'] | float}) %}{% endif %}
-{% if vars.update({'change_time':neighborinfo['last-established-time'] | int}) %}{% endif %}
+{% if 'state' in neighborinfo %}
+{% if vars.interface_name == "" or vars.interface_name == neighborinfo['state']['interface-name'] %}
+{% if vars.update({'number':neighborinfo['state']['dead-time'] | float}) %}{% endif %}
+{% if vars.update({'change_time':neighborinfo['state']['last-established-time'] | int}) %}{% endif %}
 {% if vars.update({'change_time':vars.change_time/1000}) %}{% endif %}
-{% if 'adjacency-state' in neighborinfo %}
-{% if vars.update({'nbr_state':neighborinfo['adjacency-state'].split(':')[1]}) %}{% endif -%}
+{% if 'adjacency-state' in neighborinfo['state'] %}
+{% if vars.update({'nbr_state':neighborinfo['state']['adjacency-state'].split(':')[1]}) %}{% endif -%}
 {% set neighbor_state = " " %}
 {% if vars.nbr_state == "FULL" %}
 {% set neighbor_state = "Full" %}
@@ -124,37 +127,38 @@ VRF Name: {{list_elem['vrfName']}}
 {% endif -%}
 {% endif -%}
  Neighbor {{neighborinfo['neighbor-id']}}, interface address {{neighborinfo['neighbor-address']}}
-    In the area {{neighborinfo['area-id']}} via interface {{neighborinfo['interface-name']}}
-    Neighbor priority is {{neighborinfo['priority']}}, State is {{neighbor_state}}, {{neighborinfo['state-changes']}} state changes
+    In the area {{neighborinfo['state']['area-id']}} via interface {{neighborinfo['state']['interface-name']}}
+    Neighbor priority is {{neighborinfo['state']['priority']}}, State is {{neighbor_state}}, {{neighborinfo['state']['state-changes']}} state changes
     Most recent state change statistics:
       Progressive change {{'%dh%dm%ds'|format(vars.change_time/3600, (vars.change_time%3600)/60,((vars.change_time%3600)%60)) }} ago
-    DR is {{neighborinfo['designated-router']}}, BDR is {{neighborinfo['backup-designated-router']}}
-    Options {{neighborinfo['option-value']}} {{neighborinfo['optional-capabilities']}}
+    DR is {{neighborinfo['state']['designated-router']}}, BDR is {{neighborinfo['state']['backup-designated-router']}}
+    Options {{neighborinfo['state']['option-value']}} {{neighborinfo['state']['optional-capabilities']}}
     Dead timer due in {{'%s'|format(('%0.3f'| format(vars.number/1000|float)) + 's')}}
-    Database Summary List {{neighborinfo['database-summary-queue-length']}}
-    Link State Request List {{neighborinfo['link-state-request-queue-length']}}
-    Link State Retransmission List {{neighborinfo['retransmit-summary-queue-length']}}
-{% if neighborinfo['thread-inactivity-timer'] == True %}
+    Database Summary List {{neighborinfo['state']['database-summary-queue-length']}}
+    Link State Request List {{neighborinfo['state']['link-state-request-queue-length']}}
+    Link State Retransmission List {{neighborinfo['state']['retransmit-summary-queue-length']}}
+{% if neighborinfo['state']['thread-inactivity-timer'] == True %}
     Thread Inactivity Timer on
 {% else %}
     Thread Inactivity Timer off
 {% endif %}
     Thread Database Description Retransmision off
-{% if neighborinfo['thread-ls-request-retransmission'] == True %}
+{% if neighborinfo['state']['thread-ls-request-retransmission'] == True %}
     Thread Link State Request Retransmission on
 {% else %}
     Thread Link State Request Retransmission off
 {% endif %}
-{% if neighborinfo['thread-ls-update-retransmission'] == True %}
+{% if neighborinfo['state']['thread-ls-update-retransmission'] == True %}
     Thread Link State Update Retransmission on
 {% else %}
     Thread Link State Update Retransmission off
 {% endif %}
-{% if 'bfd-state' in neighborinfo %}
+{% if 'bfd-state' in neighborinfo['state'] %}
   {{'  '}}
-    BFD: Type: {{neighborinfo['bfd-peer-type']}}
+    BFD: Type: {{neighborinfo['state']['bfd-peer-type']}}
       Detect Multiplier: 3, Min Rx interval: 300, Min Tx interval: 300
-      Status: {{neighborinfo['bfd-status']}}, Last update:{{neighborinfo['bfd-peer-last-update-time']}}
+      Status: {{neighborinfo['state']['bfd-status']}}, Last update:{{neighborinfo['state']['bfd-peer-last-update-time']}}
+{% endif %}
 {% endif %}
 {% endif %}
 {{' '}}
