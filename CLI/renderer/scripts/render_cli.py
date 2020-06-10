@@ -5,6 +5,7 @@ import json
 import sys
 import gc
 import select
+import termios
 from rpipe_utils import pipestr
 import datetime
 
@@ -42,20 +43,27 @@ def cli_getch():
     # Disable canonical mode of input stream
     # Set min bytes as 1 and read operation as blocking
     fd = sys.stdin.fileno()
+    term_settings_old = termios.tcgetattr(fd)
+    term_settings_new = termios.tcgetattr(fd)
+    term_settings_new[3] = term_settings_new[3] & ~termios.ICANON
+    term_settings_new[6][termios.VMIN] = 1
+    term_settings_new[6][termios.VTIME] = 0
+    termios.tcsetattr(fd, termios.TCSANOW, term_settings_new)
     c = None
 
     #global ctrc_rfd
     #fds = [fd, ctrlc_rfd]
     fds = [fd]
     try:
+        termios.tcflush(fd, termios.TCIFLUSH)
         read_fds, write_fds, excep_fds = select.select(fds, [], [])
         """
         # Return immediately for Ctrl-C interrupt
         if ctrlc_rfd in read_fds:
             return 'q'
         """
-
         c = os.read(fd, 1)
+        termios.tcflush(fd, termios.TCIFLUSH)
     except KeyboardInterrupt:
         return 'q'
     except select.error as e:
@@ -63,6 +71,8 @@ def cli_getch():
             return 'q'
         else:
             sys.stdout.write("Received error : " + str(e))
+    finally:
+        termios.tcsetattr(fd, termios.TCSANOW, term_settings_old)
     return c
 
 def _write(string, disable_page=False):
@@ -105,9 +115,8 @@ def _write(string, disable_page=False):
                 # key when CLISH executes commands from non-TTY
                 # Example : clish_source plugin
                 elif c == '\n' or c == '\r':
-                    #line_count = page_len_local - 1
-                    line_count = 0
-                    terminal.write('\x1b[2K'+'\x1b[0G')
+                    line_count = page_len_local - 1
+                    terminal.write('\x1b[1A'+'\x1b[2K')
                     terminal.flush()
                     break
     return False
