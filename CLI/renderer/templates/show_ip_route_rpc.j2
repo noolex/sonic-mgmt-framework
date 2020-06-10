@@ -15,6 +15,7 @@
 {% if json_output %}
 {% if json_output is iterable %}
 Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
+        > - selected route, * - FIB route, q - queued route, r - rejected route, # - not installed in hardware
       {{' %-29s'|format("Destination")}}{{'%-55s'|format("Gateway")}}{{'%-14s'|format("Dist/Metric")}}{{'%-12s'|format("Uptime")}}
 -------------------------------------------------------------------------------------------------------------------
 {% set routeList = json_output %}
