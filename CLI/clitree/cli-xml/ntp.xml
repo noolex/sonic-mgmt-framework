@@ -117,66 +117,51 @@ limitations under the License.
     </COMMAND>
 
     <!-- NTP source configuration commands -->
-    <COMMAND name="ntp source"
-             help="Configure NTP source IP address"
+    <COMMAND name="ntp source-interface"
+             help="Configure NTP source interface to pick the source IP, used for the NTP packets"
              ptype="SUBCOMMAND"
              mode="subcommand"
              command_keys="global_key=global"
              command_tables="sonic-system-ntp:sonic-system-ntp/NTP/global_key={global_key}"
              render_command_cb="ntp_server_source_if">
-      <PARAM name="srcopt"
-             help="NTP server address"
+      <PARAM name="iftype"
+             help="Interface type"
              mode="switch"
              ptype="SUBCOMMAND">
-        <PARAM name="interface"
-               help="Interface name"
-               mode="subcommand"
-               ptype="SUBCOMMAND">
-          <PARAM name="iftype"
-                 help="Interface type"
-                 mode="switch"
-                 ptype="SUBCOMMAND">
-            <PARAM name="Ethernet"
-                   help="Ethernet interface"
-                   ptype="PHY_INTERFACE"
-                   mode="subcommand">
-            </PARAM>
-            <PARAM name="Loopback"
-                   help="Loopback interface"
-                   ptype="LOOPBACK_INTERFACE"
-                   mode="subcommand">
-            </PARAM>
-            <PARAM name="Management"
-                   help="Management Interface"
-                   ptype="SUBCOMMAND"
-                   mode="subcommand">
-                   <PARAM
-                      name="mgmt-if-id"
-                      help="Management interface id"
-                      ptype="MGMT_INTF_ID">
-                  </PARAM>
-            </PARAM>
-            <PARAM name="PortChannel"
-                   help="PortChannel interface"
-                   ptype="PO_INTERFACE"
-                   mode="subcommand">
-            </PARAM>
-            <PARAM name="Vlan"
-                   help="Vlan interface"
-                   ptype="VLAN_INTERFACE"
-                   mode="subcommand">
-            </PARAM>
-          </PARAM>
+        <PARAM name="Ethernet"
+               help="Ethernet interface"
+               ptype="PHY_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+        <PARAM name="Loopback"
+               help="Loopback interface"
+               ptype="LOOPBACK_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+        <PARAM name="Management"
+               help="Management Interface"
+               ptype="MGMT_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+        <PARAM name="PortChannel"
+               help="PortChannel interface"
+               ptype="PO_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+        <PARAM name="Vlan"
+               help="Vlan interface"
+               ptype="VLAN_INTERFACE"
+               mode="subcommand">
         </PARAM>
       </PARAM>
       <ACTION
-        builtin="clish_pyobj">sonic_cli_ntp set_ntp_source ip=${ip} interface=${interface} iftype=${iftype} Ethernet=${Ethernet} Loopback=${Loopback} Management=${Management} mgmt-if-id=${mgmt-if-id} PortChannel=${PortChannel} Vlan=${Vlan}
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_source ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}
       </ACTION>
     </COMMAND>
 
     <!-- no NTP source configuration commands -->
-    <COMMAND name="no ntp source"
-             help="Delete NTP source IP address">
+    <COMMAND name="no ntp source-interface"
+             help="Delete NTP source-interface">
       <ACTION
         builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface
       </ACTION>

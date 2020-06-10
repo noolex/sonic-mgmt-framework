@@ -76,33 +76,9 @@ def invoke_api(func, args=[]):
 
     elif func == 'set_ntp_source':
 
-        ntp_src = None
-        ip_src = args[0].split("=")[1]
-        intf_src = args[1].split("=")[1]
-
-        if ip_src != "":
-            ntp_src = ip_src
-        elif intf_src == "interface":
-            intf_type_src = args[2].split("=")[1] 
-            if intf_type_src == "Ethernet":
-                ntp_src = args[3].split("=")[1] 
-            elif intf_type_src == "Loopback":
-                ntp_src = args[4].split("=")[1] 
-            elif intf_type_src == "Management":
-                ntp_src = "eth0" 
-            elif intf_type_src == "PortChannel":
-                ntp_src = args[7].split("=")[1] 
-            elif intf_type_src == "Vlan":
-                ntp_src = args[8].split("=")[1] 
-            else:
-                print("%Error: Invalid NTP interface source")
-                return False
-        else:
-            print("%Error: Invalid NTP source")
-            return False
-
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
-        body = { "openconfig-system:config" : { "openconfig-system-ext:ntp-source-interface" : ntp_src } }
+        body = { "openconfig-system:config" :
+                 { "openconfig-system-ext:ntp-source-interface" : args[0] if args[0] != 'Management0' else 'eth0' } }
         api_response = api.patch(keypath, body)
         if not api_response.ok():
             # error response

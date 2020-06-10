@@ -1,7 +1,7 @@
 def show_ntp_source_if(render_tables):
 
     cmd_str = ''
-    cmd_prfx = 'ntp source interface '
+    cmd_prfx = 'ntp source-interface '
     if 'sonic-system-ntp:sonic-system-ntp/NTP' in render_tables:
         for ntp_inst in render_tables['sonic-system-ntp:sonic-system-ntp/NTP']:
           if 'source' in ntp_inst:

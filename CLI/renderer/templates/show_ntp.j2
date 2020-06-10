@@ -23,9 +23,9 @@
         {% set global_info = json_output['global'] %}
         {% if vars.update({'source':global_info["openconfig-system-ext:ntp-source-interface"]}) %}{% endif %}
         {% if vars.update({'vrf':global_info["openconfig-system-ext:vrf"]}) %}{% endif %}
-        {{-'NTP source:'.ljust(20)}}{{vars.source}}
+        {{-'NTP source-interface:'.ljust(24)}}{{vars.source}}
         {{-"\n"}}
-        {{-'NTP vrf:'.ljust(20)}}{{vars.vrf}}
+        {{-'NTP vrf:'.ljust(24)}}{{vars.vrf}}
     {% elif "servers" in json_output %}
         {{-"--------------------------------"}}
         {{-"\n"}}
