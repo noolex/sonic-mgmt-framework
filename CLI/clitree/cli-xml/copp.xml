@@ -34,67 +34,67 @@ limitations under the License.
 
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
-		<!-- show copp protocols -->
-		<COMMAND name="show copp" help="Show CoPP information">
+        <!-- show copp protocols -->
+        <COMMAND name="show copp" help="Shows CoPP information">
             <PARAM name="copp-protocols-or-groups" help="" ptype="SUBCOMMAND" mode="switch" optional="false">
-				<PARAM name="classifiers" help="Displays the list of configured CoPP classifiers" ptype="SUBCOMMAND" mode="subcommand"/>
-				<PARAM name="protocols" help="Displays the list of supported CoPP protocols" ptype="SUBCOMMAND" mode="subcommand"/>
-				<PARAM name="actions" help="Dumps the configured CoPP action groups" ptype="SUBCOMMAND" mode="subcommand"/>
-				<PARAM name="policy" help="Dumps the configured CoPP policy copp-system-policy" ptype="SUBCOMMAND" mode="subcommand"/>
-			</PARAM>
+                <PARAM name="classifiers" help="Displays the list of configured CoPP classifiers" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="protocols" help="Displays the list of supported CoPP protocols" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="actions" help="Dumps the configured CoPP action groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="policy" help="Dumps the configured CoPP policy copp-system-policy" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_copp_protocols ${copp-protocols-or-groups}</ACTION>
-		</COMMAND>
+        </COMMAND>
     </VIEW>
 
     <!--===================================================================================-->
     <!--                            Config Mode commands                                   -->
     <!--===================================================================================-->
     <VIEW name="configure-view">
-        <COMMAND name="copp-action" help="Configure a CoPP action group" view="copp-action-view"
+        <COMMAND name="copp-action" help="Configures a CoPP action group" view="copp-action-view"
                  viewid="copp-action-name=${copp-action-name}">
-            <PARAM name="copp-action-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
-			<ACTION builtin="clish_pyobj">sonic_cli_fbs create_copp_action ${copp-action-name}</ACTION>
+            <PARAM name="copp-action-name" help="Name of the classifier (up to 63 characters)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_copp_action ${copp-action-name}</ACTION>
         </COMMAND>
-        <COMMAND name="no copp-action" help="Delete a CoPP action group">
-            <PARAM name="copp-action-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
-			<ACTION builtin="clish_pyobj">sonic_cli_fbs delete_copp_action ${copp-action-name}</ACTION>
+        <COMMAND name="no copp-action" help="Deletes a CoPP action group">
+            <PARAM name="copp-action-name" help="Name of the classifier (up to 63 characters)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_copp_action ${copp-action-name}</ACTION>
         </COMMAND>
     </VIEW>
 
     <VIEW name="copp-action-view" prompt="${SYSTEM_NAME}(config-action)# " depth="2">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
-        <COMMAND name="set" help="Set parameters" />
-        <COMMAND name="no set" help="Remove/Disable QoS actions" />
+        <COMMAND name="no" help="Negates a command or set its defaults"/>
+        <COMMAND name="set" help="Sets parameters" />
+        <COMMAND name="no set" help="Clears parameters" />
 
-        <COMMAND name="set trap-action" help="Set CoPP trap action">
+        <COMMAND name="set trap-action" help="Sets CoPP trap action">
             <PARAM name="trap-action-value" help="CoPP trap action" ptype="COPP_TRAP_ACTION" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_trap_action ${copp-action-name} ${trap-action-value}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no set trap-action" help="Clear CoPP trap action">
+        <COMMAND name="no set trap-action" help="Clears CoPP trap action">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_trap_action ${copp-action-name}</ACTION>
         </COMMAND>
 
-        <COMMAND name="set trap-queue" help="Set CoPP queue id">
-            <PARAM name="queue-id-value" help="Queue ID value (0-47)" ptype="COPP_RANGE_0_47" />
+        <COMMAND name="set trap-queue" help="Sets CoPP queue id">
+            <PARAM name="queue-id-value" help="Queue ID value (0 to 47)" ptype="COPP_RANGE_0_47" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_queue_id_action ${copp-action-name} ${queue-id-value}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no set trap-queue" help="Clear CoPP queue id">
+        <COMMAND name="no set trap-queue" help="Clears CoPP queue id">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_queue_id_action ${copp-action-name} </ACTION>
         </COMMAND>
 
-        <COMMAND name="set trap-priority" help="Set CoPP trap priority">
-            <PARAM name="trap-priority-value" help="Trap priority value (0-1023)" ptype="COPP_RANGE_0_1023" />
+        <COMMAND name="set trap-priority" help="Sets CoPP trap priority">
+            <PARAM name="trap-priority-value" help="Trap priority value (0 to 1023)" ptype="COPP_RANGE_0_1023" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_trap_priority_action ${copp-action-name} ${trap-priority-value}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no set trap-priority" help="Clear CoPP trap priority">
+        <COMMAND name="no set trap-priority" help="Clears CoPP trap priority">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_copp_trap_priority_action ${copp-action-name} </ACTION>
         </COMMAND>
 
-        <COMMAND name="police" help="Set rate limiting parameters">
+        <COMMAND name="police" help="Sets rate limiting parameters">
             <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
                     <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
@@ -126,35 +126,35 @@ limitations under the License.
                 <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
                     <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
                 </PARAM>
-				<PARAM name="meter-type" help="CoPP meter type" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name="meter-type" help="CoPP meter type" ptype="SUBCOMMAND" mode="subcommand" >
                     <PARAM name="meter-type-value" help="meter type value" ptype="COPP_METER_TYPE"/>
                 </PARAM>
-				<PARAM name="mode" help="CoPP mode" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name="mode" help="CoPP mode" ptype="SUBCOMMAND" mode="subcommand" >
                     <PARAM name="mode-value" help="mode value" ptype="COPP_MODE"/>
-					<PARAM name="green" help="Green trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-						<PARAM name="green-value" help="green trap action" ptype="COPP_TRAP_ACTION"/>
-					</PARAM>
-					<PARAM name="yellow" help="Yellow trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-						<PARAM name="yellow-value" help="yellow trap action" ptype="COPP_TRAP_ACTION"/>
-					</PARAM>
-					<PARAM name="red" help="Red trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-						<PARAM name="red-value" help="red trap action" ptype="COPP_TRAP_ACTION"/>
-					</PARAM>
+                    <PARAM name="green" help="Green trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                        <PARAM name="green-value" help="green trap action" ptype="COPP_TRAP_ACTION"/>
+                    </PARAM>
+                    <PARAM name="yellow" help="Yellow trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                        <PARAM name="yellow-value" help="yellow trap action" ptype="COPP_TRAP_ACTION"/>
+                    </PARAM>
+                    <PARAM name="red" help="Red trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                        <PARAM name="red-value" help="red trap action" ptype="COPP_TRAP_ACTION"/>
+                    </PARAM>
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_policer_action ${copp-action-name} ${__params}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no police" help="Clear or reset rate limiting parameters">
-            <PARAM name="meter-type" help="Clear meter-type" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="cir" help="Clear committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="cbs" help="Clear committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="pir" help="Clear peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="pbs" help="Clear peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="mode" help="Clear mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="red" help="Clear meter-type" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="yellow" help="Clear mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="green" help="Clear mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+        <COMMAND name="no police" help="Clears or resets rate limiting parameters">
+            <PARAM name="meter-type" help="Clears meter-type" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="cir" help="Clears committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="cbs" help="Clears committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="pir" help="Clears peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="pbs" help="Clears peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="mode" help="Clears mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="red" help="Clears red trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="yellow" help="Clear yellow trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="green" help="Clear green trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_copp_policer_action ${copp-action-name} ${__params}</ACTION>
         </COMMAND>
     </VIEW>
