@@ -255,7 +255,7 @@ limitations under the License.
              ptype="STRING"
              >
          </PARAM>
-         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-acl-pool-binding/nat-acl-pool-binding-entry=${bind-name}/config</ACTION>
+         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-acl-pool-binding/nat-acl-pool-binding-entry=${bind-name}</ACTION>
      </COMMAND>
 
      <COMMAND
