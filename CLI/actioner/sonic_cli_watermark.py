@@ -58,7 +58,6 @@ def get_list_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list(
     if response.ok():
         if response.content:
             api_response = response.content['sonic-watermark:SNAPSHOT_TABLE_LIST']
-	    print(api_response)
             for i in range(len(api_response)):
                 if 'interval' not in api_response[i]:
                    print("Failed : Required mandatory parameters are not found")
