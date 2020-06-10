@@ -1,0 +1,47 @@
+{% set vars = {'address': ""} %}
+{% set vars = {'access_accepts': ""} %}
+{% set vars = {'access_rejects': ""} %}
+{% set vars = {'access_requests': ""} %}
+{% set vars = {'timeout_access_requests': ""} %}
+{% set vars = {'access_challenges': ""} %}
+{% set vars = {'bad_authenticators': ""} %}
+{% set vars = {'invalid_packets': ""} %}
+{% if json_output -%}
+{% if json_output["header"] == 'True' -%}
+---------------------------------------------------------
+RADIUS Statistics
+---------------------------------------------------------
+{% else %}
+{% if vars.update({'address':json_output["address"]}) %}{% endif %}
+{% if vars.update({'access_accepts':json_output["access-accepts"]}) %}{% endif %}
+{% if vars.update({'access_rejects':json_output["access-rejects"]}) %}{% endif %}
+{% if vars.update({'access_requests':json_output["access-requests"]}) %}{% endif %}
+{% if vars.update({'timeout_access_requests':json_output["timeout-access-requests"]}) %}{% endif %}
+{% if vars.update({'access_challenges':json_output["access-challenges"]}) %}{% endif %}
+{% if vars.update({'bad_authenticators':json_output["bad-authenticators"]}) %}{% endif %}
+{% if vars.update({'invalid_packets':json_output["invalid-packets"]}) %}{% endif %}
+{{vars.address}}:
+{% if vars.access_accepts|length != 0 %}
+    access-accepts: {{vars.access_accepts}}
+{% endif %}
+{% if vars.access_rejects|length != 0 %}
+    access-rejects: {{vars.access_rejects}}
+{% endif %}
+{% if vars.access_requests|length != 0 %}
+    access-requests: {{vars.access_requests}}
+{% endif %}
+{% if vars.timeout_access_requests|length != 0 %}
+    timeout-access-requests: {{vars.timeout_access_requests}}
+{% endif %}
+{% if vars.access_challenges|length != 0 %}
+    access-challenges: {{vars.access_challenges}}
+{% endif %}
+{% if vars.bad_authenticators|length != 0 %}
+    bad-authenticators: {{vars.bad_authenticators}}
+{% endif %}
+{% if vars.invalid_packets|length != 0 %}
+    invalid-packets: {{vars.invalid_packets}}
+{% endif %}
+{% endif %}
+{% endif %}
+

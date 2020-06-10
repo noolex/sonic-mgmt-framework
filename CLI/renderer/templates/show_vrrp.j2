@@ -1,6 +1,6 @@
 {% if json_output %}
     {% set priority = 100 %}
-    {% set curr_priority = 100 %}
+    {% set vec = namespace(curr_priority = 0) %}
 
     {% set vrrpstate = json_output['openconfig-if-ip:vrrp-group'][0]['state'] %}
     {% set vrrpconfig = json_output['openconfig-if-ip:vrrp-group'][0]['config'] %}
@@ -14,14 +14,19 @@
     {{'Version is %s'|format(version)}}
     {% elif 'openconfig-interfaces-ext:version' in vrrpstate %}
     {{'Version is %s'|format(vrrpstate['openconfig-interfaces-ext:version'])}}
+    {% else %}
+    {% set version = '2' %}
+    {{'Version is %s'|format(version)}}
     {% endif %}
 
-    {{'Version is %s'|format(version)}}
-
+    {% if vrrpstate %}
     {% if vrrpstate['openconfig-interfaces-ext:state'] == 2 %}
     {{'State is %s'|format("Master")}}
     {% elif vrrpstate['openconfig-interfaces-ext:state'] == 1 %}
     {{'State is %s'|format("Backup")}}
+    {% else %}
+    {{'State is %s'|format("Down")}}
+    {% endif %}
     {% else %}
     {{'State is %s'|format("Down")}}
     {% endif %}
@@ -44,17 +49,15 @@
     {{'Virtual MAC address is 0000.5e00.01%0.2x'|format(vrid_print)}}
     {% endif %}
 
-    {% if 'priority' in vrrpstate %}
-        {% set curr_priority = vrrpstate['priority'] %}
-    {% endif %}
     {{'Track interface:'}}
 
     {% if 'openconfig-interfaces-ext:vrrp-track-interface' in vrrpbase %}
         {{'Interface       State  Priority'}}
         {% for track in vrrpbase['openconfig-interfaces-ext:vrrp-track-interface'] %}
 
-        {% if track['config']['priority-increment'] != 0 %}
+        {% if track['state']['priority-increment'] != 0 %}
         {{ '%-14s     Up  %-8s'|format(track['track-intf'], track['config']['priority-increment']) }}
+        {% set vec.curr_priority = vec.curr_priority + track['config']['priority-increment'] %}
         {% else %}
         {{ '%-14s   Down  %-8s'|format(track['track-intf'], track['config']['priority-increment']) }}
         {% endif %}
@@ -66,9 +69,10 @@
 
     {% if 'priority' in vrrpstate %}
         {% set priority = vrrpstate['priority'] %}
+        {% set vec.curr_priority = vec.curr_priority + priority %}
     {% endif %}
 
-    {{'Configured Priority is %d, Current Priority is %d'|format(priority, priority)}}
+    {{'Configured Priority is %d, Current Priority is %d'|format(priority, vec.curr_priority)}}
 
     {% if 'advertisement-interval' in vrrpstate %}
     {{'Advertisement interval is %d sec'|format(vrrpstate['advertisement-interval'])}}

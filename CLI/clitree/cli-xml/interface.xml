@@ -25,8 +25,97 @@ limitations under the License.
     <VAR name="phyifname" dynamic="true">
         <ACTION>echo -n "${phy-if-name}" | sed 's#/#%2f#g'</ACTION>
     </VAR>
-
+    <VAR name="phy-if-eth-name" dynamic="true">
+      <ACTION> if test "${iface_num}" != ""; then echo -n "Eth${iface_num}"; fi</ACTION>
+    </VAR>
+    <VAR name="phy-if-ethernet-name" dynamic="true">
+      <ACTION> if test "${iface_num}" != ""; then echo -n "Ethernet${iface_num}"; fi</ACTION>
+    </VAR>
+    <VAR name="vlan-name" dynamic="true">
+      <ACTION> if test "${vlan-id}" != ""; then echo -n "Vlan${vlan-id}"; fi</ACTION>
+    </VAR>
+    <VAR name="po-name" dynamic="true">
+      <ACTION> if test "${po-id}" != ""; then echo -n "PortChannel${po-id}"; fi</ACTION>
+    </VAR>
+    <VAR name="mgmt-name" dynamic="true">
+      <ACTION> if test "${mgmt-if-id}" != ""; then echo -n "eth${mgmt-if-id}"; fi</ACTION>
+    </VAR>
+    <VAR name="lo-name" dynamic="true">
+      <ACTION> if test "${lo-id}" != ""; then echo -n "Loopback${lo-id}"; fi</ACTION>
+    </VAR>
     <VIEW name="enable-view">
+    <!-- show running-configuration interface -->
+    <COMMAND
+           name="show running-configuration interface"
+           help="Show interface info">
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-if,configure-lag,configure-vlan,configure-lo,configure-if-mgmt</ACTION>
+      </COMMAND>
+    <COMMAND
+           name="show running-configuration interface Eth"
+           help="Show physical interface info">
+            <PARAM
+               name="iface_num"
+               help="Physical Interface"
+               ptype="ETH_PHY_SLOT_PORT_SUBPORT"
+               optional="true">
+            </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${phy-if-eth-name}" </ACTION>
+      </COMMAND>
+    <COMMAND
+           name="show running-configuration interface Ethernet"
+           help="Show physical interface info">
+            <PARAM
+               name="iface_num"
+               help="Physical Interface"
+               ptype="UINT"
+               optional="true">
+            </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${phy-if-ethernet-name}" </ACTION>
+      </COMMAND>
+      <COMMAND
+           name="show running-configuration interface Vlan"
+           help="Show interface Vlan info">
+            <PARAM
+               name="vlan-id"
+               help="Vlan Interface"
+               ptype="VLAN_ID"
+               optional="true">
+            </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vlan view_keys="name=${vlan-name}" </ACTION>
+      </COMMAND>
+      <COMMAND
+           name="show running-configuration interface PortChannel"
+           help="Show interface PortChannel  info">
+            <PARAM
+               name="po-id"
+               help="Vlan Interface"
+               ptype="LAG_ID"
+               optional="true">
+            </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-lag view_keys="name=${po-name}" </ACTION>
+      </COMMAND>
+      <COMMAND
+           name="show running-configuration interface Management"
+           help="Show interface management  info">
+            <PARAM
+               name="mgmt-if-id"
+               help="Management Interface"
+               ptype="MGMT_INTF_ID"
+               optional="true">
+            </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if-mgmt view_keys="name=${mgmt-name}"</ACTION>
+      </COMMAND>
+      <COMMAND
+           name="show running-configuration interface Loopback"
+           help="Show interface loopback  info">
+            <PARAM
+               name="lo-id"
+               help="Loopback Interface"
+               ptype="LO_ID"
+               optional="true">
+            </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-lo view_keys="name=${lo-name}" </ACTION>
+      </COMMAND>
     <!--show interface -->
     <COMMAND
          name="show interface"
@@ -152,6 +241,29 @@ limitations under the License.
                  mode="subcommand"
                  >
              </PARAM>
+          <!-- show interface transceiver-->
+          <PARAM
+                name="transceiver"
+                help="Transceiver info"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="phy-if-name"
+                    help="Interface"
+                    ptype="PHY_INTERFACE"
+                    optional="true"
+                    >
+                </PARAM>
+                <PARAM
+                    name="summary"
+                    help="Summary of transceiver info"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                 </PARAM>
+          </PARAM>
          </PARAM>
    <ACTION>
         if test "${if-subcommands}" = "status"; then&#xA;
@@ -195,6 +307,14 @@ limitations under the License.
                 python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces_interface Ethernet${iface_num} show_interface_id.j2 ${__full_line}&#xA;
+            fi&#xA;
+        elif test "${if-subcommands}" = "transceiver"; then&#xA;
+            if test "${summary}" = "summary"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_transceiver_status Ethernet_SUMMARY platform_transceiver_show.j2 ${__full_line}&#xA;
+            elif test "${phy-if-name}" = ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_transceiver_status Ethernet_ALL platform_transceiver_show.j2 ${__full_line}&#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_transceiver_status ${phy-if-name} platform_transceiver_show.j2 ${__full_line}&#xA;
             fi&#xA;
         else&#xA;
             if test "${phy-if-name}" = ""; then&#xA;
@@ -291,7 +411,7 @@ limitations under the License.
         <PARAM name="headroom" help="choose headroom as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="shared" help="choose shared as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}
  </ACTION>
     </COMMAND>
     <COMMAND name="show threshold queue" help="Show queue threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
@@ -300,7 +420,7 @@ limitations under the License.
         <PARAM name="multicast" help="choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="CPU" help="choose threshold cpu queue" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__params} ${__full_line}
+      <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}
  </ACTION>
     </COMMAND>
     <COMMAND name="clear threshold"
@@ -617,6 +737,11 @@ limitations under the License.
             help="false"
             completion="false"
             />
+        <COMMAND
+            name="show configuration"
+            help = "show configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${iface}" </ACTION>            
+        </COMMAND>    
         <COMMAND
             name="no"
             help="Negate a command or set its defaults"
@@ -1001,6 +1126,11 @@ limitations under the License.
          completion="false"
       />
       <COMMAND
+            name="show configuration"
+            help = "show configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-lo view_keys="name=${lo_name}" </ACTION>   
+      </COMMAND>    
+      <COMMAND
         name="no"
         help="Negate a command or set its defaults"
       />
@@ -1033,6 +1163,11 @@ limitations under the License.
          help="false"
          completion="false"
       />
+      <COMMAND
+            name="show configuration"
+            help = "show configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vlan view_keys="name=${vlan_name}" </ACTION>   
+      </COMMAND>    
       <COMMAND
         name="no"
         help="Negate a command or set its defaults"
@@ -1144,6 +1279,11 @@ limitations under the License.
         help="false"
         completion="false"
         />
+        <COMMAND
+            name="show configuration"
+            help = "show configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-lag view_keys="name=${po_name}" </ACTION>            
+        </COMMAND>    
 
         <COMMAND
             name="nat-zone"
@@ -1327,6 +1467,12 @@ limitations under the License.
             help="false"
             completion="false"
             />
+        <COMMAND
+            name="show configuration"
+            help = "show configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if-mgmt view_keys="name=${iface}" </ACTION>   
+        </COMMAND>    
+
         <COMMAND
             name="no"
             help="Negate a command or set its defaults"

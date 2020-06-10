@@ -1244,4 +1244,11 @@ limitations under the License.
         help=""
         />
     <!--=======================================================-->
+        <PTYPE
+        name="PID"
+        method="integer"
+        pattern="1..32768"
+        help="Process ID"
+        />
+    <!--=======================================================-->
 </CLISH_MODULE>
