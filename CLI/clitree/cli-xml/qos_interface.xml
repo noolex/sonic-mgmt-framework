@@ -28,8 +28,8 @@ limitations under the License.
     <COMMAND
         name="qos"
         help="QoS Configuration"
-        view="configure-qos-intf-view"
-        viewid="intf_name=${name}"
+        mode="subcommand"
+        ptype="SUBCOMMAND"
         >
         <PARAM
         name="interface"
@@ -37,20 +37,53 @@ limitations under the License.
         mode="subcommand"
         ptype="SUBCOMMAND"
         >
+        <!-- choose interface -->
         <PARAM
-           name="name"
-           help="Physical interface"
+        name="if-switch"
+        help="Select Interface"
+        mode="switch"
+        ptype="STRING"
+        >
+        <!-- qos interface Ethernet <id> -->
+        <PARAM
+           name="phy-if-name"
+           help="Physical Interface"
            ptype="PHY_INTERFACE"
+           view="configure-qos-phy-view"
+           viewid="iface=${phy-if-name}"
            >
         </PARAM>
+        <!-- qos interface PortChannel <id> -->
+        <PARAM
+            name="po-if-name"
+            help="PortChannel interface"
+            ptype="PO_INTERFACE"
+            view="configure-qos-po-view"
+            viewid="po_name=${po-if-name}"
+            >
         </PARAM>
+        <!-- qos interface Vlan <id> -->
+        <PARAM
+            name="vlan-if-name"
+            help="VLAN interface"
+            ptype="VLAN_INTERFACE"
+            view="configure-qos-vlan-view"
+            viewid="vlan_name=${vlan-if-name}"
+            >
+        </PARAM>
+        </PARAM>
+        </PARAM>
+        <!--
         <ACTION>
         </ACTION>
+        -->
+         <ACTION builtin="clish_nop"></ACTION>
     </COMMAND>
   </VIEW>
 
-  <VIEW name="configure-qos-intf-view"
-        prompt="${SYSTEM_NAME}(conf-qos-${intf_name})# "
+  <!-- qos interface Ethernet <id> -->
+  <VIEW name="configure-qos-phy-view"
+        prompt="${SYSTEM_NAME}(conf-qos-${iface})# "
         depth="2"
         >
 
@@ -83,7 +116,7 @@ limitations under the License.
               </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_qos patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile ${intf_name}:${qid} ${wred_prof_name}
+                sonic_cli_qos patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile ${iface}:${qid} ${wred_prof_name}
             </ACTION>
         </COMMAND>
 
@@ -97,7 +130,7 @@ limitations under the License.
                >
             </PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_qos patch_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${intf_name} ${sp_name}
+                sonic_cli_qos patch_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${iface} ${sp_name}
             </ACTION>
         </COMMAND>
 
@@ -105,7 +138,7 @@ limitations under the License.
         <COMMAND name="no" help="Negate a command"/>
         <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/output/scheduler-policy/config/name
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/output/scheduler-policy/config/name
             </ACTION>
         </COMMAND>
 
@@ -119,14 +152,14 @@ limitations under the License.
                >
             </PARAM>
             <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${intf_name} ${dscp_tc_map_name}
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${iface} ${dscp_tc_map_name}
             </ACTION>
         </COMMAND>
 
 
         <COMMAND name="no dscp-to-tc-map" help="Unconfigure a DSCP to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
             </ACTION>
         </COMMAND>
 
@@ -140,16 +173,59 @@ limitations under the License.
                >
             </PARAM>
             <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${intf_name} ${dot1p_tc_map_name}
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${iface} ${dot1p_tc_map_name}
             </ACTION>
         </COMMAND>
 
 
         <COMMAND name="no dot1p-to-tc-map" help="Unconfigure a DOT1P to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group
             </ACTION>
         </COMMAND>
+
+        <COMMAND
+            name="tc-to-dscp-map"
+            help="TC to DSCP map configuration">
+           <PARAM
+               name="tc_dscp_map_name"
+               help="TC to DSCP map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${iface} ${tc_dscp_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no tc-to-dscp-map" help="Unconfigure a TC to DSCP map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="tc-to-dot1p-map"
+            help="TC to DOT1P map configuration">
+           <PARAM
+               name="tc_dot1p_map_name"
+               help="TC to DOT1P map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dot1p ${iface} ${tc_dot1p_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no tc-to-dot1p-map" help="Unconfigure a TC to DOT1P map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dot1p
+            </ACTION>
+        </COMMAND>
+
 
         <COMMAND name="no queue" help="Negate Queue configuration">
            <PARAM
@@ -170,6 +246,160 @@ limitations under the License.
         </COMMAND>
 
   </VIEW>
+
+  <!-- qos interface PortChannel <id> -->
+  <VIEW name="configure-qos-po-view"
+        prompt="${SYSTEM_NAME}(conf-qos-${po_name})# "
+        depth="2"
+        >
+
+    <!-- Inheritance -->
+    <NAMESPACE
+        ref="configure-view"
+        help="false"
+        completion="false"
+        />
+
+        <COMMAND
+            name="dscp-to-tc-map"
+            help="DSCP to TC map configuration">
+           <PARAM
+               name="dscp_tc_map_name"
+               help="DSCP to TC map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${po_name} ${dscp_tc_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no dscp-to-tc-map" help="Unconfigure a DSCP to TC map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="dot1p-to-tc-map"
+            help="DOT1P to TC map configuration">
+           <PARAM
+               name="dot1p_tc_map_name"
+               help="DOT1P to TC map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${po_name} ${dot1p_tc_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no dot1p-to-tc-map" help="Unconfigure a DOT1P to TC map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="tc-to-dscp-map"
+            help="TC to DSCP map configuration">
+           <PARAM
+               name="tc_dscp_map_name"
+               help="TC to DSCP map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${po_name} ${tc_dscp_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no tc-to-dscp-map" help="Unconfigure a TC to DSCP map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="tc-to-dot1p-map"
+            help="TC to DOT1P map configuration">
+           <PARAM
+               name="tc_dot1p_map_name"
+               help="TC to DOT1P map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dot1p ${po_name} ${tc_dot1p_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no tc-to-dot1p-map" help="Unconfigure a TC to DOT1P map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dot1p
+            </ACTION>
+        </COMMAND>
+  </VIEW>
+
+  <!-- qos interface Vlan <id> -->
+  <VIEW name="configure-qos-vlan-view"
+        prompt="${SYSTEM_NAME}(conf-qos-${vlan_name})# "
+        depth="2"
+        >
+
+    <!-- Inheritance -->
+    <NAMESPACE
+        ref="configure-view"
+        help="false"
+        completion="false"
+        />
+
+        <COMMAND
+            name="dscp-to-tc-map"
+            help="DSCP to TC map configuration">
+           <PARAM
+               name="dscp_tc_map_name"
+               help="DSCP to TC map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${vlan_name} ${dscp_tc_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no dscp-to-tc-map" help="Unconfigure a DSCP to TC map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${vlan_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="tc-to-dscp-map"
+            help="TC to DSCP map configuration">
+           <PARAM
+               name="tc_dscp_map_name"
+               help="TC to DSCP map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${vlan_name} ${tc_dscp_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no tc-to-dscp-map" help="Unconfigure a TC to DSCP map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${vlan_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp
+            </ACTION>
+        </COMMAND>
+  </VIEW>
   <VIEW name="enable-view">
     <COMMAND name="show qos" help="Show QoS information">
         <PARAM 
@@ -178,24 +408,25 @@ limitations under the License.
             ptype="SUBCOMMAND"
             mode="subcommand"
             >
-          <PARAM
-             name="Ethernet"
-             help="Name of physical interface"
+         <PARAM
+             name="qos-if-subcommands"
+             help="QOS Interface subcommands"
+             mode="switch"
              ptype="SUBCOMMAND"
-             mode="subcommand"
              >
-          <PARAM
-             name="intf_name"
-             help="Name of physical interface"
-             ptype="STRING"
-             >
+             <!-- show interface Ethernet [<id>] -->
              <PARAM
-              name="queue"
-              help="Queue Id"
-              ptype="SUBCOMMAND"
-              mode="subcommand"
-              optional="true"
-              >
+                 name="phy-intf-name"
+                 help="Physical Interface"
+                 ptype="PHY_INTERFACE"
+                 >
+                 <PARAM
+                     name="queue"
+                     help="Queue Id"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
                 <PARAM
                  name="queue-id"
                  help="Queue id: 0, 1, .. etc"
@@ -203,16 +434,34 @@ limitations under the License.
                  >
                 </PARAM>
               </PARAM>
-          </PARAM>
+             </PARAM>
+             <PARAM
+                 name="po-intf-name"
+                 help="PortChannel Interface"
+                 ptype="PO_INTERFACE"
+                 >
+             </PARAM>
+             <PARAM
+                 name="vlan-intf-name"
+                 help="Vlan Interface"
+                 ptype="VLAN_INTERFACE"
+                 >
+             </PARAM>
           </PARAM>
         </PARAM>
         <ACTION>
-            if test "${queue}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_queues_queue Ethernet${intf_name}:${queue-id} &#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config Ethernet${intf_name} &#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps Ethernet${intf_name} &#xA;
-            fi&#xA;   
+            if test "${qos-if-subcommands}" = "phy-intf-name"; then&#xA;
+                if test "${queue}" != ""; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_queues_queue ${phy-intf-name}:${queue-id} &#xA;
+                else&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config ${phy-intf-name} &#xA;
+                fi&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${phy-intf-name} &#xA;
+            elif test "${qos-if-subcommands}" = "po-intf-name"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${po-intf-name} &#xA;
+            elif test "${qos-if-subcommands}" = "vlan-intf-name"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${vlan-intf-name} &#xA;
+            fi&#xA;
         </ACTION>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>

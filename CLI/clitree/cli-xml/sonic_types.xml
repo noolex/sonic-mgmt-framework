@@ -70,7 +70,7 @@ limitations under the License.
     <PTYPE
         name="LAG_ID"
         method="integer"
-        pattern="1..128"
+        pattern="1..256"
         help=""
         />
     <!--=======================================================-->

@@ -120,18 +120,25 @@ def clear_classifier_description(args):
 
 
 def set_classifier_match_acl(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_NAME', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}', classifier_name=args[0])
     if 'mac' == args[1]:
-        acl_name = args[2] + '_ACL_L2'
+        acl_type = 'L2'
     elif 'ip' == args[1]:
-        acl_name = args[2] + '_ACL_IPV4'
+        acl_type = 'L3'
     elif 'ipv6' == args[1]:
-        acl_name = args[2] + '_ACL_IPV6'
+        acl_type = 'L3V6'
     else:
         print('Unknown ACL Type')
         return
 
-    body = {'ACL_NAME': acl_name}
+    body = {"sonic-flow-based-services:CLASSIFIER_TABLE_LIST": [
+        {
+            'CLASSIFIER_NAME': args[0],
+            'ACL_NAME': args[2],
+            'ACL_TYPE': acl_type,
+            'MATCH_TYPE': 'ACL'
+        }
+    ]}
 
     return fbs_client.patch(keypath, body)
 

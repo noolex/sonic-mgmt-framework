@@ -19,7 +19,12 @@
 from show_config_bgp import *
 from show_config_interface import *
 from show_config_authentication import *
+<<<<<<< HEAD
 from show_config_dns import *
+||||||| merged common ancestors
+=======
+from show_config_ptp import *
+>>>>>>> origin/broadcom_sonic_3.x_share
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -41,7 +46,20 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'if_lag_mclag'            : show_if_lag_mclag,
                   'interface_management'    : show_interface_management,
                   'if_management_autoneg'   : show_if_management_autoneg,
+<<<<<<< HEAD
                   'tacacs_server_source_if' : show_tacacs_source_if,
                   'dns_server_source_if'    : show_dns_source_if
  } 
+||||||| merged common ancestors
+                  'tacacs_server_source_if' : show_tacacs_source_if
+ } 
+=======
+                  'tacacs_server_source_if' : show_tacacs_source_if,
+                  'ptp_mode'                : show_ptp_mode,
+                  'ptp_domain_profile'      : show_ptp_domain_profile,
+                  'ptp_two_step'            : show_ptp_two_step,
+                  'ptp_network_transport'   : show_ptp_network_transport,
+                  'ptp_master_table'        : show_ptp_master_table
+ }
+>>>>>>> origin/broadcom_sonic_3.x_share
 
