@@ -1,45 +1,44 @@
 {% for arr2 in json_output %}
-{% for arr3 in json_output[arr2] %}
-{{ 'CoPP action group'}} {{ arr3['name']}}
-{% if 'trap-action' in arr3.keys() %}
-{{ '    trap-action' }} {{ arr3['trap-action']|lower}}
-{% endif %}
-{% if 'trap-priority' in arr3.keys() %}
-{{ '    trap-priority' }} {{ arr3['trap-priority']}}
-{% endif %}
-{% if 'queue' in arr3.keys() %}
-{{ '    trap-queue' }} {{ arr3['queue']}}
-{% endif %}
-{% if 'cir' in arr3.keys() %}
-{% set str = '    police cir ' + arr3['cir'] %}
-{% if 'cbs' in arr3.keys() %}
-{% set str = str + ' cbs ' + arr3['cbs'] %}
-{% endif %}
-{% if 'pir' in arr3.keys() %}
-{% set str = str + ' pir ' + arr3['pir'] %}
-{% endif %}
-{% if 'pbs' in arr3.keys() %}
-{% set str = str + ' pbs ' + arr3['pbs'] %}
-{% endif %}
-{{ str }}
-{% if 'meter-type' in arr3.keys() %}
-{{ '      meter-type' }} {{ arr3['meter-type']|lower}}
-{% endif %}
-{% if 'mode' in arr3.keys() %}
-{{ '      mode' }} {{ arr3['mode']|lower}}
-{% endif %}
-{% if 'red-action' in arr3.keys() %}
-{{ '      red-action' }} {{ arr3['red-action']|lower}}
-{% endif %}
-{% if 'yellow-action' in arr3.keys() %}
-{{ '      yellow-action' }} {{ arr3['yellow-action']|lower}}
-{% endif %}
-{% if 'green-action' in arr3.keys() %}
-{{ '      green-action' }} {{ arr3['green-action']|lower}}
-{% endif %}
-{% endif %}
-{% if 'enable' in arr3.keys() %}
-{{ '    enable' }} {{ arr3['enable']|lower}}
-{% endif %}
-{% endfor %}
+	{% for arr3 in json_output[arr2] %}
+		{{- 'CoPP action group'}} {{ arr3['name']}}
+		{% if 'config' in arr3.keys() %}
+			{% if 'trap-action' in arr3['config'].keys() %}
+				{{- '    trap-action' }} {{ arr3['config']['trap-action']|lower}}
+			{% endif %}
+			{% if 'trap-priority' in arr3['config'].keys() %}
+				{{- '    trap-priority' }} {{ arr3['config']['trap-priority']}}
+			{% endif %}
+			{% if 'queue' in arr3['config'].keys() %}
+				{{- '    trap-queue' }} {{ arr3['config']['queue']}}
+			{% endif %}
+			{% if 'cir' in arr3['config'].keys() %}
+				{% set str = '    police cir ' + arr3['config']['cir'] %}
+				{% if 'cbs' in arr3['config'].keys() %}
+					{% set str = str + ' cbs ' + arr3['config']['cbs'] %}
+				{% endif %}
+				{% if 'pir' in arr3['config'].keys() %}
+					{% set str = str + ' pir ' + arr3['config']['pir'] %}
+				{% endif %}
+				{% if 'pbs' in arr3['config'].keys() %}
+					{% set str = str + ' pbs ' + arr3['config']['pbs'] %}
+				{% endif %}
+				{{- str }}
+				{% if 'meter-type' in arr3['config'].keys() %}
+					{{- '      meter-type' }} {{ arr3['config']['meter-type']|lower}}
+				{% endif %}
+				{% if 'mode' in arr3['config'].keys() %}
+					{{- '      mode' }} {{ arr3['config']['mode']|lower}}
+				{% endif %}
+				{% if 'red-action' in arr3['config'].keys() %}
+					{{- '      red-action' }} {{ arr3['config']['red-action']|lower}}
+				{% endif %}
+				{% if 'yellow-action' in arr3['config'].keys() %}
+					{{- '      yellow-action' }} {{ arr3['config']['yellow-action']|lower}}
+				{% endif %}
+				{% if 'green-action' in arr3['config'].keys() %}
+					{{- '      green-action' }} {{ arr3['config']['green-action']|lower}}
+				{% endif %}
+			{% endif %}
+		{% endif %}
+	{% endfor %}
 {% endfor %}
