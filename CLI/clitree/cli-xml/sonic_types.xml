@@ -17,6 +17,7 @@ limitations under the License.
 
 <!DOCTYPE CLISH_MODULE [
 <!ENTITY MAX_MTU         "9216">
+<!ENTITY SLOT_PORT       "([1]/([1-9]|[1-9][0-9]|[1-2][0-9][0-9]))">
 <!ENTITY ETH_PHY_NUM     "([0-9]|[1-9]([0-9])*)">
 <!ENTITY ETH_ALL_INTF    "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM;$)))">
 <!ENTITY SLOT            "([1])">
@@ -1171,6 +1172,14 @@ limitations under the License.
         method="select"
         pattern="1x100G 1x40G 2x100G 2x50G 4x100G 4x25G 4x10G 1x400G 2x200G 4x50G"
         help="port breakout mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="FRONT_PANEL_PORT"
+        method="regexp_select"
+        ext_pattern="(slot/port)"
+        pattern="&SLOT_PORT;"
+        help="Front-panel port (slot/port)"
         />
     <!--=======================================================-->
     <PTYPE
