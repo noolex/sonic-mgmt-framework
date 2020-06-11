@@ -30,7 +30,15 @@ import (
 	"github.com/Azure/sonic-mgmt-common/translib"
 
 	"github.com/golang/glog"
+	"log/syslog"
 )
+
+var Writer *syslog.Writer
+
+func init() {
+
+    Writer, _ = syslog.Dial("", "", (syslog.LOG_LOCAL4), "")
+}
 
 // Process function is the common landing place for all REST requests.
 // Swagger code-gen should be configured to invoke this function
@@ -50,8 +58,15 @@ func Process(w http.ResponseWriter, r *http.Request) {
 	var data []byte
 	var rtype string
 
-	glog.Infof("[%s] %s %s; content-len=%d", reqID, r.Method, r.URL.Path, r.ContentLength)
+
+	// Since CLI connects via the unix socket, its RemoteAddr will be "@"
+	if r.RemoteAddr != "@" {
+		auditMsg := fmt.Sprintf("[%s] %s received from '%s@%s' for %s; content-len=%d",
+				reqID, r.Method, rc.Auth.User, r.RemoteAddr, r.URL.Path, r.ContentLength)
+		Writer.Info(auditMsg)
+	}
 	_, args.data, err = getRequestBody(r, rc)
+
 
 	if err == nil {
 		err = parseQueryParams(&args, r)
