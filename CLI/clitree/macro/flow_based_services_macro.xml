@@ -20,6 +20,7 @@
                 <PARAM name="qos" help="QoS Policy" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="monitoring" help="Monitoring Policy" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="forwarding" help="Forwarding Policy" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Forwarding Policy" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
         </PARAM>
     </MACRODEF>

@@ -473,7 +473,7 @@ limitations under the License.
              >
         </PARAM>
         <ACTION builtin="clish_pyobj">
-                sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${vlan_name} ${vrrp-id} ${afi-name};
+                sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${vlan_name} ${vrrp-id} ${afi-name}
         </ACTION>
     </COMMAND>
 

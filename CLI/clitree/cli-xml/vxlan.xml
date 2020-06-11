@@ -20,20 +20,19 @@
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_interface show_vxlan_interface.j2</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Show command to display the name, SIP, associated NVO name, 
-                    the loopback interface configured with the VTEP SIP.
+                    show command to display the VXLAN global parameters.  
                 </DESCRIPTION>
                 <USAGE>
                     sonic# show vxlan interface
                 </USAGE>
-                <EXAMPLE summary="show vxlan interface">
+                <EXAMPLE summary="show vxlan interface">_
                     sonic# show vxlan interface
+                    
+                    VTEP Name        :  vtep1
+                    VTEP Source IP   :  1.1.1.1
+                    QoS Mode         :  pipe (dscp:0)
+                    Source Interface :  Loopback0
 
-                    VTEP Information:
-
-                        VTEP Name : VTEP1, SIP  : 4.4.4.4
-                        NVO Name  : nvo1,  VTEP : VTEP1
-                        Source interface  : Loopback33   
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
@@ -41,16 +40,16 @@
         <!--show vxlan vlanvnimap -->
         <COMMAND 
             name="show vxlan vlanvnimap" 
-            help="Show Vlan VNI mapping information">
+            help="show VLAN VNI mapping information">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vlanvnimap show_vxlan_vlanvnimap.j2 show</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Show command to display all the VLAN VNI mappings
+                    show command to display all the VLAN VNI mappings
                 </DESCRIPTION>
                 <USAGE>
                     sonic# show vxlan vlanvnimap
                 </USAGE>
-                <EXAMPLE summary="show vxlan vlan-vni map">
+                <EXAMPLE summary="show vxlan vlanvnimap">
                     sonic# show vxlan vlanvnimap
 
                     +---------+-------+
@@ -66,23 +65,23 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan vlanvnimap count" 
-            help="Show Vlan VNI mapping count">
+            help="shows number of VLAN VNI mappings ">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vlanvnimap show_vxlan_vlanvnimap.j2 count</ACTION>
         </COMMAND>
 
         <!--show vxlan vrfvnimap -->
         <COMMAND 
             name="show vxlan vrfvnimap" 
-            help="Show Vrf VNI mapping information">
+            help="show VRF VNI mapping information">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vrfvnimap show_vxlan_vrfvnimap.j2 show </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Show command to display all the VRF VNI mappings
+                    show command to display all the VRF VNI mappings
                 </DESCRIPTION>
                 <USAGE>
                     sonic# show vxlan vrfvnimap
                 </USAGE>
-                <EXAMPLE summary="show vxlan vrf-vni map">
+                <EXAMPLE summary="show vxlan vrfvnimap">
                     sonic# show vxlan vrfvnimap
 
                     +-------+-------+
@@ -96,19 +95,19 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan vrfvnimap count" 
-            help="Show Vrf VNI mapping count">
+            help="shows number of VRF VNI mappings ">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_vrfvnimap show_vxlan_vrfvnimap.j2 count </ACTION>
         </COMMAND>
 
         <!--show vxlan tunnel -->
         <COMMAND 
             name="show vxlan tunnel" 
-            help="Show Vxlan Tunnels">
+            help="show vxlan tunnel information per remote VTEP">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_tunnel show_vxlan_tunnel.j2 show</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Show command to display all the discovered tunnels. 
-                    SIP, DIP, Creation Source, OperStatus are the columns.
+                    show command to display all the discovered tunnels. 
+                    SIP, DIP, creation source, operstatus are the columns.
                 </DESCRIPTION>
                 <USAGE>
                     sonic# show vxlan tunnel
@@ -117,7 +116,7 @@
                     sonic# show vxlan tunnel
 
                     +---------+---------+-------------------+--------------+
-                    | SIP     | DIP     | Creation Source   | OperStatus   |
+                    | SIP     | DIP     | creation source   | operstatus   |
                     +=========+=========+===================+==============+
                     | 2.2.2.2 | 4.4.4.4 | EVPN              | oper_up      |
                     +---------+---------+-------------------+--------------+
@@ -129,7 +128,7 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan tunnel count" 
-            help="Show Vxlan Tunnels count">
+            help="shows number of remote VTEPs">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_tunnel show_vxlan_tunnel.j2 count</ACTION>
         </COMMAND>
 
@@ -140,7 +139,7 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan remote vni" 
-            help="Show Vxlan Remote VNI">
+            help="shows the VNI of the VLANs extended to remote VTEPs.">
             <PARAM
                 name="remote_ip_addr"
                 help="remote vtep ip"
@@ -182,7 +181,7 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan remote vni count" 
-            help="Show Vxlan Remote vni count">
+            help="shows the number of VLANs extended to remote VTEPs.">
             <PARAM
                 name="remote_ip_addr"
                 help="remote vtep ip"
@@ -194,7 +193,7 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan remote mac" 
-            help="Show Vxlan Remote mac">
+            help="shows the MACs learnt from remote VTEPs.">
             <PARAM
                 name="remote_ip_addr"
                 help="remote vtep ip"
@@ -244,7 +243,7 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan remote mac count" 
-            help="Show Vxlan Remote mac count">
+            help="shows number of remote MACs">
             <PARAM
                 name="remote_ip_addr"
                 help="remote vtep ip"
@@ -259,8 +258,8 @@
 
     <VIEW name="configure-view">
         <COMMAND
-            name="no interface Vxlan"
-            help="VXLAN Configuration mode"
+            name="no interface vxlan"
+            help="Delete VXLAN Interface"
             >
             <PARAM
                 name="vxlan-if-name"
@@ -272,27 +271,27 @@
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Command to delete the VTEP, the VTEP deletion will succeed provided no vlan/vrf vni mapping exists on this VTEP.
+                    Command to delete the VTEP. The VTEP deletion will succeed provided no vlan/vrf vni mapping exists on this VTEP.
                 </DESCRIPTION>
                 <USAGE>
                     (config)# no interface vxlan VTEPNAME
                     VTEPNAME - string prefixed with 'vtep'
                 </USAGE>
-                <EXAMPLE summary="Unconfigure Vxlan VTEP">
+                <EXAMPLE summary="Unconfigure vxlan VTEP">
                     sonic(config)# no interface vxlan vtep1
                     sonic(config-if-vtep1)#
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
         <COMMAND
-            name="interface Vxlan"
-            help="VXLAN Configuration mode"
+            name="interface vxlan"
+            help="VXLAN Configuration Mode"
             view="configure-vxlan-view"
-            viewid="iface=Vxlan-${vxlan-if-name}"
+            viewid="iface=vxlan-${vxlan-if-name}"
             >
             <PARAM
                 name="vxlan-if-name"
-                help="VTEP Name"
+                help="Name of VTEP (Max 10 chars, prefixed by 'vtep')"
                 ptype="VTEP_NAME"
                 >
             </PARAM>
@@ -300,11 +299,11 @@
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Command to enter VxLAN configuration mode.
+                    Command to enter VXLAN configuration mode.
                 </DESCRIPTION>
                 <USAGE>
                     (config)# interface vxlan VTEPNAME
-                    VTEPNAME - string prefixed with 'vtep'
+                    VTEPNAME - string prefixed with 'vtep' with max size of 10 chars.
                 </USAGE>
                 <EXAMPLE summary="configuration mode for vxlan">
                     sonic(config)# interface vxlan vtep1
@@ -331,7 +330,7 @@
         </COMMAND>
         <COMMAND
             name="no source-ip"
-            help="Unset the source Ipv4 address">
+            help="unset the source IPv4 address">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_src_ip ${iface}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -341,24 +340,24 @@
                     (config-if-vtep)# no source-ip 
                 </USAGE>
                 <EXAMPLE summary="unset the source IPv4 address">
-                    sonic(config)# interface Vxlan vtep1
-                    sonic(conf-if-Vxlan-vtep1)# no source-ip
+                    sonic(config)# interface vxlan vtep1
+                    sonic(conf-if-vxlan-vtep1)# no source-ip
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
         <COMMAND 
             name="no map" 
             help="Delete VNI Mapping">
-            <PARAM name="vni" help="Configure VNI mapping" ptype="SUBCOMMAND" mode="subcommand"> 
+            <PARAM name="vni" help="VNId of the mapping to be deleted" ptype="SUBCOMMAND" mode="subcommand"> 
                 <PARAM name="vnid" help="VNID" ptype="RANGE_1_16777215"> 
                     <PARAM name="mapoptions" help="" ptype="SUBCOMMAND" mode="switch"> 
-                        <PARAM name="vlan" help="Configure VLAN" ptype="SUBCOMMAND" mode="subcommand"> 
+                        <PARAM name="vlan" help="VLAN ID of the mapping to be deleted" ptype="SUBCOMMAND" mode="subcommand"> 
                             <PARAM name="vid" help="VLAN ID" ptype="VLAN_ID"> </PARAM>
-                            <PARAM name="count" help="Number of mappings" ptype="SUBCOMMAND" mode="subcommand" optional="true"> 
+                            <PARAM name="count" help="Number of mappings to be deleted" ptype="SUBCOMMAND" mode="subcommand" optional="true"> 
                                 <PARAM name="numvid" help="Number" ptype="VLAN_ID" optional="true"> </PARAM>
                             </PARAM>
                         </PARAM>
-                        <PARAM name="vrf" help="Configure VRF Name" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="vrf" help="VRF Name of the mapping to be deleted" ptype="SUBCOMMAND" mode="subcommand">
                             <PARAM name="vrf-name" help="VRF Name" ptype="STRING_63"> </PARAM>
                         </PARAM>
                     </PARAM>
@@ -370,17 +369,17 @@
                     Command to unconfigure VNI-VLAN mappings and VNI-VRF mappings
                 </DESCRIPTION>
                 <USAGE>
-                    (conf-if-Vxlan-vtep)# no map vni VNIID vlan VLANID count COUNT
-                    (conf-if-Vxlan-vtep)# no map vni VNIID vrf VRFNAME
-                    VNIID - VNI value between 1 to 16777215
+                    (conf-if-vxlan-vtep)# no map vni VNID vlan VLANID count COUNT
+                    (conf-if-vxlan-vtep)# no map vni VNID vrf VRFNAME
+                    VNID - VNI value between 1 to 16777215
                     VLANID - VLAN value between 1 to 4094
                     COUNT - number of mappings (optional parameter)
                     VRFNAME - string
                 </USAGE>
                 <EXAMPLE summary="unconfigure vni-vlan mapping and vni-vrf mapping">
-                    sonic(config)# interface Vxlan vtep1
-                    sonic(conf-if-Vxlan-vtep1)# no map vni 100 vlan 100
-                    sonic(conf-if-Vxlan-vtep1)# no map vni 100 vrf vrf1
+                    sonic(config)# interface vxlan vtep1
+                    sonic(conf-if-vxlan-vtep1)# no map vni 100 vlan 100
+                    sonic(conf-if-vxlan-vtep1)# no map vni 100 vrf vrf1
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
@@ -399,20 +398,20 @@
                     Command to set the source IPv4 address
                 </DESCRIPTION>
                 <USAGE>
-                    (conf-if-Vxlan-vtep)# source-ip SOURCEIP
+                    (conf-if-vxlan-vtep)# source-ip SOURCEIP
                     SOURCEIP - source IPv4 address
                 </USAGE>
                 <EXAMPLE summary="configure the source IPv4 address">
-                    sonic(config)# interface Vxlan vtep1
-                    sonic(conf-if-Vxlan-vtep1)# source-ip 1.1.1.1
+                    sonic(config)# interface vxlan vtep1
+                    sonic(conf-if-vxlan-vtep1)# source-ip 1.1.1.1
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name="qos-mode" help="Configure qos-mode">
+        <COMMAND name="qos-mode" help="Configure QoS Mode">
             <PARAM name="qos-mode" help="QoS mode" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="uniform" help="Uniform QoS mode" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-                <PARAM name="pipe" help="Pipe QoS mode" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="dscp" help="pipe mode dscp" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="uniform" help="Uniform Mode" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+                <PARAM name="pipe" help="Pipe Mode" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="dscp" help="Encap DSCP for Pipe Mode" ptype="SUBCOMMAND" mode="subcommand">
                         <PARAM name="dscp-value" help="dscp value" ptype="RANGE_0_63"> </PARAM>
                     </PARAM>
                 </PARAM>
@@ -424,18 +423,18 @@
         </COMMAND>
         <COMMAND 
             name="map" 
-            help="Configure Mapping">
+            help="Configure VNI to VLAN/VRF Mapping">
             <PARAM name="vni" help="Configure VNI mapping" ptype="SUBCOMMAND" mode="subcommand"> 
                 <PARAM name="vnid" help="VNID" ptype="RANGE_1_16777215"> 
                     <PARAM name="mapoptions" help="" ptype="SUBCOMMAND" mode="switch"> 
-                        <PARAM name="vlan" help="Configure VLAN" ptype="SUBCOMMAND" mode="subcommand"> 
+                        <PARAM name="vlan" help="Configure VLAN VNI mapping" ptype="SUBCOMMAND" mode="subcommand"> 
                             <PARAM name="vid" help="VLAN ID" ptype="VLAN_ID"> 
                                 <PARAM name="count" help="Number of mappings" ptype="SUBCOMMAND" mode="subcommand" optional="true"> 
                                     <PARAM name="numvid" help="Number" ptype="VLAN_ID" optional="true"> </PARAM>
                                 </PARAM>
                             </PARAM>
                         </PARAM>
-                        <PARAM name="vrf" help="Configure VRF name" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="vrf" help="Configure VRF VNI mapping" ptype="SUBCOMMAND" mode="subcommand">
                             <PARAM name="vrf-name" help="VRF Name" ptype="STRING_63"> </PARAM>
                         </PARAM>
                     </PARAM>
@@ -447,17 +446,17 @@
                     Command to configure VNI-VLAN mappings and VNI-VRF mappings
                 </DESCRIPTION>
                 <USAGE>
-                    (conf-if-Vxlan-vtep)# map vni VNIID vlan VLANID count COUNT
-                    (conf-if-Vxlan-vtep)# map vni VNIID vrf VRFNAME
-                    VNIID - VNI value between 1 to 16777215
+                    (conf-if-vxlan-vtep)# map vni VNID vlan VLANID count COUNT
+                    (conf-if-vxlan-vtep)# map vni VNID vrf VRFNAME
+                    VNID - VNI value between 1 to 16777215
                     VLANID - VLAN value between 1 to 4094
                     COUNT - number of mappings (optional parameter)
                     VRFNAME - string
                 </USAGE>
                 <EXAMPLE summary="configure vni-vlan and vni-vrf mappings">
-                    sonic(config)# interface Vxlan vtep1
-                    sonic(conf-if-Vxlan-vtep1)# map vni 100 vlan 100 count 2
-                    sonic(conf-if-Vxlan-vtep1)# map vni 100 vrf vrf1
+                    sonic(config)# interface vxlan vtep1
+                    sonic(conf-if-vxlan-vtep1)# map vni 100 vlan 100 count 2
+                    sonic(conf-if-vxlan-vtep1)# map vni 100 vrf vrf1
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>    
