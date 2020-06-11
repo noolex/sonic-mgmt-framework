@@ -333,7 +333,11 @@ class OpenApiPlugin(plugin.PyangPlugin):
             optparse.make_option("--with-md-doc",
                                  dest="with_md",
                                  action="store_true",
-                                 help="Generate markdown(.md) RESTCONF API documents"),                    
+                                 help="Generate markdown(.md) RESTCONF API documents"), 
+            optparse.make_option("--with-oneof",
+                                 dest="no_oneof",
+                                 action="store_true",
+                                 help="Models Union/choice/case stmts using oneOf"), 
         ]
         g = optparser.add_option_group("OpenApiPlugin options")
         g.add_options(optlist)
@@ -347,6 +351,11 @@ class OpenApiPlugin(plugin.PyangPlugin):
       global errorList
       global warnList
       global globalCtx
+      
+      if "OPENAPI_EXTENDED" in os.environ and ctx.opts.no_oneof is None:
+          if bool(os.environ["OPENAPI_EXTENDED"]):
+              ctx.opts.with_md = None
+              ctx.opts.no_oneof = True
 
       globalCtx = ctx
       global_fd = fd
@@ -979,9 +988,14 @@ def build_payload(child, payloadDict, uriPath="", oneInstance=False, Xpath="", f
             jsonPayloadDict[nodeName] = [typeInfo["x-yang-type"]]
 
     elif child.keyword == "choice":
-        parentNode["oneOf"] = []
-        payloadJson = jsonPayloadDict 
-    
+        if globalCtx.opts.no_oneof is not None:
+            parentNode["oneOf"] = []
+            payloadJson = jsonPayloadDict
+        else:
+            childJson = payloadDict
+            payloadJson = jsonPayloadDict
+            nodeObj = parentNode           
+                
     elif child.keyword == "case":
         childJson = payloadDict
         payloadJson = jsonPayloadDict
@@ -1012,7 +1026,7 @@ def build_payload(child, payloadDict, uriPath="", oneInstance=False, Xpath="", f
 
     if hasattr(child, 'i_children'):
         for ch in child.i_children:
-            if child.keyword == "choice":
+            if child.keyword == "choice" and globalCtx.opts.no_oneof is not None:
                 oneOfEntry = OrderedDict()
                 oneOfEntry["type"] = "object"
                 oneOfEntry["properties"] = OrderedDict()
@@ -1307,11 +1321,15 @@ def getType(node, typeNodes=[]):
         elif nodeType == "leafref":            
             return handle_leafref(node, typeNodes2)
         elif nodeType == "union":
-            unionObj = OrderedDict()
-            unionObj["oneOf"] = []
-            for unionStmt in stmt.search('type'):
-                unionObj["oneOf"].append(copy.deepcopy(getType(unionStmt, typeNodes2)))
-            return copy.deepcopy(unionObj)
+            if globalCtx.opts.no_oneof is None:
+                stringObj = copy.deepcopy(codegenTypesToYangTypesMap["string"])
+                return stringObj
+            else:
+                unionObj = OrderedDict()
+                unionObj["oneOf"] = []
+                for unionStmt in stmt.search('type'):
+                    unionObj["oneOf"].append(copy.deepcopy(getType(unionStmt, typeNodes2)))
+                return copy.deepcopy(unionObj)
         elif nodeType == "decimal64":
             return copy.deepcopy(codegenTypesToYangTypesMap[nodeType])
         elif nodeType in ['int8', 'int16', 'int32', 'int64',
