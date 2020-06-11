@@ -23,44 +23,7 @@ limitations under the License.
     xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
     http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
-  <VIEW name="configure-view">
-    <!-- qos -->
-    <COMMAND
-        name="qos"
-        help="QoS Configuration"
-        view="configure-qos-intf-view"
-        viewid="intf_name=${name}"
-        >
-        <PARAM
-        name="interface"
-        help="Interface QoS Configuration"
-        mode="subcommand"
-        ptype="SUBCOMMAND"
-        >
-        <PARAM
-           name="name"
-           help="Physical interface"
-           ptype="PHY_INTERFACE"
-           >
-        </PARAM>
-        </PARAM>
-        <ACTION>
-        </ACTION>
-    </COMMAND>
-  </VIEW>
-
-  <VIEW name="configure-qos-intf-view"
-        prompt="${SYSTEM_NAME}(conf-qos-${intf_name})# "
-        depth="2"
-        >
-
-    <!-- Inheritance -->
-    <NAMESPACE
-        ref="configure-view"
-        help="false"
-        completion="false"
-        />
-
+  <VIEW name="configure-if-view">
         <COMMAND
             name="queue"
             help="Queue configuration">
@@ -70,8 +33,8 @@ limitations under the License.
                ptype="STRING_32"
                >
               <PARAM 
-                name="wred-profile"
-                help="WRED profile" 
+                name="wred-policy"
+                help="WRED policy" 
                 mode="subcommand"
                 ptype="SUBCOMMAND">
                 <PARAM
@@ -83,7 +46,7 @@ limitations under the License.
               </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_qos patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile ${intf_name}:${qid} ${wred_prof_name}
+                sonic_cli_qos patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile ${iface}:${qid} ${wred_prof_name}
             </ACTION>
         </COMMAND>
 
@@ -97,20 +60,28 @@ limitations under the License.
                >
             </PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_qos patch_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${intf_name} ${sp_name}
+                sonic_cli_qos patch_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name ${iface} ${sp_name}
             </ACTION>
         </COMMAND>
 
-
-        <COMMAND name="no" help="Negate a command"/>
         <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/output/scheduler-policy/config/name
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/output/scheduler-policy/config/name
             </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="qos-map"
+            help="QoS Map Configuration"
+            >
+        </COMMAND>
+        <COMMAND
+            name="no qos-map"
+            help="QoS Map Unconfiguration"
+            >
         </COMMAND>
 
         <COMMAND
-            name="dscp-to-tc-map"
+            name="qos-map dscp-tc"
             help="DSCP to TC map configuration">
            <PARAM
                name="dscp_tc_map_name"
@@ -119,19 +90,19 @@ limitations under the License.
                >
             </PARAM>
             <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${intf_name} ${dscp_tc_map_name}
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${iface} ${dscp_tc_map_name}
             </ACTION>
         </COMMAND>
 
 
-        <COMMAND name="no dscp-to-tc-map" help="Unconfigure a DSCP to TC map">
+        <COMMAND name="no qos-map dscp-tc" help="Unconfigure a DSCP to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
             </ACTION>
         </COMMAND>
 
         <COMMAND
-            name="dot1p-to-tc-map"
+            name="qos-map dot1p-tc"
             help="DOT1P to TC map configuration">
            <PARAM
                name="dot1p_tc_map_name"
@@ -140,14 +111,56 @@ limitations under the License.
                >
             </PARAM>
             <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${intf_name} ${dot1p_tc_map_name}
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${iface} ${dot1p_tc_map_name}
             </ACTION>
         </COMMAND>
 
 
-        <COMMAND name="no dot1p-to-tc-map" help="Unconfigure a DOT1P to TC map">
+        <COMMAND name="no qos-map dot1p-tc" help="Unconfigure a DOT1P to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${intf_name}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="qos-map tc-queue"
+            help="TC to Queue map configuration">
+           <PARAM
+               name="tc_queue_map_name"
+               help="TC to Queue map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_queue_map ${iface} ${tc_queue_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no qos-map tc-queue" help="Unconfigure a TC to Queue map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-queue
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="qos-map tc-pg"
+            help="TC to priority group map configuration">
+           <PARAM
+               name="tc_pg_map_name"
+               help="TC to PG map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_pg_map ${iface} ${tc_pg_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no qos-map tc-pg" help="Unconfigure a TC to Priority Group map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-priority-group
             </ACTION>
         </COMMAND>
 
@@ -158,17 +171,99 @@ limitations under the License.
                ptype="STRING_32"
                >
               <PARAM 
-                name="wred-profile"
-                help="WRED profile"
+                name="wred-policy"
+                help="WRED policy"
                 mode="subcommand"
                 ptype="SUBCOMMAND">
               </PARAM>
            </PARAM>
            <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/queues/queue=${intf_name}:${qid}/wred/config/openconfig-qos-ext:wred-profile
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/queues/queue=${iface}:${qid}/wred/config/openconfig-qos-ext:wred-profile
             </ACTION>
         </COMMAND>
 
+        <COMMAND
+            name="pfc"
+            help="PFC Configuration">
+            <PARAM 
+                name="pfc-subcmd"
+                help="PFC commands"
+                mode="switch"
+                ptype="SUBCOMMAND"
+                >
+                <PARAM 
+                    name="priority"
+                    help="PFC Priority commands"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                    <PARAM
+                        name="dot1p"
+                        help="Priority value (0-7)"
+                        ptype="RANGE_0_7"
+                        >
+                    </PARAM>
+                </PARAM>
+                <PARAM 
+                    name="asymmetric"
+                    help="PFC asymmetric configuration"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                </PARAM>
+            </PARAM>
+            <ACTION>
+            if test "${pfc-subcmd}" = "priority"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable ${iface} ${dot1p} &#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric ${iface} &#xA;
+            fi&#xA;
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="no pfc"
+            help="Delete PFC Configuration">
+            <PARAM 
+                name="pfc-subcmd"
+                help="PFC commands"
+                mode="switch"
+                ptype="SUBCOMMAND"
+                >
+                <PARAM 
+                    name="priority"
+                    help="PFC Priority commands"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                    <PARAM
+                        name="dot1p"
+                        help="Priority value (0-7)"
+                        ptype="RANGE_0_7"
+                        optional="true"
+                        >
+                    </PARAM>
+                </PARAM>
+                <PARAM 
+                    name="asymmetric"
+                    help="PFC asymmetric configuration"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                </PARAM>
+            </PARAM>
+            <ACTION>
+            if test "${pfc-subcmd}" = "priority"; then&#xA;
+               if test "${dot1p}" = ""; then&#xA;
+                  python $SONIC_CLI_ROOT/sonic_cli_qos.py delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities ${iface} &#xA;
+               else&#xA;
+                  python $SONIC_CLI_ROOT/sonic_cli_qos.py delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable ${iface} ${dot1p} &#xA;
+               fi&#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py delete_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric ${iface} &#xA;
+            fi&#xA;
+            </ACTION>
+        </COMMAND>
   </VIEW>
   <VIEW name="enable-view">
     <COMMAND name="show qos" help="Show QoS information">
@@ -178,40 +273,59 @@ limitations under the License.
             ptype="SUBCOMMAND"
             mode="subcommand"
             >
-          <PARAM
-             name="Ethernet"
-             help="Name of physical interface"
-             ptype="SUBCOMMAND"
-             mode="subcommand"
-             >
-          <PARAM
-             name="intf_name"
-             help="Name of physical interface"
-             ptype="STRING"
-             >
-             <PARAM
-              name="queue"
-              help="Queue Id"
-              ptype="SUBCOMMAND"
-              mode="subcommand"
-              optional="true"
-              >
+            <PARAM 
+                name="intf_cmd"
+                help="interface QoS info"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                >
                 <PARAM
-                 name="queue-id"
-                 help="Queue id: 0, 1, .. etc"
-                 ptype="STRING"
-                 >
+                    name="Ethernet"
+                    help="Name of physical interface"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                    <PARAM
+                        name="intf_name"
+                        help="Name of physical interface"
+                        ptype="STRING"
+                        >
+                        <PARAM
+                            name="queue"
+                            help="Queue Id"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            optional="true"
+                            >
+                            <PARAM
+                                name="queue-id"
+                                help="Queue id: 0, 1, .. etc"
+                                ptype="STRING"
+                                >
+                            </PARAM>
+                        </PARAM>
+                    </PARAM>
                 </PARAM>
-              </PARAM>
-          </PARAM>
-          </PARAM>
+                <PARAM
+                    name="pfc"
+                    help="PFC configuations of physical interfaces"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                </PARAM>
+            </PARAM>
         </PARAM>
         <ACTION>
+            if test "${intf_cmd}" != "Ethernet"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_pfc_summary &#xA;
+            else&#xA;
             if test "${queue}" != ""; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_queues_queue Ethernet${intf_name}:${queue-id} &#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config Ethernet${intf_name} &#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps Ethernet${intf_name} &#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_pfc Ethernet${intf_name} &#xA;
+            fi&#xA;   
             fi&#xA;   
         </ACTION>
       <xi:include href="include/pipe.xml"/>

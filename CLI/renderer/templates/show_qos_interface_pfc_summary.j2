@@ -1,0 +1,38 @@
+{{'-----------------------------------------------'}}
+{{'%-15s'|format("Port")}}{{'%-15s'|format("Priority")}}{{'%-15s'|format("Asymmetric")}}
+{{'------------------------------------------------'}}
+{% if json_output %}
+{% set intf_info_list = json_output['interface'] %}
+{% for intf_info in intf_info_list %}
+  {% set intfName = intf_info['interface-id'] %}
+  {% if intf_info['openconfig-qos-ext:pfc'] %}
+     {% set pfc_config = intf_info['openconfig-qos-ext:pfc']['config'] %}
+     {% if pfc_config %}
+        {% if pfc_config['asymmetric'] == true %}
+           {% set pfc_asymmetric = 'on' %}
+        {% else %}
+           {% set pfc_asymmetric = 'off' %}
+        {% endif %}
+     {% else %}
+        {% set pfc_asymmetric = 'off' %}
+     {% endif %}
+     {% set pfc_priroity = [ ] %}
+     {% set prio_list = intf_info['openconfig-qos-ext:pfc']['pfc-priorities']['pfc-priority'] %}
+     {% if prio_list %}
+       {% for prio_info in prio_list %}
+          {% set prio_state_info = prio_info['state'] %}
+          {% if prio_state_info['enable'] == true %}
+            {% set pfc_enable = prio_state_info['dot1p']|string %}
+            {% do pfc_priroity.append(pfc_enable) %}
+            {% set pfc_en = true %}
+          {% endif %}
+       {% endfor %}
+    {% endif %}
+    {% if pfc_en == true %}
+{{'%-15s'|format(intfName)}}{{'%-15s'|format(pfc_priroity|join(","))}}{{'%-15s'|format(pfc_asymmetric)}}
+    {% else %}
+{{'%-15s'|format(intfName)}}{{'%-15s'|format("-")}}{{'%-15s'|format(pfc_asymmetric)}}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+{% endif %}
