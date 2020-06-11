@@ -1,0 +1,46 @@
+{{ 'Policy copp-system-policy Type copp'}}
+{% for arr1 in json_output %}
+{% for arr2 in json_output[arr1] %}
+{{ '  Flow' }} {{ arr2['name']}}
+{% if 'trap-group' in arr2.keys() %}
+{{ '    Action' }} {{ arr2['trap-group']|lower}}
+{% endif %}
+{% if 'trap-action' in arr2.keys() %}
+{{ '      trap-action' }} {{ arr2['trap-action']|lower}}
+{% endif %}
+{% if 'trap-priority' in arr2.keys() %}
+{{ '      trap-priority' }} {{ arr2['trap-priority']}}
+{% endif %}
+{% if 'queue' in arr2.keys() %}
+{{ '      trap-queue' }} {{ arr2['queue']}}
+{% endif %}
+{% if 'cir' in arr2.keys() %}
+{% set str = '      police cir ' + arr2['cir'] %}
+{% if 'cbs' in arr2.keys() %}
+{% set str = str + ' cbs ' + arr2['cbs'] %}
+{% endif %}
+{% if 'pir' in arr2.keys() %}
+{% set str = str + ' pir ' + arr2['pir'] %}
+{% endif %}
+{% if 'pbs' in arr2.keys() %}
+{% set str = str + ' pbs ' + arr2['pbs'] %}
+{% endif %}
+{{ str }}
+{% if 'meter-type' in arr2.keys() %}
+{{ '        meter-type' }} {{ arr2['meter-type']|lower}}
+{% endif %}
+{% if 'mode' in arr2.keys() %}
+{{ '        mode' }} {{ arr2['mode']|lower}}
+{% endif %}
+{% if 'red-action' in arr2.keys() %}
+{{ '        red-action' }} {{ arr2['red-action']|lower}}
+{% endif %}
+{% if 'yellow-action' in arr2.keys() %}
+{{ '        yellow-action' }} {{ arr2['yellow-action']|lower}}
+{% endif %}
+{% if 'green-action' in arr2.keys() %}
+{{ '        green-action' }} {{ arr2['green-action']|lower}}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
