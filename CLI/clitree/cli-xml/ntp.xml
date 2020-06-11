@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<!--
+Copyright 2020 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+  <VIEW name="enable-view">
+
+    <COMMAND name="show ntp" 
+             help="Display NTP information"/>
+
+    <COMMAND name="show ntp global" 
+             help="Display NTP global configuration" 
+             mode="subcommand" 
+             ptype="SUBCOMMAND">
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp get_ntp_global show_ntp.j2  
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="show ntp server" 
+             help="Display NTP server configuration" 
+             mode="subcommand" 
+             ptype="SUBCOMMAND">
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp get_ntp_server show_ntp.j2  
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="show ntp associations" 
+             help="Display NTP associations" 
+             mode="subcommand" 
+             ptype="SUBCOMMAND">
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp get_ntp_associations show_ntp.j2  
+      </ACTION>
+    </COMMAND>
+
+  </VIEW>
+
+  <VIEW name="configure-view">
+
+    <!-- NTP configuration commands -->
+    <COMMAND name="ntp"
+             help="NTP configuration">
+    </COMMAND>
+
+    <COMMAND name="no ntp"
+             help="Delete NTP configuration">
+    </COMMAND>
+
+    <!-- NTP server configuration commands -->
+    <COMMAND name="ntp server"
+             help="Configure NTP server"
+             mode="subcommand"
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/server_address={addr}">
+      <PARAM name="svropt"
+             help="NTP server address"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="ip"
+               help="NTP server IPv4/IPv6 address"
+               ptype="IPV4V6_ADDR"
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/server_address">
+        </PARAM>
+        <PARAM name="server-name"
+               help="NTP server name"
+               ptype="HOSTNAME_STR_64"
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/server_address">
+        </PARAM>
+      </PARAM>
+      <ACTION
+        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/servers/server=${ip}${server-name}/config body={"openconfig-system:config": {"address": "${ip}${server-name}"}}
+      </ACTION>
+    </COMMAND>
+
+    <!-- no NTP server configuration commands -->
+    <COMMAND name="no ntp server"
+             help="Delete NTP server">
+      <PARAM name="svropt"
+             help="NTP server address"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="ip"
+               help="NTP server IPv4/IPv6 address"
+               ptype="IPV4V6_ADDR">
+        </PARAM>
+        <PARAM name="server-name"
+               help="NTP server name"
+               ptype="HOSTNAME_STR_64">
+        </PARAM>
+      </PARAM>
+      <ACTION
+        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/servers/server=${ip}${server-name}
+      </ACTION>
+    </COMMAND>
+
+    <!-- NTP source configuration commands -->
+    <COMMAND name="ntp source-interface"
+             help="Configure NTP source interface to pick the source IP, used for the NTP packets"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             command_keys="global_key=global"
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/global_key={global_key}"
+             render_command_cb="ntp_server_source_if">
+      <PARAM name="iftype"
+             help="Interface type"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="Ethernet"
+               help="Ethernet interface"
+               ptype="PHY_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+        <PARAM name="Loopback"
+               help="Loopback interface"
+               ptype="LOOPBACK_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+        <PARAM name="Management"
+               help="Management Interface"
+               ptype="MGMT_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+        <PARAM name="PortChannel"
+               help="PortChannel interface"
+               ptype="PO_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+        <PARAM name="Vlan"
+               help="Vlan interface"
+               ptype="VLAN_INTERFACE"
+               mode="subcommand">
+        </PARAM>
+      </PARAM>
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_source ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}
+      </ACTION>
+    </COMMAND>
+
+    <!-- no NTP source configuration commands -->
+    <COMMAND name="no ntp source-interface"
+             help="Delete NTP source-interface">
+      <ACTION
+        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface
+      </ACTION>
+    </COMMAND>
+
+    <!-- NTP VRF configuration commands -->
+    <COMMAND name="ntp vrf"
+             help="Enable NTP on VRF"
+             mode="subcommand"
+             command_keys="global_key=global"
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/global_key={global_key}">
+      <PARAM name="vrfopt"
+             help="VRF type"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="mgmt"
+               help="Enable NTP on management VRF"
+               ptype="SUBCOMMAND"
+               mode="subcommand"
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/vrf=mgmt">
+        </PARAM>
+        <PARAM name="default"
+               help="Enable NTP on default VRF"
+               ptype="SUBCOMMAND"
+               mode="subcommand"
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/vrf=default">
+        </PARAM>
+      </PARAM>
+      <ACTION
+        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/config body={"openconfig-system:config":{"openconfig-system-ext:vrf":"${mgmt}${default}"}}
+      </ACTION>
+    </COMMAND>
+
+    <!-- no NTP VRF configuration commands -->
+    <COMMAND name="no ntp vrf"
+             help="Disable NTP on VRF">
+      <ACTION
+        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:vrf
+      </ACTION>
+    </COMMAND>
+
+  </VIEW>
+
+</CLISH_MODULE>
