@@ -181,11 +181,17 @@ limitations under the License.
                help="Enable NTP on management VRF"
                ptype="SUBCOMMAND"
                mode="subcommand"
-               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/vrf">
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/vrf=mgmt">
+        </PARAM>
+        <PARAM name="default"
+               help="Enable NTP on default VRF"
+               ptype="SUBCOMMAND"
+               mode="subcommand"
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/vrf=default">
         </PARAM>
       </PARAM>
       <ACTION
-        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/config body={"openconfig-system:config":{"openconfig-system-ext:vrf":"${mgmt}"}}
+        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/config body={"openconfig-system:config":{"openconfig-system-ext:vrf":"${mgmt}${default}"}}
       </ACTION>
     </COMMAND>
 
