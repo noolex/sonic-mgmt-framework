@@ -21,6 +21,12 @@
   {% if map_config['forwarding-group-to-priority-group'] %}
       {{'    tc-pg-map: '}}{{map_config['forwarding-group-to-priority-group']}}
   {% endif %}
+  {% if map_config['forwarding-group-to-dscp'] %}
+      {{'    tc-dscp-map: '}}{{map_config['forwarding-group-to-dscp']}}
+  {% endif %}
+  {% if map_config['forwarding-group-to-dot1p'] %}
+      {{'    tc-dot1p-map: '}}{{map_config['forwarding-group-to-dot1p']}}
+  {% endif %}
   {% endif %}
   {% if json_output['openconfig-qos-ext:pfc'] %}
   {% set pfc_config = json_output['openconfig-qos-ext:pfc']['config'] %}
@@ -44,12 +50,6 @@
     {% endif %}
   {% endfor %}
       {{'    pfc-priority  : '}}{{'%s'| format(temp|join(","))}}
-  {% endif %}
-  {% if map_config['forwarding-group-to-dscp'] %}
-      {{'    tc-to-dscp-map: '}}{{map_config['forwarding-group-to-dscp']}}
-  {% endif %}
-  {% if map_config['forwarding-group-to-dot1p'] %}
-      {{'    tc-to-dot1p-map: '}}{{map_config['forwarding-group-to-dot1p']}}
   {% endif %}
   {% endif %}
 {% endif %}
