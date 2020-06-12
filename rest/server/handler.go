@@ -59,12 +59,6 @@ func Process(w http.ResponseWriter, r *http.Request) {
 	var rtype string
 
 
-	// Since CLI connects via the unix socket, its RemoteAddr will be "@"
-	if r.RemoteAddr != "@" {
-		auditMsg := fmt.Sprintf("[%s] %s received from '%s@%s' for %s; content-len=%d",
-				reqID, r.Method, rc.Auth.User, r.RemoteAddr, r.URL.Path, r.ContentLength)
-		Writer.Info(auditMsg)
-	}
 	_, args.data, err = getRequestBody(r, rc)
 
 
@@ -105,6 +99,15 @@ func Process(w http.ResponseWriter, r *http.Request) {
 
 write_resp:
 	glog.Infof("[%s] Sending response %d, type=%s, size=%d", reqID, status, rtype, len(data))
+
+	// Since CLI connects via the unix socket, its RemoteAddr will be "@"
+	if r.RemoteAddr != "@" {
+		auditMsg := fmt.Sprintf("[%s] User \"%s@%s\" request \"%s %s\" status - %d",
+				reqID, rc.Auth.User, r.RemoteAddr, r.Method, r.URL.Path, status)
+		//auditMsg := fmt.Sprintf("[%s] %s received from '%s@%s' for %s status - %d",
+	        //		reqID, r.Method, rc.Auth.User, r.RemoteAddr, r.URL.Path, status)
+		Writer.Info(auditMsg)
+	}
 
 	// Write http response.. Following strict order should be
 	// maintained to form proper response.

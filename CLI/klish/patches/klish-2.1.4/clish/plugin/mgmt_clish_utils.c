@@ -27,7 +27,7 @@ int interruptRecvd = 0;
 int ctrlc_rd_fd = 0, ctrlc_wr_fd = 0;
 
 void log_user_command(clish_shell_t * cli_shell, char *cmd_str, int result) {
-    syslog(LOG_INFO|LOG_LOCAL4, "User \"%s\" command \"%s\" - %s",
+    syslog(LOG_INFO|LOG_LOCAL4, "User \"%s\" command \"%s\" status - %s",
             cli_shell->user->pw_name,
             cmd_str, !result ? "success" : "failure");
 }
