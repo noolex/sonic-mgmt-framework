@@ -17,6 +17,7 @@
 
 import syslog as log
 import sys
+import json
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
@@ -153,6 +154,21 @@ def get_vrf(intf):
         log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
 
+def process_response(response):
+        response = response.content
+        if response is None:
+                return None
+        try:
+            msg = response.get('ietf-restconf:errors').get('error')
+            if msg is None:
+                    return None
+            msg = "% Error: " + msg[0].get('error-message')
+            return msg
+        except Exception as e:
+            log.syslog(log.LOG_ERR, str(e))
+            msg = "% Error: Internal error"
+            return msg
+
 def process_args(args):
   global inputDict
 
@@ -166,7 +182,7 @@ def process_args(args):
 
 def run(func, args):
     global inputDict
-    status = 0
+    response = None
 
     process_args(args)
 
@@ -178,9 +194,13 @@ def run(func, args):
         return 1
 
     if func.startswith("patch"):
-        apiClient.patch(keypath, body)
+        response = apiClient.patch(keypath, body)
     if func.startswith("del"):
-        apiClient.delete(keypath)
+        response = apiClient.delete(keypath)
+    if response is not None:
+        msg = process_response(response)
+        if msg is not None:
+            print(msg)
 
     inputDict = {}
     return 0
