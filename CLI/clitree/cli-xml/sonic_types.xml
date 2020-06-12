@@ -70,7 +70,7 @@ limitations under the License.
     <PTYPE
         name="LAG_ID"
         method="integer"
-        pattern="1..256"
+        pattern="1..128"
         help=""
         />
     <!--=======================================================-->
@@ -1171,7 +1171,6 @@ limitations under the License.
         name="VTEP_NAME"
         pattern="^vtep([a-zA-Z0-9_-]){1,59}$"
         ext_pattern="vtep(string)"
-        help="Name of VTEP (Max size 63, prefixed by vtep)"
         />
     <!--=======================================================-->
     <PTYPE
