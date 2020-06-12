@@ -92,6 +92,14 @@ def invoke(func, args=[]):
     if func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc_summary':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces')
         return api.get(path)
+    if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
+        body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-dscp": args[1]} }
+        return api.patch(path, body)
+    if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dot1p':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
+        body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-dot1p": args[1]} }
+        return api.patch(path, body)
 
     return api.cli_not_implemented(func)
 
