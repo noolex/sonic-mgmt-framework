@@ -40,8 +40,108 @@ def invoke(func, args):
     
     modName = "openconfig-aaa-ldap-ext:"
     baseLdapUri = "/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/"
+
+    if commandType == 'ldap_global_config' :
+        ldap_type = "LDAP"
+    elif commandType == 'ldap_nss_config' :
+        ldap_type = "LDAP_NSS"
+    elif commandType == 'ldap_pam_config' :
+        ldap_type = "LDAP_PAM"
+    elif commandType == 'ldap_sudo_config' : 
+        ldap_type = "LDAP_SUDO"
                
-    if commandType == 'ldap_server_config':
+    if commandType == 'ldap_global_config' or commandType == 'ldap_nss_config' or commandType == 'ldap_pam_config' or commandType == 'ldap_sudo_config':
+        if isDel == False :
+            field_val = args[1]
+            
+        if args[0] == "timelimit" :
+            field_name = "search-time-limit"
+            if isDel == False:
+                bodyParam = int(field_val)
+        elif args[0] == "bind-timelimit" :
+            field_name = "bind-time-limit"
+            if isDel == False:
+                bodyParam = int(field_val)
+        elif args[0] == "idle-timelimit" :
+            field_name = "idle-time-limit"
+            if isDel == False:
+                bodyParam = int(field_val)
+        elif args[0] == "retry" :
+            field_name = "retransmit-attempts"
+            if isDel == False:
+                bodyParam = int(field_val)
+        elif args[0] == "port" :
+            field_name = "port"
+            bodyParam = field_val
+        elif args[0] == "version" :
+            field_name = "version"
+            if isDel == False:
+                bodyParam = int(field_val)
+        elif args[0] == "base" :
+            field_name = "base"
+            bodyParam = field_val
+        elif args[0] == "ssl" :
+            field_name = "ssl"
+            bodyParam = field_val.upper()
+        elif args[0] == "binddn" :
+            field_name = "bind-dn"
+            bodyParam = field_val            
+        elif args[0] == "bindpw" :
+            field_name = "bind-pw"
+            bodyParam = field_val            
+        elif args[0] == "scope" :
+            field_name = "scope"
+            bodyParam = field_val.upper()            
+        elif args[0] == "nss-base-passwd" :
+            field_name = "nss-base-passwd"
+            bodyParam = field_val            
+        elif args[0] == "nss-base-group" :
+            field_name = "nss-base-group"
+            bodyParam = field_val            
+        elif args[0] == "nss-base-shadow" :
+            field_name = "nss-base-shadow"
+            bodyParam = field_val            
+        elif args[0] == "nss-base-netgroup" :
+            field_name = "nss-base-netgroup"
+            bodyParam = field_val            
+        elif args[0] == "nss-base-sudoers" :
+            field_name = "nss-base-sudoers"
+            bodyParam = field_val            
+        elif args[0] == "nss-initgroups-ignoreusers" :
+            field_name = "nss-initgroups-ignoreusers"
+            bodyParam = field_val            
+        elif args[0] == "sudoers-base" :
+            field_name = "sudoers-base"
+            bodyParam = field_val            
+        elif args[0] == "pam-filter" :
+            field_name = "pam-filter"
+            bodyParam = field_val            
+        elif args[0] == "pam-login-attribute" :
+            field_name = "pam-login-attribute"
+            bodyParam = field_val            
+        elif args[0] == "pam-group-dn" :
+            field_name = "pam-group-dn"
+            bodyParam = field_val            
+        elif args[0] == "pam-member-attribute" :
+            field_name = "pam-member-attribute"
+            bodyParam = field_val            
+        elif args[0] == "source-ip" :
+            field_name = "source-address"
+            bodyParam = field_val            
+        elif args[0] == "vrf" :
+            field_name = "vrf-name"
+            bodyParam = field_val
+            
+        keypath = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group={ldapType}/'+modName+'ldap/config/{fieldName}',
+                ldapType=ldap_type, fieldName=field_name)
+        
+        if isDel == False :            
+            body = { (modName+field_name) : bodyParam }
+            return aa.patch(keypath, body)
+        else:
+            return aa.delete (keypath)
+               
+    elif commandType == 'ldap_server_config':
         if isDel == False :
             keypath = cc.Path(baseLdapUri+'servers/server={address}', address=args[0])
             body = {   "openconfig-system:server": [ {
