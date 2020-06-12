@@ -240,7 +240,7 @@
 > 						clish_param__get_ptype(param);
 > 					if ((CLISH_PTYPE_METHOD_REGEXP_SELECT != clish_ptype__get_method(ptype)) && 
 > 					(!arg || (arg && (pname == lub_string_nocasestr(pname, arg)))))
-148a322,343
+148a322,356
 > 					else if (CLISH_PTYPE_METHOD_REGEXP_SELECT ==
 > 						clish_ptype__get_method(ptype)) {
 > 						const char *name;
@@ -250,6 +250,19 @@
 > 							name = clish_ptype_regexp_select__get_name(ptype, j);
 > 							if ((!arg) || (name && ((name == lub_string_nocasestr(name, arg))))) {
 > 								clish_pargv_insert(last, param, arg);
+>                                                                 if (strncmp(cmd_name, IFACE_CMD, strlen(IFACE_CMD))) {
+>                                                                         if (*idx + 1 == need_index)
+>                                                                                 clish_ptype__set_usename(ptype, USE_VALUE);
+>                                                                         else if (cnt > 1)
+>                                                                                 clish_ptype__set_usename(ptype, USE_RANGE);
+>                                                                         else
+>                                                                                 clish_ptype__set_usename(ptype, USE_NAME);
+>                                                                 } else {
+>                                                                         if (*idx + 1 == need_index)
+>                                                                                 clish_ptype__set_usename(ptype, USE_VALUE);
+>                                                                         else
+>                                                                                 clish_ptype__set_usename(ptype, USE_NAME);
+>                                                                 }
 > 								break;
 > 							}
 > 							if(name != NULL) {
@@ -263,11 +276,11 @@
 >                             				name = NULL;
 >                         			}
 > 					}
-173c368
+173c381
 < 			if (clish_pargv_find_arg(pargv, clish_param__get_name(param))) {
 ---
 > 			if (clish_pargv_find_arg(pargv, clish_param__get_name(param))) { 
-187a383,471
+187a396,484
 > 					} else {
 > 						/*  For CLISH_PTYPE_REGEXP_SELECT method, we try to match the
 > 						 *  input arg against a PARAM. If it is not matching we try
@@ -357,7 +370,7 @@
 > 									*strmatchLen = strmatch;
 >                                                         }
 > 						}
-192a477,547
+192a490,560
 > 				/*  For CLISH_PTYPE_REGEXP_SELECT method, we try to match the
 > 				 *  input arg against a PARAM. If it is not matching we try
 > 				 *  concatenating the next arg to this arg and try matching
@@ -429,7 +442,7 @@
 > 							*strmatchLen = strmatch;
 >                                         }
 > 				}
-203,204c558,562
+203,204c571,575
 < 					clish_pargv_insert(pargv, param,
 < 						validated);
 ---
@@ -438,25 +451,25 @@
 > 						lub_string_free(validated);
 > 						return CLISH_BAD_PARAM;
 > 					}
-220c578
+220c591
 < 							argv, idx, last, need_index);
 ---
 > 							argv, idx, last, need_index, errP, strmatchLen);
-250c608,610
+250c621,623
 < 					else
 ---
 > 					else {
 > 						clish_pargv_insert(pargv, param,
 > 								   clish_param__get_name(param));
-251a612
+251a625
 > 					}
-275c636
+275c649
 < 			(*idx <= argc) && (index >= paramc)) {
 ---
 > 			(*idx <= argc) && (index >= paramc) && (need_index != 0)) {
-296d656
+296d669
 < 			char *enc = NULL;
-301,304c661
+301,304c674
 < 			/* Escape quote and backslash */
 < 			enc = lub_string_encode(arg, lub_string_esc_quoted);
 < 			lub_string_cat(&args, enc);
