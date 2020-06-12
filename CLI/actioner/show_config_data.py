@@ -20,6 +20,7 @@ from show_config_bgp import *
 from show_config_interface import *
 from show_config_authentication import *
 from show_config_dns import *
+from show_config_table_sort import *
 from show_config_ntp import *
 from show_config_ptp import *
 
@@ -29,7 +30,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
 
 
 render_filelst  = {}
@@ -53,3 +54,4 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_master_table'        : show_ptp_master_table
  }
 
+table_sort_cb_dict = {'PORT_LIST' : natsort_list }
