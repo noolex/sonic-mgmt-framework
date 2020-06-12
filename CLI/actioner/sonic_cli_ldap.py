@@ -200,6 +200,14 @@ def invoke(func, args):
         else:
             keypath = cc.Path(baseLdapUri+modName+'ldap/maps/map='+mapName+','+args[1]+'/config/to')
             return aa.delete(keypath)
+    elif func == 'ldap_server_src_if_config':
+        path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/source-interface')
+        body = { "openconfig-aaa-ldap-ext:source-interface": args[0] if args[0] != 'Management0' else 'eth0' }
+        return aa.patch(path, body)
+    elif func == 'ldap_server_vrf_config':
+        path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/vrf-name')
+        body = { "openconfig-aaa-ldap-ext:vrf-name": args[0]}
+        return aa.patch(path, body)
     else:
         print("%Error: not implemented")
         exit(1)

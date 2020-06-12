@@ -104,6 +104,12 @@ limitations under the License.
      help=""
      />
      
+<PTYPE
+     name="LDAP_VRF"
+     pattern="(Vrf(([0-9A-Za-z]){1,28}))|(mgmt)"
+     help="Name of VRF (Max size 32, (mgmt, or prefixed by Vrf)"
+/>
+
 <!--=======================================================-->
 
 <!-- Config mode -->
@@ -403,6 +409,40 @@ limitations under the License.
 				
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_sudo_config ${__params}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="ldap-server source-interface"
+             help="Configure source interface to be used as  source IP for the LDAP packets"
+             ptype="SUBCOMMAND"
+			 mode="subcommand">
+        <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
+          <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+        </PARAM>
+		  <ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_src_if_config ${__params}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configure source-interface to be used for LDAP packets </DESCRIPTION>
+		<EXAMPLE>
+			   sonic(config)# ldap-server source-interface Loopback 3
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ldap-server vrf" help="Configure  VRF to be used for LDAP server connection">
+        <PARAM name="vrf_name" help="" ptype="LDAP_VRF" >
+        </PARAM>
+		  <ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_vrf_config ${__params}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configure VRF tp be used for LDAP server connection </DESCRIPTION>
+		<EXAMPLE>
+               sonic(config)# ldap-server vrf Vrf1
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="ldap-server host" help="Configure host name for a LDAP server">
@@ -720,6 +760,34 @@ limitations under the License.
                 
 			</PARAM>
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_map_config ${__params}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ldap-server source-interface"
+             help="Unconfigure global source interface for LDAP">
+      <ACTION
+		  builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/source-interface
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigure global source interface for LDAP</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# no ldap-server source-interface
+               sonic(config)# 
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no ldap-server vrf"
+             help="Unconfigure global vrf for LDAP">
+      <ACTION
+		  builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/vrf-name
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigure global vrf for LDAP</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# no ldap-server vrf
+               sonic(config)# 
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 			    
 </VIEW>
