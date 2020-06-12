@@ -56,6 +56,42 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
         body = {"openconfig-qos-maps-ext:config": { "dot1p-to-forwarding-group": args[1]} }
         return api.patch(path, body)
+    if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities/pfc-priority', interface_id=args[0])
+        prio = int(args[1])
+        body = {"openconfig-qos-ext:pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":True}}]}
+        return api.patch(path, body)
+    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities/pfc-priority', interface_id=args[0])
+        prio = int(args[1])
+        body = {"openconfig-qos-ext:pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":False}}]}
+        return api.patch(path, body)
+
+    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/pfc-priorities', intf_name=args[0])
+        return api.delete(path)
+
+    if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
+        body = {"openconfig-qos-ext:asymmetric" : True}
+        return api.patch(path, body)
+    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
+        return api.delete(path)
+    if func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc', interface_id=args[0])
+        return api.get(path)
+    if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_queue_map':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
+        body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-queue": args[1]} }
+        return api.patch(path, body)
+    if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_pg_map':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
+        body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-priority-group": args[1]} }
+        return api.patch(path, body)
+    if func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc_summary':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces')
+        return api.get(path)
     if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
         body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-dscp": args[1]} }
@@ -87,25 +123,23 @@ def getIfId(item):
 
 def run(func, args):
 
-    response = invoke(func, args)
+    try:
+       response = invoke(func, args)
 
-    if response.ok():
-        if response.content is not None:
-            api_response = response.content
-            
-            #print api_response
-            #print sys.argv[2:]
+       if response.ok():
+          if response.content is not None:
+             api_response = response.content
 
-            if func == 'get_openconfig_qos_qos_interfaces_interface_output_queues_queue_state':
+             if func == 'get_openconfig_qos_qos_interfaces_interface_output_queues_queue_state':
                 show_cli_output('show_qos_interface_queue_counters.j2', response)
-            elif func == 'get_openconfig_qos_qos_interfaces_interface_output_queues':
+             elif func == 'get_openconfig_qos_qos_interfaces_interface_output_queues':
                 if 'openconfig-qos:queues' in api_response:
                     value = api_response['openconfig-qos:queues']
                     if 'queue' in value:
                         tup = value['queue']
                         value['queue'] = sorted(tup, key=getQId)
                 show_cli_output(sys.argv[3], response['openconfig-qos:queues'])
-            elif func == 'get_openconfig_qos_qos_interfaces':
+             elif func == 'get_openconfig_qos_qos_interfaces':
                 if 'openconfig-qos:interfaces' in api_response:
                     value = api_response['openconfig-qos:interfaces']
                     if 'interface' in value:
@@ -121,24 +155,35 @@ def run(func, args):
                            tup = valdic['input']['openconfig-qos-ext:priority-groups']['priority-group']
                            valdic['input']['openconfig-qos-ext:priority-groups']['priority-group'] = sorted(tup, key=getQId)
                 show_cli_output(sys.argv[2], response['openconfig-qos:interfaces'])
-            elif func == 'get_openconfig_qos_ext_qos_interfaces_interface_input_priority_groups':
-                 if 'openconfig-qos-ext:priority-groups' in api_response:
+             elif func == 'get_openconfig_qos_ext_qos_interfaces_interface_input_priority_groups':
+                if 'openconfig-qos-ext:priority-groups' in api_response:
                     value = api_response['openconfig-qos-ext:priority-groups']
                     if 'priority-group' in value:
                         tup = value['priority-group']
                         value['priority-group'] = sorted(tup, key=getQId)
-                 show_cli_output(sys.argv[3], response['openconfig-qos-ext:priority-groups'])
-            elif func == 'get_list_openconfig_qos_ext_qos_threshold_breaches_breach':
+                show_cli_output(sys.argv[3], response['openconfig-qos-ext:priority-groups'])
+             elif func == 'get_list_openconfig_qos_ext_qos_threshold_breaches_breach':
                 show_cli_output('show_qos_queue_threshold_breaches.j2', response)
-            elif func == 'get_openconfig_qos_qos_queues_queue':
+             elif func == 'get_openconfig_qos_qos_queues_queue':
                 show_cli_output('show_qos_queue_config.j2', response)
-            elif func == 'get_openconfig_qos_qos_interface_scheduler_policy_config':
+             elif func == 'get_openconfig_qos_qos_interface_scheduler_policy_config':
                 show_cli_output('show_qos_interface_config.j2', response)
-            elif func == 'get_openconfig_qos_qos_interfaces_interface_maps':
+             elif func == 'get_openconfig_qos_qos_interfaces_interface_maps':
                 show_cli_output('show_qos_interface_config.j2', response)
+             elif func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc':
+                show_cli_output('show_qos_interface_config.j2', response)
+             elif func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc_summary':
+                if 'openconfig-qos:interfaces' in api_response:
+                    value = api_response['openconfig-qos:interfaces']
+                    if 'interface' in value:
+                        tup = value['interface']
+                        value['interface'] = sorted(tup, key=getIfId)
+                show_cli_output('show_qos_interface_pfc_summary.j2', response['openconfig-qos:interfaces'])
+       else:
+          print response.error_message()
 
-    else:
-        print response.error_message()
+    except Exception as e:
+        print("% Error: Internal error: " + str(e))
 
 
 
