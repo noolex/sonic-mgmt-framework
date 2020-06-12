@@ -32,6 +32,18 @@
                          {% if vars.update({'maxHopCount':"10"}) %}{% endif %}
                      {% endif %}
 {{"Max Hop Count: "}}{{ vars.maxHopCount}}
+                     {% if 'openconfig-relay-agent-ext:vrf' in RelayConfig %}
+                        {% if vars.update({'serverVrf':RelayConfig['openconfig-relay-agent-ext:vrf']}) %}{% endif %}
+                     {% else %}
+                        {% if vars.update({'serverVrf':"Not Configured"}) %}{% endif %}
+                     {% endif %}
+{{"Server Vrf: "}}{{ vars.serverVrf }}
+                     {% if 'openconfig-relay-agent-ext:vrf-select' in RelayConfig and RelayConfig['openconfig-relay-agent-ext:vrf-select'] == "ENABLE" %}
+                         {% if vars.update({'vrfSelect':"enable"}) %}{% endif %}
+                     {% else %}
+                         {% if vars.update({'vrfSelect':"disable"})  %}{% endif %}
+                     {% endif %}
+{{"Relay Vrf Select: "}}{{ vars.vrfSelect }}
                   {% endif %}
                {% endfor %}
             {% endfor %}
@@ -62,6 +74,18 @@
             {% if vars.update({'maxHopCount':"10"}) %}{% endif %}
          {% endif %}
 {{"Max Hop Count: "}}{{ vars.maxHopCount}}
+         {% if 'openconfig-relay-agent-ext:vrf' in RelayConfig %}
+            {% if vars.update({'serverVrf':RelayConfig['openconfig-relay-agent-ext:vrf']}) %}{% endif %}
+         {% else %}
+            {% if vars.update({'serverVrf':"Not Configured"}) %}{% endif %}
+         {% endif %}
+{{"Server Vrf: "}}{{ vars.serverVrf }}
+         {% if 'openconfig-relay-agent-ext:vrf-select' in RelayConfig and RelayConfig['openconfig-relay-agent-ext:vrf-select'] == "ENABLE" %}
+            {% if vars.update({'vrfSelect':"enable"}) %}{% endif %}
+         {% else %}
+             {% if vars.update({'vrfSelect':"disable"})  %}{% endif %}
+         {% endif %}
+{{"Relay Vrf Select: "}}{{ vars.vrfSelect }}
       {% endif %}
    {% endfor %}
 {% endif %}
