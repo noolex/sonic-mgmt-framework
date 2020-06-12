@@ -2,8 +2,8 @@ def show_dns_source_if(render_tables):
 
     cmd_str = ''
     cmd_prfx = 'ip name-server source-interface '
-    if 'sonic-system-dns:sonic-system-dns/DNS' in render_tables:
-        for dns_inst in render_tables['sonic-system-dns:sonic-system-dns/DNS']:
+    if 'sonic-system-dns:sonic-system-dns/DNS/DNS_LIST' in render_tables:
+        for dns_inst in render_tables['sonic-system-dns:sonic-system-dns/DNS/DNS_LIST']:
           if 'src_intf' in dns_inst:
             intf = dns_inst['src_intf']
             if intf.startswith('Ethernet'):
