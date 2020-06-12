@@ -15,15 +15,13 @@
     {{- '  Description:' }} {{ class_data["DESCRIPTION"] }}{{ "\n" }}
     {{- '  Match:' }}{{ "\n" }}
     {% if ("ACL_NAME" in class_data) and (class_data["ACL_NAME"] ) %}
-    {% if class_data["ACL_NAME"].endswith("_ACL_L2") %}
-    {{ "mac" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-7] }}
-    {% elif class_data["ACL_NAME"].endswith("_ACL_IPV4") %}
-    {{ "ip" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-9] }}
-    {% elif class_data["ACL_NAME"].endswith("_ACL_IPV6") %}
-    {{ "ipv6" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-9] }}
-    {% else %}
-    {{ 'match access-group' }} {{ class_data["ACL_NAME"] }}
-    {% endif %}
+        {% if class_data["ACL_TYPE"] == "L2" %}
+            {{- "    mac" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% elif class_data["ACL_TYPE"] == "L3" %}
+            {{- "    ip" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% elif class_data["ACL_TYPE"] == "L3V6" %}
+            {{- "    ipv6" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% endif %}
     {% endif %}
     {% if "ETHER_TYPE" in class_data %}
         {{- '    ethertype' }} {{ class_data["ETHER_TYPE"] }}

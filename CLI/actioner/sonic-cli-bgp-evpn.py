@@ -34,29 +34,29 @@ def invoke_api(func, args=[]):
     #Patch cases
     if func == 'patch_bgp_evpn_advertise_all_vni':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:advertise-all-vni',
+            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn/openconfig-bgp-evpn-ext:config'
+            +'/advertise-all-vni',
                 vrf=args[0], af_name=args[1])
         body = { "openconfig-bgp-evpn-ext:advertise-all-vni": True if args[2] == 'True' else False }
         return api.patch(keypath, body)
     elif func == 'patch_bgp_evpn_advertise_default_gw':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:advertise-default-gw',
+            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn/openconfig-bgp-evpn-ext:config'
+            +'/advertise-default-gw',
                 vrf=args[0], af_name=args[1])
         body = { "openconfig-bgp-evpn-ext:advertise-default-gw": True if args[2] == 'True' else False }
         return api.patch(keypath, body)
     elif func == 'patch_bgp_evpn_default_originate':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:default-originate/{originate_family}',
+            +'/openconfig-bgp-evpn-ext:default-originate/config/{originate_family}',
                 vrf=args[0], af_name=args[1], originate_family=args[2])
         body = { "openconfig-bgp-evpn-ext:{}".format(args[2]): True }
         return api.patch(keypath, body)
     elif func == 'patch_bgp_evpn_rd':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:route-distinguisher',
+            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn/openconfig-bgp-evpn-ext:config'
+            +'/route-distinguisher',
                 vrf=args[0], af_name=args[1])
         body = { "openconfig-bgp-evpn-ext:route-distinguisher": args[2] }
         return api.patch(keypath, body)
@@ -64,8 +64,8 @@ def invoke_api(func, args=[]):
         rttype = args[3]
         if rttype == 'both' or rttype == 'import':
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-                +'/openconfig-bgp-evpn-ext:import-rts',
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn/openconfig-bgp-evpn-ext:config'
+                +'/import-rts',
                     vrf=args[0], af_name=args[1])
             body = { "openconfig-bgp-evpn-ext:import-rts": [ args[2] ] }
             response = api.patch(keypath, body)
@@ -73,23 +73,23 @@ def invoke_api(func, args=[]):
                 return response
         if rttype == 'both' or rttype == 'export':
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-                +'/openconfig-bgp-evpn-ext:export-rts',
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn/openconfig-bgp-evpn-ext:config'
+                +'/export-rts',
                     vrf=args[0], af_name=args[1], route_target_type=args[3])
             body = { "openconfig-bgp-evpn-ext:export-rts": [ args[2] ] }
             response = api.patch(keypath, body)
         return response
     elif func == 'patch_bgp_evpn_advertise':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:advertise-list',
+            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn/openconfig-bgp-evpn-ext:config'
+            +'/advertise-list',
                 vrf=args[0], af_name=args[1])
         body = { "openconfig-bgp-evpn-ext:advertise-list": [ args[2] ] }
         return api.patch(keypath, body)
     elif func == 'patch_bgp_evpn_autort':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:autort',
+            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn/openconfig-bgp-evpn-ext:config'
+            +'/autort',
                 vrf=args[0], af_name=args[1])
         body = { "openconfig-bgp-evpn-ext:autort": args[2] }
         return api.patch(keypath, body)
@@ -103,17 +103,17 @@ def invoke_api(func, args=[]):
     elif func == 'patch_bgp_evpn_dad_enable':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/enabled',
+            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/enabled',
                 vrf=args[0], af_name=args[1])
         body = { "openconfig-bgp-evpn-ext:enabled": True }
         return api.patch(keypath, body)
     elif func == 'patch_bgp_evpn_dad_params':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection',
+            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config',
                 vrf=args[0], af_name=args[1])
         body = { 
-                    "openconfig-bgp-evpn-ext:dup-addr-detection": {
+                    "openconfig-bgp-evpn-ext:config": {
                         "enabled": True,
                         "max-moves": int(args[2]),
                         "time": int(args[3])
@@ -123,7 +123,7 @@ def invoke_api(func, args=[]):
     elif func == 'patch_bgp_evpn_dad_freeze':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/freeze',
+            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/freeze',
                 vrf=args[0], af_name=args[1])
         body = { "openconfig-bgp-evpn-ext:freeze": args[2] }
         return api.patch(keypath, body)
@@ -146,7 +146,7 @@ def invoke_api(func, args=[]):
         if rttype == 'both' or rttype == 'import':
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
                 +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-                +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/import-rts',
+                +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/import-rts',
                     vrf=args[0], af_name=args[1], vni_number=args[2])
             body = { "openconfig-bgp-evpn-ext:import-rts": [ args[3] ] }
             response = api.patch(keypath, body)
@@ -155,7 +155,7 @@ def invoke_api(func, args=[]):
         if rttype == 'both' or rttype == 'export':
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
                 +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-                +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/export-rts',
+                +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/export-rts',
                     vrf=args[0], af_name=args[1], vni_number=args[2])
             body = { "openconfig-bgp-evpn-ext:export-rts": [ args[3] ] }
             response = api.patch(keypath, body)
@@ -163,14 +163,14 @@ def invoke_api(func, args=[]):
     elif func == 'patch_bgp_evpn_vni_advertise_default_gw':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/advertise-default-gw',
+            +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/advertise-default-gw',
                 vrf=args[0], af_name=args[1], vni_number=args[2])
         body = { "openconfig-bgp-evpn-ext:advertise-default-gw": True }
         return api.patch(keypath, body)
     elif func == 'patch_bgp_evpn_vni_rd':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/route-distinguisher',
+            +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/route-distinguisher',
                 vrf=args[0], af_name=args[1], vni_number=args[2])
         body = { "openconfig-bgp-evpn-ext:route-distinguisher": args[3] }
         return api.patch(keypath, body)
@@ -180,25 +180,25 @@ def invoke_api(func, args=[]):
     elif func == 'delete_bgp_evpn_advertise_all_vni':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:advertise-all-vni',
+            +'/openconfig-bgp-evpn-ext:config/advertise-all-vni',
                 vrf=args[0], af_name=args[1])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_advertise_default_gw':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:advertise-default-gw',
+            +'/openconfig-bgp-evpn-ext:config/advertise-default-gw',
                 vrf=args[0], af_name=args[1])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_default_originate':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:default-originate/{originate_family}',
+            +'/openconfig-bgp-evpn-ext:default-originate/config/{originate_family}',
                 vrf=args[0], af_name=args[1], originate_family=args[2])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_rd':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:route-distinguisher',
+            +'/openconfig-bgp-evpn-ext:config/route-distinguisher',
                 vrf=args[0], af_name=args[1])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_rt':
@@ -206,7 +206,7 @@ def invoke_api(func, args=[]):
         if rttype == "both" or rttype == "import":
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
                 +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-                +'/openconfig-bgp-evpn-ext:import-rts={route_target}',
+                +'/openconfig-bgp-evpn-ext:config/import-rts={route_target}',
                     vrf=args[0], af_name=args[1], route_target=args[2])
             response = api.delete(keypath)
             if not response.ok():
@@ -214,20 +214,20 @@ def invoke_api(func, args=[]):
         if rttype == "both" or rttype == "export":
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
                 +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-                +'/openconfig-bgp-evpn-ext:export-rts={route_target}',
+                +'/openconfig-bgp-evpn-ext:config/export-rts={route_target}',
                     vrf=args[0], af_name=args[1], route_target=args[2])
             response = api.delete(keypath)
         return response
     elif func == 'delete_bgp_evpn_advertise':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:advertise-list={afi_safi_name}',
+            +'/openconfig-bgp-evpn-ext:config/advertise-list={afi_safi_name}',
                 vrf=args[0], af_name=args[1], afi_safi_name=args[2])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_autort':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:autort',
+            +'/openconfig-bgp-evpn-ext:config/autort',
                 vrf=args[0], af_name=args[1])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_flooding':
@@ -239,24 +239,24 @@ def invoke_api(func, args=[]):
     elif func == 'delete_bgp_evpn_dad_enable':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/enabled',
+            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/enabled',
                 vrf=args[0], af_name=args[1])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_dad_params':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/max-moves',
+            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/max-moves',
                 vrf=args[0], af_name=args[1])
         api.delete(keypath)
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/time',
+            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/time',
                 vrf=args[0], af_name=args[1])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_dad_freeze':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/freeze',
+            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/freeze',
                 vrf=args[0], af_name=args[1])
         return api.delete(keypath)
 
@@ -272,7 +272,7 @@ def invoke_api(func, args=[]):
         if rttype == "both" or rttype == "import":
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
                 +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-                +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/import-rts={route_target}',
+                +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/import-rts={route_target}',
                     vrf=args[0], af_name=args[1], vni_number=args[2], route_target=args[3])
             response = api.delete(keypath)
             if not response.ok():
@@ -280,20 +280,20 @@ def invoke_api(func, args=[]):
         if rttype == "both" or rttype == "export":
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
                 +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-                +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/export-rts={route_target}',
+                +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/export-rts={route_target}',
                     vrf=args[0], af_name=args[1], vni_number=args[2], route_target=args[3])
             response = api.delete(keypath)
         return response
     elif func == 'delete_bgp_evpn_vni_advertise_default_gw':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/advertise-default-gw',
+            +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/advertise-default-gw',
                 vrf=args[0], af_name=args[1], vni_number=args[2])
         return api.delete(keypath)
     elif func == 'delete_bgp_evpn_vni_rd':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/route-distinguisher',
+            +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/route-distinguisher',
                 vrf=args[0], af_name=args[1], vni_number=args[2])
         return api.delete(keypath)
 
