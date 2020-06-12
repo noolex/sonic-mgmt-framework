@@ -309,6 +309,17 @@ limitations under the License.
   <!-- qos interface PortChannel <id> -->
   <VIEW name="configure-lag-view">
         <COMMAND
+            name="qos-map"
+            help="QoS Map Configuration"
+            >
+        </COMMAND>
+        <COMMAND
+            name="no qos-map"
+            help="QoS Map Unconfiguration"
+            >
+        </COMMAND>
+
+        <COMMAND
             name="qos-map dscp-tc"
             help="DSCP to TC map configuration">
            <PARAM
@@ -395,6 +406,17 @@ limitations under the License.
 
   <!-- qos interface Vlan <id> -->
   <VIEW name="configure-vlan-view">
+        <COMMAND
+            name="qos-map"
+            help="QoS Map Configuration"
+            >
+        </COMMAND>
+        <COMMAND
+            name="no qos-map"
+            help="QoS Map Unconfiguration"
+            >
+        </COMMAND>
+
         <COMMAND
             name="qos-map dscp-tc"
             help="DSCP to TC map configuration">
