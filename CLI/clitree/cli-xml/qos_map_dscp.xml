@@ -71,6 +71,16 @@ limitations under the License.
     </COMMAND>
 
     <!-- no maps -->
+    <COMMAND
+        name="no qos"
+        help="Unconfigure QoS "
+        >
+    </COMMAND>
+    <COMMAND
+        name="no qos map"
+        help="Unconfigure QoS Map"
+        >
+    </COMMAND>
     <COMMAND name="no qos map dscp-tc" help="Unconfigure a dscp-tc map">
       <PARAM name="name" help="Name of the map" ptype="STRING_32"> </PARAM>
         <ACTION builtin="clish_restcl"> 
