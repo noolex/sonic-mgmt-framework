@@ -1,11 +1,11 @@
-def show_tacacs_source_if(render_tables):
+def show_dns_source_if(render_tables):
 
     cmd_str = ''
-    cmd_prfx = 'tacacs-server source-interface '
-    if 'sonic-system-tacacs:sonic-system-tacacs/TACPLUS' in render_tables:
-        for tac_inst in render_tables['sonic-system-tacacs:sonic-system-tacacs/TACPLUS']:
-          if 'src_intf' in tac_inst:
-            intf = tac_inst['src_intf']
+    cmd_prfx = 'ip name-server source-interface '
+    if 'sonic-system-dns:sonic-system-dns/DNS' in render_tables:
+        for dns_inst in render_tables['sonic-system-dns:sonic-system-dns/DNS']:
+          if 'src_intf' in dns_inst:
+            intf = dns_inst['src_intf']
             if intf.startswith('Ethernet'):
                intf_split = intf.split('Ethernet')
                cmd_str = cmd_prfx + 'Ethernet' + intf_split[1]
