@@ -27,6 +27,9 @@
   {% if map_config['forwarding-group-to-dot1p'] %}
       {{'    tc-dot1p-map: '}}{{map_config['forwarding-group-to-dot1p']}}
   {% endif %}
+  {% if map_config['pfc-priority-to-queue'] %}
+      {{'    pfc-priority-queue-map: '}}{{map_config['pfc-priority-to-queue']}}
+  {% endif %}
   {% endif %}
   {% if json_output['openconfig-qos-ext:pfc'] %}
   {% set pfc_config = json_output['openconfig-qos-ext:pfc']['config'] %}

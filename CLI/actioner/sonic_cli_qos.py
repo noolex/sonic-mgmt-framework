@@ -89,6 +89,10 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
         body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-priority-group": args[1]} }
         return api.patch(path, body)
+    if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_pfc_priority_queue_map':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
+        body = {"openconfig-qos-maps-ext:config": { "pfc-priority-to-queue": args[1]} }
+        return api.patch(path, body)
     if func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc_summary':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces')
         return api.get(path)

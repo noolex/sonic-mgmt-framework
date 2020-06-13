@@ -57,6 +57,14 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps/forwarding-group-dot1p-map={name}', name=args[0])
         return api.get(path)
 
+    if func == 'get_openconfig_qos_maps_ext_qos_pfc_priority_maps' :
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps')
+        return api.get(path)
+
+    if func == 'get_openconfig_qos_maps_ext_qos_pfc_priority_maps_pfc_priority_map' :
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map={name}', name=args[0])
+        return api.get(path)
+
     return api.cli_not_implemented(func)
 
 def run(func, args):
@@ -94,6 +102,10 @@ def run(func, args):
                 elif func == 'get_openconfig_qos_maps_ext_qos_forwarding_group_dot1p_maps_forwarding_group_dot1p_map':
                      show_cli_output(args[1], api_response)
                 elif func == 'get_openconfig_qos_maps_ext_qos_forwarding_group_dot1p_maps':
+                     show_cli_output(args[0], api_response)
+                elif func == 'get_openconfig_qos_maps_ext_qos_pfc_priority_maps_pfc_priority_map':
+                     show_cli_output(args[1], api_response)
+                elif func == 'get_openconfig_qos_maps_ext_qos_pfc_priority_maps':
                      show_cli_output(args[0], api_response)
 
        else:

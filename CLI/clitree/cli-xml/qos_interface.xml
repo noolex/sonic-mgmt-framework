@@ -204,6 +204,27 @@ limitations under the License.
             </ACTION>
         </COMMAND>
 
+        <COMMAND
+            name="qos-map pfc-priority-queue"
+            help="PFC Priority to Queue map configuration">
+           <PARAM
+               name="pfc_priority_queue_map_name"
+               help="PFC Priority to Queue map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_pfc_priority_queue_map ${iface} ${pfc_priority_queue_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no qos-map pfc-priority-queue" help="Unconfigure a PFC priority to Queue map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/pfc-priority-to-queue
+            </ACTION>
+        </COMMAND>
+
         <COMMAND name="no queue" help="Negate Queue configuration">
            <PARAM
                name="qid"
