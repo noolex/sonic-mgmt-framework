@@ -21,6 +21,7 @@ from show_config_interface import *
 from show_config_authentication import *
 from show_config_ptp import *
 from show_config_dns import *
+from show_config_copp import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -28,7 +29,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
+['configure', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp', 'copp-action' ]
 
 
 render_filelst  = {}
@@ -48,6 +49,7 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_two_step'            : show_ptp_two_step,
                   'ptp_network_transport'   : show_ptp_network_transport,
                   'ptp_master_table'        : show_ptp_master_table,
-                  'dns_server_source_if'    : show_dns_source_if
+                  'dns_server_source_if'    : show_dns_source_if,
+                  'copp_police'             : show_copp_police
  }
 
