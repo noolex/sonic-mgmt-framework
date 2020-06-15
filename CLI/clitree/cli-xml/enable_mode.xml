@@ -70,6 +70,10 @@ limitations under the License.
         <COMMAND
             name="clear"
             help="Clear commands" />
+        <!-- renew commands -->
+        <COMMAND
+            name="renew"
+            help="Renew commands" />
         <!-- Debug commands -->
         <COMMAND
             name="debug"
