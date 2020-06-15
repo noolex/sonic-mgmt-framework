@@ -18,25 +18,11 @@
 
 from show_config_if_cmd import *
 from show_config_interface import *
-<<<<<<< HEAD
 from show_config_bgp import *
 from show_config_table_sort import *
-||||||| merged common ancestors
 from show_config_authentication import *
-<<<<<<<<< Temporary merge branch 1
-from show_config_dns import *
-||||||||| merged common ancestors
-=========
-=======
-from show_config_authentication import *
->>>>>>> origin/broadcom_sonic_3.x_share
 from show_config_ptp import *
-<<<<<<< HEAD
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-=======
 from show_config_dns import *
->>>>>>> origin/broadcom_sonic_3.x_share
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
