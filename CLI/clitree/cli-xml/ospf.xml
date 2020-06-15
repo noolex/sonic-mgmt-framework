@@ -639,9 +639,11 @@ limitations under the License.
     <PARAM name="router-lsa" help="Advertise own Router-LSA with infinite distance (stub router)" ptype="SUBCOMMAND" mode="subcommand" >
       <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
         <PARAM name="on-shutdown" help="Advertise stub-router prior to full shutdown of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="extdistance" help="Time (seconds) to wait till full shutdown" ptype="RANGE_5_100" />
         </PARAM>
+-->
         <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="interdistance" help="Time (seconds) to advertise self as stub-router" ptype="RANGE_5_86400" />
         </PARAM>
@@ -651,10 +653,11 @@ limitations under the License.
     if test "${maxmetrictype}" = "administrative"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative ${vrf-name} &#xA;
     fi&#xA;
-
+<!--
     if test "${maxmetrictype}" = "on-shutdown"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_shutdown ${vrf-name} ${extdistance} &#xA;
     fi&#xA;
+-->
 
     if test "${maxmetrictype}" = "on-startup"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_startup ${vrf-name} ${interdistance} &#xA;
@@ -666,7 +669,9 @@ limitations under the License.
     <PARAM name="router-lsa" help="Advertise own Router-LSA with infinite distance (stub router)" ptype="SUBCOMMAND" mode="subcommand" >
       <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
         <PARAM name="on-shutdown" help="Advertise stub-router prior to full shutdown of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
         <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       </PARAM>
     </PARAM>
@@ -675,9 +680,11 @@ limitations under the License.
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative ${vrf-name} &#xA;
     fi&#xA;
 
+<!--
     if test "${maxmetrictype}" = "on-shutdown"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_shutdown ${vrf-name} &#xA;
     fi&#xA;
+-->
 
     if test "${maxmetrictype}" = "on-startup"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_startup ${vrf-name} &#xA;

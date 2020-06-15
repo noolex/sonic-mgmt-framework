@@ -445,6 +445,10 @@ def invoke_api(func, args=[]):
         srcIntf = ""
         linkSelect = ""
         MaxHopCount = ""
+        serverVrf = ""
+        selectVrf = ""
+        policyAction = ""
+
         for index,i in  enumerate(args):
                 #Find the ipv4 address from the list of args
                 if not ((i.find(".") == -1)):
@@ -459,20 +463,27 @@ def invoke_api(func, args=[]):
                 elif ( i == "link-select" ):
                    linkSelect = "True"
                    path3 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:link-select', id=args[0])
-                   body3 = { "openconfig-relay-agent-ext:link-select": "enable" }
+                   body3 = { "openconfig-relay-agent-ext:link-select": "ENABLE" }
                 elif ( i == "max-hop-count" ):
                    MaxHopCount = "True"
                    path4 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
                    body4 = {"openconfig-relay-agent-ext:max-hop-count": int(args[index+1]) }
+                elif ( i == "vrf" ):
+                   serverVrf = "True"
+                   path5 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
+                   body5 = {"openconfig-relay-agent-ext:vrf": args[index+1] }
+                elif ( i == "vrf-select" ):
+                   selectVrf = "True"
+                   path6 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf-select', id=args[0])
+                   body6 = {"openconfig-relay-agent-ext:vrf-select": "ENABLE" }
+                elif ( i == "policy-action" ):
+                   policyAction = "True"
+                   path7 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:policy-action', id=args[0])
+                   body7 = {"openconfig-relay-agent-ext:policy-action": (args[index+1]).upper() }
+
         if (helperConfig == "True"):
-           api.patch(path1, body1)
-        if ( srcIntf == "True" ):
-           api.patch(path2, body2)
-        if ( linkSelect == "True"):
-           api.patch(path3, body3)
-        if (MaxHopCount ==  "True"):
-           api.patch(path4, body4)
-        if (helperConfig == "True"):
+           if (serverVrf ==  "True"):
+               api.patch(path5, body5)
            return  api.patch(path1, body1)
         elif ( srcIntf == "True" ):
            return  api.patch(path2, body2)
@@ -480,6 +491,10 @@ def invoke_api(func, args=[]):
            return  api.patch(path3, body3)
         elif (MaxHopCount ==  "True"):
            return api.patch(path4, body4)
+        elif (selectVrf ==  "True"):
+           return api.patch(path6, body6)
+        elif (policyAction ==  "True"):
+           return api.patch(path7, body7)
 
     elif func == 'patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config':
         path1 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/helper-address', id=args[0])
@@ -489,6 +504,9 @@ def invoke_api(func, args=[]):
         srcIntf = ""
         linkSelect = ""
         MaxHopCount = ""
+        serverVrf = ""
+        selectVrf = ""
+
         for index,i in  enumerate(args):
                 #Find the ipv6 address from the list of args
                 if not ((i.find(":") == -1)):
@@ -500,30 +518,30 @@ def invoke_api(func, args=[]):
                    srcIntf = "True"
                    path2 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
                    body2 = {"openconfig-relay-agent-ext:src-intf":  args[index+1] }
-                elif ( i == "link-select" ):
-                   linkSelect = "True"
-                   path3 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:link-select', id=args[0])
-                   body3 = { "openconfig-relay-agent-ext:link-select": "enable" }
                 elif ( i == "max-hop-count" ):
                    MaxHopCount = "True"
-                   path4 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
-                   body4 = {"openconfig-relay-agent-ext:max-hop-count": int(args[index+1]) }
+                   path3 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
+                   body3 = {"openconfig-relay-agent-ext:max-hop-count": int(args[index+1]) }
+                elif ( i == "vrf" ):
+                   serverVrf = "True"
+                   path4 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
+                   body4 = {"openconfig-relay-agent-ext:vrf": args[index+1] }
+                elif ( i == "vrf-select" ):
+                   selectVrf = "True"
+                   path5 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf-select', id=args[0])
+                   body5 = {"openconfig-relay-agent-ext:vrf-select": "ENABLE"}
+
         if (helperConfig == "True"):
-           api.patch(path1, body1)
-        if ( srcIntf == "True" ):
-           api.patch(path2, body2)
-        if ( linkSelect == "True"):
-           api.patch(path3, body3)
-        if (MaxHopCount ==  "True"):
-           api.patch(path4, body4)
-        if (helperConfig == "True"):
+           if (serverVrf ==  "True"):
+               api.patch(path4, body4)
            return  api.patch(path1, body1)
         elif ( srcIntf == "True" ):
            return  api.patch(path2, body2)
-        elif ( linkSelect == "True"):
-           return  api.patch(path3, body3)
         elif (MaxHopCount ==  "True"):
-           return api.patch(path4, body4)
+           return api.patch(path3, body3)
+        elif (selectVrf ==  "True"):
+           return api.patch(path5, body5)
+
 
     elif func == 'del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config':
         ipAdrStr = ""
@@ -550,6 +568,13 @@ def invoke_api(func, args=[]):
                  api.delete(path)
                  path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
                  api.delete(path)
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
+                 api.delete(path)
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf-select', id=args[0])
+                 api.delete(path)
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:policy-action', id=args[0])
+                 api.delete(path)
+
         for i in args:
            if ( i == "src-intf" ):
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
@@ -560,6 +585,16 @@ def invoke_api(func, args=[]):
            elif ( i == "max-hop-count") :
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
              api.delete(path)
+           elif ( i == "vrf") :
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
+             api.delete(path)
+           elif ( i == "vrf-select") :
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf-select', id=args[0])
+             api.delete(path)
+           elif ( i == "policy-action") :
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:policy-action', id=args[0])
+             api.delete(path)
+
         if (path1 != ""):
            return api.delete(path1)
         if (path != ""):
@@ -588,6 +623,10 @@ def invoke_api(func, args=[]):
                  api.delete(path)
                  path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
                  api.delete(path)
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
+                 api.delete(path)
+                 path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf-select', id=args[0])
+                 api.delete(path)
 
         for i in args:
            if ( i == "src-intf" ):
@@ -596,6 +635,13 @@ def invoke_api(func, args=[]):
            elif ( i == "max-hop-count") :
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
              api.delete(path)
+           elif ( i == "vrf") :
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
+             api.delete(path)
+           elif ( i == "vrf-select") :
+             path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf-select', id=args[0])
+             api.delete(path)
+
         if (path1 != ""):
            return api.delete(path1)
         if (path != ""):
