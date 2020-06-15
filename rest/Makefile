@@ -19,6 +19,7 @@
 
 TOPDIR     := ..
 BUILD_DIR  ?= $(TOPDIR)/build
+MGMT_COMMON_DIR ?= $(TOPDIR)/../sonic-mgmt-common
 
 GO     ?= go
 GOROOT ?= $(shell $(GO) env GOROOT)
@@ -26,6 +27,7 @@ GOROOT ?= $(shell $(GO) env GOROOT)
 REST_BUILD_DIR := $(BUILD_DIR)/rest_server
 REST_BIN := $(REST_BUILD_DIR)/main
 REST_TEST_BIN := $(BUILD_DIR)/tests/rest/server.test
+STATIC_CHECK  := $(REST_BUILD_DIR)/.staticcheck
 
 REST_GO_SRCS   = $(shell find . -name '*.go' -not -name '*_test.go')
 REST_TEST_SRCS = $(shell find . -name '*_test.go')
@@ -41,7 +43,7 @@ REST_SRCS := $(REST_GO_SRCS) $(GENERATED_SRCS) $(MGMT_COMM_SRCS) $(OPENAPI_SPECS
 CERTGEN_BIN := $(REST_BUILD_DIR)/generate_cert
 
 
-DEFAULT_TARGETS = $(REST_BIN) $(CERTGEN_BIN)
+DEFAULT_TARGETS = $(REST_BIN) $(CERTGEN_BIN) $(STATIC_CHECK)
 ifeq ($(NO_TEST_BINS),)
 DEFAULT_TARGETS += $(REST_TEST_BIN)
 endif
@@ -52,9 +54,10 @@ all: $(DEFAULT_TARGETS)
 %/.:
 	mkdir -p $@
 
+.SECONDEXPANSION:
+
 # REST Server binary
-# Invokes yang and model make to generate swagger artifcats.
-$(REST_BIN): $(REST_SRCS) $(@D)/.
+$(REST_BIN): $(REST_SRCS)
 ifeq ($(SONIC_COVERAGE_ON),y)
 	$(GO) test -mod=vendor -coverpkg="./..." -c -o $@ ../rest/main/main.go ../rest/main/main_test.go
 else
@@ -62,15 +65,19 @@ else
 endif
 
 # Gotest binary for REST Server
-$(REST_TEST_BIN): $(REST_TEST_SRCS) $(REST_GO_SRCS) $(@D)/.
+$(REST_TEST_BIN): $(REST_TEST_SRCS) $(REST_GO_SRCS)
 	$(GO) test -mod=vendor -cover -c ../rest/server -o $@
 
 # Compile certificate generator from standard crypto/tls/generate_cert.go.
 # Source file will be available in GOROOT/src.
-$(CERTGEN_BIN): $(@D)/.
+$(CERTGEN_BIN):
 	$(GO) build -o $@ $(GOROOT)/src/crypto/tls/generate_cert.go
 
+$(STATIC_CHECK): $(REST_GO_SRCS) | $$(@D)/.
+	$(MGMT_COMMON_DIR)/tools/test/static-check.sh
+	touch $@
+
 clean:
-	rm -f $(REST_BIN) $(CERTGEN_BIN)
-	rm -f $(REST_TEST_BIN)
+	$(RM) $(DEFAULT_TARGETS)
+	$(RM) $(REST_TEST_BIN)
 
