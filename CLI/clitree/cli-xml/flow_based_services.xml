@@ -193,7 +193,7 @@ limitations under the License.
 
         <COMMAND name="no class" help="Delete flow classification and its actions">
             <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_flow_${fbs-class-type} ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_flow_${fbs-policy-type} ${fbs-policy-name} ${fbs-class-name}</ACTION>
         </COMMAND>
     </VIEW>
 
@@ -361,18 +361,18 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-copp-classifier-view" prompt="${SYSTEM_NAME}(config-classifier)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
-        <COMMAND name="match" help="Add match criteria"/>
-        <COMMAND name="no match" help="Delete match criteria"/>
+        <COMMAND name="no" help="Negates a command or set its defaults"/>
+        <COMMAND name="match" help="Adds a match criteria"/>
+        <COMMAND name="no match" help="Deletes a match criteria"/>
 
         <MACRO name="CLASSIFIER-DESCRIPTION"/>
 
-        <COMMAND name="match protocol" help="Match using access-list">
+        <COMMAND name="match protocol" help="Matches protocol trap to classifier">
             <PARAM name="trap-id" help="Name of the trap id" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_match_protocol ${fbs-class-name} ${trap-id}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no match protocol" help="Delete match using access-list">
+        <COMMAND name="no match protocol" help="Deletes a match of protocol trap to classifier">
             <PARAM name="trap-id" help="Name of the trap id" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_match_protocol ${fbs-class-name} ${trap-id}</ACTION>
         </COMMAND>
@@ -540,7 +540,7 @@ limitations under the License.
         <COMMAND name="set" help="Set parameters" />
 
         <COMMAND name="set copp-action" help="Binds a CoPP action group to the classifier">
-            <PARAM name="copp-action-name" help="Name of the CoPP action group (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="copp-action-name" help="Name of the CoPP action group (up to 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_action_group ${fbs-policy-name} ${fbs-class-name} ${copp-action-name}</ACTION>
         </COMMAND>
     </VIEW>
