@@ -74,7 +74,7 @@ limitations under the License.
     <COMMAND name="ntp server"
              help="Configure NTP server"
              mode="subcommand"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/server_address={addr}">
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address={addr}">
       <PARAM name="svropt"
              help="NTP server address"
              mode="switch"
@@ -82,12 +82,12 @@ limitations under the License.
         <PARAM name="ip"
                help="NTP server IPv4/IPv6 address"
                ptype="IPV4V6_ADDR"
-               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/server_address">
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address">
         </PARAM>
         <PARAM name="server-name"
                help="NTP server name"
                ptype="HOSTNAME_STR_64"
-               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/server_address">
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address">
         </PARAM>
       </PARAM>
       <ACTION
@@ -122,7 +122,7 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand"
              command_keys="global_key=global"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/global_key={global_key}"
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
              render_command_cb="ntp_server_source_if">
       <PARAM name="iftype"
              help="Interface type"
@@ -172,7 +172,7 @@ limitations under the License.
              help="Enable NTP on VRF"
              mode="subcommand"
              command_keys="global_key=global"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/global_key={global_key}">
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}">
       <PARAM name="vrfopt"
              help="VRF type"
              mode="switch"
@@ -181,13 +181,13 @@ limitations under the License.
                help="Enable NTP on management VRF"
                ptype="SUBCOMMAND"
                mode="subcommand"
-               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/vrf=mgmt">
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/vrf=mgmt">
         </PARAM>
         <PARAM name="default"
                help="Enable NTP on default VRF"
                ptype="SUBCOMMAND"
                mode="subcommand"
-               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/vrf=default">
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/vrf=default">
         </PARAM>
       </PARAM>
       <ACTION

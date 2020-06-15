@@ -2,8 +2,8 @@ def show_ptp_mode(render_tables):
 
     cmd_str = ''
     cmd_prfx = 'ptp mode '
-    if 'sonic-ptp:sonic-ptp/PTP_CLOCK' in render_tables:
-        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK']:
+    if 'sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST' in render_tables:
+        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST']:
           if 'clock-type' in ptp_inst:
             clock_type = ptp_inst['clock-type']
             if clock_type == "BC":
@@ -21,8 +21,8 @@ def show_ptp_domain_profile(render_tables):
 
     cmd_str = ''
     cmd_prfx = 'ptp domain-profile '
-    if 'sonic-ptp:sonic-ptp/PTP_CLOCK' in render_tables:
-        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK']:
+    if 'sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST' in render_tables:
+        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST']:
           if 'domain-profile' in ptp_inst:
             domain_profile = ptp_inst['domain-profile']
             if domain_profile == "ieee1588":
@@ -38,8 +38,8 @@ def show_ptp_two_step(render_tables):
 
     cmd_str = ''
     cmd_prfx = 'ptp two-step '
-    if 'sonic-ptp:sonic-ptp/PTP_CLOCK' in render_tables:
-        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK']:
+    if 'sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST' in render_tables:
+        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST']:
           if 'two-step' in ptp_inst:
             two_step = ptp_inst['two-step']
             if two_step == "1":
@@ -53,8 +53,8 @@ def show_ptp_network_transport(render_tables):
 
     cmd_str = ''
     cmd_prfx = 'ptp network-transport '
-    if 'sonic-ptp:sonic-ptp/PTP_CLOCK' in render_tables:
-        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK']:
+    if 'sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST' in render_tables:
+        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST']:
           if 'network-transport' in ptp_inst:
             network_transport = ptp_inst['network-transport']
             if network_transport == "L2":
@@ -73,8 +73,8 @@ def show_ptp_master_table(render_tables):
 
     cmd_str = ''
     cmd_prfx = 'ptp port master-table '
-    if 'sonic-ptp:sonic-ptp/PTP_PORT' in render_tables:
-        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_PORT']:
+    if 'sonic-ptp:sonic-ptp/PTP_PORT/PTP_PORT_LIST' in render_tables:
+        for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_PORT/PTP_PORT_LIST']:
             if 'unicast-table' in ptp_inst:
                 if 'underlying-interface' in ptp_inst:
                     underlying_interface = ptp_inst['underlying-interface']
