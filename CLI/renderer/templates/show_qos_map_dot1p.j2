@@ -12,13 +12,13 @@
 {{'DOT1P-TC-MAP: '}}{{map['name']}}
 
 {{'----------------------------'}}
-    {{'%-5s'|format("DOT1P")}}{{'%-5s'|format("TC")}}
+    {{'%-7s'|format("DOT1P")}}{{'%-5s'|format("TC")}}
 {{'----------------------------'}}
   {% set map_info = map['dot1p-map-entries'] %}
   {% if map_info %}
       {% set entries = map_info['dot1p-map-entry'] %}
       {% for entry in entries %}
-    {{'%-5s'|format(entry['dot1p'])}}{{'%-5s'|format(entry['config']['fwd-group'])}}
+    {{'%-7s'|format(entry['dot1p'])}}{{'%-5s'|format(entry['config']['fwd-group'])}}
       {% endfor %}
   {% endif %}
 {{'----------------------------'}}

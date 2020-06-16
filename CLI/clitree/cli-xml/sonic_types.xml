@@ -70,7 +70,7 @@ limitations under the License.
     <PTYPE
         name="LAG_ID"
         method="integer"
-        pattern="1..128"
+        pattern="1..256"
         help=""
         />
     <!--=======================================================-->
@@ -1262,6 +1262,13 @@ limitations under the License.
         method="integer"
         pattern="1..600"
         help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="SCHEDULER_TYPE_OPTION"
+        method="select"
+        pattern="dwrr(DWRR) wrr(WRR) strict(STRICT)"
+        help="Scheduler type Options"
         />
     <!--=======================================================-->
         <PTYPE

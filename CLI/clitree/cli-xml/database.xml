@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<CLISH_MODULE
+      xmlns="http://www.dellemc.com/sonic/XMLSchema"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema 
+      http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+      >
+
+    <!--MODE : database view -->
+    <VIEW name="enable-view">
+        <COMMAND
+            name="show database"
+            help="Show Redis database information">
+        </COMMAND>
+        <COMMAND
+            name="show database map"
+            help="Show Redis database mapping currently in use">
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_database map show_database_map.j2
+            </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Use this command to display a summary of the databases currently in use in SONiC. The following information
+                    about each database is also displayed:
+                     - ID: Numeric database identifier.
+                     - Name: Database name string used to refer to the database in the
+                             sonic-db-cli command and Database connector APIs.
+                     - Instance: Redis instance this database is part of
+                     - TCP Port: The TCP Port used to connect to the Redis instance which this
+                                 database is part of.
+                     - Unix Socket Path: The unix socket path used to connect to the Redis instance
+                                         which this database is part of.
+                </DESCRIPTION>
+                <USAGE>
+                    sonic# show database map
+                </USAGE>
+                <EXAMPLE>
+                    sonic# show database map
+                    ----------------------------------------------------------------------------
+                     ID             Name         Instance  TCP Port  Unix Socket Path
+                    ----------------------------------------------------------------------------
+                      0          APPL_DB           redis2     26379  /var/run/redis/redis2.sock
+                      1          ASIC_DB           redis3     36379  /var/run/redis/redis3.sock
+                      2      COUNTERS_DB            redis      6379  /var/run/redis/redis.sock
+                      3      LOGLEVEL_DB            redis      6379  /var/run/redis/redis.sock
+                      4        CONFIG_DB            redis      6379  /var/run/redis/redis.sock
+                      5        PFC_WD_DB            redis      6379  /var/run/redis/redis.sock
+                      6         STATE_DB            redis      6379  /var/run/redis/redis.sock
+                      7  SNMP_OVERLAY_DB            redis      6379  /var/run/redis/redis.sock
+                      8         ERROR_DB            redis      6379  /var/run/redis/redis.sock
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>

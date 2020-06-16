@@ -9,6 +9,7 @@
 {% set vars = {'green_drop_probability': ""} %}
 {% set vars = {'yellow_drop_probability': ""} %}
 {% set vars = {'red_drop_probability': ""} %}
+{% set bytes_to_kb = 1024 %}
 {% if json_output -%}
 {% for key_json in json_output %}
     {% if key_json == "openconfig-qos-ext:wred-profiles" %}
@@ -32,36 +33,43 @@
     {% if vars.update({'yellow_drop_probability':wred_cfg["yellow-drop-probability"]}) %}{% endif %}
     {% if vars.update({'red_drop_probability':wred_cfg["red-drop-probability"]}) %}{% endif %}
 ---------------------------------------------------
-Profile                : {{ vars.name }}
+Policy                 : {{ vars.name }}
+---------------------------------------------------
 {% if vars.ecn %}
 ecn                    : {{ vars.ecn|lower }}
 {% endif %}
 {% if vars.green_min_threshold %}
-green-min-threshold    : {{ vars.green_min_threshold }}
+{% set temp = vars.green_min_threshold|int//bytes_to_kb %}
+green-min-threshold    : {{'%-12s'|format(temp)}}{{ 'KBytes' }}
 {% endif %}
 {% if vars.green_max_threshold %}
-green-max-threshold    : {{ vars.green_max_threshold }}
+{% set temp = vars.green_max_threshold|int//bytes_to_kb %}
+green-max-threshold    : {{'%-12s'|format(temp)}}{{ 'KBytes' }}
 {% endif %}
 {% if vars.green_drop_probability %}
-green-drop-probability : {{ vars.green_drop_probability }}
+green-drop-probability : {{'%-12s'|format(vars.green_drop_probability)}}
 {% endif %}
 {% if vars.yellow_min_threshold %}
-yellow-min-threshold   : {{ vars.yellow_min_threshold }}
+{% set temp = vars.yellow_min_threshold|int//bytes_to_kb %}
+yellow-min-threshold   : {{'%-12s'|format(temp)}}{{ 'KBytes' }}
 {% endif %}
 {% if vars.yellow_max_threshold %}
-yellow-max-threshold   : {{ vars.yellow_max_threshold }}
+{% set temp = vars.yellow_max_threshold|int//bytes_to_kb %}
+yellow-max-threshold   : {{'%-12s'|format(temp)}}{{ 'KBytes' }}
 {% endif %}
 {% if vars.yellow_drop_probability %}
-yellow-drop-probability: {{ vars.yellow_drop_probability }}
+yellow-drop-probability: {{'%-12s'|format(vars.yellow_drop_probability)}}
 {% endif %}
 {% if vars.red_min_threshold %}
-red-min-threshold      : {{ vars.red_min_threshold }}
+{% set temp = vars.red_min_threshold|int//bytes_to_kb %}
+red-min-threshold      : {{'%-12s'|format(temp)}}{{ 'KBytes' }} 
 {% endif %}
 {% if vars.red_max_threshold %}
-red-max-threshold      : {{ vars.red_max_threshold }}
+{% set temp = vars.red_max_threshold|int//bytes_to_kb %}
+red-max-threshold      : {{'%-12s'|format(temp)}}{{ 'KBytes' }}
 {% endif %}
 {% if vars.red_drop_probability %}
-red-drop-probability   : {{ vars.red_drop_probability }}
+red-drop-probability   : {{'%-12s'|format(vars.red_drop_probability)}}
 {% endif %}
 {% endfor %}
 {% endfor %}

@@ -100,7 +100,7 @@ def delete_classifier(args):
     if response.ok() and response.content:
         return fbs_client.delete(keypath)
     else:
-        keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap={copp_name}', copp_name=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}', copp_name=args[0])
         return fbs_client.delete(keypath)
 
 
@@ -120,18 +120,25 @@ def clear_classifier_description(args):
 
 
 def set_classifier_match_acl(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_NAME', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}', classifier_name=args[0])
     if 'mac' == args[1]:
-        acl_name = args[2] + '_ACL_L2'
+        acl_type = 'L2'
     elif 'ip' == args[1]:
-        acl_name = args[2] + '_ACL_IPV4'
+        acl_type = 'L3'
     elif 'ipv6' == args[1]:
-        acl_name = args[2] + '_ACL_IPV6'
+        acl_type = 'L3V6'
     else:
         print('Unknown ACL Type')
         return
 
-    body = {'ACL_NAME': acl_name}
+    body = {"sonic-flow-based-services:CLASSIFIER_TABLE_LIST": [
+        {
+            'CLASSIFIER_NAME': args[0],
+            'ACL_NAME': args[2],
+            'ACL_TYPE': acl_type,
+            'MATCH_TYPE': 'ACL'
+        }
+    ]}
 
     return fbs_client.patch(keypath, body)
 
@@ -416,14 +423,14 @@ def clear_match_tcp_flags(args):
 def create_flow_copp(args):
     # inputs: <policy_name> <class_name> [priority]
     if len(args) == 3:
-        keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap={copp_name}/trap-group',
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/trap-group',
                           copp_name=args[2])
         response = fbs_client.get(keypath)
         if response.ok():
-            if "openconfig-copp:trap-group" in response.content:
-                keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}/trap-priority',
-                                  copp_name=response.content["openconfig-copp:trap-group"])
-                body = {"openconfig-copp:trap-priority": int(args[3])}
+            if "openconfig-copp-ext:trap-group" in response.content:
+                keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/trap-priority',
+                                  copp_name=response.content["openconfig-copp-ext:trap-group"])
+                body = {"openconfig-copp-ext:trap-priority": int(args[3])}
 
                 return fbs_client.patch(keypath, body)
 
@@ -444,7 +451,7 @@ def create_flow(args):
 
 def delete_flow_copp(args):
     # inputs: <policy_name> <class_name>
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap={copp_name}', copp_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}', copp_name=args[1])
     return fbs_client.delete(keypath)
 
 
@@ -799,7 +806,7 @@ def clear_details_by_interface(args):
 
 def get_copp_trap_id(name):
     trap_id_val = ""
-    tmp_keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap={copp_name}/trap-ids',
+    tmp_keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
                           copp_name=name)
     tmp_response = fbs_client.get(tmp_keypath)
     if tmp_response is None:
@@ -807,8 +814,8 @@ def get_copp_trap_id(name):
 
     if tmp_response.ok():
         response = tmp_response.content
-        if 'openconfig-copp:trap-ids' in response:
-            trap_id_val = response['openconfig-copp:trap-ids']
+        if 'openconfig-copp-ext:trap-ids' in response:
+            trap_id_val = response['openconfig-copp-ext:trap-ids']
 
     return trap_id_val
 
@@ -824,9 +831,9 @@ def set_classifier_match_protocol(args):
         return
     nd_list.append(args[1])
     outval = ','.join(nd_list)
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap={copp_name}/trap-ids',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
                       copp_name=args[0])
-    body = {"openconfig-copp:trap-ids": outval}
+    body = {"openconfig-copp-ext:trap-ids": outval}
 
     return fbs_client.patch(keypath, body)
 
@@ -843,53 +850,54 @@ def clear_classifier_match_protocol(args):
     nd_list.remove(args[1])
     outval = ','.join(nd_list)
     if outval == "":
-        keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap={copp_name}/trap-ids',
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
                           copp_name=args[0])
         return fbs_client.delete(keypath)
     else:
-        keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap={copp_name}/trap-ids',
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
                           copp_name=args[0])
-        body = {"openconfig-copp:trap-ids": outval}
+        body = {"openconfig-copp-ext:trap-ids": outval}
 
         return fbs_client.patch(keypath, body)
 
 
 def set_trap_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}/trap-action',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-action',
                       copp_name=args[0])
-    body = {"openconfig-copp:trap-action": args[1]}
+    body = {"openconfig-copp-ext:trap-action": args[1]}
 
     return fbs_client.patch(keypath, body)
 
 
 def clear_trap_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}/trap-action',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-action',
                       copp_name=args[0])
 
     return fbs_client.delete(keypath)
 
 
 def set_queue_id_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}/queue',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/queue',
                       copp_name=args[0])
-    body = {"openconfig-copp:queue": int(args[1])}
+    body = {"openconfig-copp-ext:queue": int(args[1])}
 
     return fbs_client.patch(keypath, body)
 
 
 def clear_queue_id_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}/queue',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/queue',
                       copp_name=args[0])
 
     return fbs_client.delete(keypath)
 
 
 def set_copp_policer_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
                       copp_name=args[0])
     body = dict()
     data = {
-        "name": args[0]
+        "name": args[0],
+        "config": dict()
     }
 
     index = 1
@@ -965,15 +973,15 @@ def set_copp_policer_action(args):
             print('%Error: Unknown argument {}'.format(args[index]))
             return
 
-        data[key] = value
+        data["config"][key] = value
         index += 2
 
-    body["openconfig-copp:copp-group"] = [data]
+    body["openconfig-copp-ext:copp-group"] = [data]
     return fbs_client.patch(keypath, body)
 
 
 def clear_copp_policer_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
                       copp_name=args[0])
 
     response = fbs_client.get(keypath)
@@ -1011,8 +1019,10 @@ def clear_copp_policer_action(args):
                 delete_params.append(feat)
 
         for feat in delete_params:
-            if feat in data['openconfig-copp:copp-group'][0].keys():
-                del data['openconfig-copp:copp-group'][0][feat]
+            if feat in data['openconfig-copp-ext:copp-group'][0]['config'].keys():
+                del data['openconfig-copp-ext:copp-group'][0]['config'][feat]
+        if 'state' in data['openconfig-copp-ext:copp-group'][0].keys():
+            del data['openconfig-copp-ext:copp-group'][0]['state']
 
         return fbs_client.put(keypath, data)
     else:
@@ -1024,39 +1034,30 @@ def create_copp_action(args):
 
 
 def delete_copp_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}',
-                      copp_name=args[2])
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                      copp_name=args[0])
 
-    response = fbs_client.get(keypath)
-    if response.ok():
-        data = response.content
-        delete_params = ['trap-priority', 'trap-action', 'queue', 'meter-type', 'mode', 'green-action', 'red-action', 'yellow-action', 'trap-action', 'enable', 'pbs', 'pir', 'cbs', 'cir']
-
-        for feat in delete_params:
-            if feat in data['openconfig-copp:copp-group'][0].keys():
-                del data['openconfig-copp:copp-group'][0][feat]
-
-        return fbs_client.put(keypath, data)
+    return fbs_client.delete(keypath)
 
 
 def set_copp_action_group(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap={copp_name}/trap-group',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-group',
                       copp_name=args[1])
-    body = {"openconfig-copp:trap-group": args[2]}
+    body = {"openconfig-copp-ext:trap-group": args[2]}
 
     return fbs_client.patch(keypath, body)
 
 
 def set_copp_trap_priority_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}/trap-priority',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
                       copp_name=args[0])
-    body = {"openconfig-copp:trap-priority": int(args[1])}
+    body = {"openconfig-copp-ext:trap-priority": int(args[1])}
 
     return fbs_client.patch(keypath, body)
 
 
 def clear_copp_trap_priority_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}/trap-priority',
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
                       copp_name=args[0])
 
     return fbs_client.delete(keypath)
@@ -1064,13 +1065,13 @@ def clear_copp_trap_priority_action(args):
 
 def show_copp_protocols(args):
     if args[0] == "actions":
-        keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group')
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group')
         return fbs_client.get(keypath)
     elif args[0] == "classifiers":
-        keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap')
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
         return fbs_client.get(keypath)
     elif args[0] == "policy":
-        keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-trap')
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
         return fbs_client.get(keypath)
     print("Classifier match-type copp protocols")
     print("  protocol stp")
@@ -1341,22 +1342,22 @@ def handle_clear_details_by_interface_response(response, args, op_str):
 def handle_show_copp_protocols_response(response, args, op_str):
     if response.ok():
         content = response.content
-        if "openconfig-copp:copp-group" in content:
+        if "openconfig-copp-ext:copp-group" in content:
             show_cli_output('show_copp_actions.j2', content)
-        if "openconfig-copp:copp-trap" in content:
+        if "openconfig-copp-ext:copp-trap" in content:
             if args[0] == "policy":
-                if "openconfig-copp:copp-trap" in content:
-                    if "openconfig-copp:copp-trap" in content:
-                        for entry in content["openconfig-copp:copp-trap"]:
-                            if "trap-group" in entry:
-                                keypath = cc.Path('/restconf/data/openconfig-copp:copp-config/copp-group={copp_name}',
-                                                  copp_name=entry["trap-group"])
-                                resp2 = fbs_client.get(keypath)
-                                if resp2.ok():
-                                    content2 = resp2.content
-                                    if "openconfig-copp:copp-group" in content2:
-                                        for entry2 in resp2.content["openconfig-copp:copp-group"]:
-                                            for key, value in entry2.items():
+                if "openconfig-copp-ext:copp-trap" in content:
+                    for entry in content["openconfig-copp-ext:copp-trap"]:
+                        if "config" in entry and "trap-group" in entry["config"]:
+                            keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                                              copp_name=entry["config"]["trap-group"])
+                            resp2 = fbs_client.get(keypath)
+                            if resp2.ok():
+                                content2 = resp2.content
+                                if "openconfig-copp-ext:copp-group" in content2:
+                                    for entry2 in resp2.content["openconfig-copp-ext:copp-group"]:
+                                        if "config" in entry2:
+                                            for key, value in entry2["config"].items():
                                                 entry[key] = value
                 show_cli_output('show_copp_policy.j2', content)
             else:

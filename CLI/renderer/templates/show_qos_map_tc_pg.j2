@@ -1,0 +1,28 @@
+{% if json_output %}
+{% for key_json in json_output %}
+    {% if key_json == "openconfig-qos-maps-ext:forwarding-group-priority-group-maps" %}
+        {% set map_list = json_output[key_json]["forwarding-group-priority-group-map"] %}
+    {% else %}
+      {% if key_json == "openconfig-qos-maps-ext:forwarding-group-priority-group-map" %}
+        {% set map_list = json_output[key_json] %}
+      {% endif %}
+    {% endif %}
+{% for map in map_list %}
+
+{{'Traffic-Class-Priority-Group-MAP: '}}{{map['name']}}
+
+{{'----------------------------'}}
+    {{'%-5s'|format("TC")}}{{'%-5s'|format("PG")}}
+{{'----------------------------'}}
+  {% set map_info = map['forwarding-group-priority-group-map-entries'] %}
+  {% if map_info %}
+      {% set entries = map_info['forwarding-group-priority-group-map-entry'] %}
+      {% for entry in entries %}
+    {{'%-5s'|format(entry['fwd-group'])}}{{'%-5s'|format(entry['config']['priority-group-index'])}}
+      {% endfor %}
+  {% endif %}
+{{'----------------------------'}}
+
+{% endfor %}
+{% endfor %}
+{% endif %}
