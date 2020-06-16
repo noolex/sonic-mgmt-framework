@@ -1,6 +1,6 @@
 ###########################################################################
 #
-# Copyright 2019 Dell, Inc.
+# Copyright 2020 Dell, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_two_step'            : show_ptp_two_step,
                   'ptp_network_transport'   : show_ptp_network_transport,
                   'ptp_master_table'        : show_ptp_master_table,
+                  'sflow_source_if'         : show_sflow_source_if,
                   'dns_server_source_if'    : show_dns_source_if
  }
 

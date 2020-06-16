@@ -1,7 +1,7 @@
 
 ###########################################################################
 #
-# Copyright 2019 Dell, Inc.
+# Copyright 2020 Dell, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,3 +84,13 @@ def show_tacacs_source_if(render_tables):
                            'sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST',
                            'src_intf',
                            cmd_prfx)
+
+
+def show_sflow_source_if(render_tables):
+
+    cmd_prfx = 'sflow agent-id '
+    return show_get_if_cmd(render_tables,
+                           'sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST',
+                           'agent_id',
+                           cmd_prfx)
+
