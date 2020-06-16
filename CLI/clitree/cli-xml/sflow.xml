@@ -81,10 +81,10 @@ limitations under the License.
   </VIEW>
   <VIEW name="configure-view">
     <COMMAND name="sflow" help="sFlow Configurations"/>
-    <COMMAND name="sflow collector" help="Collector name" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="name" help="Collector name" ptype="STRING_16"/>
-      <PARAM name="ip" help="Collector IP address" ptype="IPV4_OR_IPV6_ADDR"/>
-      <PARAM name="port" help="Collector port number" ptype="RANGE_0_65535" optional="true"/>
+    <COMMAND name="sflow collector" help="Collector name" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_name={name}">
+      <PARAM name="name" help="Collector name" ptype="STRING_16" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_name"/>
+      <PARAM name="ip" help="Collector IP address" ptype="IPV4_OR_IPV6_ADDR" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_ip"/>
+      <PARAM name="port" help="Collector port number" ptype="RANGE_0_65535" optional="true" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_port"/>
       <ACTION builtin="clish_pyobj">sonic_cli_sflow put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list ${name} ${ip} ${port}</ACTION>
       <DOCGEN>
           <DESCRIPTION>Add an sFLow Collector</DESCRIPTION>
@@ -98,7 +98,7 @@ limitations under the License.
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="sflow enable" help="Enable sFlow" ptype="SUBCOMMAND" mode="subcommand">
+    <COMMAND name="sflow enable" help="Enable sFlow" ptype="SUBCOMMAND" mode="subcommand" command_keys="sflow_key=global" command_tables="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/sflow_key={sflow_key}" dbpath="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/admin_state">
       <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state up </ACTION>
       <DOCGEN>
           <DESCRIPTION>Enable sFlow</DESCRIPTION>
@@ -108,7 +108,7 @@ limitations under the License.
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="sflow agent-id" help="Collector agent interface" ptype="SUBCOMMAND" mode="subcommand">
+    <COMMAND name="sflow agent-id" help="Collector agent interface" ptype="SUBCOMMAND" mode="subcommand" command_keys="sflow_key=global" command_tables="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/sflow_key={sflow_key}" render_command_cb="sflow_source_if">
       <PARAM name="if-switch" help="agent interface" mode="switch" ptype="STRING">
         <PARAM name="phy-if-name" help="Physical interface" ptype="PHY_INTERFACE"/>
         <PARAM name="vlan-if-name" help="Vlan indentifer" ptype="VLAN_INTERFACE"/>
@@ -123,8 +123,8 @@ limitations under the License.
         </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="sflow polling-interval" help="Collector polling interval" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="interval" help="Interval (default: 20)" ptype="SFLOW_POLL_INTERVAL"/>
+    <COMMAND name="sflow polling-interval" help="Collector polling interval" ptype="SUBCOMMAND" mode="subcommand" command_keys="sflow_key=global" command_tables="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/sflow_key={sflow_key}">
+      <PARAM name="interval" help="Interval (default: 20)" ptype="SFLOW_POLL_INTERVAL" dbpath="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/polling_interval"/>
       <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_polling_interval ${interval} </ACTION>
       <DOCGEN>
           <DESCRIPTION>Configure sFlow polling interval</DESCRIPTION>
