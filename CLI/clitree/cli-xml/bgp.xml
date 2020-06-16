@@ -196,10 +196,10 @@ limitations under the License.
   <COMMAND name="router" help="Router mode" >
   </COMMAND>
 
-  <COMMAND name="router bgp" help="Border Gateway protocol (BGP)" view="configure-router-bgp-view" viewid="instance=${as-num-dot};vrf-name=${vrf-name}"  view_keys="vrf_name=*, ip_prfx=*" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name={vrf-name}">
-    <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/local_asn">
+  <COMMAND name="router bgp" help="Border Gateway protocol (BGP)" view="configure-router-bgp-view" viewid="instance=${as-num-dot};vrf-name=${vrf-name}"  view_keys="vrf_name=*, ip_prfx=*" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name={vrf-name}">
+    <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/local_asn">
       <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name"/>
+        <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_config_as ${vrf-name} ${as-num-dot}</ACTION>
@@ -237,11 +237,11 @@ limitations under the License.
       depth="2">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <COMMAND name="show configuration" help="show bgp configuration">
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_configuration configure-router-bgp vrf-name=${vrf-name} </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp view_keys="vrf-name=${vrf-name}"</ACTION>
   </COMMAND>
 
   <COMMAND name="router-id" help="Override configured router identifier">
-    <PARAM name="ip-addr" help="Router identifier" ptype="IP_ADDR"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/router_id"/>
+    <PARAM name="ip-addr" help="Router identifier" ptype="IP_ADDR"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/router_id"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_config_router_id ${vrf-name} ${ip-addr}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -263,7 +263,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="graceful-restart" help="BGP graceful restart feature"/>
-  <COMMAND name="graceful-restart enable" help="Enable BGP graceful restart" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/graceful_restart_enable=true">
+  <COMMAND name="graceful-restart enable" help="Enable BGP graceful restart" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/graceful_restart_enable=true">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_graceful_restart_config_enabled ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -285,7 +285,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="graceful-restart preserve-fw-state" help="Enable BGP graceful restart preserve FW state" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/gr_preserve_fw_state=true">
+  <COMMAND name="graceful-restart preserve-fw-state" help="Enable BGP graceful restart preserve FW state" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/gr_preserve_fw_state=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_graceful_restart_config_preserve_fw_state ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -305,7 +305,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="graceful-restart restart-time" help="BGP graceful restart restart-time">
-    <PARAM name="restart-time" help="Seconds" ptype="RANGE_1_3600"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/gr_restart_time"/>
+    <PARAM name="restart-time" help="Seconds" ptype="RANGE_1_3600"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/gr_restart_time"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_graceful_restart_config_restart_time ${vrf-name} ${restart-time}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -326,7 +326,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="graceful-restart stalepath-time" help="BGP graceful restart stalepath-time">
-    <PARAM name="stalepath-time" help="Seconds" ptype="RANGE_1_3600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/gr_stale_routes_time"/>
+    <PARAM name="stalepath-time" help="Seconds" ptype="RANGE_1_3600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/gr_stale_routes_time"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_graceful_restart_config_stale_routes_time ${vrf-name} ${stalepath-time}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -347,7 +347,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="always-compare-med" help="Allow comparing MED from different neighbors" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/always_compare_med=true">
+  <COMMAND name="always-compare-med" help="Allow comparing MED from different neighbors" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/always_compare_med=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_always_compare_med ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -369,7 +369,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="coalesce-time" help="Subgroup coalesce timer">
-    <PARAM name="coaltime" help="Subgroup coalesce timer value (in ms)" ptype="RANGE_1_4294967295"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/coalesce_time"/>
+    <PARAM name="coaltime" help="Subgroup coalesce timer value (in ms)" ptype="RANGE_1_4294967295"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/coalesce_time"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_coalesce_time ${vrf-name} ${coaltime}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -387,7 +387,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="read-quanta" help="How many packets to read from peer socket per I/O cycle">
-    <PARAM name="rdval" help="Number of packets" ptype="RANGE_1_10" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/read_quanta"/>
+    <PARAM name="rdval" help="Number of packets" ptype="RANGE_1_10" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/read_quanta"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_read_quanta ${vrf-name} ${rdval}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -408,7 +408,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="write-quanta" help="How many packets to write to peer socket per run">
-    <PARAM name="wrval" help="Number of packets" ptype="RANGE_1_10" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/write_quanta"/>
+    <PARAM name="wrval" help="Number of packets" ptype="RANGE_1_10" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/write_quanta"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_write_quanta ${vrf-name} ${wrval}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -432,7 +432,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="client-to-client" help="Configure client to client route reflection"/>
-  <COMMAND name="client-to-client reflection" help="Route reflection" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/rr_clnt_to_clnt_reflection=true">
+  <COMMAND name="client-to-client reflection" help="Route reflection" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/rr_clnt_to_clnt_reflection=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_clnt_to_clnt_reflection ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -449,7 +449,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="cluster-id" help="Configure Route-Reflector Cluster-id">
-    <PARAM name="intval-ip" help= "Route-Reflector Cluster-id as IP address format or 32-bit quantity" ptype="INT32_OR_IP_ADDR" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/rr_cluster_id"/>
+    <PARAM name="intval-ip" help= "Route-Reflector Cluster-id as IP address format or 32-bit quantity" ptype="INT32_OR_IP_ADDR" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/rr_cluster_id"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_bgp_ext_route_reflector_config_route_reflector_cluster_id ${vrf-name} ${intval-ip}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -467,7 +467,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="log-neighbor-changes" help="Log neighbor up/down and reset reason(default)"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/log_nbr_state_changes=true">
+  <COMMAND name="log-neighbor-changes" help="Log neighbor up/down and reset reason(default)"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/log_nbr_state_changes=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_logging_options_config_log_neighbor_state_changes ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -485,7 +485,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="deterministic-med" help="Pick the best-MED path among paths advertised from the neighboring AS" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/deterministic_med=true">
+  <COMMAND name="deterministic-med" help="Pick the best-MED path among paths advertised from the neighboring AS" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/deterministic_med=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_deterministic_med ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -512,7 +512,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on ebgp sessions" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/disable_ebgp_connected_rt_check=true">
+  <COMMAND name="disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on ebgp sessions" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/disable_ebgp_connected_rt_check=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_disable_ebgp_connected_route_check ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -530,7 +530,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="graceful-shutdown" help="Graceful shutdown parameters" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/graceful_shutdown=true">
+  <COMMAND name="graceful-shutdown" help="Graceful shutdown parameters" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/graceful_shutdown=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_graceful_shutdown ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -553,12 +553,12 @@ limitations under the License.
   <COMMAND name="max-med" help="Advertise routes with max-med">
     <PARAM name="maxmedopts" help="MAX_MED admin or startup" mode="switch" ptype="SUBCOMMAND">
       <PARAM name="on-startup" help="Effective on a startup" ptype="SUBCOMMAND" mode="subcommand">
-        <PARAM name="stime" help="Time (seconds) period for max-med" ptype="RANGE_5_86400" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/max_med_time">
-          <PARAM name="maxmedval" help="Max MED value to be used" ptype="RANGE_0_4294967295" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/max_med_val"/>
+        <PARAM name="stime" help="Time (seconds) period for max-med" ptype="RANGE_5_86400" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/max_med_time">
+          <PARAM name="maxmedval" help="Max MED value to be used" ptype="RANGE_0_4294967295" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/max_med_val"/>
         </PARAM>
       </PARAM>
-      <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/max_med_admin=true">
-          <PARAM name="maxmedval" help="Max MED value to be used" ptype="RANGE_0_4294967295" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/max_med_admin_val"/>
+      <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/max_med_admin=true">
+          <PARAM name="maxmedval" help="Max MED value to be used" ptype="RANGE_0_4294967295" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/max_med_admin_val"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; maxmedopts:${maxmedopts} stime:${stime} maxmedval:${maxmedval}</ACTION>
@@ -583,7 +583,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="default" help="Configure BGP defaults"/>
-  <COMMAND name="default ipv4-unicast" help="Activate ipv4-unicast for a peer by default" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/default_ipv4_unicast=true">
+  <COMMAND name="default ipv4-unicast" help="Activate ipv4-unicast for a peer by default" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/default_ipv4_unicast=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_ipv4_unicast ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -603,7 +603,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="default local-preference" help="Local preference (higher=more preferred)">
-       <PARAM name="lprftime" help="Configure default local preference value" ptype="RANGE_0_4294967295" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/default_local_preference"/>
+       <PARAM name="lprftime" help="Configure default local preference value" ptype="RANGE_0_4294967295" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/default_local_preference"/>
        <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_local_preference ${vrf-name} ${lprftime}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -620,7 +620,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="default show-hostname" help="Show hostname in certain command outputs"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/default_show_hostname=true">
+  <COMMAND name="default show-hostname" help="Show hostname in certain command outputs"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/default_show_hostname=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_show_hostname ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -639,7 +639,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="default shutdown" help="Apply administrative shutdown to newly configured peers" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/default_shutdown=true">
+  <COMMAND name="default shutdown" help="Apply administrative shutdown to newly configured peers" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/default_shutdown=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_shutdown ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -660,7 +660,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="default subgroup-pkt-queue-max" help="subgroup-pkt-queue-max">
-       <PARAM name="maxval" help="Configure subgroup packet queue max" ptype="RANGE_20_100" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/default_subgroup_pkt_queue_max"/>
+       <PARAM name="maxval" help="Configure subgroup packet queue max" ptype="RANGE_20_100" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/default_subgroup_pkt_queue_max"/>
        <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_subgroup_pkt_queue_max ${vrf-name} ${maxval}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -679,7 +679,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/fast_external_failover">
+  <COMMAND name="fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/fast_external_failover">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_fast_external_failover ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -699,7 +699,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="network" help="Check BGP network route exists in IGP"/>
-  <COMMAND name="network import-check" help="" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/network_import_check">
+  <COMMAND name="network import-check" help="" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/network_import_check">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_network_import_check ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -723,7 +723,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="route-map" help="Time in secs to wait before processing route-map changes"/>
   <COMMAND name="route-map delay-timer" help="Time in secs to wait before processing route-map changes">
-    <PARAM name="delaytm" help="0 disables the timer,  no route updates happen when route-maps change" ptype="RANGE_0_600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/route_map_process_delay"/>
+    <PARAM name="delaytm" help="0 disables the timer,  no route updates happen when route-maps change" ptype="RANGE_0_600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/route_map_process_delay"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_route_map_process_delay ${vrf-name} ${delaytm}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -744,7 +744,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-reflector" help="Allow modifications made by out route-map"/>
-  <COMMAND name="route-reflector allow-outbound-policy" help="Allow modifications made by out route-map" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/rr_allow_out_policy=true">
+  <COMMAND name="route-reflector allow-outbound-policy" help="Allow modifications made by out route-map" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/rr_allow_out_policy=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_bgp_ext_route_reflector_config_allow_outbound_policy ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -764,8 +764,8 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="update-delay" help="Force initial delay for best-path and updates">
-    <PARAM name="time" help="Maximum delay for best path calculation (Seconds)" ptype="RANGE_0_3600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/max_delay">
-       <PARAM name="maxmedval" help="Maximum delay for updates (Seconds)" ptype="RANGE_1_3600" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/establish_wait"/>
+    <PARAM name="time" help="Maximum delay for best path calculation (Seconds)" ptype="RANGE_0_3600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/max_delay">
+       <PARAM name="maxmedval" help="Maximum delay for updates (Seconds)" ptype="RANGE_1_3600" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/establish_wait"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; time:${time} maxmedval:${maxmedval}</ACTION>
     <DOCGEN>
@@ -803,8 +803,8 @@ limitations under the License.
 
   <COMMAND name="bestpath" help="Change the default bestpath selection"/>
   <COMMAND name="bestpath as-path" help="AS-path for best path computation"/>
-  <COMMAND name="bestpath as-path multipath-relax" help="Include prefixes received from different AS path during multipath calculation" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/load_balance_mp_relax=true">
-    <PARAM name="as-set" help="Generate AS set path information" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/as_path_mp_as_set=true"/>
+  <COMMAND name="bestpath as-path multipath-relax" help="Include prefixes received from different AS path during multipath calculation" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/load_balance_mp_relax=true">
+    <PARAM name="as-set" help="Generate AS set path information" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/as_path_mp_as_set=true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_use_multiple_paths_ebgp_config ${vrf-name} True ${as-set}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -824,7 +824,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="bestpath as-path ignore" help="Ignore AS path for best path computation" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/ignore_as_path_length=true">
+  <COMMAND name="bestpath as-path ignore" help="Ignore AS path for best path computation" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/ignore_as_path_length=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_ignore_as_path_length ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -843,7 +843,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="bestpath as-path confed" help="Compare path lengths including confederation sets and sequences in selecting a route" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/compare_confed_as_path=true">
+  <COMMAND name="bestpath as-path confed" help="Compare path lengths including confederation sets and sequences in selecting a route" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/compare_confed_as_path=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_compare_confed_as_path ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -865,11 +865,11 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="bestpath med" help="MED attribute">
     <PARAM name="medopt" mode="switch" ptype="SUBCOMMAND" help="MED option">
-      <PARAM name="missing-as-worst" mode="subcommand" ptype="SUBCOMMAND" help="Treat missing MED as the least preferred one" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/med_missing_as_worst=true">
-         <PARAM name="confed" help="Compare MED among confederation paths" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/med_confed=true"/>
+      <PARAM name="missing-as-worst" mode="subcommand" ptype="SUBCOMMAND" help="Treat missing MED as the least preferred one" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/med_missing_as_worst=true">
+         <PARAM name="confed" help="Compare MED among confederation paths" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/med_confed=true"/>
       </PARAM>
-      <PARAM name="confed" help="Compare MED among confederation paths" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/med_confed=true">
-         <PARAM name="missing-as-worst" mode="subcommand" ptype="SUBCOMMAND" help="Treat missing MED as the least preferred one" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/med_missing_as_worst=true"/>
+      <PARAM name="confed" help="Compare MED among confederation paths" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/BGP_GLOBALS_LIST/med_confed=true">
+         <PARAM name="missing-as-worst" mode="subcommand" ptype="SUBCOMMAND" help="Treat missing MED as the least preferred one" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/med_missing_as_worst=true"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; missing-as-worst:${missing-as-worst} confed:${confed}</ACTION>
@@ -892,7 +892,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="bestpath compare-routerid" help="Compare router-id for identical EBGP paths" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/external_compare_router_id">
+  <COMMAND name="bestpath compare-routerid" help="Compare router-id for identical EBGP paths" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/external_compare_router_id">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_external_compare_router_id ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -929,7 +929,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="neighbor" help="Specify a neighbor router" view="configure-router-bgp-nbr-view" viewid="nbr-addr=${ip}${Ethernet}${PortChannel}${Vlan};vrf-name=${vrf-name}" render_command_cb="router_bgp_neighbor" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name,neighbor=*" view_tables="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/vrf_name={vrf-name},neighbor={neighbor}">
+  <COMMAND name="neighbor" help="Specify a neighbor router" view="configure-router-bgp-nbr-view" viewid="nbr-addr=${ip}${Ethernet}${PortChannel}${Vlan};vrf-name=${vrf-name}" render_command_cb="router_bgp_neighbor" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name,neighbor=*" view_tables="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/vrf_name={vrf-name},neighbor={neighbor}">
     <PARAM name="nbopt" help="neighbor router" mode="switch" ptype="SUBCOMMAND">
       <PARAM name="ip" help="Neighbor router" ptype="IPV4V6_ADDR"/>
       <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
@@ -959,7 +959,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="peer-group" help="Specify a peer-group" view="configure-router-bgp-template-view" viewid="template-name=${template-str};vrf-name=${vrf-name}"  view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name,pg=*" view_tables="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/vrf_name={vrf-name},peer_group_name={pg}">
+  <COMMAND name="peer-group" help="Specify a peer-group" view="configure-router-bgp-template-view" viewid="template-name=${template-str};vrf-name=${vrf-name}"  view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name,pg=*" view_tables="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_LIST/vrf_name={vrf-name},peer_group_name={pg}">
     <PARAM name="template-str" help="Peer-group" ptype="STRING"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_config ${vrf-name} ${template-str} ${instance}</ACTION>
     <DOCGEN>
@@ -978,8 +978,8 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="address-family" help="Enter Address Family command mode"/>
-  <COMMAND name="address-family ipv4" help="Enter Address Family command mode" view="configure-router-bgp-ipv4-view" viewid="vrf-name=${vrf-name};family=ipv4" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name,afi-safi=ipv4_unicast" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/vrf_name={vrf-name},afi_safi={afi-safi}">
-    <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/afi_safi=ipv4_unicast"/>
+  <COMMAND name="address-family ipv4" help="Enter Address Family command mode" view="configure-router-bgp-ipv4-view" viewid="vrf-name=${vrf-name};family=ipv4" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name,afi-safi=ipv4_unicast" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/vrf_name={vrf-name},afi_safi={afi-safi}">
+    <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/afi_safi=ipv4_unicast"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_config ${vrf-name} IPV4_UNICAST</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -999,8 +999,8 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="address-family ipv6" help="Enter Address Family command mode" view="configure-router-bgp-ipv6-view" viewid="vrf-name=${vrf-name};family=ipv6" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name,afi-safi=ipv6_unicast" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/vrf_name={vrf-name},afi_safi={afi-safi}">
-    <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/afi_safi=ipv6_unicast"/>
+  <COMMAND name="address-family ipv6" help="Enter Address Family command mode" view="configure-router-bgp-ipv6-view" viewid="vrf-name=${vrf-name};family=ipv6" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name,afi-safi=ipv6_unicast" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/vrf_name={vrf-name},afi_safi={afi-safi}">
+    <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/afi_safi=ipv6_unicast"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_config ${vrf-name} IPV6_UNICAST</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1020,8 +1020,8 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="address-family l2vpn" help="Enter Address Family command mode" view="configure-router-bgp-l2vpn-view" viewid="vrf-name=${vrf-name};family=l2vpn" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name,afi-safi=l2vpn_evpn" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/vrf_name={vrf-name},afi_safi={afi-safi}">
-    <PARAM name="evpn" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/afi_safi=l2vpn_evpn"/>
+  <COMMAND name="address-family l2vpn" help="Enter Address Family command mode" view="configure-router-bgp-l2vpn-view" viewid="vrf-name=${vrf-name};family=l2vpn" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name,afi-safi=l2vpn_evpn" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/vrf_name={vrf-name},afi_safi={afi-safi}">
+    <PARAM name="evpn" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/afi_safi=l2vpn_evpn"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_config ${vrf-name} L2VPN_EVPN</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1042,17 +1042,17 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="listen" help="Set the prefix range for dynamic peers" command_tables="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_GLOBALS_LISTEN_PREFIX/vrf_name={vrf-name},ip_prefix={ip_prfx}">
+  <COMMAND name="listen" help="Set the prefix range for dynamic peers" command_tables="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_GLOBALS_LISTEN_PREFIX/BGP_GLOBALS_LISTEN_PREFIX_LIST/vrf_name={vrf-name},ip_prefix={ip_prfx}">
     <PARAM name="listen-opt" help="Listen options" mode="switch" ptype="SUBCOMMAND">
      <PARAM name="range" help="Configure BGP dynamic neighbors listen range" mode="subcommand" ptype="SUBCOMMAND">
-       <PARAM name="addr" help="Neighbor prefix" ptype="IPV4_IPV6_NETWORK" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_GLOBALS_LISTEN_PREFIX/ip_prefix">
+       <PARAM name="addr" help="Neighbor prefix" ptype="IPV4_IPV6_NETWORK" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_GLOBALS_LISTEN_PREFIX/BGP_GLOBALS_LISTEN_PREFIX_LIST/ip_prefix">
          <PARAM name="peer-group" help="Member of the peer-group" mode="subcommand" ptype="SUBCOMMAND">
-           <PARAM name="pgname" help="Peer-group name" ptype="STRING" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_GLOBALS_LISTEN_PREFIX/peer_group"/>
+           <PARAM name="pgname" help="Peer-group name" ptype="STRING" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_GLOBALS_LISTEN_PREFIX/BGP_GLOBALS_LISTEN_PREFIX_LIST/peer_group"/>
          </PARAM>
        </PARAM>
      </PARAM>
      <PARAM name="limit" help="maximum number of BGP Dynamic Neighbors that can be created" mode="subcommand" ptype="SUBCOMMAND">
-       <PARAM name="lmt-val" help="Limit value" ptype="RANGE_1_5000" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/max_dynamic_neighbors"/>
+       <PARAM name="lmt-val" help="Limit value" ptype="RANGE_1_5000" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/max_dynamic_neighbors"/>
      </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; listen-opt:${listen-opt} addr:${addr} pgname:${pgname} lmt-val:${lmt-val}</ACTION>
@@ -1076,10 +1076,10 @@ limitations under the License.
   <COMMAND name="confederation" help="AS confederation parameters" render_command_cb="router_bgp_confederation">
     <PARAM name="conf-opt" help="Listen options" mode="switch" ptype="SUBCOMMAND">
       <PARAM name="identifier" help="AS number" mode="subcommand" ptype="SUBCOMMAND">
-        <PARAM name="id-as" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/confed_id"/>
+        <PARAM name="id-as" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/confed_id"/>
       </PARAM>
       <PARAM name="peers" help="Peer ASs in BGP confederation" mode="subcommand" ptype="SUBCOMMAND">
-        <PARAM name="peer-as" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/confed_peers@"/>
+        <PARAM name="peer-as" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/confed_peers@"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; conf-opt:${conf-opt} id-as:${id-as} peer-as:${peer-as}</ACTION>
@@ -1105,8 +1105,8 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="timers" help="Adjust routing timers">
-    <PARAM name="keepalive-intvl" help="Keepalive interval (default=60)" ptype="RANGE_1_3600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/keepalive">
-      <PARAM name="hold-time" help="Holdtime (default=180)" ptype="RANGE_1_3600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/holdtime"/>
+    <PARAM name="keepalive-intvl" help="Keepalive interval (default=60)" ptype="RANGE_1_3600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/keepalive">
+      <PARAM name="hold-time" help="Holdtime (default=180)" ptype="RANGE_1_3600" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/holdtime"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Gbl ${vrf-name} ${__cmd} &#xA; keepalive-intvl:${keepalive-intvl} hold-time:${hold-time}</ACTION>
     <DOCGEN>
@@ -1316,10 +1316,10 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp nbr configuration">
-     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_configuration configure-router-bgp-nbr vrf-name=${vrf-name} neighbor=${nbr-addr} </ACTION>
+     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr view_keys="vrf-name=${vrf-name},neighbor=${nbr-addr}"</ACTION>
    </COMMAND>
   <COMMAND name="description" help="Assign a string describing the neighbor">
-    <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/name"/>
+    <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/name"/>
      <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/protocols/protocol=BGP,bgp/bgp/neighbors/neighbor=${nbr-addr}/config/description body={"openconfig-network-instance:description": "${String}"}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1338,8 +1338,8 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/ebgp_multihop=true">
-    <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/ebgp_multihop_ttl"/>
+  <COMMAND name="ebgp-multihop" help="Allow EBGP neighbors not on directly connected networks" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/ebgp_multihop=true">
+    <PARAM name="hop-count" help="Maximum hop count (default=255)" ptype="RANGE_1_255" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/ebgp_multihop_ttl"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; hop-count:${hop-count}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1360,7 +1360,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="peer-group" help="Inherit configuration of peer-group">
-    <PARAM name="template-name" help="Name of peer-group from which to inherit" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/peer_group_name"/>
+    <PARAM name="template-name" help="Name of peer-group from which to inherit" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/peer_group_name"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_group ${vrf-name} ${nbr-addr} ${template-name}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1381,9 +1381,9 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="remote-as" help="Specify a BGP neighbor AS">
     <PARAM name="remtype" help="Remote type" mode="switch" ptype="SUBCOMMAND">
-      <PARAM name="internal" help="Internal BGP peer" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/peer_type=internal"/>
-      <PARAM name="external" help="External BGP peer" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/peer_type=external"/>
-      <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295"  dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/asn"/>
+      <PARAM name="internal" help="Internal BGP peer" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/peer_type=internal"/>
+      <PARAM name="external" help="External BGP peer" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/peer_type=external"/>
+      <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295"  dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/asn"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; remtype:${remtype} as-num-dot:${as-num-dot}</ACTION>
     <DOCGEN>
@@ -1408,11 +1408,11 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="timers" help="Adjust routing timers">
     <PARAM name="timertype" help="Timer type" mode="switch" ptype="SUBCOMMAND">
-      <PARAM name="keepalive-intvl" help="Keepalive interval (default=60)" ptype="RANGE_1_3600" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/keepalive">
-        <PARAM name="hold-time" help="Holdtime (default=180)" ptype="RANGE_1_3600"  dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/holdtime"/>
+      <PARAM name="keepalive-intvl" help="Keepalive interval (default=60)" ptype="RANGE_1_3600" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/keepalive">
+        <PARAM name="hold-time" help="Holdtime (default=180)" ptype="RANGE_1_3600"  dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/holdtime"/>
       </PARAM>
       <PARAM name="connect" help="BGP connect timer" mode="subcommand" ptype="SUBCOMMAND">
-        <PARAM name="connect-time" help="Connect timer" ptype="RANGE_1_65535" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/conn_retry"/>
+        <PARAM name="connect-time" help="Connect timer" ptype="RANGE_1_65535" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/conn_retry"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; timertype:${timertype} connect-time:${connect-time} keepalive-intvl:${keepalive-intvl} hold-time:${hold-time}</ACTION>
@@ -1469,9 +1469,9 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="shutdown" help="Shutdown a neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/admin_status=false">
+  <COMMAND name="shutdown" help="Shutdown a neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/admin_status=false">
     <PARAM name="message" help="Add a shutdown message (draft-ietf-idr-shutdown-06)" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-       <PARAM name="MSG" help="Shutdown message" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/shutdown_message"/>
+       <PARAM name="MSG" help="Shutdown message" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/shutdown_message"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; message:${message} MSG:${MSG}</ACTION>
     <DOCGEN>
@@ -1493,7 +1493,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="advertisement-interval" help="Minimum interval between sending BGP routing updates">
-    <PARAM name="tval" help="Seconds" ptype="RANGE_0_600" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/min_adv_interval"/>
+    <PARAM name="tval" help="Seconds" ptype="RANGE_0_600" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/min_adv_interval"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_timers_config_minimum_advertisement_interval ${vrf-name} ${nbr-addr} ${tval}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1513,8 +1513,8 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="bfd" help="Enables BFD support" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/bfd=true">
-    <PARAM name="check-control-plane-failure" help="Link dataplane status with BGP controlplane" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/bfd_check_ctrl_plane_failure=true"/>
+  <COMMAND name="bfd" help="Enables BFD support" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/bfd=true">
+    <PARAM name="check-control-plane-failure" help="Link dataplane status with BGP controlplane" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/bfd_check_ctrl_plane_failure=true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; check-control-plane-failure:${check-control-plane-failure}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1535,7 +1535,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="capability" help="Advertise capability to the peer"/>
-  <COMMAND name="capability extended-nexthop" help="Advertise extended next-hop capability to the peer" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/capability_ext_nexthop=true">
+  <COMMAND name="capability extended-nexthop" help="Advertise extended next-hop capability to the peer" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/capability_ext_nexthop=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_capability_extended_nexthop ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1558,7 +1558,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="capability dynamic" help="Advertise dynamic capability to this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/capability_dynamic=true">
+  <COMMAND name="capability dynamic" help="Advertise dynamic capability to this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/capability_dynamic=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_capability_dynamic ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1576,7 +1576,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="disable-connected-check" help="One-hop away EBGP peer using loopback address" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/disable_ebgp_connected_route_check=true">
+  <COMMAND name="disable-connected-check" help="One-hop away EBGP peer using loopback address" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/disable_ebgp_connected_route_check=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_disable_ebgp_connected_route_check ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1596,7 +1596,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="dont-capability-negotiate" help="Do not perform capability negotiation" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/dont_negotiate_capability=true">
+  <COMMAND name="dont-capability-negotiate" help="Do not perform capability negotiation" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/dont_negotiate_capability=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_dont_negotiate_capability ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1630,7 +1630,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="enforce-first-as" help="Enforce the first AS for EBGP routes" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/enforce_first_as=true">
+  <COMMAND name="enforce-first-as" help="Enforce the first AS for EBGP routes" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/enforce_first_as=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_enforce_first_as ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1650,7 +1650,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="enforce-multihop" help="Enforce EBGP neighbors perform multihop" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/enforce_multihop=true">
+  <COMMAND name="enforce-multihop" help="Enforce EBGP neighbors perform multihop" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/enforce_multihop=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_enforce_multihop ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1669,9 +1669,9 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="local-as" help="Specify a local-as number">
-    <PARAM name="asnum" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/local_asn">
-      <PARAM name="no-prepend" help="Do not prepend local-as to updates from ebgp peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/local_as_no_prepend=true">
-        <PARAM name="replace-as" help="Do not prepend local-as to updates from ibgp peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/local_as_replace_as=true"/>
+    <PARAM name="asnum" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_asn">
+      <PARAM name="no-prepend" help="Do not prepend local-as to updates from ebgp peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_no_prepend=true">
+        <PARAM name="replace-as" help="Do not prepend local-as to updates from ibgp peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_replace_as=true"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; no-prepend:${no-prepend} replace-as:${replace-as} asnum:${asnum}</ACTION>
@@ -1708,7 +1708,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="override-capability" help="Override capability negotiation result" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/override_capability=true">
+  <COMMAND name="override-capability" help="Override capability negotiation result" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/override_capability=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_override_capability ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1729,7 +1729,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="passive" help="Don't send open messages to this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/passive_mode=true">
+  <COMMAND name="passive" help="Don't send open messages to this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/passive_mode=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_transport_config_passive_mode ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1775,7 +1775,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="port" help="Neighbor's BGP port">
-    <PARAM name="tcpport" help="TCP port number" ptype="RANGE_0_65535" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/peer_port"/>
+    <PARAM name="tcpport" help="TCP port number" ptype="RANGE_0_65535" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/peer_port"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_peer_port ${vrf-name} ${nbr-addr} ${tcpport}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1794,7 +1794,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="solo" help="Solo peer - part of its own update group" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/solo_peer=true">
+  <COMMAND name="solo" help="Solo peer - part of its own update group" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/solo_peer=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_solo_peer ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1814,7 +1814,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="strict-capability-match" help="Strict capability negotiation match" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/strict_capability_match=true">
+  <COMMAND name="strict-capability-match" help="Strict capability negotiation match" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/strict_capability_match=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_strict_capability_match ${vrf-name} ${nbr-addr} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1835,7 +1835,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="ttl-security" help="TTL security" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/ttl_security_hops=true"/>
+  <COMMAND name="ttl-security" help="TTL security" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/ttl_security_hops=true"/>
   <COMMAND name="ttl-security hops" help="BGP ttl-security parameters">
     <PARAM name="nhops" help="Specify the maximum number of hops to the BGP peer" ptype="RANGE_1_254"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_config_ttl_security_hops ${vrf-name} ${nbr-addr} ${nhops}</ACTION>
@@ -1860,8 +1860,8 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="address-family" help="Enter Address Family command mode" />
-  <COMMAND name="address-family ipv4" help="Enter Address Family command mode" view="configure-router-bgp-nbr-ipv4-view" viewid="vrf-name=${vrf-name};nbr-addr=${nbr-addr};nbr-family=nbr-ipv4" view_keys="vrfname=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/vrf_name, nbr=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/neighbor, afi-safi=ipv4_unicast" view_tables="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/vrf_name={vrfname},neighbor={nbr},afi_safi={afi-safi}">
-    <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/afi_safi=ipv4_unicast"/>
+  <COMMAND name="address-family ipv4" help="Enter Address Family command mode" view="configure-router-bgp-nbr-ipv4-view" viewid="vrf-name=${vrf-name};nbr-addr=${nbr-addr};nbr-family=nbr-ipv4" view_keys="vrfname=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/vrf_name, nbr=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/neighbor, afi-safi=ipv4_unicast" view_tables="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/vrf_name={vrfname},neighbor={nbr},afi_safi={afi-safi}">
+    <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/afi_safi=ipv4_unicast"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config ${vrf-name} ${nbr-addr} IPV4_UNICAST</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1882,8 +1882,8 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="address-family ipv6" help="Enter Address Family command mode" view="configure-router-bgp-nbr-ipv6-view" viewid="vrf-name=${vrf-name};nbr-addr=${nbr-addr};nbr-family=nbr-ipv6" view_keys="vrfname=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/vrf_name, nbr=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/neighbor, afi-safi=ipv6_unicast" view_tables="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/vrf_name={vrfname},neighbor={nbr},afi_safi={afi-safi}">
-    <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/afi_safi=ipv6_unicast"/>
+  <COMMAND name="address-family ipv6" help="Enter Address Family command mode" view="configure-router-bgp-nbr-ipv6-view" viewid="vrf-name=${vrf-name};nbr-addr=${nbr-addr};nbr-family=nbr-ipv6" view_keys="vrfname=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/vrf_name, nbr=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/neighbor, afi-safi=ipv6_unicast" view_tables="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/vrf_name={vrfname},neighbor={nbr},afi_safi={afi-safi}">
+    <PARAM name="unicast" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/afi_safi=ipv6_unicast"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config ${vrf-name} ${nbr-addr} IPV6_UNICAST</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1904,8 +1904,8 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="address-family l2vpn" help="Enter Address Family command mode" view="configure-router-bgp-nbr-l2vpn-view" viewid="vrf-name=${vrf-name};nbr-addr=${nbr-addr};nbr-family=nbr-l2vpn" view_keys="vrfname=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/vrf_name, nbr=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/neighbor, afi-safi=l2vpn_evpn" view_tables="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/vrf_name={vrfname},neighbor={nbr},afi_safi={afi-safi}">
-    <PARAM name="evpn" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/afi_safi=l2vpn_evpn"/>
+  <COMMAND name="address-family l2vpn" help="Enter Address Family command mode" view="configure-router-bgp-nbr-l2vpn-view" viewid="vrf-name=${vrf-name};nbr-addr=${nbr-addr};nbr-family=nbr-l2vpn" view_keys="vrfname=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/vrf_name, nbr=sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/neighbor, afi-safi=l2vpn_evpn" view_tables="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/vrf_name={vrfname},neighbor={nbr},afi_safi={afi-safi}">
+    <PARAM name="evpn" help="Address Family" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/afi_safi=l2vpn_evpn"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config ${vrf-name} ${nbr-addr} L2VPN_EVPN</ACTION>
     <DOCGEN>
       <DESCRIPTION>

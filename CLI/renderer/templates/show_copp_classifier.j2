@@ -1,0 +1,13 @@
+{% for arr1 in json_output %}
+	{% for arr2 in json_output[arr1] %}
+		{{- 'Classifier' }} {{ arr2['config']['name']}} {{ 'match-type copp' }}
+		{% if 'config' in arr2.keys() %}
+			{% if 'trap-ids' in arr2['config'].keys() %}
+				{% set list = arr2['config']['trap-ids'].split(',') %}
+				{% for i in list %}
+					{{- '  protocol' }} {{ i }}
+				{% endfor %}
+			{% endif %}
+		{% endif %}
+	{% endfor %}
+{% endfor %}

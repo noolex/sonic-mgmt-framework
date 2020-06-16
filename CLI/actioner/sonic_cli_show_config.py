@@ -29,10 +29,11 @@ from show_config_data import render_filelst
 from show_config_data import config_view_hierarchy
 from show_config_data import view_dependency
 from show_config_data import render_cb_dict
+from show_config_data import table_sort_cb_dict
 from show_config_utils import process_cmd
 from show_config_utils import get_view_table_keys
 from show_config_utils import log
-
+from show_config_table_sort import natsort_list
 
 CLI_XML_VIEW_MAP = {}
 
@@ -59,7 +60,7 @@ CMD_SUCCESS = "CMD_SUCCESS"
 CB_FAIL = "CB_FAIL"
 CB_SUCCESS = "CB_SUCCESS"
 
-RENDERER_TEMPLATE_PATH="/usr/sbin/cli/render-templates"
+RENDERER_TEMPLATE_PATH=os.getenv("RENDERER_TEMPLATE_PATH", "/usr/sbin/cli/render-templates")
 FORMAT_FILE = "DB.txt"
 
 
@@ -96,13 +97,9 @@ def get_rendered_template_output(template_file, response, render_view):
     # Create the jinja2 environment.
     # Notice the use of trim_blocks, which greatly helps control whitespace.
     t_str = ""
-    #template_path = os.getenv(RENDERER_TEMPLATE_PATH)
-    #erint ("template_path
-    #template_path = os.path.abspath(os.path.join(THIS_DIR, "../render-templates"))
     loader = None
     if template_file  not in jinja_loader:
 
-        template_path = os.getenv(RENDERER_TEMPLATE_PATH)
         template_path = os.path.join(RENDERER_TEMPLATE_PATH,"showrunning")
         j2_env = Environment(loader=FileSystemLoader(template_path),extensions=['jinja2.ext.do','jinja2.ext.loopcontrols'])
         j2_env.trim_blocks = True
@@ -124,21 +121,17 @@ def get_rest_table(table_path):
 
 
     #TODO optimize by filtering based on keys, if all keys of the table are available
-    #TODO add support for multi-table get. table_path is list of tables.
 
     #table_path format "sonic:sonic/TABLE_NAME/keys"
     #The response of DB get() is cached.
     #On the next get request, first the cache is queried.
     #This is to avoid multiple REST api calls, which are expensive.
+    sonic_table = '/'.join(table_path.split('/')[:-1])
 
-    bare_table_name = table_path.split('/')[1]
 
-    table_list_name = bare_table_name + '_LIST'
+    if sonic_table in DB_Cache:
+       return DB_Cache.get(sonic_table)
 
-    if table_list_name in DB_Cache:
-       return DB_Cache.get(table_list_name)
-
-    sonic_table = '/'.join(table_path.split('/', 2)[:2])
     sonic_table_yang_path = '/restconf/data/' + sonic_table
     log.debug("sonic_table_name {}" .format(sonic_table_yang_path))
 
@@ -152,23 +145,25 @@ def get_rest_table(table_path):
             log.info("Get Table {} response failure, continue next table or next view " .format(sonic_table_yang_path) )
             return None
 
-        yang_table_fmt = sonic_table.split(':')[-1].replace('/',':')
+        modulename = sonic_table.split(':')[0]
+        bare_table_name = sonic_table.split(':')[1].split('/')[-1]
+        yang_table_fmt = modulename + ":" + bare_table_name
         response_table = response.content.get(yang_table_fmt)
         if response_table is None:
             # Cache to denote get request is done.
-            DB_Cache.update({table_list_name:None})
+            DB_Cache.update({sonic_table:None})
             log.info("Table {} not in ConfigDB continue next table or next view" .format(yang_table_fmt))
             return None
 
-        response_table_lst = response_table.get(table_list_name)
-
-        if response_table_lst is None:
-            log.info("Table {} not in ConfigDB continue next table or next view" .format(table_list_name))
-            return None
+        #get table sorting callback if given. otherwise use default natsort.
+        sort_callback =  table_sort_cb_dict.get(sonic_table)
+        if sort_callback is None:
+           sort_callback= natsort_list 
+        response_table = sort_callback(response_table, table_path)
 
         #cache table
-        DB_Cache.update({table_list_name:response_table_lst})    
-        return response_table_lst
+        DB_Cache.update({sonic_table:response_table}) 
+        return response_table
     else:
         log.warn("Response failure for {} in configDB" .format(sonic_table_yang_path))    
     return None
@@ -214,13 +209,13 @@ class cli_xml_view:
         #remove empty string from list
         self.table_list = list(filter(None, table_lst))
 
-        if len(self.table_list) == 0:
+        if not self.table_list:
             log.warn("cli_xml_view init: table list length zero for view {}" .format(self.name))
         else:
             #Primary table for this view. for e.g. "sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name={vrf-name}"
             #Data represented as "view_table" tag in the xml.
             self.primary_table =self.table_list[0]
-            self.dbpathstr = '/'.join(self.primary_table.split('/', 2)[:2])
+            self.dbpathstr = '/'.join(self.primary_table.split('/')[:-1])
 
         log.debug("name: {}, table_keys: {}, primary_table: {} dbpathstr {} tablelist" \
                 .format(self.name, self.table_keys, self.primary_table, self.dbpathstr, self.table_list))
@@ -236,7 +231,7 @@ class cli_xml_view:
     def process_view_commands_no_table(self, indent):
             
         log.debug('ENTER view {} ' .format(self.name))
-        if len(self.view_cmd_list) is 0:
+        if not self.view_cmd_list:
             return CMD_SUCCESS
 
         for cmd in  self.view_cmd_list:
@@ -289,10 +284,6 @@ class cli_xml_view:
 
         #get primary table
         primary_table_path = self.primary_table
-        #get bare table name by stripping key info.
-        if len(primary_table_path.split("/")) != 3:
-            log.info("Invalid table_path {}. continue to next/table view" .format(primary_table_path))
-            return CMD_SUCCESS
 
         #get table keys from table path in form of dict ={key:value, key1:value,..}
         primary_table_keys = get_view_table_keys(primary_table_path)
@@ -329,7 +320,7 @@ class cli_xml_view:
 
             skip_record = False
             for filter_key, filter_key_value in filter_keys.items():
-                if ((filter_key not in member)) or (member[filter_key] != filter_key_value):
+                if ((filter_key not in member)) or (str(member[filter_key]) != filter_key_value):
                     log.debug("Skipping record; member keys {}, given key {}"  .format(member_keys, member[filter_key]))
                     skip_record = True
                     break
@@ -402,7 +393,7 @@ class cli_xml_view:
         table_keys = keys
         cmd_status = CMD_SUCCESS
 
-        if len(self.table_list) > 0:
+        if self.table_list:
             log.info("table list {}" .format(self.table_list))
             cmd_status= self.process_view_commands(table_keys, depth)            
         else:
@@ -486,9 +477,9 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
                 break
             cmd_table_present = True
             # new dbpathstr and keys from cmd table
-            dbpathstr = '/'.join(cmd_table_path.split('/', 2)[:2])
+            dbpathstr = '/'.join(cmd_table_path.split('/')[:-1])
 
-            if member_keys and len(member_keys) ==0:
+            if not member_keys:
                 log.info(" No view keys for table {} " .format(cmd_table_path))
 
 
@@ -523,7 +514,7 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
             key = cmd_key_lst[0].lstrip()
             value = cmd_key_lst[1].rstrip()
 
-            if value is None or value is '*' or len(value.split('/')) >1:
+            if value is None or value == '*' or len(value.split('/')) >1:
                 log.warning("command key invalid {} for view {}, skip key " .format(cmd_key, view))
                 continue
             member_keys.update({key:value})
@@ -592,10 +583,17 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
 
             skip_record = False
             for filter_key, filter_key_value in filter_keys.items():
-                if ((filter_key not in cmd_member)) or (cmd_member[filter_key] != filter_key_value):
-                    log.debug("Skipping record; member keys {}, given key {}"  .format(member_keys, cmd_member[filter_key]))
+
+                if filter_key in cmd_member:
+                    if str(cmd_member[filter_key]) != filter_key_value:
+                       skip_record  = True
+                       log.debug("Skipping record; member keys {}, given key {}"  .format(member_keys, cmd_member[filter_key]))
+                       break
+                else:
                     skip_record = True
+                    log.debug("Skipping record; member keys {}, filter_key {} missing in record"  .format(member_keys, filter_key))
                     break
+                    
             if skip_record == True:
                 continue
             
@@ -668,16 +666,15 @@ def parse_command_line(command_line):
 
 def render_cli_config(view_name = '', view_keys = {}):
     global CMDS_STRING
-
+    depth = 0
     if view_name:
         if view_name in CLI_XML_VIEW_MAP:
             cli_view = CLI_XML_VIEW_MAP[view_name]
-            cli_view.process_cli_view(view_keys, 1)
+            cli_view.process_cli_view(view_keys, depth)
     else:
 
         for config_view in config_view_hierarchy:
             #get corresponding view_class for the view
-            depth = 1
             if config_view in CLI_XML_VIEW_MAP:
                 cli_view = CLI_XML_VIEW_MAP[config_view]
                 cli_view_keys = cli_view.table_keys
@@ -712,51 +709,64 @@ def read_cli_format_file(format_file):
         parse_command_line(command)
 
 
-def show_view(func, args = []):
+def show_views(func, args = []):
 
     log.debug('args {}' .format(args))
-    args_len = len(args)
-    if args_len < 1:
-        log.error("Missing view_name.")
-        return
-    view_name = args[0]
-    view_keys = {}
+    
+    views = []	
+    view_keys = []
+    for arg in args:
+      if arg.startswith("views="):
+          views_str= arg.lstrip("views=")
+          views=views_str.split(',')
+      if arg.startswith("view_keys="):
+          view_keys_str = arg.lstrip("view_keys=")
+          view_keys_str = view_keys_str.replace('"','')
+          view_keys = view_keys_str.split(',')
+    
+    if not views:
+      log.warn("Missing view name, args {}" .format(args))
+      return
 
-    if args_len > 1:
-        for key in args[1:]:
+    if func=='show_view' and len(views) > 1:
+       log.warn("Multiple views specified for 'show_view' option, {}" .format(views))
+       return
+    viewKV = {} 
+    #parse keys only for single view case
+    if len(views) == 1:
+        for key in view_keys: 
             key_split = key.split('=')
-            if len(key_split) is not 2:
+            if len(key_split) != 2:
                 log.error("Invalid keys {}" .format(key_split))
                 return
-            view_keys.update({key_split[0]:key_split[1]})
-    log.debug('view-keys {}' .format(view_keys))
-
-    if view_name not in args and view_keys not in args:
-        log.warn("Missing args {}" .format(args))
-    else:
-        render_cli_config(view_name, view_keys)
+            if key_split[1]:
+               viewKV.update({key_split[0]:key_split[1]})
+    log.debug('view-keys {}' .format(viewKV))
+    for view_name in views:
+        render_cli_config(view_name, viewKV)
 
 
 def run(func = '', args=[]):
     global format_read
+    log.debug("args {}" .format(args)) 
     if format_read == False:
-        template_path = os.getenv(RENDERER_TEMPLATE_PATH)
-        format_file =template_path = os.path.join(RENDERER_TEMPLATE_PATH, FORMAT_FILE)
+        template_path = os.getenv('SHOW_CONFIG_TOOLS', RENDERER_TEMPLATE_PATH)
+        format_file = os.path.join(template_path, FORMAT_FILE)
 
         log.debug("format_file {}" .format(format_file))
         read_cli_format_file(format_file)
         format_read = True
     
-    for id, arg in enumerate(args):
-      if arg == '\\|':
-          args[id]= '|'
-    pipestr().write(args) 
-    
-    if  func == 'show_configuration':
-        show_view(func, args)
+    full_cmd = os.getenv('USER_COMMAND', None)
+    if full_cmd is not None:
+        pipestr().write(full_cmd.split())
+
+    if  func == 'show_view' or func == 'show_multi_views':
+        show_views(func, args) 
     else:
         render_cli_config()
 
 
 if __name__ ==  "__main__":
+    pipestr().write(sys.argv) 
     run(args=sys.argv)

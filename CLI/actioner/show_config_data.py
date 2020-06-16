@@ -16,9 +16,13 @@
 #
 ###########################################################################
 
-from show_config_bgp import *
+from show_config_if_cmd import *
 from show_config_interface import *
+from show_config_bgp import *
+from show_config_table_sort import *
 from show_config_authentication import *
+from show_config_ptp import *
+from show_config_dns import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -26,7 +30,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
 
 
 render_filelst  = {}
@@ -40,6 +44,15 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'if_lag_mclag'            : show_if_lag_mclag,
                   'interface_management'    : show_interface_management,
                   'if_management_autoneg'   : show_if_management_autoneg,
-                  'tacacs_server_source_if' : show_tacacs_source_if
- } 
+                  'tacacs_server_source_if' : show_tacacs_source_if,
+                  'dns_server_source_if'    : show_dns_source_if,
+                  'ntp_server_source_if'    : show_ntp_source_if,
+                  'ptp_mode'                : show_ptp_mode,
+                  'ptp_domain_profile'      : show_ptp_domain_profile,
+                  'ptp_two_step'            : show_ptp_two_step,
+                  'ptp_network_transport'   : show_ptp_network_transport,
+                  'ptp_master_table'        : show_ptp_master_table,
+                  'dns_server_source_if'    : show_dns_source_if
+ }
 
+table_sort_cb_dict = {'PORT_LIST' : natsort_list }

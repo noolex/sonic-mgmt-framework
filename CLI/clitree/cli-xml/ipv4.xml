@@ -164,7 +164,7 @@ limitations under the License.
             name="addr"
             help="IP address with mask"
             ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${iface_uri} ${addr}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${iface} ${addr}</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -177,21 +177,12 @@ limitations under the License.
             optional="true"
             ptype="IP_ADDR_MASK"
             />
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface_uri} ${addr} True</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True</ACTION>
     </COMMAND>
 
-    <COMMAND
-        name="ip dhcp-relay"
-        help="Add DHCP relay on an interface" >
-        <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${ifName} ${hop-count} ${__full_line}</ACTION>
-    </COMMAND>
-    <COMMAND
-        name="no ip dhcp-relay"
-        help="Remove DHCP relay on an interface" >
-        <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${__full_line}</ACTION>
-    </COMMAND>
+    <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
+    <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
+
     <COMMAND
         name="ip unnumbered"
         help="Configure IPv4 unnumbered interface" >
@@ -230,6 +221,61 @@ limitations under the License.
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
                 sonic-cli(conf-if-Ethernet0)# no ip unnumbered
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip arp"
+        help="Configure static ND" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IPV4_OR_IPV6_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure static ND.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure static ND.
+            </USAGE>
+            <EXAMPLE summary="Configure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no ip arp"
+        help="Unconfigure static ND" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IPV4_OR_IPV6_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure static ND.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure static ND.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
@@ -319,19 +365,64 @@ limitations under the License.
              ptype="IP_ADDR_MASK" />
         <ACTION builtin="clish_pyobj">sonic_cli_if delete_vlan_if_ip ${vlan_name} ${addr} True</ACTION>
       </COMMAND>
-      <COMMAND
-         name="ip dhcp-relay"
-         help="Add DHCP relay on an interface" >
-         <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
-         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${vlan_name} ${ifName} ${hop-count} ${__full_line}</ACTION>
-      </COMMAND>
-      <COMMAND
-         name="no ip dhcp-relay"
-         help="Remove DHCP relay on an interface" >
-         <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-         <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config  ${vlan_name} ${__full_line}</ACTION>
-      </COMMAND>
 
+      <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{vlan_name} "> </MACRO>
+      <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{vlan_name} "> </MACRO>
+
+      <COMMAND
+        name="ip arp"
+        help="Configure static ND" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IPV4_OR_IPV6_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure static ND.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure static ND.
+            </USAGE>
+            <EXAMPLE summary="Configure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no ip arp"
+        help="Unconfigure static ND" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IPV4_OR_IPV6_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure static ND.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure static ND.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
 </VIEW>
 
 <!--=======================================================-->
@@ -369,18 +460,9 @@ limitations under the License.
              ptype="IP_ADDR_MASK" />
          <ACTION builtin="clish_pyobj">sonic_cli_if delete_po_if_ip ${po_name} ${addr} True</ACTION>
       </COMMAND>
-      <COMMAND
-         name="ip dhcp-relay"
-         help="Add DHCP relay on an interface" >
-         <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
-         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${po_name} ${ifName} ${hop-count} ${__full_line}</ACTION> 
-      </COMMAND>
-      <COMMAND
-         name="no ip dhcp-relay"
-         help="Remove DHCP relay on an interface" >
-         <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-         <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${po_name}  ${__full_line}</ACTION>
-      </COMMAND>
+
+      <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{po_name} "> </MACRO>
+      <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{po_name} "> </MACRO>
 
       <COMMAND
          name="ip unnumbered"
@@ -424,6 +506,61 @@ limitations under the License.
             </EXAMPLE>
         </DOCGEN>
      </COMMAND>
+    <COMMAND
+        name="ip arp"
+        help="Configure static ND" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IPV4_OR_IPV6_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure static ND.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure static ND.
+            </USAGE>
+            <EXAMPLE summary="Configure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no ip arp"
+        help="Unconfigure static ND" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IPV4_OR_IPV6_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure static ND.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure static ND.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
 </VIEW>
 
 <!--=======================================================-->
@@ -463,3 +600,4 @@ limitations under the License.
       </COMMAND>
 </VIEW>
 </CLISH_MODULE>
+

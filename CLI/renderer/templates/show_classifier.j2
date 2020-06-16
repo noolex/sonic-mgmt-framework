@@ -2,22 +2,29 @@
 {% set last_elem = class_list|last %}
 {% for class_name in json_output %}
     {% set class_data = json_output[class_name] %}
+    {% if class_data["MATCH_TYPE"].lower() == "copp" %}
+        {% if 'TRAP_IDS' in class_data %}
+            {{- 'Classifier' }} {{ class_name }} {{ 'match-type copp' }}
+            {% set list = class_data['TRAP_IDS'].split(',') %}
+            {% for i in list %}
+                {{- '  protocol' }} {{ i }}
+            {% endfor %}
+        {% endif %}
+    {% else %}
     {{- 'Classifier'}} {{ class_name }} {{ 'match-type' }} {{ class_data["MATCH_TYPE"].lower() }}{{ "\n" }}
     {{- '  Description:' }} {{ class_data["DESCRIPTION"] }}{{ "\n" }}
     {{- '  Match:' }}{{ "\n" }}
     {% if ("ACL_NAME" in class_data) and (class_data["ACL_NAME"] ) %}
-    {% if class_data["ACL_NAME"].endswith("_ACL_L2") %}
-    {{ "mac" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-7] }}
-    {% elif class_data["ACL_NAME"].endswith("_ACL_IPV4") %}
-    {{ "ip" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-9] }}
-    {% elif class_data["ACL_NAME"].endswith("_ACL_IPV6") %}
-    {{ "ipv6" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-9] }}
-    {% else %}
-    {{ 'match access-group' }} {{ class_data["ACL_NAME"] }}
-    {% endif %}
+        {% if class_data["ACL_TYPE"] == "L2" %}
+            {{- "    mac" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% elif class_data["ACL_TYPE"] == "L3" %}
+            {{- "    ip" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% elif class_data["ACL_TYPE"] == "L3V6" %}
+            {{- "    ipv6" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% endif %}
     {% endif %}
     {% if "ETHER_TYPE" in class_data %}
-        {{- '    ether-type' }} {{ class_data["ETHER_TYPE"] }}
+        {{- '    ethertype' }} {{ class_data["ETHER_TYPE"] }}
     {% endif %}
     {% if "SRC_MAC" in class_data %}
         {{- '    src-mac' }} {{ mac_addr_to_user_fmt(class_data["SRC_MAC"]) }}
@@ -26,7 +33,7 @@
         {{- '    dst-mac' }} {{ mac_addr_to_user_fmt(class_data["DST_MAC"]) }}
     {% endif %}
     {% if "VLAN" in class_data %}
-        {{ '-    vlan' }} {{ class_data["VLAN"] }}
+        {{- '    vlan' }} {{ class_data["VLAN"] }}
     {% endif %}
     {% if "PCP" in class_data %}
         {{- '    pcp' }} {{ class_data["PCP"] }}
@@ -35,7 +42,7 @@
         {{- '    dei' }} {{ class_data["DEI"] }}
     {% endif %}
     {% if "IP_PROTOCOL" in class_data %}
-        {{- '    ip-proto' }} {{ ip_proto_to_user_fmt(class_data["IP_PROTOCOL"]) }}
+        {{- '    ip protocol' }} {{ ip_proto_to_user_fmt(class_data["IP_PROTOCOL"]) }}
     {% endif %}
     {% if "SRC_IP" in class_data %}
         {{- '    src-ip' }} {{ ip_addr_to_user_fmt(class_data["SRC_IP"], True) }}
@@ -70,6 +77,7 @@
     {% for referring_policy in class_data.get("REFERENCES", []) %}
         {{- '    policy' }} {{ referring_policy["POLICY_NAME"] }} at priority {{ referring_policy["PRIORITY"] }}
     {% endfor %}
+    {% endif %}
     {% if class_name != last_elem %}
         {{ "\n" }}
     {% endif %}

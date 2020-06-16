@@ -41,11 +41,19 @@ def invoke(func, args):
 
     # Get VRRP instance
     if func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state':
-        if args[3] == "ipv4":
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[1], index="0", ip=addr4, vrid=args[2])
+
+        if len(args) == 2:
+            if args[0] == "ipv4":
+                keypath = cc.Path('/restconf/operations/sonic-vrrp:get-vrrp')
+            else:
+                keypath = cc.Path('/restconf/operations/sonic-vrrp:get-vrrp6')
+            return aa.post(keypath, body)
         else:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[1], index="0", ip=addr6, vrid=args[2])
-        return aa.get(keypath)
+            if args[0] == "ipv4":
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[2], index="0", ip=addr4, vrid=args[3])
+            else:
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[2], index="0", ip=addr6, vrid=args[3])
+            return aa.get(keypath)
 
     # VRRP delete
     if func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group' :
@@ -202,17 +210,25 @@ def run(func, args):
                 pass
             # is it correct
             elif 'openconfig-if-ip:vrrp-group' in response.keys():
-                response[u'ifname'] = args[1]
-                response[u'vrid'] = args[2]
 
-                if func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_vrrp_vrrp_group_state':
+                response[u'ifname'] = args[2]
+                response[u'vrid'] = args[3]
+
+                if args[0] == "ipv6":
                     response[u'afi'] = 2
                 else:
                     response[u'afi'] = 1
-                show_cli_output("show_vrrp.j2", response)
+
+                single_instance = response.values()[0][0]
+                if 'config' in single_instance.keys():
+                    show_cli_output("show_vrrp.j2", response)
                 return
             else:
-                print(response.keys())
+                if args[0] == "ipv6":
+                    response[u'afi'] = 2
+                else:
+                    response[u'afi'] = 1
+                show_cli_output("show_vrrp_summary.j2", response)
         else:
             #error response
             print(api_response.error_message())

@@ -228,8 +228,8 @@ def process_cmd(view_member, dbpathstr, table_list, tables, view_keys, cmd_line)
     global f2ecmdlst
     cmdmap = {}
     cmdfound = False
-    log.debug("Enter: dbpathstr: {},  \ncmd_line: {},  \ntable_list: {}, view_keys: {}"
-                    .format(dbpathstr, cmd_line, table_list, view_keys))
+    log.debug("Enter: dbpathstr: {},  table_list: {}, view_keys: {}"
+                    .format(dbpathstr, table_list, view_keys))
 
     cmd_line_parts = cmd_line.split(':::')
     cmdoptlst = (cmd_line_parts[0]).split(';;;')
@@ -249,7 +249,7 @@ def process_cmd(view_member, dbpathstr, table_list, tables, view_keys, cmd_line)
             ret= process_node(view_member, dbpathstr, nodestr, tables, view_keys)
         log.debug('f2ecmdlst {}' .format(f2ecmdlst))
 
-        if len(f2ecmdlst) > 0:
+        if f2ecmdlst:
             cmdfound = True
             jlist = []
             for f2ecmd in f2ecmdlst:

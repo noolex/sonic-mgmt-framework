@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2020 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+<!--=========================================================================-->
+
+<PTYPE
+     name="LDAP_SEARCH_TIME_LIMIT"
+     method="integer"
+     pattern="1..65535"
+     help=""
+     />
+     
+<PTYPE
+     name="LDAP_BIND_TIME_LIMIT"
+     method="integer"
+     pattern="1..65535"
+     help=""
+     />
+
+<PTYPE
+     name="LDAP_IDLE_TIME_LIMIT"
+     method="integer"
+     pattern="1..65535"
+     help=""
+     />
+
+<PTYPE
+     name="RETRY_ATTEMPTS"
+     method="integer"
+     pattern="0..10"
+     help=""
+     />
+
+<PTYPE
+     name="LDAP_PORT"
+     method="integer"
+     pattern="1..65535"
+     help=""
+     />
+
+<PTYPE
+     name="LDAP_SCOPE"
+     method="select"
+     pattern="sub(sub) one(one) base(base)"
+     help=""
+     />
+
+<PTYPE
+     name="LDAP_VERSION"
+     method="integer"
+     pattern="2..3"
+     help=""
+     />
+
+<PTYPE
+     name="LDAP_SSL"
+     method="select"
+     pattern="on(on) off(off) start_tls(start_tls)"
+     help=""
+     />
+
+<PTYPE
+     name="LDAP_USE_TYPE"
+     method="select"
+     pattern="all(all) nss(nss) sudo(sudo) pam(pam)"
+     help=""
+     />
+ 
+    
+<PTYPE
+     name="LDAP_SERVER_PORT"
+     method="integer"
+     pattern="1..65535"
+     help=""
+     />
+
+<PTYPE
+     name="LDAP_SERVER_PRIORITY"
+     method="integer"
+     pattern="1..99"
+     help=""
+     />
+     
+<PTYPE
+     name="LDAP_VRF"
+     pattern="(Vrf(([0-9A-Za-z]){1,28}))|(mgmt)"
+     help="Name of VRF (Max size 32, (mgmt, or prefixed by Vrf)"
+/>
+
+<!--=======================================================-->
+
+<!-- Config mode -->
+<VIEW name="configure-view">
+    <COMMAND name = "ldap-server" help="Configure LDAP server">
+    	<PARAM name="ldap-global-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Configure global search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (Default: 0 s)"/>
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Configure global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)"/>
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Configure global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (Default: 0 s)"/>
+				</PARAM>
+	
+				<PARAM name="retry" help="Configure global retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)"/>
+				</PARAM>
+	
+				<PARAM name="port" help="Configure global server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)"/>
+				</PARAM>
+				
+        <PARAM name="scope" help="Configure global search scope" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (Default: sub)"/>
+				</PARAM>
+
+        <PARAM name="version" help="Configure global version" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (Default: 3)"/>
+				</PARAM>
+
+        <PARAM name="base" help="Configure global base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ldap_base_val" ptype="STRING" help="Base distinguished name"/>
+				</PARAM>
+
+        <PARAM name="ssl" help="Configure global TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration (Default: off)"/>
+				</PARAM>
+				
+        <PARAM name="binddn" help="Configure global distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="binddn_val" ptype="STRING" help="Distinguished name to bind"/>
+				</PARAM>
+
+        <PARAM name="bindpw" help="Configure global credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="bindpw_val" ptype="STRING" help="Credentials to bind"/>
+				</PARAM>
+
+        <PARAM name="pam-filter" help="Configure global PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="pam_filter_val" ptype="STRING" help="PAM filter"/>
+				</PARAM>
+
+        <PARAM name="pam-login-attribute" help="Configure global PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="pam_login_val" ptype="STRING" help="PAM Login attribute (Default: uid)"/>
+				</PARAM>
+
+        <PARAM name="pam-group-dn" help="Configure global PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="pam_group_val" ptype="STRING" help="PAM Group Distinguished name"/>
+				</PARAM>
+
+        <PARAM name="pam-member-attribute" help="Configure global PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="pam_member_val" ptype="STRING" help="PAM Member attribute"/>
+				</PARAM>
+
+        <PARAM name="sudoers-base" help="Configure global sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="sudoers_val" ptype="STRING" help="Sudo base distinguished name"/>
+				</PARAM>
+
+        <PARAM name="nss-base-passwd" help="Configure global NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_passwd_val" ptype="STRING" help="NSS search base for password map"/>
+				</PARAM>
+
+        <PARAM name="nss-base-group" help="Configure global NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_group_val" ptype="STRING" help="NSS search base group"/>
+				</PARAM>
+
+        <PARAM name="nss-base-shadow" help="Configure global NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_shadow_val" ptype="STRING" help="NSS search base for shadow map"/>
+				</PARAM>
+
+        <PARAM name="nss-base-netgroup" help="Configure global NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_netgroup_val" ptype="STRING" help="NSS search base for netgroup map"/>
+				</PARAM>
+
+        <PARAM name="nss-base-sudoers" help="Configure global NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_sudoers_val" ptype="STRING" help="NSS search base for sudoers map"/>
+				</PARAM>
+
+        <PARAM name="nss-initgroups-ignoreusers" help="Configure global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss-initgroups_val" ptype="STRING" help="Init groups ignore users"/>
+				</PARAM>
+
+        <PARAM name="source-ip" help="Configure global IP address of the LDAP client" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="source_ip_val" ptype="IPV4V6_ADDR" help="LDAP Client IP Address"/>
+				</PARAM>
+
+        <PARAM name="vrf" help="Configure global Vrf name" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="vrf_val" ptype="STRING" help="Vrf name"/>
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_global_config ${__params}</ACTION>
+    </COMMAND>
+    
+    <COMMAND name = "ldap-server nss" help="Configure LDAP server for NSS">
+    	<PARAM name="ldap-nss-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Configure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (Default: 0 s)"/>
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Configure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)"/>
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Configure NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (Default: 0 s)"/>
+				</PARAM>
+	
+				<PARAM name="retry" help="Configure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)"/>
+				</PARAM>
+	
+				<PARAM name="port" help="Configure server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)"/>
+				</PARAM>
+				
+        <PARAM name="scope" help="Configure search scope" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (Default: sub)"/>
+				</PARAM>
+
+        <PARAM name="version" help="Configure version" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (Default: 3)"/>
+				</PARAM>
+
+        <PARAM name="base" help="Configure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ldap_base_val" ptype="STRING" help="Base distinguished name"/>
+				</PARAM>
+
+        <PARAM name="ssl" help="Configure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration (Default: off)"/>
+				</PARAM>
+				
+        <PARAM name="binddn" help="Configure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="binddn_val" ptype="STRING" help="Distinguished name to bind"/>
+				</PARAM>
+
+        <PARAM name="bindpw" help="Configure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="bindpw_val" ptype="STRING" help="Credentials to bind"/>
+				</PARAM>
+				
+        <PARAM name="nss-base-passwd" help="Configure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_passwd_val" ptype="STRING" help="NSS search base for password map"/>
+				</PARAM>
+
+        <PARAM name="nss-base-group" help="Configure NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_group_val" ptype="STRING" help="NSS search base group"/>
+				</PARAM>
+
+        <PARAM name="nss-base-shadow" help="Configure NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_shadow_val" ptype="STRING" help="NSS search base for shadow map"/>
+				</PARAM>
+
+        <PARAM name="nss-base-netgroup" help="Configure NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_netgroup_val" ptype="STRING" help="NSS search base for netgroup map"/>
+				</PARAM>
+
+        <PARAM name="nss-base-sudoers" help="Configure NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_sudoers_val" ptype="STRING" help="NSS search base for sudoers map"/>
+				</PARAM>
+
+        <PARAM name="nss-initgroups-ignoreusers" help="Configure NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss-initgroups_val" ptype="STRING" help="Init groups ignore users"/>
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_nss_config ${__params}</ACTION>
+    </COMMAND>
+    
+    <COMMAND name = "ldap-server pam" help="Configure LDAP server for PAM">
+    	<PARAM name="ldap-pam-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Configure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (Default: 0 s)"/>
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Configure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)"/>
+				</PARAM>
+	
+				<PARAM name="retry" help="Configure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)"/>
+				</PARAM>
+	
+				<PARAM name="port" help="Configure server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)"/>
+				</PARAM>
+				
+        <PARAM name="scope" help="Configure search scope" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (Default: sub)"/>
+				</PARAM>
+
+        <PARAM name="version" help="Configure version" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (Default: 3)"/>
+				</PARAM>
+
+        <PARAM name="base" help="Configure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ldap_base_val" ptype="STRING" help="Base distinguished name"/>
+				</PARAM>
+
+        <PARAM name="ssl" help="Configure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration (Default: off)"/>
+				</PARAM>
+				
+        <PARAM name="binddn" help="Configure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="binddn_val" ptype="STRING" help="Distinguished name to bind"/>
+				</PARAM>
+
+        <PARAM name="bindpw" help="Configure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="bindpw_val" ptype="STRING" help="Credentials to bind"/>
+				</PARAM>
+
+        <PARAM name="pam-filter" help="Configure PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="pam_filter_val" ptype="STRING" help="PAM filter"/>
+				</PARAM>
+
+        <PARAM name="pam-login-attribute" help="Configure PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="pam_login_val" ptype="STRING" help="PAM Login attribute (Default: uid)"/>
+				</PARAM>
+
+        <PARAM name="pam-group-dn" help="Configure PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="pam_group_val" ptype="STRING" help="PAM Group Distinguished name"/>
+				</PARAM>
+
+        <PARAM name="pam-member-attribute" help="Configure PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="pam_member_val" ptype="STRING" help="PAM Member attribute"/>
+				</PARAM>
+				
+        <PARAM name="nss-base-passwd" help="Configure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="nss_base_passwd_val" ptype="STRING" help="NSS search base for password map"/>
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_pam_config ${__params}</ACTION>
+    </COMMAND>
+    
+    
+    <COMMAND name = "ldap-server sudo" help="Configure LDAP server for SUDO">
+    	<PARAM name="ldap-sudo-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Configure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (Default: 0 s)"/>
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Configure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)"/>
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Configure NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (Default: 0 s)"/>
+				</PARAM>
+	
+				<PARAM name="retry" help="Configure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)"/>
+				</PARAM>
+	
+				<PARAM name="port" help="Configure server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)"/>
+				</PARAM>
+				
+        <PARAM name="scope" help="Configure search scope" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (Default: sub)"/>
+				</PARAM>
+
+        <PARAM name="version" help="Configure version" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (Default: 3)"/>
+				</PARAM>
+
+        <PARAM name="base" help="Configure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ldap_base_val" ptype="STRING" help="Base distinguished name"/>
+				</PARAM>
+
+        <PARAM name="ssl" help="Configure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration (Default: off)"/>
+				</PARAM>
+				
+        <PARAM name="binddn" help="Configure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="binddn_val" ptype="STRING" help="Distinguished name to bind"/>
+				</PARAM>
+
+        <PARAM name="bindpw" help="Configure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="bindpw_val" ptype="STRING" help="Credentials to bind"/>
+				</PARAM>
+				
+        <PARAM name="sudoers-base" help="Configure sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="sudoers_val" ptype="STRING" help="Sudo base distinguished name"/>
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_sudo_config ${__params}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="ldap-server source-interface"
+             help="Configure source interface to be used as  source IP for the LDAP packets"
+             ptype="SUBCOMMAND"
+			 mode="subcommand">
+        <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
+          <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+        </PARAM>
+		  <ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_src_if_config ${__params}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configure source-interface to be used for LDAP packets </DESCRIPTION>
+		<EXAMPLE>
+			   sonic(config)# ldap-server source-interface Loopback 3
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ldap-server vrf" help="Configure  VRF to be used for LDAP server connection">
+        <PARAM name="vrf_name" help="" ptype="LDAP_VRF" >
+        </PARAM>
+		  <ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_vrf_config ${__params}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configure VRF tp be used for LDAP server connection </DESCRIPTION>
+		<EXAMPLE>
+               sonic(config)# ldap-server vrf Vrf1
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ldap-server host" help="Configure host name for a LDAP server">
+        <PARAM name="host_val" help="IPV4|IPV6 address" ptype="IPV4V6_ADDR"/>
+				<PARAM name="use-type" help="Configure server type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+					<PARAM name="use_type_val" ptype="LDAP_USE_TYPE" help="Server type (Default: all)"/>
+				</PARAM>
+				<PARAM name="port" help="Configure port number" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+					<PARAM name="server_port_val" ptype="LDAP_SERVER_PORT" help="Port number"/>
+				</PARAM>
+				<PARAM name="priority" help="Configure priority" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+					<PARAM name="priority_val" ptype="LDAP_SERVER_PRIORITY" help="Priority (Default: 1)"/>
+				</PARAM>
+				<PARAM name="ssl" help="Configure TLS" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+					<PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS (Default: off)"/>
+				</PARAM>					
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_config ${__params}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="ldap-server map" help="Configure LDAP server for map">
+    	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
+        <PARAM name="attribute" help="Configure attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="attribute_from_val" ptype="STRING" help="Attribute map key"/>
+        	<PARAM name="to" help="Configure attribute map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="attribute_to_val" ptype="STRING" help="Attribute map value"/>
+        	</PARAM>
+        </PARAM>
+    	
+        <PARAM name="objectclass" help="Configure objectclass map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="objectclass_from_val" ptype="STRING" help="Objectclass map key"/>
+        	<PARAM name="to" help="Configure objectclass map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="objectclass_to_val" ptype="STRING" help="Objectclass map value"/>
+        	</PARAM>
+        </PARAM>
+        
+        <PARAM name="default-attribute-value" help="Configure default-attribute-value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="default_from_val" ptype="STRING" help="Default-attribute-value map key"/>
+        	<PARAM name="to" help="Configure default-attribute-value map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="default_to_val" ptype="STRING" help="Default-attribute-value map value"/>
+        	</PARAM>
+        </PARAM>
+        
+        <PARAM name="override-attribute-value" help="Configure override-attribute-value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="override_from_val" ptype="STRING" help="Override-attribute-value map key"/>
+        	<PARAM name="to" help="Configure override-attribute-value map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="override_to_val" ptype="STRING" help="Override-attribute-value map value"/>
+        	</PARAM>
+        </PARAM>
+                
+			</PARAM>
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_map_config ${__params}</ACTION>
+    </COMMAND>
+
+		<!--  Unconfigure commands -->
+		
+    <COMMAND name = "no ldap-server"  help="Unconfigure LDAP server">
+    	<PARAM name="ldap-global-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Unconfigure global search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Unconfigure global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Unconfigure global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="retry" help="Unconfigure global retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="port" help="Unconfigure global server port" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="scope" help="Unconfigure global search scope" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="version" help="Unconfigure global version" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="base" help="Unconfigure global base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="ssl" help="Unconfigure global TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="binddn" help="Unconfigure global distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="bindpw" help="Unconfigure global credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-filter" help="Unconfigure global PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-login-attribute" help="Unconfigure global PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-group-dn" help="Unconfigure global PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-member-attribute" help="Unconfigure global PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="sudoers-base" help="Unconfigure global sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-passwd" help="Unconfigure global NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-group" help="Unconfigure global NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-shadow" help="Unconfigure global NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-netgroup" help="Unconfigure global NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-sudoers" help="Unconfigure global NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-initgroups-ignoreusers" help="Unconfigure global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="source-ip" help="Unconfigure global IP address of the LDAP client" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="vrf" help="Unconfigure global Vrf name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_global_config ${__params}</ACTION>
+    </COMMAND>
+    
+    <COMMAND name = "no ldap-server nss"  help="Unconfigure LDAP server for NSS">
+    	<PARAM name="ldap-nss-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Unconfigure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Unconfigure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Unconfigure NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="retry" help="Unconfigure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="port" help="Unconfigure server port" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="scope" help="Unconfigure search scope" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="version" help="Unconfigure version" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="base" help="Unconfigure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="ssl" help="Unconfigure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="binddn" help="Unconfigure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="bindpw" help="Unconfigure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="nss-base-passwd" help="Unconfigure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-group" help="Unconfigure NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-shadow" help="Unconfigure NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-netgroup" help="Unconfigure NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-sudoers" help="Unconfigure NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-initgroups-ignoreusers" help="Unconfigure NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_nss_config ${__params}</ACTION>
+		</COMMAND>
+			
+		<COMMAND name = "no ldap-server pam"  help="Unconfigure LDAP server for PAM">
+    	<PARAM name="ldap-pam-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Unconfigure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Unconfigure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="retry" help="Unconfigure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="port" help="Unconfigure server port" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="scope" help="Unconfigure search scope" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="version" help="Unconfigure version" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="base" help="Unconfigure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="ssl" help="Unconfigure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="binddn" help="Unconfigure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="bindpw" help="Unconfigure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-filter" help="Unconfigure PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-login-attribute" help="Unconfigure PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-group-dn" help="Unconfigure PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-member-attribute" help="Unconfigure PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="nss-base-passwd" help="Unconfigure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_pam_config ${__params}</ACTION>			
+		</COMMAND>
+		
+		<COMMAND name = "no ldap-server sudo"  help="Unconfigure LDAP server for SUDO">
+    	<PARAM name="ldap-sudo-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Unconfigure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Unconfigure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Unconfigure NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="retry" help="Unconfigure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="port" help="Unconfigure server port" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="scope" help="Unconfigure search scope" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="version" help="Unconfigure version" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="base" help="Unconfigure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="ssl" help="Unconfigure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="binddn" help="Unconfigure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="bindpw" help="Unconfigure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="sudoers-base" help="Unconfigure sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_sudo_config ${__params}</ACTION>			
+		</COMMAND>
+					
+    <COMMAND name="no ldap-server host" help="Unconfigure host name for a LDAP server">
+        <PARAM name="host_val" help="IPV4|IPV6 address" ptype="IPV4V6_ADDR"/>
+	        <PARAM name="ldap-map-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
+						<PARAM name="use-type" help="Unconfigure server type" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+						<PARAM name="port" help="Unconfigure port number" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+						<PARAM name="priority" help="Unconfigure priority" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+						<PARAM name="ssl" help="Unconfigure TLS" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+				</PARAM>					
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_server_config ${__params}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ldap-server map" help="Unconfigure LDAP server for map">
+    	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
+        <PARAM name="attribute" help="Unconfigure attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="attribute_from_val" ptype="STRING" help="Attribute map key"/>
+        </PARAM>
+    	
+        <PARAM name="objectclass" help="Unconfigure objectclass map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="objectclass_from_val" ptype="STRING" help="Objectclass map key"/>
+        </PARAM>
+        
+        <PARAM name="default-attribute-value" help="Unconfigure default-attribute-value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="default_from_val" ptype="STRING" help="Default-attribute-value map key"/>
+        </PARAM>
+        
+        <PARAM name="override-attribute-value" help="Unconfigure override-attribute-value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="override_from_val" ptype="STRING" help="Override-attribute-value map key"/>
+        </PARAM>
+                
+			</PARAM>
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_map_config ${__params}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ldap-server source-interface"
+             help="Unconfigure global source interface for LDAP">
+      <ACTION
+		  builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/source-interface
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigure global source interface for LDAP</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# no ldap-server source-interface
+               sonic(config)# 
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no ldap-server vrf"
+             help="Unconfigure global vrf for LDAP">
+      <ACTION
+		  builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/vrf-name
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigure global vrf for LDAP</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# no ldap-server vrf
+               sonic(config)# 
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+			    
+</VIEW>
+
+</CLISH_MODULE>

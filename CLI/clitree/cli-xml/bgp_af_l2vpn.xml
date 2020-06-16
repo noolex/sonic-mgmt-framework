@@ -375,7 +375,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-nbr-view" help="false" completion="false" />
-  <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/admin_status=true">
+  <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/admin_status=true">
     <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -398,10 +398,10 @@ limitations under the License.
         </EXAMPLE>
       </DOCGEN>
   </COMMAND>
-  <COMMAND name="allowas-in" help="Allow local AS number in as-path" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/allow_as_in=true">
+  <COMMAND name="allowas-in" help="Allow local AS number in as-path" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/allow_as_in=true">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/allow_as_count"/>
-      <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/allow_as_origin=true"/>
+      <PARAM name="value" help="as-number" ptype="RANGE_1_10" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/allow_as_count"/>
+      <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/allow_as_origin=true"/>
     </PARAM>
     <ACTION> if test -n "${value}" ; then&#xA;
                  python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count ${vrf-name} ${nbr-addr} L2VPN_EVPN ${value}&#xA;
@@ -477,9 +477,9 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="attribute-unchanged" help="BGP attribute is propagated unchanged to this neighbor">
-    <PARAM name="as-path" help="As-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/unchanged_as_path=true"/>
-    <PARAM name="med" help="Med attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/unchanged_med=true"/>
-    <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/unchanged_nexthop=true"/>
+    <PARAM name="as-path" help="As-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/unchanged_as_path=true"/>
+    <PARAM name="med" help="Med attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/unchanged_med=true"/>
+    <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/unchanged_nexthop=true"/>
     <ACTION> if test -z "${as-path}${med}${next-hop}" -o "${as-path}${med}${next-hop}" = "as-pathmednext-hop"; then&#xA;
                  python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config ${vrf-name} ${nbr-addr} L2VPN_EVPN as-path med next-hop&#xA;
              else&#xA;
@@ -508,8 +508,8 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   
-  <COMMAND name="next-hop-self" help="Disable the next hop calculation for this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/nhself=true">
-    <PARAM name="force" help="Set the next hop to self for reflected routes" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/nexthop_self_force=true"/>
+  <COMMAND name="next-hop-self" help="Disable the next hop calculation for this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/nhself=true">
+    <PARAM name="force" help="Set the next hop to self for reflected routes" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/nexthop_self_force=true"/>
      <ACTION> if test -z "${force}" ; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
              fi&#xA;
@@ -535,7 +535,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-reflector-client" help="Configure a neighbor as Route Reflector client" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/rrclient=true">
+  <COMMAND name="route-reflector-client" help="Configure a neighbor as Route Reflector client" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/rrclient=true">
    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -557,7 +557,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="route-server-client" help="Configure a neighbor as Route Server client" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/route_server_client=true">
+  <COMMAND name="route-server-client" help="Configure a neighbor as Route Server client" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/route_server_client=true">
     <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -578,7 +578,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="soft-reconfiguration" help="Per neighbor soft reconfiguration">
-    <PARAM name="inbound" help="Allow inbound soft reconfiguration for this neighbor" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/soft_reconfiguration_in=true">
+    <PARAM name="inbound" help="Allow inbound soft reconfiguration for this neighbor" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/soft_reconfiguration_in=true">
     </PARAM>
     <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
     <DOCGEN>

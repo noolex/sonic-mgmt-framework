@@ -34,6 +34,12 @@ fbs_client = cc.ApiClient()
 TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
 
 
+def create_policy_copp(args):
+    if args[0] != "copp-system-policy":
+        raise Exception("copp type classes must have the name 'copp-system-policy'")
+    return
+
+
 def create_policy(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST')
     body = dict()
@@ -48,8 +54,12 @@ def create_policy(args):
 
 
 def delete_policy(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST={policy_name}', policy_name=args[0])
-    return fbs_client.delete(keypath)
+    if args[0] == "copp-system-policy":
+        print("%Error: copp-system-policy cannot be deleted")
+        return
+    else:
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST={policy_name}', policy_name=args[0])
+        return fbs_client.delete(keypath)
 
 
 def set_policy_description(args):
@@ -66,6 +76,10 @@ def clear_policy_description(args):
     return fbs_client.delete(keypath)
 
 
+def create_classifier_copp(args):
+    pass
+
+
 def create_classifier(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST')
     body = dict()
@@ -80,8 +94,14 @@ def create_classifier(args):
 
 
 def delete_classifier(args):
+    # try to delete fbs entry first by checking if fbs object exists, else delete copp entry
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}', classifier_name=args[0])
-    return fbs_client.delete(keypath)
+    response = fbs_client.get(keypath)
+    if response.ok() and response.content:
+        return fbs_client.delete(keypath)
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}', copp_name=args[0])
+        return fbs_client.delete(keypath)
 
 
 def set_classifier_description(args):
@@ -100,18 +120,25 @@ def clear_classifier_description(args):
 
 
 def set_classifier_match_acl(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_NAME', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}', classifier_name=args[0])
     if 'mac' == args[1]:
-        acl_name = args[2] + '_ACL_L2'
+        acl_type = 'L2'
     elif 'ip' == args[1]:
-        acl_name = args[2] + '_ACL_IPV4'
+        acl_type = 'L3'
     elif 'ipv6' == args[1]:
-        acl_name = args[2] + '_ACL_IPV6'
+        acl_type = 'L3V6'
     else:
         print('Unknown ACL Type')
         return
 
-    body = {'ACL_NAME': acl_name}
+    body = {"sonic-flow-based-services:CLASSIFIER_TABLE_LIST": [
+        {
+            'CLASSIFIER_NAME': args[0],
+            'ACL_NAME': args[2],
+            'ACL_TYPE': acl_type,
+            'MATCH_TYPE': 'ACL'
+        }
+    ]}
 
     return fbs_client.patch(keypath, body)
 
@@ -393,6 +420,21 @@ def clear_match_tcp_flags(args):
         return __update_tcp_flags(args[0], args[1:], True)
 
 
+def create_flow_copp(args):
+    # inputs: <policy_name> <class_name> [priority]
+    if len(args) == 3:
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/trap-group',
+                          copp_name=args[2])
+        response = fbs_client.get(keypath)
+        if response.ok():
+            if "openconfig-copp-ext:trap-group" in response.content:
+                keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/trap-priority',
+                                  copp_name=response.content["openconfig-copp-ext:trap-group"])
+                body = {"openconfig-copp-ext:trap-priority": int(args[3])}
+
+                return fbs_client.patch(keypath, body)
+
+
 def create_flow(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST')
     body = dict()
@@ -405,6 +447,12 @@ def create_flow(args):
         body["POLICY_SECTIONS_TABLE_LIST"][0]["PRIORITY"] = int(args[2])
 
     return fbs_client.patch(keypath, body)
+
+
+def delete_flow_copp(args):
+    # inputs: <policy_name> <class_name>
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}', copp_name=args[1])
+    return fbs_client.delete(keypath)
 
 
 def delete_flow(args):
@@ -756,6 +804,324 @@ def clear_details_by_interface(args):
     return fbs_client.post(keypath, body)
 
 
+def get_copp_trap_id(name):
+    trap_id_val = ""
+    tmp_keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
+                          copp_name=name)
+    tmp_response = fbs_client.get(tmp_keypath)
+    if tmp_response is None:
+        trap_id_val = ""
+
+    if tmp_response.ok():
+        response = tmp_response.content
+        if 'openconfig-copp-ext:trap-ids' in response:
+            trap_id_val = response['openconfig-copp-ext:trap-ids']
+
+    return trap_id_val
+
+
+def set_classifier_match_protocol(args):
+    trap_id_val = get_copp_trap_id(args[0])
+
+    nd_list = []
+    if trap_id_val != "":
+        nd_list = trap_id_val.split(',')
+    if args[1] in nd_list:
+        # entry already exists
+        return
+    nd_list.append(args[1])
+    outval = ','.join(nd_list)
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
+                      copp_name=args[0])
+    body = {"openconfig-copp-ext:trap-ids": outval}
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_classifier_match_protocol(args):
+    trap_id_val = get_copp_trap_id(args[0])
+
+    nd_list = []
+    if trap_id_val != "":
+        nd_list = trap_id_val.split(',')
+    if args[1] not in nd_list:
+        # entry does not exist
+        return
+    nd_list.remove(args[1])
+    outval = ','.join(nd_list)
+    if outval == "":
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
+                          copp_name=args[0])
+        return fbs_client.delete(keypath)
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
+                          copp_name=args[0])
+        body = {"openconfig-copp-ext:trap-ids": outval}
+
+        return fbs_client.patch(keypath, body)
+
+
+def set_trap_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-action',
+                      copp_name=args[0])
+    body = {"openconfig-copp-ext:trap-action": args[1]}
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_trap_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-action',
+                      copp_name=args[0])
+
+    return fbs_client.delete(keypath)
+
+
+def set_queue_id_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/queue',
+                      copp_name=args[0])
+    body = {"openconfig-copp-ext:queue": int(args[1])}
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_queue_id_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/queue',
+                      copp_name=args[0])
+
+    return fbs_client.delete(keypath)
+
+
+def set_copp_policer_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                      copp_name=args[0])
+    body = dict()
+    data = {
+        "name": args[0],
+        "config": dict()
+    }
+
+    index = 1
+    while index < len(args):
+        if args[index] == 'cir':
+            key = 'cir'
+            value = args[index + 1]
+            if value.endswith('kbps'):
+                value = value.replace('kbps', '000')
+            elif value.endswith('mbps'):
+                value = value.replace('mbps', '000000')
+            elif value.endswith('gbps'):
+                value = value.replace('gbps', '000000000')
+            elif value.endswith('tbps'):
+                value = value.replace('tbps', '000000000000')
+            elif value.endswith('bps'):
+                value = value.replace('bps', '')
+        elif args[index] == 'cbs':
+            key = 'cbs'
+            value = args[index + 1]
+            if value.endswith('KB'):
+                value = value.replace('KB', '000')
+            elif value.endswith('MB'):
+                value = value.replace('MB', '000000')
+            elif value.endswith('GB'):
+                value = value.replace('GB', '000000000')
+            elif value.endswith('TB'):
+                value = value.replace('TB', '000000000000')
+            elif value.endswith('B'):
+                value = value.replace('B', '')
+        elif args[index] == 'pir':
+            key = 'pir'
+            value = args[index + 1]
+            if value.endswith('kbps'):
+                value = value.replace('kbps', '000')
+            elif value.endswith('mbps'):
+                value = value.replace('mbps', '000000')
+            elif value.endswith('gbps'):
+                value = value.replace('gbps', '000000000')
+            elif value.endswith('tbps'):
+                value = value.replace('tbps', '000000000000')
+            elif value.endswith('bps'):
+                value = value.replace('bps', '')
+        elif args[index] == 'pbs':
+            key = 'pbs'
+            value = args[index + 1]
+            if value.endswith('KB'):
+                value = value.replace('KB', '000')
+            elif value.endswith('MB'):
+                value = value.replace('MB', '000000')
+            elif value.endswith('GB'):
+                value = value.replace('GB', '000000000')
+            elif value.endswith('TB'):
+                value = value.replace('TB', '000000000000')
+            elif value.endswith('B'):
+                value = value.replace('B', '')
+        elif args[index] == 'meter-type':
+            key = 'meter-type'
+            value = args[index + 1]
+        elif args[index] == 'mode':
+            key = 'mode'
+            value = args[index + 1]
+        elif args[index] == 'green':
+            key = 'green-action'
+            value = args[index + 1]
+        elif args[index] == 'red':
+            key = 'red-action'
+            value = args[index + 1]
+        elif args[index] == 'yellow':
+            key = 'yellow-action'
+            value = args[index + 1]
+        else:
+            print('%Error: Unknown argument {}'.format(args[index]))
+            return
+
+        data["config"][key] = value
+        index += 2
+
+    body["openconfig-copp-ext:copp-group"] = [data]
+    return fbs_client.patch(keypath, body)
+
+
+def clear_copp_policer_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                      copp_name=args[0])
+
+    response = fbs_client.get(keypath)
+    if response.ok():
+        data = response.content
+        if len(args) == 1:
+            delete_params = ['pbs', 'pir', 'cbs', 'cir', 'meter-type', 'mode', 'green-action', 'red-action', 'yellow-action']
+        else:
+            delete_params = []
+        for feat in args[1:]:
+            if feat == 'mode':
+                delete_params.append('mode')
+                delete_params.append('green-action')
+                delete_params.append('red-action')
+                delete_params.append('yellow-action')
+            elif feat == 'red':
+                delete_params.append('red-action')
+            elif feat == 'green':
+                delete_params.append('green-action')
+            elif feat == 'yellow':
+                delete_params.append('yellow-action')
+            elif feat == 'cir':
+                delete_params.append('cir')
+                delete_params.append('cbs')
+                delete_params.append('pir')
+                delete_params.append('pbs')
+            elif feat == 'cbs':
+                delete_params.append('cbs')
+                delete_params.append('pir')
+                delete_params.append('pbs')
+            elif feat == 'pir':
+                delete_params.append('pir')
+                delete_params.append('pbs')
+            else:
+                delete_params.append(feat)
+
+        for feat in delete_params:
+            if feat in data['openconfig-copp-ext:copp-group'][0]['config'].keys():
+                del data['openconfig-copp-ext:copp-group'][0]['config'][feat]
+        if 'state' in data['openconfig-copp-ext:copp-group'][0].keys():
+            del data['openconfig-copp-ext:copp-group'][0]['state']
+
+        return fbs_client.put(keypath, data)
+    else:
+        print('Error:{}'.format(response.error_message()))
+
+
+def create_copp_action(args):
+    pass
+
+
+def delete_copp_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                      copp_name=args[0])
+
+    return fbs_client.delete(keypath)
+
+
+def set_copp_action_group(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-group',
+                      copp_name=args[1])
+    body = {"openconfig-copp-ext:trap-group": args[2]}
+
+    return fbs_client.patch(keypath, body)
+
+
+def set_copp_trap_priority_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
+                      copp_name=args[0])
+    body = {"openconfig-copp-ext:trap-priority": int(args[1])}
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_copp_trap_priority_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
+                      copp_name=args[0])
+
+    return fbs_client.delete(keypath)
+
+
+def show_copp_protocols(args):
+    if args[0] == "actions":
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group')
+        return fbs_client.get(keypath)
+    elif args[0] == "classifiers":
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
+        return fbs_client.get(keypath)
+    elif args[0] == "policy":
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
+        return fbs_client.get(keypath)
+    print("Classifier match-type copp protocols")
+    print("  protocol stp")
+    print("  protocol lacp")
+    print("  protocol eapol")
+    print("  protocol lldp")
+    print("  protocol pvrst")
+    print("  protocol igmp_query")
+    print("  protocol igmp_leave")
+    print("  protocol igmp_v1_report")
+    print("  protocol igmp_v2_report")
+    print("  protocol igmp_v3_report")
+    print("  protocol sample_packet")
+    print("  protocol switch_cust_range")
+    print("  protocol arp_req")
+    print("  protocol arp_resp")
+    print("  protocol dhcp")
+    print("  protocol ospf")
+    print("  protocol pim")
+    print("  protocol vrrp")
+    print("  protocol bgp")
+    print("  protocol dhcpv6")
+    print("  protocol ospfv6")
+    print("  protocol vrrpv6")
+    print("  protocol bgpv6")
+    print("  protocol neigh_discovery")
+    print("  protocol mld_v1_v2")
+    print("  protocol mld_v1_report")
+    print("  protocol mld_v1_done")
+    print("  protocol mld_v2_report")
+    print("  protocol ip2me")
+    print("  protocol ssh")
+    print("  protocol snmp")
+    print("  protocol router_custom_range")
+    print("  protocol l3_mtu_error")
+    print("  protocol ttl_error")
+    print("  protocol udld")
+    print("  protocol bfd")
+    print("  protocol bfdv6")
+    print("  protocol src_nat_miss")
+    print("  protocol dest_nat_miss")
+    print("  protocol ptp")
+    print("  protocol pim")
+    print("  protocol arp_suppress")
+    print("  protocol nd_suppress")
+    print("  protocol icmp")
+    print("  protocol icmpv6")
+    print("  protocol iccp")
+
+
 ########################################################################################################################
 #                                                  Response handlers                                                   #
 ########################################################################################################################
@@ -973,16 +1339,46 @@ def handle_clear_details_by_interface_response(response, args, op_str):
         print(response.error_message())
 
 
+def handle_show_copp_protocols_response(response, args, op_str):
+    if response.ok():
+        content = response.content
+        if "openconfig-copp-ext:copp-group" in content:
+            show_cli_output('show_copp_actions.j2', content)
+        if "openconfig-copp-ext:copp-trap" in content:
+            if args[0] == "policy":
+                if "openconfig-copp-ext:copp-trap" in content:
+                    for entry in content["openconfig-copp-ext:copp-trap"]:
+                        if "config" in entry and "trap-group" in entry["config"]:
+                            keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                                              copp_name=entry["config"]["trap-group"])
+                            resp2 = fbs_client.get(keypath)
+                            if resp2.ok():
+                                content2 = resp2.content
+                                if "openconfig-copp-ext:copp-group" in content2:
+                                    for entry2 in resp2.content["openconfig-copp-ext:copp-group"]:
+                                        if "config" in entry2:
+                                            for key, value in entry2["config"].items():
+                                                entry[key] = value
+                show_cli_output('show_copp_policy.j2', content)
+            else:
+                show_cli_output('show_copp_classifier.j2', content)
+
+
 # ######################################################################################################################
 #
 # #######################################################################################################################
 
 request_handlers = {
-    'create_policy': create_policy,
+    'create_policy_qos': create_policy,
+    'create_policy_monitoring': create_policy,
+    'create_policy_forwarding': create_policy,
+    'create_policy_copp': create_policy_copp,
     'delete_policy': delete_policy,
     'set_policy_description': set_policy_description,
     'clear_policy_description': clear_policy_description,
-    'create_classifier': create_classifier,
+    'create_classifier_acl': create_classifier,
+    'create_classifier_fields': create_classifier,
+    'create_classifier_copp': create_classifier_copp,
     'delete_classifier': delete_classifier,
     'set_classifier_description': set_classifier_description,
     'clear_classifier_description': clear_classifier_description,
@@ -1008,8 +1404,14 @@ request_handlers = {
     'clear_match_layer4_port': clear_match_layer4_port,
     'set_match_tcp_flags': set_match_tcp_flags,
     'clear_match_tcp_flags': clear_match_tcp_flags,
-    'create_flow': create_flow,
-    'delete_flow': delete_flow,
+    'create_flow_qos': create_flow,
+    'create_flow_monitoring': create_flow,
+    'create_flow_forwarding': create_flow,
+    'create_flow_copp': create_flow_copp,
+    'delete_flow_qos': delete_flow,
+    'delete_flow_monitoring': delete_flow,
+    'delete_flow_forwarding': delete_flow,
+    'delete_flow_copp': delete_flow_copp,
     'set_flow_description': set_flow_description,
     'clear_flow_description': clear_flow_description,
     'set_pcp_remarking_action': set_pcp_remarking_action,
@@ -1034,16 +1436,35 @@ request_handlers = {
     'show_details_by_policy': show_details_by_policy,
     'show_details_by_interface': show_details_by_interface,
     'clear_details_by_policy': clear_details_by_policy,
-    'clear_details_by_interface': clear_details_by_interface
+    'clear_details_by_interface': clear_details_by_interface,
+    'set_classifier_match_protocol': set_classifier_match_protocol,
+    'clear_classifier_match_protocol': clear_classifier_match_protocol,
+    'set_trap_action': set_trap_action,
+    'clear_trap_action': clear_trap_action,
+    'set_queue_id_action': set_queue_id_action,
+    'clear_queue_id_action': clear_queue_id_action,
+    'set_copp_policer_action': set_copp_policer_action,
+    'clear_copp_policer_action': clear_copp_policer_action,
+    'show_copp_protocols': show_copp_protocols,
+    'create_copp_action': create_copp_action,
+    'delete_copp_action': delete_copp_action,
+    'set_copp_action_group': set_copp_action_group,
+    'set_copp_trap_priority_action': set_copp_trap_priority_action,
+    'clear_copp_trap_priority_action': clear_copp_trap_priority_action
 }
 
 
 response_handlers = {
-    'create_policy': handle_generic_set_response,
+    'create_policy_qos': handle_generic_set_response,
+    'create_policy_monitoring': handle_generic_set_response,
+    'create_policy_forwarding': handle_generic_set_response,
+    'create_policy_copp': handle_generic_set_response,
     'delete_policy': handle_generic_delete_response,
     'set_policy_description': handle_generic_set_response,
     'clear_policy_description': handle_generic_delete_response,
-    'create_classifier': handle_generic_set_response,
+    'create_classifier_acl': handle_generic_set_response,
+    'create_classifier_fields': handle_generic_set_response,
+    'create_classifier_copp': handle_generic_set_response,
     'delete_classifier': handle_generic_delete_response,
     'set_classifier_description': handle_generic_set_response,
     'clear_classifier_description': handle_generic_delete_response,
@@ -1069,8 +1490,14 @@ response_handlers = {
     'clear_match_layer4_port': handle_generic_delete_response,
     'set_match_tcp_flags': handle_generic_set_response,
     'clear_match_tcp_flags': handle_generic_delete_response,
-    'create_flow': handle_generic_set_response,
-    'delete_flow': handle_generic_delete_response,
+    'create_flow_qos': handle_generic_set_response,
+    'create_flow_monitoring': handle_generic_set_response,
+    'create_flow_forwarding': handle_generic_set_response,
+    'create_flow_copp': handle_generic_set_response,
+    'delete_flow_qos': handle_generic_delete_response,
+    'delete_flow_monitoring': handle_generic_delete_response,
+    'delete_flow_forwarding': handle_generic_delete_response,
+    'delete_flow_copp': handle_generic_delete_response,
     'set_flow_description': handle_generic_set_response,
     'clear_flow_description': handle_generic_delete_response,
     'set_pcp_remarking_action': handle_generic_set_response,
@@ -1095,7 +1522,21 @@ response_handlers = {
     'show_details_by_policy': handle_show_service_policy_details_response,
     'show_details_by_interface': handle_show_service_policy_details_response,
     'clear_details_by_policy': handle_clear_details_by_policy_response,
-    'clear_details_by_interface': handle_clear_details_by_interface_response
+    'clear_details_by_interface': handle_clear_details_by_interface_response,
+    'set_classifier_match_protocol': handle_generic_set_response,
+    'clear_classifier_match_protocol': handle_generic_delete_response,
+    'set_trap_action': handle_generic_set_response,
+    'clear_trap_action': handle_generic_delete_response,
+    'set_queue_id_action': handle_generic_set_response,
+    'clear_queue_id_action': handle_generic_delete_response,
+    'set_copp_policer_action': handle_generic_set_response,
+    'clear_copp_policer_action': handle_generic_delete_response,
+    'show_copp_protocols': handle_show_copp_protocols_response,
+    'create_copp_action': handle_generic_set_response,
+    'delete_copp_action': handle_generic_delete_response,
+    'set_copp_action_group': handle_generic_set_response,
+    'set_copp_trap_priority_action': handle_generic_set_response,
+    'clear_copp_trap_priority_action': handle_generic_delete_response
 }
 
 

@@ -9,18 +9,18 @@ VRF Name: {{list_elem['vrfName']}}
 {% set route_table = list_elem['openconfig-ospfv2-ext:route-tables']['route-table'] %}
 {% for routeinfo in route_table %}
 {% if 'type' in routeinfo and routeinfo['type'] == 'openconfig-ospfv2-ext:NETWORK_ROUTE_TABLE' %}
-{% if 'route' in routeinfo %}
-{% if vars.update({'network_table_data':routeinfo['route']}) %}{% endif -%}
+{% if 'state' in routeinfo and 'route-table-state' in routeinfo['state'] and 'route' in routeinfo['state']['route-table-state'] %}
+{% if vars.update({'network_table_data':routeinfo['state']['route-table-state']['route']}) %}{% endif -%}
 {% endif -%}
 {% endif -%}
 {% if 'type' in routeinfo and routeinfo['type'] == 'openconfig-ospfv2-ext:ROUTER_ROUTE_TABLE' %}
-{% if 'route' in routeinfo %}
-{% if vars.update({'router_table_data':routeinfo['route']}) %}{% endif -%}
+{% if 'state' in routeinfo and 'route-table-state' in routeinfo['state'] and 'route' in routeinfo['state']['route-table-state'] %}
+{% if vars.update({'router_table_data':routeinfo['state']['route-table-state']['route']}) %}{% endif -%}
 {% endif -%}
 {% endif -%}
 {% if 'type' in routeinfo and routeinfo['type'] == 'openconfig-ospfv2-ext:EXTERNAL_ROUTE_TABLE' %}
-{% if 'route' in routeinfo %}
-{% if vars.update({'external_table_data':routeinfo['route']}) %}{% endif -%}
+{% if 'state' in routeinfo and 'route-table-state' in routeinfo['state'] and 'route' in routeinfo['state']['route-table-state'] %}
+{% if vars.update({'external_table_data':routeinfo['state']['route-table-state']['route']}) %}{% endif -%}
 {% endif -%}
 {% endif -%}
 {% endfor -%}
@@ -29,11 +29,12 @@ VRF Name: {{list_elem['vrfName']}}
 ============ OSPF network routing table ============
 {% if vars.network_table_data != " " %}
 {% for single_route in vars.network_table_data %}
+{% if 'state' in single_route %}
 {% if vars.update({'last_area_id':' '}) %}{% endif -%}
-{% for nexthop  in single_route['next-hops'] %}
-{% if vars.last_area_id != nexthop['area-id'] %}
-N    {{'%-18s'|format(single_route['prefix'])}}    [{{single_route['cost']}}] area: {{nexthop['area-id']}}
-{% if vars.update({'last_area_id':nexthop['area-id']}) %}{% endif -%}
+{% for nexthop  in single_route['state']['next-hops-list']['next-hops'] %}
+{% if vars.last_area_id != nexthop['state']['area-id'] %}
+N    {{'%-18s'|format(single_route['prefix'])}}    [{{single_route['state']['cost']}}] area: {{nexthop['state']['area-id']}}
+{% if vars.update({'last_area_id':nexthop['state']['area-id']}) %}{% endif -%}
 {% endif -%}
 {% if nexthop['next-hop'] == '0.0.0.0' %}
                            {{'%s %s'|format('directly attached to', nexthop['out-interface'])}}
@@ -41,44 +42,46 @@ N    {{'%-18s'|format(single_route['prefix'])}}    [{{single_route['cost']}}] ar
 		           {{'%s %s%s %s'|format('via', nexthop['next-hop'], ',', nexthop['out-interface'])}}	
 {% endif -%}
 {% endfor -%}
+{% endif %}
 {% endfor -%}
 {% endif -%}
 {{' '}}
 ============ OSPF router routing table =============
 {% if vars.router_table_data != " " %}
 {% for single_route in vars.router_table_data %}
+{% if 'state' in single_route %}
 {% set area_id_list = [] %}
 {% set area_id_list1 = [] %}
 {% if vars.update({'last_area_id':' '}) %}{% endif -%}
 {% if vars.update({'router_type':' '}) %}{% endif -%}
 {% if vars.update({'first_line_flag':'False'}) %}{% endif -%}
-{% if 'inter-area' in single_route and single_route['inter-area'] == True %}
+{% if 'inter-area' in single_route['state'] and single_route['state']['inter-area'] == True %}
 {% if vars.update({'inter_area_info':'IA'}) %}{% endif -%}
 {% else %}
 {% if vars.update({'inter_area_info':'  '}) %}{% endif -%}
 {% endif -%}
-{% if 'router-type' in single_route %}
-{% if single_route['router-type'] == 'openconfig-ospfv2-ext:ABR' %}
+{% if 'router-type' in single_route['state'] %}
+{% if single_route['state']['router-type'] == 'openconfig-ospfv2-ext:ABR' %}
 {% if vars.update({'router_type':', ABR'}) %}{% endif -%}
-{% elif single_route['router-type'] == 'openconfig-ospfv2-ext:ASBR' %}
+{% elif single_route['state']['router-type'] == 'openconfig-ospfv2-ext:ASBR' %}
 {% if vars.update({'router_type':', ASBR'}) %}{% endif -%}
-{% elif single_route['router-type'] == 'openconfig-ospfv2-ext:ABRASBR' %}
+{% elif single_route['state']['router-type'] == 'openconfig-ospfv2-ext:ABRASBR' %}
 {% if vars.update({'router_type':', ABR, ASBR'}) %}{% endif -%}
 {% endif -%}
 {% endif -%}
-{% for nexthop  in single_route['next-hops'] %}
-{% set area_id_list = area_id_list.append(nexthop['area-id']) %}
+{% for nexthop  in single_route['state']['next-hops-list']['next-hops'] %}
+{% set area_id_list = area_id_list.append(nexthop['state']['area-id']) %}
 {% endfor -%}
 {% set area_id_list1 =  area_id_list | unique %}
 {% for id in area_id_list1 %}
 {% if vars.first_line_flag == 'False' %}
-R    {{'%-18s'|format(single_route['prefix'])}} {{'%2s'|format(vars.inter_area_info)}} [{{single_route['cost']}}] area: {{id}}{{vars.router_type}}
+R    {{'%-18s'|format(single_route['prefix'])}} {{'%2s'|format(vars.inter_area_info)}} [{{single_route['state']['cost']}}] area: {{id}}{{vars.router_type}}
 {% if vars.update({'first_line_flag':'True'}) %}{% endif -%}
 {% else %}
-                        {{'%2s'|format(vars.inter_area_info)}} [{{single_route['cost']}}] area: {{id}}{{vars.router_type}}
+                        {{'%2s'|format(vars.inter_area_info)}} [{{single_route['state']['cost']}}] area: {{id}}{{vars.router_type}}
 {% endif -%}
-{% for nexthop  in single_route['next-hops'] %}
-{% if id == nexthop['area-id'] %}
+{% for nexthop  in single_route['state']['next-hops-list']['next-hops'] %}
+{% if id == nexthop['state']['area-id'] %}
 {% if nexthop['next-hop'] == '0.0.0.0' %}
                            {{'%s %s'|format('directly attached to', nexthop['out-interface'])}}
 {% else %}
@@ -87,30 +90,33 @@ R    {{'%-18s'|format(single_route['prefix'])}} {{'%2s'|format(vars.inter_area_i
 {% endif %}
 {% endfor -%}
 {% endfor -%}
+{% endif -%}
 {% endfor -%}
 {% endif -%}
 {{' '}}
 ============ OSPF external routing table ===========
 {% if vars.external_table_data != " " %}
 {% for single_route in vars.external_table_data %}
-{% if 'type2-cost' in single_route %}
-{% if vars.update({'type2_cost':single_route['type2-cost']}) %}{% endif -%}
+{% if 'state' in single_route %}
+{% if 'type2-cost' in single_route['state'] %}
+{% if vars.update({'type2_cost':single_route['state']['type2-cost']}) %}{% endif -%}
 {% else %}
 {% if vars.update({'type2_cost':'20'}) %}{% endif -%}
 {% endif -%}
-{% if 'sub-type' in single_route and single_route['sub-type'] == 'openconfig-ospfv2-ext:EXTERNAL_ROUTE_TYPE_1' %}
+{% if 'sub-type' in single_route['state'] and single_route['state']['sub-type'] == 'openconfig-ospfv2-ext:EXTERNAL_ROUTE_TYPE_1' %}
 {% if vars.update({'external_route_type':'N E1'}) %}{% endif -%}
 {% else %}
 {% if vars.update({'external_route_type':'N E2'}) %}{% endif -%}
 {% endif -%}
-{{'%-4s'|format(vars.external_route_type)}} {{'%-18s'|format(single_route['prefix'])}}    {{'[%s/%s] tag: 0'|format(single_route['cost'], vars.type2_cost)}}
-{% for nexthop  in single_route['next-hops'] %}
+{{'%-4s'|format(vars.external_route_type)}} {{'%-18s'|format(single_route['prefix'])}}    {{'[%s/%s] tag: 0'|format(single_route['state']['cost'], vars.type2_cost)}}
+{% for nexthop  in single_route['state']['next-hops-list']['next-hops'] %}
 {% if nexthop['next-hop'] == '0.0.0.0' %}
                            {{'%s %s'|format('directly attached to', nexthop['out-interface'])}}
 {% else %}
 		           {{'%s %s%s %s'|format('via', nexthop['next-hop'], ',', nexthop['out-interface'])}}	
 {% endif -%}
 {% endfor -%}
+{% endif -%}
 {% endfor -%}
 {% endif -%}
 {{' '}}

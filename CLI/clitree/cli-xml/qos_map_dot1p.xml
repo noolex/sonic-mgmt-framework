@@ -26,7 +26,7 @@ limitations under the License.
   <VIEW name="configure-view">
     <!-- maps -->
     <COMMAND
-        name="dot1p-tc-map"
+        name="qos map dot1p-tc"
         help="QoS DOT1P-to-TC Map Configuration"
         mode="subcommand"
         ptype="SUBCOMMAND"
@@ -55,13 +55,13 @@ limitations under the License.
           </USAGE>
           <EXAMPLE summary="The following command creates DOT1P to Traffic class entrie map.">
             sonic# configure terminal
-            sonic(config)# dot1p-tc-map dot1p-map
+            sonic(config)#qos map dot1p-tc dot1p-map
           </EXAMPLE>
         </DOCGEN>
     </COMMAND>
 
     <!-- no maps -->
-    <COMMAND name="no dot1p-tc-map" help="Unconfigure a dot1p-tc map">
+    <COMMAND name="no qos map dot1p-tc" help="Unconfigure a dot1p-tc map">
       <PARAM name="name" help="Name of the map" ptype="STRING_32"> </PARAM>
         <ACTION builtin="clish_restcl"> 
             oper=DELETE
@@ -76,7 +76,7 @@ limitations under the License.
           </USAGE>
           <EXAMPLE summary="The following command delete DOT1P to Traffic class entries map">
             sonic# configure terminal
-            sonic(config)# no dot1p-tc-map dot1p-map
+            sonic(config)# no qos map dot1p-tc dot1p-map
           </EXAMPLE>
         </DOCGEN>
     </COMMAND>
@@ -152,7 +152,7 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <!--show dot1p-map -->
-    <COMMAND name="show dot1p-tc-map" help="Show configured dot1p-tc-map">
+    <COMMAND name="show qos map dot1p-tc" help="Show configured dot1p-tc-map">
       <PARAM name="name" help="Name of the dot1p-tc-map" ptype="STRING_32" optional="true"> </PARAM>
       <ACTION>
           if test "${name}" = "" ; then&#xA;

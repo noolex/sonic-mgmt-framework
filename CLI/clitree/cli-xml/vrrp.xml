@@ -26,17 +26,17 @@ limitations under the License.
 <VIEW name="enable-view">
 <!--show vrrp -->
     <COMMAND name = "show vrrp"
-        help = "Show IPv4 VRRP instances information"
+        help = "Shows IPv4 VRRP instance information"
         >
         <PARAM
             name="interface"
             help="VRRP information for the interface"
-            ptype="SUBCOMMAND"
+            ptype="SUBCOMMAND" optional="true"
             mode="subcommand"
         >
         <PARAM
             name="ifname"
-            help="VRRP interface name (max 63 character)"
+            help="VRRP interface name (up to 63 characters)"
             ptype="STRING_63"
             >
             <PARAM
@@ -46,7 +46,7 @@ limitations under the License.
                 >
                 <PARAM
                     name = "id"
-                    help="VRRP ID (Max size 255)"
+                    help="VRRP ID (1 to 255)"
                     ptype="RANGE_1_255"
                 >
                 </PARAM>
@@ -54,23 +54,23 @@ limitations under the License.
         </PARAM>
     </PARAM>
         <ACTION builtin="clish_pyobj">
-            sonic_cli_vrrp get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state show_vrrp.j2 ${ifname} ${id} ipv4
+            sonic_cli_vrrp get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state ipv4 show_vrrp.j2 ${ifname} ${id}
         </ACTION>
     </COMMAND>
 
 <!--show vrrp6 -->
     <COMMAND name = "show vrrp6"
-        help = "Show IPv6 VRRP instances information"
+        help = "Shows IPv6 VRRP instance information"
         >
         <PARAM
             name="interface"
             help="VRRP information for the interface"
-            ptype="SUBCOMMAND"
+            ptype="SUBCOMMAND" optional="true"
             mode="subcommand"
         >
         <PARAM
             name="ifname"
-            help="VRRP interface name (max 63 character)"
+            help="VRRP interface name (up to 63 characters)"
             ptype="STRING_63"
             >
             <PARAM
@@ -80,7 +80,7 @@ limitations under the License.
                 >
                 <PARAM
                     name = "id"
-                    help="VRRP ID (Max size 255)"
+                    help="VRRP ID (1 to 255)"
                     ptype="RANGE_1_255"
                 >
                 </PARAM>
@@ -88,7 +88,7 @@ limitations under the License.
         </PARAM>
     </PARAM>
         <ACTION builtin="clish_pyobj">
-            sonic_cli_vrrp get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state show_vrrp.j2 ${ifname} ${id} ipv6
+            sonic_cli_vrrp get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state ipv6 show_vrrp.j2 ${ifname} ${id}
         </ACTION>
     </COMMAND>
 </VIEW>
@@ -106,9 +106,16 @@ limitations under the License.
          >
          <PARAM
              name="vrrp-id"
-             help="VRRP ID (Max size 255)"
+             help="VRRP ID (1 to 255)"
              ptype="RANGE_1_255"
              >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
         </PARAM>
         <PARAM
              name="afi-name"
@@ -128,9 +135,16 @@ limitations under the License.
          help="Unconfigure VRRP"
      >
          <PARAM name="vrrp-id"
-             help="VRRP ID (Max size 255)"
+             help="VRRP ID (1 to 255)"
              ptype="RANGE_1_255"
              >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
         </PARAM>
         <PARAM
              name="afi-name"
@@ -345,9 +359,16 @@ limitations under the License.
          >
          <PARAM
              name="vrrp-id"
-             help="VRRP ID (Max size 255)"
+             help="VRRP ID (1 to 255)"
              ptype="RANGE_1_255"
              >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
         </PARAM>
         <PARAM
              name="afi-name"
@@ -367,9 +388,16 @@ limitations under the License.
          help="Configure IPv4 VRRP"
      >
          <PARAM name="vrrp-id"
-             help="VRRP ID (Max size 255)"
+             help="VRRP ID (1 to 255)"
              ptype="RANGE_1_255"
              >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
         </PARAM>
         <PARAM
              name="afi-name"
@@ -398,9 +426,16 @@ limitations under the License.
          >
          <PARAM
              name="vrrp-id"
-             help="VRRP ID (Max size 255)"
+             help="VRRP ID (1 to 255)"
              ptype="RANGE_1_255"
              >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
         </PARAM>
         <PARAM
              name="afi-name"
@@ -420,9 +455,16 @@ limitations under the License.
          help="Configure IPv4 VRRP"
      >
          <PARAM name="vrrp-id"
-             help="VRRP ID (Max size 255)"
+             help="VRRP ID (1 to 255)"
              ptype="RANGE_1_255"
              >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
         </PARAM>
         <PARAM
              name="afi-name"
@@ -431,7 +473,7 @@ limitations under the License.
              >
         </PARAM>
         <ACTION builtin="clish_pyobj">
-                sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${vlan_name} ${vrrp-id} ${afi-name};
+                sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${vlan_name} ${vrrp-id} ${afi-name}
         </ACTION>
     </COMMAND>
 

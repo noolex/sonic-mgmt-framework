@@ -54,9 +54,11 @@ limitations under the License.
         <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="defaultcost" help="Stub's advertised default summary cost" ptype="RANGE_0_16777215" />
         </PARAM>
+<!--
         <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="exportlistname" help="Name of the access-list" ptype="STRING" />
         </PARAM>
+-->
         <PARAM name="filter-list" help="Filter networks between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="prefix" help="Filter prefixes between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" >
             <PARAM name="prefixlistname" help="Name of an IP prefix-list" ptype="STRING" >
@@ -67,9 +69,11 @@ limitations under the License.
             </PARAM> 
           </PARAM>   
         </PARAM>
+<!--
         <PARAM name="import-list" help="Set the filter for networks from other areas announced to the specified one" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="importlistname" help="Name of the access-list" ptype="STRING" />
         </PARAM>
+-->
 <!--
         <PARAM name="nssa" help="Configure OSPF area as nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="no-summary" help="Do not inject inter-area routes into nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
@@ -215,7 +219,7 @@ limitations under the License.
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_substitute ${vrf-name} ${areaid} ${rangeprefix} ${rangenetworkprefix} &#xA;
         fi&#xA;
       fi&#xA;
-
+<!--
       if test "${areacmdtype}" = "import-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist ${vrf-name} ${areaid} ${importlistname} &#xA;
       fi&#xA;
@@ -223,6 +227,7 @@ limitations under the License.
       if test "${areacmdtype}" = "export-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_exportlist ${vrf-name} ${areaid} ${exportlistname} &#xA;
       fi&#xA;
+-->
 
       if test "${areacmdtype}" = "filter-list"; then&#xA;
         if test "${filterdirection}" = "in"; then&#xA;
@@ -248,7 +253,9 @@ limitations under the License.
           <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
         </PARAM>
         <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
         <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
         <PARAM name="filter-list" help="Filter networks between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="prefix" help="Filter prefixes between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" >
             <PARAM name = "filterdirection" help = "" ptype = "SUBCOMMAND" mode="switch" >
@@ -257,7 +264,9 @@ limitations under the License.
             </PARAM>
           </PARAM>
         </PARAM>
+<!--
         <PARAM name="import-list" help="Set the filter for networks from other areas announced to the specified one" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
 <!--
         <PARAM name="nssa" help="Configure OSPF area as nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="no-summary" help="Do not inject inter-area routes into nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
@@ -377,6 +386,7 @@ limitations under the License.
         fi&#xA;
       fi&#xA;
 
+<!--
       if test "${areacmdtype}" = "import-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist ${vrf-name} ${areaid} &#xA;
       fi&#xA;
@@ -384,6 +394,7 @@ limitations under the License.
       if test "${areacmdtype}" = "export-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_exportlist ${vrf-name} ${areaid} &#xA;
       fi&#xA;
+-->
 
       if test "${areacmdtype}" = "filter-list"; then&#xA;
         if test "${filterdirection}" = "in"; then&#xA;
@@ -500,7 +511,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="default-metric" help="Set metric of redistributed routes" >
-    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_1_16777214" />
+    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_0_16777214" />
     <ACTION>
     python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_config_default_metric ${vrf-name} ${defaultmetric} &#xA;
     </ACTION>
@@ -568,6 +579,7 @@ limitations under the License.
     </ACTION>
   </COMMAND>
 
+<!--
   <COMMAND name="distribute-list" help="Filter networks in routing updates" >
     <PARAM name="aclname" help="Access-list name" ptype="STRING_15"  >
       <PARAM name="out" help="Filter outgoing routing updates" ptype="SUBCOMMAND" mode="subcommand" >
@@ -599,6 +611,7 @@ limitations under the License.
     python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_access_list ${vrf-name} ${protocol} &#xA;
     </ACTION>
   </COMMAND>
+-->
 
   <COMMAND name="log-adjacency-changes" help="Log changes in adjacency state" >
     <PARAM name="detail" help="Log all state changes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
@@ -626,9 +639,11 @@ limitations under the License.
     <PARAM name="router-lsa" help="Advertise own Router-LSA with infinite distance (stub router)" ptype="SUBCOMMAND" mode="subcommand" >
       <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
         <PARAM name="on-shutdown" help="Advertise stub-router prior to full shutdown of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="extdistance" help="Time (seconds) to wait till full shutdown" ptype="RANGE_5_100" />
         </PARAM>
+-->
         <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="interdistance" help="Time (seconds) to advertise self as stub-router" ptype="RANGE_5_86400" />
         </PARAM>
@@ -638,10 +653,11 @@ limitations under the License.
     if test "${maxmetrictype}" = "administrative"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative ${vrf-name} &#xA;
     fi&#xA;
-
+<!--
     if test "${maxmetrictype}" = "on-shutdown"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_shutdown ${vrf-name} ${extdistance} &#xA;
     fi&#xA;
+-->
 
     if test "${maxmetrictype}" = "on-startup"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_startup ${vrf-name} ${interdistance} &#xA;
@@ -653,7 +669,9 @@ limitations under the License.
     <PARAM name="router-lsa" help="Advertise own Router-LSA with infinite distance (stub router)" ptype="SUBCOMMAND" mode="subcommand" >
       <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
         <PARAM name="on-shutdown" help="Advertise stub-router prior to full shutdown of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
         <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       </PARAM>
     </PARAM>
@@ -662,9 +680,11 @@ limitations under the License.
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative ${vrf-name} &#xA;
     fi&#xA;
 
+<!--
     if test "${maxmetrictype}" = "on-shutdown"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_shutdown ${vrf-name} &#xA;
     fi&#xA;
+-->
 
     if test "${maxmetrictype}" = "on-startup"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_startup ${vrf-name} &#xA;

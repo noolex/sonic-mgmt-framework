@@ -53,7 +53,7 @@
           {% for subif in subif_list %}
             {% if vars.update({'ipv4':"IPV4"}) %}{% endif %}
             {% if vars.update({'ipv6':"IPV6"}) %}{% endif %}
-            {% if subif["openconfig-if-ip:ipv4"] %}
+            {% if subif["openconfig-if-ip:ipv4"] and "addresses" in subif["openconfig-if-ip:ipv4"] and "address" in subif["openconfig-if-ip:ipv4"]["addresses"] %}
               {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
               {% set ip_all = [] %}
               {% for ip in ip_list %}
@@ -61,13 +61,17 @@
                   {% set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() %}
                   {{ ip_all.append(ipfx)|default("", True)}}
                 {% endif %}
-                {% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
+                {% if "config" in ip %}
+                    {% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
+                {% else %}
+                    {% if vars.update({'mode4':"DHCP"}) %}{% endif %}
+                {% endif %}
               {% endfor %}
               {% if vars.update({'ipv4_src_pfx':ip_all|join(',')}) %}{% endif %}
             {% else %}
               {% if vars.update({'mode4':"not-set"}) %}{% endif %}
             {% endif %}
-            {% if subif["openconfig-if-ip:ipv6"] %}
+            {% if subif["openconfig-if-ip:ipv6"] and "addresses" in subif["openconfig-if-ip:ipv6"] and "address" in subif["openconfig-if-ip:ipv6"]["addresses"] %}
               {% set ip_list = subif["openconfig-if-ip:ipv6"]["addresses"]["address"] %}
               {% set ipv6_all = [] %}
               {% for ip in ip_list %}
@@ -75,7 +79,11 @@
                   {% set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() %}
                   {{ ipv6_all.append(ipfx)|default("", True)}}
                 {% endif %}
-                {% if vars.update({'mode6':"MANUAL"}) %}{% endif %}
+                {% if "config" in ip %}
+                    {% if vars.update({'mode6':"MANUAL"}) %}{% endif %}
+                {% else %}
+                    {% if vars.update({'mode6':"DHCP"}) %}{% endif %}
+                {% endif %}
               {% endfor %}
               {% if vars.update({'ipv6_src_pfx':ipv6_all|join(',')}) %}{% endif %}
             {% else %}

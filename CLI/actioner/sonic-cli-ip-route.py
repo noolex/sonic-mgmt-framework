@@ -75,8 +75,8 @@ def parse_nextHops(route, nexthops):
                 if "ip-address" in state:
                     gateway= "via " + state["ip-address"].encode('ascii', 'ignore')
                     nexthop.update({"gateway":gateway})
-                elif "directlyConnected" in state:
-                    if state["directlyConnected"] == True:
+                elif "directly-connected" in state:
+                    if state["directly-connected"] == True:
                         nexthop.update({"gateway":"Direct"})
             nexthopsLst.append(nexthop)    
         route.update({"nexthops": nexthopsLst})

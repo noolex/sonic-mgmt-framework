@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------
+ ID             Name         Instance  TCP Port  Unix Socket Path
+-------------------------------------------------------------------------
+{% for db in json_output.keys() %}
+{% set db_str = db | string %}
+{% set port_str = json_output[db]['port'] | string %}
+{{db_str.rjust(3)}} {{json_output[db]['name'].rjust(16)}} {{json_output[db]['instance'].rjust(16)}} {{port_str.rjust(9)}}  {{json_output[db]['socket'].rjust(16)}}
+{% endfor %}

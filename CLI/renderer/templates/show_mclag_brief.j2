@@ -33,6 +33,7 @@
 {% if vars.update({'keepalive_interval':domain_info["keepalive_interval"]}) %} {% endif %}
 {% if vars.update({'session_timeout':domain_info["session_timeout"]}) %}{% endif %}
 {% if vars.update({'system_mac':domain_info["system_mac"]}) %}{% endif %}
+{% if vars.update({'mclag_system_mac':domain_info["mclag_system_mac"]}) %}{% endif %}
 
 
 {{'Domain ID'.ljust(20)}} : {{ vars.domain_id }}
@@ -45,6 +46,7 @@
 {{'Keepalive Interval'.ljust(20)}} : {{ vars.keepalive_interval}} {{'secs'}}
 {{'Session Timeout'.ljust(20)}} : {{ vars.session_timeout}} {{'secs'}}
 {{'System Mac'.ljust(20)}} : {{ vars.system_mac}}
+{{'Mclag System Mac'.ljust(20)}} : {{ vars.mclag_system_mac}}
 
 {% if gateway_mac_info -%}
 {% if vars.update({'gateway_mac':gateway_mac_info["gateway_mac"]}) %}{% endif %}

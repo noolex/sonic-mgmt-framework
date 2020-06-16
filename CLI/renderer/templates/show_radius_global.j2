@@ -2,18 +2,26 @@
 {{'RADIUS Global Configuration'.ljust(20)}}
 {{'---------------------------------------------------------'}}
 {% if json_output -%}
-{% set srcip = json_output['openconfig-system:config']['openconfig-system-ext:source-address'] %}
-{% set nasip = json_output['openconfig-system:config']['openconfig-system-ext:nas-ip-address'] %}
-{% set timeout = json_output['openconfig-system:config']['openconfig-system-ext:timeout'] %}
-{% set authtype = json_output['openconfig-system:config']['openconfig-system-ext:auth-type'] %}
-{% set key = json_output['openconfig-system:config']['openconfig-system-ext:secret-key'] %}
-{% set retransmit = json_output['openconfig-system:config']['openconfig-system-ext:retransmit-attempts'] %}
+{% set srcip = json_output['openconfig-system-ext:source-address'] %}
+{% set nasip = json_output['nas-ip-address'] %}
+{% set statistics = json_output['statistics'] %}
+{% set timeout = json_output['openconfig-system-ext:timeout'] %}
+{% set authtype = json_output['openconfig-system-ext:auth-type'] %}
+{% set key = json_output['openconfig-system-ext:secret-key'] %}
+{% if 'retransmit-attempts' in json_output %}
+{% set retransmit = (json_output['retransmit-attempts'])|string %}
+{% else %}
+{% set retransmit = 0 %}
+{% endif %}
 
 {% if srcip -%}
 {{'source-ip  : '}}{{srcip}}
 {% endif %}
 {% if nasip -%}
 {{'nas-ip-addr: '}}{{nasip}}
+{% endif %}
+{% if statistics -%}
+{{'statistics : '}}{{statistics}}
 {% endif %}
 {% if timeout -%}
 {{'timeout    : '}}{{timeout}}
