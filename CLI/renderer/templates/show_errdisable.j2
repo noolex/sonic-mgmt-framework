@@ -1,0 +1,12 @@
+{% if json_output -%}
+{{' '}}
+{{'Errdisable Cause    Status'}}
+{{'------------------  --------'}}
+{% set errdisable_info = json_output['openconfig-errdisable-ext:errdisable'] %}
+{% if errdisable_info['config']['udld'] == False %}
+{{'udld                disabled'}}
+{%else %}
+{{'udld                enabled'}}
+{%endif%}
+{{'Timeout for Auto-recovery: '}} {{errdisable_info['config']['interval']}} seconds
+{%endif%}
