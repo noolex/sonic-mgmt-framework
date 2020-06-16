@@ -72,7 +72,8 @@ def invoke(func, args):
                 bodyParam = int(field_val)
         elif args[0] == "port" :
             field_name = "port"
-            bodyParam = field_val
+            if isDel == False:
+                bodyParam = int(field_val)
         elif args[0] == "version" :
             field_name = "version"
             if isDel == False:
@@ -82,7 +83,8 @@ def invoke(func, args):
             bodyParam = field_val
         elif args[0] == "ssl" :
             field_name = "ssl"
-            bodyParam = field_val.upper()
+            if isDel == False:
+                bodyParam = field_val.upper()
         elif args[0] == "binddn" :
             field_name = "bind-dn"
             bodyParam = field_val            
@@ -91,7 +93,8 @@ def invoke(func, args):
             bodyParam = field_val            
         elif args[0] == "scope" :
             field_name = "scope"
-            bodyParam = field_val.upper()            
+            if isDel == False:
+                bodyParam = field_val.upper()            
         elif args[0] == "nss-base-passwd" :
             field_name = "nss-base-passwd"
             bodyParam = field_val            
@@ -125,12 +128,6 @@ def invoke(func, args):
         elif args[0] == "pam-member-attribute" :
             field_name = "pam-member-attribute"
             bodyParam = field_val            
-        elif args[0] == "source-ip" :
-            field_name = "source-address"
-            bodyParam = field_val            
-        elif args[0] == "vrf" :
-            field_name = "vrf-name"
-            bodyParam = field_val
             
         keypath = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group={ldapType}/'+modName+'ldap/config/{fieldName}',
                 ldapType=ldap_type, fieldName=field_name)
@@ -167,20 +164,26 @@ def invoke(func, args):
                     configObj["priority"] = int(args[args.index(elem)+1])
                 elif elem == 'ssl':
                     configObj["ssl"] = args[args.index(elem)+1].upper()
+                elif elem == 'retry':
+                    configObj["retransmit-attempts"] = int(args[args.index(elem)+1])
                     
             return aa.patch(keypath, body)
         else:
             objName = None
-            if args[1] == 'use-type':
-                objName = 'use-type'
-            elif args[1] == 'port':
-                objName = 'port'
-            elif args[1] == 'priority':
-                objName = 'priority'
-            elif args[1] == 'ssl':
-                objName = 'ssl'
-            
-            keypath = cc.Path(baseLdapUri+'servers/server={address}/'+modName+'ldap/config/'+objName, address=args[0])
+            if len(args) > 1: 
+                if args[1] == 'use-type':
+                    objName = 'use-type'
+                elif args[1] == 'port':
+                    objName = 'port'
+                elif args[1] == 'priority':
+                    objName = 'priority'
+                elif args[1] == 'ssl':
+                    objName = 'ssl'
+                elif args[1] == 'retry':
+                    objName = 'retransmit-attempts'
+                keypath = cc.Path(baseLdapUri+'servers/server={address}/'+modName+'ldap/config/'+objName, address=args[0])
+            else:   
+                keypath = cc.Path(baseLdapUri+'servers/server={address}', address=args[0])
             return aa.delete(keypath)     
     elif commandType == 'ldap_map_config':
         mapName = ""
