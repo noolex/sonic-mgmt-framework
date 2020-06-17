@@ -50,7 +50,7 @@ limitations under the License.
 <PTYPE
      name="RETRY_ATTEMPTS"
      method="integer"
-     pattern="0..99"
+     pattern="0..10"
      help=""
      />
 
