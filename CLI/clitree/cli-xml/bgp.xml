@@ -27,11 +27,25 @@ limitations under the License.
 <VIEW name="enable-view">
   <COMMAND name="show bgp ipv4" help="IPv4 information">
     <MACRO name="NEW_BGP_SHW_OPTIONS" arg="4,"></MACRO>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${__full_line}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${neighbor_type} ${__full_line}</ACTION>
   </COMMAND>
   <COMMAND name="show bgp ipv6" help="IPv6 information">
     <MACRO name="NEW_BGP_SHW_OPTIONS" arg="6,V6"></MACRO>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${__full_line}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${neighbor_type} ${__full_line}</ACTION>
+  </COMMAND>
+  <COMMAND name="show bgp all" help="BGP information">
+    <PARAM name="vrf" help="IP route information per vrf" optional = "true" mode="subcommand" ptype="SUBCOMMAND">
+      <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+    </PARAM>
+    <PARAM name="querytype" help="BGP all subcommands" ptype="SUBCOMMAND" mode="switch">
+      <PARAM name="peer-group" help="Detailed information on BGP peer groups" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="peer-group-name" help="Peer-group name" ptype="STRING" optional="true"/>
+      </PARAM>
+      <PARAM name="neighbors" help="Detailed information on TCP and BGP neighbor connections" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="neighbor-ip" help="Neighbor to display information about" ptype="IPV4V6_ADDR" optional="true"/>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${peer-group-name} ${neighbor-ip}</ACTION>
   </COMMAND>
   <COMMAND name="show ip bgp" help="BGP information">
     <PARAM name="bgp subcommands" help="BGP subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
