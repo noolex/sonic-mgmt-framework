@@ -48,7 +48,7 @@ limitations under the License.
     <COMMAND
            name="show running-configuration interface"
            help="Show interface info">
-        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-if,configure-lag,configure-vlan,configure-lo,configure-if-mgmt</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-if,configure-lag,configure-vlan,configure-vxlan,configure-lo,configure-if-mgmt</ACTION>
       </COMMAND>
     <COMMAND
            name="show running-configuration interface Eth"

@@ -29,8 +29,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp', 'copp-action' ]
-
+['configure', 'configure-vlan', 'configure-lo', 'configure-vxlan', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp', 'copp-action' ]
 
 render_filelst  = {}
 
