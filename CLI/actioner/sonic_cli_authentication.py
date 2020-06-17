@@ -61,7 +61,6 @@ def run(func, args):
           func,temp = ft.split(':')
 
 
-        print(func, temp, args)
         response = invoke_api(func, args)
         if response.ok():
             if response.content is not None:
