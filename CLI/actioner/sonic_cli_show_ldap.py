@@ -123,16 +123,28 @@ def get_sonic_ldap_maps():
         print("%Error: Get Failure")
         return
 
-    # print response.content
-
     if (not (MODNAME_MAPS) in response.content) \
-            or (len(response.content[MODNAME_MAPS]) == 0):
+            or (not 'map' in response.content[MODNAME_MAPS]) \
+            or (len(response.content[MODNAME_MAPS]['map']) == 0):
         return
 
     api_response['header'] = 'True'
     show_cli_output("show_ldap_maps.j2", api_response)
 
-    # show the maps Todo.
+    # show the maps
+    maps = { 'ATTRIBUTE' : {},
+             'OBJECTCLASS' : {},
+             'DEFAULT_ATTRIBUTE_VALUE' : {},
+             'OVERRIDE_ATTRIBUTE_VALUE' : {}
+           }
+    for entry in response.content[MODNAME_MAPS]['map']:
+        maps[entry['name']][entry['from']] = entry['config']['to']
+
+    # print maps
+
+    for mapname, map in maps.iteritems():
+        if len(map) != 0:
+            show_cli_output("show_ldap_maps.j2", map, name=mapname)
 
 def run(func, args):
     """
