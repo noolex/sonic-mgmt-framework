@@ -1,0 +1,10 @@
+{% if json_output -%}
+{% if json_output["header"] == 'True' -%}
+--------------------------------------------------------------------------------
+{{'%-16s'|format("HOST")}}{{'%-10s'|format("USE-TYPE")}}{{'%-10s'|format("PORT")}}{{'%-9s'|format("PRIORITY")}}{{'%-10s'|format("SSL")}}{{'%-6s'|format("RETRY")}}
+--------------------------------------------------------------------------------
+{% else %}
+{{'%-15s'|format(json_output["address"])}} {{'%-9s'|format(json_output["use_type"])}} {{'%-9s'|format(json_output["port"])}} {{'%-8s'|format(json_output["priority"])}} {{'%-9s'|format(json_output["ssl"])}} {{'%-5s'|format(json_output["retry"])}}
+{% endif %}
+{% endif %}
+
