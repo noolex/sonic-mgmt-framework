@@ -91,7 +91,7 @@ def invoke_api(func, args=[]):
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn/openconfig-bgp-evpn-ext:config'
             +'/autort',
                 vrf=args[0], af_name=args[1])
-        body = { "openconfig-bgp-evpn-ext:autort": args[2] }
+        body = { "openconfig-bgp-evpn-ext:autort": args[2].upper().replace('-','_') }
         return api.patch(keypath, body)
     elif func == 'patch_bgp_evpn_flooding':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
