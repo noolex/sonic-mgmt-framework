@@ -127,9 +127,9 @@ def get_vrf(intf):
 
     if intf.lower().startswith('e'):
         request = '/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST=' + intf + '/vrf_name'
-    elif intf.startswith('Vlan'):
+    elif intf.lower().startswith('vlan'):
         request = '/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST=' + intf + '/vrf_name'
-    elif intf.startswith('PortChannel'):
+    elif intf.lower().startswith('p'):
         request =  '/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST=' + intf + '/vrf_name'
     else:
         return 'default'
@@ -145,7 +145,13 @@ def get_vrf(intf):
         if response is  None:
             return 'default'
 
-        vrf = response.get('sonic-interface:vrf_name')
+        if intf.lower().startswith('e'):
+            vrf = response.get('sonic-interface:vrf_name')
+        if intf.lower().startswith('vlan'):
+            vrf = response.get('sonic-vlan-interface:vrf_name')
+        if intf.lower().startswith('p'):
+            vrf = response.get('sonic-portchannel-interface:vrf_name')
+
         if vrf is None or vrf == '':
             return 'default'
         return vrf
@@ -153,21 +159,6 @@ def get_vrf(intf):
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
-
-def process_response(response):
-        response = response.content
-        if response is None:
-                return None
-        try:
-            msg = response.get('ietf-restconf:errors').get('error')
-            if msg is None:
-                    return None
-            msg = "% Error: " + msg[0].get('error-message')
-            return msg
-        except Exception as e:
-            log.syslog(log.LOG_ERR, str(e))
-            msg = "% Error: Internal error"
-            return msg
 
 def process_args(args):
   global inputDict
@@ -191,16 +182,19 @@ def run(func, args):
     if keypath is None:
         print("% Error: Internal error")
         inputDict = {}
-        return 1
+        return -1
 
     if func.startswith("patch"):
         response = apiClient.patch(keypath, body)
     if func.startswith("del"):
         response = apiClient.delete(keypath)
-    if response is not None:
-        msg = process_response(response)
-        if msg is not None:
-            print(msg)
+
+    if response.ok():
+        response = response.content
+    else:
+        print(response.error_message())
+        inputDict = {}
+        return -1
 
     inputDict = {}
     return 0
