@@ -14,53 +14,51 @@
 {% if vars.update({'zebraNotif': "0"}) %}{% endif %}
 BFD Peers:
 
-{% if 'openconfig-bfd-ext:bfd-state' in json_output %}
-    {% set sessions_list = json_output['openconfig-bfd-ext:bfd-state'] %}
+{% if 'openconfig-bfd:bfd' in json_output %}
+    {% set sessions_list = json_output['openconfig-bfd:bfd'] %}
     {% for key in sessions_list %}
-        {% set singlehop = sessions_list[key] %}
-        {% for peer in singlehop %}
-            {% if "local-discriminator" in peer %}
-                {% if vars.update({'sessionId':peer['local-discriminator']}) %}{% endif %}
-            {% endif %}
-            {% if "local-address" in peer %}
-                {% if vars.update({'localAddress':peer['local-address']}) %}{% endif %}
-            {% endif %}
-            {% if "remote-address" in peer %}
-                {% if vars.update({'peerAddress':peer['remote-address']}) %}{% endif %}
-            {% endif %}
-            {% if "session-state" in peer %}
-                {% if vars.update({'status':peer['session-state']}) %}{% endif %}
-            {% endif %}
-            {% if "vrf" in peer %}
-                {% if vars.update({'vrf':peer['vrf']}) %}{% endif %}
-            {% endif %}
-            {% if "interface" in peer %}
-                {% if vars.update({'interface':peer['interface']}) %}{% endif %}
-            {% endif %}
-            {% if "async" in peer %}
-                {% if "transmitted-packets" in peer['async'] %}
-                    {% if vars.update({'controlPktOut':peer['async']['transmitted-packets']}) %}{% endif %}
+        {% set sessions = sessions_list[key] %}
+        {% for key2 in sessions %}
+            {% for peer in sessions[key2] %}
+                {% if "local-discriminator" in peer %}
+                    {% if vars.update({'sessionId':peer['local-discriminator']}) %}{% endif %}
                 {% endif %}
-                {% if "received-packets" in peer['async'] %}
-                    {% if vars.update({'controlPktIn':peer['async']['received-packets']}) %}{% endif %}
+                {% if "local-address" in peer %}
+                    {% if vars.update({'localAddress':peer['local-address']}) %}{% endif %}
                 {% endif %}
-                {% if "up-transitions" in peer['async'] %}
-                    {% if vars.update({'sessionUp':peer['async']['up-transitions']}) %}{% endif %}
+                {% if "remote-address" in peer %}
+                    {% if vars.update({'peerAddress':peer['remote-address']}) %}{% endif %}
                 {% endif %}
-            {% endif %}
-            {% if "echo" in peer %}
-                {% if "transmitted-packets" in peer['echo'] %}
-                    {% if vars.update({'echoPktOut':peer['echo']['transmitted-packets']}) %}{% endif %}
+                {% if "vrf" in peer %}
+                    {% if vars.update({'vrf':peer['vrf']}) %}{% endif %}
                 {% endif %}
-                {% if "received-packets" in peer['echo'] %}
-                    {% if vars.update({'echoPktIn':peer['echo']['received-packets']}) %}{% endif %}
+                {% if "interface" in peer %}
+                    {% if vars.update({'interface':peer['interface']}) %}{% endif %}
                 {% endif %}
-            {% endif %}
-            {% if "failure-transitions" in peer %}
-                {% if vars.update({'sessionDown':peer['failure-transitions']}) %}{% endif %}
-            {% endif %}        
+                {% if "async" in peer['state'] %}
+                    {% if "transmitted-packets" in peer['state']['async'] %}
+                        {% if vars.update({'controlPktOut':peer['state']['async']['transmitted-packets']}) %}{% endif %}
+                    {% endif %}
+                    {% if "received-packets" in peer['state']['async'] %}
+                        {% if vars.update({'controlPktIn':peer['state']['async']['received-packets']}) %}{% endif %}
+                    {% endif %}
+                    {% if "up-transitions" in peer['state']['async'] %}
+                        {% if vars.update({'sessionUp':peer['state']['async']['up-transitions']}) %}{% endif %}
+                    {% endif %}
+                {% endif %}
+                {% if "echo" in peer['state'] %}
+                    {% if "transmitted-packets" in peer['state']['echo'] %}
+                        {% if vars.update({'echoPktOut':peer['state']['echo']['transmitted-packets']}) %}{% endif %}
+                    {% endif %}
+                    {% if "received-packets" in peer['state']['echo'] %}
+                        {% if vars.update({'echoPktIn':peer['state']['echo']['received-packets']}) %}{% endif %}
+                    {% endif %}
+                {% endif %}
+                {% if "failure-transitions" in peer['state'] %}
+                    {% if vars.update({'sessionDown':peer['state']['failure-transitions']}) %}{% endif %}
+                {% endif %}        
 {% set peerkey = 'peer %s'|format(vars.peerAddress)%}
-{% if key == 'multi-hop-state'%}
+{% if key2 == 'multi-hop'%}
 {% set peerkey = '%s %s'|format(peerkey, 'multihop')%}
 {% endif %}
 {% if vars.localAddress != 'null'%}
@@ -80,7 +78,7 @@ BFD Peers:
 {{'%8sSession up events: %s'|format(' ', vars.sessionUp)}}
 {{'%8sSession down events: %s'|format(' ', vars.sessionDown)}}
 {{'%8sZebra notifications: %s'|format(' ', vars.zebraNotif)}}
-
+            {% endfor %}
         {% endfor %}
     {% endfor %}
 {% endif %}
