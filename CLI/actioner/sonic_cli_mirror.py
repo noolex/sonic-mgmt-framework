@@ -46,6 +46,9 @@ def invoke(func, args):
         if args.source is not '':
             entry["src_port"] = args.source
 
+        if args.source_lag is not '':
+            entry["src_port"] = args.source_lag
+
         if args.direction is not '':
             entry["direction"] = args.direction.upper()
 
@@ -162,6 +165,7 @@ def run(func, in_args=None):
         parser.add_argument('-session', '--session', type=str, help='mirror session name')
         parser.add_argument('-destination', '--destination', help='destination port')
         parser.add_argument('-source', '--source', type=str, help='mirror source port')
+        parser.add_argument('-source_lag', '--source_lag', type=str, help='mirror source LAG')
         parser.add_argument('-direction', '--direction', type=str, help='mirror direction')
         parser.add_argument('-dst_ip', '--dst_ip', help='ERSPAN destination ip address')
         parser.add_argument('-src_ip', '--src_ip', help='ERSPAN source ip address')

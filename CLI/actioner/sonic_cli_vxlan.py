@@ -156,8 +156,6 @@ def invoke(func, args):
 
     if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_qos_mode'):
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0][6:])
-        print func
-        print args
 
         dscp_val = 0
         if (len(args) == 3):

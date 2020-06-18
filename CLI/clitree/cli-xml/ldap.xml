@@ -204,14 +204,6 @@ limitations under the License.
            <PARAM name="nss-initgroups_val" ptype="STRING" help="Init groups ignore users"/>
 				</PARAM>
 
-        <PARAM name="source-ip" help="Configure global IP address of the LDAP client" ptype="SUBCOMMAND" mode="subcommand">
-           <PARAM name="source_ip_val" ptype="IPV4V6_ADDR" help="LDAP Client IP Address"/>
-				</PARAM>
-
-        <PARAM name="vrf" help="Configure global Vrf name" ptype="SUBCOMMAND" mode="subcommand">
-           <PARAM name="vrf_val" ptype="STRING" help="Vrf name"/>
-				</PARAM>
-				
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_global_config ${__params}</ACTION>
     </COMMAND>
@@ -366,10 +358,6 @@ limitations under the License.
 				<PARAM name="bind-timelimit" help="Configure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)"/>
 				</PARAM>
-	    
-				<PARAM name="idle-timelimit" help="Configure NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (Default: 0 s)"/>
-				</PARAM>
 	
 				<PARAM name="retry" help="Configure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)"/>
@@ -377,10 +365,6 @@ limitations under the License.
 	
 				<PARAM name="port" help="Configure server port" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)"/>
-				</PARAM>
-				
-        <PARAM name="scope" help="Configure search scope" ptype="SUBCOMMAND" mode="subcommand">
-           <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (Default: sub)"/>
 				</PARAM>
 
         <PARAM name="version" help="Configure version" ptype="SUBCOMMAND" mode="subcommand">
@@ -445,8 +429,8 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ldap-server host" help="Configure host name for a LDAP server">
-        <PARAM name="host_val" help="IPV4|IPV6 address" ptype="IPV4V6_ADDR"/>
+    <COMMAND name="ldap-server host" help="Configure host name for a LDAP server">    
+        <PARAM name="host_val" help="Hostname or IP address of LDAP server" ptype="STRING"/>
 				<PARAM name="use-type" help="Configure server type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
 					<PARAM name="use_type_val" ptype="LDAP_USE_TYPE" help="Server type (Default: all)"/>
 				</PARAM>
@@ -458,6 +442,9 @@ limitations under the License.
 				</PARAM>
 				<PARAM name="ssl" help="Configure TLS" ptype="SUBCOMMAND" mode="subcommand" optional="true">
 					<PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS (Default: off)"/>
+				</PARAM>					
+				<PARAM name="retry" help="Configure Retry" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)"/>
 				</PARAM>					
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_config ${__params}</ACTION>
     </COMMAND>
@@ -565,13 +552,6 @@ limitations under the License.
 
         <PARAM name="nss-initgroups-ignoreusers" help="Unconfigure global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
-
-        <PARAM name="source-ip" help="Unconfigure global IP address of the LDAP client" ptype="SUBCOMMAND" mode="subcommand">
-				</PARAM>
-
-        <PARAM name="vrf" help="Unconfigure global Vrf name" ptype="SUBCOMMAND" mode="subcommand">
-				</PARAM>
-				
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_global_config ${__params}</ACTION>
     </COMMAND>
@@ -690,17 +670,11 @@ limitations under the License.
 
 				<PARAM name="bind-timelimit" help="Unconfigure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
-	    
-				<PARAM name="idle-timelimit" help="Unconfigure NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
-				</PARAM>
 	
 				<PARAM name="retry" help="Unconfigure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
 				<PARAM name="port" help="Unconfigure server port" ptype="SUBCOMMAND" mode="subcommand">
-				</PARAM>
-				
-        <PARAM name="scope" help="Unconfigure search scope" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
         <PARAM name="version" help="Unconfigure version" ptype="SUBCOMMAND" mode="subcommand">
@@ -726,7 +700,7 @@ limitations under the License.
 		</COMMAND>
 					
     <COMMAND name="no ldap-server host" help="Unconfigure host name for a LDAP server">
-        <PARAM name="host_val" help="IPV4|IPV6 address" ptype="IPV4V6_ADDR"/>
+        <PARAM name="host_val" help="Hostname or IP address of LDAP server" ptype="STRING"/>
 	        <PARAM name="ldap-map-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
 						<PARAM name="use-type" help="Unconfigure server type" ptype="SUBCOMMAND" mode="subcommand">
 						</PARAM>
@@ -735,6 +709,8 @@ limitations under the License.
 						<PARAM name="priority" help="Unconfigure priority" ptype="SUBCOMMAND" mode="subcommand">
 						</PARAM>
 						<PARAM name="ssl" help="Unconfigure TLS" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+						<PARAM name="retry" help="Unconfigure Retry" ptype="SUBCOMMAND" mode="subcommand" optional="true">
 						</PARAM>
 				</PARAM>					
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_server_config ${__params}</ACTION>
