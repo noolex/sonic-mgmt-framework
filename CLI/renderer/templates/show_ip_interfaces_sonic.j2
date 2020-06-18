@@ -1,3 +1,9 @@
+{#
+INTF_TABLE for fetching IP address associated with phy, loopback, vlan and port-ch.
+MGMT_INTF_TABLE for fetching IP address associated with mgmt-intf.
+And respective tables for different if-types for fetching admin/oper status like VLAN_TABLE, PORT_TABLE...etc
+#}
+
 {% set vars = {'name': ""} %}
 {% set vars = {'admin_state': ""} %}
 {% set vars = {'oper_state': "down"} %}
@@ -5,7 +11,7 @@
 {% set vars = {'vrf': ""} %}
 {% set vars = {'flags': ""} %}
 {% set vars = {'ipv4_src_pfx': ""} %}
-{% if json_output %}
+{% if (("sonic-interface:INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in json_output)) %}
 Flags: U-Unnumbered interface
 -----------------------------------------------------------------------------------------------
 {{'%-20s'|format("Interface")}}{{'%-35s'|format("IP address/mask")}}{{'%-15s'|format("VRF")}}{{'%-15s'|format("Admin/Oper")}}{{'%-15s'|format("Flags")}}
