@@ -20,9 +20,7 @@ from show_config_if_cmd import *
 from show_config_interface import *
 from show_config_bgp import *
 from show_config_table_sort import *
-from show_config_authentication import *
 from show_config_ptp import *
-from show_config_dns import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
