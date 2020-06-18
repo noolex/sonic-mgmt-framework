@@ -51,7 +51,8 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_network_transport'   : show_ptp_network_transport,
                   'ptp_master_table'        : show_ptp_master_table,
                   'sflow_source_if'         : show_sflow_source_if,
-                  'dns_server_source_if'    : show_dns_source_if
+                  'dns_server_source_if'    : show_dns_source_if,
+                  'mac_source_if'           : show_mac_source_if
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
