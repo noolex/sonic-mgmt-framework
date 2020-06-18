@@ -7,6 +7,7 @@ import gc
 import select
 from rpipe_utils import pipestr
 import datetime
+import json_tools
 
 # Capture our current directory
 #THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -146,6 +147,7 @@ def show_cli_output(template_file, response, **kwargs):
         return datetime.datetime.fromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S')
 
     j2_env.globals.update(datetimeformat=datetimeformat)
+    j2_env.globals.update(json_tools=json_tools)
 
     full_cmd = os.getenv('USER_COMMAND', None)
     if full_cmd is not None:
