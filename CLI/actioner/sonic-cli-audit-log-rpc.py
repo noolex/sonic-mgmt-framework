@@ -26,9 +26,7 @@ def run(func, args):
         keypath = cc.Path('/restconf/operations/sonic-auditlog:clear-auditlog')
         body = { "sonic-auditlog:input": "" }
         response = aa.post(keypath, body)
-        if response.ok():
-            print("%Success: audit log is cleared.")
-        else:
+        if not response.ok():
             print "%Error: Transaction Failure "
             print(response.error_message())
             print(response.status_code)
