@@ -27,13 +27,45 @@ from scripts.render_cli import show_cli_output
 import urllib3
 urllib3.disable_warnings()
 
+
+def do_show_aaa(content):
+
+    # show aaa authentication already done
+
+    # show aaa authorization
+    if ( 'openconfig-system:aaa' in content ) \
+       and ( 'authorization' in content['openconfig-system:aaa'] ) \
+       and ( 'openconfig-aaa-ext:login' in \
+           content['openconfig-system:aaa']['authorization'] ) \
+       and ( 'config' in \
+           content['openconfig-system:aaa']['authorization']\
+               ['openconfig-aaa-ext:login'] ) \
+       and ( 'authorization-method' in \
+           content['openconfig-system:aaa']['authorization']\
+               ['openconfig-aaa-ext:login']['config'] ):
+       show_cli_output( 'show_aaa_authorization.j2', \
+           content['openconfig-system:aaa']['authorization']\
+               ['openconfig-aaa-ext:login']['config'] )
+
+    # show aaa name-service
+    if ( 'openconfig-system:aaa' in content ) \
+       and ( 'openconfig-aaa-ext:name-service' in \
+           content['openconfig-system:aaa'] ) \
+       and ( 'config' in content['openconfig-system:aaa']\
+           ['openconfig-aaa-ext:name-service'] ) \
+       and ( len(content['openconfig-system:aaa']\
+           ['openconfig-aaa-ext:name-service']['config'] ) != 0):
+       show_cli_output( 'show_aaa_name_service.j2', \
+           content['openconfig-system:aaa']['openconfig-aaa-ext:name-service']\
+           ['config'] )
+
 def invoke_api(func, args):
     body = None
     api = cc.ApiClient()
 
     # Set/Get aaa configuration
-    body = { "openconfig-system-ext:failthrough": 'False', "openconfig-system:authentication-method": ['local'] }
     failthrough='False'
+    body = { "openconfig-system-ext:failthrough": failthrough, "openconfig-system:authentication-method": ['local'] }
     authmethod=[]
 
     # authentication-method is a leaf-list. So patch is not supported. A put opeartion
@@ -51,7 +83,9 @@ def invoke_api(func, args):
                 body["openconfig-system:authentication-method"] = api_response['openconfig-system:config']['authentication-method']
     if func == 'put_openconfig_system_ext_system_aaa_authentication_config_failthrough':
        path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config/openconfig-system-ext:failthrough')
-       body["openconfig-system-ext:failthrough"] = args[0]
+       if args[0] == 'True':
+           failthrough = 'True'
+       body["openconfig-system-ext:failthrough"] = failthrough
        return api.put(path, body)
     elif func == 'put_openconfig_system_system_aaa_authentication_config_authentication_method':
        path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config/authentication-method')
@@ -69,7 +103,31 @@ def invoke_api(func, args):
            pass
        body["openconfig-system:authentication-method"] = authmethod
        return api.put(path, body)
+    elif func == 'put_openconfig_system_system_aaa_authentication_config_login':
+       # Industry Standard CLI
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config/authentication-method')
+       if args[0] == "group":
+           authmethod.append(args[1])
+       else:
+           authmethod.append(args[0])
+
+       if len(args) == 3:
+           authmethod.append(args[2])
+
+       body["openconfig-system:authentication-method"] = authmethod
+       return api.put(path, body)
     elif func == 'get_openconfig_system_system_aaa_authentication_config':
+       return get_response
+       # The above is the earlier style of "show aaa"
+    elif func == 'get_openconfig_system_system_aaa':
+       if get_response.ok() and ( get_response.content is not None ) :
+            show_cli_output(args[0], get_response.content)
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa')
+       get_response = api.get(path)
+       if not get_response.ok():
+           print("%Error: Invalid Response")
+           return
+       do_show_aaa(get_response.content)
        return get_response
     else:
        body = {}
