@@ -139,7 +139,7 @@ limitations under the License.
              <PARAM 
                  name="Eth" 
                  help="Physical Interface" 
-                 test="${SONIC_CLI_IFACE_MODE} = alias" 
+                 test="${SONIC_CLI_IFACE_MODE} = standard" 
                  ptype="SUBCOMMAND" 
                  mode="subcommand"
                  hidden="true" 
