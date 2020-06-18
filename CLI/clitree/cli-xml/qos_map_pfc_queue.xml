@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+  <VIEW name="configure-view">
+    <!-- maps -->
+    <COMMAND
+        name="qos map pfc-priority-queue"
+        help="QoS PFC-Priority-to-Queue Map Configuration"
+        mode="subcommand"
+        ptype="SUBCOMMAND"
+        view="configure-pfc-priority-queue-map-view"
+        viewid="map_name=${name}"
+        >
+        <PARAM
+           name="name"
+           help="Name of the map"
+           ptype="STRING_32"
+           >
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=PATCH
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${name}
+            body={"openconfig-qos-maps-ext:pfc-priority-queue-map": [{"name": "${name}"}]}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command creates map to associates set of PFC Priorities to Queues. 
+            This map is used to classify a queue for data packets on the 
+            basis of the received packets DOT1P field.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to create PFC Priority to Queue entires map.
+          </USAGE>
+          <EXAMPLE summary="The following command creates DOT1P to queue entrie map.">
+            sonic# configure terminal
+            sonic(config)#qos map pfc-priority-queue pfc-priority-queue-map
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <!-- no maps -->
+    <COMMAND name="no qos map pfc-priority-queue" help="Unconfigure a pfc-priority-queue map">
+      <PARAM name="name" help="Name of the map" ptype="STRING_32"> </PARAM>
+        <ACTION builtin="clish_restcl"> 
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${name}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command delete PFC Priority to queue entires map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to delete PFC Priority to queue entries map.
+          </USAGE>
+          <EXAMPLE summary="The following command delete PFC Priority to queue entries map">
+            sonic# configure terminal
+            sonic(config)# no qos map pfc-priority-queue pfc-priority-queue-map
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+  </VIEW>
+
+  <VIEW
+    name="configure-pfc-priority-queue-map-view"
+    prompt="${SYSTEM_NAME}(conf-pfc-priority-queue-map-${map_name})# "
+    depth="2"
+    >
+    <!-- Inheritance -->
+    <NAMESPACE
+        ref="configure-view"
+        help="false"
+        completion="false"
+        />
+
+     <COMMAND name="pfc-priority" help="PFC Priority value" mode="subcommand" ptype="SUBCOMMAND" >
+        <PARAM name="dot1p" help="PFC Priority value (0-7)" ptype="RANGE_0_7" >
+            <PARAM name="queue" help="Queue" mode="subcommand" ptype="SUBCOMMAND" >
+                <PARAM name="qid" help="Queue value" ptype="RANGE_0_7" >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=PATCH
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${map_name}/pfc-priority-queue-map-entries/pfc-priority-queue-map-entry=${dot1p}
+            body={"openconfig-qos-maps-ext:pfc-priority-queue-map-entry": [{"dot1p":${dot1p}, "config": {"output-queue-index": ${qid}}}]}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command to add PFC Priority to queue entry in map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to add entry to map PFC Priority to queue.
+          </USAGE>
+          <EXAMPLE summary="The following command add entry to map PFC Priority to queue">
+            sonic# configure terminal
+            sonic(config)# dot1p 1 queue 0
+            sonic(config)# dot1p 2 queue 0
+            sonic(config)# dot1p 3 queue 1
+          </EXAMPLE>
+        </DOCGEN>
+
+      </COMMAND>
+
+      <!-- no dot1p-->
+      <COMMAND name="no pfc-priority" help="Unconfigure a mapping">
+        <PARAM name="dot1p" help="PFC Priority value (0-7)" ptype="RANGE_0_7" >
+        </PARAM>
+        <ACTION builtin="clish_restcl">
+            oper=DELETE
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${map_name}/pfc-priority-queue-map-entries/pfc-priority-queue-map-entry=${dot1p}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command to delete PFC Priority to queue entry in map.
+          </DESCRIPTION>
+          <USAGE>
+             Use this command to delete entry to map PFC Priority to queue.
+          </USAGE>
+          <EXAMPLE summary="The following command delete entry to map PFC Priority to queue">
+            sonic# configure terminal
+            sonic(config)# no dot1p 1
+            sonic(config)# no dot1p 2
+            sonic(config)# no dot1p 3
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+  </VIEW>
+
+
+  <VIEW name="enable-view">
+
+    <!--show pfc-priority-queue-map -->
+    <COMMAND name="show qos map pfc-priority-queue" help="Show configured pfc-priority-queue-map">
+      <PARAM name="name" help="Name of the pfc-priority-queue-map" ptype="STRING_32" optional="true"> </PARAM>
+      <ACTION>
+          if test "${name}" = "" ; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_qos_map.py get_openconfig_qos_maps_ext_qos_pfc_priority_maps show_qos_map_pfc_priority.j2&#xA;
+          else&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_qos_map.py get_openconfig_qos_maps_ext_qos_pfc_priority_maps_pfc_priority_map ${name} show_qos_map_pfc_priority.j2&#xA;
+          fi&#xA;
+      </ACTION>
+    </COMMAND>
+  </VIEW>
+
+ </CLISH_MODULE>

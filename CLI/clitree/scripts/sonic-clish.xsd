@@ -40,7 +40,7 @@ limitations under the License.
 
 <xs:simpleType name="stringType">
 <xs:restriction base="xs:string">
-<xs:minLength value="1"/>
+<xs:minLength value="0"/>
 </xs:restriction>
 </xs:simpleType>
 

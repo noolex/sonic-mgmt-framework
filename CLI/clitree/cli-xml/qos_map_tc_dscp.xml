@@ -26,7 +26,7 @@ limitations under the License.
   <VIEW name="configure-view">
     <!-- maps -->
     <COMMAND
-        name="tc-dscp-map"
+        name="qos map tc-dscp"
         help="QoS TC-to-DSCP Map Configuration"
         mode="subcommand"
         ptype="SUBCOMMAND"
@@ -56,13 +56,13 @@ limitations under the License.
           </USAGE>
           <EXAMPLE summary="The following command creates Traffic class to DSCP entries map.">
             sonic# configure terminal
-            sonic(config)# tc-dscp-map tc_dscp
+            sonic(config)# qos map tc-dscp tc_dscp
           </EXAMPLE>
         </DOCGEN>
     </COMMAND>
 
     <!-- no maps -->
-    <COMMAND name="no tc-dscp-map" help="Unconfigure a tc-dscp map">
+    <COMMAND name="no qos map tc-dscp" help="Unconfigure a tc-dscp map">
       <PARAM name="name" help="Name of the map" ptype="STRING_32"> </PARAM>
         <ACTION builtin="clish_restcl"> 
             oper=DELETE
@@ -77,7 +77,7 @@ limitations under the License.
           </USAGE>
           <EXAMPLE summary="The following command deletes Traffic class to DSCP entries map">
             sonic# configure terminal
-            sonic(config)# no tc-dscp-map tc_dscp
+            sonic(config)# no qos map tc-dscp 
           </EXAMPLE>
         </DOCGEN>
     </COMMAND>
@@ -116,7 +116,7 @@ limitations under the License.
           </USAGE>
           <EXAMPLE summary="The following command add entry to Traffic class to DSCP map">
             sonic# configure terminal
-            sonic(config)# tc-dscp-map tc_dscp
+            sonic(config)# qos map tc-dscp tc_dscp
             sonic(conf-tc-dscp-map-tc_dscp)# traffic-class 0 dscp 0
             sonic(conf-tc-dscp-map-tc_dscp)# traffic-class 1 dscp 10
             sonic(conf-tc-dscp-map-tc_dscp)# traffic-class 3 dscp 29
@@ -142,7 +142,7 @@ limitations under the License.
           </USAGE>
           <EXAMPLE summary="The following command deletes entry from Traffic class to DSCP map">
             sonic# configure terminal
-            sonic(config)# tc-dscp-map tc_dscp
+            sonic(config)# qos map tc-dscp tc_dscp
             sonic(conf-tc-dscp-map-tc_dscp)# no traffic-class 0
             sonic(conf-tc-dscp-map-tc_dscp)# no traffic-class 1
             sonic(conf-tc-dscp-map-tc_dscp)# no traffic-class 3
@@ -155,7 +155,7 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <!--show dscp-map -->
-    <COMMAND name="show tc-dscp-map" help="Show configured tc-dscp-map">
+    <COMMAND name="show qos map tc-dscp" help="Show configured tc-dscp-map">
       <PARAM name="name" help="Name of the tc-dscp-map" ptype="STRING_32" optional="true"> </PARAM>
       <ACTION>
           if test "${name}" = "" ; then&#xA;

@@ -111,7 +111,7 @@ klish_xml_dir = "..\\cli-xml"
 
 #FILE_LIST = ['interface.xml', 'udld.xml', 'storm_control.xml', 'configure_mode.xml']
 
-FILE_LIST = ['udld.xml', 'tacacs.xml', 'configure_mode.xml']
+FILE_LIST = ['udld.xml', 'tacacs.xml', 'sflow.xml', 'configure_mode.xml']
 
 FILE_TREE_MAP = {}
 PARENT_NODE_SEP_CLI_CHILD_MAP = {}
