@@ -21,6 +21,7 @@ from show_config_interface import *
 from show_config_bgp import *
 from show_config_table_sort import *
 from show_config_ptp import *
+from show_config_routemap import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -28,7 +29,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp']
 
 
 render_filelst  = {}
@@ -52,6 +53,11 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_master_table'        : show_ptp_master_table,
                   'sflow_source_if'         : show_sflow_source_if,
                   'dns_server_source_if'    : show_dns_source_if,
+                  'routemap_set_community'  : show_routemap_setcommunity,
+                  'routemap_set_extcommunity' : show_routemap_setextcommunity,
+                  'routemap_match_interface'  : show_routemap_matchintf,
+                  'routemap_match_peer'     : show_routemap_matchpeer,
+                  'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if
  }
 
