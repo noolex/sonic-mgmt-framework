@@ -522,6 +522,9 @@ def run(func, args):
             func != 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list'):
           config_response_handler(api_response,func,args)
 
+        if api_response.errors():
+          return 1
+
     except:
             # system/network error
             print("Error: Transaction Failure")
