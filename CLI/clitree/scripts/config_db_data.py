@@ -21,6 +21,7 @@ VIEW_PRIORITY_FILE_MAP = { "configure-if-view" : ['interface.xml', 'udld.xml', '
                            "configure-lag-view": ['interface.xml'],
                            "configure-vlan-view": ['interface.xml'],
                            "configure-if-mgmt-view": ['interface.xml'],
-                           "configure-lo-view": ['interface.xml']
+                           "configure-lo-view": ['interface.xml'],
+                           "configure-vxlan-view": ['vxlan.xml']
                          }
 
