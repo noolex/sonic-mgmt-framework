@@ -22,6 +22,8 @@ limitations under the License.
     xmlns:xi="http://www.w3.org/2001/XInclude"
     xsi:schemaLocation="https://raw.githubusercontent.com/project-arlo/sonic-mgmt-framework/master/src/CLI/clitree/scripts/sonic-clish.xsd">
 
+<PTYPE name="LST_TIMEOUT" method="integer" pattern="1..1800" help=""/>
+
 <VIEW name="configure-view">
     <COMMAND name="link" help="Create link state tracking group" />
     <COMMAND name="link state" help="Create link state tracking group" />
@@ -52,8 +54,8 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_description ${group}</ACTION>
     </COMMAND>
 
-    <COMMAND name="timeout" help="Timeout value (1-999)">
-        <PARAM name="grp-tmout" help="Timeout" ptype="UINT" />
+    <COMMAND name="timeout" help="Timeout value (1-1800)">
+        <PARAM name="grp-tmout" help="Timeout" ptype="LST_TIMEOUT" />
         <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_timeout ${group} ${grp-tmout}</ACTION>
     </COMMAND>
     <COMMAND name="no timeout" help="Rest timeout value">

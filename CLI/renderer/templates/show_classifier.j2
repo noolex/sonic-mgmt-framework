@@ -24,7 +24,7 @@
         {% endif %}
     {% endif %}
     {% if "ETHER_TYPE" in class_data %}
-        {{- '    ethertype' }} {{ class_data["ETHER_TYPE"] }}
+        {{- '    ethertype' }} {{ ethertype_to_user_fmt(class_data["ETHER_TYPE"]) }}
     {% endif %}
     {% if "SRC_MAC" in class_data %}
         {{- '    src-mac' }} {{ mac_addr_to_user_fmt(class_data["SRC_MAC"]) }}
@@ -36,7 +36,7 @@
         {{- '    vlan' }} {{ class_data["VLAN"] }}
     {% endif %}
     {% if "PCP" in class_data %}
-        {{- '    pcp' }} {{ class_data["PCP"] }}
+        {{- '    pcp' }} {{ pcp_to_user_fmt(class_data["PCP"]) }}
     {% endif %}
     {% if "DEI" in class_data %}
         {{- '    dei' }} {{ class_data["DEI"] }}
@@ -57,7 +57,7 @@
         {{- '    dst-ipv6' }} {{ ip_addr_to_user_fmt(class_data["DST_IPV6"], False) }}
     {% endif %}
     {% if "DSCP" in class_data %}
-        {{- '    dscp' }} {{ class_data["DSCP"] }}
+        {{- '    dscp' }} {{ dscp_to_user_fmt(class_data["DSCP"]) }}
     {% endif %}
     {% if "L4_SRC_PORT" in class_data %}
         {{- '    src-port' }} {{ class_data["L4_SRC_PORT"] }}
