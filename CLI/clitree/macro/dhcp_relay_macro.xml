@@ -21,7 +21,7 @@ limitations under the License.
            name="ip dhcp-relay"
            help="Add DHCP relay on an interface" >
            <PARAM help="IP address" name="ipaddr1" optional="false" ptype="IP_ADDR">
-               <PARAM help="Configure the VRF in which the server resides" name="vrf" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+               <PARAM help="Configure the VRF in which the server resides" name="vrf-name" optional="true" mode="subcommand" ptype="SUBCOMMAND">
                    <PARAM help="vrf name" name="vrfName" optional="false" ptype="STRING_32"/>
                </PARAM>
                <PARAM help="IP address" name="ipaddr2" optional="true" ptype="IP_ADDR">
@@ -140,7 +140,7 @@ limitations under the License.
            name="ipv6 dhcp-relay"
            help="Add DHCP relay on an interface" >
            <PARAM help="IP address" name="ipaddr1" optional="false" ptype="IPV6_ADDR">
-               <PARAM help="Configure the VRF in which the server resides" name="vrf" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+               <PARAM help="Configure the VRF in which the server resides" name="vrf-name" optional="true" mode="subcommand" ptype="SUBCOMMAND">
                  <PARAM help="vrf name" name="vrfName" optional="false" ptype="STRING_32"/>
                </PARAM>
              <PARAM help="IP address" name="ipaddr2" optional="true" ptype="IPV6_ADDR">
