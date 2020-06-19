@@ -865,6 +865,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="MCLAG_DELAY_RESTORE_TIME_RANGE"
+        method="integer"
+        pattern="1..3600"
+        help="Delay restore time in seconds"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RD"
         pattern="(&IPV4_NN;|&ASN_NN;)"
         help="A.B.C.D:NN or ASN:NN"
