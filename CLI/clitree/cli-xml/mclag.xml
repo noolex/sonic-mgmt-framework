@@ -107,6 +107,37 @@
     <COMMAND name="no session-timeout" help="unset mclag Session Timeout">
       <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_session_timeout ${id} </ACTION>
     </COMMAND>
+    <COMMAND
+      name="delay-restore" help="Set mclag delay restore time" >
+      <PARAM name="DL" help="Delay restore time in seconds" ptype="MCLAG_DELAY_RESTORE_TIME_RANGE"> </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_delay_restore ${id} ${DL} </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configure MCLAG delay restore time in seconds
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to change the default MCLAG delay restore time 
+        </USAGE>
+        <EXAMPLE summary="Set MCLAG delay restore time to 180 seconds">
+          sonic-cli(config)# mclag delay-restore 180
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND
+      name="no delay-restore" help="Revert back to default MCLAG delay restore time" >
+      <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_delay_restore ${id} </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Delete MCLAG delay restore configuration
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to delete MCLAG delay restore time previously configured 
+        </USAGE>
+        <EXAMPLE summary="Delete MCLAG delay restore configuration">
+          sonic-cli(config)# no mclag delay-restore 180
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
   </VIEW>
 
   <!--MODE : show commands view -->
