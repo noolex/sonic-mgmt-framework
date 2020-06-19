@@ -25,11 +25,13 @@ limitations under the License.
         help="Configure forwarding table"
         mode="subcommand"
         ptype="SUBCOMMAND"
+        command_tables="arg3"
         >
         <PARAM
           name="vrf-name"
           help="Name of VRF"
           ptype="STRING_15"
+          dbpath="arg4"
           >
         </PARAM>
         <ACTION

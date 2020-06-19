@@ -19,7 +19,9 @@ limitations under the License.
     <MACRODEF name="DHCP-RELAY-CONFIG-OPTIONS">
        <COMMAND
            name="ip dhcp-relay"
-           help="Add DHCP relay on an interface" >
+           help="Add DHCP relay on an interface"
+           command_tables="arg2"
+           render_command_cb="arg3" >
            <PARAM help="IP address" name="ipaddr1" optional="false" ptype="IP_ADDR">
                <PARAM help="Configure the VRF in which the server resides" name="vrf" optional="true" mode="subcommand" ptype="SUBCOMMAND">
                  <PARAM help="vrf name" name="vrfName" optional="false" ptype="STRING_32"/>
@@ -35,30 +37,37 @@ limitations under the License.
        </COMMAND>
        <COMMAND
            name="ip dhcp-relay src-intf"
-           help="Add DHCP relay source interface" >
-            <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32">  </PARAM>
+           help="Add DHCP relay source interface"
+           command_tables="arg2" >
+            <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32" dbpath="arg4/dhcp_relay_src_intf">  </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
         </COMMAND>
         <COMMAND
             name="ip dhcp-relay link-select"
-            help="Enable link selection suboption" >
+            help="Enable link selection suboption"
+            command_tables="arg2"
+            dbpath="arg4/dhcp_relay_link_select=enable" >
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
          </COMMAND>
          <COMMAND
              name="ip dhcp-relay max-hop-count"
-             help="Set max hop count for DHCP Relay packets" >
-              <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="RANGE_16"> </PARAM>
+             help="Set max hop count for DHCP Relay packets"
+             command_tables="arg2" >
+              <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="RANGE_16" dbpath="arg4/dhcp_relay_max_hop_count"> </PARAM>
               <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${hop-count} ${__full_line}</ACTION>
           </COMMAND>
           <COMMAND
               name="ip dhcp-relay vrf-select"
-              help="Enable VRF selection suboption" >
+              help="Enable VRF selection suboption"
+              command_tables="arg2"
+              dbpath="arg4/dhcp_relay_vrf_select=enable" >
              <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
            </COMMAND>
            <COMMAND
                name="ip dhcp-relay policy-action"
-               help="Configure the policy for handling of DHCPv4 relay options" >
-                <PARAM help="policy action [discard|append|replace]" name="policyAction" optional="false" ptype="STRING_8">  </PARAM>
+               help="Configure the policy for handling of DHCPv4 relay options"
+               command_tables="arg2" >
+                <PARAM help="policy action [discard|append|replace]" name="policyAction" optional="false" ptype="STRING_8" dbpath="arg4/dhcp_relay_policy_action">  </PARAM>
                 <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${policy-action} ${__full_line}</ACTION>
             </COMMAND>
     </MACRODEF>
@@ -66,7 +75,9 @@ limitations under the License.
     <MACRODEF name="DHCPV6-RELAY-CONFIG-OPTIONS">
        <COMMAND
            name="ipv6 dhcp-relay"
-           help="Add DHCP relay on an interface" >
+           help="Add DHCP relay on an interface"
+           command_tables="arg2"
+           render_command_cb="arg3" >
            <PARAM help="IP address" name="ipaddr1" optional="false" ptype="IPV6_ADDR">
                <PARAM help="Configure the VRF in which the server resides" name="vrf" optional="true" mode="subcommand" ptype="SUBCOMMAND">
                  <PARAM help="vrf name" name="vrfName" optional="false" ptype="STRING_32"/>
@@ -81,19 +92,24 @@ limitations under the License.
        </COMMAND>
        <COMMAND
            name="ipv6 dhcp-relay src-intf"
-           help="Add DHCPv6 relay source interface" >
-            <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32">  </PARAM>
+           help="Add DHCPv6 relay source interface"
+           command_tables="arg2" >
+            <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32" dbpath="arg4/dhcpv6_relay_src_intf">  </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
         </COMMAND>
          <COMMAND
              name="ipv6 dhcp-relay max-hop-count"
-             help="Set max hop count for DHCPv6 Relay packets" >
-              <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="RANGE_16"> </PARAM>
+             help="Set max hop count for DHCPv6 Relay packets"
+             command_tables="arg2"
+              >
+              <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="RANGE_16" dbpath="arg4/dhcpv6_relay_max_hop_count"> </PARAM>
               <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${hop-count} ${__full_line}</ACTION>
           </COMMAND>
           <COMMAND
               name="ipv6 dhcp-relay vrf-select"
-              help="Enable VRF selection suboption" >
+              help="Enable VRF selection suboption"
+              command_tables="arg2"
+              dbpath="arg4/dhcpv6_relay_vrf_select=enable" >
              <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
            </COMMAND>
     </MACRODEF>
