@@ -79,7 +79,7 @@ limitations under the License.
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IPV6_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
@@ -107,7 +107,7 @@ limitations under the License.
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IPV6_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
@@ -321,13 +321,13 @@ limitations under the License.
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IPV6_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
             ptype="MAC_ADDR" />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${vlan_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -349,13 +349,13 @@ limitations under the License.
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IPV6_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
             ptype="MAC_ADDR" />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${vlan_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
