@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<CLISH_MODULE
+      xmlns="http://www.dellemc.com/sonic/XMLSchema"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema 
+      http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+      >
+
+
+    <PTYPE
+        name="CONTAINER_NAME"
+        pattern="[^|]+"
+        help="container_name"
+        />
+
+    <PTYPE
+        name="BOOL_SELECT"
+        method="select"
+        pattern="yes(yes) no(no)"
+        help=""
+        />
+
+
+  <VIEW name="enable-view">
+    <COMMAND
+         name="show tpcm"
+         help="Show TPC image information"
+         >
+        <PARAM name="list"
+               help=" List the docker image"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+         </PARAM>
+       <ACTION
+           builtin="clish_pyobj">sonic_cli_tpcm tpcm_list tpcm.j2
+       </ACTION>
+    </COMMAND>
+
+    <COMMAND
+         name="tpcm"
+         help="SONiC image installation manager"
+         >
+    </COMMAND> 
+
+    <COMMAND name="tpcm install"
+             help="Install docker image from local file, dcoker..."
+             mode="subcommand"
+             ptype="SUBCOMMAND">
+             <PARAM name="name" help="container name" ptype="SUBCOMMAND" mode="subcommand" >
+                   <PARAM name="container_name" help="String for container name" ptype="STRING">
+                   </PARAM>
+             </PARAM>
+              <PARAM name="install_method" help="" ptype="SUBCOMMAND" mode="switch" >
+                   <PARAM name="url" help="Install TPC docker from HTTP/HTTPS server" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="url_path" help="URL(http:// or https://) to image" default="null" ptype="STRING">
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="image" help="Install TPC docker from existing docker image" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="image_path" help="for image name or image id"  default="null" ptype="STRING">
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="pull" help="Install TPC docker from docker registry hub" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="pull_path" help="for Image tag name" default="null" ptype="STRING">
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="file" help="Install TPC docker from local file" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="file_path" help="Path to image on local File System" default="null" ptype="STRING">
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="scp" help="Install TPC docker from SCP server" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="scp_host" help="Hostname or IP address of SCP server" default="null" ptype="STRING">
+                         </PARAM>
+                         <PARAM name="username" help="String for username" ptype="SUBCOMMAND" mode="subcommand" >
+                              <PARAM name="scp_username" help="for username" default="null" ptype="STRING">
+                              </PARAM>
+                         </PARAM>
+                         <PARAM name="password" help="String for password" ptype="SUBCOMMAND" mode="subcommand" >
+                               <PARAM name="scp_password" help="for password" default="null" ptype="STRING">
+                               </PARAM>
+                         </PARAM>
+                         <PARAM name="filename" help="String for image path" ptype="SUBCOMMAND" mode="subcommand" >
+                               <PARAM name="scp_filename" help="for image path" default="null" ptype="STRING">
+                               </PARAM>
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="sftp" help="Install TPC docker from SFTP server" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="sftp_host" help="Hostname or IP address of SFTP server" default="null" ptype="STRING">
+                         </PARAM>
+                         <PARAM name="username" help="String for username" ptype="SUBCOMMAND" mode="subcommand" >
+                              <PARAM name="sftp_username" help="for username" default="null" ptype="STRING">
+                              </PARAM>
+                         </PARAM>
+                         <PARAM name="password" help="String for password" ptype="SUBCOMMAND" mode="subcommand" >
+                               <PARAM name="sftp_password" help="for password" default="null" ptype="STRING">
+                               </PARAM>
+                         </PARAM>
+                         <PARAM name="filename" help="String for image path" ptype="SUBCOMMAND" mode="subcommand" >
+                               <PARAM name="sftp_filename" help="for image path" default="null" ptype="STRING">
+                               </PARAM>
+                         </PARAM>
+                   </PARAM>
+              </PARAM>
+              <PARAM name="args" help="Additional startup args to the container" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                   <PARAM name="_args"
+                     help="Additional startup args to the container"
+                     default="null"
+                     ptype="STRING">
+                   </PARAM>
+              </PARAM>
+       <ACTION>
+           if test "${url_path}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install url ${container_name} ${url_path} tpcm.j2 ${_args}&#xA;
+           elif test "${image_path}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install image ${container_name} ${image_path} tpcm.j2 ${_args}&#xA;
+           elif test "${pull_path}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install pull ${container_name} ${pull_path} tpcm.j2 ${_args}&#xA;
+           elif test "${file_path}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install file ${container_name} ${file_path} tpcm.j2 ${_args}&#xA;
+           elif test "${scp_host}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install scp ${container_name} ${scp_filename} tpcm.j2 ${_args} ${scp_username} ${scp_password} ${scp_host}&#xA;
+           else&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install sftp ${container_name} ${sftp_filename} tpcm.j2 ${_args} ${sftp_username} ${sftp_password} ${sftp_host}&#xA;
+           fi&#xA;
+       </ACTION>
+
+    </COMMAND>
+
+    <COMMAND name="tpcm upgrade"
+             help="Upgrade docker image from local, docker hub,..."
+             mode="subcommand"
+             ptype="SUBCOMMAND">
+             <PARAM name="name" help="container name" ptype="SUBCOMMAND" mode="subcommand" >
+                   <PARAM name="container_name" help="String for container name" ptype="STRING">
+                   </PARAM>
+             </PARAM>
+              <PARAM name="install_method" help="" ptype="SUBCOMMAND" mode="switch" >
+                   <PARAM name="url" help="Install TPC docker from HTTP/HTTPS server" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="url_path" help="URL(http:// or https://) to image" default="null" ptype="STRING">
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="image" help="Install TPC docker from existing docker image" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="image_path" help="for image name or image id"  default="null" ptype="STRING">
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="pull" help="Install TPC docker from docker registry hub" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="pull_path" help="for Image tag name" default="null" ptype="STRING">
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="file" help="Install TPC docker from local file" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="file_path" help="Path to image on local File System" default="null" ptype="STRING">
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="scp" help="Install TPC docker from SCP server" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="scp_host" help="Hostname or IP address of SCP server" default="null" ptype="STRING">
+                         </PARAM>
+                         <PARAM name="username" help="String for username" ptype="SUBCOMMAND" mode="subcommand" >
+                              <PARAM name="scp_username" help="for username" default="null" ptype="STRING">
+                              </PARAM>
+                         </PARAM>
+                         <PARAM name="password" help="String for password" ptype="SUBCOMMAND" mode="subcommand" >
+                               <PARAM name="scp_password" help="for password" default="null" ptype="STRING">
+                               </PARAM>
+                         </PARAM>
+                         <PARAM name="filename" help="String for image path" ptype="SUBCOMMAND" mode="subcommand" >
+                               <PARAM name="scp_filename" help="for image path" default="null" ptype="STRING">
+                               </PARAM>
+                         </PARAM>
+                   </PARAM>
+                   <PARAM name="sftp" help="Install TPC docker from SFTP server" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                         <PARAM name="sftp_host" help="Hostname or IP address of SFTP server" default="null" ptype="STRING">
+                         </PARAM>
+                         <PARAM name="username" help="String for username" ptype="SUBCOMMAND" mode="subcommand" >
+                              <PARAM name="sftp_username" help="for username" default="null" ptype="STRING">
+                              </PARAM>
+                         </PARAM>
+                         <PARAM name="password" help="String for password" ptype="SUBCOMMAND" mode="subcommand" >
+                               <PARAM name="sftp_password" help="for password" default="null" ptype="STRING">
+                               </PARAM>
+                         </PARAM>
+                         <PARAM name="filename" help="String for image path" ptype="SUBCOMMAND" mode="subcommand" >
+                               <PARAM name="sftp_filename" help="for image path" default="null" ptype="STRING">
+                               </PARAM>
+                         </PARAM>
+                   </PARAM>
+              </PARAM>
+              <PARAM name="skip_data" help="Leaves the TPC data from deletion" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                   <PARAM name="skip"
+                       help="Leaves the TPC data from deletion"
+                       default="null"
+                       ptype="BOOL_SELECT">
+                   </PARAM>
+              </PARAM>
+              <PARAM name="args" help="Additional startup args to the container" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                   <PARAM name="_args"
+                     help="Additional startup args to the container"
+                     default="null"
+                     ptype="STRING">
+                   </PARAM>
+              </PARAM>
+
+       <ACTION>
+           if test "${url_path}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade url ${container_name} ${url_path} tpcm.j2 ${_args} ${skip}&#xA;
+           elif test "${image_path}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade image ${container_name} ${image_path} tpcm.j2 ${_args} ${skip}&#xA;
+           elif test "${pull_path}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade pull ${container_name} ${pull_path} tpcm.j2 ${_args} ${skip}&#xA;
+           elif test "${file_path}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade file ${container_name} ${file_path} tpcm.j2 ${_args} ${skip}&#xA;
+           elif test "${scp_host}" != "null"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade scp ${container_name} ${scp_filename} tpcm.j2 ${_args} ${scp_username} ${scp_password} ${scp_host} ${skip}&#xA;
+           else&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade sftp ${container_name} ${sftp_filename} tpcm.j2 ${_args} ${sftp_username} ${sftp_password} ${sftp_host} ${skip}&#xA;
+           fi&#xA;
+
+       </ACTION>
+    </COMMAND>
+    <COMMAND name="tpcm uninstall"
+             help="Uninstall the TPC docker image"
+             mode="subcommand"
+             ptype="SUBCOMMAND">
+             <PARAM name="name" help="container name" ptype="SUBCOMMAND" mode="subcommand" >
+                   <PARAM name="container_name" help="String for container name" ptype="STRING">
+                   </PARAM>
+             </PARAM>
+              <PARAM name="skip_data" help="Leaves the TPC data from deletion" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                   <PARAM name="skip"
+                       help="Leaves the TPC data from deletion"
+                       default="null"
+                       ptype="BOOL_SELECT">
+                   </PARAM>
+              </PARAM>
+       <ACTION
+           builtin="clish_pyobj">sonic_cli_tpcm tpcm_uninstall default ${container_name} tpcm.j2 ${skip}
+       </ACTION>
+    </COMMAND>
+
+  </VIEW>
+</CLISH_MODULE>
