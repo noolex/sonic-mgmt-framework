@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--copyright 2020 Dell, Inc.  
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+<!DOCTYPE CLISH_MODULE [
+]>
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+<!-- ********************************************************************** -->
+<!-- *  Management interface DHCP COMMANDS                                * -->
+<!--
+renew dhcp-lease interface management <id>
+-->
+<!-- *  View : enable-view                                                * -->
+<!-- ********************************************************************** -->
+    <VIEW name="enable-view">
+        <COMMAND name="renew dhcp-lease"
+            help="Renew DHCP lease"
+            >
+            <PARAM name="interface"
+                help="Renew DHCP lease of an interface"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="Management"
+                    help="Management Interface"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                    <PARAM
+                        name="mgmt-if-id"
+                        help="Management interface id"
+                        ptype="MGMT_INTF_ID"
+                        >
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic-cli-mgmt-dhcp.py rpc_sonic_mgmt_interface_renew_dhcp_lease eth${mgmt-if-id}&#xA;
+            </ACTION>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>
+

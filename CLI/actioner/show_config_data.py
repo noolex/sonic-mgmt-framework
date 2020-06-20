@@ -1,6 +1,6 @@
 ###########################################################################
 #
-# Copyright 2019 Dell, Inc.
+# Copyright 2020 Dell, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 #
 ###########################################################################
 
-from show_config_bgp import *
+from show_config_if_cmd import *
 from show_config_interface import *
-from show_config_authentication import *
+from show_config_bgp import *
+from show_config_table_sort import *
 from show_config_ptp import *
 from show_config_dns import *
 from show_config_copp import *
@@ -29,7 +30,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'configure-vlan', 'configure-lo', 'configure-vxlan', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp', 'copp-action' ]
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp, 'configure-vxlan', 'copp-action']
 
 render_filelst  = {}
 
@@ -43,6 +44,8 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'interface_management'    : show_interface_management,
                   'if_management_autoneg'   : show_if_management_autoneg,
                   'tacacs_server_source_if' : show_tacacs_source_if,
+                  'dns_server_source_if'    : show_dns_source_if,
+                  'ntp_server_source_if'    : show_ntp_source_if,
                   'ptp_mode'                : show_ptp_mode,
                   'ptp_domain_profile'      : show_ptp_domain_profile,
                   'ptp_two_step'            : show_ptp_two_step,
@@ -50,5 +53,7 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_master_table'        : show_ptp_master_table,
                   'dns_server_source_if'    : show_dns_source_if,
                   'copp_police'             : show_copp_police
+                  'sflow_source_if'         : show_sflow_source_if,
  }
 
+table_sort_cb_dict = {'PORT_LIST' : natsort_list }

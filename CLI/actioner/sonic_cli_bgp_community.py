@@ -259,31 +259,32 @@ def invoke(func, args):
         keypath = generate_aspath_delete_keypath(args)
         return aa.delete(keypath)
 
-    elif func == 'bgp_community_show_all':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/community-sets')
-        return aa.get(keypath)
-
     elif func == 'bgp_community_show_specific':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/community-sets/community-set={name}', name=args[1])
-        return aa.get(keypath)
-
-    elif func == 'bgp_ext_community_show_all':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/ext-community-sets')
+        if len(args) > 1:
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/community-sets/community-set={name}', name=args[1])
+        else:
+            # show all
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/community-sets')
         return aa.get(keypath)
 
     elif func == 'bgp_ext_community_show_specific':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/ext-community-sets/ext-community-set={name}', name=args[1])
+        if len(args) > 1:
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/ext-community-sets/ext-community-set={name}', name=args[1])
+        else:
+            # show all
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/ext-community-sets')
         return aa.get(keypath)
 
     elif func == 'bgp_aspath_show_specific':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/as-path-sets/as-path-set={name}', name=args[1])
+        if len(args) > 1:
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/as-path-sets/as-path-set={name}', name=args[1])
+        else:
+            # show all
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/as-path-sets')
         return aa.get(keypath)
 
-    elif func == 'bgp_aspath_show_all':
-        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/as-path-sets')
-        return aa.get(keypath)
     else:
-    	return aa.cli_not_implemented(func)
+        return aa.cli_not_implemented(func)
 
 
 def run(func, args):
@@ -296,15 +297,15 @@ def run(func, args):
             # Get Command Output
             api_response = response.content
             if api_response is None:
-                print("Failed")
-                return 
-	    #print api_response
-	    show_cli_output(args[0], api_response)
+                print ("%Error: Internal error.")
+                return
+            #print api_response
+            show_cli_output(args[0], api_response)
     else:
         print response.error_message()
-	return
+        return
   except Exception as e:
-    print "%Error: " + str(e)
+    print ("%Error: Internal error.")
 
   return
 

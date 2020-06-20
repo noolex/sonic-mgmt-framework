@@ -29,10 +29,11 @@ from show_config_data import render_filelst
 from show_config_data import config_view_hierarchy
 from show_config_data import view_dependency
 from show_config_data import render_cb_dict
+from show_config_data import table_sort_cb_dict
 from show_config_utils import process_cmd
 from show_config_utils import get_view_table_keys
 from show_config_utils import log
-
+from show_config_table_sort import natsort_list
 
 CLI_XML_VIEW_MAP = {}
 
@@ -120,21 +121,17 @@ def get_rest_table(table_path):
 
 
     #TODO optimize by filtering based on keys, if all keys of the table are available
-    #TODO add support for multi-table get. table_path is list of tables.
 
     #table_path format "sonic:sonic/TABLE_NAME/keys"
     #The response of DB get() is cached.
     #On the next get request, first the cache is queried.
     #This is to avoid multiple REST api calls, which are expensive.
+    sonic_table = '/'.join(table_path.split('/')[:-1])
 
-    bare_table_name = table_path.split('/')[1]
 
-    table_list_name = bare_table_name + '_LIST'
+    if sonic_table in DB_Cache:
+       return DB_Cache.get(sonic_table)
 
-    if table_list_name in DB_Cache:
-       return DB_Cache.get(table_list_name)
-
-    sonic_table = '/'.join(table_path.split('/', 2)[:2])
     sonic_table_yang_path = '/restconf/data/' + sonic_table
     log.debug("sonic_table_name {}" .format(sonic_table_yang_path))
 
@@ -148,23 +145,25 @@ def get_rest_table(table_path):
             log.info("Get Table {} response failure, continue next table or next view " .format(sonic_table_yang_path) )
             return None
 
-        yang_table_fmt = sonic_table.split(':')[-1].replace('/',':')
+        modulename = sonic_table.split(':')[0]
+        bare_table_name = sonic_table.split(':')[1].split('/')[-1]
+        yang_table_fmt = modulename + ":" + bare_table_name
         response_table = response.content.get(yang_table_fmt)
         if response_table is None:
             # Cache to denote get request is done.
-            DB_Cache.update({table_list_name:None})
+            DB_Cache.update({sonic_table:None})
             log.info("Table {} not in ConfigDB continue next table or next view" .format(yang_table_fmt))
             return None
 
-        response_table_lst = response_table.get(table_list_name)
-
-        if response_table_lst is None:
-            log.info("Table {} not in ConfigDB continue next table or next view" .format(table_list_name))
-            return None
+        #get table sorting callback if given. otherwise use default natsort.
+        sort_callback =  table_sort_cb_dict.get(sonic_table)
+        if sort_callback is None:
+           sort_callback= natsort_list 
+        response_table = sort_callback(response_table, table_path)
 
         #cache table
-        DB_Cache.update({table_list_name:response_table_lst})    
-        return response_table_lst
+        DB_Cache.update({sonic_table:response_table}) 
+        return response_table
     else:
         log.warn("Response failure for {} in configDB" .format(sonic_table_yang_path))    
     return None
@@ -216,7 +215,7 @@ class cli_xml_view:
             #Primary table for this view. for e.g. "sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name={vrf-name}"
             #Data represented as "view_table" tag in the xml.
             self.primary_table =self.table_list[0]
-            self.dbpathstr = '/'.join(self.primary_table.split('/', 2)[:2])
+            self.dbpathstr = '/'.join(self.primary_table.split('/')[:-1])
 
         log.debug("name: {}, table_keys: {}, primary_table: {} dbpathstr {} tablelist" \
                 .format(self.name, self.table_keys, self.primary_table, self.dbpathstr, self.table_list))
@@ -285,10 +284,6 @@ class cli_xml_view:
 
         #get primary table
         primary_table_path = self.primary_table
-        #get bare table name by stripping key info.
-        if len(primary_table_path.split("/")) != 3:
-            log.info("Invalid table_path {}. continue to next/table view" .format(primary_table_path))
-            return CMD_SUCCESS
 
         #get table keys from table path in form of dict ={key:value, key1:value,..}
         primary_table_keys = get_view_table_keys(primary_table_path)
@@ -325,7 +320,7 @@ class cli_xml_view:
 
             skip_record = False
             for filter_key, filter_key_value in filter_keys.items():
-                if ((filter_key not in member)) or (member[filter_key] != filter_key_value):
+                if ((filter_key not in member)) or (str(member[filter_key]) != filter_key_value):
                     log.debug("Skipping record; member keys {}, given key {}"  .format(member_keys, member[filter_key]))
                     skip_record = True
                     break
@@ -482,7 +477,7 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
                 break
             cmd_table_present = True
             # new dbpathstr and keys from cmd table
-            dbpathstr = '/'.join(cmd_table_path.split('/', 2)[:2])
+            dbpathstr = '/'.join(cmd_table_path.split('/')[:-1])
 
             if not member_keys:
                 log.info(" No view keys for table {} " .format(cmd_table_path))
@@ -588,10 +583,17 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
 
             skip_record = False
             for filter_key, filter_key_value in filter_keys.items():
-                if ((filter_key not in cmd_member)) or (cmd_member[filter_key] != filter_key_value):
-                    log.debug("Skipping record; member keys {}, given key {}"  .format(member_keys, cmd_member[filter_key]))
+
+                if filter_key in cmd_member:
+                    if str(cmd_member[filter_key]) != filter_key_value:
+                       skip_record  = True
+                       log.debug("Skipping record; member keys {}, given key {}"  .format(member_keys, cmd_member[filter_key]))
+                       break
+                else:
                     skip_record = True
+                    log.debug("Skipping record; member keys {}, filter_key {} missing in record"  .format(member_keys, filter_key))
                     break
+                    
             if skip_record == True:
                 continue
             
@@ -719,7 +721,7 @@ def show_views(func, args = []):
           views=views_str.split(',')
       if arg.startswith("view_keys="):
           view_keys_str = arg.lstrip("view_keys=")
- 	  view_keys_str = view_keys_str.replace('"','') 
+          view_keys_str = view_keys_str.replace('"','')
           view_keys = view_keys_str.split(',')
     
     if not views:

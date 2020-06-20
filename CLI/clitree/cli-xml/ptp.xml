@@ -138,10 +138,10 @@
 	</VIEW>
 	<VIEW name="configure-view">
 		<COMMAND name="ptp" help="Configures precision time protocol settings" />
-		<COMMAND name="ptp mode" help="Configures PTP mode" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}"
+		<COMMAND name="ptp mode" help="Configures PTP mode" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}"
 			render_command_cb="ptp_mode">
 
-			<PARAM name="mode_type" help="PTP mode" ptype="PTP_MODE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/clock-type" />
+			<PARAM name="mode_type" help="PTP mode" ptype="PTP_MODE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/clock-type" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp clock-type 0 ${mode_type}
 			</ACTION>
@@ -155,9 +155,9 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp network-transport" help="Configures PTP network transport" db_flag="SEP_CLI" command_keys="instance=GLOBAL|instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}|sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}" render_command_cb="ptp_network_transport">
-			<PARAM name="ptp_network_transport_type" help="PTP network transport type" ptype="PTP_TRANSPORT" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/network-transport" />
-			<PARAM name="ptp_master_slave" help="unicast or multicast" ptype="PTP_MST_SLV" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/unicast-multicast" />
+		<COMMAND name="ptp network-transport" help="Configures PTP network transport" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}" render_command_cb="ptp_network_transport">
+			<PARAM name="ptp_network_transport_type" help="PTP network transport type" ptype="PTP_TRANSPORT" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/network-transport" />
+			<PARAM name="ptp_master_slave" help="unicast or multicast" ptype="PTP_MST_SLV" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/unicast-multicast" />
 			<ACTION builtin="clish_pyobj">
 					sonic_cli_ptp network_transport_uc_mc 0 ${ptp_network_transport_type} 0 ${ptp_master_slave}
 			</ACTION>
@@ -171,8 +171,8 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp ipv6-scope" help="Configures PTP IPv6 multicast scope" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}">
-			<PARAM name="ptp_ipv6_scope" help="Scope used for IPv6 multicast message. Used as second byte of the primary address" ptype="PTP_V6SCOPE_TYPE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/udp6-scope" />
+		<COMMAND name="ptp ipv6-scope" help="Configures PTP IPv6 multicast scope" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
+			<PARAM name="ptp_ipv6_scope" help="Scope used for IPv6 multicast message. Used as second byte of the primary address" ptype="PTP_V6SCOPE_TYPE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/udp6-scope" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp udp6-scope 0 ${ptp_ipv6_scope}
 			</ACTION>
@@ -186,8 +186,8 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp domain" help="Configures PTP domain" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}">
-			<PARAM name="ptp_domain" help="PTP domain value" ptype="PTP_RANGE_0_127" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/domain-number" />
+		<COMMAND name="ptp domain" help="Configures PTP domain" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
+			<PARAM name="ptp_domain" help="PTP domain value" ptype="PTP_RANGE_0_127" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/domain-number" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_default_ds_domain_number 0 ${ptp_domain}
 			</ACTION>
@@ -201,9 +201,9 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp domain-profile" help="Configures PTP domain profile" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}"
+		<COMMAND name="ptp domain-profile" help="Configures PTP domain profile" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}"
 			render_command_cb="ptp_domain_profile">
-			<PARAM name="ptp_domain_profile" help="PTP domain profile type" ptype="PTP_DOMAIN_PROFILE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/domain-profile" />
+			<PARAM name="ptp_domain_profile" help="PTP domain profile type" ptype="PTP_DOMAIN_PROFILE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/domain-profile" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp  domain-profile 0 ${ptp_domain_profile}
 			</ACTION>
@@ -217,9 +217,9 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp two-step" help="Configures PTP two step enable" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}"
+		<COMMAND name="ptp two-step" help="Configures PTP two step enable" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}"
 			render_command_cb="ptp_domain_two_step">
-			<PARAM name="ptp_two_step" help="Enable/Disable" ptype="ENA_DISA" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/two-step-flag" />
+			<PARAM name="ptp_two_step" help="Enable/Disable" ptype="ENA_DISA" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/two-step-flag" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_default_ds_two_step_flag 0 ${ptp_two_step}
 			</ACTION>
@@ -233,8 +233,8 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp priority1" help="Configures PTP priority1" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}">
-			<PARAM name="ptp_priority1" help="PTP priority1 value" ptype="RANGE_0_255" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/priority1" />
+		<COMMAND name="ptp priority1" help="Configures PTP priority1" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
+			<PARAM name="ptp_priority1" help="PTP priority1 value" ptype="RANGE_0_255" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/priority1" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_default_ds_priority1 0 ${ptp_priority1}
 			</ACTION>
@@ -248,8 +248,8 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp priority2" help="Configures PTP priority2" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}">
-			<PARAM name="ptp_priority2" help="PTP priority2 value" ptype="RANGE_0_255" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/priority2" />
+		<COMMAND name="ptp priority2" help="Configures PTP priority2" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
+			<PARAM name="ptp_priority2" help="PTP priority2 value" ptype="RANGE_0_255" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/priority2" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_default_ds_priority2 0 ${ptp_priority2}
 			</ACTION>
@@ -263,8 +263,8 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp log-announce-interval" help="Configures PTP announce interval" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}">
-			<PARAM name="ptp_announce_interval" help="PTP announce interval value" ptype="INT8_RANGE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/log-announce-interval" />
+		<COMMAND name="ptp log-announce-interval" help="Configures PTP announce interval" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
+			<PARAM name="ptp_announce_interval" help="PTP announce interval value" ptype="INT8_RANGE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/log-announce-interval" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_port_ds_list_log_announce_interval 0 ${ptp_announce_interval}
 			</ACTION>
@@ -278,8 +278,8 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp announce-timeout" help="Configures PTP announce timeout" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}">
-			<PARAM name="ptp_announce_timeout" help="PTP announce timeout value" ptype="PTP_RANGE_2_255" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/announce-receipt-timeout" />
+		<COMMAND name="ptp announce-timeout" help="Configures PTP announce timeout" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
+			<PARAM name="ptp_announce_timeout" help="PTP announce timeout value" ptype="PTP_RANGE_2_255" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/vannounce-receipt-timeout" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_port_ds_list_announce_receipt_timeout 0 ${ptp_announce_timeout}
 			</ACTION>
@@ -293,8 +293,8 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp log-sync-interval" help="Configures PTP sync interval" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}">
-			<PARAM name="ptp_sync_interval" help="PTP sync interval value" ptype="INT8_RANGE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/log-sync-interval" />
+		<COMMAND name="ptp log-sync-interval" help="Configures PTP sync interval" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
+			<PARAM name="ptp_sync_interval" help="PTP sync interval value" ptype="INT8_RANGE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/log-sync-interval" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_port_ds_list_log_sync_interval 0 ${ptp_sync_interval}
 			</ACTION>
@@ -308,8 +308,8 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp log-min-delay-req-interval" help="Configures PTP delay request interval" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/instance-number={instance}">
-			<PARAM name="ptp_delay_request_interval" help="PTP delay request interval value" ptype="INT8_RANGE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/log-min-delay-req-interval" />
+		<COMMAND name="ptp log-min-delay-req-interval" help="Configures PTP delay request interval" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
+			<PARAM name="ptp_delay_request_interval" help="PTP delay request interval value" ptype="INT8_RANGE" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/log-min-delay-req-interval" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_port_ds_list_log_min_delay_req_interval 0 ${ptp_delay_request_interval}
 			</ACTION>
@@ -324,7 +324,7 @@
 			</DOCGEN>
 		</COMMAND>
 		<COMMAND name="ptp port" help="Configures PTP port settings" />
-		<COMMAND name="ptp port add" help="Adds PTP network interface" command_keys="instance=GLOBAL;interface=*" command_tables="sonic-ptp:sonic-ptp/PTP_PORT/instance-number={instance},underlying-interface={interface}">
+		<COMMAND name="ptp port add" help="Adds PTP network interface" command_keys="instance=GLOBAL;interface=*" command_tables="sonic-ptp:sonic-ptp/PTP_PORT/PTP_PORT_LIST/instance-number={instance},underlying-interface={interface}">
 			<MACRO name="PTP-CFG-IF-TYPE" arg=""/>
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp post_ietf_ptp_ptp_instance_list_port_ds_list_port_state 0 ${Ethernet}
@@ -339,7 +339,7 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp port del" help="Deletes PTP network interface" command_keys="instance=GLOBAL;interface=*" command_tables="sonic-ptp:sonic-ptp/PTP_PORT/instance-number={instance},underlying-interface={interface}">
+		<COMMAND name="ptp port del" help="Deletes PTP network interface" command_keys="instance=GLOBAL;interface=*" command_tables="sonic-ptp:sonic-ptp/PTP_PORT/PTP_PORT_LIST/instance-number={instance},underlying-interface={interface}">
 			<MACRO name="PTP-CFG-CLEAN-IF-TYPE" arg=""/>
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp delete_ietf_ptp_ptp_instance_list_port_ds_list 0 ${Ethernet}
@@ -354,7 +354,7 @@
 				</EXAMPLE>
 			</DOCGEN>
 		</COMMAND>
-		<COMMAND name="ptp port master-table" help="Configures PTP master nodes list when this node is configured as slave" command_keys="instance=GLOBAL;interface=*" command_tables="sonic-ptp:sonic-ptp/PTP_PORT/instance-number={instance},underlying-interface={interface}" render_command_cb="ptp_master_table">
+		<COMMAND name="ptp port master-table" help="Configures PTP master nodes list when this node is configured as slave" command_keys="instance=GLOBAL;interface=*" command_tables="sonic-ptp:sonic-ptp/PTP_PORT/PTP_PORT_LIST/instance-number={instance},underlying-interface={interface}" render_command_cb="ptp_master_table">
 			<MACRO name="PTP-CFG-MT-IF-TYPE" arg=""/>
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp ${cfg_ptp_mt_subcommands}_master_table 0 ${Ethernet} ${l3_ip}${mac}

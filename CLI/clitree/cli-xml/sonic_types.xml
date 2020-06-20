@@ -1285,6 +1285,13 @@ limitations under the License.
         help=""
         />
     <!--=======================================================-->
+    <PTYPE
+        name="SCHEDULER_TYPE_OPTION"
+        method="select"
+        pattern="dwrr(DWRR) wrr(WRR) strict(STRICT)"
+        help="Scheduler type Options"
+        />
+    <!--=======================================================-->
         <PTYPE
         name="PID"
         method="integer"
