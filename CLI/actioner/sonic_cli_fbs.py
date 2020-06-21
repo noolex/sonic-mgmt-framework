@@ -24,8 +24,7 @@ import cli_client as cc
 from scripts.render_cli import show_cli_output
 import traceback
 import cli_log as log
-from sonic_cli_acl import pcp_map
-from sonic_cli_acl import dscp_map
+from sonic_cli_acl import pcp_map, proto_number_map, dscp_map, ethertype_map
 from natsort import natsorted
 import sonic_cli_acl
 
@@ -41,14 +40,16 @@ def create_policy_copp(args):
 
 
 def create_policy(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST')
-    body = dict()
-    body["POLICY_TABLE_LIST"] = [{
-        "POLICY_NAME": args[0]
-    }]
-
-    if len(args) == 2:
-        body["POLICY_TABLE_LIST"][0]["TYPE"] = args[1].upper()
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy')
+    body = {
+    "openconfig-fbs-ext:policy": [{
+        "policy-name": args[0],
+            "config": {
+                "name": args[0],
+                "type": "POLICY_" + args[1].upper()
+            }
+        }]
+    }
 
     return fbs_client.patch(keypath, body)
 
@@ -58,21 +59,21 @@ def delete_policy(args):
         print("%Error: copp-system-policy cannot be deleted")
         return
     else:
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST={policy_name}', policy_name=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}', policy_name=args[0])
         return fbs_client.delete(keypath)
 
 
 def set_policy_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST={policy_name}/DESCRIPTION', policy_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/config/description', policy_name=args[0])
     if len(args) > 2:
-        body = {'DESCRIPTION': '"{}"'.format(" ".join(args[1:]))}
+        body = {"openconfig-fbs-ext:description": '"{}"'.format(" ".join(args[1:]))}
     else:
-        body = {'DESCRIPTION': args[1]}
+        body = {"openconfig-fbs-ext:description": args[1]}
     return fbs_client.patch(keypath, body)
 
 
 def clear_policy_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST={policy_name}/DESCRIPTION', policy_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/config/description', policy_name=args[0])
     return fbs_client.delete(keypath)
 
 
@@ -81,15 +82,16 @@ def create_classifier_copp(args):
 
 
 def create_classifier(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST')
-    body = dict()
-    body["CLASSIFIER_TABLE_LIST"] = [{
-        "CLASSIFIER_NAME": args[0]
-    }]
-
-    if len(args) == 2:
-        body["CLASSIFIER_TABLE_LIST"][0]["MATCH_TYPE"] = args[1].upper()
-
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier')
+    body = {
+        "openconfig-fbs-ext:classifier": [{
+            "class-name": args[0],
+                "config": {
+                "name": args[0],
+                "match-type": "MATCH_" + args[1].upper()
+            }
+        }]
+    }
     return fbs_client.patch(keypath, body)
 
 
@@ -98,6 +100,7 @@ def delete_classifier(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}', classifier_name=args[0])
     response = fbs_client.get(keypath)
     if response.ok() and response.content:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={classifier_name}', classifier_name=args[0])
         return fbs_client.delete(keypath)
     else:
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}', copp_name=args[0])
@@ -105,255 +108,216 @@ def delete_classifier(args):
 
 
 def set_classifier_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DESCRIPTION', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/config/description', class_name=args[0])
     if len(args) > 2:
-        body = {'DESCRIPTION': '"{}"'.format(" ".join(args[1:]))}
+        body = {"openconfig-fbs-ext:description": '"{}"'.format(" ".join(args[1:]))}
     else:
-        body = {'DESCRIPTION': args[1]}
+        body = {"openconfig-fbs-ext:description": args[1]}
 
     return fbs_client.patch(keypath, body)
 
 
 def clear_classifier_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DESCRIPTION', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/config/description', class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_classifier_match_acl(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-acl/config', class_name=args[0])
     if 'mac' == args[1]:
-        acl_type = 'L2'
+        acl_type = 'ACL_L2'
     elif 'ip' == args[1]:
-        acl_type = 'L3'
+        acl_type = 'ACL_IPV4'
     elif 'ipv6' == args[1]:
-        acl_type = 'L3V6'
+        acl_type = 'ACL_IPV6'
     else:
-        print('Unknown ACL Type')
+        print('%Error: Unknown ACL Type')
         return
 
-    body = {"sonic-flow-based-services:CLASSIFIER_TABLE_LIST": [
-        {
-            'CLASSIFIER_NAME': args[0],
-            'ACL_NAME': args[2],
-            'ACL_TYPE': acl_type,
-            'MATCH_TYPE': 'ACL'
+    body = {
+        "openconfig-fbs-ext:config": {
+            "acl-name": args[2],
+            "acl-type": acl_type
         }
-    ]}
+    }
 
     return fbs_client.patch(keypath, body)
 
 
 def clear_classifier_match_acl(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_NAME', classifier_name=args[0])
-    resp = fbs_client.delete(keypath)
-    if resp.ok():
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_TYPE', classifier_name=args[0])
-        resp = fbs_client.delete(keypath)
-
-    return resp
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-acl', class_name=args[0])
+    return fbs_client.delete(keypath)
 
 
 def __format_mac_addr(macaddr):
     return "{}{}:{}{}:{}{}:{}{}:{}{}:{}{}".format(*macaddr.translate(None, ".:-"))
 
 
-def __match_mac_address(addr_type, args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
-                      classifier_name=args[0], addr_type=addr_type)
-
+def __set_match_address(addr_type, args):
     if 'mac' == args[1]:
-        value = "{}/{}".format(args[2], args[3]) if args[2] != 'host' else args[3]
-        value = value.split('/')
-        for idx in range(len(value)):
-            value[idx] = __format_mac_addr(value[idx])
-        value = '/'.join(value)
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config', class_name=args[0])
+        body = {
+            "openconfig-fbs-ext:config": {
+            }
+        }
+        if args[2] == 'host':
+            body["openconfig-fbs-ext:config"]["{}-mac".format(addr_type)] = __format_mac_addr(args[3])
+        else:
+            body["openconfig-fbs-ext:config"]["{}-mac".format(addr_type)] = __format_mac_addr(args[2])
+            body["openconfig-fbs-ext:config"]["{}-mac-mask".format(addr_type)] = __format_mac_addr(args[3])
     elif 'ip' == args[1]:
-        value = args[2] if args[2] != 'host' else args[3] + '/32'
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/{addr_type}-address',
+                          class_name=args[0], addr_type=addr_type)
+        body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/32'}
     elif 'ipv6' == args[1]:
-        value = args[2] if args[2] != 'host' else args[3] + '/128'
-    else:
-        print('%Error: Unknown address type {}'.format(args[1]))
-        return
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/{addr_type}-address',
+                          class_name=args[0], addr_type=addr_type)
+        body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/128'}
 
-    body = {
-        addr_type: value
-    }
     return fbs_client.patch(keypath, body)
 
 
 def set_match_source_address(args):
-    addr_type = 'SRC_{}'.format(args[1].upper())
-    return __match_mac_address(addr_type, args)
+    return __set_match_address('source', args)
 
 
 def clear_match_source_address(args):
-    addr_type = 'SRC_{}'.format(args[1].upper())
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
-                      classifier_name=args[0], addr_type=addr_type)
+    if 'mac' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/source-mac', class_name=args[0])
+    elif 'ip' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/source-address', class_name=args[0])
+    elif 'ipv6' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/source-address', class_name=args[0])
+
     return fbs_client.delete(keypath)
 
 
 def set_match_destination_address(args):
-    addr_type = 'DST_{}'.format(args[1].upper())
-    return __match_mac_address(addr_type, args)
+    return __set_match_address('destination', args)
 
 
 def clear_match_destination_address(args):
-    addr_type = 'DST_{}'.format(args[1].upper())
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
-                      classifier_name=args[0], addr_type=addr_type)
+    if 'mac' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/destination-mac', class_name=args[0])
+    elif 'ip' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/destination-address', class_name=args[0])
+    elif 'ipv6' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/destination-address', class_name=args[0])
+
     return fbs_client.delete(keypath)
 
 
 def set_match_ethertype(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ETHER_TYPE',
-                      classifier_name=args[0])
-    ether_type_map = {
-        "ip": "0x800",
-        "ipv6": "0x86dd",
-        "arp": "0x806"
-    }
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/ethertype',
+                      class_name=args[0])
     body = {
-        "ETHER_TYPE": args[1] if args[1] not in ether_type_map else ether_type_map[args[1]]
+        "openconfig-fbs-ext:ethertype": int(args[1], 0) if args[1] not in ethertype_map else ethertype_map[args[1]]
     }
+
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_ethertype(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ETHER_TYPE',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/ethertype',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_vlan(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/VLAN',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/vlanid',
+                      class_name=args[0])
     body = {
-        "VLAN": int(args[1])
+        "openconfig-fbs-ext:vlanid": int(args[1])
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_vlan(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/VLAN',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/vlanid',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_pcp(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/PCP',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/pcp',
+                      class_name=args[0])
     body = {
-        "PCP": int(args[1]) if args[1] not in pcp_map.keys() else pcp_map[args[1]]
+        "openconfig-fbs-ext:pcp": int(args[1]) if args[1] not in pcp_map.keys() else pcp_map[args[1]]
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_pcp(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/PCP',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/pcp',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_dei(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DEI',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/dei',
+                      class_name=args[0])
     body = {
-        "DEI": int(args[1])
+        "openconfig-fbs-ext:dei": int(args[1])
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_dei(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DEI',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/dei',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_ip_protocol(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/IP_PROTOCOL',
-                      classifier_name=args[0])
-    protocol_map = {
-        'icmp': 1,
-        'tcp': 6,
-        'udp': 17,
-        'icmpv6': 58
-    }
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ip/config/protocol',
+                      class_name=args[0])
     body = {
-        "IP_PROTOCOL": int(args[1]) if args[1] not in protocol_map.keys() else protocol_map[args[1]]
+        "openconfig-fbs-ext:protocol": int(args[1]) if args[1] not in proto_number_map.keys() else proto_number_map[args[1]]
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_ip_protocol(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/IP_PROTOCOL',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ip/config/protocol',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_dscp(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DSCP',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ip/config/dscp',
+                      class_name=args[0])
     body = {
-        "DSCP": int(args[1]) if args[1] not in dscp_map.keys() else dscp_map[args[1]]
+        "openconfig-fbs-ext:dscp": int(args[1]) if args[1] not in dscp_map.keys() else dscp_map[args[1]]
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_dscp(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DSCP',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ip/config/dscp',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_layer4_port(args):
-    if args[1] == 'source':
-        if args[2] == 'eq':
-            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_SRC_PORT',
-                              classifier_name=args[0])
-            body = {
-                'L4_SRC_PORT': int(args[3])
-            }
-        else:
-            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_SRC_PORT_RANGE',
-                              classifier_name=args[0])
-            body = {
-                'L4_SRC_PORT_RANGE': '-'.join(args[3:])
-            }
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/{dir}-port',
+                      class_name=args[0], dir=args[1])
+
+    if args[2] == 'eq':
+        body = {
+            "openconfig-fbs-ext:{}-port".format(args[1]): int(args[3])
+        }
     else:
-        if args[2] == 'eq':
-            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_DST_PORT',
-                              classifier_name=args[0])
-            body = {
-                'L4_DST_PORT': int(args[3])
-            }
-        else:
-            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_DST_PORT_RANGE',
-                              classifier_name=args[0])
-            body = {
-                'L4_DST_PORT_RANGE': '-'.join(args[3:])
-            }
+        body = {
+            "openconfig-fbs-ext:{}-port".format(args[1]): '{}..{}'.format(args[3], args[4])
+        }
+
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_layer4_port(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}',
-                      classifier_name=args[0])
-    response = fbs_client.get(keypath)
-    if response.ok():
-        data = response.content
-        if args[1] == 'source':
-            delete_params = ['L4_SRC_PORT', 'L4_SRC_PORT_RANGE']
-        else:
-            delete_params = ['L4_DST_PORT', 'L4_DST_PORT_RANGE']
-
-        for feat in delete_params:
-            if feat in data['sonic-flow-based-services:CLASSIFIER_TABLE_LIST'][0].keys():
-                del data['sonic-flow-based-services:CLASSIFIER_TABLE_LIST'][0][feat]
-
-        return fbs_client.put(keypath, data)
-    else:
-        print(response.error_message())
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/{dir}-port',
+                      class_name=args[0], dir=args[1])
+    return fbs_client.delete(keypath)
 
 
 def __convert_tcp_flags(flags):
@@ -372,42 +336,41 @@ def __convert_tcp_flags(flags):
 
 
 def __update_tcp_flags(classifier, flags, delete=False):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/TCP_FLAGS',
-                      classifier_name=classifier)
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/tcp-flags',
+                      class_name=classifier)
     response = fbs_client.get(keypath)
     data = None
-    if response.ok():
+    if response.ok() and bool(response.content):
         data = response.content
-
-    if not bool(data):
+    else:
         data = {
-            'sonic-flow-based-services:TCP_FLAGS': '0/0'
+            "openconfig-fbs-ext:tcp-flags": []
         }
 
-    tcp_flags = data['sonic-flow-based-services:TCP_FLAGS']
-    tcp_flags = tcp_flags.split('/')
+    tcp_flags = data["openconfig-fbs-ext:tcp-flags"]
     for idx in range(len(tcp_flags)):
-        try:
-            tcp_flags[idx] = int(tcp_flags[idx])
-        except ValueError:
-            tcp_flags[idx] = int(tcp_flags[idx], 0)
+        tcp_flags[idx] = tcp_flags[idx].split(":")[-1]
 
-    ex_tcp_flags = __convert_tcp_flags(flags)
-    for idx in range(len(tcp_flags)):
+    for flag in flags:
+        oc_flag = "TCP_" + flag.replace("-", "_").upper()
         if delete:
-            ex_tcp_flags[idx] = ex_tcp_flags[idx] ^ tcp_flags[idx]
+            try:
+                tcp_flags.remove(oc_flag)
+            except ValueError:
+                pass
         else:
-            ex_tcp_flags[idx] = ex_tcp_flags[idx] | tcp_flags[idx]
+            tcp_flags.append(oc_flag)
 
-    if 0 == ex_tcp_flags[1]:
+    tcp_flags = list(set(tcp_flags))
+    if len(tcp_flags) == 0:
         if delete:
             response = fbs_client.delete(keypath)
         else:
             print('%Error: No TCP Flags configured')
             return None
     else:
-        data['sonic-flow-based-services:TCP_FLAGS'] = '0x{:x}/0x{:x}'.format(ex_tcp_flags[0], ex_tcp_flags[1])
-        response = fbs_client.patch(keypath, data)
+        data["openconfig-fbs-ext:tcp-flags"] = tcp_flags
+        response = fbs_client.put(keypath, data)
 
     return response
 
@@ -418,9 +381,13 @@ def set_match_tcp_flags(args):
 
 def clear_match_tcp_flags(args):
     if len(args) == 1:
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/TCP_FLAGS',
-                          classifier_name=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/tcp-flags',
+                          class_name=args[0])
         return fbs_client.delete(keypath)
+    #elif len(args) == 2:
+    #    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/tcp-flags={flag}',
+    #                      class_name=args[0], flag="TCP_" + args[1].replace("-", "_").upper())
+    #    return fbs_client.delete(keypath)
     else:
         return __update_tcp_flags(args[0], args[1:], True)
 
@@ -446,15 +413,15 @@ def create_flow_copp(args):
 
 
 def create_flow(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST')
-    body = dict()
-    body["POLICY_SECTIONS_TABLE_LIST"] = [{
-        "POLICY_NAME": args[0],
-        "CLASSIFIER_NAME": args[1]
-    }]
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section', policy_name=args[0])
+    body = {"openconfig-fbs-ext:section": [{
+        "class": args[1],
+        "config": {
+            "name": args[1],
+        }}]}
 
     if len(args) == 3:
-        body["POLICY_SECTIONS_TABLE_LIST"][0]["PRIORITY"] = int(args[2])
+        body["openconfig-fbs-ext:section"][0]["config"]["priority"] = int(args[2])
 
     return fbs_client.patch(keypath, body)
 
@@ -467,79 +434,78 @@ def delete_flow_copp(args):
 
 
 def delete_flow(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_flow_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/DESCRIPTION',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/config/description',
+                      policy_name=args[0], class_name=args[1])
     if len(args) > 3:
-        body = {'DESCRIPTION': '"{}"'.format(" ".join(args[2:]))}
+        body = {'openconfig-fbs-ext:description': '"{}"'.format(" ".join(args[2:]))}
     else:
-        body = {'DESCRIPTION': args[2]}
+        body = {'openconfig-fbs-ext:description': args[2]}
     return fbs_client.patch(keypath, body)
 
 
 def clear_flow_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/DESCRIPTION',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/config/description',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_pcp_remarking_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_PCP',
-                      policy_name=args[0], classifier_name=args[1])
-    body = {'SET_PCP': int(args[2])}
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/remark/config/set-dot1p',
+                      policy_name=args[0], class_name=args[1])
+    body = {'openconfig-fbs-ext:set-dot1p': int(args[2])}
     return fbs_client.patch(keypath, body)
 
 
 def clear_pcp_remarking_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_PCP',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/remark/config/set-dot1p',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_dscp_remarking_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_DSCP',
-                      policy_name=args[0], classifier_name=args[1])
-    body = {'SET_DSCP': int(args[2])}
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/remark/config/set-dscp',
+                      policy_name=args[0], class_name=args[1])
+    body = {'openconfig-fbs-ext:set-dscp': int(args[2])}
     return fbs_client.patch(keypath, body)
 
 
 def clear_dscp_remarking_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_DSCP',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/remark/config/set-dscp',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_traffic_class_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_TC',
-                      policy_name=args[0], classifier_name=args[1])
-    body = {'SET_TC': int(args[2])}
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/queuing/config/output-queue-index',
+                      policy_name=args[0], class_name=args[1])
+    body = {'openconfig-fbs-ext:output-queue-index': int(args[2])}
     return fbs_client.patch(keypath, body)
 
 
 def clear_traffic_class_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_TC',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/queuing/config/output-queue-index',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_policer_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
-                      policy_name=args[0], classifier_name=args[1])
-    body = dict()
-    data = {
-        "POLICY_NAME": args[0],
-        "CLASSIFIER_NAME": args[1]
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/policer/config',
+                      policy_name=args[0], class_name=args[1])
+    body = {
+        "openconfig-fbs-ext:config": {
+        }
     }
 
     index = 2
     while index < len(args):
         if args[index] == 'cir':
-            key = 'SET_POLICER_CIR'
+            key = 'cir'
             value = args[index + 1]
             if value.endswith('kbps'):
                 value = value.replace('kbps', '000')
@@ -551,8 +517,8 @@ def set_policer_action(args):
                 value = value.replace('tbps', '000000000000')
             elif value.endswith('bps'):
                 value = value.replace('bps', '')
-        elif args[index] == 'cbs':
-            key = 'SET_POLICER_CBS'
+        elif args[index] == 'cbs' or args[index] == 'bc':
+            key = 'bc'
             value = args[index + 1]
             if value.endswith('KB'):
                 value = value.replace('KB', '000')
@@ -565,7 +531,7 @@ def set_policer_action(args):
             elif value.endswith('B'):
                 value = value.replace('B', '')
         elif args[index] == 'pir':
-            key = 'SET_POLICER_PIR'
+            key = 'pir'
             value = args[index+1]
             if value.endswith('kbps'):
                 value = value.replace('kbps', '000')
@@ -577,8 +543,8 @@ def set_policer_action(args):
                 value = value.replace('tbps', '000000000000')
             elif value.endswith('bps'):
                 value = value.replace('bps', '')
-        elif args[index] == 'pbs':
-            key = 'SET_POLICER_PBS'
+        elif args[index] == 'pbs' or args[index] == 'be':
+            key = 'be'
             value = args[index + 1]
             if value.endswith('KB'):
                 value = value.replace('KB', '000')
@@ -594,29 +560,36 @@ def set_policer_action(args):
             print('%Error: Unknown argument {}'.format(args[index]))
             return
 
-        data[key] = value
+        body["openconfig-fbs-ext:config"][key] = value
         index += 2
 
-    body["POLICY_SECTIONS_TABLE_LIST"] = [data]
     return fbs_client.patch(keypath, body)
 
 
 def clear_policer_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/policer/config',
+                      policy_name=args[0], class_name=args[1])
+    if len(args) == 2:
+        return fbs_client.delete(keypath)
+
     response = fbs_client.get(keypath)
     if response.ok():
         data = response.content
         if len(args) == 2:
-            delete_params = ['SET_POLICER_PBS', 'SET_POLICER_PIR', 'SET_POLICER_CBS', 'SET_POLICER_CIR']
+            delete_params = ['cir', 'bc', 'pir', 'be']
         else:
             delete_params = []
             for feat in args[2:]:
-                delete_params.append('SET_POLICER_' + feat.upper())
+                if feat == 'cir' or feat == 'pir':
+                    delete_params.append(feat)
+                elif feat == 'cbs':
+                    delete_params.append('bc')
+                elif feat == 'pbs':
+                    delete_params.append('be')
 
         for feat in delete_params:
-            if feat in data['sonic-flow-based-services:POLICY_SECTIONS_TABLE_LIST'][0].keys():
-                del data['sonic-flow-based-services:POLICY_SECTIONS_TABLE_LIST'][0][feat]
+            if feat in data['openconfig-fbs-ext:config'].keys():
+                del data['openconfig-fbs-ext:config'][feat]
 
         return fbs_client.put(keypath, data)
     else:
