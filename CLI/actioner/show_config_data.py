@@ -23,6 +23,7 @@ from show_config_table_sort import *
 from show_config_ptp import *
 from show_config_routemap import *
 from show_config_copp import *
+from show_config_bgp_af import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -74,6 +75,12 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
-                  'copp_police'             : show_copp_police
+                  'copp_police'             : show_copp_police,
+                  'bgp_af_ipv4_nw'          : show_router_bgp_af_ipv4_nw_cmd,
+                  'bgp_af_ipv4_ag'          : show_router_bgp_af_ipv4_ag_cmd,
+                  'bgp_af_ipv4_redist'      : show_router_bgp_af_ipv4_redist_cmd,
+                  'bgp_af_ipv6_nw'          : show_router_bgp_af_ipv6_nw_cmd,
+                  'bgp_af_ipv6_ag'          : show_router_bgp_af_ipv6_ag_cmd,
+                  'bgp_af_ipv6_redist'      : show_router_bgp_af_ipv6_redist_cmd
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
