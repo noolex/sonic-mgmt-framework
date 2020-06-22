@@ -1281,3 +1281,15 @@ def ip_protocol_to_user_fmt(val):
         return "icmpv6"
 
     return val
+
+
+def pcp_to_user_fmt(pcp):
+    return pcp_rev_map[pcp]
+
+
+def dscp_to_user_fmt(dscp):
+    if dscp in dscp_rev_map:
+        return dscp_rev_map[dscp]
+
+    return dscp
+

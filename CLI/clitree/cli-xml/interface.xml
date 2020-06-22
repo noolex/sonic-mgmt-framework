@@ -342,7 +342,7 @@ limitations under the License.
    <ACTION builtin="clish_pyobj">sonic_cli_vlan get_sonic_vlan_sonic_vlan Vlan${id} show_vlan.j2 ${__full_line}</ACTION>
    </COMMAND>
    <COMMAND
-       name="show NeighbourSuppressStatus"
+       name="show neighbor-suppress-status"
        help="Show arp and nd suppression status"
        ptype="SUBCOMMAND"
        mode="subcommand"
@@ -1208,14 +1208,14 @@ limitations under the License.
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/mtu body={"openconfig-interfaces:mtu": 9100}</ACTION>
       </COMMAND>
       <COMMAND
-        name="neigh_suppress"
+        name="neigh-suppress"
         help="Enable ARP and ND Suppression"
         command_tables="sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/SUPPRESS_VLAN_NEIGH_LIST/name={name}"
         dbpath="sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/SUPPRESS_VLAN_NEIGH_LIST/suppress=on">
         <ACTION builtin="clish_pyobj">sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list ${vlan_name}</ACTION>
       </COMMAND>
       <COMMAND
-        name="no neigh_suppress"
+        name="no neigh-suppress"
         help="Disable ARP and ND Suppression">
         <ACTION builtin="clish_pyobj">sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list ${vlan_name}</ACTION>
       </COMMAND>

@@ -407,13 +407,13 @@ def invoke_api(func, args=[]):
 
     # Configure IGMP
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp-joins/igmp-join={mcastgrpaddr},{srcaddr}/config', name=args[0], index="0",mcastgrpaddr=args[1], srcaddr=args[2])
-        body = { "openconfig-interfaces-ext:config":  {"enable" : True}}
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/joins', name=args[0], index="0")
+        body = {"openconfig-igmp-ext:joins":{"join":[{"mcastgrpaddr":args[1],"srcaddr":args[2],"config":{"enable":True}}]}}
         return api.patch(path, body)
 
     # Delete IGMP
     elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp-joins/igmp-join={mcastgrpaddr},{srcaddr}', name=args[0], index="0",mcastgrpaddr=args[1], srcaddr=args[2])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/joins/join={mcastgrpaddr},{srcaddr}', name=args[0], index="0",mcastgrpaddr=args[1], srcaddr=args[2])
         return api.delete(path)
 
     # Enable IGMP
@@ -492,8 +492,8 @@ def invoke_api(func, args=[]):
      
     # Configure static ARP
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors/neighbor={sip}/config', name=args[0], index="0", sip=args[1])
-        body = { "openconfig-if-ip:config":  {"ip" : args[1], "link-layer-address": args[2]} }
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=args[0], index="0")
+        body = {"openconfig-if-ip:neighbors":{"neighbor":[{"ip":args[1],"config":{"ip":args[1],"link-layer-address":args[2]}}]}}
         return api.patch(path, body)
 
     # Delete static ARP
@@ -503,8 +503,8 @@ def invoke_api(func, args=[]):
 
     # Configure static ND
     elif func == 'patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors/neighbor={sip}/config', name=args[0], index="0", sip=args[1])
-        body = { "openconfig-if-ip:config":  {"ip" : args[1], "link-layer-address": args[2]} }
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors', name=args[0], index="0")
+        body = {"openconfig-if-ip:neighbors":{"neighbor":[{"ip":args[1],"config":{"ip":args[1],"link-layer-address":args[2]}}]}}
         return api.patch(path, body)
 
     # Delete static ND
@@ -543,7 +543,7 @@ def invoke_api(func, args=[]):
                    MaxHopCount = "True"
                    path4 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
                    body4 = {"openconfig-relay-agent-ext:max-hop-count": int(args[index+1]) }
-                elif ( i == "vrf" ):
+                elif ( i == "vrf-name" ):
                    serverVrf = "True"
                    path5 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
                    body5 = {"openconfig-relay-agent-ext:vrf": args[index+1] }
@@ -558,7 +558,7 @@ def invoke_api(func, args=[]):
 
         if (helperConfig == "True"):
            if (serverVrf ==  "True"):
-               api.patch(path5, body5)
+               body1.update(body5)
            return  api.patch(path1, body1)
         elif ( srcIntf == "True" ):
            return  api.patch(path2, body2)
@@ -597,7 +597,7 @@ def invoke_api(func, args=[]):
                    MaxHopCount = "True"
                    path3 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
                    body3 = {"openconfig-relay-agent-ext:max-hop-count": int(args[index+1]) }
-                elif ( i == "vrf" ):
+                elif ( i == "vrf-name" ):
                    serverVrf = "True"
                    path4 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
                    body4 = {"openconfig-relay-agent-ext:vrf": args[index+1] }
@@ -608,7 +608,7 @@ def invoke_api(func, args=[]):
 
         if (helperConfig == "True"):
            if (serverVrf ==  "True"):
-               api.patch(path4, body4)
+               body1.update(body4)
            return  api.patch(path1, body1)
         elif ( srcIntf == "True" ):
            return  api.patch(path2, body2)
@@ -660,7 +660,7 @@ def invoke_api(func, args=[]):
            elif ( i == "max-hop-count") :
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
              api.delete(path)
-           elif ( i == "vrf") :
+           elif ( i == "vrf-name") :
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
              api.delete(path)
            elif ( i == "vrf-select") :
@@ -710,7 +710,7 @@ def invoke_api(func, args=[]):
            elif ( i == "max-hop-count") :
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:max-hop-count', id=args[0])
              api.delete(path)
-           elif ( i == "vrf") :
+           elif ( i == "vrf-name") :
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:vrf', id=args[0])
              api.delete(path)
            elif ( i == "vrf-select") :

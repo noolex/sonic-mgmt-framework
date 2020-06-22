@@ -1,0 +1,15 @@
+{% for key,value in json_output.items() %}
+{% if 'openconfig-system-ext:tpcm-image-list' == key %}
+{% for image in value %}
+{{ image }}
+{% endfor %}
+{% else %}
+{% for output in value['status-detail'] %}
+{% if "-y" not in output  %}
+{{output}}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+
