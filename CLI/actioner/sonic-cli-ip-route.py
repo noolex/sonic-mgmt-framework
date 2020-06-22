@@ -110,16 +110,18 @@ def parse_ipv4Entry(routeLst, response):
         if "prefix" in ipEntry:
             prefix = ipEntry["prefix"].encode('ascii', 'ignore')
             route.update({"prefix": prefix})
-        if "openconfig-aft-ipv4-ext:metric" in ipEntry:
-            distance = "/" + str(ipEntry["openconfig-aft-ipv4-ext:metric"])
-        if "openconfig-aft-ipv4-ext:distance" in ipEntry:
-            distance = str(ipEntry["openconfig-aft-ipv4-ext:distance"]) + distance
-        if "openconfig-aft-ipv4-ext:origin-protocol" in ipEntry:
-            originProtocol = getOriginProtocol(ipEntry["openconfig-aft-ipv4-ext:origin-protocol"])
-            route.update({"originProtocol": originProtocol})
-        if "openconfig-aft-ipv4-ext:uptime" in ipEntry:
-            uptime = ipEntry["openconfig-aft-ipv4-ext:uptime"].encode('ascii', 'ignore')
-            route.update({"uptime": uptime})
+        if "state" in ipEntry:
+            ipEntryState = ipEntry["state"]
+            if "openconfig-aft-ipv4-ext:metric" in ipEntryState:
+                distance = "/" + str(ipEntryState["openconfig-aft-ipv4-ext:metric"])
+            if "openconfig-aft-ipv4-ext:distance" in ipEntryState:
+                distance = str(ipEntryState["openconfig-aft-ipv4-ext:distance"]) + distance
+            if "openconfig-aft-ipv4-ext:origin-protocol" in ipEntryState:
+                originProtocol = getOriginProtocol(ipEntryState["openconfig-aft-ipv4-ext:origin-protocol"])
+                route.update({"originProtocol": originProtocol})
+            if "openconfig-aft-ipv4-ext:uptime" in ipEntryState:
+                uptime = ipEntryState["openconfig-aft-ipv4-ext:uptime"].encode('ascii', 'ignore')
+                route.update({"uptime": uptime})
         if "openconfig-aft-ipv4-ext:next-hops" in ipEntry:
             nextHops = ipEntry["openconfig-aft-ipv4-ext:next-hops"]
             parse_nextHops(route, nextHops)
@@ -144,16 +146,18 @@ def parse_ipv6Entry(routeLst, response):
         if "prefix" in ipEntry:
             prefix = ipEntry["prefix"].encode('ascii', 'ignore')
             route.update({"prefix": prefix})
-        if "openconfig-aft-ipv6-ext:metric" in ipEntry:
-            distance = "/" + str(ipEntry["openconfig-aft-ipv6-ext:metric"])
-        if "openconfig-aft-ipv6-ext:distance" in ipEntry:
-            distance = str(ipEntry["openconfig-aft-ipv6-ext:distance"]) + distance
-        if "openconfig-aft-ipv6-ext:origin-protocol" in ipEntry:
-            originProtocol = getOriginProtocol(ipEntry["openconfig-aft-ipv6-ext:origin-protocol"])
-            route.update({"originProtocol": originProtocol})
-        if "openconfig-aft-ipv6-ext:uptime" in ipEntry:
-            uptime = ipEntry["openconfig-aft-ipv6-ext:uptime"].encode('ascii', 'ignore')
-            route.update({"uptime": uptime})
+        if "state" in ipEntry:
+            ipEntryState = ipEntry["state"]
+            if "openconfig-aft-ipv6-ext:metric" in ipEntryState:
+                distance = "/" + str(ipEntryState["openconfig-aft-ipv6-ext:metric"])
+            if "openconfig-aft-ipv6-ext:distance" in ipEntryState:
+                distance = str(ipEntryState["openconfig-aft-ipv6-ext:distance"]) + distance
+            if "openconfig-aft-ipv6-ext:origin-protocol" in ipEntryState:
+                originProtocol = getOriginProtocol(ipEntryState["openconfig-aft-ipv6-ext:origin-protocol"])
+                route.update({"originProtocol": originProtocol})
+            if "openconfig-aft-ipv6-ext:uptime" in ipEntryState:
+                uptime = ipEntryState["openconfig-aft-ipv6-ext:uptime"].encode('ascii', 'ignore')
+                route.update({"uptime": uptime})
         if "openconfig-aft-ipv6-ext:next-hops" in ipEntry:
             nextHops = ipEntry["openconfig-aft-ipv6-ext:next-hops"]
             parse_nextHops(route, nextHops)
