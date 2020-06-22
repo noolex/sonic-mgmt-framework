@@ -230,26 +230,14 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip arp"
-<<<<<<< HEAD
-        help="Configure static ND"
         command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
-        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4">
-||||||| merged common ancestors
-        help="Configure static ND" >
-=======
+        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4"
         help="Configure static ARP" >
->>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="static-ip"
             help="IP Address"
-<<<<<<< HEAD
-            ptype="IPV4_OR_IPV6_ADDR"
-            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"/>
-||||||| merged common ancestors
-            ptype="IPV4_OR_IPV6_ADDR" />
-=======
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"
             ptype="IP_ADDR" />
->>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="neigh"
             help="MAC Address"
@@ -683,41 +671,20 @@ limitations under the License.
 
       <COMMAND
         name="ip arp"
-<<<<<<< HEAD
-        help="Configure static ND" 
         command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
         dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4"        
-        >
-||||||| merged common ancestors
-        help="Configure static ND" >
-=======
         help="Configure static ARP" >
->>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="static-ip"
             help="IP Address"
-<<<<<<< HEAD
-            ptype="IPV4_OR_IPV6_ADDR" 
-            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"/>
-||||||| merged common ancestors
-            ptype="IPV4_OR_IPV6_ADDR" />
-=======
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"
             ptype="IP_ADDR" />
->>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="neigh"
             help="MAC Address"
-<<<<<<< HEAD
             ptype="MAC_ADDR"
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
-||||||| merged common ancestors
-            ptype="MAC_ADDR" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
-=======
-            ptype="MAC_ADDR" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${vlan_name} ${static-ip}
->>>>>>> origin/broadcom_sonic_3.x_share
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -1128,28 +1095,14 @@ limitations under the License.
      </COMMAND>
     <COMMAND
         name="ip arp"
-<<<<<<< HEAD
-        help="Configure static ND" 
         command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
         dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4"        
-        >
-||||||| merged common ancestors
-        help="Configure static ND" >
-=======
         help="Configure static ARP" >
->>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="static-ip"
             help="IP Address"
-<<<<<<< HEAD
-            ptype="IPV4_OR_IPV6_ADDR"
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"            
-             />
-||||||| merged common ancestors
-            ptype="IPV4_OR_IPV6_ADDR" />
-=======
             ptype="IP_ADDR" />
->>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="neigh"
             help="MAC Address"

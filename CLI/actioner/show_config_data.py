@@ -75,7 +75,6 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_two_step'            : show_ptp_two_step,
                   'ptp_network_transport'   : show_ptp_network_transport,
                   'ptp_master_table'        : show_ptp_master_table,
-<<<<<<< HEAD
                   'ipv4_eth_dhcp_relay'     : show_ipv4_eth_dhcp_relay,
                   'ipv4_po_dhcp_relay'      : show_ipv4_po_dhcp_relay,
                   'ipv4_vlan_dhcp_relay'    : show_ipv4_vlan_dhcp_relay,
@@ -92,30 +91,14 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ipv6_lag_ip_address'     : show_ipv6_lag_ip_address,
                   'ipv6_mgmt_ip_address'    : show_ipv6_mgmt_ip_address,
                   'ipv6_lo_ip_address'      : show_ipv6_lo_ip_address,
-                  'sflow_source_if'         : show_sflow_source_if,
                   'routemap_set_community'  : show_routemap_setcommunity,
                   'routemap_set_extcommunity' : show_routemap_setextcommunity,
                   'routemap_match_interface'  : show_routemap_matchintf,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
-||||||| merged common ancestors
-<<<<<<<<< Temporary merge branch 1
                   'sflow_source_if'         : show_sflow_source_if,
                   'dns_server_source_if'    : show_dns_source_if
-||||||||| merged common ancestors
-                  'dns_server_source_if'    : show_dns_source_if
-=========
-                  'dns_server_source_if'    : show_dns_source_if,
-=======
-                  'dns_server_source_if'    : show_dns_source_if,
->>>>>>> origin/broadcom_sonic_3.x_share
                   'copp_police'             : show_copp_police
-<<<<<<< HEAD
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-=======
-                  'sflow_source_if'         : show_sflow_source_if,
->>>>>>> origin/broadcom_sonic_3.x_share
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
