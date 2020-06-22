@@ -145,7 +145,12 @@ def set_classifier_match_acl(args):
 
 def clear_classifier_match_acl(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_NAME', classifier_name=args[0])
-    return fbs_client.delete(keypath)
+    resp = fbs_client.delete(keypath)
+    if resp.ok():
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_TYPE', classifier_name=args[0])
+        resp = fbs_client.delete(keypath)
+
+    return resp
 
 
 def __format_mac_addr(macaddr):
@@ -1260,7 +1265,10 @@ def handle_show_classifier_response(response, args, op_str):
                             mac_addr_to_user_fmt=sonic_cli_acl.mac_addr_to_user_fmt,
                             ip_addr_to_user_fmt=sonic_cli_acl.convert_ip_addr_to_user_fmt,
                             ip_proto_to_user_fmt=sonic_cli_acl.ip_protocol_to_user_fmt,
-                            tcp_flags_to_user_fmt=sonic_cli_acl.tcp_flags_to_user_fmt)
+                            tcp_flags_to_user_fmt=sonic_cli_acl.tcp_flags_to_user_fmt,
+                            ethertype_to_user_fmt=ethertype_to_user_fmt,
+                            pcp_to_user_fmt=sonic_cli_acl.pcp_to_user_fmt,
+                            dscp_to_user_fmt=sonic_cli_acl.dscp_to_user_fmt)
     else:
         print(response.error_message())
 
@@ -1550,3 +1558,15 @@ def run(op_str, args):
 
 if __name__ == '__main__':
     run(sys.argv[1], sys.argv[2:])
+
+
+def ethertype_to_user_fmt(val):
+    if val == '0x800':
+        return 'ip'
+    elif val == '0x86dd':
+        return 'ipv6'
+    elif val == '0x806':
+        return 'arp'
+    else:
+        return val
+

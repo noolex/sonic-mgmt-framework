@@ -480,6 +480,12 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="STRING_72"
+        pattern="(^([a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,71})))$"
+        help="String(Max: 72 characters)"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="STRING_WITH_PIPE"
         pattern=".+"
         help="String"
@@ -862,6 +868,13 @@ limitations under the License.
         method="integer"
         pattern="1..3600"
         help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="MCLAG_DELAY_RESTORE_TIME_RANGE"
+        method="integer"
+        pattern="1..3600"
+        help="Delay restore time in seconds"
         />
     <!--=======================================================-->
     <PTYPE

@@ -28,7 +28,7 @@ limitations under the License.
         <PARAM
             name="session-name"
             help="Mirror session name"
-            ptype="STRING"
+            ptype="STRING_72"
             optional="true"
             >
         </PARAM>
@@ -66,7 +66,7 @@ limitations under the License.
         <PARAM
             name="session-name"
             help="Mirror session name"
-            ptype="STRING"
+            ptype="STRING_72"
             >
         </PARAM>
      <ACTION builtin="clish_nop"></ACTION>
@@ -79,7 +79,7 @@ limitations under the License.
         <PARAM
             name="session-name"
             help="Mirror session name"
-            ptype="STRING"
+            ptype="STRING_72"
             >
         </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_mirror delete_mirror_session --session=${session-name}</ACTION>

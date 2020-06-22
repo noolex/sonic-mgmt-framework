@@ -28,6 +28,11 @@ from rpipe_utils import pipestr
 import scripts.render_cli as cli
 
 
+class SonicLinkStateTrackingCLIError(RuntimeError):
+    """Indicates CLI processing errors that needs to be displayed to user"""
+    pass
+
+
 def create_link_state_tracking_group(args):
     aa = cc.ApiClient()
     body = {
@@ -50,8 +55,15 @@ def delete_link_state_tracking_group(args):
 def set_link_state_tracking_group_description(args):
     aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/description', grp_name=args[0])
+
+    descr = args[1]
+    full_cmd = os.getenv('USER_COMMAND', None)
+    match = re.search('description (["]?.*["]?)', full_cmd)
+    if match:
+        descr = match.group(1)
+
     body = {
-        "sonic-link-state-tracking:description": args[1]
+        "sonic-link-state-tracking:description": descr
     }
     return aa.patch(uri, body)
 
@@ -64,8 +76,8 @@ def delete_link_state_tracking_group_description(args):
 
 def set_link_state_tracking_group_timeout(args):
     timeout = int(args[1])
-    if timeout > 999:
-        raise RuntimeError("Timeout not in range 1-999")
+    if timeout > 1800:
+        raise RuntimeError("Timeout not in range 1-1800")
 
     aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/timeout', grp_name=args[0])
@@ -124,32 +136,32 @@ def generic_set_response_handler(response, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
-            print("%Error: {}".format(str(resp_content)))
+            raise SonicLinkStateTrackingCLIError(str(resp_content))
     else:
         try:
             error_data = response.content['ietf-restconf:errors']['error'][0]
             if 'error-app-tag' in error_data and error_data['error-app-tag'] == 'too-many-elements':
-                print('Error: Exceeds maximum number of link state group')
+                raise SonicLinkStateTrackingCLIError('Exceeds maximum number of link state group')
             else:
-                print(response.error_message())
+                raise SonicLinkStateTrackingCLIError(response.error_message())
         except Exception as e:
-            print(response.error_message())
+            raise SonicLinkStateTrackingCLIError(response.error_message())
 
 
 def generic_delete_response_handler(response, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
-            print("%Error: {}".format(str(resp_content)))
+            raise SonicLinkStateTrackingCLIError(str(resp_content))
     elif response.status_code != '404':
         try:
             error_data = response.content['ietf-restconf:errors']['error'][0]
             if 'error-app-tag' in error_data and error_data['error-app-tag'] == 'too-many-elements':
-                print('Error: Exceeds maximum number of link state group')
+                raise SonicLinkStateTrackingCLIError('Exceeds maximum number of link state group')
             else:
-                print(response.error_message())
+                raise SonicLinkStateTrackingCLIError(response.error_message())
         except Exception as e:
-            print(response.error_message())
+            raise SonicLinkStateTrackingCLIError(response.error_message())
 
 
 def show_link_state_tracking_group_data(groups, details):
@@ -183,12 +195,12 @@ def show_link_state_tracking_group_response_handler(response, args):
         if bool(data):
             show_link_state_tracking_group_data(data['sonic-link-state-tracking:INTF_TRACKING_TABLE_LIST'], len(args) > 0)
         elif len(args) > 0:
-             print("%Error: Group not found")
+            raise SonicLinkStateTrackingCLIError("Group not found")
     elif str(response.status_code) == '404':
         if len(args) > 0:
-            print("%Error: Group not found")
+            raise SonicLinkStateTrackingCLIError("Group not found")
     else:
-        print(response.error_message())
+        raise SonicLinkStateTrackingCLIError(response.error_message())
 
 
 request_handlers = {
@@ -227,7 +239,12 @@ def run(op_str, args):
             pipestr().write(full_cmd.split())
         resp = request_handlers[op_str](args)
         response_handlers[op_str](resp, args)
+    except SonicLinkStateTrackingCLIError as e:
+        print("%Error: {}".format(e.message))
+        return -1
     except Exception as e:
-        print("%Error: {}".format(str(e)))
-
+        log.log_error(traceback.format_exc())
+        print('%Error: Encountered exception "{}"'.format(str(e)))
+        return -1
     return
+

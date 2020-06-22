@@ -21,7 +21,17 @@ from show_config_interface import *
 from show_config_bgp import *
 from show_config_table_sort import *
 from show_config_ptp import *
+<<<<<<< HEAD
 from show_config_routemap import *
+||||||| merged common ancestors
+<<<<<<<<< Temporary merge branch 1
+||||||||| merged common ancestors
+from show_config_dns import *
+=========
+from show_config_dns import *
+=======
+from show_config_dns import *
+>>>>>>> origin/broadcom_sonic_3.x_share
 from show_config_copp import *
 
 view_dependency= \
@@ -30,7 +40,21 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
+<<<<<<< HEAD
 ['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-vxlan', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp', 'copp-action']
+||||||| merged common ancestors
+<<<<<<<<< Temporary merge branch 1
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
+
+||||||||| merged common ancestors
+['configure', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp']
+
+=========
+['configure', 'configure-vlan', 'configure-lo', 'configure-vxlan', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp', 'copp-action' ]
+>>>>>>>>> Temporary merge branch 2
+=======
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp, 'configure-vxlan', 'copp-action']
+>>>>>>> origin/broadcom_sonic_3.x_share
 
 render_filelst  = {}
 
@@ -51,6 +75,7 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_two_step'            : show_ptp_two_step,
                   'ptp_network_transport'   : show_ptp_network_transport,
                   'ptp_master_table'        : show_ptp_master_table,
+<<<<<<< HEAD
                   'ipv4_eth_dhcp_relay'     : show_ipv4_eth_dhcp_relay,
                   'ipv4_po_dhcp_relay'      : show_ipv4_po_dhcp_relay,
                   'ipv4_vlan_dhcp_relay'    : show_ipv4_vlan_dhcp_relay,
@@ -74,6 +99,23 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
+||||||| merged common ancestors
+<<<<<<<<< Temporary merge branch 1
+                  'sflow_source_if'         : show_sflow_source_if,
+                  'dns_server_source_if'    : show_dns_source_if
+||||||||| merged common ancestors
+                  'dns_server_source_if'    : show_dns_source_if
+=========
+                  'dns_server_source_if'    : show_dns_source_if,
+=======
+                  'dns_server_source_if'    : show_dns_source_if,
+>>>>>>> origin/broadcom_sonic_3.x_share
                   'copp_police'             : show_copp_police
+<<<<<<< HEAD
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+=======
+                  'sflow_source_if'         : show_sflow_source_if,
+>>>>>>> origin/broadcom_sonic_3.x_share
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

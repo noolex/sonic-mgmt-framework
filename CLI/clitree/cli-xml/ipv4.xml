@@ -230,14 +230,26 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip arp"
+<<<<<<< HEAD
         help="Configure static ND"
         command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
         dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4">
+||||||| merged common ancestors
+        help="Configure static ND" >
+=======
+        help="Configure static ARP" >
+>>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="static-ip"
             help="IP Address"
+<<<<<<< HEAD
             ptype="IPV4_OR_IPV6_ADDR"
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"/>
+||||||| merged common ancestors
+            ptype="IPV4_OR_IPV6_ADDR" />
+=======
+            ptype="IP_ADDR" />
+>>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="neigh"
             help="MAC Address"
@@ -248,12 +260,12 @@ limitations under the License.
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Configure static ND.
+                Configure static ARP.
             </DESCRIPTION>
             <USAGE>
-                Use this command to configure static ND.
+                Use this command to configure static ARP.
             </USAGE>
-            <EXAMPLE summary="Configure static ND">
+            <EXAMPLE summary="Configure static ARP">
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
             </EXAMPLE>
@@ -262,11 +274,11 @@ limitations under the License.
 
     <COMMAND
         name="no ip arp"
-        help="Unconfigure static ND" >
+        help="Unconfigure static ARP" >
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IP_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
@@ -276,12 +288,12 @@ limitations under the License.
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Unconfigure static ND.
+                Unconfigure static ARP.
             </DESCRIPTION>
             <USAGE>
-                Use this command to unconfigure static ND.
+                Use this command to unconfigure static ARP.
             </USAGE>
-            <EXAMPLE summary="Unconfigure static ND">
+            <EXAMPLE summary="Unconfigure static ARP">
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
             </EXAMPLE>
@@ -671,30 +683,50 @@ limitations under the License.
 
       <COMMAND
         name="ip arp"
+<<<<<<< HEAD
         help="Configure static ND" 
         command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
         dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4"        
         >
+||||||| merged common ancestors
+        help="Configure static ND" >
+=======
+        help="Configure static ARP" >
+>>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="static-ip"
             help="IP Address"
+<<<<<<< HEAD
             ptype="IPV4_OR_IPV6_ADDR" 
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"/>
+||||||| merged common ancestors
+            ptype="IPV4_OR_IPV6_ADDR" />
+=======
+            ptype="IP_ADDR" />
+>>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="neigh"
             help="MAC Address"
+<<<<<<< HEAD
             ptype="MAC_ADDR"
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+||||||| merged common ancestors
+            ptype="MAC_ADDR" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+=======
+            ptype="MAC_ADDR" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${vlan_name} ${static-ip}
+>>>>>>> origin/broadcom_sonic_3.x_share
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Configure static ND.
+                Configure static ARP.
             </DESCRIPTION>
             <USAGE>
-                Use this command to configure static ND.
+                Use this command to configure static ARP.
             </USAGE>
-            <EXAMPLE summary="Configure static ND">
+            <EXAMPLE summary="Configure static ARP">
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
             </EXAMPLE>
@@ -703,26 +735,26 @@ limitations under the License.
 
     <COMMAND
         name="no ip arp"
-        help="Unconfigure static ND" >
+        help="Unconfigure static ARP" >
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IP_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
             ptype="MAC_ADDR" />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${vlan_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Unconfigure static ND.
+                Unconfigure static ARP.
             </DESCRIPTION>
             <USAGE>
-                Use this command to unconfigure static ND.
+                Use this command to unconfigure static ARP.
             </USAGE>
-            <EXAMPLE summary="Unconfigure static ND">
+            <EXAMPLE summary="Unconfigure static ARP">
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
             </EXAMPLE>
@@ -1096,16 +1128,28 @@ limitations under the License.
      </COMMAND>
     <COMMAND
         name="ip arp"
+<<<<<<< HEAD
         help="Configure static ND" 
         command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
         dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4"        
         >
+||||||| merged common ancestors
+        help="Configure static ND" >
+=======
+        help="Configure static ARP" >
+>>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="static-ip"
             help="IP Address"
+<<<<<<< HEAD
             ptype="IPV4_OR_IPV6_ADDR"
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"            
              />
+||||||| merged common ancestors
+            ptype="IPV4_OR_IPV6_ADDR" />
+=======
+            ptype="IP_ADDR" />
+>>>>>>> origin/broadcom_sonic_3.x_share
         <PARAM
             name="neigh"
             help="MAC Address"
@@ -1113,16 +1157,16 @@ limitations under the License.
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh"            
              />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${po_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Configure static ND.
+                Configure static ARP.
             </DESCRIPTION>
             <USAGE>
-                Use this command to configure static ND.
+                Use this command to configure static ARP.
             </USAGE>
-            <EXAMPLE summary="Configure static ND">
+            <EXAMPLE summary="Configure static ARP">
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
             </EXAMPLE>
@@ -1131,24 +1175,24 @@ limitations under the License.
 
     <COMMAND
         name="no ip arp"
-        help="Unconfigure static ND" >
+        help="Unconfigure static ARP" >
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IP_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
             ptype="MAC_ADDR" />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${po_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Unconfigure static ND.
+                Unconfigure static ARP.
             </DESCRIPTION>
             <USAGE>
-                Use this command to unconfigure static ND.
+                Use this command to unconfigure static ARP.
             </USAGE>
             <EXAMPLE summary="Unconfigure static ND">
                 sonic-cli(config)# interface Ethernet 0
