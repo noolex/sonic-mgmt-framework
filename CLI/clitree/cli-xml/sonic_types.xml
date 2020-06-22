@@ -92,9 +92,12 @@ limitations under the License.
         name="PHY_VL_PO_INTERFACE"
         method="regexp_select"
         ext_pattern="Ethernet(Port) PortChannel(1-128) Vlan(1-4093) "
+        alt_ext_pattern="Eth(slot/port[/subport]) PortChannel(1-128) Vlan(1-4093) "
         ext_help="(Ethernet interface type) (PortChannel interface type) (Vlan interface type)"
         pattern="&ETH_ALL_INTF;|&VLAN_ALL_INTF;|&PO_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_ALIAS;|&VLAN_ALL_INTF;|&PO_ALL_INTF;"
         help="Interface Type - Ranges"
+        preprocess="mode"
         />
     <!--=======================================================-->
     <PTYPE
@@ -480,6 +483,12 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="STRING_72"
+        pattern="(^([a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,71})))$"
+        help="String(Max: 72 characters)"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="STRING_WITH_PIPE"
         pattern=".+"
         help="String"
@@ -862,6 +871,13 @@ limitations under the License.
         method="integer"
         pattern="1..3600"
         help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="MCLAG_DELAY_RESTORE_TIME_RANGE"
+        method="integer"
+        pattern="1..3600"
+        help="Delay restore time in seconds"
         />
     <!--=======================================================-->
     <PTYPE

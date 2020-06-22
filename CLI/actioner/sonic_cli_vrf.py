@@ -66,10 +66,9 @@ def get_vrf_data(vrf_name, vrf_intf_info):
         else:
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/interfaces/interface', name=vrf_name)
             vrf_intfs = api.get(keypath)
-            if vrf_intfs.ok():
+            vrf_data['openconfig-network-instance:interface'] = []
+            if vrf_intfs.ok() and 'openconfig-network-instance:interface' in vrf_intfs.content:
                 vrf_data['openconfig-network-instance:interface'] = vrf_intfs.content['openconfig-network-instance:interface']
-            else:
-                vrf_data['openconfig-network-instance:interface'] = []
 
             intfs = vrf_data['openconfig-network-instance:interface']
             for intf in intfs:

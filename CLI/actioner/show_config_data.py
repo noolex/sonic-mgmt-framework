@@ -31,7 +31,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-vxlan', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp', 'copp-action']
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt', 'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
 
 render_filelst  = {}
 
@@ -68,7 +68,6 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ipv6_lag_ip_address'     : show_ipv6_lag_ip_address,
                   'ipv6_mgmt_ip_address'    : show_ipv6_mgmt_ip_address,
                   'ipv6_lo_ip_address'      : show_ipv6_lo_ip_address,
-                  'sflow_source_if'         : show_sflow_source_if,
                   'routemap_set_community'  : show_routemap_setcommunity,
                   'routemap_set_extcommunity' : show_routemap_setextcommunity,
                   'routemap_match_interface'  : show_routemap_matchintf,
@@ -76,6 +75,7 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
                   'copp_police'             : show_copp_police,
+                  'sflow_source_if'         : show_sflow_source_if,
                   'bgp_af_ipv4_nw'          : show_router_bgp_af_ipv4_nw_cmd,
                   'bgp_af_ipv4_ag'          : show_router_bgp_af_ipv4_ag_cmd,
                   'bgp_af_ipv4_redist'      : show_router_bgp_af_ipv4_redist_cmd,

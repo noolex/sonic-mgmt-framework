@@ -21,6 +21,12 @@
                      {% set ips = RelayConfig['helper-address'] %}
                      {% set ip_all = ips|join(", ")  %}
 {{"Server Address: "}}{{ ip_all }}
+                     {% if 'openconfig-relay-agent-ext:vrf' in RelayConfig %}
+                        {% if vars.update({'serverVrf':RelayConfig['openconfig-relay-agent-ext:vrf']}) %}{% endif %}
+                     {% else %}
+                        {% if vars.update({'serverVrf':"Not Configured"}) %}{% endif %}
+                     {% endif %}
+{{"Server VRF: "}}{{ vars.serverVrf }}
                      {% if 'openconfig-relay-agent-ext:src-intf' in RelayConfig %}
                         {% if vars.update({'srcIntf':RelayConfig['openconfig-relay-agent-ext:src-intf']}) %}{% endif %}
                      {% else %}
@@ -33,24 +39,18 @@
                          {% if vars.update({'linkSelect':"disable"})  %}{% endif %}
                      {% endif %}
 {{"Link Select: "}}{{ vars.linkSelect }}
+                     {% if 'openconfig-relay-agent-ext:vrf-select' in RelayConfig and RelayConfig['openconfig-relay-agent-ext:vrf-select'] == "ENABLE" %}
+                         {% if vars.update({'vrfSelect':"enable"}) %}{% endif %}
+                     {% else %}
+                         {% if vars.update({'vrfSelect':"disable"})  %}{% endif %}
+                     {% endif %}
+{{"VRF Select: "}}{{ vars.vrfSelect }}
                      {% if 'openconfig-relay-agent-ext:max-hop-count' in RelayConfig %}
                          {% if vars.update({'maxHopCount':RelayConfig['openconfig-relay-agent-ext:max-hop-count']}) %}{% endif %}
                      {% else %}
                          {% if vars.update({'maxHopCount':"10"}) %}{% endif %}
                      {% endif %}
 {{"Max Hop Count: "}}{{ vars.maxHopCount}}
-                     {% if 'openconfig-relay-agent-ext:vrf' in RelayConfig %}
-                        {% if vars.update({'serverVrf':RelayConfig['openconfig-relay-agent-ext:vrf']}) %}{% endif %}
-                     {% else %}
-                        {% if vars.update({'serverVrf':"Not Configured"}) %}{% endif %}
-                     {% endif %}
-{{"Server Vrf: "}}{{ vars.serverVrf }}
-                     {% if 'openconfig-relay-agent-ext:vrf-select' in RelayConfig and RelayConfig['openconfig-relay-agent-ext:vrf-select'] == "ENABLE" %}
-                         {% if vars.update({'vrfSelect':"enable"}) %}{% endif %}
-                     {% else %}
-                         {% if vars.update({'vrfSelect':"disable"})  %}{% endif %}
-                     {% endif %}
-{{"Relay Vrf Select: "}}{{ vars.vrfSelect }}
          {% if 'openconfig-relay-agent-ext:policy-action' in RelayConfig  and RelayConfig['openconfig-relay-agent-ext:policy-action'] == "APPEND" %}
             {% if vars.update({'policyAction':"append"}) %}{% endif %}
          {% elif 'openconfig-relay-agent-ext:policy-action' in RelayConfig  and RelayConfig['openconfig-relay-agent-ext:policy-action'] == "REPLACE" %}
@@ -58,7 +58,7 @@
          {% else %}
             {% if vars.update({'policyAction':"discard"})  %}{% endif %}
          {% endif %}
-{{"Relay Policy Action: "}}{{ vars.policyAction }}
+{{"Policy Action: "}}{{ vars.policyAction }}
                   {% endif %}
                {% endfor %}
             {% endfor %}
@@ -77,6 +77,12 @@
          {% set ips = RelayConfig['helper-address'] %}
          {% set ip_all = ips|join(", ")  %}
 {{"Server Address: "}}{{ ip_all }}
+         {% if 'openconfig-relay-agent-ext:vrf' in RelayConfig %}
+            {% if vars.update({'serverVrf':RelayConfig['openconfig-relay-agent-ext:vrf']}) %}{% endif %}
+         {% else %}
+            {% if vars.update({'serverVrf':"Not Configured"}) %}{% endif %}
+         {% endif %}
+{{"Server VRF: "}}{{ vars.serverVrf }}
          {% if 'openconfig-relay-agent-ext:src-intf' in RelayConfig %}
             {% if vars.update({'srcIntf':RelayConfig['openconfig-relay-agent-ext:src-intf']}) %}{% endif %}
          {% else %}
@@ -89,24 +95,18 @@
             {% if vars.update({'linkSelect':"disable"})  %}{% endif %}
          {% endif %}
 {{"Link Select: "}}{{ vars.linkSelect }}
+         {% if 'openconfig-relay-agent-ext:vrf-select' in RelayConfig and RelayConfig['openconfig-relay-agent-ext:vrf-select'] == "ENABLE" %}
+            {% if vars.update({'vrfSelect':"enable"}) %}{% endif %}
+         {% else %}
+            {% if vars.update({'vrfSelect':"disable"})  %}{% endif %}
+         {% endif %}
+{{"VRF Select: "}}{{ vars.vrfSelect }}
          {% if 'openconfig-relay-agent-ext:max-hop-count' in RelayConfig %}
             {% if vars.update({'maxHopCount':RelayConfig['openconfig-relay-agent-ext:max-hop-count']}) %}{% endif %}
          {% else %}
             {% if vars.update({'maxHopCount':"10"}) %}{% endif %}
          {% endif %}
 {{"Max Hop Count: "}}{{ vars.maxHopCount}}
-         {% if 'openconfig-relay-agent-ext:vrf' in RelayConfig %}
-            {% if vars.update({'serverVrf':RelayConfig['openconfig-relay-agent-ext:vrf']}) %}{% endif %}
-         {% else %}
-            {% if vars.update({'serverVrf':"Not Configured"}) %}{% endif %}
-         {% endif %}
-{{"Server Vrf: "}}{{ vars.serverVrf }}
-         {% if 'openconfig-relay-agent-ext:vrf-select' in RelayConfig and RelayConfig['openconfig-relay-agent-ext:vrf-select'] == "ENABLE" %}
-            {% if vars.update({'vrfSelect':"enable"}) %}{% endif %}
-         {% else %}
-            {% if vars.update({'vrfSelect':"disable"})  %}{% endif %}
-         {% endif %}
-{{"Relay Vrf Select: "}}{{ vars.vrfSelect }}
          {% if 'openconfig-relay-agent-ext:policy-action' in RelayConfig  and RelayConfig['openconfig-relay-agent-ext:policy-action'] == "APPEND" %}
             {% if vars.update({'policyAction':"append"})  %}{% endif %}
          {% elif 'openconfig-relay-agent-ext:policy-action' in RelayConfig  and RelayConfig['openconfig-relay-agent-ext:policy-action'] == "REPLACE" %}
@@ -114,7 +114,7 @@
          {% else %}
             {% if vars.update({'policyAction':"discard"})  %}{% endif %}
          {% endif %}
-{{"Relay Policy Action: "}}{{ vars.policyAction }}
+{{"Policy Action: "}}{{ vars.policyAction }}
       {% endif %}
    {% endfor %}
 {% endif %}

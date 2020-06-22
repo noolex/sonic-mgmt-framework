@@ -206,6 +206,52 @@ limitations under the License.
 
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_global_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server timelimit 13</EXAMPLE>
+				<DESCRIPTION>Configure bind time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server bind-timelimit 10</EXAMPLE>
+				<DESCRIPTION>Configure idle time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server idle-timelimit 12</EXAMPLE>
+				<DESCRIPTION>Configure retry attempt for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server retry 8</EXAMPLE>
+				<DESCRIPTION>Configure port for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server port 81</EXAMPLE>
+				<DESCRIPTION>Configure scope for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server scope sub</EXAMPLE>
+				<DESCRIPTION>Configure version for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server version 2</EXAMPLE>
+				<DESCRIPTION>Configure base distinguished name for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server base basetest</EXAMPLE>
+				<DESCRIPTION>Configure TLS configuration for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server ssl on</EXAMPLE>
+				<DESCRIPTION>Configure distinguished name to bind for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server binddn dnname</EXAMPLE>
+				<DESCRIPTION>Configure credentials to bind for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server bindpw testpasswd</EXAMPLE>
+				<DESCRIPTION>Configure PAM filter for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam-filter testfilter</EXAMPLE>
+				<DESCRIPTION>Configure PAM Login attribute for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam-login-attribute loginattrstring</EXAMPLE>
+				<DESCRIPTION>Configure PAM Group Distinguished name for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam-group-dn grpdn</EXAMPLE>
+				<DESCRIPTION>Configure PAM Member attribute for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam-member-attribute attrstring</EXAMPLE>
+				<DESCRIPTION>Configure sudo base distinguished name for queries for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudoers-base dnqrystr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for passwd map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-passwd dnsearchstr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for group map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-group grpmap</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for shadow map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-shadow grpmap</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for netgroup map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-netgroup netgrpstr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for sudoers map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-sudoers sudomap</EXAMPLE>
+				<DESCRIPTION>Configure NSS init groups ignore users for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-initgroups-ignoreusers grpstr</EXAMPLE>
+			</DOCGEN>
     </COMMAND>
     
     <COMMAND name = "ldap-server nss" help="Configure LDAP server for NSS">
@@ -280,6 +326,42 @@ limitations under the License.
 				
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_nss_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss timelimit 13</EXAMPLE>
+				<DESCRIPTION>Configure bind time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss bind-timelimit 10</EXAMPLE>
+				<DESCRIPTION>Configure idle time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss idle-timelimit 12</EXAMPLE>
+				<DESCRIPTION>Configure retry attempt for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss retry 8</EXAMPLE>
+				<DESCRIPTION>Configure port for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss port 81</EXAMPLE>
+				<DESCRIPTION>Configure scope for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss scope sub</EXAMPLE>
+				<DESCRIPTION>Configure version for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss version 2</EXAMPLE>
+				<DESCRIPTION>Configure base distinguished name for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss base basetest</EXAMPLE>
+				<DESCRIPTION>Configure TLS configuration for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss ssl on</EXAMPLE>
+				<DESCRIPTION>Configure distinguished name to bind for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss binddn dnname</EXAMPLE>
+				<DESCRIPTION>Configure credentials to bind for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss bindpw testpasswd</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for passwd map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-passwd dnsearchstr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for group map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-group grpmap</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for shadow map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-shadow grpmap</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for netgroup map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-netgroup netgrpstr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for sudoers map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-sudoers sudomap</EXAMPLE>
+				<DESCRIPTION>Configure NSS init groups ignore users for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-initgroups-ignoreusers grpstr</EXAMPLE>
+			</DOCGEN>
     </COMMAND>
     
     <COMMAND name = "ldap-server pam" help="Configure LDAP server for PAM">
@@ -346,6 +428,38 @@ limitations under the License.
 				
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_pam_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure time limit for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam timelimit 13</EXAMPLE>
+				<DESCRIPTION>Configure bind time limit for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam bind-timelimit 10</EXAMPLE>
+				<DESCRIPTION>Configure retry attempt for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam retry 8</EXAMPLE>
+				<DESCRIPTION>Configure port for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam port 81</EXAMPLE>
+				<DESCRIPTION>Configure scope for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam scope sub</EXAMPLE>
+				<DESCRIPTION>Configure version for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam version 2</EXAMPLE>
+				<DESCRIPTION>Configure base distinguished name for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam base basetest</EXAMPLE>
+				<DESCRIPTION>Configure TLS configuration for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam ssl on</EXAMPLE>
+				<DESCRIPTION>Configure distinguished name to bind for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam binddn dnname</EXAMPLE>
+				<DESCRIPTION>Configure credentials to bind for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam bindpw testpasswd</EXAMPLE>
+				<DESCRIPTION>Configure PAM filter for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam pam-filter testfilter</EXAMPLE>
+				<DESCRIPTION>Configure PAM Login attribute for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam pam-login-attribute loginattrstring</EXAMPLE>
+				<DESCRIPTION>Configure PAM Group Distinguished name for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam pam-group-dn grpdn</EXAMPLE>
+				<DESCRIPTION>Configure PAM Member attribute for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam pam-member-attribute attrstring</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for passwd map for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam nss-base-passwd dnsearchstr</EXAMPLE>
+			</DOCGEN>
     </COMMAND>
     
     
@@ -393,6 +507,30 @@ limitations under the License.
 				
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_sudo_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure time limit for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo timelimit 13</EXAMPLE>
+				<DESCRIPTION>Configure bind time limit for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo bind-timelimit 10</EXAMPLE>
+				<DESCRIPTION>Configure retry attempt for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo retry 8</EXAMPLE>
+				<DESCRIPTION>Configure port for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo port 81</EXAMPLE>
+				<DESCRIPTION>Configure scope for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo scope sub</EXAMPLE>
+				<DESCRIPTION>Configure version for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo version 2</EXAMPLE>
+				<DESCRIPTION>Configure base distinguished name for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo base basetest</EXAMPLE>
+				<DESCRIPTION>Configure TLS configuration for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo ssl on</EXAMPLE>
+				<DESCRIPTION>Configure distinguished name to bind for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo binddn dnname</EXAMPLE>
+				<DESCRIPTION>Configure credentials to bind for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo bindpw testpasswd</EXAMPLE>
+				<DESCRIPTION>Configure sudo base distinguished name for queries for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo sudoers-base dnqrystr</EXAMPLE>
+			</DOCGEN>
     </COMMAND>
 
     <COMMAND name="ldap-server source-interface"
@@ -447,6 +585,10 @@ limitations under the License.
 					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)"/>
 				</PARAM>					
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure host for LDAP server </DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server host 4.5.6.7 use-type nss port 300 priority 12 ssl on retry 5</EXAMPLE>
+			</DOCGEN>
     </COMMAND>
 
     <COMMAND name="ldap-server map" help="Configure LDAP server for map">
@@ -481,6 +623,10 @@ limitations under the License.
                 
 			</PARAM>
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_map_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure LDAP server map</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server map objectclass objkey to objectVal</EXAMPLE>
+			</DOCGEN>
     </COMMAND>
 
 		<!--  Unconfigure commands -->
@@ -554,6 +700,52 @@ limitations under the License.
 				</PARAM>
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_global_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server timelimit</EXAMPLE>
+				<DESCRIPTION>Unconfigure bind time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server bind-timelimit</EXAMPLE>
+				<DESCRIPTION>Unconfigure idle time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server idle-timelimit</EXAMPLE>
+				<DESCRIPTION>Unconfigure retry attempt for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server retry</EXAMPLE>
+				<DESCRIPTION>Unconfigure port for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server port</EXAMPLE>
+				<DESCRIPTION>Unconfigure scope for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server scope</EXAMPLE>
+				<DESCRIPTION>Unconfigure version for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server version</EXAMPLE>
+				<DESCRIPTION>Unconfigure base distinguished name for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server base </EXAMPLE>
+				<DESCRIPTION>Unconfigure TLS configuration for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server ssl </EXAMPLE>
+				<DESCRIPTION>Unconfigure distinguished name to bind for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server binddn </EXAMPLE>
+				<DESCRIPTION>Unconfigure credentials to bind for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server bindpw </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM filter for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam-filter </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Login attribute for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam-login-attribute </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Group Distinguished name for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam-group-dn </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Member attribute for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam-member-attribute </EXAMPLE>
+				<DESCRIPTION>Unconfigure sudo base distinguished name for queries for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudoers-base </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for passwd map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-passwd </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for group map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-group </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for shadow map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-shadow </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for netgroup map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-netgroup </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for sudoers map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-sudoers </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS init groups ignore users for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-initgroups-ignoreusers </EXAMPLE>
+			</DOCGEN>
     </COMMAND>
     
     <COMMAND name = "no ldap-server nss"  help="Unconfigure LDAP server for NSS">
@@ -611,6 +803,42 @@ limitations under the License.
 				
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_nss_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure bind time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss bind-timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure idle time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss idle-timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure retry attempt for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss retry </EXAMPLE>
+				<DESCRIPTION>Unconfigure port for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss port </EXAMPLE>
+				<DESCRIPTION>Unconfigure scope for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss scope </EXAMPLE>
+				<DESCRIPTION>Unconfigure version for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss version </EXAMPLE>
+				<DESCRIPTION>Unconfigure base distinguished name for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss base </EXAMPLE>
+				<DESCRIPTION>Unconfigure TLS configuration for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss ssl </EXAMPLE>
+				<DESCRIPTION>Unconfigure distinguished name to bind for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss binddn </EXAMPLE>
+				<DESCRIPTION>Unconfigure credentials to bind for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss bindpw </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for passwd map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-passwd </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for group map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-group </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for shadow map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-shadow </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for netgroup map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-netgroup </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for sudoers map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-sudoers </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS init groups ignore users for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-initgroups-ignoreusers </EXAMPLE>
+			</DOCGEN>
 		</COMMAND>
 			
 		<COMMAND name = "no ldap-server pam"  help="Unconfigure LDAP server for PAM">
@@ -660,7 +888,39 @@ limitations under the License.
         <PARAM name="nss-base-passwd" help="Unconfigure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>				
 			</PARAM>				
-			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_pam_config ${__params}</ACTION>			
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_pam_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure time limit for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure bind time limit for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam bind-timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure retry attempt for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam retry </EXAMPLE>
+				<DESCRIPTION>Unconfigure port for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam port </EXAMPLE>
+				<DESCRIPTION>Unconfigure scope for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam scope </EXAMPLE>
+				<DESCRIPTION>Unconfigure version for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam version </EXAMPLE>
+				<DESCRIPTION>Unconfigure base distinguished name for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam base </EXAMPLE>
+				<DESCRIPTION>Unconfigure TLS configuration for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam ssl </EXAMPLE>
+				<DESCRIPTION>Unconfigure distinguished name to bind for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam binddn </EXAMPLE>
+				<DESCRIPTION>Unconfigure credentials to bind for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam bindpw </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM filter for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam pam-filter </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Login attribute for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam pam-login-attribute </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Group Distinguished name for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam pam-group-dn </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Member attribute for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam pam-member-attribute </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for passwd map for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam nss-base-passwd </EXAMPLE>
+			</DOCGEN>
 		</COMMAND>
 		
 		<COMMAND name = "no ldap-server sudo"  help="Unconfigure LDAP server for SUDO">
@@ -696,7 +956,31 @@ limitations under the License.
 				</PARAM>
 				
 			</PARAM>				
-			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_sudo_config ${__params}</ACTION>			
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_sudo_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure time limit for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure bind time limit for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo bind-timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure retry attempt for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo retry </EXAMPLE>
+				<DESCRIPTION>Unconfigure port for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo port </EXAMPLE>
+				<DESCRIPTION>Unconfigure scope for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo scope </EXAMPLE>
+				<DESCRIPTION>Unconfigure version for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo version </EXAMPLE>
+				<DESCRIPTION>Unconfigure base distinguished name for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo base </EXAMPLE>
+				<DESCRIPTION>Unconfigure TLS configuration for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo ssl </EXAMPLE>
+				<DESCRIPTION>Unconfigure distinguished name to bind for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo binddn </EXAMPLE>
+				<DESCRIPTION>Unconfigure credentials to bind for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo bindpw </EXAMPLE>
+				<DESCRIPTION>Unconfigure sudo base distinguished name for queries for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo sudoers-base </EXAMPLE>
+			</DOCGEN>
 		</COMMAND>
 					
     <COMMAND name="no ldap-server host" help="Unconfigure host name for a LDAP server">
@@ -714,6 +998,10 @@ limitations under the License.
 						</PARAM>
 				</PARAM>					
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_server_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure host for LDAP server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server host 4.5.6.7 </EXAMPLE>
+			</DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ldap-server map" help="Unconfigure LDAP server for map">
@@ -736,6 +1024,10 @@ limitations under the License.
                 
 			</PARAM>
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_map_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure LDAP server map</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server map objectclass objkey</EXAMPLE>
+			</DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ldap-server source-interface"

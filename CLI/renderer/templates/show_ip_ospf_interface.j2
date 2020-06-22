@@ -27,6 +27,9 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'openconfig-ospfv2-ext:index' in interface_state and 'openconfig-ospfv2-ext:mtu' in interface_state and 'openconfig-ospfv2-ext:bandwidth' in interface_state and 'openconfig-ospfv2-ext:if-flags' in interface_state %}
   ifindex {{interface_state['openconfig-ospfv2-ext:index']}}, MTU {{interface_state['openconfig-ospfv2-ext:mtu']}} bytes, BW {{interface_state['openconfig-ospfv2-ext:bandwidth']}} Mbit {{interface_state['openconfig-ospfv2-ext:if-flags']}}
 {% endif %}
+{% if 'openconfig-ospfv2-ext:unnumbered' in interface_state and interface_state['openconfig-ospfv2-ext:unnumbered'] == True and 'openconfig-ospfv2-ext:area-id' in interface_state %}
+  This interface is UNNUMBERED, Area {{interface_state['openconfig-ospfv2-ext:area-id']}}
+{% endif %}
 {% if 'openconfig-ospfv2-ext:address' in interface_state and 'openconfig-ospfv2-ext:address-len' in interface_state and 'openconfig-ospfv2-ext:broadcast-address' in interface_state and 'openconfig-ospfv2-ext:area-id' in interface_state %}
   Internet Address {{interface_state['openconfig-ospfv2-ext:address']}}/{{interface_state['openconfig-ospfv2-ext:address-len']}}, Broadcast {{interface_state['openconfig-ospfv2-ext:broadcast-address']}}, Area {{interface_state['openconfig-ospfv2-ext:area-id']}}
 {% endif %}
