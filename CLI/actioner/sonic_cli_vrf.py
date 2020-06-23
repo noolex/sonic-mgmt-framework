@@ -139,6 +139,12 @@ def build_intf_vrf_binding (intf_vrf_binding):
             log.syslog(log.LOG_ERR, str(e))
             print "%Error: Internal error"
 
+def generate_body(func, args=[]):
+    body = {}
+    if func == 'patch_network_instance_interface':
+        body = {"id": args[0], "config": {"id": args[0]}}
+    return body
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
@@ -181,6 +187,32 @@ def invoke_api(func, args=[]):
 
             return vrf_data
 
+    elif func == 'config_if_range':
+        """
+            - Configure number, range, or comma-delimited list of numbers and range of Vlan or Ethernet or PortChannel interfaces
+            param:
+                - List of available interfaces to be configured
+                - API name to generate payload
+        """
+        iflistStr = args[0].split("=")[1]
+        iflist = iflistStr.rstrip().split(',')
+        subfunc = args[1]
+	vrf_name = args[2]
+	body = {
+		  "openconfig-network-instance:interfaces": {
+		    "interface": []
+		  }
+		}
+        for intf in iflist:
+            intfargs = [intf]
+            body["openconfig-network-instance:interfaces"]["interface"].append(generate_body(subfunc, intfargs))
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/interfaces', name=vrf_name)
+        return api.patch(keypath, body)
+
+    elif func == 'delete_network_instance_interface':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/interfaces/interface={intf}', name=args[1],intf=args[0])
+        return api.delete(keypath)
+
     else:
         body = {}
 
@@ -188,15 +220,34 @@ def invoke_api(func, args=[]):
 
 def run(func, args):
     try:
-        api_response = invoke_api(func, args)
+        if func == 'delete_if_range':
+            """
+                - Remove config for given number, range, or comma-delimited list of numbers and range of interfaces.
+                - Transaction is per interface.
+                param:
+                    -List of interfaces from which config has to be removed
+                    -API name to be invoked
+            """
+            iflistStr = args[0].split("=")[1]
+            if iflistStr == "":
+                return 1
+            iflist = iflistStr.rstrip().split(',')
+            subfunc = args[1] #ex:delete_network_instance_interface
+            for intf in iflist:
+                intfargs = [intf]+args[2:]
+                response = invoke_api(subfunc, intfargs)
+                if not response.ok():
+                    print (response.error_message(), " Interface:", intf)
+        else:
+            api_response = invoke_api(func, args)
 
-        if not api_response.ok():
-            # error response
-            print api_response.error_message()
+            if not api_response.ok():
+                # error response
+                print api_response.error_message()
 
     except:
-            # system/network error
-            print "%Error: Transaction Failure"
+        # system/network error
+        print "%Error: Transaction Failure"
 
 if __name__ == '__main__':
 

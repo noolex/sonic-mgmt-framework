@@ -50,13 +50,6 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${iface_uri} ${addr}</ACTION>
     </COMMAND>
     <COMMAND
-        name="ipv6 enable"
-        help="Enable IPv6"
-        command_tables="sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name}"
-        dbpath="sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/ipv6_use_link_local_only=enable" >
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
-    </COMMAND>
-    <COMMAND
         name="no ipv6 address"
         help="Delete IPv6 address(es) on the interface" >
         <PARAM
@@ -69,13 +62,9 @@ limitations under the License.
     </COMMAND>
 
     <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},ipv6_eth_dhcp_relay,sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST"> </MACRO>
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iface}"> </MACRO>
     <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
 
-    <COMMAND
-        name="no ipv6 enable"
-        help="Disable IPv6" >
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
-    </COMMAND>
     <COMMAND
         name="ipv6 neighbor"
         help="Configure static ND"
@@ -201,15 +190,6 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
-        name="ipv6 enable"
-        help="Enable IPv6"
-        command_tables="sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/pch_name={name}"
-        dbpath="sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/ipv6_use_link_local_only=enable"
-         >
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
-    </COMMAND>
-
-    <COMMAND
         name="no ipv6 address"
         help="Delete IPv6 address(es) on the interface" >
         <PARAM
@@ -221,13 +201,9 @@ limitations under the License.
     </COMMAND>
 
     <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{po_name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/pch_name={name},ipv6_po_dhcp_relay,sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST"> </MACRO>
+    <MACRO name="INTF_IPV6_ENABLE" arg="${po_name}"> </MACRO>
     <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg="{po_name} "> </MACRO>
 
-    <COMMAND
-        name="no ipv6 enable"
-        help="Disable IPv6" >
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
-    </COMMAND>
     <COMMAND
         name="ipv6 neighbor"
         help="Configure static ND"
@@ -319,15 +295,6 @@ limitations under the License.
       </COMMAND>
 
       <COMMAND
-          name="ipv6 enable"
-          help="Enable IPv6"
-          command_tables="sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST/vlanName={name}"
-          dbpath="sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST/ipv6_use_link_local_only=enable"
-           >
-          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
-      </COMMAND>
-
-      <COMMAND
           name="no ipv6 address"
           help="Delete IPv6 address(es) on the interface" >
           <PARAM
@@ -339,13 +306,9 @@ limitations under the License.
       </COMMAND>
 
       <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{vlan_name},sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name={name},ipv6_vlan_dhcp_relay,sonic-vlan:sonic-vlan/VLAN/VLAN_LIST"> </MACRO>
+      <MACRO name="INTF_IPV6_ENABLE" arg="${vlan_name}"> </MACRO>
       <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg="{vlan_name} "> </MACRO>
 
-      <COMMAND
-          name="no ipv6 enable"
-          help="Disable IPv6" >
-          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
-      </COMMAND>
     <COMMAND
         name="ipv6 neighbor"
         help="Configure static ND"
@@ -567,5 +530,42 @@ limitations under the License.
       <ACTION> python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_relay_clear  ${ifName}  ${__full_line}
  </ACTION>
     </COMMAND>
+</VIEW>
+
+<!--=======================================================-->
+<!--                Config Interface RANGE-MODE         -->
+<!--=======================================================-->
+<VIEW name="configure-if-range-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iflist}"> </MACRO>
+</VIEW>
+<VIEW name="configure-vlan-range-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iflist}"> </MACRO>
+</VIEW>
+<VIEW name="configure-po-range-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iflist}"> </MACRO>
 </VIEW>
 </CLISH_MODULE>
