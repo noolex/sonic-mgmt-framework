@@ -1195,5 +1195,46 @@ limitations under the License.
          <ACTION builtin="clish_pyobj">sonic_cli_if delete_lo_if_ip ${lo_name} ${addr} True</ACTION>
       </COMMAND>
 </VIEW>
+
+
+<!--=======================================================-->
+<!--                Config Interface RANGE-MODE         -->
+<!--=======================================================-->
+  <VIEW name="configure-if-range-view">
+    <COMMAND
+        name="ip"
+        help="Interface Internet Protocol config commands"/>
+    <COMMAND
+        name="no ip"
+        help="Interface Internet Protocol config commands">
+    </COMMAND>
+
+    <MACRO name="NO_INTF_RANGE_IPv4" arg="${iflist}"></MACRO>
+    <MACRO name="NO_INTF_RANGE_IPv6" arg="${iflist}"></MACRO>
+  </VIEW>
+
+  <VIEW name="configure-vlan-range-view">
+    <COMMAND
+        name="ip"
+        help="Interface Internet Protocol config commands"/>
+    <COMMAND
+        name="no ip"
+        help="Interface Internet Protocol config commands">
+    </COMMAND>
+    <MACRO name="NO_INTF_RANGE_IPv4" arg="${iflist}"></MACRO>
+    <MACRO name="NO_INTF_RANGE_IPv6" arg="${iflist}"></MACRO>
+  </VIEW>
+  <VIEW name="configure-po-range-view">
+    <COMMAND
+        name="ip"
+        help="Interface Internet Protocol config commands"/>
+    <COMMAND
+        name="no ip"
+        help="Interface Internet Protocol config commands">
+    </COMMAND>
+    <MACRO name="NO_INTF_RANGE_IPv4" arg="${iflist}"></MACRO>
+    <MACRO name="NO_INTF_RANGE_IPv6" arg="${iflist}"></MACRO>
+  </VIEW>
+
 </CLISH_MODULE>
 
