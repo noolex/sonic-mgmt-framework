@@ -1242,6 +1242,20 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="CRM_THRESHOLD"
+        method="unsignedInteger"
+        pattern="0..4294967295"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="CRM_THRESHOLD_TYPE"
+        method="select"
+        pattern="PERCENTAGE USED FREE"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="QoS_THRESHOLD"
         method="integer"
         pattern="1..12480"

@@ -1,0 +1,18 @@
+{% set vars = {'fdb_entry_used': ""} %}
+{% set vars = {'fdb_entry_available': ""} %}
+
+{% if json_output -%}
+{% for key_json in json_output %}
+{% set info = json_output[key_json] %}
+
+{% if vars.update({'fdb_entry_used':info['fdb-entries-used']}) %}{% endif %}
+{% if vars.update({'fdb_entry_available':info['fdb-entries-available']}) %}{% endif %}
+
+Resource Name           Used Count    Available Count
+--------------------  ------------  -----------------
+
+{{'%-22s'|format('fdb_entry')}}{{'%12s'|format(vars.fdb_entry_used)}}{{'%19s'|format(vars.fdb_entry_available)}}
+
+
+{% endfor %}
+{% endif %}

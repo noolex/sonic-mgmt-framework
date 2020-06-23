@@ -1,0 +1,108 @@
+{% set vars = {'dnat_entry_used': ""} %}
+{% set vars = {'dnat_entry_available': ""} %}
+{% set vars = {'fdb_entry_used': ""} %}
+{% set vars = {'fdb_entry_available': ""} %}
+{% set vars = {'ipmc_entry_used': ""} %}
+{% set vars = {'ipmc_entry_available': ""} %}
+{% set vars = {'ipv4_neighbor_used': ""} %}
+{% set vars = {'ipv4_neighbor_available': ""} %}
+{% set vars = {'ipv4_nexthop_used': ""} %}
+{% set vars = {'ipv4_nexthop_available': ""} %}
+{% set vars = {'ipv4_route_used': ""} %}
+{% set vars = {'ipv4_route_available': ""} %}
+{% set vars = {'ipv6_neighbor_used': ""} %}
+{% set vars = {'ipv6_neighbor_available': ""} %}
+{% set vars = {'ipv6_nexthop_used': ""} %}
+{% set vars = {'ipv6_nexthop_available': ""} %}
+{% set vars = {'ipv6_route_used': ""} %}
+{% set vars = {'ipv6_route_available': ""} %}
+{% set vars = {'nexthop_group_member_used': ""} %}
+{% set vars = {'nexthop_group_member_available': ""} %}
+{% set vars = {'nexthop_group_used': ""} %}
+{% set vars = {'nexthop_group_available': ""} %}
+{% set vars = {'snat_entry_used': ""} %}
+{% set vars = {'snat_entry_available': ""} %}
+
+{% set vars = {'acl_group_used': ""} %}
+{% set vars = {'acl_group_available': ""} %}
+{% set vars = {'acl_table_used': ""} %}
+{% set vars = {'acl_table_available': ""} %}
+
+{% if json_output -%}
+{% set info = json_output %}
+
+{% if vars.update({'dnat_entry_used':info['dnat-entries-used']}) %}{% endif %}
+{% if vars.update({'dnat_entry_available':info['dnat-entries-available']}) %}{% endif %}
+{% if vars.update({'fdb_entry_used':info['fdb-entries-used']}) %}{% endif %}
+{% if vars.update({'fdb_entry_available':info['fdb-entries-available']}) %}{% endif %}
+{% if vars.update({'ipmc_entry_used':info['ipmc-entries-used']}) %}{% endif %}
+{% if vars.update({'ipmc_entry_available':info['ipmc-entries-available']}) %}{% endif %}
+{% if vars.update({'ipv4_neighbor_used':info['ipv4-neighbors-used']}) %}{% endif %}
+{% if vars.update({'ipv4_neighbor_available':info['ipv4-neighbors-available']}) %}{% endif %}
+{% if vars.update({'ipv4_nexthop_used':info['ipv4-nexthops-used']}) %}{% endif %}
+{% if vars.update({'ipv4_nexthop_available':info['ipv4-nexthops-available']}) %}{% endif %}
+{% if vars.update({'ipv4_route_used':info['ipv4-routes-used']}) %}{% endif %}
+{% if vars.update({'ipv4_route_available':info['ipv4-routes-available']}) %}{% endif %}
+{% if vars.update({'ipv6_neighbor_used':info['ipv6-neighbors-used']}) %}{% endif %}
+{% if vars.update({'ipv6_neighbor_available':info['ipv6-neighbors-available']}) %}{% endif %}
+{% if vars.update({'ipv6_nexthop_used':info['ipv6-nexthops-used']}) %}{% endif %}
+{% if vars.update({'ipv6_nexthop_available':info['ipv6-nexthops-available']}) %}{% endif %}
+{% if vars.update({'ipv6_route_used':info['ipv6-routes-used']}) %}{% endif %}
+{% if vars.update({'ipv6_route_available':info['ipv6-routes-available']}) %}{% endif %}
+{% if vars.update({'nexthop_group_member_used':info['nexthop-group-members-used']}) %}{% endif %}
+{% if vars.update({'nexthop_group_member_available':info['nexthop-group-members-available']}) %}{% endif %}
+{% if vars.update({'nexthop_group_used':info['nexthop-groups-used']}) %}{% endif %}
+{% if vars.update({'nexthop_group_available':info['nexthop-groups-available']}) %}{% endif %}
+{% if vars.update({'snat_entry_used':info['snat-entries-used']}) %}{% endif %}
+{% if vars.update({'snat_entry_available':info['snat-entries-available']}) %}{% endif %}
+
+
+{{' '}}
+{{' '}}
+
+Resource Name           Used Count    Available Count
+--------------------  ------------  -----------------
+{{'%-22s'|format('ipv4_route')}}{{'%12s'|format(vars.ipv4_route_used)}}{{'%19s'|format(vars.ipv4_route_available)}}
+{{'%-22s'|format('ipv6_route')}}{{'%12s'|format(vars.ipv6_route_used)}}{{'%19s'|format(vars.ipv6_route_available)}}
+{{'%-22s'|format('ipv4_nexthop')}}{{'%12s'|format(vars.ipv4_nexthop_used)}}{{'%19s'|format(vars.ipv4_nexthop_available)}}
+{{'%-22s'|format('ipv6_nexthop')}}{{'%12s'|format(vars.ipv6_nexthop_used)}}{{'%19s'|format(vars.ipv6_nexthop_available)}}
+{{'%-22s'|format('ipv4_neighbor')}}{{'%12s'|format(vars.ipv4_neighbor_used)}}{{'%19s'|format(vars.ipv4_neighbor_available)}}
+{{'%-22s'|format('ipv6_neighbor')}}{{'%12s'|format(vars.ipv6_neighbor_used)}}{{'%19s'|format(vars.ipv6_neighbor_available)}}
+{{'%-22s'|format('nexthop_group_member')}}{{'%12s'|format(vars.nexthop_group_member_used)}}{{'%19s'|format(vars.nexthop_group_member_available)}}
+{{'%-22s'|format('nexthop_group')}}{{'%12s'|format(vars.nexthop_group_used)}}{{'%19s'|format(vars.nexthop_group_available)}}
+{{'%-22s'|format('fdb_entry')}}{{'%12s'|format(vars.fdb_entry_used)}}{{'%19s'|format(vars.fdb_entry_available)}}
+{{'%-22s'|format('snat_entry')}}{{'%12s'|format(vars.snat_entry_used)}}{{'%19s'|format(vars.snat_entry_available)}}
+{{'%-22s'|format('dnat_entry')}}{{'%12s'|format(vars.dnat_entry_used)}}{{'%19s'|format(vars.dnat_entry_available)}}
+{{'%-22s'|format('ipmc_entry')}}{{'%12s'|format(vars.ipmc_entry_used)}}{{'%19s'|format(vars.ipmc_entry_available)}}
+
+{{' '}}
+{{' '}}
+
+Stage    Bind Point    Resource Name      Used Count    Available Count
+-------  ------------  ---------------  ------------  -----------------
+
+{% set rule = ['egress', 'ingress'] %}
+{% for st in rule %}
+{% for bp in info[st] %}
+
+{% if vars.update({'acl_group_used':info[st][bp]['groups-used']}) %}{% endif %}
+{% if vars.update({'acl_group_available':info[st][bp]['groups-available']}) %}{% endif %}
+{% if vars.update({'acl_table_used':info[st][bp]['tables-used']}) %}{% endif %}
+{% if vars.update({'acl_table_available':info[st][bp]['tables-available']}) %}{% endif %}
+
+{{'%-9s'|format(st.upper())}}{{'%-14s'|format(bp.upper())}}{{'%-17s'|format('acl_group')}}{{'%12s'|format(vars.acl_group_used)}}{{'%19s'|format(vars.acl_group_available)}}
+{{'%-9s'|format(st.upper())}}{{'%-14s'|format(bp.upper())}}{{'%-17s'|format('acl_table')}}{{'%12s'|format(vars.acl_table_used)}}{{'%19s'|format(vars.acl_table_available)}}
+
+{% endfor %}
+{% endfor %}
+
+{{' '}}
+{{' '}}
+
+Table ID    Resource Name    Used Count    Available Count
+----------  ---------------  ------------  -----------------
+
+{{' '}}
+{{' '}}
+
+{% endif %}
