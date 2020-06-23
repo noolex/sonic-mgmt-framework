@@ -13,7 +13,7 @@ def run(func, args):
         if (itype == "all"):
             body = { "sonic-auditlog:input": {"content-type" : "all"} }
         else:
-            body = { "sonic-auditlog:input": {"content-type" : "brief"} }
+            body = { "sonic-auditlog:input": {"content-type" : ""} }
         response = aa.post(keypath, body)
         if response.ok():
             print(response.content["sonic-show-auditlog:output"]["audit-content"])
