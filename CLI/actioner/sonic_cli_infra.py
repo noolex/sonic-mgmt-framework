@@ -47,6 +47,8 @@ def run_get_openconfig_infra_state(func, argv):
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/clock')
     elif argv[0] == "uptime":
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/uptime')
+    elif argv[0] == "reboot-cause":
+       path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/reboot-cause')
     else:
        print "%Error: invalid state command"
     api_response = aa.get(path)
@@ -55,12 +57,39 @@ def run_get_openconfig_infra_state(func, argv):
             response = api_response.content
             show_cli_output(templ, response)
 
+def run_get_sonic_infra_config(func, argv):
+    templ = argv[1]
+    process_msg = True
+    cmd=argv[0]
+
+    data={"Param":" %s" %cmd}
+
+    aa = cc.ApiClient()
+    keypath = cc.Path('/restconf/operations/sonic-system-infra:config')
+    body = { "sonic-system-infra:input":data}
+
+    print("config %s in process ....."%cmd) 
+
+    api_response = aa.post(keypath, body)
+
+    try:
+        if api_response.ok():
+           response = api_response.content
+           if response is not None and 'sonic-system-infra:output' in response:
+              show_cli_output(templ, response['sonic-system-infra:output']['result'])
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print "%Error: Traction Failure"
+
+
 
 def invoke(func, argv):
     if func == "get_sonic_infra_reboot":
          run_get_sonic_infra_reboot(func, argv)
     elif func == "get_openconfig_infra_state":
          run_get_openconfig_infra_state(func, argv) 
+    elif func == "get_openconfig_infra_config":
+         run_get_sonic_infra_config(func, argv)
     else:
          print "%Error: invalid command"
 
