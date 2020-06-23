@@ -74,7 +74,6 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
                   'sflow_source_if'         : show_sflow_source_if,
-                  'dns_server_source_if'    : show_dns_source_if
                   'copp_police'             : show_copp_police
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
