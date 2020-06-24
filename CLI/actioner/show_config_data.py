@@ -21,7 +21,7 @@ from show_config_interface import *
 from show_config_bgp import *
 from show_config_table_sort import *
 from show_config_ptp import *
-from show_config_routemap import *
+from show_config_routepolicy import *
 from show_config_copp import *
 
 view_dependency= \
@@ -74,6 +74,8 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
                   'sflow_source_if'         : show_sflow_source_if,
-                  'copp_police'             : show_copp_police
+                  'copp_police'             : show_copp_police,
+                  'v4prefix_lists_cmd'      : show_v4prefix_lists,
+                  'v6prefix_lists_cmd'      : show_v6prefix_lists
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
