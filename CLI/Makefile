@@ -26,13 +26,21 @@ SUBDIRS := clitree renderer klish
 export SONIC_CLI_ROOT=$(TOPDIR)/build
 TGT_DIR := $(SONIC_CLI_ROOT)/target
 
-all: $(CLIDEPS) $(SUBDIRS)
+CLI_DIR         := $(TOPDIR)/CLI
+PY_FILES        := $(shell find $(CLI_DIR)/actioner -name '*.py')
+PY_FILES        += $(shell find $(CLI_DIR)/renderer/scripts -name '*.py')
+PY_FILES        += $(shell find $(CLI_DIR)/clitree/scripts -name '*.py')
+PYLINT_DONE     := $(SONIC_CLI_ROOT)/cli/.pylint_done
+TOOLS_DIR       := $(TOPDIR)/tools
+LINTER          := $(TOOLS_DIR)/test/pylint.sh
+
+all: $(CLIDEPS) $(SUBDIRS) $(PYLINT_DONE)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
 .PHONY: clean
 
-all:
+all: $(PYLINT_DONE)
 	for dir in $(SUBDIRS); do \
     	$(MAKE) -C $$dir -f Makefile $@; \
 	done
@@ -40,7 +48,26 @@ all:
 	rm -rf $(TOPDIR)/build/cli
 	mv -f $(TGT_DIR) $(TOPDIR)/build/cli
 
-clean:
+.SECONDEXPANSION:
+
+#======================================================================
+# Common rule for directories. Use "." suffix, like "xyz/."
+#======================================================================
+.PRECIOUS: %/. 
+%/.:
+	mkdir -p $@
+
+pylint: $(PYLINT_DONE)
+
+$(PYLINT_DONE): $(PY_FILES) | $$(@D)/.
+	$(LINTER) $?
+	touch $@
+
+pylint-clean:
+	$(RM) -r $(PYLINT_DONE)
+	$(RM) -r $(SONIC_CLI_ROOT)/cli/pylint.log*
+
+clean: pylint-clean
 	make --directory=klish clean
 	rm -rf $(TOPDIR)/build/cli
 	rm -rf $(TGT_DIR)
@@ -52,4 +79,5 @@ packages:
 	if ! dpkg -l | grep xsltproc -c >>/dev/null; then sudo apt-get install xsltproc; fi
 	if ! dpkg -l | grep python-lxml -c >>/dev/null; then sudo apt-get install python-lxml; fi
 	if ! dpkg -l | grep libexpat1-dev -c >>/dev/null; then sudo apt-get install libexpat1-dev; fi
+
 

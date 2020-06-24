@@ -58,7 +58,13 @@ cli:
 clish:
 	SONIC_CLI_ROOT=$(BUILD_DIR) $(MAKE) -C CLI/klish
 
-clitree:
+pylint:
+	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI pylint
+
+pylint-clean:
+	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI pylint-clean
+
+clitree: pylint
 	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI/clitree
 
 clidocgen:
