@@ -53,15 +53,40 @@ def get_base(data, path, as_str=False):
                 else:
                     returnData = None
                     for entry in data:
+                        data_found = True
                         for param in paramDict:
                             if param not in entry:
-                                return None
+                                data_found = False
+                                break
                             else:
-                                if entry[param] != paramDict[param]:
-                                    return None
-                        returnData = entry
-                        break
+                                ConvertVal = paramDict[param]
+                                if ConvertVal.lower() == "true":
+                                    ConvertVal = True
+                                elif ConvertVal.lower() == "false":
+                                    ConvertVal = False                                    
+                                elif ConvertVal.isdigit():
+                                    ConvertVal = int(ConvertVal)
+                                else:
+                                    isFloat = False
+                                    try:
+                                        float(ConvertVal)
+                                        isFloat = True
+                                    except:
+                                        isFloat = False
+                                    if isFloat:
+                                        ConvertVal = float(ConvertVal)
+                                    
+                                if entry[param] != ConvertVal:
+                                    data_found = False
+                                    break
+                                else:
+                                    data_found = True
+                        if data_found:
+                            returnData = entry
+                            break
                     data = returnData
+                    if data is None:
+                        return None
             else:
                 return None
         elif token in data:
