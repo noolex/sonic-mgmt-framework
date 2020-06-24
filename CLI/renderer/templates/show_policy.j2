@@ -6,7 +6,9 @@
                 {% set flow_data = json_output[policy_name]["FLOWS"][flow_prio] %}
                 {{- '  Flow' }} {{ flow_data["CLASS_NAME"]}}
                 {% if 'TRAP_GROUP' in flow_data %}
-                    {{- '    Action' }} {{ flow_data['TRAP_GROUP']|lower}}
+                    {% if flow_data['TRAP_GROUP']|lower != 'null' %}
+                        {{- '    Action' }} {{ flow_data['TRAP_GROUP']|lower}}
+                    {% endif %}
                 {% endif %}
                 {% if 'TRAP_ACTION' in flow_data %}
                     {{- '      trap-action' }} {{ flow_data['TRAP_ACTION']|lower}}
