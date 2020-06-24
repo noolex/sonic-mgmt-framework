@@ -21,7 +21,7 @@ from show_config_interface import *
 from show_config_bgp import *
 from show_config_table_sort import *
 from show_config_ptp import *
-from show_config_routemap import *
+from show_config_routepolicy import *
 from show_config_copp import *
 
 view_dependency= \
@@ -81,6 +81,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'bgp_af_ipv4_redist'      : show_router_bgp_af_redist_cmd,
                   'bgp_af_ipv6_nw'          : show_router_bgp_af_nw_cmd,
                   'bgp_af_ipv6_ag'          : show_router_bgp_af_ag_cmd,
-                  'bgp_af_ipv6_redist'      : show_router_bgp_af_redist_cmd
+                  'bgp_af_ipv6_redist'      : show_router_bgp_af_redist_cmd,
+                  'v4prefix_lists_cmd'      : show_v4prefix_lists,
+                  'v6prefix_lists_cmd'      : show_v6prefix_lists
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

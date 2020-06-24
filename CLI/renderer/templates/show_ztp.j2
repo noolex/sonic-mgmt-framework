@@ -33,7 +33,8 @@
 {% if 'config-section' in json_output %}
 {% if 'config-section-list' in json_output['config-section'] %}
 {% set c_dict = json_output['config-section']['config-section-list'] %}
-{% for val in c_dict %}
+{% for item in c_dict %}
+{% set val = item['state'] %}
 {{' '}}
 {{'---------------------------------------------'}}
 {{val['sectionname'].ljust(20)}}
