@@ -16,7 +16,7 @@
 {% endfor %}
 {% endif %}
 {% set value =  neigh['neighbors']['neighbor'][0] %}
-{{value['id'].ljust(20)}}{{value['state']['system-name'].ljust(20)}}{{value['state']['port-id'].ljust(20)}}{{(cap_list | join() | string).ljust(20)}}{{value['state']['port-description'].ljust(20)}}
+{{value['id'].ljust(20)}}{{(value['state']['system-name'] | truncate(19)).ljust(20)}}{{value['state']['port-id'].ljust(20)}}{{(cap_list | join() | string).ljust(20)}}{{value['state']['port-description'].ljust(20)}}
 {% endif %}
 {% endfor %}
 

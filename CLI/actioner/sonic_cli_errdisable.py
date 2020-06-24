@@ -43,16 +43,17 @@ def generic_show_response_handler(output_data, args):
     show_cli_output(j2_tmpl, output_data)
 
 
-def delete_openconfig_errdisable_udld():
-    body = { "openconfig-errdisable-ext:udld": False}
-    uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/udld')  
-    return aa.delete(uri, body)
-
-
 def delete_openconfig_errdisable_cause(args):
+    if args[0] not in ["udld", "bpduguard"]:
+        print('%Error Invalid cause : {}'.format(args[0]))
+        return None
+
+    body = {}
     if args[0] == "udld":
-        return delete_openconfig_errdisable_udld()
-    return None
+        uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/cause=UDLD')  
+    elif args[0] == "bpduguard":
+        uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/cause=BPDUGUARD')
+    return aa.delete(uri, body)
 
 
 def delete_openconfig_errdisable_interval(args):
@@ -61,16 +62,14 @@ def delete_openconfig_errdisable_interval(args):
     return aa.delete(uri, body)
 
 
-def patch_openconfig_errdisable_udld():
-    body = { "openconfig-errdisable-ext:udld": True}
-    uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/udld')  
-    return aa.patch(uri, body)
-
-
 def patch_openconfig_errdisable_cause(args):
-    if args[0] == "udld":
-        return patch_openconfig_errdisable_udld()
-    return None
+    if args[0] not in ["udld", "bpduguard"]:
+        print('%Error Invalid cause : {}'.format(args[0]))
+        return None
+
+    body = { "openconfig-errdisable-ext:cause": [args[0].upper()]}
+    uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/cause')  
+    return aa.patch(uri, body)
 
 
 def patch_openconfig_errdisable_interval(args):

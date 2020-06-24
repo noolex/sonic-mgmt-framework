@@ -214,12 +214,14 @@ limitations under the License.
         </DOCGEN> 
     </COMMAND>
 
+<!--
     <COMMAND name = "debug bfd" help = "Bidirection Forwarding Detection" >
     </COMMAND>
 
     <COMMAND name = "debug bfd packet" help = "BFD packets" >
         <ACTION builtin="clish_nop"/> 
     </COMMAND>
+-->
 
 </VIEW>  
 

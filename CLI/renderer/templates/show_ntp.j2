@@ -44,6 +44,9 @@
         {% for server in server_list %}
             {% if "state" in server %} 
                 {% set assoc_info = server["state"] %}
+                {% if "openconfig-system-ext:refid" not in assoc_info %}
+                    {% continue %}
+                {% endif %}
                 {% if vars.update({'selmode':assoc_info["openconfig-system-ext:selmode"]}) %}{% endif %}
                 {% if vars.update({'remote':assoc_info["address"]}) %}{% endif %}
                 {% if vars.update({'refid':assoc_info["openconfig-system-ext:refid"]}) %}{% endif %}

@@ -1,9 +1,9 @@
 {# There are 3 list elements with key as 'openconfig-network-instance:state'(global state, spt timer state and lsa generation state). #}
 {# remaining are list elements with area states present in this ospf domain. #}
 {% set vars = {'router_id': "0", 'ospf_rfc1583_compatible': "False", 'opaque_capability': "False", 'throttle_delay': "0", 'initial_delay': "0", 'maximum_delay': "0",                'holdtime_multiplier': "0", 'spf_run': "False", 'spf_last_executed_time': 0, 'last_spf_duration':"0", 'spf_timer_running': "False", 'spf_timer_value':"0",
-	'min_interval_timer':"0", 'min_arival_timer':"0", 'refresh_timer':"0", 'external_lsa_count':"0", 'external_lsa_checksum':"0", 'opaque_lsa_count':"0",
-	'opaque_lsa_checksum':"0", area_count:0, 'area_id': "0", 'total_interface': "0", 'active_interface': "0", 'fully_adj_nbrs': "0", 
-	'auth_type': "no authentication", 
+  'min_interval_timer':"0", 'min_arival_timer':"0", 'refresh_timer':"0", 'external_lsa_count':"0", 'external_lsa_checksum':"0", 'opaque_lsa_count':"0",
+  'opaque_lsa_checksum':"0", area_count:0, 'area_id': "0", 'total_interface': "0", 'active_interface': "0", 'fully_adj_nbrs': "0", 
+  'auth_type': "no", 
         'spf_algo_executed_count': "0", 'all_lsa_count': "0", 'router_lsa_count': "0", 'router_lsa_checksum': "0", 'network_lsa_count': "0", 
         'network_lsa_checksum': "0", 'summary_lsa_count': "0", 'summary_lsa_checksum': "0", 'asbr_summary_lsa_count': "0",  
         'asbr_summary_lsa_checksum': "0", 'nssa_lsa_count': "0",'nssa_lsa_checksum': "0", 'opaque_link_lsa_count': "0", 'opaque_link_lsa_checksum': "0", 
@@ -173,12 +173,12 @@ VRF Name: {{list_elem['vrfName']}}
     {% if vars.update({'area_id':areainfo['identifier']}) %}{% endif %}
     {% if vars.update({'area_exists':'False'}) %}{% endif %}
     {% for id in area_id_list %}
-	{% if vars.area_id == id %}
-	    {% if vars.update({'area_exists':'True'}) %}{% endif %}
-	{% endif %}
+    {% if vars.area_id == id %}
+        {% if vars.update({'area_exists':'True'}) %}{% endif %}
+    {% endif %}
     {% endfor %}
     {% if vars.area_exists == 'False' %}
-	{% do area_id_list.append(vars.area_id) %}
+    {% do area_id_list.append(vars.area_id) %}
     {% endif %}
     {% endif %}
     {% if vars.area_id == '0.0.0.0' %}
@@ -193,11 +193,9 @@ VRF Name: {{list_elem['vrfName']}}
     {% if "openconfig-ospfv2-ext:adjacency-count" in areainfo['state'] %}
     {% if vars.update({'fully_adj_nbrs':areainfo['state']['openconfig-ospfv2-ext:adjacency-count']}) %}{% endif %}
     {% endif %}
+    {% if vars.update({'auth_type':'no'}) %}{% endif %}
     {% if 'openconfig-ospfv2-ext:authentication-type' in areainfo['state'] %}
-    {% if vars.update({'auth_type':'no authentication'}) %}{% endif %}
-    {% if areainfo['state']['openconfig-ospfv2-ext:authentication-type'] == 'openconfig-ospfv2-ext:MD5HMAC' %}
-    {% if vars.update({'auth_type':'message digest authentication'}) %}{% endif %}
-    {% endif %}
+    {% if vars.update({'auth_type':areainfo['state']['openconfig-ospfv2-ext:authentication-type']}) %}{% endif %}
     {% endif %}
     {% if "openconfig-ospfv2-ext:spf-execution-count" in areainfo['state'] %}
     {% if vars.update({'spf_algo_executed_count':areainfo['state']['openconfig-ospfv2-ext:spf-execution-count']}) %}{% endif %}
@@ -261,11 +259,11 @@ VRF Name: {{list_elem['vrfName']}}
     {% endif %}
     {% endif %}
     {% if vars.stub_str != '' %}
-	{% if vars.shortcut_str != 'Default' %}	
+    {% if vars.shortcut_str != 'Default' %}	
             {% if vars.update({'backbone':'(' + vars.stub_str + '; ' +  ')'})  %}{% endif %}
         {% else %}
             {% if vars.update({'backbone':'(' + vars.stub_str +  ')'})  %}{% endif %}
-	{% endif %}
+    {% endif %}
     {% endif -%}
 {% if vars.area_exists == "False" %}
  Area ID: {{'%s %s'|format(vars.area_id, vars.backbone)}}
@@ -280,7 +278,7 @@ VRF Name: {{list_elem['vrfName']}}
      Administratively activated (indefinitely)
 {% endif -%}
    {{'   '}}Number of fully adjacent neighbors in this area: {{'%d'|format(vars.fully_adj_nbrs)}}
-   Area has {{'%s'|format(vars.auth_type)}}
+   Area has {{'%s'|format(vars.auth_type)}} authentication
 {% if vars.area_id != '0.0.0.0' %}
    Number of full virtual adjacencies going through this area: {{vars.vlink_count}}
 {% endif %}

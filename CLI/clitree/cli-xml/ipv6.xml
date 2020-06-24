@@ -39,20 +39,16 @@ limitations under the License.
     />
     <COMMAND
         name="ipv6 address"
-        help="IPv6 address" >
+        help="IPv6 address"
+        command_tables="sonic-interface:sonic-interface/INTERFACE/INTERFACE_IPADDR_LIST/portname={name},ip_prefix={prfx}"
+        render_command_cb="ipv6_eth_ip_address"
+        >
         <PARAM
             name="addr"
             help="IPv6 address with mask"
             ptype="IPV6_ADDR_MASK" />
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${iface_uri} ${addr}</ACTION>
     </COMMAND>
-
-    <COMMAND
-        name="ipv6 enable"
-        help="Enable IPv6" >
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
-    </COMMAND>
-
     <COMMAND
         name="no ipv6 address"
         help="Delete IPv6 address(es) on the interface" >
@@ -65,25 +61,27 @@ limitations under the License.
 
     </COMMAND>
 
-    <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
+    <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},ipv6_eth_dhcp_relay,sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST"> </MACRO>
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iface}"> </MACRO>
     <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
 
     <COMMAND
-        name="no ipv6 enable"
-        help="Disable IPv6" >
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
-    </COMMAND>
-    <COMMAND
         name="ipv6 neighbor"
-        help="Configure static ND" >
+        help="Configure static ND"
+        command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}"
+        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv6"
+         >
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"
+            ptype="IPV6_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
-            ptype="MAC_ADDR" />
+            ptype="MAC_ADDR"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh"
+            />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
              ${neigh}</ACTION>
@@ -107,7 +105,7 @@ limitations under the License.
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IPV6_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
@@ -141,7 +139,10 @@ limitations under the License.
     />
     <COMMAND
         name="ipv6 address"
-        help="IPv6 address" >
+        help="IPv6 address"
+        command_tables="sonic-mgmt-interface:sonic-mgmt-interface/MGMT_INTERFACE/MGMT_INTERFACE_IPADDR_LIST/portname={name},ip_prefix={prfx}"
+        render_command_cb="ipv6_mgmt_ip_address" 
+         >
         <PARAM
             name="addr"
             help="IPv6 address with mask"
@@ -176,19 +177,16 @@ limitations under the License.
     />
     <COMMAND
         name="ipv6 address"
-        help="IPv6 address" >
+        help="IPv6 address"
+        command_tables="sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST/pch_name={name},ip_prefix={prfx}"
+        render_command_cb="ipv6_lag_ip_address" 
+        >
         <PARAM
             name="addr"
             help="IPv6 address with mask"
             ptype="IPV6_ADDR_MASK" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${po_name} ${addr}</ACTION>
 
-    </COMMAND>
-
-    <COMMAND
-        name="ipv6 enable"
-        help="Enable IPv6" >
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -202,25 +200,28 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if delete_po_if_ip ${po_name} ${addr} False</ACTION>
     </COMMAND>
 
-    <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{po_name} "> </MACRO>
+    <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{po_name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/pch_name={name},ipv6_po_dhcp_relay,sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST"> </MACRO>
+    <MACRO name="INTF_IPV6_ENABLE" arg="${po_name}"> </MACRO>
     <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg="{po_name} "> </MACRO>
 
     <COMMAND
-        name="no ipv6 enable"
-        help="Disable IPv6" >
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
-    </COMMAND>
-    <COMMAND
         name="ipv6 neighbor"
-        help="Configure static ND" >
+        help="Configure static ND"
+        command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
+        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv6"
+         >
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IPV4_OR_IPV6_ADDR"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"
+             />
         <PARAM
             name="neigh"
             help="MAC Address"
-            ptype="MAC_ADDR" />
+            ptype="MAC_ADDR" 
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh"
+            />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
              ${neigh}</ACTION>
@@ -282,18 +283,15 @@ limitations under the License.
       </COMMAND>
       <COMMAND
           name="ipv6 address"
-          help="IPv6 address" >
+          help="IPv6 address" 
+          command_tables="sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_IPADDR_LIST/vlanName={name},ip_prefix={prfx}"
+          render_command_cb="ipv6_vlan_ip_address" 
+          >
           <PARAM
              name="addr"
              help="IPv6 address with mask"
              ptype="IPV6_ADDR_MASK" />
       <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${vlan_name} ${addr}</ACTION>
-      </COMMAND>
-
-      <COMMAND
-          name="ipv6 enable"
-          help="Enable IPv6" >
-          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
       </COMMAND>
 
       <COMMAND
@@ -307,27 +305,29 @@ limitations under the License.
           <ACTION builtin="clish_pyobj">sonic_cli_if delete_vlan_if_ip ${vlan_name} ${addr} False</ACTION>
       </COMMAND>
 
-      <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{vlan_name} "> </MACRO>
+      <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{vlan_name},sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name={name},ipv6_vlan_dhcp_relay,sonic-vlan:sonic-vlan/VLAN/VLAN_LIST"> </MACRO>
+      <MACRO name="INTF_IPV6_ENABLE" arg="${vlan_name}"> </MACRO>
       <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg="{vlan_name} "> </MACRO>
 
-      <COMMAND
-          name="no ipv6 enable"
-          help="Disable IPv6" >
-          <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled </ACTION>
-      </COMMAND>
     <COMMAND
         name="ipv6 neighbor"
-        help="Configure static ND" >
+        help="Configure static ND"
+        command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
+        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv6"
+         >
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"
+            ptype="IPV6_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
-            ptype="MAC_ADDR" />
+            ptype="MAC_ADDR"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh"
+             />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${vlan_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -349,13 +349,13 @@ limitations under the License.
         <PARAM
             name="static-ip"
             help="IP Address"
-            ptype="IPV4_OR_IPV6_ADDR" />
+            ptype="IPV6_ADDR" />
         <PARAM
             name="neigh"
             help="MAC Address"
             ptype="MAC_ADDR" />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${vlan_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -386,16 +386,22 @@ limitations under the License.
       </COMMAND>
       <COMMAND
           name="ipv6 address"
-          help="IPv6 address" >
+          help="IPv6 address" 
+          command_tables="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_IPADDR_LIST/loIfName={name},ip_prefix={prfx}"
+          render_command_cb="ipv6_lo_ip_address"
+          >
           <PARAM
              name="addr"
              help="IPv6 address with mask (/128 is supported)"
-             ptype="IPV6_ADDR_MASK" />
+             ptype="IPV6_ADDR_MASK"
+          />
           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${lo_name} ${addr}</ACTION>
       </COMMAND>
       <COMMAND
           name="ipv6 enable"
-          help="Enable IPv6" >
+          help="Enable IPv6"
+          command_tables="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST/loIfName={name}"
+          dbpath="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST/ipv6_use_link_local_only=true" >
           <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv6/config/enabled body={"openconfig-if-ip:enabled": true}</ACTION>
       </COMMAND>
 
@@ -524,5 +530,42 @@ limitations under the License.
       <ACTION> python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_relay_clear  ${ifName}  ${__full_line}
  </ACTION>
     </COMMAND>
+</VIEW>
+
+<!--=======================================================-->
+<!--                Config Interface RANGE-MODE         -->
+<!--=======================================================-->
+<VIEW name="configure-if-range-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iflist}"> </MACRO>
+</VIEW>
+<VIEW name="configure-vlan-range-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iflist}"> </MACRO>
+</VIEW>
+<VIEW name="configure-po-range-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iflist}"> </MACRO>
 </VIEW>
 </CLISH_MODULE>

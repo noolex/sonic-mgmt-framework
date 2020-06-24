@@ -26,6 +26,13 @@ limitations under the License.
     >
 <!--=========================================================================-->
   <PTYPE
+     name="AAA_AUTH_LDAP"
+     method="select"
+     pattern="ldap(ldap)"
+     help=""
+     />
+<!--=========================================================================-->
+  <PTYPE
      name="AAA_AUTH_TACPLUS"
      method="select"
      pattern="tacacs+(tacacs+)"
@@ -46,12 +53,79 @@ limitations under the License.
      help=""
      />
   <!--=========================================================================-->
+  <PTYPE
+     name="AAA_NSS_LOGIN"
+     method="select"
+     pattern="login(login)"
+     help=""
+     />
+  <!--=========================================================================-->
 
   <VIEW name="enable-view">
     <COMMAND name="show aaa"
              help="Show aaa info">
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-aaa.py get_openconfig_system_system_aaa_authentication_config show_aaa.j2</ACTION>
+      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-aaa.py get_openconfig_system_system_aaa show_aaa.j2</ACTION>
     </COMMAND>
+  </VIEW>
+
+
+  <VIEW name="hidden-cmd-view">
+    <COMMAND name="aaa authentication login-method"
+             help="AAA authentication login method preference"
+             mode="subcommand"
+             ptype="SUBCOMMAND">
+      <PARAM name="login"
+             help="login methods"
+             mode="switch"
+             ptype="SUBCOMMAND">
+          <PARAM name="local"
+                 help="local authentication"
+                 optional="true"
+                 mode="subcommand"
+                 ptype="SUBCOMMAND">
+              <PARAM name="tacacs+"
+                     test='"${radius}"!="radius"'
+                     help="tacacs+ authentication"
+                     optional="true"
+                     ptype="AAA_AUTH_TACPLUS">
+              </PARAM>
+              <PARAM name="radius"
+                     test='"${tacacs+}"!="tacacs+"'
+                     help="radius authentication"
+                     optional="true"
+                     ptype="AAA_AUTH_RADIUS">
+              </PARAM>
+          </PARAM>
+          <PARAM name="tacacs+"
+                 help="tacacs+ authentication"
+                 optional="true"
+                 mode="subcommand"
+                 ptype="SUBCOMMAND">
+              <PARAM name="local"
+                     help="local authentication"
+                     optional="true"
+                     ptype="AAA_AUTH_LOCAL">
+              </PARAM>
+          </PARAM>
+          <PARAM name="radius"
+                 help="radius authentication"
+                 optional="true"
+                 mode="subcommand"
+                 ptype="SUBCOMMAND">
+              <PARAM name="local"
+                     help="local authentication"
+                     optional="true"
+                     ptype="AAA_AUTH_LOCAL">
+              </PARAM>
+          </PARAM>
+      </PARAM>
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_authentication_method ${login} ${local} ${tacacs+} ${radius} </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no aaa authentication login-method" help="Unconfigure aaa authentication login method">
+      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_authentication_method local</ACTION>
+    </COMMAND>
+
   </VIEW>
 
   <VIEW name="configure-view">
@@ -79,62 +153,471 @@ limitations under the License.
       </ACTION>
     </COMMAND>
 
+<!--
     <COMMAND name="aaa authentication login-method"
              help="AAA authentication login method preference"
              mode="subcommand"
              ptype="SUBCOMMAND">
-      <PARAM name="login" 
-             help="login methods" 
-             mode="switch" 
+      <PARAM name="login"
+             help="login methods"
+             mode="switch"
              ptype="SUBCOMMAND">
-          <PARAM name="local" 
-                 help="local authentication" 
-                 optional="true" 
-                 mode="subcommand" 
+          <PARAM name="local"
+                 help="local authentication"
+                 optional="true"
+                 mode="subcommand"
                  ptype="SUBCOMMAND">
-              <PARAM name="tacacs+" 
-                     test='"${radius}"!="radius"' 
-                     help="tacacs+ authentication" 
-                     optional="true" 
-                     ptype="AAA_AUTH_TACPLUS"> 
+              <PARAM name="tacacs+"
+                     test='"${radius}"!="radius"'
+                     help="tacacs+ authentication"
+                     optional="true"
+                     ptype="AAA_AUTH_TACPLUS">
               </PARAM>
-              <PARAM name="radius" 
-                     test='"${tacacs+}"!="tacacs+"' 
-                     help="radius authentication" 
-                     optional="true" 
-                     ptype="AAA_AUTH_RADIUS"> 
+              <PARAM name="radius"
+                     test='"${tacacs+}"!="tacacs+"'
+                     help="radius authentication"
+                     optional="true"
+                     ptype="AAA_AUTH_RADIUS">
               </PARAM>
           </PARAM>
-          <PARAM name="tacacs+" 
-                 help="tacacs+ authentication" 
-                 optional="true" 
-                 mode="subcommand" 
+          <PARAM name="tacacs+"
+                 help="tacacs+ authentication"
+                 optional="true"
+                 mode="subcommand"
                  ptype="SUBCOMMAND">
-              <PARAM name="local" 
-                     help="local authentication" 
-                     optional="true" 
-                     ptype="AAA_AUTH_LOCAL"> 
+              <PARAM name="local"
+                     help="local authentication"
+                     optional="true"
+                     ptype="AAA_AUTH_LOCAL">
               </PARAM>
           </PARAM>
-          <PARAM name="radius" 
-                 help="radius authentication" 
-                 optional="true" 
-                 mode="subcommand" 
-                 ptype="SUBCOMMAND"> 
-              <PARAM name="local" 
-                     help="local authentication" 
-                     optional="true" 
-                     ptype="AAA_AUTH_LOCAL"> 
+          <PARAM name="radius"
+                 help="radius authentication"
+                 optional="true"
+                 mode="subcommand"
+                 ptype="SUBCOMMAND">
+              <PARAM name="local"
+                     help="local authentication"
+                     optional="true"
+                     ptype="AAA_AUTH_LOCAL">
               </PARAM>
           </PARAM>
       </PARAM>
       <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_authentication_method ${login} ${local} ${tacacs+} ${radius} </ACTION>
     </COMMAND>
+-->
     <COMMAND name="no aaa" help="Unconfigure aaa authentication configuration"/>
     <COMMAND name="no aaa authentication" help="Unconfigure aaa authentication configuration"/>
+<!--
     <COMMAND name="no aaa authentication login-method" help="Unconfigure aaa authentication login method">
       <ACTION>python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_authentication_method local</ACTION>
     </COMMAND>
+-->
+
+    <COMMAND name="aaa authentication login"
+             help="Configures AAA login authentication"/>
+
+    <COMMAND name="aaa authentication login default"
+             help="Configures AAA login authentication default list"
+             mode="subcommand"
+             ptype="SUBCOMMAND">
+      <PARAM name="login"
+             help="Selects authentication method"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="local"
+               help="Selects local authentication"
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+            <PARAM name="group"
+                   help="Selects group"
+                   optional="true"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+              <PARAM name="remote"
+                     help="Selects remote method group"
+                     mode="switch"
+                     ptype="SUBCOMMAND">
+                <PARAM name="tacacs+"
+                       test='"${radius}"!="radius" -a "${ldap}"!="ldap"'
+                       help="Selects group of all TACACS+ servers"
+                       optional="true"
+                       mode="subcommand"
+                       ptype="SUBCOMMAND">
+                </PARAM>
+                <PARAM name="radius"
+                       test='"${tacacs+}"!="tacacs+" -a "${ldap}"!="ldap"'
+                       help="Selects group of all RADIUS servers"
+                       optional="true"
+                       mode="subcommand"
+                       ptype="SUBCOMMAND">
+                </PARAM>
+                <PARAM name="ldap"
+                       test='"${tacacs+}"!="tacacs+" -a "${radius}"!="radius"'
+                       help="Selects group of all LDAP servers"
+                       optional="true"
+                       mode="subcommand"
+                       ptype="SUBCOMMAND">
+                </PARAM>
+              </PARAM>
+            </PARAM>
+        </PARAM>
+        <PARAM name="group"
+               help="Selects group"
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+            <PARAM name="remote"
+                     help="Selects remote method group"
+                     mode="switch"
+                     ptype="SUBCOMMAND">
+            <PARAM name="tacacs+"
+                   test='"${radius}"!="radius" -a "${ldap}"!="ldap"'
+                   help="Selects group of all TACACS+ servers"
+                   optional="true"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+                <PARAM name="local"
+                       help="Selects local authentication"
+                       optional="true"
+                       mode="subcommand"
+                       ptype="SUBCOMMAND">
+                </PARAM>
+            </PARAM>
+            <PARAM name="radius"
+                   help="Selects group of all RADIUS servers"
+                   test='"${tacacs+}"!="tacacs+" -a "${ldap}"!="ldap"'
+                   optional="true"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+                <PARAM name="local"
+                       help="Selects local authentication"
+                       optional="true"
+                       mode="subcommand"
+                       ptype="SUBCOMMAND">
+                </PARAM>
+            </PARAM>
+            <PARAM name="ldap"
+                   test='"${tacacs+}"!="tacacs+" -a "${radius}"!="radius"'
+                   help="Selects group of all LDAP servers"
+                   optional="true"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+                <PARAM name="local"
+                       help="Selects local authentication"
+                       optional="true"
+                       mode="subcommand"
+                       ptype="SUBCOMMAND">
+                </PARAM>
+            </PARAM>
+            </PARAM>
+        </PARAM>
+      </PARAM>
+
+        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_login ${__params} </ACTION>
+    </COMMAND>
+
+    <COMMAND name="aaa authorization"
+             help="Configures AAA authorization"/>
+
+    <COMMAND name="aaa authorization login"
+             help="Configures AAA login authorization"/>
+
+    <COMMAND name="aaa authorization login default"
+             help="Configures AAA login authorization default list"
+             mode="subcommand"
+             ptype="SUBCOMMAND">
+      <PARAM name="login"
+             help="Selects authorization method"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="local"
+               help="Selects local authorization"
+               test='"${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="group"
+               help="Selects group"
+               test='"${local}"!="local"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+            <PARAM name="ldap"
+                   help="Selects group of all LDAP servers"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+            </PARAM>
+        </PARAM>
+      </PARAM>
+
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/authorization/openconfig-aaa-ext:login/config/authorization-method body={"openconfig-aaa-ext:authorization-method": ["${local}${ldap}"] }
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="aaa name-service"
+             help="Configures AAA name service"/>
+
+    <COMMAND name="aaa name-service passwd"
+             help="Configures AAA passwd name-service"
+             mode="switch"
+             ptype="SUBCOMMAND">
+      <PARAM name="method"
+             help="Selects name-service method"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="local"
+               help="Selects local name-service"
+               test='"${login}"!="login" -a "${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="login"
+               help="Selects login name-service"
+               test='"${local}"!="local" -a "${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="group"
+               help="Selects group"
+               test='"${login}"!="login" -a "${local}"!="local"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+            <PARAM name="ldap"
+                   help="Selects group of all LDAP servers"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+            </PARAM>
+        </PARAM>
+      </PARAM>
+
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/passwd-method body={"openconfig-aaa-ext:passwd-method": ["${local}${login}${ldap}"] }
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="aaa name-service shadow"
+             help="Configures AAA shadow name-service"
+             mode="switch"
+             ptype="SUBCOMMAND">
+      <PARAM name="method"
+             help="Selects name-service method"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="local"
+               help="Selects local name-service"
+               test='"${login}"!="login" -a "${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="login"
+               help="Selects login name-service"
+               test='"${local}"!="local" -a "${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="group"
+               help="Selects group"
+               test='"${login}"!="login" -a "${local}"!="local"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+            <PARAM name="ldap"
+                   help="Selects group of all LDAP servers"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+            </PARAM>
+        </PARAM>
+      </PARAM>
+
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/shadow-method body={"openconfig-aaa-ext:shadow-method": ["${local}${login}${ldap}"] }
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="aaa name-service group"
+             help="Configures AAA group name-service"
+             mode="switch"
+             ptype="SUBCOMMAND">
+      <PARAM name="method"
+             help="Selects name-service method"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="local"
+               help="Selects local name-service"
+               test='"${login}"!="login" -a "${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="login"
+               help="Selects login name-service"
+               test='"${local}"!="local" -a "${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="group"
+               help="Selects group"
+               test='"${login}"!="login" -a "${local}"!="local"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+            <PARAM name="ldap"
+                   help="Selects group of all LDAP servers"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+            </PARAM>
+        </PARAM>
+      </PARAM>
+
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/group-method body={"openconfig-aaa-ext:group-method": ["${local}${login}${ldap}"] }
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="aaa name-service netgroup"
+             help="Configures AAA netgroup name-service"
+             mode="switch"
+             ptype="SUBCOMMAND">
+      <PARAM name="method"
+             help="Selects name-service method"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="local"
+               help="Selects local name-service"
+               test='"${login}"!="login" -a "${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="group"
+               help="Selects group"
+               test='"${login}"!="login" -a "${local}"!="local"'
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+            <PARAM name="ldap"
+                   help="Selects group of all LDAP servers"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+            </PARAM>
+        </PARAM>
+      </PARAM>
+
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/netgroup-method body={"openconfig-aaa-ext:netgroup-method": ["${local}${ldap}"] }
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="aaa name-service sudoers"
+             help="Configures AAA sudoers name-service"
+             mode="switch"
+             ptype="SUBCOMMAND">
+      <PARAM name="method"
+             help="Selects name-service method"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="local"
+               help="Selects local name-service"
+               test='"${login}"!="login" -a "${ldap}"!="ldap"'
+               optional="true"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="group"
+               help="Selects group"
+               test='"${login}"!="login" -a "${local}"!="local"'
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+            <PARAM name="ldap"
+                   help="Selects group of all LDAP servers"
+                   mode="subcommand"
+                   ptype="SUBCOMMAND">
+            </PARAM>
+        </PARAM>
+      </PARAM>
+
+      <ACTION
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/sudoers-method body={"openconfig-aaa-ext:sudoers-method": ["${local}${ldap}"] }
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no aaa authentication login"
+             help="Unconfigures AAA login authentication"/>
+
+    <COMMAND name="no aaa authentication login default"
+             help="Unconfigures AAA login authentication default list">
+
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/authentication/config/authentication-method
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no aaa authorization"
+             help="Unconfigures AAA authorization"/>
+
+    <COMMAND name="no aaa authorization login"
+             help="Unconfigures AAA login authorization"/>
+
+    <COMMAND name="no aaa authorization login default"
+             help="Unconfigures AAA login authorization default list">
+
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/authorization/openconfig-aaa-ext:login/config/authorization-method
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no aaa name-service"
+             help="Unconfigures AAA name-service"/>
+
+    <COMMAND name="no aaa name-service passwd"
+             help="Unconfigures AAA passwd name-service">
+
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/passwd-method
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no aaa name-service shadow"
+             help="Unconfigures AAA shadow name-service">
+
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/shadow-method
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no aaa name-service group"
+             help="Unconfigures AAA group name-service">
+
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/group-method
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no aaa name-service netgroup"
+             help="Unconfigures AAA netgroup name-service">
+
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/netgroup-method
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no aaa name-service sudoers"
+             help="Unconfigures AAA sudoers name-service">
+
+      <ACTION
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/sudoers-method
+      </ACTION>
+    </COMMAND>
+
   </VIEW>
 
 </CLISH_MODULE>

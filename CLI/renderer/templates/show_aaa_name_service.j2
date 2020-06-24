@@ -1,0 +1,10 @@
+{{'---------------------------------------------------------'}}
+{{'AAA Name-Service Information'.ljust(20)}}
+{{'---------------------------------------------------------'}}
+{% if json_output -%}
+{% for field,value in json_output.iteritems() %}
+{% set attr = field|replace("openconfig-aaa-ext:", "", count=1) %}
+{{ "%-15s"|format(attr) }} : {{value[0]}}
+{% endfor %}
+{% endif %}
+
