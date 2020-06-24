@@ -1,4 +1,3 @@
-
 ###########################################################################
 #
 # Copyright 2020 Dell, Inc.
@@ -34,78 +33,75 @@ def show_router_bgp_neighbor_cmd(render_tables):
 
   return 'CB_SUCCESS', cmd_str
 
-def util_show_router_bgp_af_nw_cmd(render_tables, af):
+def show_router_bgp_cmd(render_tables):
     cmd_str = ''
+    if 'sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST' in render_tables:
+        cmd_prefix = 'router bgp'
+        rmap = render_tables['sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST']
+        if 'local_asn' in rmap:
+            cmd_str = cmd_prefix + ' ' + str(rmap['local_asn'])
+        if 'vrf_name' in rmap and rmap['vrf_name'] != 'default':
+            cmd_str = cmd_str + ' vrf ' + rmap['vrf_name']
+
+    return 'CB_SUCCESS', cmd_str
+
+def show_router_bgp_af_nw_cmd(render_tables):
+    cmd_str = ''
+    vrf_name = render_tables['vrf-name']
+    afi_safi = render_tables['afi-safi']
     if 'sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF_NETWORK/BGP_GLOBALS_AF_NETWORK_LIST' in render_tables:
         rmap = render_tables['sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF_NETWORK/BGP_GLOBALS_AF_NETWORK_LIST']
         for item in rmap:
             cmd_prefix = 'network '
-            if 'afi_safi' in item and item['afi_safi'] != af:
-                continue
-            if 'ip_prefix' in item:
-                cmd_str = cmd_str + cmd_prefix + item['ip_prefix']
-                if 'backdoor' in item:
-                    cmd_str = cmd_str + ' backdoor'
-                if 'policy' in item:
-                    cmd_str = cmd_str + ' route-map ' + item['policy']
-                cmd_str = cmd_str + ' ;'
+            if ('vrf_name' in item and item['vrf_name'] == vrf_name)  and ('afi_safi' in item and item['afi_safi'] == afi_safi):
+                if 'ip_prefix' in item:
+                    cmd_str = cmd_str + cmd_prefix + item['ip_prefix']
+                    if 'backdoor' in item:
+                        cmd_str = cmd_str + ' backdoor'
+                    if 'policy' in item:
+                        cmd_str = cmd_str + ' route-map ' + item['policy']
+                    cmd_str = cmd_str + ' ;'
 
     return 'CB_SUCCESS', cmd_str
 
-def util_show_router_bgp_af_ag_cmd(render_tables, af):
+def show_router_bgp_af_ag_cmd(render_tables):
     cmd_str = ''
+    vrf_name = render_tables['vrf-name']
+    afi_safi = render_tables['afi-safi']
     if 'sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF_AGGREGATE_ADDR/BGP_GLOBALS_AF_AGGREGATE_ADDR_LIST' in render_tables:
         rmap = render_tables['sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF_AGGREGATE_ADDR/BGP_GLOBALS_AF_AGGREGATE_ADDR_LIST']
         for item in rmap:
             cmd_prefix = 'aggregate-address '
-            if 'afi_safi' in item and item['afi_safi'] != af:
-                continue
-            if 'ip_prefix' in item:
-                cmd_str = cmd_str + cmd_prefix + item['ip_prefix']
-                if 'as_set' in item:
-                    cmd_str = cmd_str + ' as-set'
-                if 'summary_only' in item:
-                    cmd_str = cmd_str + ' summary-only'
-                if 'policy' in item:
-                    cmd_str = cmd_str + ' route-map ' + item['policy']
-                cmd_str = cmd_str + ' ;'
+            if ('vrf_name' in item and item['vrf_name'] == vrf_name)  and ('afi_safi' in item and item['afi_safi'] == afi_safi):
+                if 'ip_prefix' in item:
+                    cmd_str = cmd_str + cmd_prefix + item['ip_prefix']
+                    if 'as_set' in item:
+                        cmd_str = cmd_str + ' as-set'
+                    if 'summary_only' in item:
+                        cmd_str = cmd_str + ' summary-only'
+                    if 'policy' in item:
+                        cmd_str = cmd_str + ' route-map ' + item['policy']
+                    cmd_str = cmd_str + ' ;'
 
     return 'CB_SUCCESS', cmd_str
 
-def util_show_router_bgp_af_redist_cmd(render_tables, af):
+def show_router_bgp_af_redist_cmd(render_tables):
     cmd_str = ''
+    vrf_name = render_tables['vrf-name']
+    afi_safi = render_tables['afi-safi']
     if 'sonic-route-common:sonic-route-common/ROUTE_REDISTRIBUTE/ROUTE_REDISTRIBUTE_LIST' in render_tables:
         rmap = render_tables['sonic-route-common:sonic-route-common/ROUTE_REDISTRIBUTE/ROUTE_REDISTRIBUTE_LIST']
         for item in rmap:
             cmd_prefix = 'redistribute'
-            if 'addr_family' in item and item['addr_family'] != af:
-                continue
-            if 'src_protocol' in item:
-                cmd_str = cmd_str + cmd_prefix + ' ' + item['src_protocol']
-                if 'route_map' in item:
-                    cmd_str = cmd_str + ' route-map'
-                    for rtm in item['route_map']:
-                        cmd_str = cmd_str + ' ' + rtm
-                if 'metric' in item:
-                    cmd_str = cmd_str + ' metric ' + str(item['metric'])
-                cmd_str = cmd_str + ' ;'
+            if ('vrf_name' in item and item['vrf_name'] == vrf_name)  and ('addr_family' in item and (item['addr_family'] in afi_safi)):
+                if 'src_protocol' in item:
+                    cmd_str = cmd_str + cmd_prefix + ' ' + item['src_protocol']
+                    if 'route_map' in item:
+                        cmd_str = cmd_str + ' route-map'
+                        for rtm in item['route_map']:
+                            cmd_str = cmd_str + ' ' + rtm
+                    if 'metric' in item:
+                        cmd_str = cmd_str + ' metric ' + str(item['metric'])
+                    cmd_str = cmd_str + ' ;'
 
     return 'CB_SUCCESS', cmd_str
-
-def show_router_bgp_af_ipv4_nw_cmd(render_tables):
-    return util_show_router_bgp_af_nw_cmd(render_tables, 'ipv4_unicast')
-
-def show_router_bgp_af_ipv4_ag_cmd(render_tables):
-    return util_show_router_bgp_af_ag_cmd(render_tables, 'ipv4_unicast')
-
-def show_router_bgp_af_ipv4_redist_cmd(render_tables):
-    return util_show_router_bgp_af_redist_cmd(render_tables, 'ipv4')
-
-def show_router_bgp_af_ipv6_nw_cmd(render_tables):
-    return util_show_router_bgp_af_nw_cmd(render_tables, 'ipv6_unicast')
-
-def show_router_bgp_af_ipv6_ag_cmd(render_tables):
-    return util_show_router_bgp_af_ag_cmd(render_tables, 'ipv6_unicast')
-
-def show_router_bgp_af_ipv6_redist_cmd(render_tables):
-    return util_show_router_bgp_af_redist_cmd(render_tables, 'ipv6')
