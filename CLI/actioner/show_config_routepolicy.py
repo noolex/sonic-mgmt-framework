@@ -18,6 +18,7 @@
 
 from show_config_if_cmd import show_get_if_cmd
 
+# Route map related
 def show_routemap_setcommunity(render_tables):
     cmd_str = ''
 
@@ -101,3 +102,52 @@ def show_routemap_matchtag(render_tables):
 
     return 'CB_SUCCESS', cmd_str
 
+
+# IPv4/IPv6 prefix lists related
+
+def show_prefix_lists(render_tables, ip_mode):
+    cmd_str = ''
+    temp = {}
+    # Fetch IPv4 or Ipv6 mode and store from PREFIX_SET_LIST table and then filter PREFIX_LIST
+    if 'sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST' in render_tables:
+        prefix_set = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST']
+        for set in prefix_set:
+            name = set["name"]
+            temp[name] = set["mode"]
+
+    if 'sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST' in render_tables:
+        prefix_list = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST']
+        for prefix in prefix_list:
+            mode = ''
+            mask_range_str = ''
+            prefix_name = prefix["set_name"]
+
+            # Display only IP or IPv6 prefixes based on request.
+            if temp[prefix_name] != ip_mode:
+               continue
+            if temp[prefix_name] == "IPv4":
+               cmd_prfx = 'ip prefix-list '
+            elif temp[prefix_name] == "IPv6":
+               cmd_prfx = 'ipv6 prefix-list '
+            else:
+               continue
+
+            mask_range = prefix['masklength_range']
+
+            if mask_range != "exact":
+               prefix_val = prefix['ip_prefix'].split("/")
+               mask_range_val = prefix['masklength_range'].split("..")
+               if prefix_val[1] == mask_range_val[0]:
+                  mask_range_str = " le " + mask_range_val[1]
+               else:
+                  mask_range_str = " ge " + mask_range_val[0] + " le " + mask_range_val[1]
+
+            cmd_str = cmd_str + cmd_prfx + prefix['set_name'] + " " + prefix['action'] + " " + prefix['ip_prefix'] + mask_range_str + ";" ;
+
+    return 'CB_SUCCESS', cmd_str
+
+def show_v4prefix_lists(render_tables):
+    return show_prefix_lists(render_tables, "IPv4")
+
+def show_v6prefix_lists(render_tables):
+    return show_prefix_lists(render_tables, "IPv6")
