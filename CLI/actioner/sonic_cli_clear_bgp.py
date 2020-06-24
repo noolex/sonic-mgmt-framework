@@ -40,6 +40,10 @@ def clear_bgp_api(args):
    asn, asnval = args[0].split("=")
    nipv4, nipv4ip = args[1].split("=")
    nipv6, nipv6ip = args[2].split("=")
+   if args[3] == 'cleartype=ip-prefix':
+       # clear bgp ipv4/v6 unicast <ipv4-prefix/v6-prefix>
+       # replace keyword unicast with prefix
+       args[7] = 'prefix'
    i = 6
    for arg in args[6:]:
         if "vrf" == arg:

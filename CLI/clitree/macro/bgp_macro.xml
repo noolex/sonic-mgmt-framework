@@ -55,6 +55,40 @@ limitations under the License.
       </PARAM>
     </MACRODEF>
 
+    <MACRODEF name="NEW_BGP_CLR_OPTIONS">
+      <PARAM name="unicast" help="BGP IPvarg1 unicast" ptype="SUBCOMMAND" mode="subcommand"/>
+      <PARAM name="vrf" help="BGP VRF" ptype="SUBCOMMAND" mode="subcommand" order="true" optional="true">
+        <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+      </PARAM>
+      <PARAM name="cleartype" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch" order="true" optional="true">
+        <PARAM name="*" help="Clear all peers" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="as-num-dot" help="Clear BGP by Autonomous system number" ptype="RANGE_1_4294967295"/>
+        <PARAM name="external" help="Clear all external peers" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="ip-addr" help="IPvarg1 Neighbor address to clear BGP" ptype="arg3"/>
+        <PARAM name="ip-prefix" help="IPvarg1 Prefix to clear BGP" ptype="IParg2_ADDR_MASK"/>
+        <PARAM name="interface" help="Inferface to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="interface_type" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="Ethernet" help="Ethernet Interface to clear BGP" ptype="PHY_INTERFACE" mode="subcommand"/>
+            <PARAM name="PortChannel" help="PortChannel to clear BGP" ptype="PO_INTERFACE" mode="subcommand"/>
+            <PARAM name="Vlan" help="Vlan to clear BGP" ptype="VLAN_INTERFACE" mode="subcommand"/>
+          </PARAM>
+        </PARAM>
+        <PARAM name="peer-group" help="Peer group to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="peer-group-name" help="Peer-group name" ptype="STRING" optional="true"/>
+        </PARAM>
+      </PARAM>
+      <PARAM name="inout_subcommands" help="Clear inout subcommands" ptype="SUBCOMMAND" mode="switch" order="true" optional="true">
+         <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
+         <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
+         <PARAM name="soft" help="Soft reconfig inbound and outbound updates" ptype="SUBCOMMAND" mode="subcommand">
+           <PARAM name="soft-opt" help="soft-reconfiguration options" ptype="SUBCOMMAND" mode="switch" optional="true">
+             <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
+             <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
+           </PARAM>
+         </PARAM>
+      </PARAM>
+    </MACRODEF>
+
     <MACRODEF name="IP_BGP_NBR_SHW_RTE_OPTIONS">
         <PARAM name="neighbor-subcommands" help="Neighbor subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
           <PARAM name="routes" help="Display the routes learned from neighbor" ptype="SUBCOMMAND" mode="subcommand"/>
