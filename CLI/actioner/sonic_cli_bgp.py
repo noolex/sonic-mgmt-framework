@@ -1821,11 +1821,15 @@ def get_bgp_nbr_iptype(nbr, afisafiname):
                nbr_afisafiname = "openconfig-bgp-types:IPV4_UNICAST"
            if nbr_afisafiname == afisafiname:
               break
+           elif afisafiname == 'ipv4v6' and (nbr_afisafiname == "openconfig-bgp-types:IPV4_UNICAST" or nbr_afisafiname == "openconfig-bgp-types:IPV6_UNICAST"):
+              break
     try:
         ipaddr = netaddr.IPAddress(nbr['neighbor-address'])
     except:
         unnumbered = True
     if nbr_afisafiname == afisafiname:
+       is_afmatch = True
+    elif afisafiname == 'ipv4v6' and (nbr_afisafiname == "openconfig-bgp-types:IPV4_UNICAST" or nbr_afisafiname == "openconfig-bgp-types:IPV6_UNICAST"):
        is_afmatch = True
     return is_afmatch, unnumbered
 
@@ -1940,6 +1944,8 @@ def invoke_show_api(func, args=[]):
             afisafiname = 'openconfig-bgp-types:IPV6_UNICAST'
         elif args[2] == 'evpn':
             afisafiname = 'openconfig-bgp-types:L2VPN_EVPN'
+        elif args[2] == 'ipv4v6':
+            afisafiname = args[2]
         else:
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
@@ -1965,6 +1971,8 @@ def invoke_show_api(func, args=[]):
             afisafiname = 'openconfig-bgp-types:IPV6_UNICAST'
         elif args[2] == 'evpn':
             afisafiname = 'openconfig-bgp-types:L2VPN_EVPN'
+        elif args[2] == 'ipv4v6':
+            afisafiname = args[2]
         else:
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
@@ -2797,12 +2805,49 @@ def parseGloblShow(vrf_name, cmd, args=[]):
             generate_show_bgp_vrf_all(args)
             return 0
 
+        if len(args) == 0:
+            return get_show_bgp(args)
         if args[0] == 'statistics':
             return generate_show_bgp_stats(args)
         elif args[0] == 'ip-prefix':
             return generate_show_bgp_prefix_routes(args)
+        elif args[0] == 'neighbors':
+            nbr_subcmds = [ 'routes', 'received-routes', 'advertised-routes' ]
+            if args[-1] in  nbr_subcmds:
+                return generate_show_bgp_routes(args)
+            elif args[1] == 'neighbor-ip':
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip',  [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4', args[-1] ])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            elif args[1] == 'interface':
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip',  [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4', args[-1] ])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            else:
+                response = invoke_show_api('get_ip_bgp_neighbors', [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4' ] + args[4:])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            return 0
+        elif args[0] == 'summary':
+            response = invoke_show_api('get_ip_bgp_summary', [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4' ])
+            show_cli_output('show_ip_bgp_summary.j2', response)
+            return 0
+
         else:
             return generate_show_bgp_routes(args)
+
+    elif cmd == 'show bgp all':
+        vrf_arg = [ 'vrf' , vrf_name ]
+        if args[0] == 'peer-group':
+            if len(args) == 1:
+                response = invoke_show_api('get_show_bgp_peer_group_all', vrf_arg + args)
+            else:
+                response = invoke_show_api('get_show_bgp_peer_group', vrf_arg + args)
+        elif args[0] == 'neighbors':
+            if len(args) == 1:
+                response = invoke_show_api('get_ip_bgp_neighbors', [ None, vrf_name, 'ipv4v6' ])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            else:
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip',  [ None, vrf_name, 'ipv4v6' ] + args[1:])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+        return 0
 
     print cc.ApiClient().cli_not_implemented(cmd).error_message()
     return 1

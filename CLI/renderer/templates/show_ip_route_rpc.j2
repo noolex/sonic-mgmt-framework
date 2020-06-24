@@ -15,6 +15,7 @@
 {% if json_output %}
 {% if json_output is iterable %}
 Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
+        > - selected route, * - FIB route, q - queued route, r - rejected route, # - not installed in hardware
       {{' %-29s'|format("Destination")}}{{'%-55s'|format("Gateway")}}{{'%-14s'|format("Dist/Metric")}}{{'%-12s'|format("Uptime")}}
 -------------------------------------------------------------------------------------------------------------------
 {% set routeList = json_output %}
@@ -98,9 +99,9 @@ Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
      {% set temp = vars.distance |string() + "/" + vars.metric | string() %}
      {% set codes = vars.protocol %}
      {% if loop.index == 1 %}
-{{' %-6s'|format(codes)}}{{'%-29s'|format(vars.prefix)}}{{'%-30s'|format(vars.gateway)}}{{'%-25s'|format(vars.interface)}}{{'%-14s'|format(temp)}}{{'%-12s'|format(vars.uptime)}}
+{{' %-1s'|format(codes)}}{{'%-1s'|format(vars.selected)}}{{'%-4s'|format(vars.fib)}}{{'%-29s'|format(vars.prefix)}}{{'%-30s'|format(vars.gateway)}}{{'%-25s'|format(vars.interface)}}{{'%-14s'|format(temp)}}{{'%-12s'|format(vars.uptime)}}
      {% else %}
-{{'%-36s'|format(" ")}}{{'%-30s'|format(vars.gateway)}}{{'%-25s'|format(vars.interface)}}{{'%-17s'|format(" ")}}
+{{'   %-3s'|format(vars.fib)}}{{'%-30s'|format(" ")}}{{'%-30s'|format(vars.gateway)}}{{'%-25s'|format(vars.interface)}}{{'%-17s'|format(" ")}}
      {% endif %}
   {% endfor %}
   {% endfor %}

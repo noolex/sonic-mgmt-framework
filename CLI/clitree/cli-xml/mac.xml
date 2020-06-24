@@ -420,7 +420,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="mac-address add"
-        help="Add static mac" >
+        help="Add static mac" command_tables="sonic-fdb:sonic-fdb/FDB/FDB_LIST" render_command_cb="mac_source_if">
         <PARAM name="address" help="" mode="subcommand" ptype="SUBCOMMAND">
             <PARAM name="mac-address" help="mac address" ptype="MAC_ADDR">
                 <PARAM name="vlan" help="" mode="subcommand" ptype="SUBCOMMAND">
@@ -432,17 +432,10 @@ limitations under the License.
                             ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="Ethernet"
+                                name="phy-if-name"
                                 help="Ethernet IEEE 802.3"
-                                ptype="SUBCOMMAND"
-                                mode="subcommand"
+                                ptype="PHY_INTERFACE"
                                 >
-                                <PARAM
-                                    name="phy-if-id"
-                                    help="Physical interface"
-                                    ptype="UINT"
-                                    >
-                                </PARAM>
                             </PARAM>
                             <PARAM
                                 name="PortChannel"
@@ -466,7 +459,7 @@ limitations under the License.
         if test "${if-subcommand}" = "PortChannel"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id} PortChannel${port-channel-id}&#xA;
         else&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id} Ethernet${phy-if-id}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id} ${phy-if-name}&#xA;
         fi&#xA;
     </ACTION>
     </COMMAND>

@@ -26,15 +26,18 @@ limitations under the License.
      <COMMAND
         name="interface-naming"
         help="Interface naming"
+        command_keys="name=localhost"
+        command_tables="sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST/name={name}"
         >
         <PARAM 
             name="standard" 
             help="Enable interface naming standard mode" 
             ptype="SUBCOMMAND" 
             mode="subcommand"
+            dbpath="sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST/intf_naming_mode=standard"
             >
         </PARAM>
-     <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST=localhost/intf_naming_mode body={"sonic-device-metadata:intf_naming_mode": "alias"}</ACTION>
+     <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST=localhost/intf_naming_mode body={"sonic-device-metadata:intf_naming_mode": "standard"}</ACTION>
      </COMMAND>
 
      <COMMAND

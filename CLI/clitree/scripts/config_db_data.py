@@ -17,10 +17,10 @@
 ###########################################################################
 
 
-VIEW_PRIORITY_FILE_MAP = { "configure-if-view" : ['interface.xml', 'udld.xml', 'storm_control.xml'],
-                           "configure-lag-view": ['interface.xml'],
-                           "configure-vlan-view": ['interface.xml'],
-                           "configure-if-mgmt-view": ['interface.xml'],
-                           "configure-lo-view": ['interface.xml']
+VIEW_PRIORITY_FILE_MAP = { "configure-if-view" : ['interface.xml', 'vrf.xml', 'ipv4.xml', 'ipv6.xml' ],
+                           "configure-lag-view": ['interface.xml', 'vrf.xml', 'ipv4.xml', 'ipv6.xml' ],
+                           "configure-vlan-view": ['interface.xml','vrf.xml', 'ipv4.xml', 'ipv6.xml' ],
+                           "configure-if-mgmt-view": ['interface.xml','vrf.xml', 'ipv4.xml', 'ipv6.xml'],
+                           "configure-lo-view": ['interface.xml','vrf.xml', 'ipv4.xml', 'ipv6.xml'],
+                           "configure-vxlan-view": ['vxlan.xml']
                          }
-

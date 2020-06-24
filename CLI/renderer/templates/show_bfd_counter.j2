@@ -12,26 +12,20 @@
 {% if vars.update({'sessionUp': "0"}) %}{% endif %}
 {% if vars.update({'sessionDown': "0"}) %}{% endif %}
 {% if vars.update({'zebraNotif': "0"}) %}{% endif %}
-{% if 'openconfig-bfd-ext:single-hop-state' in json_output or 'openconfig-bfd-ext:multi-hop-state' in json_output %}
-    {% if 'openconfig-bfd-ext:single-hop-state' in json_output %}
-        {% set sessions = json_output['openconfig-bfd-ext:single-hop-state'] %}
+{% if 'openconfig-bfd-ext:single-hop' in json_output or 'openconfig-bfd-ext:multi-hop' in json_output %}
+    {% if 'openconfig-bfd-ext:single-hop' in json_output %}
+        {% set sessions = json_output['openconfig-bfd-ext:single-hop'] %}
     {% endif %}
-    {% if 'openconfig-bfd-ext:multi-hop-state' in json_output %}
-        {% set sessions = json_output['openconfig-bfd-ext:multi-hop-state'] %}
+    {% if 'openconfig-bfd-ext:multi-hop' in json_output %}
+        {% set sessions = json_output['openconfig-bfd-ext:multi-hop'] %}
     {% endif %}
     {% if sessions %}
         {% for peer in sessions %}
-            {% if "local-discriminator" in peer %}
-                {% if vars.update({'sessionId':peer['local-discriminator']}) %}{% endif %}
-            {% endif %}
             {% if "local-address" in peer %}
                 {% if vars.update({'localAddress':peer['local-address']}) %}{% endif %}
             {% endif %}
             {% if "remote-address" in peer %}
                 {% if vars.update({'peerAddress':peer['remote-address']}) %}{% endif %}
-            {% endif %}
-            {% if "session-state" in peer %}
-                {% if vars.update({'status':peer['session-state']}) %}{% endif %}
             {% endif %}
             {% if "vrf" in peer %}
                 {% if vars.update({'vrf':peer['vrf']}) %}{% endif %}
@@ -39,30 +33,30 @@
             {% if "interface" in peer %}
                 {% if vars.update({'interface':peer['interface']}) %}{% endif %}
             {% endif %}
-            {% if "async" in peer %}
-                {% if "transmitted-packets" in peer['async'] %}
-                    {% if vars.update({'controlPktOut':peer['async']['transmitted-packets']}) %}{% endif %}
+            {% if "async" in peer['state'] %}
+                {% if "transmitted-packets" in peer['state']['async'] %}
+                    {% if vars.update({'controlPktOut':peer['state']['async']['transmitted-packets']}) %}{% endif %}
                 {% endif %}
-                {% if "received-packets" in peer['async'] %}
-                    {% if vars.update({'controlPktIn':peer['async']['received-packets']}) %}{% endif %}
+                {% if "received-packets" in peer['state']['async'] %}
+                    {% if vars.update({'controlPktIn':peer['state']['async']['received-packets']}) %}{% endif %}
                 {% endif %}
-                {% if "up-transitions" in peer['async'] %}
-                    {% if vars.update({'sessionUp':peer['async']['up-transitions']}) %}{% endif %}
+                {% if "up-transitions" in peer['state']['async'] %}
+                    {% if vars.update({'sessionUp':peer['state']['async']['up-transitions']}) %}{% endif %}
                 {% endif %}
             {% endif %}
             {% if "echo" in peer %}
-                {% if "transmitted-packets" in peer['echo'] %}
-                    {% if vars.update({'echoPktOut':peer['echo']['transmitted-packets']}) %}{% endif %}
+                {% if "transmitted-packets" in peer['state']['echo'] %}
+                    {% if vars.update({'echoPktOut':peer['state']['echo']['transmitted-packets']}) %}{% endif %}
                 {% endif %}
-                {% if "received-packets" in peer['echo'] %}
-                    {% if vars.update({'echoPktIn':peer['echo']['received-packets']}) %}{% endif %}
+                {% if "received-packets" in peer['state']['echo'] %}
+                    {% if vars.update({'echoPktIn':peer['state']['echo']['received-packets']}) %}{% endif %}
                 {% endif %}
             {% endif %}
-            {% if "failure-transitions" in peer %}
-                {% if vars.update({'sessionDown':peer['failure-transitions']}) %}{% endif %}
+            {% if "failure-transitions" in peer['state'] %}
+                {% if vars.update({'sessionDown':peer['state']['failure-transitions']}) %}{% endif %}
             {% endif %}        
 {% set peerkey = 'peer %s'|format(vars.peerAddress)%}
-{% if 'openconfig-bfd-ext:multi-hop-state' in json_output %}
+{% if 'openconfig-bfd-ext:multi-hop' in json_output %}
 {% set peerkey = '%s %s'|format(peerkey, 'multihop')%}
 {% endif %}
 {% if vars.localAddress != 'null'%}

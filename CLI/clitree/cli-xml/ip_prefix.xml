@@ -38,6 +38,9 @@ limitations under the License.
     <COMMAND
         name="ip prefix-list"
         help="Build a prefix list"
+        command_keys="name=*,prefix=*,mask=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
+        render_command_cb="v4prefix_lists_cmd"
         >
         <PARAM
             name="prefix-name"
@@ -140,6 +143,9 @@ limitations under the License.
     <COMMAND
         name="ipv6 prefix-list"
         help="Build a prefix list"
+        command_keys="name=*,prefix=*,mask=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
+        render_command_cb="v6prefix_lists_cmd"
         >
         <PARAM
             name="prefix-name"

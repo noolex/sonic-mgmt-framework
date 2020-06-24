@@ -1,0 +1,17 @@
+{% if json_output -%}
+{{' '}}
+{{'Errdisable Cause    Status'}}
+{{'------------------  --------'}}
+{% set errdisable_info = json_output['openconfig-errdisable-ext:errdisable'] %}
+{% if 'openconfig-errdisable-types:UDLD' in errdisable_info['config']['cause'] %}
+{{'udld                enabled'}}
+{%else %}
+{{'udld                disabled'}}
+{%endif%}
+{% if 'openconfig-errdisable-types:BPDUGUARD' in errdisable_info['config']['cause'] %}
+{{'bpduguard           enabled'}}
+{%else %}
+{{'bpduguard           disabled'}}
+{%endif%}
+{{'Timeout for Auto-recovery: '}} {{errdisable_info['config']['interval']}} seconds
+{%endif%}

@@ -94,3 +94,19 @@ def show_sflow_source_if(render_tables):
                            'agent_id',
                            cmd_prfx)
 
+def show_mac_source_if(render_tables):
+    cmd_prfx = 'mac-address add address '
+    table_name = 'sonic-fdb:sonic-fdb/FDB'
+    cmd_str = ''
+    if table_name in render_tables:
+        if 'FDB_LIST' in render_tables[table_name]:
+            table_inst = render_tables[table_name]['FDB_LIST']
+            for inst in table_inst:
+                temp_cmd_prfx = cmd_prfx + inst['mac-address'] + ' '
+                temp_cmd_str = ''
+                temp_cmd_str = show_render_if_cmd(inst, 'vlan', temp_cmd_prfx, temp_cmd_prfx)
+                temp_cmd_str += ' '
+                temp_cmd_str = show_render_if_cmd(inst, 'port', temp_cmd_str, temp_cmd_str)
+                cmd_str = cmd_str+';'+temp_cmd_str
+    return 'CB_SUCCESS', cmd_str
+

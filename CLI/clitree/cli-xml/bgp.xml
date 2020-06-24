@@ -27,11 +27,25 @@ limitations under the License.
 <VIEW name="enable-view">
   <COMMAND name="show bgp ipv4" help="IPv4 information">
     <MACRO name="NEW_BGP_SHW_OPTIONS" arg="4,"></MACRO>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${__full_line}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${neighbor_type} ${__full_line}</ACTION>
   </COMMAND>
   <COMMAND name="show bgp ipv6" help="IPv6 information">
     <MACRO name="NEW_BGP_SHW_OPTIONS" arg="6,V6"></MACRO>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${__full_line}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${neighbor_type} ${__full_line}</ACTION>
+  </COMMAND>
+  <COMMAND name="show bgp all" help="Display BGP information for all address families">
+    <PARAM name="vrf" help="BGP VRF" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+      <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+    </PARAM>
+    <PARAM name="querytype" help="BGP all subcommands" ptype="SUBCOMMAND" mode="switch">
+      <PARAM name="peer-group" help="Detailed information on BGP peer groups" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="peer-group-name" help="Display one particular BGP peer group" ptype="STRING" optional="true"/>
+      </PARAM>
+      <PARAM name="neighbors" help="Detailed information on BGP neighbors" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="neighbor-ip" help="Display one particular BGP neighbor" ptype="IPV4V6_ADDR" optional="true"/>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${peer-group-name} ${neighbor-ip}</ACTION>
   </COMMAND>
   <COMMAND name="show ip bgp" help="BGP information">
     <PARAM name="bgp subcommands" help="BGP subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
@@ -148,6 +162,14 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="clear bgp" help="Clear BGP"/>
+  <COMMAND name="clear bgp ipv4" help="Clear BGP IPv4">
+    <MACRO name="NEW_BGP_CLR_OPTIONS" arg="4,,IPV4_ADDR_ABC"></MACRO>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ip-addr} n-ipv6= cleartype=${cleartype} ${__full_line}</ACTION>
+  </COMMAND>
+  <COMMAND name="clear bgp ipv6" help="Clear BGP IPv6">
+    <MACRO name="NEW_BGP_CLR_OPTIONS" arg="6,V6,IPV6_ADDR"></MACRO>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4= n-ipv6=${ip-addr} cleartype=${cleartype} ${__full_line}</ACTION>
+  </COMMAND>
   <COMMAND name="clear ip bgp" help="Clear BGP">
     <PARAM name="clear_bgp_subcommands" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch">
         <MACRO name="CLEAR_BGP_COMMON_OPTIONS_SUB_CMDS" arg=""></MACRO>

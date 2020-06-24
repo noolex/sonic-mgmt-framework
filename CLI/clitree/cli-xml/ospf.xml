@@ -1120,6 +1120,40 @@ limitations under the License.
 
 <VIEW name="enable-view">   
 
+  <COMMAND name="clear ip ospf" help="Clear OSPFv2 sessions">
+    <PARAM name="clear_ospf_subcommands" help="Clear OSPFv2 commands" ptype="SUBCOMMAND" mode="switch">
+      <PARAM name="interface" help="Interface" ptype="SUBCOMMAND" mode="subcommand">
+         <PARAM name="interface-name" help="Interface name" ptype="STRING" optional="true"/>
+      </PARAM>
+      <PARAM name="vrf" help="OSPFv2 interface VRF name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="vrf-name" help="VRF Name" ptype="STRING" optional="false" >
+           <PARAM name="interface" help="Interface" ptype="SUBCOMMAND" mode="subcommand">
+               <PARAM name="interface-name" help="Interface name" ptype="STRING" optional="true"/>
+           </PARAM>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_ospfv2 clear_ospfv2 intf=${interface-name} vrf=${vrf-name} ${__full_line}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command clears/resets OSPFv2 sessions on an OSPFv2 interface.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to clear OSPFv2 sessions. Following is a partial list of
+        information with command syntax that can be cleared.
+        - clear ip ospf interface IF-NAME
+          This command clears all OSPF sessions on an OSPF interface
+        - clear ip ospf vrf VRF-NAME interface IF-NAME
+          This command clears all OSPF sessions on interface in VRF VRF-NAME
+      </USAGE>
+      <EXAMPLE summary="Below command clear sessions on Ethernt64">
+        sonic# clear ip ospf interface  Ethernet64
+        sonic# clear ip ospf vrf default interface Ethernet64
+      </EXAMPLE>
+    </DOCGEN>
+  </COMMAND>
+
+
     <COMMAND name = "show ip ospf" help = "OSPF information" >
       <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
@@ -1347,7 +1381,8 @@ limitations under the License.
 
      <COMMAND name="show ip ospf router-info" help="Router Information" >
         <ACTION builtin="clish_nop"></ACTION>
-     </COMMAND>
+  </COMMAND>
+
 </VIEW>
 
 <!--=======================================================-->

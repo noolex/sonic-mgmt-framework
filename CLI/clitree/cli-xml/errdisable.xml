@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+<!--=========================================================================-->
+
+    <PTYPE
+        name = "ERR_DISABLE_RECOVERY_CAUSE"
+        method="select"
+        pattern="udld bpduguard"
+        help="Cause for ERRDISABLE"
+    />
+    <PTYPE
+        name = "ERR_DISABLE_INTERVAL"
+        method = "integer"
+        pattern = "30..65535"
+        help = ""
+    />
+    <VIEW name="enable-view">
+        <COMMAND name = "show errdisable"
+            help = "Show ERRDISABLE recovery information">
+        </COMMAND>
+        <!-- show errdisable recovery -->
+        <COMMAND name = "show errdisable recovery"
+            help = "Show ERRDISABLE recovery information">
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable show_errdisable_recovery show_errdisable.j2</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Shows ERRDISABLE recovery information
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to check status of ERRDISABLE recovery for all supported feature
+                </USAGE>
+                <EXAMPLE summary="Shows status of ERRDISABLE recovery for all supported feature">
+                    show errdisable recovery
+                    ErrDisable Reason    Timer Status
+                    -----------------    --------------
+                    udld                 Disabled
+                    bpduguard            Disabled
+
+                </EXAMPLE>
+                <FEATURE> ERRDISABLE </FEATURE>
+            </DOCGEN>
+        </COMMAND>
+    </VIEW>
+
+
+    <VIEW name="configure-view">
+        <COMMAND name="errdisable" help="Enable ERRDISABLE recovery"/>
+        <COMMAND name="no errdisable" help="Disables ERRDISABLE recovery"/>
+        <COMMAND name="errdisable recovery" help="Enables ERRDISABLE recovery"/>
+        <COMMAND name="no errdisable recovery" help="Disables ERRDISABLE recovery"/>
+        <COMMAND name="errdisable recovery cause" help="Enables ERRDISABLE recovery for the given cause">
+            <PARAM
+                name="cause"
+                help="Enables ERRDISABLE for the given cause"
+                ptype="ERR_DISABLE_RECOVERY_CAUSE"
+                >
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_cause ${cause}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Enables ERRDISABLE recovery for the given cause.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to enable ERRDISABLE recovery for the given cause.
+                </USAGE>
+                <EXAMPLE summary="Enable ERRDISABLE recovery for udld.">
+                    sonic-cli(config)# errdisable recovery cause udld
+                </EXAMPLE>
+                <FEATURE> ERRDISABLE </FEATURE>
+            </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="no errdisable recovery cause" help="ERRDISABLE recovery cause">
+            <PARAM
+                name="cause"
+                help="Disables ERRDISABLE for the given cause"
+                ptype="ERR_DISABLE_RECOVERY_CAUSE"
+                >
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_cause ${cause}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                Disables ERRDISABLE recovery for the given cause.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to disable ERRDISABLE recovery for the given cause.
+                </USAGE>
+                <EXAMPLE summary="Disable ERRDISABLE recovery for udld.">
+                    sonic-cli(config)# no errdisable recovery cause udld
+                </EXAMPLE>
+                <FEATURE> ERRDISABLE </FEATURE>
+            </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name = "errdisable recovery interval"
+            help = "Configures ERRDISABLE recovery interval (30 to 65535)">
+            <PARAM
+                name="interval"
+                help="ERRDISABLE recovery interval (30 to 65535)"
+                ptype="ERR_DISABLE_INTERVAL"
+                >
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_interval ${interval}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configures ERRDISABLE recovery interval. 
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to set errdisable recovery interval. Default value is 300.
+                </USAGE>
+                <EXAMPLE summary="Configure ERRDISABLE recovery interval.">
+                    sonic-cli(config)# errdisable recovery interval 200
+                </EXAMPLE>
+                <FEATURE> ERRDISABLE </FEATURE>
+            </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name = "no errdisable recovery interval"
+            help = "Resets ERRDISABLE recovery interval">
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_interval 300</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Resets ERRDISABLE recovery interval. 
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to reset ERRDISABLE recovery interval. Default value is 300.
+                </USAGE>
+                <EXAMPLE summary="Reset ERRDISABLE recovery interval.">
+                    sonic-cli(config)# errdisable recovery interval 200 
+                    sonic-cli(config)# no errdisable recovery interval 
+                </EXAMPLE>
+                <FEATURE> ERRDISABLE </FEATURE>
+            </DOCGEN>
+        </COMMAND>
+
+    </VIEW>
+
+</CLISH_MODULE>

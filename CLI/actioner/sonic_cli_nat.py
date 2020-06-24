@@ -102,11 +102,7 @@ def invoke_api(func, args=[]):
     # Config NAT Pool
     elif func == 'patch_openconfig_nat_nat_instances_instance_nat_pool_nat_pool_entry_config':
         path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-pool/nat-pool-entry={poolname}/config', id=args[0],poolname=args[1])
-        ip = args[2].split("-")
-        if len(ip) == 1:
-            body = { "openconfig-nat:config": {"IP-ADDRESS": args[2]} }
-        else:
-            body =  { "openconfig-nat:config": {"IP-ADDRESS-RANGE": args[2]} }
+        body = { "openconfig-nat:config": {"nat-ip": args[2]} }
 
         if len(args) > 3:
             body["openconfig-nat:config"].update( {"nat-port": args[3] } )
