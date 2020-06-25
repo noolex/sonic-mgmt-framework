@@ -294,6 +294,7 @@ limitations under the License.
             </PARAM>
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_aggregate_trunk_vlan ${vlan_id_list}</ACTION>
+    </COMMAND>
 </MACRODEF>
 <MACRODEF name="INTF_IPV6_ENABLE">
     <COMMAND
