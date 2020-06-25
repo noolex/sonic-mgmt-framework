@@ -29,6 +29,7 @@ from scripts.render_cli import show_cli_output
 import subprocess
 import re
 from sonic_intf_utils import name_to_int_val
+from natsort import natsorted
 
 import urllib3
 urllib3.disable_warnings()
@@ -405,7 +406,7 @@ def run(func, args):
                 iftype, ifrangelist = rangetolst(givenifrange)
                 iflist = invoke_api("get_available_interface_names_list", [iftype])
                 iflist = intersection(iflist, ifrangelist)
-            res = ",".join(iflist)
+            res = ",".join(natsorted(iflist))
             sys.stdout.write(res)
 
         elif func == 'delete_if_range':
