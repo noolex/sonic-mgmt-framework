@@ -462,7 +462,8 @@ def create_flow(args):
 def delete_flow_copp(args):
     # inputs: <policy_name> <class_name>
     keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-group', copp_name=args[1])
-    return fbs_client.delete(keypath)
+    body = {"openconfig-copp-ext:trap-group": "NULL"}
+    return fbs_client.patch(keypath, body)
 
 
 def delete_flow(args):
@@ -1498,7 +1499,7 @@ response_handlers = {
     'delete_flow_qos': handle_generic_delete_response,
     'delete_flow_monitoring': handle_generic_delete_response,
     'delete_flow_forwarding': handle_generic_delete_response,
-    'delete_flow_copp': handle_generic_delete_response,
+    'delete_flow_copp': handle_generic_set_response,
     'set_flow_description': handle_generic_set_response,
     'clear_flow_description': handle_generic_delete_response,
     'set_pcp_remarking_action': handle_generic_set_response,
