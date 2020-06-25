@@ -54,22 +54,25 @@ def clear_qos_api(args):
            queuetype = arg
         elif "multicast" == arg:
            queuetype = arg
+        elif "CPU" == arg:
+           ifname = arg
+           exact_intf = True
         elif "headroom" == arg:
            pgcountertype = arg
         elif "shared" == arg:
            pgcountertype = arg
         elif "interface" == arg:
-           ifname = args[i+1] + args[i+2]
+           ifname = args[i+1]
            exact_intf = True
         elif "queue" == arg:
            if i !=  1:
               queue = args[i+1]
-              queue = ifname + ":" + queue
+              queue = ifname + ":" + str(queue)
               exact = True
         elif "priority-group" == arg:
            if i !=  1:
               pg = args[i+1]
-              pg = ifname + ":" + pg
+              pg = ifname + ":" + str(pg)
               exact = True
         else:
            pass
@@ -111,10 +114,12 @@ def clear_qos_api(args):
    return api.post(keypath, body)
 
 def run(func, args):
-    if func == 'clear_qos':
-        response = clear_qos_api(args)
-        if response.ok():
-            if response.content is not None:
+
+    try:
+       if func == 'clear_qos':
+          response = clear_qos_api(args)
+          if response.ok():
+             if response.content is not None:
                 # Get Command Output
                 api_response = response.content
                 if api_response is None:
@@ -124,11 +129,16 @@ def run(func, args):
                     output = api_response["sonic-qos-clear:output"]
                     if output["response"] != "Success: Cleared Counters":
                        print output["response"]
-        else:
-            print response.error_message()
-            sys.exit(1)
-    else:
-       return
+          else:
+             print response.error_message()
+             sys.exit(1)
+       else:
+           return
+
+    except Exception as e:
+        syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
+        print("%Error: Transaction Failure")
+        return 1
 
 if __name__ == '__main__':
 
