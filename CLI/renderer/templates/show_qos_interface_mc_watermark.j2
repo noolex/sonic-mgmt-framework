@@ -1,7 +1,7 @@
 {{'Egress queue watermark per multicast queue:'}}
-{{'-----------------------------------------------'}}
-{{'%-5s'|format("MC8")}}{{'%-5s'|format("MC9")}}{{'%-5s'|format("MC10")}}{{'%-5s'|format("MC11")}}{{'%-5s'|format("MC12")}}{{'%-5s'|format("MC13")}}{{'%-5s'|format("MC14")}}{{'%-5s'|format("MC15")}}
-{{'-----------------------------------------------'}}
+{{'-------------------------------------------------------------------------------'}}
+{{'%-10s'|format("MC8")}}{{'%-10s'|format("MC9")}}{{'%-10s'|format("MC10")}}{{'%-10s'|format("MC11")}}{{'%-10s'|format("MC12")}}{{'%-10s'|format("MC13")}}{{'%-10s'|format("MC14")}}{{'%-10s'|format("MC15")}}
+{{'-------------------------------------------------------------------------------'}}
 {% if json_output %}
 {% set watermark = {}%}
 {% set queue_info_list = json_output['queue'] %}
@@ -11,5 +11,5 @@
     {% set qname = queue.split(':') %}
     {% if watermark.update({qname[1] :  q_stats_info['openconfig-qos-ext:watermark']}) %} {% endif %}
 {% endfor %}
-{{'%-5s'|format(watermark['8'])}}{{'%-5s'|format(watermark['9'])}}{{'%-5s'|format(watermark['10'])}}{{'%-5s'|format(watermark['11'])}}{{'%-5s'|format(watermark['12'])}}{{'%-5s'|format(watermark['13'])}}{{'%-5s'|format(watermark['14'])}}{{'%-5s'|format(watermark['15'])}}
+{{'%-10s'|format(watermark['8'])}}{{'%-10s'|format(watermark['9'])}}{{'%-10s'|format(watermark['10'])}}{{'%-10s'|format(watermark['11'])}}{{'%-10s'|format(watermark['12'])}}{{'%-10s'|format(watermark['13'])}}{{'%-10s'|format(watermark['14'])}}{{'%-10s'|format(watermark['15'])}}
 {% endif %}

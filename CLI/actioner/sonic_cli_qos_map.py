@@ -40,6 +40,7 @@ def invoke(func, args=[]):
 
     if func == 'get_openconfig_qos_maps_ext_qos_tc_pg_maps_tc_pg_map' :
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-priority-group-maps/forwarding-group-priority-group-map={name}', name=args[0])
+        return api.get(path)
 
     if func == 'get_openconfig_qos_maps_ext_qos_forwarding_group_dscp_maps' :
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps')

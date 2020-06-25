@@ -7,6 +7,7 @@ import cli_client as cc
 from collections import OrderedDict
 from scripts.render_cli import show_cli_output
 from rpipe_utils import pipestr
+import sonic_intf_utils as ifutils
 
 def invoke(func, args=[]):
     api = cc.ApiClient()
@@ -116,14 +117,8 @@ def getQId(item):
     return qName
 
 def getIfId(item):
-    prfx = "Ethernet"
     ifName = item['interface-id']
-
-    if ifName.startswith(prfx):
-        ifId = int(ifName[len(prfx):])
-        return ifId
-    return ifName
-
+    return ifutils.name_to_int_val(ifName)
 
 def run(func, args):
 
@@ -135,14 +130,15 @@ def run(func, args):
              api_response = response.content
 
              if func == 'get_openconfig_qos_qos_interfaces_interface_output_queues_queue_state':
-                show_cli_output('show_qos_interface_queue_counters.j2', response)
+                if 'openconfig-qos:state' in api_response:
+                   show_cli_output('show_qos_interface_queue_counters.j2', response)
              elif func == 'get_openconfig_qos_qos_interfaces_interface_output_queues':
                 if 'openconfig-qos:queues' in api_response:
                     value = api_response['openconfig-qos:queues']
                     if 'queue' in value:
                         tup = value['queue']
                         value['queue'] = sorted(tup, key=getQId)
-                show_cli_output(sys.argv[3], response['openconfig-qos:queues'])
+                    show_cli_output(sys.argv[3], response['openconfig-qos:queues'])
              elif func == 'get_openconfig_qos_qos_interfaces':
                 if 'openconfig-qos:interfaces' in api_response:
                     value = api_response['openconfig-qos:interfaces']
@@ -165,7 +161,7 @@ def run(func, args):
                     if 'priority-group' in value:
                         tup = value['priority-group']
                         value['priority-group'] = sorted(tup, key=getQId)
-                show_cli_output(sys.argv[3], response['openconfig-qos-ext:priority-groups'])
+                    show_cli_output(sys.argv[3], response['openconfig-qos-ext:priority-groups'])
              elif func == 'get_list_openconfig_qos_ext_qos_threshold_breaches_breach':
                 show_cli_output('show_qos_queue_threshold_breaches.j2', response)
              elif func == 'get_openconfig_qos_qos_queues_queue':
@@ -187,9 +183,9 @@ def run(func, args):
           print response.error_message()
 
     except Exception as e:
-        print("% Error: Internal error: " + str(e))
-
-
+        syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
+        print("%Error: Transaction Failure")
+        return 1
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
