@@ -97,6 +97,204 @@ limitations under the License.
       </COMMAND>
 </MACRODEF>
 
+
+<MACRODEF name="INTF_RNG_SWITCHPORT">
+    <COMMAND 
+        name="switchport" 
+        help="Configure switchport parameters" 
+         />
+    <COMMAND 
+        name="switchport access" 
+        help="Set access mode characteristics of the interface" 
+        ptype="SUBCOMMAND" 
+        mode="subcommand"
+        >
+        <PARAM 
+            name="Vlan" 
+            help="Set VLAN when interface is in access mode" 
+            ptype="SUBCOMMAND" 
+            mode="subcommand"
+            >
+            <PARAM 
+		name="vlan-id" 
+                help="VLAN ID of the VLAN when this port is in access mode" 
+                ptype="VLAN_ID" 
+                />
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_access_vlan ${vlan-id}</ACTION>
+    </COMMAND>
+    <COMMAND 
+	name="switchport trunk" 
+        help="Configure trunking parameters on an interface" 
+	ptype="SUBCOMMAND" 
+	mode="subcommand"
+	>
+	<PARAM 
+	    name="allowed" 
+            help="Configure trunking parameters on an interface" 
+	    ptype="SUBCOMMAND" 
+	    mode="subcommand"
+	    >
+            <PARAM 
+		name="Vlan" 
+		help="Configure trunking parameters on an interface" 
+		ptype="SUBCOMMAND" 
+		mode="subcommand">
+                <PARAM 
+		    name="vlan_id_list" 
+		    help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142" 
+		    ptype="VLAN_RANGE" 
+		/>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_trunk_vlan ${vlan_id_list}</ACTION>
+    </COMMAND>
+    <COMMAND 
+	name="no switchport" 
+	help="Removes switchport parameters" 
+	/>
+    <COMMAND 
+	name="no switchport access" 
+	help="Remove access mode characteristics of the interface" 
+	ptype="SUBCOMMAND" 
+	mode="subcommand"
+    >
+        <PARAM 
+	    name="Vlan" 
+	    help="Remove VLAN when interface is in access mode" 
+            ptype="SUBCOMMAND" 
+	    mode="subcommand" 
+            >
+	</PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_access_vlan</ACTION>
+    </COMMAND>
+        
+    <COMMAND 
+	name="no switchport trunk" 
+	help="Remove trunking parameters on an interface" 
+	ptype="SUBCOMMAND" 
+        mode="subcommand"
+        >
+        <PARAM 
+	    name="allowed" 
+	    help="Remove trunking parameters on an interface" 
+	    ptype="SUBCOMMAND" 
+            mode="subcommand"
+	>
+            <PARAM 
+		name="Vlan" 
+		help="Remove trunking parameters on an interface" 
+		ptype="SUBCOMMAND" 
+		mode="subcommand"
+		   >
+            <PARAM 
+		name="vlan_id_list" 
+		help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142" 
+		ptype="VLAN_RANGE" 
+	    />
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_trunk_vlan ${vlan_id_list}</ACTION>
+    </COMMAND>
+</MACRODEF>
+<MACRODEF name="INTF_RNG_AGGREGATE_SWITCHPORT">
+    <COMMAND
+        name="switchport"
+        help="Configure switchport parameters"
+         />
+    <COMMAND
+        name="switchport access"
+        help="Set access mode characteristics of the interface"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+        <PARAM
+            name="Vlan"
+            help="Set VLAN when interface is in access mode"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            >
+            <PARAM
+                name="vlan-id"
+                help="VLAN ID of the VLAN when this port is in access mode"
+                ptype="VLAN_ID"
+                />
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_aggregation_access_vlan ${vlan-id}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="switchport trunk"
+        help="Configure trunking parameters on an interface"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+        <PARAM
+            name="allowed"
+            help="Configure trunking parameters on an interface"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            >
+            <PARAM
+                name="Vlan"
+                help="Configure trunking parameters on an interface"
+                ptype="SUBCOMMAND"
+                mode="subcommand">
+                <PARAM
+                    name="vlan_id_list"
+                    help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                    ptype="VLAN_RANGE"
+                />
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_aggregation_trunk_vlan ${vlan_id_list}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no switchport"
+        help="Removes switchport parameters"
+        />
+    <COMMAND
+        name="no switchport access"
+        help="Remove access mode characteristics of the interface"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+    >
+        <PARAM
+            name="Vlan"
+            help="Remove VLAN when interface is in access mode"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_aggregate_access_vlan</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no switchport trunk"
+        help="Remove trunking parameters on an interface"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+        <PARAM
+            name="allowed"
+            help="Remove trunking parameters on an interface"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+            <PARAM 
+		name="Vlan"
+                help="Remove trunking parameters on an interface"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+            <PARAM
+                name="vlan_id_list"
+                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                ptype="VLAN_RANGE"
+            />
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_aggregate_trunk_vlan ${vlan_id_list}</ACTION>
+</MACRODEF>
 <MACRODEF name="INTF_IPV6_ENABLE">
     <COMMAND
         name="ipv6 enable"
