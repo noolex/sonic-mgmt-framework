@@ -52,6 +52,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ptp_two_step'            : show_ptp_two_step,
                   'ptp_network_transport'   : show_ptp_network_transport,
                   'ptp_master_table'        : show_ptp_master_table,
+<<<<<<< HEAD
                   'ipv4_eth_dhcp_relay'     : show_ipv4_eth_dhcp_relay,
                   'ipv4_po_dhcp_relay'      : show_ipv4_po_dhcp_relay,
                   'ipv4_vlan_dhcp_relay'    : show_ipv4_vlan_dhcp_relay,
@@ -75,6 +76,13 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
                   'copp_police'             : show_copp_police,
+||||||| merged common ancestors
+                  'dns_server_source_if'    : show_dns_source_if,
+                  'copp_police'             : show_copp_police
+=======
+                  'dns_server_source_if'    : show_dns_source_if,
+                  'copp_police'             : show_copp_police,
+>>>>>>> origin/broadcom_sonic_3.x_share
                   'sflow_source_if'         : show_sflow_source_if,
                   'bgp_af_ipv4_nw'          : show_router_bgp_af_nw_cmd,
                   'bgp_af_ipv4_ag'          : show_router_bgp_af_ag_cmd,

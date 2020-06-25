@@ -427,17 +427,22 @@ def clear_match_tcp_flags(args):
 
 def create_flow_copp(args):
     # inputs: <policy_name> <class_name> [priority]
-    if len(args) == 3:
-        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/trap-group',
-                          copp_name=args[2])
-        response = fbs_client.get(keypath)
-        if response.ok():
-            if "openconfig-copp-ext:trap-group" in response.content:
-                keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/trap-priority',
-                                  copp_name=response.content["openconfig-copp-ext:trap-group"])
-                body = {"openconfig-copp-ext:trap-priority": int(args[3])}
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}',
+                      copp_name=args[1])
+    response = fbs_client.get(keypath)
+    if response.ok() and bool(response.content):
+        if len(args) == 3:
+            content = response.content
+            if 'openconfig-copp-ext:copp-trap' in response.content:
+                if 'config' in content['openconfig-copp-ext:copp-trap'][0]:
+                    if 'trap-group' in content['openconfig-copp-ext:copp-trap'][0]['config']:
+                        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
+                                          copp_name=content['openconfig-copp-ext:copp-trap'][0]['config']['trap-group'])
+                        body = {"openconfig-copp-ext:trap-priority": int(args[2])}
 
-                return fbs_client.patch(keypath, body)
+                        return fbs_client.patch(keypath, body)
+    else:
+        raise Exception('Class not found')
 
 
 def create_flow(args):
@@ -1094,7 +1099,7 @@ def show_copp_protocols(args):
     print("  protocol ip2me")
     print("  protocol sample_packet")
     print("  protocol udld")
-    print("  protocol ?")
+    print("  protocol subnet")
     print("  protocol l3_mtu_error")
     print("  protocol igmp_query")
     print("  protocol bfd")

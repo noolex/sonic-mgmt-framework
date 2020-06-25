@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<CLISH_MODULE
+      xmlns="http://www.dellemc.com/sonic/XMLSchema"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema 
+      http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+      >
+
+  <VIEW name="enable-view">
+    <COMMAND
+         name="show config"
+         help="Show details about configuration profiles available"
+         >
+        <PARAM name="profiles"
+               help="Show details about configuration profiles available"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <ACTION
+            builtin="clish_pyobj">sonic_cli_cfg_profiles get_sonic_profiles_sonic_profiles show_config_profiles.j2
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+              Use this command to list all supported factory default configuration profiles.
+              It also displays the current active default configuration profile. The current
+              active profile name is used to create a startup configuration file when the write
+              erase command is used. The following information about each default configuration
+              profile is displayed.
+
+               - Name: Profile name used to refer to a default configuration profile
+               - Description: A descriptive string
+            </DESCRIPTION>
+            <USAGE>
+               show factory default profiles
+            </USAGE>
+            <EXAMPLE>
+               sonic# show config profiles
+               Factory Default: l3
+
+               Profile Name     Description
+               -------------------------------------------------------------
+               l2               Layer 2 Switch Configuration
+               l3               Layer 3 Router Configuration
+            </EXAMPLE>
+        </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+  </VIEW>
+
+  <VIEW name="configure-view">
+      <COMMAND
+        name="factory"
+        help="Modify factory default configuration">
+        <PARAM name="default"
+               help="Configures factory default configuration profile"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM name="profile"
+               help="Configures factory default configuration profile"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+        </PARAM>
+        <PARAM
+               name="config_profile"
+               help="Enter default configuration profile name"
+               ptype="STRING">
+        </PARAM>
+        <ACTION
+             builtin="clish_pyobj">sonic_cli_cfg_profiles set_sonic_profiles_sonic_profiles ${config_profile}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+               This command is used to set the factory default configuration profile of a SONiC switch. This
+               command removes the currently running switch configuration and creates a new startup configuration
+               file using the input default configuration profile name. The newly created startup configuration
+               is also applied as part of this command. This command may result in a loss of switch connectivity
+               as it results in a restart of all SONiC application services.
+            </DESCRIPTION>
+            <USAGE>
+                factory default profile profile-name
+            </USAGE>
+            <EXAMPLE>
+                sonic# configure terminal
+                sonic(config)# factory default profile l2
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+  </VIEW>
+
+</CLISH_MODULE>
