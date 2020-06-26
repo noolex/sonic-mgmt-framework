@@ -475,9 +475,9 @@ limitations under the License.
 
 <VIEW name="configure-view">
 	<!-- ip arp timeout -->
-	<COMMAND name="ip arp" help="Configure ARP" ptype="SUBCOMMAND" mode="subcommand">
+	<COMMAND name="ip arp" help="Configure ARP" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST/name={name}" command_keys="name=Values">
 		<PARAM name="timeout" help="Set ARP timeout value" ptype="SUBCOMMAND" mode="subcommand">
-			<PARAM name="value" help="Timeout in seconds" ptype="NEIGH_TIMEOUT"> </PARAM>
+			<PARAM name="value" help="Timeout in seconds" ptype="NEIGH_TIMEOUT" dbpath="sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST/ipv4_arp_timeout"> </PARAM>
 		</PARAM>
 
 		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-neighbors.py set_ipv4_arp_timeout ${value}&#xA; </ACTION>

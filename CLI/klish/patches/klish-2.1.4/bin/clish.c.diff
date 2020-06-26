@@ -11,7 +11,7 @@
 88a97,101
 >     char *mode = getenv("SONIC_CLI_IFACE_MODE");
 >     if (mode) {
->         _nos_use_alt_name = (strcmp(mode, "alias") == 0);
+>         _nos_use_alt_name = (strcmp(mode, "standard") == 0);
 >     }
 > 
 307c320

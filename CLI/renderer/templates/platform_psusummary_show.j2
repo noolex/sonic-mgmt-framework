@@ -1,4 +1,8 @@
 {% for psu_name, psu_info in json_output.items() %}
+
+{% if 'state' in psu_info and 'empty' in psu_info['state'] and psu_info['state']['empty'] %}
+{{psu_name}}: {{'Not Present'}}
+{% else %}
 {{psu_name}}:
 {% if 'state' in psu_info %}
 {% for key, val in psu_info['state'].items() %}
@@ -50,4 +54,5 @@
 {% endif %}
 {% endfor %}
 
+{% endif %}
 {% endfor %}

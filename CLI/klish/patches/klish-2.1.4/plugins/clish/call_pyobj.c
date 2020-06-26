@@ -122,7 +122,7 @@ int pyobj_set_rest_token(const char *token) {
 int call_pyobj(char *cmd, const char *arg) {
     int ret_code = 0;
     char *token[128];
-    char buf[1024]; 
+    char *buf;
     int i;
 
     PyGILState_STATE gstate;
@@ -131,12 +131,16 @@ int call_pyobj(char *cmd, const char *arg) {
     pyobj_set_user_cmd(cmd);
     syslog(LOG_DEBUG, "clish_pyobj: cmd=%s", cmd);
 
-    strcpy(buf, arg);
+    buf = strdup(arg);
+    if (!buf) {
+        syslog(LOG_WARNING, "clish_pyobj: Failed to allocate memory");
+        return -1;
+    }
     char *p = strtok(buf, " ");
     size_t idx = 0;
     while (p) {
-    	token[idx++] = p;
-    	p = strtok(NULL, " "); 
+        token[idx++] = p;
+        p = strtok(NULL, " "); 
     }
 
     PyObject *module, *name, *func, *args, *value;
@@ -147,9 +151,10 @@ int call_pyobj(char *cmd, const char *arg) {
         lub_dump_printf("%%Error: Internal error.\n");
         syslog(LOG_WARNING, "clish_pyobj: Failed to load module %s", token[0]);
         pyobj_handle_error();
+        free(buf);
         Py_XDECREF(name);
         PyGILState_Release(gstate);
-    	return -1;
+        return -1;
     }
 
     func = PyObject_GetAttrString(module, "run");
@@ -159,6 +164,7 @@ int call_pyobj(char *cmd, const char *arg) {
         syslog(LOG_WARNING, "clish_pyobj: Function run not found in module %s", token[0]);
         Py_XDECREF(module);
         Py_XDECREF(name);
+        free(buf);
         PyGILState_Release(gstate);
         return -1;
     }
@@ -194,6 +200,7 @@ int call_pyobj(char *cmd, const char *arg) {
     Py_XDECREF(value);
     Py_XDECREF(args_list);
 
+    free(buf);
     PyGILState_Release(gstate);
     return ret_code;
 }

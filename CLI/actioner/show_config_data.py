@@ -21,7 +21,7 @@ from show_config_interface import *
 from show_config_bgp import *
 from show_config_table_sort import *
 from show_config_ptp import *
-from show_config_dns import *
+from show_config_routepolicy import *
 from show_config_copp import *
 
 view_dependency= \
@@ -29,12 +29,24 @@ view_dependency= \
                          'configure-router-bgp-nbr'],
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
-config_view_hierarchy= \
-['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
+config_view_hierarchy = [
+    'configure',
+    'config-if-CPU',
+    'configure-vlan',
+    'configure-lo',
+    'configure-if-mgmt',
+    'configure-if',
+    'configure-lag',
+    'configure-route-map',
+    'configure-router-bgp',
+    'configure-vxlan',
+    'copp-action',
+ ]
 
 render_filelst  = {}
 
-render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
+render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
+                  'router_bgp_neighbor'     : show_router_bgp_neighbor_cmd,
                   'if_channel_group'        : show_if_channel_group_cmd,
                   'if_switchport_access'    : show_if_switchport_access,
                   'if_switchport_trunk'     : show_if_switchport_trunk,
@@ -51,9 +63,37 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'ptp_two_step'            : show_ptp_two_step,
                   'ptp_network_transport'   : show_ptp_network_transport,
                   'ptp_master_table'        : show_ptp_master_table,
-                  'dns_server_source_if'    : show_dns_source_if,
+                  'ipv4_eth_dhcp_relay'     : show_ipv4_eth_dhcp_relay,
+                  'ipv4_po_dhcp_relay'      : show_ipv4_po_dhcp_relay,
+                  'ipv4_vlan_dhcp_relay'    : show_ipv4_vlan_dhcp_relay,
+                  'ipv6_eth_dhcp_relay'     : show_ipv6_eth_dhcp_relay,
+                  'ipv6_po_dhcp_relay'      : show_ipv6_po_dhcp_relay,
+                  'ipv6_vlan_dhcp_relay'    : show_ipv6_vlan_dhcp_relay,
+                  'ipv4_eth_ip_address'     : show_ipv4_eth_ip_address,
+                  'ipv4_vlan_ip_address'    : show_ipv4_vlan_ip_address,
+                  'ipv4_lag_ip_address'     : show_ipv4_lag_ip_address,
+                  'ipv4_mgmt_ip_address'    : show_ipv4_mgmt_ip_address,
+                  'ipv4_lo_ip_address'      : show_ipv4_lo_ip_address,
+                  'ipv6_eth_ip_address'     : show_ipv6_eth_ip_address,
+                  'ipv6_vlan_ip_address'    : show_ipv6_vlan_ip_address,
+                  'ipv6_lag_ip_address'     : show_ipv6_lag_ip_address,
+                  'ipv6_mgmt_ip_address'    : show_ipv6_mgmt_ip_address,
+                  'ipv6_lo_ip_address'      : show_ipv6_lo_ip_address,
+                  'routemap_set_community'  : show_routemap_setcommunity,
+                  'routemap_set_extcommunity' : show_routemap_setextcommunity,
+                  'routemap_match_interface'  : show_routemap_matchintf,
+                  'routemap_match_peer'     : show_routemap_matchpeer,
+                  'routemap_match_tag'      : show_routemap_matchtag,
+                  'mac_source_if'           : show_mac_source_if,
                   'copp_police'             : show_copp_police,
                   'sflow_source_if'         : show_sflow_source_if,
+                  'bgp_af_ipv4_nw'          : show_router_bgp_af_nw_cmd,
+                  'bgp_af_ipv4_ag'          : show_router_bgp_af_ag_cmd,
+                  'bgp_af_ipv4_redist'      : show_router_bgp_af_redist_cmd,
+                  'bgp_af_ipv6_nw'          : show_router_bgp_af_nw_cmd,
+                  'bgp_af_ipv6_ag'          : show_router_bgp_af_ag_cmd,
+                  'bgp_af_ipv6_redist'      : show_router_bgp_af_redist_cmd,
+                  'v4prefix_lists_cmd'      : show_v4prefix_lists,
+                  'v6prefix_lists_cmd'      : show_v6prefix_lists
  }
-
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
