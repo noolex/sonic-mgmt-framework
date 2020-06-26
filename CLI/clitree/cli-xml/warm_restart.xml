@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2020 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+  <VIEW name="enable-view">
+    <COMMAND name="show warm-restart" help="Show warm restart state information">
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_warm_restart get_openconfig_warm_restart_warm_restart_status_submodules show_warm_restart.j2 ${__full_line} 
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Show warm restart </DESCRIPTION>
+          <EXAMPLE summary="Shows the warm restart state information">
+              sonic# show warm-restart
+              ------------------------------------------------------
+              Module              Restore_count   State
+              ------------------------------------------------------
+              aclsvcd             0
+              bgp                 0               disabled
+              dropmgrd            0
+              fdbsyncd            0               disabled
+              gearsyncd           0
+              ifamgrd             0
+              intfmgrd            0               disabled
+              iphelpermgr         0
+              l2mcmgrd            0
+              natsyncd            0
+              nbrmgrd             0
+              neighsyncd          0
+              orchagent           0               disabled
+              portmgrd            0
+
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+
+  <!--=======================================================-->
+  <PTYPE
+      name="WARM_RESTART_TIMER"
+      method="integer"
+      pattern="1..3599"
+      help="timeout in seconds"
+      />
+  <!--=======================================================-->
+  <PTYPE
+      name="WARM_RESTART_NEIGHSYNCD_TIMER"
+      method="integer"
+      pattern="1..9998"
+      help="timeout in seconds"
+      />
+  <!--=======================================================-->
+
+  <VIEW name="configure-view">
+    <COMMAND name="warm-restart" help="Warm restart configuration"/>
+
+    <!-- Warm restart BGP commands -->
+
+    <COMMAND name="warm-restart bgp enable"
+             help="Enable warm restart for BGP service"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             command_keys="module=bgp"
+             command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/module={module}"
+             dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/enable=true">             
+        <ACTION builtin="clish_pyobj">
+             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable bgp true ${__full_line}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Enable warm restart feature</DESCRIPTION>
+          <EXAMPLE summary="Enable warm restart for BGP service">
+              sonic(config)# warm-restart bgp enable
+              sonic(config)#
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="warm-restart bgp eoiu"
+             help="Enable end-of-initial update"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/module={module}"
+             dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/bgp_eoiu">
+        <ACTION builtin="clish_pyobj">
+             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_config_bgp_eoiu true ${__full_line}
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Enable BGP EOIU flag</DESCRIPTION>
+          <EXAMPLE summary="Enable BGP EOIU flag status">
+              sonic(config)# warm-restart bgp eoiu
+              sonic(config)#
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="warm-restart bgp" 
+             help="Warm restart BGP configuration"
+             command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/module={module}"
+             dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/module=bgp">
+        <PARAM name="timer" 
+               help="Set warm restart timer" 
+               ptype="SUBCOMMAND" 
+               mode="subcommand">
+          <PARAM name="value" 
+                 help="Warm restart timer value in seconds" 
+                 ptype="WARM_RESTART_TIMER" 
+                 dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/bgp_timer">
+          </PARAM>
+        </PARAM>
+      <ACTION builtin="clish_pyobj">
+            sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_timers_timer_config_value bgp ${value} ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Timer value for warm restart of BGP service</DESCRIPTION>
+          <EXAMPLE summary="Warm restart timer for BGP service in seconds. Range 1-3599">
+              sonic(config)# warm-restart bgp timer 60
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- Warm restart swss commands -->
+
+    <COMMAND name="warm-restart swss enable"
+             help="Enable warm restart for SWSS service"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             command_keys="module=swss"
+             command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/module={module}"
+             dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/enable=true">
+        <ACTION builtin="clish_pyobj">
+             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable swss true ${__full_line}
+        </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Enable warm restart feature</DESCRIPTION>
+          <EXAMPLE summary="Enable warm restart for SWSS service">
+              sonic(config)# warm-restart swss enable
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="warm-restart swss" 
+             help="Warm restart SWSS configuration" 
+             command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/module={module}"
+             dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/module=swss">
+        <PARAM name="timer" 
+               help="Set warm restart timer" 
+               ptype="SUBCOMMAND" 
+               mode="subcommand">
+          <PARAM name="value" 
+                 help="Warm restart timer value in seconds" 
+                 ptype="WARM_RESTART_NEIGHSYNCD_TIMER" 
+                 dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/neighsyncd_timer">
+          </PARAM>
+        </PARAM>
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_timers_timer_config_value neighsyncd ${value} ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Timer value for warm restart of SWSS service</DESCRIPTION>
+          <EXAMPLE summary="Warm restart timer for SWSS service in seconds. Range 1-9998 ">
+              sonic(config)# warm-restart swss timer 3600
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- Warm restart system command -->
+
+    <COMMAND name="warm-restart system" 
+             help="Warm restart system configuration"
+             command_keys="module=system"
+             command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/module={module}"
+             dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/enable=true">
+        <PARAM name="enable" 
+               help="Enable warm restart for system service" 
+               ptype="SUBCOMMAND" 
+               mode="subcommand" 
+               optional="true"> 
+        </PARAM>
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_config_enable
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Enable warm restart feature</DESCRIPTION>
+          <EXAMPLE summary="Enable warm restart for system service">
+              sonic(config)# warm-restart system 
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- Warm restart teamd commands -->
+
+    <COMMAND name="warm-restart teamd enable"
+             help="Enable warm restart for teamd service"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             command_keys="module=teamd"
+             command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/module={module}"
+             dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/enable=true">
+        <ACTION builtin="clish_pyobj">
+             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable teamd true ${__full_line}
+        </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Enable warm restart feature</DESCRIPTION>
+          <EXAMPLE summary="Enable warm restart for teamd service">
+              sonic(config)# warm-restart teamd enable
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="warm-restart teamd" 
+             help="Warm restart teamd configuration" 
+             command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/module={module}"
+             dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/module=teamd">
+        <PARAM name="timer" 
+               help="Set warm restart timer" 
+               ptype="SUBCOMMAND" 
+               mode="subcommand">
+          <PARAM name="value" 
+                 help="Warm restart timer value in seconds" 
+                 ptype="WARM_RESTART_TIMER" 
+                 dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART/WARM_RESTART_LIST/teamsyncd_timer">
+          </PARAM>
+        </PARAM>
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_timers_timer_config_value teamsyncd ${value} ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Timer value for warm restart of teamd service</DESCRIPTION>
+          <EXAMPLE summary="Warm restart timer for teamd service in seconds. Range 1-3599">
+              sonic(config)# warm-restart teamd timer 600
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no warm-restart" 
+             help="Warm restart configuration"/>
+
+    <!-- Disable warm restart BGP commands -->
+
+    <COMMAND name="no warm-restart bgp enable"
+             help="Disable warm restart for BGP service"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable bgp ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Disable warm restart feature</DESCRIPTION>
+          <EXAMPLE summary="Disable warm restart for BGP service">
+              sonic(config)# no warm-restart bgp enable
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no warm-restart bgp eoiu"
+             help="Disable end-of-initial update"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_config_bgp_eoiu ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Disable BGP EOIU flag</DESCRIPTION>
+          <EXAMPLE summary="Disable BGP EOIU flag status">
+              sonic(config)# no warm-restart bgp eoiu
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no warm-restart bgp" 
+             help="Disable warm restart BGP configuration">
+        <PARAM name="timer" 
+               help="Remove warm restart timer" 
+               ptype="SUBCOMMAND" 
+               mode="subcommand">
+        </PARAM>
+      <ACTION builtin="clish_pyobj">
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_timers_timer_config_value bgp ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Remove timer value for warm restart of BGP service</DESCRIPTION>
+          <EXAMPLE summary="Disable warm restart timer for BGP service">
+              sonic(config)# no warm-restart bgp timer
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- Disable warm restart swss commands -->
+
+    <COMMAND name="no warm-restart swss enable"
+             help="Disable warm restart SWSS commands"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable swss ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Disable warm restart feature</DESCRIPTION>
+          <EXAMPLE summary="Disable warm restart for SWSS service">
+              sonic(config)# no warm-restart swss enable
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no warm-restart swss" 
+             help="Disable warm restart SWSS configuration">
+        <PARAM name="timer" 
+               help="Remove warm restart timer" 
+               ptype="SUBCOMMAND" 
+               mode="subcommand">
+        </PARAM>
+      <ACTION builtin="clish_pyobj">
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_timers_timer_config_value neighsyncd ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Remove timer value for warm restart of SWSS service</DESCRIPTION>
+          <EXAMPLE summary="Disable warm restart timer for SWSS service">
+              sonic(config)# no warm-restart swss timer
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- Disable warm restart system command -->
+
+    <COMMAND name="no warm-restart system" 
+             help="Disable warm restart system configuration">
+        <PARAM name="enable" 
+               help="Disable warm restart for system service" 
+               ptype="SUBCOMMAND" 
+               mode="subcommand" 
+               optional="true">
+        </PARAM>
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_config_enable
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Disable warm restart feature</DESCRIPTION>
+          <EXAMPLE summary="Disable warm restart for system service">
+              sonic(config)# no warm-restart system enable
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- Disable warm restart teamd commands -->
+
+    <COMMAND name="no warm-restart teamd enable" 
+             help="Disable warm restart for teamd service" 
+             ptype="SUBCOMMAND" 
+             mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable teamd ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Disable warm restart feature</DESCRIPTION>
+          <EXAMPLE summary="Disable warm restart for teamd service">
+              sonic(config)# no warm-restart teamd enable
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no warm-restart teamd"
+             help="Disable warm restart teamd configuration">
+        <PARAM name="timer" 
+               help="Remove warm restart timer" 
+               ptype="SUBCOMMAND" 
+               mode="subcommand">
+        </PARAM>
+      <ACTION builtin="clish_pyobj">
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_timers_timer_config_value teamsyncd ${__full_line}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Remove timer value for warm restart of teamd service</DESCRIPTION>
+          <EXAMPLE summary="Disable warm restart timer for teamd service">
+              sonic(config)# no warm-restart teamd timer
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+</CLISH_MODULE>
