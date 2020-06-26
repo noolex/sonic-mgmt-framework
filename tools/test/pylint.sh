@@ -96,7 +96,7 @@ for arg in $*; do
 done
 
 LINT="python -m pylint -rn $CONFIG"
-LOGDIR=$REPO/build/cli
+LOGDIR=$REPO/build/pylint
 
 if [[ ! -d $LOGDIR ]]; then
 	mkdir -p $LOGDIR
