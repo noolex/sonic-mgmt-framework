@@ -751,6 +751,10 @@ def invoke_api(func, args=[]):
         else:
            path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}', id=args[1])
         return api.get(path)
+    elif func == 'default_port_config':
+        path = cc.Path('/restconf/operations/sonic-config-mgmt:default-port-config')
+        body = {"sonic-config-mgmt:input": { "ifname": args[0] }}
+        return api.post(path, body)
     elif func == 'rpc_interface_counters':
         keypath = cc.Path('/restconf/operations/sonic-counters:interface_counters')
         body = {}
