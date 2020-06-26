@@ -25,6 +25,7 @@ import collections
 from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+from natsort import natsorted
 
 pcDict = {}
 memberDict = {}
@@ -67,7 +68,7 @@ def run(func, args):
             if 'sonic-portchannel:LAG_TABLE' in api_response:
                 value = api_response['sonic-portchannel:LAG_TABLE']
                 if 'LAG_TABLE_LIST' in value:
-                    laglst = value['LAG_TABLE_LIST']
+                    laglst = natsorted(value['LAG_TABLE_LIST'], key = lambda k:k['lagname'])
             if api_response is None:
                 print("Failed")
             else:
@@ -83,6 +84,7 @@ def run(func, args):
 
                     if 'sonic-portchannel:LAG_MEMBER_TABLE' in api_response_members:
                         memlst = api_response_members['sonic-portchannel:LAG_MEMBER_TABLE']['LAG_MEMBER_TABLE_LIST']
+                        memlst = natsorted(memlst, key = lambda k:k['ifname'])
                     for pc_dict in laglst:
                         pc_dict['members']=[]
                         pc_dict['type']="Eth"
