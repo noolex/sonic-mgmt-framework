@@ -30,7 +30,7 @@ CLI_DIR         := $(TOPDIR)/CLI
 PY_FILES        := $(shell find $(CLI_DIR)/actioner -name '*.py')
 PY_FILES        += $(shell find $(CLI_DIR)/renderer/scripts -name '*.py')
 PY_FILES        += $(shell find $(CLI_DIR)/clitree/scripts -name '*.py')
-PYLINT_DONE     := $(SONIC_CLI_ROOT)/cli/.pylint_done
+PYLINT_DONE     := $(SONIC_CLI_ROOT)/pylint/.pylint_done
 TOOLS_DIR       := $(TOPDIR)/tools
 LINTER          := $(TOOLS_DIR)/test/pylint.sh
 
