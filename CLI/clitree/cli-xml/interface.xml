@@ -736,6 +736,7 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if_range create_if_range cmd=${range_option} iflist=${ethiflist}${vlaniflist}${poiflist} ifrange=${vlan_range_num}${po_range_num} mode=${PoMode} min-links=${min-links-value} fallback=${fallback} fast_rate=${fast_rate}</ACTION>
     </COMMAND>
 
+
      <!-- no interface commands -->
     <COMMAND
         name="no interface"
@@ -1709,6 +1710,7 @@ limitations under the License.
 
         <MACRO name="INTF_MTU" arg="${iflist}"></MACRO>
         <MACRO name="INTF_RANGE_SHUT_DESCR" arg="${iflist}"></MACRO>
+	<MACRO name="INTF_RNG_SWITCHPORT" arg="${iflist}"></MACRO>
         <MACRO name="INTF_SPEED" arg="${iflist}"></MACRO>
     </VIEW>
 
@@ -1750,6 +1752,7 @@ limitations under the License.
 
         <MACRO name="INTF_MTU" arg="${iflist}"></MACRO>
         <MACRO name="INTF_RANGE_SHUT_DESCR" arg="${iflist}"></MACRO>
+	<MACRO name="INTF_RNG_AGGREGATE_SWITCHPORT" arg="${iflist}"></MACRO>
 
     </VIEW>
 

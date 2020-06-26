@@ -5,7 +5,10 @@
 {% for psu_name, psu_info in json_output.items() %}
 {% if 'state' in psu_info %}
 {% if 'oper-status' in psu_info['state'] %}
+{% set oper_status = 'Not Present' %}
+{% if 'empty' in psu_info['state'] and not psu_info['state']['empty'] %}
 {% set oper_status = psu_info['state']['oper-status'] %}
+{% endif %}
 {% if 'openconfig-platform-types:' in oper_status %}
 {% set oper_status = oper_status.split(':')[1] %}
 {% endif %}

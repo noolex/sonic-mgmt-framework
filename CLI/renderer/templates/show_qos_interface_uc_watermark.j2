@@ -1,7 +1,7 @@
 {{'Egress queue watermark per unicast queue:'}}
-{{'-----------------------------------------------'}}
-{{'%-5s'|format("UC0")}}{{'%-5s'|format("UC1")}}{{'%-5s'|format("UC2")}}{{'%-5s'|format("UC3")}}{{'%-5s'|format("UC4")}}{{'%-5s'|format("UC5")}}{{'%-5s'|format("UC6")}}{{'%-5s'|format("UC7")}}
-{{'-----------------------------------------------'}}
+{{'-------------------------------------------------------------------------------'}}
+{{'%-10s'|format("UC0")}}{{'%-10s'|format("UC1")}}{{'%-10s'|format("UC2")}}{{'%-10s'|format("UC3")}}{{'%-10s'|format("UC4")}}{{'%-10s'|format("UC5")}}{{'%-10s'|format("UC6")}}{{'%-10s'|format("UC7")}}
+{{'-------------------------------------------------------------------------------'}}
 {% if json_output %}
 {% set watermark = {}%}
 {% set queue_info_list = json_output['queue'] %}
@@ -11,5 +11,5 @@
     {% set qname = queue.split(':') %}
     {% if watermark.update({qname[1] :  q_stats_info['openconfig-qos-ext:watermark']}) %} {% endif %}
 {% endfor %}
-{{'%-5s'|format(watermark['0'])}}{{'%-5s'|format(watermark['1'])}}{{'%-5s'|format(watermark['2'])}}{{'%-5s'|format(watermark['3'])}}{{'%-5s'|format(watermark['4'])}}{{'%-5s'|format(watermark['5'])}}{{'%-5s'|format(watermark['6'])}}{{'%-5s'|format(watermark['7'])}}
+{{'%-10s'|format(watermark['0'])}}{{'%-10s'|format(watermark['1'])}}{{'%-10s'|format(watermark['2'])}}{{'%-10s'|format(watermark['3'])}}{{'%-10s'|format(watermark['4'])}}{{'%-10s'|format(watermark['5'])}}{{'%-10s'|format(watermark['6'])}}{{'%-10s'|format(watermark['7'])}}
 {% endif %}

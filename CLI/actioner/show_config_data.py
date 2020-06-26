@@ -34,7 +34,8 @@ config_view_hierarchy= \
 
 render_filelst  = {}
 
-render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
+render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
+                  'router_bgp_neighbor'     : show_router_bgp_neighbor_cmd,
                   'if_channel_group'        : show_if_channel_group_cmd,
                   'if_switchport_access'    : show_if_switchport_access,
                   'if_switchport_trunk'     : show_if_switchport_trunk,
@@ -73,8 +74,14 @@ render_cb_dict  = {'router_bgp_neighbor'    : show_router_bgp_neighbor_cmd,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
-                  'sflow_source_if'         : show_sflow_source_if,
                   'copp_police'             : show_copp_police,
+                  'sflow_source_if'         : show_sflow_source_if,
+                  'bgp_af_ipv4_nw'          : show_router_bgp_af_nw_cmd,
+                  'bgp_af_ipv4_ag'          : show_router_bgp_af_ag_cmd,
+                  'bgp_af_ipv4_redist'      : show_router_bgp_af_redist_cmd,
+                  'bgp_af_ipv6_nw'          : show_router_bgp_af_nw_cmd,
+                  'bgp_af_ipv6_ag'          : show_router_bgp_af_ag_cmd,
+                  'bgp_af_ipv6_redist'      : show_router_bgp_af_redist_cmd,
                   'v4prefix_lists_cmd'      : show_v4prefix_lists,
                   'v6prefix_lists_cmd'      : show_v6prefix_lists
  }

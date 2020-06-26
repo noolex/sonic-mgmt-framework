@@ -9,6 +9,21 @@ import re
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 
+def stp_mode_get():
+    global g_stp_resp
+
+    aa = cc.ApiClient()
+    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None)
+    if not g_stp_resp.ok():
+        return 0
+
+    if g_stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
+        return -1
+    elif g_stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
+        return -1
+
+    return 0
+
 ## Run an external command
 def run_get_sonic_infra_reboot(func, argv):
     templ = argv[2]
@@ -25,6 +40,10 @@ def run_get_sonic_infra_reboot(func, argv):
     aa = cc.ApiClient()
     keypath = cc.Path('/restconf/operations/sonic-system-infra:reboot-ops')
     body = { "sonic-system-infra:input":data}
+
+    if cmd == "warm-reboot" and stp_mode_get() == -1:
+        print("Error: warm-reboot not allowed as spanning-tree is enabled")
+        return
 
     if process_msg:
        print("%s in process ....."%cmd) 

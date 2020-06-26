@@ -165,6 +165,48 @@ def generate_body(func, args=[]):
                  "openconfig-if-ethernet:ethernet" : {"config": {}}
                }
         body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-aggregate:aggregate-id": args[1] } )
+    
+     #configure switchport
+    elif func == 'patch_access_vlan':
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-ethernet:ethernet": {"openconfig-vlan:switched-vlan":{}}
+        }
+        body["openconfig-if-ethernet:ethernet"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "ACCESS", "access-vlan": int(args[1])}})
+
+    elif func == 'patch_trunk_vlan':
+        vlanlst = args[1].split(',')
+        vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-ethernet:ethernet": {"openconfig-vlan:switched-vlan":{}}
+        }
+
+        body["openconfig-if-ethernet:ethernet"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "TRUNK", "trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}}) 
+   
+    elif func == 'patch_aggregation_access_vlan':
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-aggregate:aggregation": {"openconfig-vlan:switched-vlan":{}}
+        }
+        body["openconfig-if-aggregate:aggregation"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "ACCESS", "access-vlan": int(args[1])}})
+
+    elif func == 'patch_aggregation_trunk_vlan':
+        vlanlst = args[1].split(',')
+        vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-aggregate:aggregation": {"openconfig-vlan:switched-vlan":{}}
+        }
+
+        body["openconfig-if-aggregate:aggregation"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "TRUNK", "trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}})
+
     # Speed config
     elif func == 'patch_port_speed':
         body = {
@@ -203,6 +245,26 @@ def invoke_api(func, args=[]):
     elif func == 'delete_aggregate_id':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id', name=args[0])
         return api.delete(path)
+
+    #Remove access vlan
+    elif func == 'delete_access_vlan':
+	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
+        return api.delete(path) 
+    
+    #Remove trunk vlan
+    elif func == 'delete_trunk_vlan':
+   	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=args[1])
+        return api.delete(path)
+ 
+    #Remove aggregate access vlan
+    elif func == 'delete_aggregate_access_vlan':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
+        return api.delete(path)
+    
+      #Remove aggregate trunk vlan
+    elif func == 'delete_aggregate_trunk_vlan':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=args[1])
+	return api.delete(path)
 
     # Remove IP addresses from interface
     elif func == 'delete_if_ip':
