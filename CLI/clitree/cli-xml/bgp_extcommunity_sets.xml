@@ -26,7 +26,10 @@ limitations under the License.
 
     <COMMAND
         name="bgp extcommunity-list"
-        help="Add BGP extended community-list entry" escape_chars="">
+        help="Add BGP extended community-list entry" escape_chars=""
+        command_keys="name=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/EXTENDED_COMMUNITY_SET/EXTENDED_COMMUNITY_SET_LIST/name={name}"
+        render_command_cb="bgp_extcom_list">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"

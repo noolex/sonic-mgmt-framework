@@ -83,6 +83,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'bgp_af_ipv6_ag'          : show_router_bgp_af_ag_cmd,
                   'bgp_af_ipv6_redist'      : show_router_bgp_af_redist_cmd,
                   'v4prefix_lists_cmd'      : show_v4prefix_lists,
-                  'v6prefix_lists_cmd'      : show_v6prefix_lists
+                  'v6prefix_lists_cmd'      : show_v6prefix_lists,
+                  'bgp_com_list'            : show_bgpcom_lists,
+                  'bgp_extcom_list'         : show_bgpextcom_lists,
+                  'bgp_aspath_list'         : show_bgpaspath_lists
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

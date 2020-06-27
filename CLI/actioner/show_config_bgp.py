@@ -105,3 +105,97 @@ def show_router_bgp_af_redist_cmd(render_tables):
                     cmd_str = cmd_str + ' ;'
 
     return 'CB_SUCCESS', cmd_str
+
+def show_bgpcom_lists(render_tables):
+  cmd_str = ''
+
+  if 'sonic-routing-policy-sets:sonic-routing-policy-sets/COMMUNITY_SET/COMMUNITY_SET_LIST' in render_tables:
+      com_list = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/COMMUNITY_SET/COMMUNITY_SET_LIST']
+      cmd_prfx = 'bgp community-list '
+      for com in com_list:
+          if 'set_type' in com:
+              com_type = com['set_type'].lower()
+              if 'name' in com:
+                  name = com['name'] + " "
+                  act_str = ''
+                  if 'match_action' in com :
+                      # show only ALL, ANY is optional, do not show
+                      if com['match_action'] == "ALL":
+                         act_str = " all "
+                      if 'community_member' in com:
+                          member_str = ''
+                          asn = []
+                          # For EXPANDED type, each leaf-list members will appear as
+                          # separate CLI command.
+                          # For STANDARD type other than multiple AA:NN, all other will
+                          # be combined to single CLI command, more than one AA:NN will
+                          # appear as separate CLI
+                          for member in com['community_member']:
+                              if com_type == "standard":
+                                 if ':' in member:
+                                     if ':' not in member_str:
+                                         if member_str:
+                                            member_str +=" "
+                                         member_str += member
+                                     else:
+                                         # more than one AA:NN store it here and show it as
+                                         # separate CLI at the end.
+                                         asn.append(member)
+                                 else:
+                                     if member_str:
+                                        member_str +=" "
+                                     member_str += member
+                              else:
+                                  cmd_str += cmd_prfx + com_type +" " + name + member + act_str + ";"
+
+                          if com_type == "standard":
+                             cmd_str += cmd_prfx + com_type +" " + name + member_str + act_str + ";"
+
+                             # show stored AA:NN as separate CLI
+                             for member in asn:
+                                 cmd_str += cmd_prfx + com_type +" " + name + member + act_str + ";"
+
+  return 'CB_SUCCESS', cmd_str
+
+def show_bgpextcom_lists(render_tables):
+  cmd_str = ''
+
+  if 'sonic-routing-policy-sets:sonic-routing-policy-sets/EXTENDED_COMMUNITY_SET/EXTENDED_COMMUNITY_SET_LIST' in render_tables:
+      extcom_list = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/EXTENDED_COMMUNITY_SET/EXTENDED_COMMUNITY_SET_LIST']
+      cmd_prfx = 'bgp extcommunity-list '
+      for extcom in extcom_list:
+          if 'set_type' in extcom:
+              if 'name' in extcom:
+                  if 'match_action' in extcom:
+                      act_str = ''
+                      # ANY is optional, do not show. show only ALL
+                      if extcom['match_action'] == "ALL":
+                         act_str = " all "
+                      if 'community_member' in extcom:
+                          for member in extcom['community_member']:
+                              member_str = ''
+                              if 'route-target:' in member:
+                                 member_str += "rt " + member[13:]
+                              elif 'route-origin:' in member:
+                                 member_str += "soo " + member[13:]
+                              elif member:
+                                 # Expanded type case
+                                 member_str += member
+
+                              cmd_str += cmd_prfx + extcom['set_type'].lower() +" " + extcom['name'] + " " + member_str + act_str + ";"
+
+  return 'CB_SUCCESS', cmd_str
+
+def show_bgpaspath_lists(render_tables):
+  cmd_str = ''
+
+  if 'sonic-routing-policy-sets:sonic-routing-policy-sets/AS_PATH_SET/AS_PATH_SET_LIST' in render_tables:
+      aspath_list = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/AS_PATH_SET/AS_PATH_SET_LIST']
+      cmd_prfx = 'bgp as-path-list '
+      for aspath in aspath_list:
+          if 'name' in aspath:
+              if 'as_path_set_member' in aspath:
+                  for member in aspath['as_path_set_member']:
+                      cmd_str += cmd_prfx + aspath['name']+ " regex " + member + ";"
+
+  return 'CB_SUCCESS', cmd_str
