@@ -652,7 +652,7 @@ limitations under the License.
               name="addr"
               help="IP address with mask"
               ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${vlan_name} ${addr}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_routed_vlan_ipv4_addresses_address_config ${vlan_name} ${addr}</ACTION>
       </COMMAND>
       <COMMAND
           name="no ip address"
