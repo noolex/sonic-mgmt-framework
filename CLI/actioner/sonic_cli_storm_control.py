@@ -25,7 +25,7 @@ def show(args):
         index = 0
         while (index <len(response['sonic-storm-control:PORT_STORM_CONTROL_LIST'])):
             iter = response['sonic-storm-control:PORT_STORM_CONTROL_LIST'][index]
-            if (arg_length == 3 and (args[2] != iter['ifname'])):
+            if (arg_length == 2 and (args[1] != iter['ifname'])):
                 response['sonic-storm-control:PORT_STORM_CONTROL_LIST'].pop(index)
             else:
                 index = index+1
