@@ -298,27 +298,27 @@ def invoke_api(func, args=[]):
             responsePortTbl = api.get(path)
             if responsePortTbl.ok():
 		intf_map = responsePortTbl.content
-	    	tbl_key = "sonic-port:PORT_TABLE_LIST"
+                tbl_key = "sonic-port:PORT_TABLE_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["ifname"] for i in intf_map[tbl_key] if i["ifname"].startswith("Eth")]
 	elif args[0] == "Vlan":
-            path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN_TABLE/VLAN_TABLE_LIST')
+            path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST')
             responseVlanTbl = api.get(path)
 	    iflist = []
             if responseVlanTbl.ok():
 		intf_map = responseVlanTbl.content
-	    	tbl_key = "sonic-vlan:VLAN_TABLE_LIST"
+                tbl_key = "sonic-vlan:VLAN_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("Vlan")]
 	elif args[0] == "PortChannel":
-            path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/LAG_TABLE/LAG_TABLE_LIST')
+            path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST')
             responseLagTbl = api.get(path)
 	    iflist = []
             if responseLagTbl.ok():
 		intf_map = responseLagTbl.content
-	    	tbl_key = "sonic-portchannel:LAG_TABLE_LIST"
+	    	tbl_key = "sonic-portchannel:PORTCHANNEL_LIST"
 		if tbl_key in intf_map:
-		    iflist = [i["lagname"] for i in intf_map[tbl_key] if i["lagname"].startswith("PortChannel")]
+		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("PortChannel")]
 	return iflist
 
     elif func == 'create_if_range': 
@@ -408,6 +408,12 @@ def run(func, args):
                 iflist = intersection(iflist, ifrangelist)
             res = ",".join(natsorted(iflist))
             sys.stdout.write(res)
+
+        elif func == 'expand_if_range_to_list':
+            givenifrange = args[0]
+            _, ifrangelist = rangetolst(givenifrange)
+            res = ",".join(natsorted(ifrangelist))
+            return res
 
         elif func == 'delete_if_range':
             """
