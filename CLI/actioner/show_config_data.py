@@ -23,6 +23,7 @@ from show_config_table_sort import *
 from show_config_ptp import *
 from show_config_routepolicy import *
 from show_config_copp import *
+from show_config_qos import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -30,7 +31,7 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt', 'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
+['configure', 'configure-wred', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt', 'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
 
 render_filelst  = {}
 
@@ -86,6 +87,19 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'v6prefix_lists_cmd'      : show_v6prefix_lists,
                   'bgp_com_list'            : show_bgpcom_lists,
                   'bgp_extcom_list'         : show_bgpextcom_lists,
-                  'bgp_aspath_list'         : show_bgpaspath_lists
+                  'bgp_aspath_list'         : show_bgpaspath_lists,
+                  'qos_wred_policy_green'   : show_wred_policy_green,
+                  'qos_wred_policy_yellow'  : show_wred_policy_yellow,
+                  'qos_wred_policy_red'     : show_wred_policy_red,
+                  'queue_wred_policy'       : show_queue_wred_policy,
+                  'qos_intf_map_dscp_tc'    : show_qos_intf_map_dscp_tc,
+                  'qos_intf_map_dot1p_tc'   : show_qos_intf_map_dot1p_tc,
+                  'qos_intf_map_tc_queue'  : show_qos_intf_map_tc_queue,
+                  'qos_intf_map_tc_pg'     : show_qos_intf_map_tc_pg,
+                  'qos_intf_map_tc_dscp'   : show_qos_intf_map_tc_dscp,
+                  'qos_intf_map_tc_dot1p'  : show_qos_intf_map_tc_dot1p,
+                  'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
+                  'qos_intf_pfc'  : show_qos_intf_pfc
+
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
