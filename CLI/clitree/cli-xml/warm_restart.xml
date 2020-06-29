@@ -78,7 +78,7 @@ limitations under the License.
              command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/module={module}"
              dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/enable=true">             
         <ACTION builtin="clish_pyobj">
-             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable bgp true ${__full_line}
+             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_modules_config_enable bgp true ${__full_line}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>Enable warm restart feature</DESCRIPTION>
@@ -143,7 +143,7 @@ limitations under the License.
              command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/module={module}"
              dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/enable=true">
         <ACTION builtin="clish_pyobj">
-             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable swss true ${__full_line}
+             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_modules_config_enable swss true ${__full_line}
         </ACTION>
       <DOCGEN>
           <DESCRIPTION>Enable warm restart feature</DESCRIPTION>
@@ -215,7 +215,7 @@ limitations under the License.
              command_tables="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/module={module}"
              dbpath="sonic-warm-restart:sonic-warm-restart/WARM_RESTART_ENABLE/WARM_RESTART_ENABLE_LIST/enable=true">
         <ACTION builtin="clish_pyobj">
-             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable teamd true ${__full_line}
+             sonic_cli_warm_restart patch_openconfig_warm_restart_warm_restart_enable_modules_config_enable teamd true ${__full_line}
         </ACTION>
       <DOCGEN>
           <DESCRIPTION>Enable warm restart feature</DESCRIPTION>
@@ -262,7 +262,7 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand">
       <ACTION builtin="clish_pyobj">
-            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable bgp ${__full_line}
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_modules_config_enable bgp ${__full_line}
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>Disable warm restart feature</DESCRIPTION>
@@ -315,7 +315,7 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand">
       <ACTION builtin="clish_pyobj">
-            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable swss ${__full_line}
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_modules_config_enable swss ${__full_line}
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>Disable warm restart feature</DESCRIPTION>
@@ -374,7 +374,7 @@ limitations under the License.
              ptype="SUBCOMMAND" 
              mode="subcommand">
       <ACTION builtin="clish_pyobj">
-            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_warm_restart_modules_config_enable teamd ${__full_line}
+            sonic_cli_warm_restart delete_openconfig_warm_restart_warm_restart_enable_modules_config_enable teamd ${__full_line}
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>Disable warm restart feature</DESCRIPTION>
