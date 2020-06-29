@@ -6,6 +6,8 @@
     xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
     http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
+    <VAR name="vtep-name" dynamic="true">
+    </VAR>
 
     <!--MODE : show commands view -->
     <VIEW name="enable-view">
@@ -13,6 +15,11 @@
         <COMMAND 
             name="show vxlan" 
             help="show vxlan commands"> 
+        </COMMAND>
+        <COMMAND
+             name="show running-configuration interface vxlan"
+             help="show VXLAN configuration">
+          <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vxlan view_keys="name=${iface}" </ACTION>
         </COMMAND>
         <COMMAND 
             name="show vxlan interface" 
@@ -288,11 +295,14 @@
             help="VXLAN Configuration Mode"
             view="configure-vxlan-view"
             viewid="iface=vxlan-${vxlan-if-name}"
+            view_keys="name=*"
+            view_tables="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/name={vxlan-if-name}"
             >
             <PARAM
                 name="vxlan-if-name"
                 help="Name of VTEP (Max 10 chars, prefixed by 'vtep')"
                 ptype="VTEP_NAME"
+                dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/name"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list ${vxlan-if-name}
@@ -323,6 +333,11 @@
             help="false"
             completion="false"
             />
+      <COMMAND
+            name="show configuration"
+            help = "show vxlan configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vxlan view_keys="name=${iface}" </ACTION>   
+      </COMMAND>    
         <COMMAND
             name="no"
             help="Negate a command or set its defaults"
@@ -390,6 +405,7 @@
                 name="SIP"
                 help="Source IPv4 address"
                 ptype="IPV4_ADDR_ABC"
+                dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/src_ip"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_src_ip ${iface} ${SIP} </ACTION>
@@ -407,12 +423,12 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name="qos-mode" help="Configure QoS Mode">
-            <PARAM name="qos-mode" help="QoS mode" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="uniform" help="Uniform Mode" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-                <PARAM name="pipe" help="Pipe Mode" ptype="SUBCOMMAND" mode="subcommand">
+        <COMMAND name="qos-mode" help="Configure QoS Mode" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/qos-mode" >
+            <PARAM name="qos-mode" help="QoS mode" ptype="SUBCOMMAND" mode="switch" >
+                <PARAM name="uniform" help="Uniform Mode" ptype="SUBCOMMAND" mode="subcommand" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/qos-mode=uniform"> </PARAM>
+                <PARAM name="pipe" help="Pipe Mode" ptype="SUBCOMMAND" mode="subcommand" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/qos-mode=pipe">
                     <PARAM name="dscp" help="Encap DSCP for Pipe Mode" ptype="SUBCOMMAND" mode="subcommand">
-                        <PARAM name="dscp-value" help="dscp value" ptype="RANGE_0_63"> </PARAM>
+                        <PARAM name="dscp-value" help="dscp value" ptype="RANGE_0_63" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/dscp"> </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>

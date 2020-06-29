@@ -495,6 +495,13 @@ limitations under the License.
                 ptype="SUBCOMMAND"
                 >
                 <PARAM
+                    name="CPU"
+                    help="CPU interface"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                </PARAM>
+                <PARAM
                     name="phy-intf-name"
                     help="Physical Interface"
                     ptype="PHY_INTERFACE"
@@ -534,13 +541,15 @@ limitations under the License.
                     python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_queues_queue ${phy-intf-name}:${queue-id} &#xA;
                 else&#xA;
                     python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config ${phy-intf-name} &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${phy-intf-name} &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_pfc ${phy-intf-name} &#xA;
                 fi&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${phy-intf-name} &#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_pfc ${phy-intf-name} &#xA;
             elif test "${qos-if-subcommands}" = "po-intf-name"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${po-intf-name} &#xA;
             elif test "${qos-if-subcommands}" = "vlan-intf-name"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${vlan-intf-name} &#xA;
+            elif test "${qos-if-subcommands}" = "CPU"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config CPU &#xA;
             fi&#xA;
         </ACTION>
       <xi:include href="include/pipe.xml"/>

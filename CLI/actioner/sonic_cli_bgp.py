@@ -1007,7 +1007,7 @@ def invoke_api(func, args=[]):
         body = { "openconfig-bgp-ext:config" : { "enabled" : True if args[3] == 'True' else False } }
         if 'all' in args[3:]:
             body["openconfig-bgp-ext:config"]["all"] = True
-        if 'replace-AS' in args[3:]:
+        if 'replace-as' in args[3:]:
             body["openconfig-bgp-ext:config"]["replace-as"] = True
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_reflector_client':
@@ -1249,7 +1249,7 @@ def invoke_api(func, args=[]):
         body = { "openconfig-bgp-ext:config" : { "enabled" : True if args[3] == 'True' else False } }
         if 'all' in args[3:]:
             body["openconfig-bgp-ext:config"]["all"] = True
-        if 'replace-AS' in args[3:]:
+        if 'replace-as' in args[3:]:
             body["openconfig-bgp-ext:config"]["replace-as"] = True
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_reflector_client':
@@ -1819,13 +1819,13 @@ def get_bgp_nbr_iptype(nbr, afisafiname):
                nbr_afisafiname = afisafi['state']['afi-safi-name']
            else:
                nbr_afisafiname = "openconfig-bgp-types:IPV4_UNICAST"
-           if nbr_afisafiname == afisafiname:
+           if nbr_afisafiname == afisafiname or afisafiname == 'ipAll':
               break
     try:
         ipaddr = netaddr.IPAddress(nbr['neighbor-address'])
     except:
         unnumbered = True
-    if nbr_afisafiname == afisafiname:
+    if nbr_afisafiname == afisafiname or afisafiname == 'ipAll':
        is_afmatch = True
     return is_afmatch, unnumbered
 
@@ -1940,6 +1940,8 @@ def invoke_show_api(func, args=[]):
             afisafiname = 'openconfig-bgp-types:IPV6_UNICAST'
         elif args[2] == 'evpn':
             afisafiname = 'openconfig-bgp-types:L2VPN_EVPN'
+        elif args[2] == 'ipAll':
+            afisafiname = args[2]
         else:
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
@@ -1965,6 +1967,8 @@ def invoke_show_api(func, args=[]):
             afisafiname = 'openconfig-bgp-types:IPV6_UNICAST'
         elif args[2] == 'evpn':
             afisafiname = 'openconfig-bgp-types:L2VPN_EVPN'
+        elif args[2] == 'ipAll':
+            afisafiname = args[2]
         else:
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
@@ -2357,12 +2361,12 @@ def parseNeighV4(vrf_name, nbr_addr, cmd, args=[]):
             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
         else:
             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
-    elif cmd == 'remove-private-AS':
+    elif cmd == 'remove-private-as':
         if not argds.get('all'):
            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
-        if not argds.get('replace-AS'):
+        if not argds.get('replace-as'):
            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
-        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-AS'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-as'))
     elif cmd == 'maximum-prefix':
         if argds.get('threshold-val') == '0':
              rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
@@ -2403,7 +2407,7 @@ def parseNeighV4(vrf_name, nbr_addr, cmd, args=[]):
             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
         else:
             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
-    elif cmd == 'no remove-private-AS':
+    elif cmd == 'no remove-private-as':
         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_enabled', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, nbr_addr, 'IPV4_UNICAST' ])
@@ -2464,12 +2468,12 @@ def parsePeergV4(vrf_name, template_name, cmd, args=[]):
             rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
         else:
             rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
-    elif cmd == 'remove-private-AS':
+    elif cmd == 'remove-private-as':
         if not argds.get('all'):
            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, template_name, 'IPV4_UNICAST' ])
-        if not argds.get('replace-AS'):
+        if not argds.get('replace-as'):
            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, template_name, 'IPV4_UNICAST' ])
-        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-AS'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, template_name, 'IPV4_UNICAST' ] + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-as'))
     elif cmd == 'maximum-prefix':
         if argds.get('threshold-val') == '0':
              rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv4_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, template_name, 'IPV4_UNICAST' ])
@@ -2510,7 +2514,7 @@ def parsePeergV4(vrf_name, template_name, cmd, args=[]):
             rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
         else:
             rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, template_name, 'IPV4_UNICAST' ] + mkArgds2list(argds, 'pname'))
-    elif cmd == 'no remove-private-AS':
+    elif cmd == 'no remove-private-as':
         rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_enabled', [ vrf_name, template_name, 'IPV4_UNICAST' ])
         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, template_name, 'IPV4_UNICAST' ])
         rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, template_name, 'IPV4_UNICAST' ])
@@ -2619,12 +2623,12 @@ def parseNeighV6(vrf_name, nbr_addr, cmd, args=[]):
             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
         else:
             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
-    elif cmd == 'remove-private-AS':
+    elif cmd == 'remove-private-as':
         if not argds.get('all'):
            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
-        if not argds.get('replace-AS'):
+        if not argds.get('replace-as'):
            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
-        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ]  + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-AS'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ]  + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-as'))
     elif cmd == 'maximum-prefix':
         if argds.get('threshold-val') == '0':
              rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
@@ -2665,7 +2669,7 @@ def parseNeighV6(vrf_name, nbr_addr, cmd, args=[]):
             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
         else:
             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
-    elif cmd == 'no remove-private-AS':
+    elif cmd == 'no remove-private-as':
         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_enabled', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, nbr_addr, 'IPV6_UNICAST' ])
@@ -2724,12 +2728,12 @@ def parsePeergV6(vrf_name, template_name, cmd, args=[]):
             rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
         else:
             rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
-    elif cmd == 'remove-private-AS':
+    elif cmd == 'remove-private-as':
         if not argds.get('all'):
            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, template_name, 'IPV6_UNICAST' ])
-        if not argds.get('replace-AS'):
+        if not argds.get('replace-as'):
            rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, template_name, 'IPV6_UNICAST' ])
-        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, template_name, 'IPV6_UNICAST' ]  + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-AS'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config', [ vrf_name, template_name, 'IPV6_UNICAST' ]  + [ 'True' ] + mkArgds2list(argds, 'all', 'replace-as'))
     elif cmd == 'maximum-prefix':
         if argds.get('threshold-val') == '0':
              rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_ipv6_unicast_config_prefix_limit_config_warning_threshold_pct', [ vrf_name, template_name, 'IPV6_UNICAST' ])
@@ -2770,7 +2774,7 @@ def parsePeergV6(vrf_name, template_name, cmd, args=[]):
             rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_import_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
         else:
             rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_prefix_list_config_export_policy', [ vrf_name, template_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'pname'))
-    elif cmd == 'no remove-private-AS':
+    elif cmd == 'no remove-private-as':
         rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_enabled', [ vrf_name, template_name, 'IPV6_UNICAST' ])
         rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_all', [ vrf_name, template_name, 'IPV6_UNICAST' ])
         rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_remove_private_as_config_replace_as', [ vrf_name, template_name, 'IPV6_UNICAST' ])
@@ -2797,12 +2801,49 @@ def parseGloblShow(vrf_name, cmd, args=[]):
             generate_show_bgp_vrf_all(args)
             return 0
 
+        if len(args) == 0:
+            return get_show_bgp(args)
         if args[0] == 'statistics':
             return generate_show_bgp_stats(args)
         elif args[0] == 'ip-prefix':
             return generate_show_bgp_prefix_routes(args)
+        elif args[0] == 'neighbors':
+            nbr_subcmds = [ 'routes', 'received-routes', 'advertised-routes' ]
+            if args[-1] in  nbr_subcmds:
+                return generate_show_bgp_routes(args)
+            elif args[1] == 'neighbor-ip':
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip',  [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4', args[-1] ])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            elif args[1] == 'interface':
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip',  [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4', args[-1] ])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            else:
+                response = invoke_show_api('get_ip_bgp_neighbors', [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4' ] + args[4:])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            return 0
+        elif args[0] == 'summary':
+            response = invoke_show_api('get_ip_bgp_summary', [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4' ])
+            show_cli_output('show_ip_bgp_summary.j2', response)
+            return 0
+
         else:
             return generate_show_bgp_routes(args)
+
+    elif cmd == 'show bgp all':
+        vrf_arg = [ 'vrf' , vrf_name ]
+        if args[0] == 'peer-group':
+            if len(args) == 1:
+                response = invoke_show_api('get_show_bgp_peer_group_all', vrf_arg + args)
+            else:
+                response = invoke_show_api('get_show_bgp_peer_group', vrf_arg + args)
+        elif args[0] == 'neighbors':
+            if len(args) == 1:
+                response = invoke_show_api('get_ip_bgp_neighbors', [ None, vrf_name, 'ipAll' ])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            else:
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip',  [ None, vrf_name, 'ipAll' ] + args[1:])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+        return 0
 
     print cc.ApiClient().cli_not_implemented(cmd).error_message()
     return 1

@@ -156,8 +156,6 @@ def invoke(func, args):
 
     if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_qos_mode'):
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0][6:])
-        print func
-        print args
 
         dscp_val = 0
         if (len(args) == 3):
@@ -285,7 +283,6 @@ def invoke(func, args):
     #[un]configure Neighbour Suppression
     if (func == 'patch_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list' or
         func == 'delete_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list'):
-        print args[0]
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/SUPPRESS_VLAN_NEIGH_LIST={name}', name=args[0])
 
         if (func.startswith("patch") is True):
@@ -523,6 +520,9 @@ def run(func, args):
         if (func != 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list' and
             func != 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list'):
           config_response_handler(api_response,func,args)
+
+        if api_response.errors():
+          return 1
 
     except:
             # system/network error

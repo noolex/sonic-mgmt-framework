@@ -1,0 +1,16 @@
+{% if 'DEFAULT_CONFIG_PROFILES_LIST' in json_output %}
+{% set record_dict = json_output['DEFAULT_CONFIG_PROFILES_LIST'] %}
+{% for val in record_dict %}
+{% if val['active'] == True %}
+Factory Default: {{val['profile-name'] + "\n "}}
+{% endif %}
+{% endfor %}
+{{"\n"}}
+Profile Name     Description
+-------------------------------------------------------------
+{% for val in record_dict %}
+{{val['profile-name'].ljust(16)}} {{val['description']}}
+{% endfor %}
+{% else %}
+No default configuration profiles found
+{% endif %}

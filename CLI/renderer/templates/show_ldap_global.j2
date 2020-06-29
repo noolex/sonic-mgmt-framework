@@ -1,0 +1,12 @@
+{% if sg %}
+{{'---------------------------------------------------------'}}
+LDAP {% if sg == "LDAP" %}Global{% elif sg == "LDAP_NSS" %}NSS{% elif sg == "LDAP_PAM" %}PAM{% elif sg == "LDAP_SUDO" %}SUDO{% endif %} Configuration
+{{'---------------------------------------------------------'}}
+{% endif %}
+{% if json_output -%}
+{% for field,value in json_output.iteritems() %}
+{% set attr = field|replace("openconfig-aaa-ldap-ext:", "", count=1) %}
+{{ "%-20s"|format(attr) }} : {{value}}
+{% endfor %}
+{% endif %}
+

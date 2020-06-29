@@ -11,7 +11,7 @@
 {% if json_output -%}
 
 ----------------------------------------------------------------------------------------------------------------------------
-{{'%-12s'|format("Event-id")}}{{'%-18s'|format("Buffer")}}{{'%-12s'|format("Type")}}{{'%-15s'|format("Port")}}{{'%-10s'|format("Index")}}{{'%-20s'|format("Breach Value(%)")}}{{'%-25s'|format("Time-stamp")}}
+{{'%-12s'|format("Event-id")}}{{'%-28s'|format("Buffer")}}{{'%-12s'|format("Type")}}{{'%-15s'|format("Port")}}{{'%-10s'|format("Index")}}{{'%-20s'|format("Breach Value(%)")}}{{'%-25s'|format("Time-stamp")}}
 ----------------------------------------------------------------------------------------------------------------------------
 {% for breach_report in json_output %}
 
@@ -24,7 +24,7 @@
     {% if vars.update({'breach_value':breach_report["breach_value"]}) %}{% endif %}
     {% if vars.update({'time_stamp':breach_report["time-stamp"]}) %}{% endif %}
 
-{{'%-12s'|format(vars.eventid)}}{{'%-18s'|format(vars.buffer)}}{{'%-12s'|format(vars.type)}}{{'%-15s'|format(vars.port)}}{{'%-10s'|format(vars.index)}}{{'%-20s'|format(vars.breach_value)}}{{'%-25s'|format(vars.time_stamp)}}
+{{'%-12s'|format(vars.eventid)}}{{'%-28s'|format(vars.buffer)}}{{'%-12s'|format(vars.type)}}{{'%-15s'|format(vars.port)}}{{'%-10s'|format(vars.index)}}{{'%-20s'|format(vars.breach_value)}}{{'%-25s'|format(vars.time_stamp)}}
 
 {% endfor %}
 

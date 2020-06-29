@@ -145,7 +145,12 @@ def set_classifier_match_acl(args):
 
 def clear_classifier_match_acl(args):
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_NAME', classifier_name=args[0])
-    return fbs_client.delete(keypath)
+    resp = fbs_client.delete(keypath)
+    if resp.ok():
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_TYPE', classifier_name=args[0])
+        resp = fbs_client.delete(keypath)
+
+    return resp
 
 
 def __format_mac_addr(macaddr):
@@ -422,17 +427,22 @@ def clear_match_tcp_flags(args):
 
 def create_flow_copp(args):
     # inputs: <policy_name> <class_name> [priority]
-    if len(args) == 3:
-        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/trap-group',
-                          copp_name=args[2])
-        response = fbs_client.get(keypath)
-        if response.ok():
-            if "openconfig-copp-ext:trap-group" in response.content:
-                keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/trap-priority',
-                                  copp_name=response.content["openconfig-copp-ext:trap-group"])
-                body = {"openconfig-copp-ext:trap-priority": int(args[3])}
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}',
+                      copp_name=args[1])
+    response = fbs_client.get(keypath)
+    if response.ok() and bool(response.content):
+        if len(args) == 3:
+            content = response.content
+            if 'openconfig-copp-ext:copp-trap' in response.content:
+                if 'config' in content['openconfig-copp-ext:copp-trap'][0]:
+                    if 'trap-group' in content['openconfig-copp-ext:copp-trap'][0]['config']:
+                        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
+                                          copp_name=content['openconfig-copp-ext:copp-trap'][0]['config']['trap-group'])
+                        body = {"openconfig-copp-ext:trap-priority": int(args[2])}
 
-                return fbs_client.patch(keypath, body)
+                        return fbs_client.patch(keypath, body)
+    else:
+        raise Exception('Class not found')
 
 
 def create_flow(args):
@@ -451,7 +461,7 @@ def create_flow(args):
 
 def delete_flow_copp(args):
     # inputs: <policy_name> <class_name>
-    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}', copp_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-group', copp_name=args[1])
     return fbs_client.delete(keypath)
 
 
@@ -1074,52 +1084,40 @@ def show_copp_protocols(args):
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
         return fbs_client.get(keypath)
     print("Classifier match-type copp protocols")
-    print("  protocol stp")
+    print("  protocol ttl_error")
     print("  protocol lacp")
-    print("  protocol eapol")
-    print("  protocol lldp")
-    print("  protocol pvrst")
-    print("  protocol igmp_query")
-    print("  protocol igmp_leave")
-    print("  protocol igmp_v1_report")
-    print("  protocol igmp_v2_report")
-    print("  protocol igmp_v3_report")
-    print("  protocol sample_packet")
-    print("  protocol switch_cust_range")
-    print("  protocol arp_req")
-    print("  protocol arp_resp")
-    print("  protocol dhcp")
-    print("  protocol ospf")
-    print("  protocol pim")
-    print("  protocol vrrp")
     print("  protocol bgp")
-    print("  protocol dhcpv6")
-    print("  protocol ospfv6")
-    print("  protocol vrrpv6")
     print("  protocol bgpv6")
-    print("  protocol neigh_discovery")
-    print("  protocol mld_v1_v2")
-    print("  protocol mld_v1_report")
-    print("  protocol mld_v1_done")
-    print("  protocol mld_v2_report")
-    print("  protocol ip2me")
+    print("  protocol dhcp")
+    print("  protocol dhcpv6")
     print("  protocol ssh")
     print("  protocol snmp")
-    print("  protocol router_custom_range")
-    print("  protocol l3_mtu_error")
-    print("  protocol ttl_error")
+    print("  protocol neigh_discovery")
+    print("  protocol arp_req")
+    print("  protocol arp_resp")
+    print("  protocol lldp")
+    print("  protocol ip2me")
+    print("  protocol sample_packet")
     print("  protocol udld")
+    print("  protocol subnet")
+    print("  protocol l3_mtu_error")
+    print("  protocol igmp_query")
     print("  protocol bfd")
     print("  protocol bfdv6")
+    print("  protocol stp")
+    print("  protocol pvrst")
     print("  protocol src_nat_miss")
     print("  protocol dest_nat_miss")
     print("  protocol ptp")
+    print("  protocol vrrp")
+    print("  protocol vrrpv6")
     print("  protocol pim")
     print("  protocol arp_suppress")
     print("  protocol nd_suppress")
+    print("  protocol ospf")
+    print("  protocol iccp")
     print("  protocol icmp")
     print("  protocol icmpv6")
-    print("  protocol iccp")
 
 
 ########################################################################################################################
@@ -1272,7 +1270,10 @@ def handle_show_classifier_response(response, args, op_str):
                             mac_addr_to_user_fmt=sonic_cli_acl.mac_addr_to_user_fmt,
                             ip_addr_to_user_fmt=sonic_cli_acl.convert_ip_addr_to_user_fmt,
                             ip_proto_to_user_fmt=sonic_cli_acl.ip_protocol_to_user_fmt,
-                            tcp_flags_to_user_fmt=sonic_cli_acl.tcp_flags_to_user_fmt)
+                            tcp_flags_to_user_fmt=sonic_cli_acl.tcp_flags_to_user_fmt,
+                            ethertype_to_user_fmt=ethertype_to_user_fmt,
+                            pcp_to_user_fmt=sonic_cli_acl.pcp_to_user_fmt,
+                            dscp_to_user_fmt=sonic_cli_acl.dscp_to_user_fmt)
     else:
         print(response.error_message())
 
@@ -1562,3 +1563,15 @@ def run(op_str, args):
 
 if __name__ == '__main__':
     run(sys.argv[1], sys.argv[2:])
+
+
+def ethertype_to_user_fmt(val):
+    if val == '0x800':
+        return 'ip'
+    elif val == '0x86dd':
+        return 'ipv6'
+    elif val == '0x806':
+        return 'arp'
+    else:
+        return val
+
