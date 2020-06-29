@@ -12,8 +12,11 @@
 {{'    SysDescr:     '}}{{value['state']['system-description'].split('\r\n')[0]}}
 {{'    TTL:          '}}{{value['state']['ttl']}}
 {% if value['state']['management-address'] %}
-{{'    MgmtIP:       '}}{{value['state']['management-address'].split(',')[0]}}
-{{'    MgmtIP:       '}}{{value['state']['management-address'].split(',')[-1]}}
+{% set mgmt_ip = value['state']['management-address'].split(',') %}
+{{'    MgmtIP:       '}}{{mgmt_ip[0]}}
+{% if mgmt_ip|length > 1 %}
+{{'    MgmtIP:       '}}{{mgmt_ip[1]}}
+{% endif %}
 {% endif %}
 {% for v in desc %}
 {{'                  '}}{{v}}
