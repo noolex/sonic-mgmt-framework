@@ -803,7 +803,7 @@ limitations under the License.
   <COMMAND name="passive-interface" help="Suppress routing updates on an interface" >
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand"/>
-      <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" >
+      <PARAM name = "interfacename" help = "Interface's name" ptype = "PHY_VL_PO_LB_INTERFACE" >
         <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" />
       </PARAM>
     </PARAM>
@@ -819,7 +819,7 @@ limitations under the License.
   <COMMAND name="no passive-interface" help="Suppress routing updates on an interface" >
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
-      <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" >
+      <PARAM name = "interfacename" help = "Interface's name" ptype = "PHY_VL_PO_LB_INTERFACE" >
         <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" />
       </PARAM>
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
@@ -1123,12 +1123,12 @@ limitations under the License.
   <COMMAND name="clear ip ospf" help="Clear OSPFv2 sessions">
     <PARAM name="clear_ospf_subcommands" help="Clear OSPFv2 commands" ptype="SUBCOMMAND" mode="switch">
       <PARAM name="interface" help="Interface" ptype="SUBCOMMAND" mode="subcommand">
-         <PARAM name="interface-name" help="Interface name" ptype="STRING" optional="true"/>
+         <PARAM name="interface-name" help="Interface name" ptype="PHY_VL_PO_LB_INTERFACE" optional="true"/>
       </PARAM>
       <PARAM name="vrf" help="OSPFv2 interface VRF name" ptype="SUBCOMMAND" mode="subcommand">
         <PARAM name="vrf-name" help="VRF Name" ptype="STRING" optional="false" >
            <PARAM name="interface" help="Interface" ptype="SUBCOMMAND" mode="subcommand">
-               <PARAM name="interface-name" help="Interface name" ptype="STRING" optional="true"/>
+               <PARAM name="interface-name" help="Interface name" ptype="PHY_VL_PO_LB_INTERFACE" optional="true"/>
            </PARAM>
         </PARAM>
       </PARAM>
