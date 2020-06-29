@@ -430,9 +430,9 @@ limitations under the License.
     </COMMAND>
     <COMMAND name="show threshold queue" help="Show queue threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="queue_buffer_type" help="choose from unicast/multicast as queue buffer type" mode="switch" ptype="SUBCOMMAND">
-        <PARAM name="unicast" help="choose unicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-        <PARAM name="multicast" help="choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="CPU" help="choose threshold cpu queue" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+        <PARAM name="multicast" help="choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+        <PARAM name="unicast" help="choose unicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
       <ACTION> python $SONIC_CLI_ROOT/sonic_cli_threshold.py get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}
  </ACTION>
