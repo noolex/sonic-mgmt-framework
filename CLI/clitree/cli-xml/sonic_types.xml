@@ -1166,7 +1166,18 @@ limitations under the License.
 	pattern="&MGMT_INTF;"
 	help=""
 	/>
-
+    <!--=======================================================-->
+    <PTYPE
+        name="PHY_VL_PO_LB_INTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(Port) PortChannel(1-128) Vlan(1-4093) Loopback(0..16383)"
+        alt_ext_pattern="Eth(slot/port[/subport]) PortChannel(1-128) Vlan(1-4093) Loopback(0..16383)"
+        ext_help="(Ethernet interface type) (PortChannel interface type) (Vlan interface type) (Loopback interface type)"
+        pattern="&ETH_ALL_INTF;|&VLAN_ALL_INTF;|&PO_ALL_INTF;|&LOOPB_INTF;"
+        alt_pattern="&ETH_ALL_INTF_ALIAS;|&VLAN_ALL_INTF;|&PO_ALL_INTF;|&LOOPB_INTF;"
+        help="Interface Type - Ranges"
+        preprocess="mode"
+        />
     <!--=======================================================-->
     <PTYPE
         name="FLOWGROUP_ID"
