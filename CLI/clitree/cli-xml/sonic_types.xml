@@ -1314,4 +1314,17 @@ limitations under the License.
         help="Process ID"
         />
     <!--=======================================================-->
+	<PTYPE
+        name="STRING_32_TAM"
+        pattern="(^([a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,31})))$"
+        help="String(Max: 32 characters)"
+        />
+    <!--=======================================================-->
+        <PTYPE
+        name="RANGE_1_10000"
+        method="integer"
+        pattern="1..10000"
+        help=""
+        />
+    <!--=======================================================-->
 </CLISH_MODULE>
