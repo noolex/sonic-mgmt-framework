@@ -21,7 +21,7 @@ limitations under the License.
     <COMMAND name="link" help="Interface link" />
     <COMMAND name="link state" help="Link state" />
     <COMMAND name="link state track" help="Link state tracking">
-        <PARAM name="grp-name" help="Name (Max size 63)" ptype="STRING_63"/>
+        <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME"/>
         <PARAM name="group-direction" help="Upstream interface" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="upstream" help="Upstream interface" ptype="SUBCOMMAND" mode="subcommand" test="arg1 -ge 1" />
             <PARAM name="downstream" help="Downstream interface" ptype="SUBCOMMAND" mode="subcommand" test="arg1 -ge 2" />
@@ -29,15 +29,20 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_${group-direction} ${grp-name} ${iface} ${vlan_name} ${po_name}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no link" help="Interface link" />
-    <COMMAND name="no link state" help="Link state" />
-    <COMMAND name="no link state track" help="Link state tracking">
-        <PARAM name="grp-name" help="Name (Max size 63)" ptype="STRING_63"/>
-        <PARAM name="group-direction" help="Upstream interface" ptype="SUBCOMMAND" mode="switch">
-            <PARAM name="upstream" help="Upstream interface" ptype="SUBCOMMAND" mode="subcommand" test="arg1 -ge 1" />
-            <PARAM name="downstream" help="Downstream interface" ptype="SUBCOMMAND" mode="subcommand" test="arg1 -ge 2" />
-        </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_${group-direction} ${grp-name} ${iface} ${vlan_name} ${po_name}</ACTION>
+    <COMMAND name="no link" help="Link state tracking group" />
+    <COMMAND name="no link state" help="Link state tracking group" />
+    <COMMAND name="no link state track" help="Link state tracking group">
+      <PARAM name="grp-name-or-type" help="" ptype="SUBCOMMAND" mode="switch">
+        <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME"/>
+        <PARAM name="upstream" help="Upstream interface" ptype="SUBCOMMAND" mode="subcommand" test="2 -ge 1"/>
+        <PARAM name="downstream" help="Downstream interface" ptype="SUBCOMMAND" mode="subcommand" test="2 -ge 2"/>
+      </PARAM>
+      <PARAM name="group-direction" help="" ptype="SUBCOMMAND" mode="switch" test="( ${grp-name} != &quot;upstream&quot; ) -a ( ${grp-name} != &quot;downstream&quot; )">
+        <PARAM name="upstream" help="Upstream interface" ptype="SUBCOMMAND" mode="subcommand" test="2 -ge 1"/>
+        <PARAM name="downstream" help="Downstream interface" ptype="SUBCOMMAND" mode="subcommand" test="2 -ge 2"/>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_binding ${group-direction} ${grp-name} ${iface} ${vlan_name} ${po_name}</ACTION>
     </COMMAND>
 </MACRODEF>
 </ROOT>
+

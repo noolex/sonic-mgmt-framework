@@ -30,7 +30,13 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
+<<<<<<< HEAD
 ['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt', 'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
+||||||| merged common ancestors
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp, 'configure-vxlan', 'copp-action']
+=======
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
+>>>>>>> origin/broadcom_sonic_3.x_share
 
 render_filelst  = {}
 
