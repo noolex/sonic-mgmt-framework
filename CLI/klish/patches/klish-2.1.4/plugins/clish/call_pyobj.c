@@ -119,7 +119,7 @@ int pyobj_set_rest_token(const char *token) {
     return pyobj_update_environ("REST_API_TOKEN", token);
 }
 
-int call_pyobj(char *cmd, const char *arg) {
+int call_pyobj(char *cmd, const char *arg, char **out) {
     int ret_code = 0;
     char *token[128];
     char *buf;
@@ -187,7 +187,17 @@ int call_pyobj(char *cmd, const char *arg) {
     } else {
         if (PyInt_Check(value)) {
             ret_code = PyInt_AsLong(value);
+        } else if (PyString_Check(value)) {
+            if (!*out) *out = (char *)calloc((PyString_Size(value)+1), sizeof(char)); // dealloc higher up in call hierarchy
+            if (*out == NULL) {
+                lub_dump_printf("%%Error: Internal error.\n");
+                syslog(LOG_WARNING, "clish_pyobj: Failed to allocate memory");
+                ret_code = -1;
+            } else {
+                strncpy(*out,PyString_AsString(value),PyString_Size(value));
+            }
         }
+
         if (ret_code) {
             syslog(LOG_WARNING, "clish_pyobj: [cmd=%s][args:%s] ret_code:%d", cmd, arg, ret_code);
         }

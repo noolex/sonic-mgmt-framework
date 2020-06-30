@@ -144,6 +144,8 @@ Route map {{'%s'| format(vars.pol_name)}}:
             {% set item = "no-export" %}
            {% elif item == "openconfig-bgp-types:NOPEER" %}
             {% set item = "no-peer" %}
+           {% elif item == "openconfig-routing-policy-ext:ADDITIVE" %}
+            {% set item = "additive" %}
            {% endif %}
           {% do temp_comm.append(item) %}
          {% endfor %}

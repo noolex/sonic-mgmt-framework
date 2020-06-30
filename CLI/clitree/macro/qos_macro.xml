@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+
+<MACRODEF name="QOS_ALL_INTERFACE_QUEUES_QUEUE">
+    <PARAM 
+        name="interface"
+        help="Counters for interface queues"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        optional="true"
+        >
+        <PARAM
+            name="intf-type-subcommands"
+            help="interface type subcommands"
+            mode="switch"
+            ptype="SUBCOMMAND"
+            >
+            <PARAM
+                name="phy-intf-name"
+                help="Physical Interface"
+                ptype="PHY_INTERFACE"
+                >
+                <PARAM
+                    name="queue"
+                    help="Counters for interface queue"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                    <PARAM
+                        name="queue-id"
+                        help="Queue id: 0, 1, .. etc"
+                        ptype="RANGE_0_15"
+                        >
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="CPU"
+                help="Counters for CPU interface queues"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="queue"
+                    help="Counters for CPU interface queue"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                    <PARAM
+                        name="queue-id"
+                        help="Queue id: 0, 1, .. etc"
+                        ptype="RANGE_0_47"
+                        >
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+        </PARAM>
+    </PARAM>
+</MACRODEF>
+
+
+<MACRODEF name="QOS_INTERFACE">
+    <PARAM 
+        name="interface"
+        help="Watermarks for interface"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        optional="true"
+        >
+        <PARAM
+            name="intf-type-subcommands"
+            help="interface type subcommands"
+            mode="switch"
+            ptype="SUBCOMMAND"
+            >
+            <PARAM
+                name="phy-intf-name"
+                help="Physical Interface"
+                ptype="PHY_INTERFACE"
+                >
+            </PARAM>
+        </PARAM>
+    </PARAM>
+</MACRODEF>
+
+<MACRODEF name="QOS_QUEUE_WATERMARK_CMDS">
+    <PARAM
+        name="unicast"
+        help="Watermark for unicast queues"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+        <MACRO name="QOS_INTERFACE" />
+    </PARAM>
+    <PARAM
+        name="multicast"
+        help="Watermark for multicast queues"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+        <MACRO name="QOS_INTERFACE" />
+    </PARAM>
+    <PARAM
+        name="CPU"
+        help="Watermark for CPU queues"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+    </PARAM>
+</MACRODEF>
+
+<MACRODEF name="QOS_PG_WATERMARK_CMDS">
+    <PARAM
+        name="headroom"
+        help="Watermarks for Headroom buffers"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+        <MACRO name="QOS_INTERFACE" />
+    </PARAM>
+    <PARAM
+        name="shared"
+        help="Watermark for shared buffers"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+        <MACRO name="QOS_INTERFACE" />
+    </PARAM>
+</MACRODEF>
+</ROOT>

@@ -16,6 +16,7 @@ def invoke_api(func, args):
     vrfname = "default"
     prefix = None
     options = None
+    address = None
     af = "IPv4"
     protocol_name = None
     api = cc.ApiClient()
@@ -29,6 +30,8 @@ def invoke_api(func, args):
            af = "IPv6"
         elif "prefix" == arg:
            prefix = args[i+1]
+        elif "address" == arg:
+           address = args[i+1]
         elif arg in ShowOpts:
            options = arg
         else:
@@ -39,6 +42,8 @@ def invoke_api(func, args):
     inputs = {"vrf-name":vrfname, "family":af}
     if prefix:
         inputs['prefix'] = prefix
+    elif address:
+        inputs['address'] = address
     elif options:
         inputs[options] = True
     body = {"sonic-ip-show:input": inputs}

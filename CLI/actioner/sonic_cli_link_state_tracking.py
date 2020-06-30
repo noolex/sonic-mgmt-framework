@@ -18,14 +18,13 @@
 #
 ###########################################################################
 
-import sys
-import json
-import collections
 import re
 import os
 import cli_client as cc
 from rpipe_utils import pipestr
 import scripts.render_cli as cli
+import cli_log as log
+import traceback
 
 
 class SonicLinkStateTrackingCLIError(RuntimeError):
@@ -36,25 +35,28 @@ class SonicLinkStateTrackingCLIError(RuntimeError):
 def create_link_state_tracking_group(args):
     aa = cc.ApiClient()
     body = {
-        "sonic-link-state-tracking:INTF_TRACKING_LIST": [
-            {
-                "name": args[0]
-            }
-        ]
+        "openconfig-lst-ext:lst-group": [
+        {
+          "name": args[0],
+          "config": {
+            "name": args[0]
+          }
+        }
+      ]
     }
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group')
     return aa.patch(uri, body)
 
 
 def delete_link_state_tracking_group(args):
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}', name=args[0])
     return aa.delete(uri)
 
 
 def set_link_state_tracking_group_description(args):
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/description', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}/config/description', name=args[0])
 
     descr = args[1]
     full_cmd = os.getenv('USER_COMMAND', None)
@@ -63,14 +65,14 @@ def set_link_state_tracking_group_description(args):
         descr = match.group(1)
 
     body = {
-        "sonic-link-state-tracking:description": descr
+        "openconfig-lst-ext:description": descr
     }
     return aa.patch(uri, body)
 
 
 def delete_link_state_tracking_group_description(args):
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/description', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}/config/description', name=args[0])
     return aa.delete(uri)
 
 
@@ -80,48 +82,112 @@ def set_link_state_tracking_group_timeout(args):
         raise RuntimeError("Timeout not in range 1-1800")
 
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/timeout', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}/config/timeout', name=args[0])
     body = {
-        "sonic-link-state-tracking:timeout": timeout
+        "openconfig-lst-ext:timeout": timeout
     }
     return aa.patch(uri, body)
 
 
 def delete_link_state_tracking_group_timeout(args):
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/timeout', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}/config/timeout', name=args[0])
     return aa.delete(uri)
 
 
 def set_link_state_tracking_group_downstream(args):
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/downstream', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface')
     body = {
-        "sonic-link-state-tracking:downstream": args[1:]
+        "openconfig-lst-ext:interface": [
+        {
+          "id": args[1],
+          "config": {
+            "id": args[1]
+          },
+          "interface-ref": {
+            "config": {
+              "interface": args[1]
+            }
+          },
+          "downstream-group": {
+            "config": {
+              "group-name": args[0]
+            }
+          }
+        }
+      ]
     }
     return aa.patch(uri, body)
 
 
 def delete_link_state_tracking_group_downstream(args):
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/downstream={downstr}', grp_name=args[0], downstr=args[1])
+    if len(args) == 2:
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={downstr}/downstream-group', downstr=args[1])
+    else:
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={downstr}/downstream-group', downstr=args[0])
     return aa.delete(uri)
 
 
 def set_link_state_tracking_group_upstream(args):
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/upstream', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface')
     body = {
-        "sonic-link-state-tracking:upstream": args[1:]
+       "openconfig-lst-ext:interface": [
+        {
+          "id": args[1],
+          "config": {
+            "id": args[1]
+          },
+          "interface-ref": {
+            "config": {
+              "interface": args[1]
+            }
+          },
+          "upstream-groups": {
+            "upstream-group": [
+              {
+                "group-name": args[0],
+                "config": {
+                  "group-name": args[0]
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
+
     return aa.patch(uri, body)
 
 
 def delete_link_state_tracking_group_upstream(args):
     aa = cc.ApiClient()
-    uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING/INTF_TRACKING_LIST={grp_name}/upstream={upstr}', grp_name=args[0], upstr=args[1])
+    if len(args) == 2:
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups/upstream-group={grp_name}', grp_name=args[0], upstr=args[1])
+    else:
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups', upstr=args[0])
     return aa.delete(uri)
 
+def delete_link_state_tracking_group_binding(args):
+    if args[0] == 'upstream':
+        return delete_link_state_tracking_group_upstream(args[1:])
+    else:
+        return delete_link_state_tracking_group_downstream(args[1:])
+
+def set_link_state_tracking_group_all_mclag_downstream(args):
+    aa = cc.ApiClient()
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream', grp_name=args[0])
+    body = {
+        "openconfig-lst-ext:all-mclags-downstream": True
+    }
+    return aa.patch(uri, body)
+
+def delete_link_state_tracking_group_all_mclag_downstream(args):
+    aa = cc.ApiClient()
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream', grp_name=args[0])
+    return aa.delete(uri)
 
 def show_link_state_tracking_group_info(args):
     aa = cc.ApiClient()
@@ -144,7 +210,7 @@ def generic_set_response_handler(response, args):
                 raise SonicLinkStateTrackingCLIError('Exceeds maximum number of link state group')
             else:
                 raise SonicLinkStateTrackingCLIError(response.error_message())
-        except Exception as e:
+        except Exception:
             raise SonicLinkStateTrackingCLIError(response.error_message())
 
 
@@ -160,7 +226,7 @@ def generic_delete_response_handler(response, args):
                 raise SonicLinkStateTrackingCLIError('Exceeds maximum number of link state group')
             else:
                 raise SonicLinkStateTrackingCLIError(response.error_message())
-        except Exception as e:
+        except Exception:
             raise SonicLinkStateTrackingCLIError(response.error_message())
 
 
@@ -211,9 +277,10 @@ request_handlers = {
     'set_link_state_tracking_group_timeout': set_link_state_tracking_group_timeout,
     'delete_link_state_tracking_group_timeout': delete_link_state_tracking_group_timeout,
     'set_link_state_tracking_group_downstream': set_link_state_tracking_group_downstream,
-    'delete_link_state_tracking_group_downstream': delete_link_state_tracking_group_downstream,
+    'set_link_state_tracking_group_all_mclag_downstream': set_link_state_tracking_group_all_mclag_downstream,
+    'delete_link_state_tracking_group_all_mclag_downstream': delete_link_state_tracking_group_all_mclag_downstream,
     'set_link_state_tracking_group_upstream': set_link_state_tracking_group_upstream,
-    'delete_link_state_tracking_group_upstream': delete_link_state_tracking_group_upstream,
+    'delete_link_state_tracking_group_binding': delete_link_state_tracking_group_binding,
     'show_link_state_tracking_group_info': show_link_state_tracking_group_info
 }
 
@@ -225,9 +292,10 @@ response_handlers = {
     'set_link_state_tracking_group_timeout': generic_set_response_handler,
     'delete_link_state_tracking_group_timeout': generic_delete_response_handler,
     'set_link_state_tracking_group_downstream': generic_set_response_handler,
-    'delete_link_state_tracking_group_downstream': generic_delete_response_handler,
+    'set_link_state_tracking_group_all_mclag_downstream': generic_set_response_handler,
+    'delete_link_state_tracking_group_all_mclag_downstream': generic_set_response_handler,
     'set_link_state_tracking_group_upstream': generic_set_response_handler,
-    'delete_link_state_tracking_group_upstream': generic_delete_response_handler,
+    'delete_link_state_tracking_group_binding': generic_delete_response_handler,
     'show_link_state_tracking_group_info': show_link_state_tracking_group_response_handler
 }
 

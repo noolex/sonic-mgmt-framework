@@ -4,7 +4,9 @@
 		{{- '  Flow' }} {{ arr2['name']}}
 		{% if 'config' in arr2.keys() %}
 			{% if 'trap-group' in arr2['config'].keys() %}
-				{{- '    Action' }} {{ arr2['config']['trap-group']|lower}}
+				{% if arr2['config']['trap-group']|lower != 'null' %}
+					{{- '    Action' }} {{ arr2['config']['trap-group']|lower}}
+				{% endif %}
 			{% endif %}
 		{% endif %}
 		{% if 'trap-action' in arr2.keys() %}

@@ -113,7 +113,10 @@ limitations under the License.
 
     <COMMAND
         name="bgp community-list"
-        help="Add BGP community-list entry" escape_chars="">
+        help="Add BGP community-list entry" escape_chars=""
+        command_keys="name=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/COMMUNITY_SET/COMMUNITY_SET_LIST/name={name}"
+        render_command_cb="bgp_com_list">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -517,6 +520,9 @@ limitations under the License.
         name="bgp as-path-list"
         help="BGP autonomous system path"
         escape_chars=""
+        command_keys="name=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/AS_PATH_SET/AS_PATH_SET_LIST/name={name}"
+        render_command_cb="bgp_aspath_list"
         >
         <PARAM
             name="as-path-list-name"

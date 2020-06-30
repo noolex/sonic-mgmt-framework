@@ -29,6 +29,7 @@ from scripts.render_cli import show_cli_output
 import subprocess
 import re
 from sonic_intf_utils import name_to_int_val
+from natsort import natsorted
 
 import urllib3
 urllib3.disable_warnings()
@@ -165,6 +166,48 @@ def generate_body(func, args=[]):
                  "openconfig-if-ethernet:ethernet" : {"config": {}}
                }
         body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-aggregate:aggregate-id": args[1] } )
+    
+     #configure switchport
+    elif func == 'patch_access_vlan':
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-ethernet:ethernet": {"openconfig-vlan:switched-vlan":{}}
+        }
+        body["openconfig-if-ethernet:ethernet"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "ACCESS", "access-vlan": int(args[1])}})
+
+    elif func == 'patch_trunk_vlan':
+        vlanlst = args[1].split(',')
+        vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-ethernet:ethernet": {"openconfig-vlan:switched-vlan":{}}
+        }
+
+        body["openconfig-if-ethernet:ethernet"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "TRUNK", "trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}}) 
+   
+    elif func == 'patch_aggregation_access_vlan':
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-aggregate:aggregation": {"openconfig-vlan:switched-vlan":{}}
+        }
+        body["openconfig-if-aggregate:aggregation"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "ACCESS", "access-vlan": int(args[1])}})
+
+    elif func == 'patch_aggregation_trunk_vlan':
+        vlanlst = args[1].split(',')
+        vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-aggregate:aggregation": {"openconfig-vlan:switched-vlan":{}}
+        }
+
+        body["openconfig-if-aggregate:aggregation"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "TRUNK", "trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}})
+
     # Speed config
     elif func == 'patch_port_speed':
         body = {
@@ -204,6 +247,26 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/openconfig-if-aggregate:aggregate-id', name=args[0])
         return api.delete(path)
 
+    #Remove access vlan
+    elif func == 'delete_access_vlan':
+	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
+        return api.delete(path) 
+    
+    #Remove trunk vlan
+    elif func == 'delete_trunk_vlan':
+   	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=args[1])
+        return api.delete(path)
+ 
+    #Remove aggregate access vlan
+    elif func == 'delete_aggregate_access_vlan':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
+        return api.delete(path)
+    
+      #Remove aggregate trunk vlan
+    elif func == 'delete_aggregate_trunk_vlan':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=args[1])
+	return api.delete(path)
+
     # Remove IP addresses from interface
     elif func == 'delete_if_ip':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
@@ -235,27 +298,27 @@ def invoke_api(func, args=[]):
             responsePortTbl = api.get(path)
             if responsePortTbl.ok():
 		intf_map = responsePortTbl.content
-	    	tbl_key = "sonic-port:PORT_TABLE_LIST"
+                tbl_key = "sonic-port:PORT_TABLE_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["ifname"] for i in intf_map[tbl_key] if i["ifname"].startswith("Eth")]
 	elif args[0] == "Vlan":
-            path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN_TABLE/VLAN_TABLE_LIST')
+            path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST')
             responseVlanTbl = api.get(path)
 	    iflist = []
             if responseVlanTbl.ok():
 		intf_map = responseVlanTbl.content
-	    	tbl_key = "sonic-vlan:VLAN_TABLE_LIST"
+                tbl_key = "sonic-vlan:VLAN_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("Vlan")]
 	elif args[0] == "PortChannel":
-            path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/LAG_TABLE/LAG_TABLE_LIST')
+            path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST')
             responseLagTbl = api.get(path)
 	    iflist = []
             if responseLagTbl.ok():
 		intf_map = responseLagTbl.content
-	    	tbl_key = "sonic-portchannel:LAG_TABLE_LIST"
+	    	tbl_key = "sonic-portchannel:PORTCHANNEL_LIST"
 		if tbl_key in intf_map:
-		    iflist = [i["lagname"] for i in intf_map[tbl_key] if i["lagname"].startswith("PortChannel")]
+		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("PortChannel")]
 	return iflist
 
     elif func == 'create_if_range': 
@@ -343,8 +406,14 @@ def run(func, args):
                 iftype, ifrangelist = rangetolst(givenifrange)
                 iflist = invoke_api("get_available_interface_names_list", [iftype])
                 iflist = intersection(iflist, ifrangelist)
-            res = ",".join(iflist)
+            res = ",".join(natsorted(iflist))
             sys.stdout.write(res)
+
+        elif func == 'expand_if_range_to_list':
+            givenifrange = args[0]
+            _, ifrangelist = rangetolst(givenifrange)
+            res = ",".join(natsorted(ifrangelist))
+            return res
 
         elif func == 'delete_if_range':
             """

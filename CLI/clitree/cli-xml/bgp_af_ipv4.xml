@@ -440,7 +440,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="addpath-tx-bestpath-per-AS" help="Use addpath to advertise the bestpath per each neighboring AS" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/tx_add_paths=tx_best_path_per_as">
+  <COMMAND name="addpath-tx-bestpath-per-as" help="Use addpath to advertise the bestpath per each neighboring AS" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/tx_add_paths=tx_best_path_per_as">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_add_paths_config_tx_add_paths ${vrf-name} ${nbr-addr} IPV4_UNICAST TX_BEST_PATH_PER_AS</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -456,7 +456,7 @@ limitations under the License.
         sonic(config-router-bgp)# neighbor 20.20.20.2
         sonic(config-router-bgp-neighbor)# remote-as 300
         sonic(config-router-bgp-neighbor)# address-family ipv4 unicast
-        sonic(config-router-bgp-neighbor-af)# addpath-tx-bestpath-per-AS
+        sonic(config-router-bgp-neighbor-af)# addpath-tx-bestpath-per-as
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
@@ -639,10 +639,10 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="remove-private-AS" help="Remove private ASNs in outbound updates" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/remove_private_as_enabled=true">
+  <COMMAND name="remove-private-as" help="Remove private ASNs in outbound updates" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/remove_private_as_enabled=true">
     <PARAM name="all" help="Apply to all AS numbers" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/remove_private_as_all=true"/>
-    <PARAM name="replace-AS" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/replace_private_as=true"/>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; all:${all} replace-AS:${replace-AS}</ACTION>
+    <PARAM name="replace-as" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/replace_private_as=true"/>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; all:${all} replace-as:${replace-as}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures BGP to remove private AS numbers from as-path in
@@ -660,7 +660,7 @@ limitations under the License.
         sonic(config-router-bgp)# neighbor 20.20.20.2
         sonic(config-router-bgp-neighbor)# remote-as 300
         sonic(config-router-bgp-neighbor)# address-family ipv4 unicast
-        sonic(config-router-bgp-neighbor-af)# remove-private-AS all
+        sonic(config-router-bgp-neighbor-af)# remove-private-as all
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
@@ -867,7 +867,7 @@ limitations under the License.
   <COMMAND name="no addpath-tx-all-paths" help="Use addpath to advertise all paths to a neighbor">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_add_paths_config_tx_add_paths ${vrf-name} ${nbr-addr} IPV4_UNICAST</ACTION>
   </COMMAND>
-  <COMMAND name="no addpath-tx-bestpath-per-AS" help="Use addpath to advertise the bestpath per each neighboring AS">
+  <COMMAND name="no addpath-tx-bestpath-per-as" help="Use addpath to advertise the bestpath per each neighboring AS">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_add_paths_config_tx_add_paths ${vrf-name} ${nbr-addr} IPV4_UNICAST</ACTION>
   </COMMAND>
   <COMMAND name="no as-override" help="Override ASNs in outbound updates if aspath equals remote-as">
@@ -914,9 +914,9 @@ limitations under the License.
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; prfopt:${prfopt} pname:${pname}</ACTION>
   </COMMAND>
-  <COMMAND name="no remove-private-AS" help="Remove private ASNs in outbound updates">
+  <COMMAND name="no remove-private-as" help="Remove private ASNs in outbound updates">
     <PARAM name="all" help="Apply to all AS numbers" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
-    <PARAM name="replace-AS" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
+    <PARAM name="replace-as" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no route-reflector-client" help="Configure a neighbor as Route Reflector client">
@@ -1063,7 +1063,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="addpath-tx-bestpath-per-AS" help="Use addpath to advertise the bestpath per each neighboring AS">
+  <COMMAND name="addpath-tx-bestpath-per-as" help="Use addpath to advertise the bestpath per each neighboring AS">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_add_paths_config_tx_add_paths ${vrf-name} ${template-name} IPV4_UNICAST TX_BEST_PATH_PER_AS</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1080,7 +1080,7 @@ limitations under the License.
         sonic(config)# router bgp 100
         sonic(config-router-bgp)# peer-group PG_Ext
         sonic(config-router-bgp-pg)# address-family ipv4 unicast
-        sonic(config-router-bgp-pg-af)# addpath-tx-bestpath-per-AS
+        sonic(config-router-bgp-pg-af)# addpath-tx-bestpath-per-as
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
@@ -1257,10 +1257,10 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="remove-private-AS" help="Remove private ASNs in outbound updates">
+  <COMMAND name="remove-private-as" help="Remove private ASNs in outbound updates">
     <PARAM name="all" help="Apply to all AS numbers" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
-    <PARAM name="replace-AS" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; all:${all} replace-AS:${replace-AS}</ACTION>
+    <PARAM name="replace-as" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; all:${all} replace-as:${replace-as}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures BGP to remove private AS numbers from as-path in
@@ -1277,7 +1277,7 @@ limitations under the License.
         sonic(config)# router bgp 100
         sonic(config-router-bgp)# peer-group PG_Ext
         sonic(config-router-bgp-pg)# address-family ipv4 unicast
-        sonic(config-router-bgp-pg-af)# remove-private-AS all
+        sonic(config-router-bgp-pg-af)# remove-private-as all
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
@@ -1479,7 +1479,7 @@ limitations under the License.
   <COMMAND name="no addpath-tx-all-paths" help="Use addpath to advertise all paths to a neighbor">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_add_paths_config_tx_add_paths ${vrf-name} ${template-name} IPV4_UNICAST</ACTION>
   </COMMAND>
-  <COMMAND name="no addpath-tx-bestpath-per-AS" help="Use addpath to advertise the bestpath per each neighboring AS">
+  <COMMAND name="no addpath-tx-bestpath-per-as" help="Use addpath to advertise the bestpath per each neighboring AS">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_add_paths_config_tx_add_paths ${vrf-name} ${template-name} IPV4_UNICAST</ACTION>
   </COMMAND>
   <COMMAND name="no as-override" help="Override ASNs in outbound updates if aspath equals remote-as">
@@ -1526,9 +1526,9 @@ limitations under the License.
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; prfopt:${prfopt} pname:${pname}</ACTION>
   </COMMAND>
-  <COMMAND name="no remove-private-AS" help="Remove private ASNs in outbound updates">
+  <COMMAND name="no remove-private-as" help="Remove private ASNs in outbound updates">
     <PARAM name="all" help="Apply to all AS numbers" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
-    <PARAM name="replace-AS" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
+    <PARAM name="replace-as" help="Replace private ASNs with our ASN in outbound updates" mode="subcommand" ptype="SUBCOMMAND" order="true" optional="true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no route-reflector-client" help="Configure a neighbor as Route Reflector client">

@@ -317,7 +317,7 @@ limitations under the License.
                 <PARAM
                     name="wt_value"
                     help="Weight for changing priority"
-                    ptype="RANGE_1_255"
+                    ptype="RANGE_1_254"
                     >
                 </PARAM>
 
