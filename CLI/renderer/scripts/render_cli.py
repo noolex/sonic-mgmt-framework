@@ -162,6 +162,6 @@ def show_cli_output(template_file, response, **kwargs):
     if full_cmd is not None:
         pipestr().write(full_cmd.split())
 
-    if response:
+    if response is not None:
         t_str = (j2_env.get_template(template_file).render(json_output=response, **kwargs))
         return write(t_str)

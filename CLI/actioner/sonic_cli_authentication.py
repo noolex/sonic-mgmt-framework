@@ -52,24 +52,32 @@ def invoke_api(func, args):
 
 def run(func, args):
 
-    response = invoke_api(func, args)
-    if response.ok():
-        if response.content is not None:
-            # Get Command Output
-            api_response = response.content
+    funcs_temps = func.split(',')
+    
+    for ft in funcs_temps:
+        func = ft
+        temp = None
+        if ':' in ft:
+          func,temp = ft.split(':')
 
-            if api_response is None:
-                print("api_response is None")
-            elif func in ['get_sonic_client_auth_rest', 'get_sonic_client_auth_telemetry']:
-                show_cli_output(args[0], api_response)
-            else:
-                return
-    else:
-        print("%Error: invoke_api failed")
+
+        response = invoke_api(func, args)
+        if response.ok():
+            if response.content is not None:
+                # Get Command Output
+                api_response = response.content
+
+                if api_response is None:
+                    print("%Error: api_response is None")
+                elif func in ['get_sonic_client_auth_rest', 'get_sonic_client_auth_telemetry']:
+                    show_cli_output(temp, api_response)
+                else:
+                    return
+        else:
+            print("%Error: invoke_api failed")
 
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)
-    func = sys.argv[1]
 
-    run(func, sys.argv[2:])
+    run(sys.argv[1], sys.argv[2:])

@@ -1,8 +1,10 @@
 {{'---------------------------------------------------------'}}
 {{'REST Client Authentication Modes'.ljust(20)}}
 {{'---------------------------------------------------------'}}
-{% if json_output and 'sonic-client-auth:client_auth' in json_output -%}
+{% if json_output and 'sonic-client-auth:client_auth' in json_output and json_output['sonic-client-auth:client_auth'] != '' -%}
 {% set client_auth = json_output['sonic-client-auth:client_auth'] %}
-{{'client_auth: '}}{{client_auth}}
+{% else %}
+{% set client_auth = 'password,jwt' %}
 {% endif %}
+{{'client_auth: '}}{{client_auth}}
 
