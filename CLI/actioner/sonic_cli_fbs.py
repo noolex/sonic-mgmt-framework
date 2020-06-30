@@ -170,7 +170,7 @@ def __set_match_address(addr_type, args):
                           class_name=args[0], addr_type=addr_type)
         body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/32'}
     elif 'ipv6' == args[1]:
-        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/{addr_type}-address',
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/{addr_type}-address',
                           class_name=args[0], addr_type=addr_type)
         body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/128'}
 
