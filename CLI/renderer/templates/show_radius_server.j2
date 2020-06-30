@@ -6,10 +6,11 @@
 {% set vars = {'timeout': ""} %}
 {% set vars = {'retransmit': ""} %}
 {% set vars = {'vrf': ""} %}
+{% set vars = {'src_intf': ""} %}
 {% if json_output -%}
 {% if json_output["header"] == 'True' -%}
 --------------------------------------------------------------------------------
-{{'%-16s'|format("HOST")}}{{'%-10s'|format("AUTH-TYPE")}}{{'%-10s'|format("KEY")}}{{'%-10s'|format("AUTH-PORT")}}{{'%-9s'|format("PRIORITY")}}{{'%-8s'|format("TIMEOUT")}}{{'%-6s'|format("RTSMT")}}{{'%-5s'|format("VRF")}}
+{{'%-16s'|format("HOST")}}{{'%-10s'|format("AUTH-TYPE")}}{{'%-10s'|format("KEY")}}{{'%-10s'|format("AUTH-PORT")}}{{'%-9s'|format("PRIORITY")}}{{'%-8s'|format("TIMEOUT")}}{{'%-6s'|format("RTSMT")}}{{'%-6s'|format("VRF")}}{{'%-3s'|format("SI")}}
 --------------------------------------------------------------------------------
 {% else %}
     {% if vars.update({'address':json_output["address"]}) %}{% endif %}
@@ -20,7 +21,8 @@
     {% if vars.update({'timeout':json_output["timeout"]}) %}{% endif %}
     {% if vars.update({'retransmit':json_output["retransmit"]}) %}{% endif %}
     {% if vars.update({'vrf':json_output["vrf"]}) %}{% endif %}
-{{'%-15s'|format(vars.address)}} {{'%-9s'|format(vars.authtype)}} {{'%-9s'|format(vars.key)}} {{'%-9s'|format(vars.port)}} {{'%-8s'|format(vars.priority)}} {{'%-7s'|format(vars.timeout)}} {{'%-5s'|format(vars.retransmit)}} {{'%-5s'|format(vars.vrf)}}
+    {% if vars.update({'src_intf':json_output["src_intf"]}) %}{% endif %}
+{{'%-15s'|format(vars.address)}} {{'%-9s'|format(vars.authtype)}} {{'%-9s'|format(vars.key)}} {{'%-9s'|format(vars.port)}} {{'%-8s'|format(vars.priority)}} {{'%-7s'|format(vars.timeout)}} {{'%-5s'|format(vars.retransmit)}} {{'%-5s'|format(vars.vrf)}} {{'%-2s'|format(vars.src_intf)}}
 {% endif %}
 {% endif %}
 
