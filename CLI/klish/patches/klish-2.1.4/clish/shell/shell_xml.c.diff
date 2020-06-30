@@ -13,32 +13,42 @@
 >         clish_xml_release(ext_help);
 >         clish_xml_release(alt_ext_pattern);
 > 	clish_xml_release(alt_pattern);
-645c654
+478a488
+>         char *hidden = clish_xmlnode_fetch_attr(element, "hidden");
+575a586,590
+>         if (hidden && lub_string_nocasecmp(hidden, "true") == 0)
+>                 clish_command__set_hidden(cmd, BOOL_TRUE);
+>         else
+>                 clish_command__set_hidden(cmd, BOOL_FALSE);
+> 
+587a603
+> 	clish_xml_release(hidden);
+645c661
 < 		clish_shell__set_idle_timeout(shell, to);
 ---
 > 		clish_shell__set_timeout(shell, to);
-712a722,724
+712a729,731
 > 	char *view = clish_xmlnode_fetch_attr(element, "view");
 >         char *viewid = clish_xmlnode_fetch_attr(element, "viewid");
 > 
-763c775,776
+763c782,783
 < 			CLISH_PTYPE_METHOD_REGEXP, CLISH_PTYPE_PRE_NONE);
 ---
 > 			CLISH_PTYPE_METHOD_REGEXP, CLISH_PTYPE_PRE_NONE, NULL, NULL,
 > 			NULL, NULL);
-782a796
+782a803
 > 
-789c803
+789c810
 < 		clish_param__set_defval(param, defval);
 ---
 > 		clish_param__set_default(param, defval);
-843a858,863
+843a865,870
 > 	if (view)
 > 		clish_param__set_viewname(param, view);
 > 
 > 	if (viewid)
 > 		clish_param__set_viewid(param, viewid);
 > 
-859a880,881
+859a887,888
 >         clish_xml_release(view);
 >         clish_xml_release(viewid);

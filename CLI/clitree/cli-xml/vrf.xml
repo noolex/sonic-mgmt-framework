@@ -48,7 +48,7 @@ limitations under the License.
 
     <VIEW name="configure-view">
     <!-- vrf configuration commands -->
-    <COMMAND name="ip vrf mgmt" help="Management VRF configuration" mode="subcommand" ptype="SUBCOMMAND">
+    <COMMAND name="ip vrf mgmt" help="Management VRF configuration" mode="subcommand" ptype="SUBCOMMAND" command_tables="sonic-mgmt-vrf:sonic-mgmt-vrf/MGMT_VRF_CONFIG/MGMT_VRF_CONFIG_LIST/vrf_global_name={name}" command_keys="name=vrf_global" dbpath="sonic-mgmt-vrf:sonic-mgmt-vrf/MGMT_VRF_CONFIG/MGMT_VRF_CONFIG_LIST/mgmtVrfEnabled=true">
       <ACTION 
         builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=mgmt body={ "openconfig-network-instance:network-instance": [ { "name": "mgmt", "config" : { "name": "mgmt", "type": "L3VRF", "enabled": true } } ] }
       </ACTION> 
@@ -59,11 +59,13 @@ limitations under the License.
       help="VRF instance configuration"
       mode="subcommand"
       ptype="SUBCOMMAND"
+      command_tables="sonic-vrf:sonic-vrf/VRF/VRF_LIST/vrf_name={name}"
       >
       <PARAM
         name="vrf-name"
         help="Name of VRF (Max size 15, prefixed by Vrf)"
         ptype="STRING_15"
+        dbpath="sonic-vrf:sonic-vrf/VRF/VRF_LIST/vrf_name"
         >
       </PARAM>
       <ACTION
@@ -103,19 +105,31 @@ url=/restconf/data/openconfig-network-instance:network-instances/network-instanc
 <!--=======================================================-->
 
 <VIEW name="configure-if-view">
-    <MACRO name="BIND-INTF-TO-VRF" arg="${iface_uri},${iface}"></MACRO>
+    <MACRO name="BIND-INTF-TO-VRF" arg="${iface_uri},${iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/vrf_name"></MACRO>
+</VIEW>
+
+<VIEW name="configure-if-range-view">
+    <MACRO name="BIND-INTF-RNG-TO-VRF" arg="${iflist}"></MACRO>
 </VIEW>
 
 <VIEW name="configure-lag-view">
-    <MACRO name="BIND-INTF-TO-VRF" arg="${po_name},${po_name}"></MACRO>
+    <MACRO name="BIND-INTF-TO-VRF" arg="${po_name},${po_name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/pch_name={name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/vrf_name"></MACRO>
+</VIEW>
+
+<VIEW name="configure-lag-range-view">
+    <MACRO name="BIND-INTF-RNG-TO-VRF" arg="${iflist}"></MACRO>
 </VIEW>
 
 <VIEW name="configure-vlan-view">
-    <MACRO name="BIND-INTF-TO-VRF" arg="${vlan_name},${vlan_name}"></MACRO>
+    <MACRO name="BIND-INTF-TO-VRF" arg="${vlan_name},${vlan_name},sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST/vlanName={name},sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST/vrf_name"></MACRO>
+</VIEW>
+
+<VIEW name="configure-vlan-range-view">
+    <MACRO name="BIND-INTF-RNG-TO-VRF" arg="${iflist}"></MACRO>
 </VIEW>
 
 <VIEW name="configure-lo-view">
-    <MACRO name="BIND-INTF-TO-VRF" arg="${lo_name},${lo_name}"></MACRO>
+    <MACRO name="BIND-INTF-TO-VRF" arg="${lo_name},${lo_name},sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST/loIfName={name},sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST/vrf_name"></MACRO>
 </VIEW>
 
 </CLISH_MODULE>

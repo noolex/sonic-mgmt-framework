@@ -1,9 +1,13 @@
 {{'-----------------------------------------------------------'}}
 {{'sFlow interface configurations'.ljust(20)}}
 {{'%40s'|format('Interface		Admin State		Sampling Rate')}}
-{% if json_output -%}
-{% for sess in json_output %}
-{{'%23s'|format(sess['ifname'].ljust(20))}} {{sess['admin_state'].ljust(20)}}    {{sess['sample_rate']}}
+{% if json_output %}
+{% for sess in json_output[0] %}
+{% set adminState = 'down' %}
+{% if sess['state']['enabled'] %}
+{% set adminState = 'up' %}
+{% endif %}
+{{'%23s'|format(sess['state']['name'].ljust(20))}}  {{adminState.ljust(20)}}   {{sess['state']['sampling-rate']}}
 {% endfor %}
 {% endif %}
 

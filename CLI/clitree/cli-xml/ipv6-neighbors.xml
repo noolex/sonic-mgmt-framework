@@ -460,10 +460,10 @@ limitations under the License.
 
 <VIEW name="configure-view">
 	<!-- ipv6 nd cache expire -->
-	<COMMAND name="ipv6 nd" help="Configure IPv6 ND" ptype="SUBCOMMAND" mode="subcommand">
+	<COMMAND name="ipv6 nd" help="Configure IPv6 ND" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST/name={name}" command_keys="name=Values">
 		<PARAM name="cache" help="Set IPv6 ND cache entry" ptype="SUBCOMMAND" mode="subcommand">
-			<PARAM name="expire" help="Set IPv6 ND cache entry expiry time" ptype="SUBCOMMAND" mode="subcommand">
-				<PARAM name="value" help="Expiry time in seconds" ptype="NEIGH_TIMEOUT"> </PARAM>
+			<PARAM name="expire" help="Set IPv6 ND cache entry expiry time" ptype="SUBCOMMAND" mode="subcommand" >
+				<PARAM name="value" help="Expiry time in seconds" ptype="NEIGH_TIMEOUT" dbpath="sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST/ipv6_nd_cache_expiry"> </PARAM>
 			</PARAM>
 		</PARAM>
 

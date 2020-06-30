@@ -119,8 +119,9 @@ def run(func, args):
  
             elif args[1] == 'interface': #### -- show mac address table [interface {Ethernet <id> | Portchannel <id>}]--- ###
                 for mac_entry in mac_entries:
-                    if args[2] == mac_entry['interface']['interface-ref']['state']['interface']:
-                        mac_table_list.append(fill_mac_info(mac_entry))
+                    if 'interface' in mac_entry:
+                        if args[2] == mac_entry['interface']['interface-ref']['state']['interface']:
+                            mac_table_list.append(fill_mac_info(mac_entry))
 
             #### -- show mac address table [static {address <mac-address> | vlan <vlan-id> | interface {Ethernet <id>| Portchannel <id>}}]--- ###
             elif args[1] == 'static':
@@ -136,8 +137,9 @@ def run(func, args):
                 
                 elif args[2] == 'interface':
                     for mac_entry in mac_entries:
-                        if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'STATIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                        if 'interface' in mac_entry:
+                            if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'STATIC':
+                                mac_table_list.append(fill_mac_info(mac_entry))
 
                 else:
                     for mac_entry in mac_entries:
@@ -159,8 +161,9 @@ def run(func, args):
 
                 elif args[2] == 'interface':
                     for mac_entry in mac_entries:
-                        if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'DYNAMIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                        if 'interface' in mac_entry:
+                            if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'DYNAMIC':
+                                mac_table_list.append(fill_mac_info(mac_entry))
 
                 else:
                     for mac_entry in mac_entries:
@@ -173,9 +176,9 @@ def run(func, args):
                 mac_table_list.append(mac_fill_count(mac_entries))
         show_cli_output(args[0], mac_table_list)
         return
-    except:
-            # system/network error
-            print "Error: Transaction Failure"
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print "% Error: Internal error"
 
 if __name__ == '__main__':
 
