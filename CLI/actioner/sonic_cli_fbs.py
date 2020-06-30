@@ -429,8 +429,7 @@ def create_flow(args):
 def delete_flow_copp(args):
     # inputs: <policy_name> <class_name>
     keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-group', copp_name=args[1])
-    body = {"openconfig-copp-ext:trap-group": "NULL"}
-    return fbs_client.patch(keypath, body)
+    return fbs_client.delete(keypath)
 
 
 def delete_flow(args):
@@ -1057,41 +1056,8 @@ def show_copp_protocols(args):
     elif args[0] == "policy":
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
         return fbs_client.get(keypath)
-    print("Classifier match-type copp protocols")
-    print("  protocol ttl_error")
-    print("  protocol lacp")
-    print("  protocol bgp")
-    print("  protocol bgpv6")
-    print("  protocol dhcp")
-    print("  protocol dhcpv6")
-    print("  protocol ssh")
-    print("  protocol snmp")
-    print("  protocol neigh_discovery")
-    print("  protocol arp_req")
-    print("  protocol arp_resp")
-    print("  protocol lldp")
-    print("  protocol ip2me")
-    print("  protocol sample_packet")
-    print("  protocol udld")
-    print("  protocol subnet")
-    print("  protocol l3_mtu_error")
-    print("  protocol igmp_query")
-    print("  protocol bfd")
-    print("  protocol bfdv6")
-    print("  protocol stp")
-    print("  protocol pvrst")
-    print("  protocol src_nat_miss")
-    print("  protocol dest_nat_miss")
-    print("  protocol ptp")
-    print("  protocol vrrp")
-    print("  protocol vrrpv6")
-    print("  protocol pim")
-    print("  protocol arp_suppress")
-    print("  protocol nd_suppress")
-    print("  protocol ospf")
-    print("  protocol iccp")
-    print("  protocol icmp")
-    print("  protocol icmpv6")
+    keypath = cc.Path('/restconf/operations/sonic-copp:get-match-protocols')
+    return fbs_client.post(keypath, {})
 
 
 ########################################################################################################################
@@ -1319,6 +1285,9 @@ def handle_show_copp_protocols_response(response, args, op_str):
         content = response.content
         if "openconfig-copp-ext:copp-group" in content:
             show_cli_output('show_copp_actions.j2', content)
+        if 'sonic-copp:output' in content:
+            if 'Match_protocols' in content['sonic-copp:output']:
+                show_cli_output('show_copp_protocols.j2', sorted(content['sonic-copp:output']['Match_protocols'], key = lambda i: i['Protocol']))
         if "openconfig-copp-ext:copp-trap" in content:
             if args[0] == "policy":
                 if "openconfig-copp-ext:copp-trap" in content:
