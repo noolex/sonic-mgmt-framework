@@ -104,18 +104,17 @@ def invoke_api(func, args):
 
 def get_tam_drop_monitor_supported(args):
     api_response = {}
+    api = cc.ApiClient()
+    path = cc.Path('/restconf/data/sonic-switch:sonic-switch/SWITCH_TABLE/SWITCH_TABLE_LIST=switch/drop_monitor_supported')
+    response = api.get(path)
 
-    # connect to APPL_DB
-    app_db = ConfigDBConnector()
-    app_db.db_connect('APPL_DB')
-
-    key = 'SWITCH_TABLE:switch'
-    data = app_db.get(app_db.APPL_DB, key, 'drop_monitor_supported')
-
-    if data and data == 'True':
-        api_response['feature'] = data
+    if response.ok():
+        if response.content:
+            api_response['feature'] = response.content['sonic-switch:drop_monitor_supported']
+        else:
+	    api_response['feature'] = 'False'
     else:
-        api_response['feature'] = 'False'
+        print "%Error: REST API transaction failure for SWITCH_TABLE"
 
     show_cli_output("show_tam_drop_monitor_feature_supported.j2", api_response)
 

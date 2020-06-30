@@ -5,222 +5,87 @@ import re
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-from swsssdk import ConfigDBConnector
-from swsssdk import SonicV2Connector
 from natsort import natsorted
 
-headerPg = ['Port', 'PG0', 'PG1', 'PG2', 'PG3', 'PG4', 'PG5', 'PG6', 'PG7']
-headerUc = ['Port', 'UC0', 'UC1', 'UC2', 'UC3', 'UC4', 'UC5', 'UC6', 'UC7']
-headerMc = ['Port', 'MC0', 'MC1', 'MC2', 'MC3', 'MC4', 'MC5', 'MC6', 'MC7']
-headerCpu = ['Queue', 'Percent']
+def get_print_all_port_config(type, th_type, renderer_template):
 
-THRESHOLD_DEFAULT = 0
-
-QUEUE_TYPE_MC = 'MC'
-QUEUE_TYPE_UC = 'UC'
-QUEUE_TYPE_ALL = 'ALL'
-SAI_QUEUE_TYPE_MULTICAST = "SAI_QUEUE_TYPE_MULTICAST"
-SAI_QUEUE_TYPE_UNICAST = "SAI_QUEUE_TYPE_UNICAST"
-SAI_QUEUE_TYPE_ALL = "SAI_QUEUE_TYPE_ALL"
-
-THRESHOLD_TABLE_PREFIX = "THRESHOLD_TABLE|"
-
-COUNTERS_PORT_NAME_MAP = "COUNTERS_PORT_NAME_MAP"
-COUNTERS_QUEUE_NAME_MAP = "COUNTERS_QUEUE_NAME_MAP"
-COUNTERS_QUEUE_TYPE_MAP = "COUNTERS_QUEUE_TYPE_MAP"
-COUNTERS_QUEUE_INDEX_MAP = "COUNTERS_QUEUE_INDEX_MAP"
-COUNTERS_QUEUE_PORT_MAP = "COUNTERS_QUEUE_PORT_MAP"
-COUNTERS_PG_NAME_MAP = "COUNTERS_PG_NAME_MAP"
-COUNTERS_PG_PORT_MAP = "COUNTERS_PG_PORT_MAP"
-COUNTERS_PG_INDEX_MAP = "COUNTERS_PG_INDEX_MAP"
-
-class Thresholdcfg(object):
-
-    def __init__(self):
-        # connect COUNTER DB
-        self.counters_db = SonicV2Connector(host='127.0.0.1')
-        self.counters_db.connect(self.counters_db.COUNTERS_DB)
-
-        # connect APP DB
-        self.config_db = ConfigDBConnector()
-        self.config_db.connect()
-
-        self.num_uc_queues = 0
-
-        def get_queue_type(table_id):
-            queue_type = self.counters_db.get(self.counters_db.COUNTERS_DB, COUNTERS_QUEUE_TYPE_MAP, table_id)
-            if queue_type is None:
-                print "Queue Type is not available!", table_id
-                sys.exit(1)
-            elif queue_type == SAI_QUEUE_TYPE_MULTICAST:
-                return QUEUE_TYPE_MC
-
-            elif queue_type == SAI_QUEUE_TYPE_UNICAST:
-                return QUEUE_TYPE_UC
-            elif queue_type == SAI_QUEUE_TYPE_ALL:
-                return QUEUE_TYPE_ALL
-            else:
-                print "Queue Type is invalid:", table_id, queue_type
-                sys.exit(1)
-
-        def get_queue_port(table_id):
-            port_table_id = self.counters_db.get(self.counters_db.COUNTERS_DB, COUNTERS_QUEUE_PORT_MAP, table_id)
-            if port_table_id is None:
-                print "Port is not available!", table_id
-                sys.exit(1)
-
-            return port_table_id
-
-        def get_pg_port(table_id):
-            port_table_id = self.counters_db.get(self.counters_db.COUNTERS_DB, COUNTERS_PG_PORT_MAP, table_id)
-            if port_table_id is None:
-                print "Port is not available!", table_id
-                sys.exit(1)
-
-            return port_table_id
-
-        # Get all ports
-        self.counter_port_name_map = self.counters_db.get_all(self.counters_db.COUNTERS_DB, COUNTERS_PORT_NAME_MAP)
-        if self.counter_port_name_map is None:
-            print "COUNTERS_PORT_NAME_MAP is empty!"
-            sys.exit(1)
-
-        self.port_uc_queues_map = {}
-        self.port_mc_queues_map = {}
-        self.port_pg_map = {}
-        self.port_name_map = {}
-
-        for port in self.counter_port_name_map:
-            self.port_uc_queues_map[port] = {}
-            self.port_mc_queues_map[port] = {}
-            self.port_pg_map[port] = {}
-            self.port_name_map[self.counter_port_name_map[port]] = port
-
-        # Get Queues for each port
-        counter_queue_name_map = self.counters_db.get_all(self.counters_db.COUNTERS_DB, COUNTERS_QUEUE_NAME_MAP)
-        if counter_queue_name_map is None:
-            print "COUNTERS_QUEUE_NAME_MAP is empty!"
-            sys.exit(1)
-
-        for queue in counter_queue_name_map:
-            port = self.port_name_map[get_queue_port(counter_queue_name_map[queue])]
-            if get_queue_type(counter_queue_name_map[queue]) == QUEUE_TYPE_UC:
-                self.port_uc_queues_map[port][queue] = counter_queue_name_map[queue]
-
-            elif get_queue_type(counter_queue_name_map[queue]) == QUEUE_TYPE_MC:
-                self.port_mc_queues_map[port][queue] = counter_queue_name_map[queue]
-
-        # Get PGs for each port
-        counter_pg_name_map = self.counters_db.get_all(self.counters_db.COUNTERS_DB, COUNTERS_PG_NAME_MAP)
-        if counter_pg_name_map is None:
-            print "COUNTERS_PG_NAME_MAP is empty!"
-            sys.exit(1)
-
-        for pg in counter_pg_name_map:
-            port = self.port_name_map[get_pg_port(counter_pg_name_map[pg])]
-            self.port_pg_map[port][pg] = counter_pg_name_map[pg]
-
-        for queue in counter_queue_name_map:
-            port = self.port_name_map[get_queue_port(counter_queue_name_map[queue])]
-            if port == 'CPU':
-                continue
-            self.num_uc_queues = len(self.port_uc_queues_map[port])
-            break
-
-        self.threshold_types = {
-            "pg_headroom": {"message": "Ingress headroom threshold per PG:",
-                           "obj_map": self.port_pg_map,
-                           "idx_func": self.get_pg_index,
-                           "th_name": "threshold",
-                           "header": headerPg},
-            "pg_shared": {"message": "Ingress shared pool threshold per PG:",
-                          "obj_map": self.port_pg_map,
-                          "idx_func": self.get_pg_index,
-                          "th_name": "threshold",
-                          "header": headerPg},
-            "q_shared_uni": {"message": "Egress shared pool threshold per unicast queue:",
-                            "obj_map": self.port_uc_queues_map,
-                            "idx_func": self.get_queue_index,
-                            "th_name": "threshold",
-                            "header": headerUc},
-            "q_shared_multi": {"message": "Egress shared pool threshold per multicast queue:",
-                            "obj_map": self.port_mc_queues_map,
-                            "idx_func": self.get_queue_index,
-                            "th_name": "threshold",
-                            "header": headerMc},
-            "q_shared_multi_cpu": {"message": "Egress shared pool threshold per CPU queue:",
-                            "obj_map": self.port_mc_queues_map,
-                            "idx_func": self.get_queue_index,
-                            "th_name": "threshold",
-                            "header": headerCpu}
-        }
-
-    def get_queue_index(self, table_id):
-        queue_index = self.counters_db.get(self.counters_db.COUNTERS_DB, COUNTERS_QUEUE_INDEX_MAP, table_id)
-        if queue_index is None:
-            print "Queue index is not available!", table_id
-            sys.exit(1)
-
-        return queue_index
-
-    def get_pg_index(self, table_id):
-        pg_index = self.counters_db.get(self.counters_db.COUNTERS_DB, COUNTERS_PG_INDEX_MAP, table_id)
-        if pg_index is None:
-            print "Priority group index is not available!", table_id
-            sys.exit(1)
-
-        return pg_index
-
-    def get_counters(self, table_prefix, port, port_obj, idx_func, threshold, th_type):
-        """
-            Get the threshold from specific table.
-        """
-
-        fields = ["0"]*8
-        if th_type == "q_shared_uni" or th_type == "q_shared_multi":
-            fields = ["0"]*self.num_uc_queues
-
-        elif th_type == "q_shared_multi_cpu":
-            fields = ["0"]*48
-
-        for name, obj_id in port_obj.items():
-            pos = int(idx_func(obj_id)) % len(fields)
-            full_table_id = table_prefix + port + '|' + str(pos)
-            threshold_data = self.config_db.get(self.config_db.CONFIG_DB, full_table_id, threshold)
-
-            if threshold_data is None:
-                fields[pos] = THRESHOLD_DEFAULT
-            elif fields[pos] != THRESHOLD_DEFAULT:
-                fields[pos] = str(int(threshold_data))
-
-        cntr = tuple(fields)
-        return cntr
-
-    def get_print_cpu_queue_stat(self, table_prefix, type, th_type, renderer_template):
-        table = []
-        array_of_cpu = self.port_mc_queues_map["CPU"]
-        for item in natsorted(array_of_cpu):
-            queue = item.split(':')
-            key = table_prefix + queue[1]
-            data = self.config_db.get(self.config_db.CONFIG_DB, key, "threshold")
-            if data is None:
-               data = 0
-            table.append((item, data))
-        show_cli_output(renderer_template, table)
+    # Get the list of interfaces on the system and create a base dictionary with interface name and all zero values
+    api = cc.ApiClient()
+    path = cc.Path('/restconf/operations/sonic-counters:interface_counters')
+    body = {"sonic-counters:input":{}}
+    response =  api.post(path, body)
+    if not (response.ok() and response.content):
+        print "%Error: REST API transaction failure on sonic-counters:interface_counters"
         return
 
-    def get_print_all_stat(self, table_prefix, type, th_type, renderer_template):
-        # Get stat for each port
-        table = []
-        for port in natsorted(self.counter_port_name_map):
-            if port == 'CPU':
-                continue
-            data = self.get_counters(table_prefix, port,
-                                     type["obj_map"][port], type["idx_func"], type["th_name"], th_type)
-            table.append((port, data[0], data[1], data[2], data[3],
-                        data[4], data[5], data[6], data[7]))
-        show_cli_output(renderer_template, table)
+    table = []
+    output = {}
+    for keys in natsorted(response.content["sonic-counters:output"]["interfaces"]["interface"]):
+        output[keys] = {"q0":0,"q1":0,"q2":0,"q3":0,"q4":0,"q5":0,"q6":0,"q7":0}
+
+
+    # Now get threshold table and update the earlier dictionary with values got from threshold table
+    path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE')
+    response = api.get(path)
+    if not response.ok():
+        print "%Error: REST API transaction failure for THRESHOLD_TABLE"
         return
+
+    if response.content:
+        for key in response.content['sonic-threshold:THRESHOLD_TABLE']['THRESHOLD_TABLE_LIST']:
+            if key['buffer'] != type:
+                continue
+            if key['threshold_buffer_type'] != th_type:
+                continue
+            if key['interface_name'] == 'CPU':
+                continue
+            intf_name = key['interface_name']
+            queue_num = key['buffer_index_per_port']
+            thresh = key['threshold']
+            queue_name = "q{}".format(queue_num)
+            queue_list = {queue_name:thresh}
+            output[intf_name].update(queue_list)
+
+    # Populate the array to print using jinja2 template
+    for key in natsorted(output):
+        table.append((key, output[key]['q0'], output[key]['q1'], output[key]['q2'], output[key]['q3'],
+                    output[key]['q4'], output[key]['q5'], output[key]['q6'], output[key]['q7']))
+    show_cli_output(renderer_template, table)
+    return
+
+def get_print_cpu_port_config(type, th_type, renderer_template):
+
+    # Create a base dictionary with CPU queue name and zero values
+    table = []
+    output = {}
+    for i in range(48):
+        queue_name = "CPU:{}".format(i)
+        output[queue_name] = {'q':0}
+
+    # Now get threshold table and update the earlier dictionary with values got from threshold table
+    path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE')
+    api = cc.ApiClient()
+    response = api.get(path)
+    if not response.ok():
+        print "%Error: REST API transaction failure for THRESHOLD_TABLE"
+        return
+
+    if response.content:
+        for key in response.content['sonic-threshold:THRESHOLD_TABLE']['THRESHOLD_TABLE_LIST']:
+            if key['interface_name'] != 'CPU':
+                continue
+            queue_num = key['buffer_index_per_port']
+            intf_name = "CPU:{}".format(queue_num)
+            thresh = key['threshold']
+            queue_list = {'q':thresh}
+            output[intf_name].update(queue_list)
+
+    # Populate the array to print using jinja2 template
+    for key in natsorted(output):
+        table.append((key, output[key]['q']))
+    show_cli_output(renderer_template, table)
+    return
+
 
 def invoke_api(func, args):
     body = None
@@ -242,14 +107,24 @@ def invoke_api(func, args):
 
     elif func == 'patch_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list_threshold':
         pool_name = args[0]
-	config_db = ConfigDBConnector()
-	config_db.connect()
-	counters_db = SonicV2Connector(host='127.0.0.1')
-	counters_db.connect(counters_db.COUNTERS_DB)
-	buffer_pool_name_to_oid_map = counters_db.get_all(counters_db.COUNTERS_DB, "COUNTERS_BUFFER_POOL_NAME_MAP")
-	if pool_name not in buffer_pool_name_to_oid_map:
-		print("Invalid pool name, please configure a valid pool name")
-		return False
+        pool_list = []
+        path = cc.Path('/restconf/data/sonic-buffer-pool:sonic-buffer-pool/BUFFER_POOL')
+        response = api.get(path)
+        if not response.ok():
+            print "%Error: REST API transaction failure for BUFFER_POOL"
+            return False
+
+        if not response.content:
+            print "Buffer pool configuration missing on the system! Please configure buffer pools"
+            return False
+
+        for key in response.content['sonic-buffer-pool:BUFFER_POOL']['BUFFER_POOL_LIST']:
+            pool_list.append(key['name'])
+
+        if pool_name not in pool_list:
+            print "Invalid pool {}, please configure a valid pool name from {}".format(pool_name, pool_list)
+            return False
+
 	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST={pool_name}/threshold', pool_name = args[0] )
         body = { "sonic-threshold:threshold":  int(args[1]) }
         return api.patch(path, body)
@@ -283,8 +158,6 @@ def get_threshold_breach_event_reports(args):
     api_response = {}
     api = cc.ApiClient()
     # connect to COUNTERS_DB to get THRESHOLD_BREACH_TABLE entries
-    counters_db = ConfigDBConnector()
-    counters_db.db_connect('COUNTERS_DB')
     path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BREACH_TABLE/THRESHOLD_BREACH_TABLE_LIST')
     response = api.get(path)
 
@@ -329,36 +202,20 @@ def get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_lis
         args[3] = args[4]
 
     if args[2] == 'queue' and args[3] == 'unicast':
-        th_type = "q_shared_uni"
         renderer_template = "show_threshold_queue_unicast_config.j2"
     if args[2] == 'queue' and args[3] == 'multicast':
-        th_type = "q_shared_multi"
         renderer_template = "show_threshold_queue_multicast_config.j2"
     elif args[2] == 'priority-group' and args[3] == 'shared':
-        th_type = "pg_shared"
         renderer_template = "show_threshold_priority_group_config.j2"
     elif args[2] == 'priority-group' and args[3] == 'headroom':
-        th_type = "pg_headroom"
         renderer_template = "show_threshold_priority_group_config.j2"
     elif args[2] == 'queue' and args[3] == 'CPU':
-        th_type = "q_shared_multi_cpu"
         renderer_template = "show_threshold_cpu_queue.j2"
 
-    thresholdcfg = Thresholdcfg()
-    if th_type is not None:
-        if th_type == "pg_shared":
-            table_prefix = THRESHOLD_TABLE_PREFIX + "priority-group" + "|" + "shared" + "|"
-        elif th_type == "pg_headroom":
-            table_prefix = THRESHOLD_TABLE_PREFIX + "priority-group" + "|" + "headroom" + "|"
-        elif th_type == "q_shared_uni":
-            table_prefix = THRESHOLD_TABLE_PREFIX + "queue" + "|" + "unicast" + "|"
-        elif th_type == "q_shared_multi":
-            table_prefix = THRESHOLD_TABLE_PREFIX + "queue" + "|" + "multicast" + "|"
-        elif th_type == "q_shared_multi_cpu":
-            table_prefix = THRESHOLD_TABLE_PREFIX + "queue" + "|" + "multicast" + "|"+ "CPU" + "|"
-            thresholdcfg.get_print_cpu_queue_stat(table_prefix, thresholdcfg.threshold_types[th_type], th_type, renderer_template)
-            sys.exit(0)
-        thresholdcfg.get_print_all_stat(table_prefix, thresholdcfg.threshold_types[th_type], th_type, renderer_template)
+    if args[2] == 'queue' and args[3] == 'CPU':
+        get_print_cpu_port_config(args[2], args[3], renderer_template)
+    else:
+        get_print_all_port_config(args[2], args[3], renderer_template)
     sys.exit(0)
 
 if __name__ == '__main__':

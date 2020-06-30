@@ -26,14 +26,7 @@ def show_routemap_setcommunity(render_tables):
         rmap = render_tables['sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST']
         if 'set_community_inline' in rmap:
             coms = rmap['set_community_inline']
-            cmd_prfx = 'set community '
-            #it is leaf list, if thee is more then one means use would have
-            # done using "additive". if its only one no additive is needed.
-            for item in coms:
-               if cmd_str:
-                  cmd_str = cmd_str + cmd_prfx + item + " additive;"
-               else:
-                  cmd_str = cmd_str + cmd_prfx + item + ";"
+            cmd_str = 'set community ' + ' '.join(coms)  
 
     return 'CB_SUCCESS', cmd_str
 
