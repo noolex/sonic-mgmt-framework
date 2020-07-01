@@ -2,12 +2,8 @@
 <ROOT>
     <MACRODEF name="SERVICE-POLICY-INTERFACE-OPTIONS">
         <PARAM name="interface-options" help="Show policies applied for interface" ptype="SUBCOMMAND" mode="switch">
-            <PARAM name="Ethernet" help="Ethernet interface" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="eth-if-id" help="Ethernet interface id" ptype="UINT" />
-            </PARAM>
-            <PARAM name="PortChannel" help="PortChannel interface" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="po-if-id" help="PortChannel interface id" ptype="LAG_ID"/>
-            </PARAM>
+            <PARAM name="eth-if-id" help="Ethernet interface id" ptype="PHY_INTERFACE" />
+            <PARAM name="po-if-id" help="PortChannel interface id" ptype="PO_INTERFACE"/>
             <PARAM name="Vlan" help="Vlan interface" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM name="vlan-if-id" help="Vlan interface id" ptype="VLAN_ID"/>
             </PARAM>
@@ -147,12 +143,8 @@
     <MACRODEF name="FBS-EGRESS-INTF-OPTIONS">
         <PARAM name="egress-intf-options" help="" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="null" help="Drop traffic" ptype="SUBCOMMAND" mode="subcommand"/>
-            <PARAM name="Ethernet" help="Redirect traffic to ethernet interface" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="port-id" help="Port number" ptype="UINT" completion="false"/>
-            </PARAM>
-            <PARAM name="PortChannel" help="Redirect traffic to portchannel interface" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="portchannel-id" help="Lag number" ptype="LAG_ID" completion="false"/>
-            </PARAM>
+                <PARAM name="port-id" help="Port number" ptype="PHY_INTERFACE" completion="false"/> 
+                <PARAM name="portchannel-id" help="Lag number" ptype="PO_INTERFACE" completion="false"/>
         </PARAM>
     </MACRODEF>
 </ROOT>
