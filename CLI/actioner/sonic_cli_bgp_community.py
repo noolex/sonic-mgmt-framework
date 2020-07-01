@@ -32,7 +32,7 @@ def generate_community_standard_body(args):
     community_member = []
     match_options = "ANY"
     for arg in args[5:]:
-        if "local-AS" == arg:
+        if "local-as" == arg:
            community_member.append("NO_EXPORT_SUBCONFED")
         elif "no-peer" == arg:
            community_member.append("NOPEER")
@@ -110,7 +110,7 @@ def generate_community_standard_delete_keypath(args):
     community_member = ''
     for arg in args[6:]:
         member_exits = 1
-        if "local-AS" == arg:
+        if "local-as" == arg:
            community_member += "NO_EXPORT_SUBCONFED"
            community_member += ","
         elif  "no-peer" == arg:

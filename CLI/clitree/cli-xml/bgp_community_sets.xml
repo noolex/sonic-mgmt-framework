@@ -146,7 +146,7 @@ limitations under the License.
                             ptype="AA_NN"
                             >
                             <PARAM
-                                name="local-AS"
+                                name="local-as"
                                 help="Do not send outside local AS (well-known community)"
                                 ptype="SUBCOMMAND"
                                 mode="subcommand"
@@ -202,7 +202,7 @@ limitations under the License.
                             </PARAM>
                         </PARAM>
                         <PARAM
-                            name="local-AS"
+                            name="local-as"
                             help="Do not send outside local AS (well-known community)"
                             ptype="SUBCOMMAND"
                             mode="subcommand"
@@ -276,7 +276,7 @@ limitations under the License.
                                 >
                             </PARAM>
                             <PARAM
-                                name="local-AS"
+                                name="local-as"
                                 help="Do not send outside local AS (well-known community)"
                                 ptype="SUBCOMMAND"
                                 mode="subcommand"
@@ -337,7 +337,7 @@ limitations under the License.
                                 >
                             </PARAM>
                             <PARAM
-                                name="local-AS"
+                                name="local-as"
                                 help="Do not send outside local AS (well-known community)"
                                 ptype="SUBCOMMAND"
                                 mode="subcommand"
@@ -398,7 +398,7 @@ limitations under the License.
                                 >
                             </PARAM>
                             <PARAM
-                                name="local-AS"
+                                name="local-as"
                                 help="Do not send outside local AS (well-known community)"
                                 ptype="SUBCOMMAND"
                                 mode="subcommand"
@@ -601,7 +601,7 @@ limitations under the License.
                             >
                         </PARAM>
                         <PARAM
-                            name="local-AS"
+                            name="local-as"
                             help="Do not send outside local AS (well-known community)"
                             ptype="SUBCOMMAND"
                             mode="subcommand"
