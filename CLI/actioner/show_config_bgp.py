@@ -196,6 +196,6 @@ def show_bgpaspath_lists(render_tables):
           if 'name' in aspath:
               if 'as_path_set_member' in aspath:
                   for member in aspath['as_path_set_member']:
-                      cmd_str += cmd_prfx + aspath['name']+ " regex " + member + ";"
+                      cmd_str += cmd_prfx + aspath['name']+ " " + member + ";"
 
   return 'CB_SUCCESS', cmd_str

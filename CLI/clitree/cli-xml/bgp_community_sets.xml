@@ -530,17 +530,10 @@ limitations under the License.
             ptype="STRING"
             >
             <PARAM
-                name="regex"
-                help="Regular expression to match the BGP AS paths"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
+                name="regx-id"
+                help="Regular expression"
+                ptype="STRING"
                 >
-                <PARAM
-                    name="regx-id"
-                    help="Regular expression"
-                    ptype="STRING"
-                    >
-                </PARAM>
             </PARAM>
         </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_as_path_list ${as-path-list-name} ${regx-id}</ACTION>
@@ -557,8 +550,8 @@ limitations under the License.
       <EXAMPLE summary="The following command creates two entries for a as-path list named
         asp_private">
         sonic# configure terminal
-        sonic(config)# bgp as-path-list asp_private regex ^65000.*6510565109$
-        sonic(config)# bgp as-path-list asp_private regex 65107.*65200
+        sonic(config)# bgp as-path-list asp_private ^65000.*6510565109$
+        sonic(config)# bgp as-path-list asp_private 65107.*65200
       </EXAMPLE>
      </DOCGEN>
     </COMMAND>
@@ -668,18 +661,10 @@ limitations under the License.
             ptype="STRING"
             >
             <PARAM
-                name="regex"
-                help="Regular expression to match the BGP AS paths"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                optional="true"
+                name="regx-id"
+                help="Regular expression"
+                ptype="STRING"
                 >
-                <PARAM
-                    name="regx-id"
-                    help="Regular expression"
-                    ptype="STRING"
-                    >
-                </PARAM>
             </PARAM>
         </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_as_path_list_delete ${as-path-list-name} ${regx-id}</ACTION>
