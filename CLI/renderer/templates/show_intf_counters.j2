@@ -9,10 +9,12 @@
 {% set vars = {'in_oversize':""} %}
 {% set vars = {'out_oversize':""} %}
 {% if json_output -%}
+{% if json_output["sonic-counters:output"] %}
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {{'%-15s'|format("Interface")}}{{'%-10s'|format("State")}}{{'%-22s'|format("RX_OK")}}{{'%-22s'|format("RX_ERR")}}{{'%-22s'|format("RX_DRP")}}{{'%-22s'|format("RX_OVERSIZE")}}{{'%-22s'|format("TX_OK")}}{{'%-22s'|format("TX_ERR")}}{{'%-22s'|format("TX_DRP")}}{{'%-22s'|format("TX_OVERSIZE")}}
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {% for key_json in json_output %}
+{{ key_json }}
     {% if "interfaces" in json_output[key_json] %}
         {% set interface_list = json_output[key_json]["interfaces"] %}
         {% if "interface" in interface_list %}
@@ -45,4 +47,48 @@
         {% endif %}
     {% endif %}
 {% endfor %}
+{% else %}
+    {% for key_json in json_output %}
+{{'%-40s'|format("Packets Received 64 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-64-octets'])}}
+{{'%-40s'|format("Packets Received 65-127 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-65-127-octets'])}}
+{{'%-40s'|format("Packets Received 128-255 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-128-255-octets'])}}
+{{'%-40s'|format("Packets Received 256-511 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-256-511-octets'])}}
+{{'%-40s'|format("Packets Received 512-1023 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-512-1023-octets'])}}
+{{'%-40s'|format("Packets Received 1024-1518 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-1024-1518-octets'])}}
+{{'%-40s'|format("Packets Received 1519-2047 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-1519-2047-octets'])}}
+{{'%-40s'|format("Packets Received 2048-4095 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-2048-4095-octets'])}}
+{{'%-40s'|format("Packets Received 4096-9216 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-4096-9216-octets'])}}
+{{'%-40s'|format("Packets Received 9217-16383 Octets")}}{{'%-10s'|format(json_output[key_json]['in-frames-9217-16383-octets'])}}
+{{""}}
+{{'%-40s'|format("Total Packets Received Without Errors")}}{{'%-10s'|format(json_output[key_json]['in-pkts'])}}
+{{'%-40s'|format("Unicast Packets Received")}}{{'%-10s'|format(json_output[key_json]['in-unicast-pkts'])}}
+{{'%-40s'|format("Multicast Packets Received")}}{{'%-10s'|format(json_output[key_json]['in-multicast-pkts'])}}
+{{'%-40s'|format("Broadcast Packets Received")}}{{'%-10s'|format(json_output[key_json]['in-broadcast-pkts'])}}
+{{'%-40s'|format("Jabbers Received")}}{{'%-10s'|format(json_output[key_json]['in-jabber-frames'])}}
+{{'%-40s'|format("Fragments Received")}}{{'%-10s'|format(json_output[key_json]['in-fragment-frames'])}}
+{{'%-40s'|format("Undersize Received")}}{{'%-10s'|format(json_output[key_json]['in-undersize-frames'])}}
+{{'%-40s'|format("Overruns Received")}}{{'%-10s'|format(json_output[key_json]['in-oversize-frames'])}}
+{{""}}
+{{'%-40s'|format("Packets Transmitted 64 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-64-octets'])}}
+{{'%-40s'|format("Packets Transmitted 65-127 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-65-127-octets'])}}
+{{'%-40s'|format("Packets Transmitted 128-255 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-128-255-octets'])}}
+{{'%-40s'|format("Packets Transmitted 256-511 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-256-511-octets'])}}
+{{'%-40s'|format("Packets Transmitted 512-1023 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-512-1023-octets'])}}
+{{'%-40s'|format("Packets Transmitted 1024-1518 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-1024-1518-octets'])}}
+{{'%-40s'|format("Packets Transmitted 1519-2047 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-1519-2047-octets'])}}
+{{'%-40s'|format("Packets Transmitted 2048-4095 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-2048-4095-octets'])}}
+{{'%-40s'|format("Packets Transmitted 4096-9216 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-4096-9216-octets'])}}
+{{'%-40s'|format("Packets Transmitted 9217-16383 Octets")}}{{'%-10s'|format(json_output[key_json]['out-frames-9217-16383-octets'])}}
+{{""}}
+{{'%-40s'|format("Total Packets Transmitted Successfully")}}{{'%-10s'|format(json_output[key_json]['out-pkts'])}}
+{{'%-40s'|format("Unicast Packets Transmitted")}}{{'%-10s'|format(json_output[key_json]['out-unicast-pkts'])}}
+{{'%-40s'|format("Multicast Packets Transmitted")}}{{'%-10s'|format(json_output[key_json]['out-multicast-pkts'])}}
+{{'%-40s'|format("Broadcast Packets Transmitted")}}{{'%-10s'|format(json_output[key_json]['out-broadcast-pkts'])}}
+{% if json_output[key_json]['last-clear'] == "0" %}
+{{'%-40s'|format("Time Since Counters Last Cleared")}}{{'%-10s'|format("N/A")}}
+{% else %}
+{{'%-40s'|format("Time Since Counters Last Cleared")}}{{'%-10s'|format(datetimeformat(json_output[key_json]['last-clear']))}}
+{% endif %}
+    {% endfor %}
+{% endif %}
 {% endif %}
