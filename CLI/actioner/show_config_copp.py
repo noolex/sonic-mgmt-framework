@@ -2,7 +2,6 @@ def show_copp_police(render_tables):
     cmd_str = ''
     cmd_prfx = 'police'
     if 'sonic-copp:sonic-copp/COPP_GROUP' in render_tables:
-        print render_tables
         police_inst = render_tables['sonic-copp:sonic-copp/COPP_GROUP']
         if 'cir' in police_inst:
             cmd_prfx += ' cir ' + police_inst['cir']

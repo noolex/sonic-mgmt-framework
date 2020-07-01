@@ -228,14 +228,14 @@ class cli_xml_view:
             log.info('---------------------------------------------------------')
 
     #only config-view case.
-    def process_view_commands_no_table(self, indent):
+    def process_view_commands_no_table(self, member_keys,indent):
             
         log.debug('ENTER view {} ' .format(self.name))
         if not self.view_cmd_list:
             return CMD_SUCCESS
 
         for cmd in  self.view_cmd_list:
-            ret, is_view_rendered = process_command(self, None, self.table_list, None, self.dbpathstr,\
+            ret, is_view_rendered = process_command(self, None, self.table_list, member_keys, self.dbpathstr,\
                                                 False, cmd, indent)
         #Process child views.
 
@@ -398,7 +398,7 @@ class cli_xml_view:
             cmd_status= self.process_view_commands(table_keys, depth)            
         else:
             log.warn("table list empty for {}, next view, maybe command views" .format(self.name))            
-            cmd_status= self.process_view_commands_no_table(depth)     
+            cmd_status= self.process_view_commands_no_table(table_keys, depth)     
    
         log.debug(os.linesep)
 
