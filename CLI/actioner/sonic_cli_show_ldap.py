@@ -107,7 +107,7 @@ def get_sonic_ldap_servers():
             if 'port' in config:
                 api_response['port'] = config['port']
 
-            show_cli_output("show_ldap_server.j2", api_response)
+        show_cli_output("show_ldap_server.j2", api_response)
 
 def get_sonic_ldap_maps():
     """
