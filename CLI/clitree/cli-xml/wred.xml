@@ -51,13 +51,16 @@
         help="WRED/ECN Configuration"
         mode="subcommand"
         ptype="SUBCOMMAND"
-        view="configure-prof-view"
+        view="configure-wred-view"
         viewid="prof_id=${name}"
+        view_keys="wname=*"
+        view_tables="sonic-wred-profile:sonic-wred-profile/WRED_PROFILE/WRED_PROFILE_LIST/name={wname}"
         >
         <PARAM
                 name="name"
                 help="WRED Policy"
                 ptype="STRING_32"
+                dbpath="sonic-wred-profile:sonic-wred-profile/WRED_PROFILE/WRED_PROFILE_LIST/name"
                 >
         </PARAM>
         <ACTION builtin="clish_pyobj"> 
@@ -102,7 +105,7 @@
   </VIEW>
 
 <VIEW
-    name="configure-prof-view"
+    name="configure-wred-view"
     prompt="${SYSTEM_NAME}(conf-wred-${prof_id})# "
     depth="2"
     >
@@ -112,12 +115,15 @@
         help="false"
         completion="false"
         />
-
+        <COMMAND name="show configuration" help="show wred-policy configuration">
+           <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-wred view_keys="wname=${prof_id}" </ACTION>
+        </COMMAND>
         <COMMAND
             name="green"
             help="Green drop precedence"
             mode="subcommand"
             ptype="SUBCOMMAND"
+            render_command_cb="qos_wred_policy_green"
             >
             <MACRO name="WRED_THD_CONFIG" arg=""/>
             <ACTION>
@@ -143,6 +149,7 @@
             help="Yellow drop precedence"
             mode="subcommand"
             ptype="SUBCOMMAND"
+            render_command_cb="qos_wred_policy_yellow"
             >
             <MACRO name="WRED_THD_CONFIG" arg=""/>
             <ACTION>
@@ -167,6 +174,7 @@
             help="Red drop precedence"
             mode="subcommand"
             ptype="SUBCOMMAND"
+            render_command_cb="qos_wred_policy_red"
             >
             <MACRO name="WRED_THD_CONFIG" arg=""/>
             <ACTION>
