@@ -1209,7 +1209,7 @@ limitations under the License.
     <PTYPE
         name="PO_INTERFACE"
         method="regexp_select"
-        ext_pattern="PortChannel(1..128)"
+        ext_pattern="PortChannel(1..256)"
         pattern="&PO_ALL_INTF;"
         help="PortChannelNUM"
          />
