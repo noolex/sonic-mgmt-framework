@@ -151,16 +151,7 @@ def invoke(func, args):
                    }
                         
         elif args[1] == 'static-group' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "static-multicast-group": [ { "group": args[2], "outgoing-interface": [args[4]] } ],
-                        "enabled": True
-                        }
-                      }
-                    ]
-                   }
+            body = {"interface":[{"config":{"enabled":True,"name":args[0]},"name":args[0],"staticgrps":{"static-multicast-group":[{"config":{"outgoing-interface":[args[4]]},"group":args[2],"source-addr":"0.0.0.0"}]}}]}
         else:    
             print("%Error: Invalid command")
             exit(1)
@@ -194,15 +185,15 @@ def invoke(func, args):
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/mrouter-interface={ifname}',
                 vlanid=args[0], ifname=args[3])
         elif args[1] == 'static-group' :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/static-multicast-group={grpAddr}/outgoing-interface={ifname}',
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/staticgrps/static-multicast-group={grpAddr},0.0.0.0/outgoing-interface={ifname}',
                 vlanid=args[0], grpAddr=args[2], ifname=args[4])
             api_response = aa.delete (keypath)
             if api_response.ok():
-                keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/static-multicast-group={grpAddr}/outgoing-interface',
+                keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/staticgrps/static-multicast-group={grpAddr},0.0.0.0/outgoing-interface',
                                   vlanid=args[0], grpAddr=args[2])
                 get_response = aa.get(keypath)
                 if get_response.ok() and len(get_response.content) == 0:
-                    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/static-multicast-group={grpAddr}',
+                    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/staticgrps/static-multicast-group={grpAddr},0.0.0.0',
                         vlanid=args[0], grpAddr=args[2])
                     return aa.delete (keypath)
                 else:
@@ -247,10 +238,10 @@ def run(func, args):
             #error response
             print api_response.error_message()
 
-    except:
-            # system/network error
-            print "%Error: Transaction Failure"
-
+    except Exception as e:
+        # system/network error
+        print e
+        print "%Error: Transaction Failure"
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
