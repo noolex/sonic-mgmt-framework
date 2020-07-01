@@ -1,0 +1,42 @@
+{% set vars = {'high': ""} %}
+{% set vars = {'low': ""} %}
+{% set vars = {'type': ""} %}
+
+{% if json_output -%}
+{% for key_json in json_output %}
+
+Resource Name         Threshold Type      Low Threshold    High Threshold
+--------------------  ----------------  ---------------  ----------------
+
+{% set info = json_output[key_json] %}
+
+{% if vars.update({'high':info['config']['high']}) %}{% endif %}
+{% if vars.update({'low':info['config']['low']}) %}{% endif %}
+{% if vars.update({'type':info['config']['type']}) %}{% endif %}
+
+{{'%-22s'|format('acl_group')}}{{'%-18s'|format(vars.type)}}{{'%15s'|format(vars.low)}}{{'%18s'|format(vars.high)}}
+
+{% if 'counter' in info -%}
+
+{% if vars.update({'high':info['counter']['config']['high']}) %}{% endif %}
+{% if vars.update({'low':info['counter']['config']['low']}) %}{% endif %}
+{% if vars.update({'type':info['counter']['config']['type']}) %}{% endif %}
+
+{{'%-22s'|format('acl_group_counter')}}{{'%-18s'|format(vars.type)}}{{'%15s'|format(vars.low)}}{{'%18s'|format(vars.high)}}
+
+{% endif %}
+
+
+{% if 'entry' in info -%}
+
+{% if vars.update({'high':info['entry']['config']['high']}) %}{% endif %}
+{% if vars.update({'low':info['entry']['config']['low']}) %}{% endif %}
+{% if vars.update({'type':info['entry']['config']['type']}) %}{% endif %}
+
+{{'%-22s'|format('acl_group_entry')}}{{'%-18s'|format(vars.type)}}{{'%15s'|format(vars.low)}}{{'%18s'|format(vars.high)}}
+
+{% endif %}
+
+
+{% endfor %}
+{% endif %}
