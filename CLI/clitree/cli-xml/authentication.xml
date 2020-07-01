@@ -27,13 +27,13 @@ limitations under the License.
 
 <VIEW name="enable-view">
    <COMMAND name="show authentication" help="Show authentication modes">
-        <ACTION> python $SONIC_CLI_ROOT/sonic_cli_authentication.py show_authentication </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_authentication get_sonic_client_auth_rest:show_client_auth_rest.j2,get_sonic_client_auth_telemetry:show_client_auth_telemetry.j2 ${__full_line}</ACTION>
    </COMMAND>
    <COMMAND name="show authentication telemetry" help="Show telemetry authentication modes">
-        <ACTION builtin="clish_pyobj">sonic_cli_authentication get_sonic_client_auth_telemetry show_client_auth_telemetry.j2</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_authentication get_sonic_client_auth_telemetry:show_client_auth_telemetry.j2 ${__full_line}</ACTION>
    </COMMAND>
    <COMMAND name="show authentication rest" help="Show rest authentication modes">
-      <ACTION builtin="clish_pyobj">sonic_cli_authentication get_sonic_client_auth_rest show_client_auth_rest.j2</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_authentication get_sonic_client_auth_rest:show_client_auth_rest.j2 ${__full_line}</ACTION>
    </COMMAND>
 </VIEW>
 <VIEW name="configure-view">
@@ -45,14 +45,14 @@ limitations under the License.
              help="Client Auth: password,jwt,cert,none" 
              ptype="AUTH_TYPES"> 
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_authentication set_sonic_client_auth_telemetry ${client-auth}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_authentication set_sonic_client_auth_telemetry ${client-auth} ${__full_line}</ACTION>
    </COMMAND>
    <COMMAND name="authentication rest" help="rest authentication modes">
       <PARAM name="client-auth" 
              help="Client Auth: password,jwt,cert,none" 
              ptype="AUTH_TYPES"> 
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_authentication set_sonic_client_auth_rest ${client-auth}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_authentication set_sonic_client_auth_rest ${client-auth} ${__full_line}</ACTION>
    </COMMAND>
 </VIEW>
 </CLISH_MODULE>
