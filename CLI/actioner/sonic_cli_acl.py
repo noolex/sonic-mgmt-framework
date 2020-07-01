@@ -558,12 +558,12 @@ def handle_get_acl_details_request(args):
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
             response = acl_client.get(keypath)
         else:
-            keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname='{}_{}'.format(args[1], args[0]))
+            keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname=args[1])
             response = acl_client.get(keypath)
     else:
         if counter_mode != "INTERFACE_ONLY":
             raise SonicAclCLIError("Per interface counter mode not set")
-        keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname='{}_{}'.format(args[1], args[0]))
+        keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname=args[1])
         response = acl_client.get(keypath)
 
     response.counter_mode = counter_mode
