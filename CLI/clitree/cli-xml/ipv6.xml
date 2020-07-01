@@ -47,7 +47,7 @@ limitations under the License.
             name="addr"
             help="IPv6 address with mask"
             ptype="IPV6_ADDR_MASK" />
-            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${iface_uri} ${addr}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${iface} ${addr}</ACTION>
     </COMMAND>
     <COMMAND
         name="no ipv6 address"
@@ -57,7 +57,7 @@ limitations under the License.
             help="IPv6 address"
             optional="true"
             ptype="IPV6_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface_uri} ${addr} False</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} False</ACTION>
 
     </COMMAND>
 
