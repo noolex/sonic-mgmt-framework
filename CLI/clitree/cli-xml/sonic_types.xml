@@ -250,6 +250,7 @@ limitations under the License.
         pattern="1500..&MAX_MTU;"
         help=""
         />
+
     <!--=======================================================-->
     <PTYPE
         name="RANGE_0_63"
@@ -1318,6 +1319,13 @@ limitations under the License.
         name="RANGE_0_15"
         method="integer"
         pattern="0..15"
+        help=""
+        />
+    <!--=======================================================-->
+       <PTYPE
+        name="RANGE_0_20"
+        method="integer"
+        pattern="0..20"
         help=""
         />
     <!--=======================================================-->
