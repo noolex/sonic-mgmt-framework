@@ -32,6 +32,7 @@ limitations under the License.
         ptype="SUBCOMMAND"
         view="configure-tc-dot1p-map-view"
         viewid="map_name=${name}"
+        data_and_render_cb="qos_map_tc_dot1p_cb"
         >
         <PARAM
            name="name"
@@ -94,6 +95,10 @@ limitations under the License.
         help="false"
         completion="false"
         />
+
+     <COMMAND name="show configuration" help="show tc-dot1p-map configuration">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-tc-dot1p-map view_keys="name=${map_name}"</ACTION>
+     </COMMAND>
 
      <COMMAND name="traffic-class" help="Internal Traffic Class (TC)" mode="subcommand" ptype="SUBCOMMAND" >
          <PARAM name="tc" help="Traffic-class value" ptype="RANGE_0_7" >

@@ -32,6 +32,7 @@ limitations under the License.
         ptype="SUBCOMMAND"
         view="configure-pfc-priority-queue-map-view"
         viewid="map_name=${name}"
+        data_and_render_cb="qos_map_pfc_queue_cb"
         >
         <PARAM
            name="name"
@@ -93,6 +94,10 @@ limitations under the License.
         help="false"
         completion="false"
         />
+
+     <COMMAND name="show configuration" help="show pfc-priority-queue-map configuration">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-pfc-priority-queue-map view_keys="name=${map_name}"</ACTION>
+     </COMMAND>
 
      <COMMAND name="pfc-priority" help="PFC Priority value" mode="subcommand" ptype="SUBCOMMAND" >
         <PARAM name="dot1p" help="PFC Priority value (0-7)" ptype="RANGE_0_7" >

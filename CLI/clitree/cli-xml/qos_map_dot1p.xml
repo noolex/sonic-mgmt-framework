@@ -32,6 +32,7 @@ limitations under the License.
         ptype="SUBCOMMAND"
         view="configure-dot1p-tc-map-view"
         viewid="map_name=${name}"
+        data_and_render_cb="qos_map_dot1p_tc_cb"
         >
         <PARAM
            name="name"
@@ -93,6 +94,10 @@ limitations under the License.
         help="false"
         completion="false"
         />
+
+     <COMMAND name="show configuration" help="show dot1p-tc-map configuration">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-dot1p-tc-map view_keys="name=${map_name}"</ACTION>
+     </COMMAND>
 
      <COMMAND name="dot1p" help="DOT1P value" mode="subcommand" ptype="SUBCOMMAND" >
         <PARAM name="dot1p" help="DOT1P value (0-7)" ptype="RANGE_0_7" >
