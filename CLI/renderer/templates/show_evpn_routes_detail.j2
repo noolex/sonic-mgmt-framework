@@ -20,8 +20,8 @@
 {% if vars.update({'asNum':globalConfig["as"]}) %}{% endif %}
 {% endif %}
 {% endfor %}
-{% for key in json_output %}
-{% if "openconfig-bgp-evpn-ext:routes" in key %}
+{% for key2 in json_output %}
+{% if "openconfig-bgp-evpn-ext:routes" in key2 %}
 {% set routeList = json_output["openconfig-bgp-evpn-ext:routes"] %}
 {% endif %}
 {% if routeList %}
@@ -46,6 +46,7 @@
     {% if vars.update({'nxtHop':route["attr-sets"]["next-hop"]}) %}{% endif %}
     {% if vars.update({'med':route["attr-sets"]["med"]}) %}{% endif %}
     {% if vars.update({'locPref':route["attr-sets"]["local-pref"]}) %}{% endif %}
+    {% if vars.update({'tag':route["attr-sets"]["tag"]}) %}{% endif %}
     {% if vars.update({'extcommstr':''}) %}{% endif %}
     {% for comm in route["attr-sets"]["ext-community"] %}
       {% set cs = vars['extcommstr'] + comm + ' ' %}
@@ -60,6 +61,8 @@
       {% if vars.update({'aspathstr':cs}) %}{% endif %}
       {% endfor %}
     {% endfor %}
+    {% else %}
+    {% if vars.update({'aspathstr':'Local'}) %}{% endif %}
     {% endif %}
   {% endif %}
 {% endfor %}
@@ -81,12 +84,19 @@
 {% if vars.update({'isBest':"not best"}) %}{% endif %}
 {% endif %}
 BGP routing table entry for {{vars.rd~':'~vars.prefix}}
-Paths: ({{''}} availalbe, best #{{''}})
-  Route {{vars.prefix}} VNI {{''}}
+Paths: 
+  {% if vars.tag %}
+  Route {{vars.prefix}} VNI {{vars.tag}}
+  {% else %}
+  Route {{vars.prefix}}
+  {% endif %}
   {{vars.aspathstr}}
-      {{vars.neighbor}} from {{vars.nxtHop}} ({{vars.rd}})
-        Origin {{vars.origin}}, weight {{vars.weight}}, {{vars.validRoute}}, {{vars.isBest}} ({{''}})
-        Extended Community: {{vars.extcommstr}}
+      {{vars.nxtHop}} from {{vars.neighbor}} ({{vars.rd.split(":")[0]}})
+        Origin {{vars.origin -}}
+        {% if vars.weight -%}, weight {{vars.weight -}}{%- endif -%}
+        {% if vars.validRoute -%}, {{vars.validRoute -}}{%- endif -%}
+        {% if vars.isBest %}, {{vars.isBest}}{% endif %}{{''}}
+        Extended Community: {{ vars.extcommstr}}
         Last update: {{datetimeformat(vars.time)|string}}
 {% endfor %}
 {% endif %}
