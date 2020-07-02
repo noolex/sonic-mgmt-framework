@@ -151,8 +151,8 @@ def get_sonic_logging_servers(args=[]):
 
         api_response['source'] = "-"
         if 'config' in server \
-                and 'source-address' in server['config']:
-            api_response['source'] = server['config']['source-address']
+                and 'openconfig-system-ext:source-interface' in server['config']:
+            api_response['source'] = server['config']['openconfig-system-ext:source-interface']
 
         api_response['port'] = "-"
         if 'config' in server \
