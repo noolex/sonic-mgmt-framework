@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+
+    <PTYPE
+         name="RANGE_28_1472"
+         method="integer"
+         pattern="28..1472"
+         help=""
+         />
+    <PTYPE
+         name="RANGE_1_1000"
+         method="integer"
+         pattern="1..1000"
+         help=""
+         />
+    <PTYPE
+         name="RANGE_1_300"
+         method="integer"
+         pattern="1..300"
+         help=""
+         />
+    <PTYPE
+         name="RANGE_0_65535"
+         method="integer"
+         pattern="0..65535"
+         help=""
+         />
+
+<!--=========================================================================-->
+<VIEW name="enable-view">
+<!--show ipsla [id] [history] -->
+    <COMMAND name = "show ip sla"
+        help = "Shows IPv4 VRRP instance information"
+        >
+        <PARAM
+            name="id"
+            help="IP SLA ID (1 to 255)"
+            ptype="RANGE_1_255" optional="true"
+            >
+            <PARAM
+                name="history"
+                help="History of IP SLA"
+                ptype="SUBCOMMAND" mode="subcommand" optional="true" default="x"
+                >
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla get_ipsla ${id} ${history}
+        </ACTION>
+    </COMMAND>
+</VIEW>
+
+<!--MODE : interface -->
+
+<VIEW name="configure-view">
+
+<!-- vrrp -->
+   <COMMAND
+         name="ip sla"
+         help="Configure IP SLA"
+         view="configure-ipsla-view"
+         viewid="sla-id=${sla-id}"
+         >
+         <PARAM
+             name="sla-id"
+             help="IP SLA ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla post_ipsla ${sla-id}
+        </ACTION>
+
+    </COMMAND>
+
+<!-- no vrrp -->
+   <COMMAND name="no ip sla"
+         help="Unconfigure IP SLA"
+     >
+         <PARAM name="sla-id"
+             help="IP SLA ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_ipsla ${sla-id}
+        </ACTION>
+    </COMMAND>
+
+</VIEW>
+
+<VIEW name="configure-ipsla-view"
+        prompt="${SYSTEM_NAME}(conf-ipsla-${sla-id})# "
+        depth="2">
+
+<!-- Inheritance -->
+
+     <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+     <!-- show configuration -->
+     <COMMAND
+         name="show configuration"
+         help="Current configuration"
+     >
+     <ACTION builtin="clish_nop"> </ACTION>
+     </COMMAND>
+
+     <COMMAND name="no"
+              help="Negate a command or set its defaults">
+     </COMMAND>
+
+     <COMMAND
+         name="no frequency"
+         help="Reset frequency"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_freq ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="frequency"
+         help="Set frequency"
+         >
+
+         <PARAM
+             name="freq-value"
+             help="Frequency value"
+             ptype="RANGE_1_300"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_freq ${sla-id} ${freq-value}
+         </ACTION>
+     </COMMAND>
+
+    <COMMAND
+        name="no threshold"
+        help="Reset threshold"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_threshold ${sla-id}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="threshold"
+        help="Set threshold"
+        >
+
+        <PARAM
+            name="threshold-value"
+            help="Threshold value"
+            ptype="RANGE_1_1000"
+            />
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla patch_threshold ${sla-id} ${threshold-value}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no timeout"
+        help="Reset timeout"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_timeout ${sla-id}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="timeout"
+        help="Set timeout"
+        >
+
+        <PARAM
+            name="timeout-value"
+            help="Timeout value"
+            ptype="RANGE_1_1000"
+            />
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla patch_timeout ${sla-id} ${timeout-value}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no icmp-echo"
+        help="Remove ICMP echo"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_icmp ${sla-id}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="icmp-echo"
+        help="Set source address"
+        view="configure-ipsla-icmp-view"
+        viewid="sla-id=${sla-id}"
+        >
+
+        <PARAM
+            name="addr"
+            help="ICMP Destination IPaddress"
+            ptype="STRING"
+            />
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla patch_icmp ${sla-id} ${addr}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no tcp-connect"
+        help="Remove TCP connect"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_tcp ${sla-id}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="tcp-connect"
+        help="Set destination address"
+        view="configure-ipsla-tcp-view"
+        viewid="sla-id=${sla-id}"
+        >
+
+        <PARAM
+            name="addr"
+            help="TCP Destination IPaddress"
+            ptype="STRING"
+            />
+
+            <PARAM
+                name="port"
+                help="TCP Destination port"
+                ptype="RANGE_0_65535"
+                />
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla patch_tcp ${sla-id} ${addr} ${port}
+        </ACTION>
+    </COMMAND>
+
+</VIEW>
+
+
+<VIEW name="configure-ipsla-icmp-view"
+        prompt="${SYSTEM_NAME}(conf-ipsla-${sla-id}-icmp)# "
+        depth="3">
+
+<!-- Inheritance -->
+
+     <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+     <!-- show configuration -->
+     <COMMAND
+         name="show configuration"
+         help="Current configuration"
+     >
+     <ACTION builtin="clish_nop"> </ACTION>
+     </COMMAND>
+
+     <COMMAND name="no"
+              help="Negate a command or set its defaults">
+     </COMMAND>
+
+     <COMMAND
+         name="no source-address"
+         help="Remove source address"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_src_ip ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="source-address"
+         help="Set source address"
+         >
+
+         <PARAM
+             name="addr"
+             help="ICMP Source IPaddress"
+             ptype="STRING"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_ip ${sla-id} ${addr}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no source-interface"
+         help="Remove source interface"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_src_if ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="source-interface"
+         help="Set source address"
+         >
+
+         <PARAM
+             name="intf"
+             help="ICMP Source interface"
+             ptype="STRING"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_if ${sla-id} ${intf}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no request-data-size"
+         help="ICMP probe data size"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_data_size ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="request-data-size"
+         help="Set ICMP probe data size"
+         >
+
+         <PARAM
+             name="size"
+             help="ICMP data size"
+             ptype="RANGE_28_1472"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_data_size ${sla-id} ${size}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no ttl"
+         help="Remove ICMP TTL"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_ttl ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="ttl"
+         help="Set ICMP TTL"
+         >
+
+         <PARAM
+             name="size"
+             help="Set ICMP TTL"
+             ptype="RANGE_1_255"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_ttl ${sla-id} ${size}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no tos"
+         help="Remove ICMP TOS"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_tos ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="tos"
+         help="Set ICMP TOS"
+         >
+
+         <PARAM
+             name="size"
+             help="Set ICMP TOS"
+             ptype="RANGE_1_255"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_tos ${sla-id} ${size}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no source-vrf"
+         help="Remove ICMP source VRF"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_vrf ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="source-vrf"
+         help="Set ICMP source VRF"
+         >
+
+         <PARAM
+             name="vrf-name"
+             help="VRF name"
+             ptype="STRING"
+             >
+         </PARAM>
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_vrf ${sla-id} ${vrf-name}
+         </ACTION>
+     </COMMAND>
+</VIEW>
+
+<VIEW name="configure-ipsla-tcp-view"
+        prompt="${SYSTEM_NAME}(conf-ipsla-${sla-id}-tcp)# "
+        depth="3">
+
+<!-- Inheritance -->
+
+     <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+     <!-- show configuration -->
+     <COMMAND
+         name="show configuration"
+         help="Current configuration"
+     >
+     <ACTION builtin="clish_nop"> </ACTION>
+     </COMMAND>
+
+     <COMMAND name="no"
+              help="Negate a command or set its defaults">
+     </COMMAND>
+
+     <COMMAND
+         name="no source-address"
+         help="Remove TCP source address"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_src_ip ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="source-address"
+         help="Set source address"
+         >
+
+         <PARAM
+             name="addr"
+             help="Set TCP Source IPaddress"
+             ptype="STRING"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_src_ip ${sla-id} ${addr}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no source-port"
+         help="Remove TCP source port"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_src_port ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="source-port"
+         help="Set TCP source port"
+         >
+
+         <PARAM
+             name="port"
+             help="Set TCP Source port"
+             ptype="RANGE_1_65535"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_src_port ${sla-id} ${port}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no ttl"
+         help="Remove TCP TTL"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_ttl ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="ttl"
+         help="Set TCP TTL"
+         >
+
+         <PARAM
+             name="size"
+             help="Set TCP TTL"
+             ptype="RANGE_1_255"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_ttl ${sla-id} ${size}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no tos"
+         help="Remove TCP TOS"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_tos ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="tos"
+         help="Set TCP TOS"
+         >
+
+         <PARAM
+             name="size"
+             help="Set TCP TOS"
+             ptype="RANGE_1_255"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_tos ${sla-id} ${size}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no source-vrf"
+         help="Remove TCP source VRF"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_vrf ${sla-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="source-vrf"
+         help="Set TCP source VRF"
+         >
+
+         <PARAM
+             name="vrf-name"
+             help="VRF name"
+             ptype="STRING"
+             >
+         </PARAM>
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_vrf ${sla-id} ${vrf-name}
+         </ACTION>
+     </COMMAND>
+</VIEW>
+
+</CLISH_MODULE>
