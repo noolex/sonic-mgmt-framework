@@ -37,7 +37,7 @@ Minimum number of links to bring PortChannel up is {{minlinks}}
 {% if fallback == "Disabled" %}
 Fallback: {{fallback}}
 {% else %}
-{% if po_intf['fallback_operational'] == True %}
+{% if po_intf['fallback_operational'] == True and gracefulshutdown == "Disabled" %}
 {% set fallbackoper = "Operational"  %}
 {% endif %}
 Fallback: {{fallback}}, {{fallbackoper}}
@@ -47,6 +47,13 @@ Fallback: {{fallback}}, {{fallbackoper}}
 Graceful shutdown: {{gracefulshutdown}}
 
 MTU {{po_intf['mtu']}}
+{% if 'speed' in po_intf %}
+{% if po_intf['speed']|int < 1000 %}
+LineSpeed {{ po_intf['speed'] }}MB
+{% else %}
+LineSpeed {{ (po_intf['speed']|int / 1000) }}GB
+{% endif %}
+{% endif %}
 
 {% endif %}
 

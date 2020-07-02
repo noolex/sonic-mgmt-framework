@@ -28,7 +28,6 @@ from sonic_cli_acl import pcp_map, proto_number_map, dscp_map, ethertype_map
 from natsort import natsorted
 import sonic_cli_acl
 
-
 fbs_client = cc.ApiClient()
 TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
 
@@ -170,7 +169,7 @@ def __set_match_address(addr_type, args):
                           class_name=args[0], addr_type=addr_type)
         body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/32'}
     elif 'ipv6' == args[1]:
-        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/{addr_type}-address',
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/{addr_type}-address',
                           class_name=args[0], addr_type=addr_type)
         body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/128'}
 
@@ -657,11 +656,11 @@ def set_egress_interface_action(args):
         keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_INTERFACE',
                           policy_name=args[0], classifier_name=args[1])
         pri = ''
-        if len(args) == 6:
+        if len(args) == 5:
             pri = args[5]
 
         data = {
-            "sonic-flow-based-services:SET_INTERFACE": ["{}{}|{}".format(args[2], args[3], pri)]
+            "sonic-flow-based-services:SET_INTERFACE": ["{}|{}".format(args[2], pri)]
         }
         return fbs_client.patch(keypath, data)
 
@@ -697,8 +696,11 @@ def unbind_policy(args):
 
 
 def show_policy_summary(args):
-    if len(args) > 4 and args[3] == 'interface':
-        interface_name = args[4] + args[5]
+    if len(args) > 1 and args[0] == 'interface':
+        if args[1] == 'Vlan':
+            interface_name = args[1] + args[2]
+        else:
+            interface_name = args[1]
         keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
                           interface_name=interface_name)
     else:
@@ -751,9 +753,14 @@ def show_details_by_interface(args):
         if len(args) == 3:
             body["sonic-flow-based-services:input"]["TYPE"] = args[2]
     else:
-        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
-        if len(args) == 4:
-            body["sonic-flow-based-services:input"]["TYPE"] = args[3]
+        if args[0] == "Vlan":
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
+            if len(args) == 5:
+                body["sonic-flow-based-services:input"]["TYPE"] = args[4]
+        else:
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+            if len(args) == 4:
+                body["sonic-flow-based-services:input"]["TYPE"] = args[3]
 
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)

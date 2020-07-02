@@ -296,12 +296,12 @@ limitations under the License.
     </COMMAND>
   <COMMAND
         name="ip igmp"
-        help="Configure IGMP">
+        help="Enable IGMP operation">
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${iface} True</ACTION>
   </COMMAND>
   <COMMAND
         name="ip igmp join"
-        help="Configure IGMP"
+        help="IGMP join multicast group"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
@@ -330,21 +330,21 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp"
-        help="Remove IGMP">
+        help="Enable IGMP operation">
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${iface} False</ACTION>
     </COMMAND>
     <COMMAND
         name="no ip igmp join"
-        help="Remove IGMP config"
+        help="IGMP join multicast group"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="mcastgrpaddr"
-            help="Multicast Group Address"
+            help="Multicast group address"
             ptype="IP_ADDR" />
         <PARAM
             name="srcaddr"
-            help="Source Address"
+            help="Source address"
             ptype="IP_ADDR" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${iface} ${mcastgrpaddr}
@@ -364,12 +364,12 @@ limitations under the License.
     </COMMAND>
   <COMMAND
         name="ip igmp version"
-        help="Configure IGMP"
+        help="IGMP version"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="version"
-            help="IGMP version 1 or 2 or 3 (Default: 2)"
+            help="IGMP version number 2 or 3 (Default: 3)"
             ptype="IGMP_VERSION" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${iface} ${version}
         </ACTION>
@@ -388,7 +388,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp version"
-        help="IGMP version 1 or 2 or 3 (Default: 2)"
+        help="IGMP version number 2 or 3 (Default: 3)"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -408,12 +408,12 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp query-interval"
-        help="Configure IGMP"
+        help="IGMP host query interval"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="queryinterval"
-            help="IGMP Query Interval 1 to 1024 (Default: 125)"
+            help="Query interval in seconds"
             ptype="IGMP_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${iface} ${queryinterval}
         </ACTION>
@@ -432,7 +432,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp query-interval"
-        help="IGMP Query Interval 1 to 1024 (Default: 125)"
+        help="IGMP host query interval"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -452,12 +452,12 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp last-member-query-count"
-        help="Configure IGMP"
+        help="IGMP last member query count"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="lmquerycount"
-            help="IGMP Last Member Query Count"
+            help="Last Member Query Count"
             ptype="IGMP_LAST_MEM_QUERY_COUNT" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${iface} ${lmquerycount}</ACTION>
@@ -476,7 +476,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp last-member-query-count"
-        help="IGMP Query Interval 1 to 7 (Default: 2)"
+        help="Last member query count"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -496,12 +496,12 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp last-member-query-interval"
-        help="Configure IGMP"
+        help="IGMP last member query interval"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="lmqueryinterval"
-            help="IGMP Last Member Query Interval 1 to 255 (Default: 10)"
+            help="Last member query interval in deciseconds"
             ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${iface} ${lmqueryinterval}
         </ACTION>
@@ -520,7 +520,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp last-member-query-interval"
-        help="IGMP Query Interval 1 to 255 (Default: 10)"
+        help="Last member query interval in deciseconds"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -540,18 +540,18 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp query-max-response-time"
-        help="Configure IGMP"
+        help="IGMP max query response value (seconds)"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="querymaxrestime"
-            help="IGMP Query Max Response Time 10 to 250 (Default: 10)"
+            help="Query response value"
             ptype="IGMP_QUERY_MAX_RES_TIME" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${iface} ${querymaxrestime}
         </ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Configure IGMP.
+                IGMP Query response value
             </DESCRIPTION>
             <USAGE>
                 Use this command to configure IGMP.
@@ -564,7 +564,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp query-max-response-time"
-        help="IGMP Query Max Response Time 10 to 250 (Default: 10)"
+        help="IGMP max query response value"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -736,23 +736,23 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp join"
-        help="Configure IGMP join"
+        help="IGMP join multicast group"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="mcastgrpaddr"
-            help="Multicast Group Address"
+            help="Multicast group address"
             ptype="IP_ADDR" />
         <PARAM
             name="srcaddr"
-            help="Source Address"
+            help="Source address"
             ptype="IP_ADDR" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${vlan_name} ${mcastgrpaddr}
              ${srcaddr}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Configure IGMP join.
+                Configure IGMP join multicast group.
             </DESCRIPTION>
             <USAGE>
                 Use this command to configure IGMP join.
@@ -765,42 +765,42 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp join"
-        help="Remove IGMP join config"
+        help="IGMP join multicast group"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="mcastgrpaddr"
-            help="Multicast Group Address"
+            help="Multicast group address"
             ptype="IP_ADDR" />
         <PARAM
             name="srcaddr"
-            help="Source Address"
+            help="Source address"
             ptype="IP_ADDR" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${vlan_name} ${mcastgrpaddr}
              ${srcaddr}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Remove IGMP join.
+                Remove IGMP join multicast group.
             </DESCRIPTION>
             <USAGE>
                 Use this command to remove IGMP join.
             </USAGE>
             <EXAMPLE summary="Remove IGMP join">
                 sonic-cli(config)# interface Ethernet 0
-                sonic-cli(conf-if-Ethernet0)# ip igmp join mcastgrpaddr srcaddr
+                sonic-cli(conf-if-Ethernet0)# no ip igmp join mcastgrpaddr srcaddr
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
 
     <COMMAND
         name="ip igmp version"
-        help="Configure IGMP version"
+        help="IGMP version"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="version"
-            help="IGMP version 1 or 2 or 3 (Default: 2)"
+            help="IGMP version 2 or 3 (Default: 3)"
             ptype="IGMP_VERSION" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${vlan_name} ${version}
         </ACTION>
@@ -819,7 +819,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp version"
-        help="IGMP version 1 or 2 or 3 (Default: 2)"
+        help="IGMP version number 2 or 3 (Default: 3)"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -839,12 +839,12 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp query-interval"
-        help="Configure IGMP query-interval"
+        help="IGMP host query interval"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="queryinterval"
-            help="IGMP Query Interval 1 to 1024 (Default: 125)"
+            help="Query interval in seconds"
             ptype="IGMP_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${vlan_name} ${queryinterval}
         </ACTION>
@@ -863,7 +863,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp query-interval"
-        help="IGMP Query Interval 1 to 1024 (Default: 125)"
+        help="IGMP host query interval"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -875,7 +875,7 @@ limitations under the License.
             <USAGE>
                 Use this command to remove IGMP query-interval.
             </USAGE>
-            <EXAMPLE summary="Configure IGMP">
+            <EXAMPLE summary="IGMP host query interval">
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# no ip igmp query-interval
             </EXAMPLE>
@@ -883,12 +883,12 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp last-member-query-count"
-        help="Configure IGMP last-member-query-count"
+        help="IGMP last member query count"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="lmquerycount"
-            help="IGMP Last Member Query Count"
+            help="Last member query count"
             ptype="IGMP_LAST_MEM_QUERY_COUNT" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${vlan_name} ${lmquerycount}</ACTION>
@@ -907,7 +907,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp last-member-query-count"
-        help="IGMP Query Interval 1 to 7 (Default: 2)"
+        help="Last member query count"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -927,12 +927,12 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp last-member-query-interval"
-        help="Configure IGMP last-member-query-interval"
+        help="IGMP last member query interval"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="lmqueryinterval"
-            help="IGMP Last Member Query Interval 1 to 255 (Default: 10)"
+            help="Last member query interval in deciseconds"
             ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${vlan_name} ${lmqueryinterval}
         </ACTION>
@@ -951,7 +951,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp last-member-query-interval"
-        help="IGMP Query Interval 1 to 255 (Default: 10)"
+        help="IGMP last member query interval"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -976,7 +976,7 @@ limitations under the License.
         mode="subcommand" >
         <PARAM
             name="querymaxrestime"
-            help="IGMP Query Max Response Time 10 to 250 (Default: 10)"
+            help="Query response value"
             ptype="IGMP_QUERY_MAX_RES_TIME" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${vlan_name} ${querymaxrestime}
         </ACTION>
@@ -995,7 +995,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp query-max-response-time"
-        help="IGMP Query Max Response Time 10 to 250 (Default: 10)"
+        help="IGMP query response value"
         ptype="SUBCOMMAND"
         mode="subcommand" >
 
@@ -1157,6 +1157,294 @@ limitations under the License.
             <EXAMPLE summary="Unconfigure static ND">
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp"
+        help="Enable IGMP operation">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${po_name} True</ACTION>
+  </COMMAND>
+  <COMMAND
+        name="ip igmp join"
+        help="IGMP join multicast group"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="mcastgrpaddr"
+            help="Multicast group address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="srcaddr"
+            help="Source address"
+            ptype="IP_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${po_name} ${mcastgrpaddr}
+             ${srcaddr}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP join multicast group.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP Join.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP join multicast group">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp join mcastgrpaddr srcaddr
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp"
+        help="Enable IGMP operation">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${po_name} False</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp join"
+        help="IGMP join multicast group" 
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="mcastgrpaddr"
+            help="Multicast group address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="srcaddr"
+            help="Source address"
+            ptype="IP_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${po_name} ${mcastgrpaddr}
+             ${srcaddr}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP Join config
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP join.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)#no ip igmp join mcastgrpaddr srcaddr
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+  <COMMAND
+        name="ip igmp version"
+        help="IGMP version"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="version"
+            help="IGMP version number"
+            ptype="IGMP_VERSION" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${po_name} ${version}
+        </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP version.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP version.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP version">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp version number
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp version"
+        help="IGMP version number"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_version_config ${po_name} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP version config.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP version config.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp version
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp query-interval"
+        help="Configure IGMP host query interval"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="queryinterval"
+            help="IGMP host query interval"
+            ptype="IGMP_QUERY_INTERVALS" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${po_name} ${queryinterval}
+        </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP query-interval.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp query-interval interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp query-interval"
+        help="Query interval in seconds"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_queryinterval_config ${po_name} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP query-interval.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP query interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp query-interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp last-member-query-count"
+        help="Configure IGMP last-member-query-count"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="lmquerycount"
+            help="Last member query count"
+            ptype="IGMP_LAST_MEM_QUERY_COUNT" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${po_name} ${lmquerycount}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP last-member-query-count.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP last-member-query-count.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP last-member-query-count">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp last-member-query-count count
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp last-member-query-count"
+        help="Last member query count"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_lmquerycount_config ${po_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP last-member-query-count.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP last-member-query-count.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP last-member-query-count">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp last-member-query-count
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp last-member-query-interval"
+        help="Configure IGMP last-member-query-interval"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="lmqueryinterval"
+            help="Last member query interval"
+            ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${po_name} ${lmqueryinterval}
+        </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP last-member-query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP last-member-query-interval.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP last-member-query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp last-member-query-interval interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp last-member-query-interval"
+        help="IGMP last member query interval"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_lmqueryinterval_config ${po_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP last-member-query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP last-member-query-interval.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP last-member-query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp last-member-query-interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp query-max-response-time"
+        help="Configure IGMP query-max-response-time"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="querymaxrestime"
+            help="Query max response time"
+            ptype="IGMP_QUERY_MAX_RES_TIME" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${po_name} ${querymaxrestime}
+        </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP query-max-response-time.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP query-max-response-time">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp query-max-response-time time
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp query-max-response-time"
+        help="Query max response time"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_querymaxrestime_config ${po_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP query-max-response-time.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP query-max-response-time.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP query-max-response-time">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp query-max-response-time
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>

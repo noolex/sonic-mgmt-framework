@@ -30,8 +30,9 @@ def clear_bfd_api(args):
     vrfname = ""
     ifname = ""
     mhop = ""
-    i = 5
-    for arg in args[5:]:
+    i = 0
+
+    for arg in args:
         if "vrf" == arg:
            vrfname = args[i+1]
         elif "peer" == arg:

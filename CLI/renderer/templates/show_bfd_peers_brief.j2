@@ -8,7 +8,9 @@
     {% set sessions_list = json_output['openconfig-bfd:bfd'] %}
     {% for key in sessions_list %}
         {% set sessions = sessions_list[key] %}
-        {% set count.value = count.value + sessions | length %}
+        {% for key2 in sessions %}
+            {% set count.value = count.value + sessions[key2] | length %}
+        {% endfor %}
     {% endfor %}
 {% endif %}
 Session Count: {{ count.value }}

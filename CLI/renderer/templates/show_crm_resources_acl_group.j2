@@ -1,0 +1,27 @@
+{% set vars = {'acl_group_used': ""} %}
+{% set vars = {'acl_group_available': ""} %}
+{% set vars = {'acl_table_used': ""} %}
+{% set vars = {'acl_table_available': ""} %}
+
+{% if json_output -%}
+
+Stage    Bind Point    Resource Name      Used Count    Available Count
+-------  ------------  ---------------  ------------  -----------------
+
+{% for key_json in json_output %}
+{% set info = json_output[key_json] %}
+{% for st in info %}
+{% for bp in info[st] %}
+
+{% if vars.update({'acl_group_used':info[st][bp]['groups-used']}) %}{% endif %}
+{% if vars.update({'acl_group_available':info[st][bp]['groups-available']}) %}{% endif %}
+{% if vars.update({'acl_table_used':info[st][bp]['tables-used']}) %}{% endif %}
+{% if vars.update({'acl_table_available':info[st][bp]['tables-available']}) %}{% endif %}
+
+{{'%-9s'|format(st.upper())}}{{'%-14s'|format(bp.upper())}}{{'%-17s'|format('acl_group')}}{{'%12s'|format(vars.acl_group_used)}}{{'%19s'|format(vars.acl_group_available)}}
+{{'%-9s'|format(st.upper())}}{{'%-14s'|format(bp.upper())}}{{'%-17s'|format('acl_table')}}{{'%12s'|format(vars.acl_table_used)}}{{'%19s'|format(vars.acl_table_available)}}
+
+{% endfor %}
+{% endfor %}
+{% endfor %}
+{% endif %}

@@ -39,7 +39,7 @@ limitations under the License.
         <PARAM name="community" help="Community" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name="comm_opts" help="Community" ptype="SUBCOMMAND" mode="switch">
              <PARAM name="aann" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN"/>
-             <PARAM name="local-AS" help="Local AS" ptype="SUBCOMMAND" mode="subcommand"/>
+             <PARAM name="local-as" help="Local AS" ptype="SUBCOMMAND" mode="subcommand"/>
              <PARAM name="no-advertise" help="No advertise" ptype="SUBCOMMAND" mode="subcommand"/>
              <PARAM name="no-export" help="No export" ptype="SUBCOMMAND" mode="subcommand"/>
              <PARAM name="no-peer" help="No peer" ptype="SUBCOMMAND" mode="subcommand"/>

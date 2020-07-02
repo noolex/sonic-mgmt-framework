@@ -1,0 +1,18 @@
+{% set vars = {'nexthop_group_member_used': ""} %}
+{% set vars = {'nexthop_group_member_available': ""} %}
+
+{% if json_output -%}
+{% for key_json in json_output %}
+{% set info = json_output[key_json] %}
+
+{% if vars.update({'nexthop_group_member_used':info['nexthop-group-members-used']}) %}{% endif %}
+{% if vars.update({'nexthop_group_member_available':info['nexthop-group-members-available']}) %}{% endif %}
+
+Resource Name           Used Count    Available Count
+--------------------  ------------  -----------------
+
+{{'%-22s'|format('nexthop_group_member')}}{{'%12s'|format(vars.nexthop_group_member_used)}}{{'%19s'|format(vars.nexthop_group_member_available)}}
+
+
+{% endfor %}
+{% endif %}

@@ -85,9 +85,9 @@ def invoke(func, args):
         if (func.startswith("patch") is True):
             if_name = None
             if args[2] == 'PortChannel':
-                if_name = "PortChannel" + args[1]
+                if_name = args[1]
             else:
-                if_name = "Ethernet" + args[1]
+                if_name = args[1]
             body = {
                 "sonic-mclag:peer_link": if_name
             }

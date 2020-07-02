@@ -140,15 +140,16 @@
 
 <!--config commands: MODE : interface vlan -->
 <VIEW name="configure-vlan-view">
+    <COMMAND
+        name="ip igmp"
+        help="Enable IGMP operation">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${vlan_name} True</ACTION>
+    </COMMAND>
 
-    <COMMAND name = "ip igmp"
-		    help="Internet Group Management Protocol (IGMP)">
-				<PARAM
-						    name="snooping"
-						    help="IGMP Snooping"
-						    ptype="SUBCOMMAND"
-						    mode="subcommand"
-							>
+    <COMMAND name = "ip igmp snooping" 
+             help="Internet Group Management Protocol (IGMP)"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
 							<PARAM
 							    name="snooping-options"
 							    help=""
@@ -271,7 +272,6 @@
 				              </PARAM>
 									</PARAM>										
 							</PARAM>					
-				</PARAM>		    
                 <ACTION builtin="clish_pyobj">sonic_cli_igmp_snooping patch_igmp_snooping_interfaces_interface_config ${vlan_name} ${__params}</ACTION>
                 <DOCGEN>
                     <DESCRIPTION>
@@ -352,14 +352,16 @@
                 </DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "no ip igmp"
-		    help="Internet Group Management Protocol (IGMP)">
-				<PARAM
-						    name="snooping"
-						    help="IGMP Snooping"
-						    ptype="SUBCOMMAND"
-						    mode="subcommand"
-							>
+    <COMMAND
+        name="no ip igmp"
+        help="Disable IGMP operation">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${vlan_name} False</ACTION>
+    </COMMAND>
+    <COMMAND name = "no ip igmp snooping" 
+             help="Internet Group Management Protocol (IGMP)"
+             ptype="SUBCOMMAND"
+             mode="subcommand">
+
 							<PARAM
 							    name="snooping-options"
 							    help=""
@@ -458,7 +460,6 @@
 				              </PARAM>
 									</PARAM>
 						</PARAM>					
-				</PARAM>		    
         <ACTION builtin="clish_pyobj">sonic_cli_igmp_snooping delete_igmp_snooping_interfaces_interface_config ${vlan_name} ${__params}</ACTION>
     </COMMAND>        
 </VIEW>

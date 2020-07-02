@@ -23,6 +23,7 @@ from show_config_table_sort import *
 from show_config_ptp import *
 from show_config_routepolicy import *
 from show_config_copp import *
+from show_config_qos_map import *
 from show_config_qos import *
 
 view_dependency= \
@@ -31,7 +32,25 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
-['configure', 'configure-wred', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt', 'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
+      ['configure',
+       'configure-wred',
+       'configure-dscp-tc-map',
+       'configure-dot1p-tc-map',
+       'configure-tc-queue-map',
+       'configure-tc-pg-map',
+       'configure-pfc-priority-queue-map',
+       'configure-tc-dot1p-map',
+       'configure-tc-dscp-map',
+       'config-if-CPU',
+       'configure-vlan',
+       'configure-lo',
+       'configure-if-mgmt',
+       'configure-if',
+       'configure-lag',
+       'configure-route-map',
+       'configure-router-bgp',
+       'configure-vxlan',
+       'copp-action']
 
 render_filelst  = {}
 
@@ -77,6 +96,13 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'mac_source_if'           : show_mac_source_if,
                   'copp_police'             : show_copp_police,
                   'sflow_source_if'         : show_sflow_source_if,
+                  'qos_map_dscp_tc_cb'      : qos_map_dscp_tc_cb,
+                  'qos_map_dot1p_tc_cb'     : qos_map_dot1p_tc_cb,
+                  'qos_map_tc_queue_cb'     : qos_map_tc_queue_cb,
+                  'qos_map_tc_pg_cb'        : qos_map_tc_pg_cb,
+                  'qos_map_pfc_queue_cb'    : qos_map_pfc_queue_cb,
+                  'qos_map_tc_dot1p_cb'     : qos_map_tc_dot1p_cb,
+                  'qos_map_tc_dscp_cb'      : qos_map_tc_dscp_cb,
                   'bgp_af_ipv4_nw'          : show_router_bgp_af_nw_cmd,
                   'bgp_af_ipv4_ag'          : show_router_bgp_af_ag_cmd,
                   'bgp_af_ipv4_redist'      : show_router_bgp_af_redist_cmd,
