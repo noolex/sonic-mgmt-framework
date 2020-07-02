@@ -224,10 +224,12 @@ def generate_body(func, args=[]):
             speed = speed_map.get(args[1])
             body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-ethernet:port-speed": speed } )
     elif func == 'patch_ipv6_enabled':
-        body = {
-                 "name": args[0],
-                 "subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }
-               }
+        body = { "name": args[0] }
+        if args[0].startswith("Vlan"):
+            body.update({"openconfig-vlan:routed-vlan" : {"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}}})
+        else:
+            body.update({"subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
+
     else:
         print("%Error: %s not supported" % func)
 
@@ -277,7 +279,10 @@ def invoke_api(func, args=[]):
 
     # Disable IPv6
     elif func == 'delete_if_ip6_enabled':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=args[0], index="0")
+	if args[0].startswith("Vlan"):
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/config/enabled', name=args[0])
+        else:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=args[0], index="0")
         return api.delete(path)
 
     # Get interface
