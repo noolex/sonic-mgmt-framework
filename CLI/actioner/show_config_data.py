@@ -31,6 +31,7 @@ view_dependency= \
                          'configure-router-bgp-nbr'],
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
+<<<<<<< HEAD
 config_view_hierarchy= \
       ['configure',
        'configure-wred',
@@ -51,6 +52,30 @@ config_view_hierarchy= \
        'configure-router-bgp',
        'configure-vxlan',
        'copp-action']
+||||||| merged common ancestors
+config_view_hierarchy= \
+<<<<<<<<< Temporary merge branch 1
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt', 'configure-if', 'configure-lag', 'configure-route-map', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
+||||||||| merged common ancestors
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp, 'configure-vxlan', 'copp-action']
+=========
+['configure', 'config-if-CPU', 'configure-vlan', 'configure-lo', 'configure-if-mgmt',  'configure-if', 'configure-lag', 'configure-router-bgp', 'configure-vxlan', 'copp-action']
+>>>>>>>>> Temporary merge branch 2
+=======
+config_view_hierarchy = [
+    'configure',
+    'config-if-CPU',
+    'configure-vlan',
+    'configure-lo',
+    'configure-if-mgmt',
+    'configure-if',
+    'configure-lag',
+    'configure-route-map',
+    'configure-router-bgp',
+    'configure-vxlan',
+    'copp-action',
+ ]
+>>>>>>> origin/broadcom_sonic_3.x_share
 
 render_filelst  = {}
 

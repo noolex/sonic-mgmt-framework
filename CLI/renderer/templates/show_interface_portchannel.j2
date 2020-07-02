@@ -37,7 +37,7 @@ Minimum number of links to bring PortChannel up is {{minlinks}}
 {% if fallback == "Disabled" %}
 Fallback: {{fallback}}
 {% else %}
-{% if po_intf['fallback_operational'] == True %}
+{% if po_intf['fallback_operational'] == True and gracefulshutdown == "Disabled" %}
 {% set fallbackoper = "Operational"  %}
 {% endif %}
 Fallback: {{fallback}}, {{fallbackoper}}

@@ -47,21 +47,7 @@ limitations under the License.
             <PARAM name = "interface" help = "Interface information" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
                 <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null"> </PARAM>
             </PARAM>
-        <ACTION>
-        if test "${multihop}" != ""; then&#xA;
-            if test "${address}" != "peer_ipv6"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_openconfig_bfd_ext_bfd_sessions_multi_hop show_bfd_peer.j2 ${peer_ipv4} ${interfacename} ${vrfname} ${local_ipv4} ${__full_line}&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_openconfig_bfd_ext_bfd_sessions_multi_hop show_bfd_peer.j2 ${peer_ipv6} ${interfacename} ${vrfname} ${local_ipv6} ${__full_line}&#xA;
-            fi&#xA;
-        else&#xA;
-            if test "${address}" != "peer_ipv6"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_openconfig_bfd_ext_bfd_sessions_single_hop show_bfd_peer.j2 ${peer_ipv4} ${interfacename} ${vrfname} ${local_ipv4} ${__full_line}&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_openconfig_bfd_ext_bfd_sessions_single_hop show_bfd_peer.j2 ${peer_ipv6} ${interfacename} ${vrfname} ${local_ipv6} ${__full_line}&#xA;
-            fi&#xA;
-        fi&#xA;
-	</ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_peer.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
 		<DESCRIPTION>
 			Display specific Bidirectional Forwarding detection(BFD) peer with the specificed filters..
@@ -93,21 +79,7 @@ limitations under the License.
             <PARAM name = "interface" help = "Interface information" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
                 <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null"> </PARAM>
             </PARAM>
-        <ACTION>
-        if test "${multihop}" != ""; then&#xA;
-            if test "${address}" != "peer_ipv6"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_openconfig_bfd_ext_bfd_sessions_multi_hop show_bfd_counter.j2 ${peer_ipv4} ${interfacename} ${vrfname} ${local_ipv4} ${__full_line}&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_openconfig_bfd_ext_bfd_sessions_multi_hop show_bfd_counter.j2 ${peer_ipv6} ${interfacename} ${vrfname} ${local_ipv6} ${__full_line}&#xA;
-            fi&#xA;
-        else&#xA;
-            if test "${address}" != "peer_ipv6"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_openconfig_bfd_ext_bfd_sessions_single_hop show_bfd_counter.j2 ${peer_ipv4} ${interfacename} ${vrfname} ${local_ipv4} ${__full_line}&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_openconfig_bfd_ext_bfd_sessions_single_hop show_bfd_counter.j2 ${peer_ipv6} ${interfacename} ${vrfname} ${local_ipv6} ${__full_line}&#xA;
-            fi&#xA;
-        fi&#xA;
-	</ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_counter.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
     <DOCGEN>
         <DESCRIPTION>
             Displays counters for the specified Bidirectional Forwarding detection(BFD) peer with the input filters.
@@ -120,26 +92,16 @@ limitations under the License.
         </EXAMPLE>
     </DOCGEN> 
     </COMMAND>
-    
+  
     <COMMAND name = "show bfd peers" help = "BFD peers status" >
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "vrfname" help = "Configure vrf name" ptype = "STRING" default="all"> </PARAM>
             </PARAM>
-            <PARAM name = "showbfdcmd" help = "" ptype = "SUBCOMMAND" mode="switch" optional = "true" >
+            <PARAM name = "showtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional = "true" >
                 <PARAM name = "brief" help = "Show BFD peer information in tabular form" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
                 <PARAM name = "counters" help = "Show BFD peer counters information" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
             </PARAM>
-        <ACTION>
-	if test "${showbfdcmd}" != ""; then&#xA;
-            if test "${showbfdcmd}" != "counters"; then&#xA;
-	        python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers_brief.j2 ${vrfname} &#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrfname} &#xA;
-            fi&#xA;
-        else&#xA;
-	    python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_peers.j2 ${vrfname} &#xA;
-        fi&#xA;
-	</ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_bfd_peers show_bfd_peers_brief.j2 ${showtype} ${vrfname} </ACTION>
     <DOCGEN>
         <DESCRIPTION>
             Displays all Bidirectional Forwarding detection(BFD) peers or counters.
@@ -158,23 +120,7 @@ limitations under the License.
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
-
-
-<!--
-    <COMMAND name = "show bfd peers counters" help = "Show BFD peer counters information" >
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-bfd.py get_bfd_peers show_bfd_counters.j2 ${vrf-name} &#xA; 
-	</ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Displays counters for all the Bidirectional Forwarding detection(BFD) peers.
-        </DESCRIPTION>
-        <EXAMPLE summary="Display BFD peers">
-            device# show bfd peers counters
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
--->
+ 
     <COMMAND name = "clear bfd" help = "Bidirection Forwarding Detection" >
     </COMMAND>
 
@@ -197,13 +143,7 @@ limitations under the License.
                 <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING"> </PARAM>
             </PARAM>
             <PARAM name = "counters" help = "clear BFD peer counters information" ptype="SUBCOMMAND" mode="subcommand" > </PARAM>
-        <ACTION>
-            if test "${address}" != "peer_ipv4"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd-clear.py clear_bfd remote-address=${peer_ipv4} vrf=${vrf-name} multihop=${multihop} local-address=${local_ipv4} interface=${interfacename} ${__full_line}&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd-clear.py clear_bfd remote-address=${peer_ipv6} vrf=${vrf-name} multihop=${multihop} local-address=${local_ipv6} interface=${interfacename} ${__full_line}&#xA;
-            fi&#xA;
-        </ACTION> 
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd_clear clear_bfd ${__full_line} </ACTION> 
         <DOCGEN>
             <DESCRIPTION>
                 Clears counters of the specific Bidirectional Forwarding detection(BFD) peer with the filters. BFD packet counters will be reset to 0.
@@ -251,39 +191,25 @@ limitations under the License.
     <COMMAND name="no"
               help="Negate a command or set its defaults">
     </COMMAND>
-    <COMMAND name = "peer" help = "Configure peer" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop}">
+    <COMMAND name = "peer" help = "Configure peer" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}">
             <PARAM name = "address" help = "" ptype = "SUBCOMMAND" mode="switch" >
-                <PARAM name = "peer_ipv4" help = "IPv4 Peer address" ptype = "IP_ADDR" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop}"> </PARAM>
-                <PARAM name = "peer_ipv6" help = "IPv6 Peer address" ptype = "IPV6_ADDR" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop}"> </PARAM>
+                <PARAM name = "peer_ipv4" help = "IPv4 Peer address" ptype = "IP_ADDR" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
+                <PARAM name = "peer_ipv6" help = "IPv6 Peer address" ptype = "IPV6_ADDR" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
             </PARAM>
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure vrf name" ptype = "STRING" default="default" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop}"> </PARAM>
+                <PARAM name = "vrfname" help = "Configure vrf name" ptype = "STRING" default="default" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
             </PARAM>
-            <PARAM name = "multihop" help = "Configure multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop}"> </PARAM>
+            <PARAM name = "multihop" help = "Configure multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
             <PARAM name = "local-address" help = "Configure local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "localaddress" help = "" ptype = "SUBCOMMAND" mode="switch" >
-                    <PARAM name = "local_ipv4" help = "IPv4 local address" ptype = "IP_ADDR" default="null" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop}"> </PARAM>
-                    <PARAM name = "local_ipv6" help = "IPv6 local address" ptype = "IPV6_ADDR" default="null" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop}"> </PARAM>
+                    <PARAM name = "local_ipv4" help = "IPv4 local address" ptype = "IP_ADDR" default="null" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
+                    <PARAM name = "local_ipv6" help = "IPv6 local address" ptype = "IPV6_ADDR" default="null" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
                 </PARAM>
             </PARAM>
             <PARAM name = "interface" help = "Interface information" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop}"> </PARAM>
+                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
             </PARAM>
-        <ACTION>
-        if test "${multihop}" != ""; then&#xA;
-	    if test "${address}" != "peer_ipv6"; then&#xA;
-	        python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop ${peer_ipv4} ${interfacename} ${vrfname} ${local_ipv4}&#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop ${peer_ipv6} ${interfacename} ${vrfname} ${local_ipv6}&#xA;
-	    fi&#xA;
-        else&#xA;
-	    if test "${address}" != "peer_ipv6"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop ${peer_ipv4} ${interfacename} ${vrfname} ${local_ipv4}&#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop ${peer_ipv6} ${interfacename} ${vrfname} ${local_ipv6}&#xA;
-	    fi&#xA;
-        fi&#xA;
-        </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Configure single-hop and multi-hop Bidirectional Forwarding detection(BFD) peer.
@@ -332,21 +258,7 @@ limitations under the License.
             <PARAM name = "interface" help = "Interface information" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
                 <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null"> </PARAM>
             </PARAM>
-        <ACTION>
-        if test "${multihop}" != ""; then&#xA;
-            if test "${address}" != "peer_ipv6"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py delete_openconfig_bfd_ext_bfd_sessions_multi_hop ${peer_ipv4} ${interfacename} ${vrfname} ${local_ipv4}&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py delete_openconfig_bfd_ext_bfd_sessions_multi_hop ${peer_ipv6} ${interfacename} ${vrfname} ${local_ipv6}&#xA;
-            fi&#xA;
-        else&#xA;
-            if test "${address}" != "peer_ipv6"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py delete_openconfig_bfd_ext_bfd_sessions_single_hop ${peer_ipv4} ${interfacename} ${vrfname} ${local_ipv4}&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py delete_openconfig_bfd_ext_bfd_sessions_single_hop ${peer_ipv6} ${interfacename} ${vrfname} ${local_ipv6}&#xA;
-            fi&#xA;
-	fi&#xA;
-	</ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd delete_openconfig_bfd_ext_bfd_sessions  ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Unconfigure Bidirectional Forwarding detection(BFD) single-hop and multi-hop peer.
@@ -392,21 +304,7 @@ limitations under the License.
 
     <COMMAND name = "detect-multiplier" help = "Configure peer detection multiplier" >
         <PARAM name = "multiplier" help= "Configure peer detection multiplier value" ptype = "RANGE_2_255" > </PARAM>
-        <ACTION>
-        if test "${multi-hop}" != ""; then&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_detection_multiplier ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} ${multiplier} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_detection_multiplier ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} ${multiplier} &#xA;
-	    fi&#xA;
-        else&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_detection_multiplier ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} ${multiplier}&#xA;
-            else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_detection_multiplier ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} ${multiplier}&#xA;
-	    fi&#xA;
-	fi&#xA;
-        </ACTION> 
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions_detection_multiplier  ${multi-hop} ${address-family} ${peer-ipv4addr} ${peer-ipv6addr} ${local-ipv4addr} ${local-ipv6addr} ${interface-name} ${vrf-name} ${multiplier} </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Configure detection multiplier for Bidirectional Forwarding detection(BFD) peer for timeout.
@@ -425,21 +323,7 @@ limitations under the License.
 
     <COMMAND name = "echo-interval" help = "Configure peer echo interval" >
         <PARAM name = "echo_interval" help = "Configure peer echo interval value in milliseconds" ptype = "RANGE_10_60000" > </PARAM>
-        <ACTION>
-	if test "${multi-hop}" != ""; then&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_desired_minimum_echo_receive &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_desired_minimum_echo_receive &#xA;
-	    fi&#xA;
-        else&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_desired_minimum_echo_receive ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} ${echo_interval}&#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_desired_minimum_echo_receive ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} ${echo_interval}&#xA;
-	    fi&#xA;
-        fi&#xA;
-        </ACTION> 
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions_desired_minimum_echo_receive ${multi-hop} ${address-family} ${peer-ipv4addr} ${peer-ipv6addr} ${local-ipv4addr} ${local-ipv6addr} ${interface-name} ${vrf-name} ${echo_interval} </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Configure desired echo packet transmit interval for Bidirectional Forwarding detection(BFD) peer.
@@ -457,17 +341,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name = "echo-mode" help = "Configure echo mode" >
-        <ACTION>
-	if test "${multi-hop}" != ""; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_echo_active &#xA;
-        else&#xA;
-            if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_echo_active ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_echo_active ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} &#xA;
-	    fi&#xA;
-        fi&#xA;
-        </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions_echo_active ${multi-hop} ${address-family} ${peer-ipv4addr} ${peer-ipv6addr} ${local-ipv4addr} ${local-ipv6addr} ${interface-name} ${vrf-name}  </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Enable echo-mode for Bidirectional Forwarding detection(BFD) peer.
@@ -485,17 +359,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name = "no echo-mode" help = "Configure echo mode" >
-        <ACTION>
-	if test "${multi-hop}" != ""; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_echo_active &#xA;
-        else&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_echo_active_disable ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_echo_active_disable ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} &#xA;
-	    fi&#xA;
-        fi&#xA;
-        </ACTION> 
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions_echo_active_disable ${multi-hop} ${address-family} ${peer-ipv4addr} ${peer-ipv6addr} ${local-ipv4addr} ${local-ipv6addr} ${interface-name} ${vrf-name}  </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Disable echo-mode for Bidirectional Forwarding detection(BFD) peer.
@@ -514,21 +378,7 @@ limitations under the License.
 
     <COMMAND name = "receive-interval" help = "Configure peer receive interval" >
         <PARAM name = "receive_interval" help = "Configure peer receive interval value in milliseconds" ptype = "RANGE_10_60000" > </PARAM>
-        <ACTION>
-	if test "${multi-hop}" != ""; then&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_required_minimum_receive ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} ${receive_interval} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_required_minimum_receive ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} ${receive_interval} &#xA;
-	    fi&#xA;
-        else&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_required_minimum_receive ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} ${receive_interval} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_required_minimum_receive ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} ${receive_interval} &#xA;
-	    fi&#xA;
-        fi&#xA;
-        </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions_required_minimum_receive ${multi-hop} ${address-family} ${peer-ipv4addr} ${peer-ipv6addr} ${local-ipv4addr} ${local-ipv6addr} ${interface-name} ${vrf-name} ${receive_interval} </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Configure packet receive interval for Bidirectional Forwarding detection(BFD) peer.
@@ -546,21 +396,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name = "shutdown" help = "Disable BFD peer" >
-        <ACTION>
-	if test "${multi-hop}" != ""; then&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_disable ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_disable ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} &#xA;
-	    fi&#xA;
-        else&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_disable ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_disable ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} &#xA;
-	    fi&#xA;
-        fi&#xA;
-        </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions_disable ${multi-hop} ${address-family} ${peer-ipv4addr} ${peer-ipv6addr} ${local-ipv4addr} ${local-ipv6addr} ${interface-name} ${vrf-name} </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Shut Bidirectional Forwarding detection(BFD) peer administratively down.
@@ -578,21 +414,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name = "no shutdown" help = "Disable BFD peer" >
-        <ACTION>
-	if test "${multi-hop}" != ""; then&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_enabled ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_enabled ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} &#xA;
-	    fi&#xA;
-        else&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_enabled ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_enabled ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} &#xA;
-	    fi&#xA;
-        fi&#xA;
-        </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions_enable ${multi-hop} ${address-family} ${peer-ipv4addr} ${peer-ipv6addr} ${local-ipv4addr} ${local-ipv6addr} ${interface-name} ${vrf-name}  </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Unshut Bidirectional Forwarding detection(BFD) peer administratively up.
@@ -611,21 +433,7 @@ limitations under the License.
 
     <COMMAND name = "transmit-interval" help = "Configure peer transmit interval" >
         <PARAM name = "transmit_interval" help = "Configure peer transmit interval value in milliseconds" ptype = "RANGE_10_60000" > </PARAM>
-        <ACTION>
-	if test "${multi-hop}" != ""; then&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_desired_minimum_tx_interval ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} ${transmit_interval} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_multi_hop_desired_minimum_tx_interval ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} ${transmit_interval} &#xA;
-	    fi&#xA;
-        else&#xA;
-	    if test "${peer-ipv4addr}" != ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_desired_minimum_tx_interval ${peer-ipv4addr} ${interface-name} ${vrf-name} ${local-ipv4addr} ${transmit_interval} &#xA;
-	    else&#xA;
-		python $SONIC_CLI_ROOT/sonic-cli-bfd.py patch_openconfig_bfd_ext_bfd_sessions_single_hop_desired_minimum_tx_interval ${peer-ipv6addr} ${interface-name} ${vrf-name} ${local-ipv6addr} ${transmit_interval} &#xA;
-	    fi&#xA;
-        fi&#xA;
-        </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions_desired_minimum_tx_interval ${multi-hop} ${address-family} ${peer-ipv4addr} ${peer-ipv6addr} ${local-ipv4addr} ${local-ipv6addr} ${interface-name} ${vrf-name}  ${transmit_interval} </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Configure desired packet transmit interval for Bidirectional Forwarding detection(BFD) peer.

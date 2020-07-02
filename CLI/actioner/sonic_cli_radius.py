@@ -85,6 +85,7 @@ def invoke_api(func, args):
         auth_type = (args[5])[10:]
         priority = (args[6])[9:]
         vrf = (args[7])[4:]
+        source_interface = (args[8])[17:]
 
         keypath = cc.Path(RADIUS_SERVER_GROUP +
             'servers/server={address}', address=args[0])
@@ -142,6 +143,9 @@ def invoke_api(func, args):
         if len(vrf) != 0:
             body["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["openconfig-system-ext:vrf"] = vrf
+        if len(source_interface) != 0:
+            body["openconfig-system:server"][0]["openconfig-system:radius"]\
+                ["openconfig-system:config"]["openconfig-aaa-radius-ext:source-interface"] = args[9] if args[9] != 'Management0' else 'eth0'
 
         return api.patch(keypath, body)
     elif func == 'delete_openconfig_radius_global_config_source_address':
@@ -211,6 +215,7 @@ def invoke_api(func, args):
                 "auth-type": "/config/openconfig-system-ext:auth-type",
                 "priority": "/config/openconfig-system-ext:priority",
                 "vrf": "/config/openconfig-system-ext:vrf",
+                "source-interface": "/radius/config/openconfig-aaa-radius-ext:source-interface",
             }
 
             path = path + uri_suffix.get(args[1], "Invalid Attribute")
@@ -318,6 +323,12 @@ def get_sonic_radius_servers(globals):
                 and 'openconfig-system-ext:vrf' in server['config']:
             api_response['vrf'] = \
                 server['config']['openconfig-system-ext:vrf']
+
+        api_response['src_intf'] = "-"
+        if 'radius' in server \
+                and 'config' in server['radius'] \
+                and 'openconfig-aaa-radius-ext:source-interface' in server['radius']['config']:
+            api_response['src_intf'] = server['radius']['config']['openconfig-aaa-radius-ext:source-interface']
 
         show_cli_output("show_radius_server.j2", api_response)
 
