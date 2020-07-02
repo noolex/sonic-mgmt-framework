@@ -30,7 +30,7 @@
                     <PARAM
                         name="queue-id"
                         help="Queue id: 0, 1, .. etc"
-                        ptype="RANGE_0_15"
+                        ptype="RANGE_0_20"
                         >
                     </PARAM>
                 </PARAM>

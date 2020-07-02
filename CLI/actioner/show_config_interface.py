@@ -17,6 +17,9 @@
 ###########################################################################
 
 from ipaddress import ip_interface
+from itertools import groupby
+from operator import itemgetter
+
 
 def show_if_channel_group_cmd(render_tables):
     cmd_str = ''
@@ -49,9 +52,26 @@ def show_if_switchport_access(render_tables):
 
 
 
+def find_ranges(vlan_lst):
+    ranges = []
+    vlan_lst.sort()
+    for k, g in groupby(enumerate(vlan_lst), lambda (i,x):i-x):
+        group = map(itemgetter(1), g)
+        ranges.append((group[0], group[-1]))
+    vlan_list_str = ''
+    for range in ranges:
+       if vlan_list_str:
+           vlan_list_str += ','
+       if range[0] == range[1]:
+           vlan_list_str += str(range[0])
+       else:
+           vlan_list_str = vlan_list_str + str(range[0]) + "-" + str(range[1])
+    return vlan_list_str
+
+
 def show_if_switchport_trunk(render_tables):
     cmd_str = ''
-    vlan_lst = ''
+    vlan_lst = []
     if 'name' in render_tables:
        ifname_key = render_tables['name']
        if 'sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST' in render_tables:
@@ -59,11 +79,11 @@ def show_if_switchport_trunk(render_tables):
               if 'ifname' in vlan_member:
                 if ifname_key == vlan_member['ifname'] and vlan_member['tagging_mode']=='tagged':
                    vlan_id = vlan_member['name'].lstrip('Vlan')
-                   if vlan_lst: 
-                       vlan_lst += ","
-                   vlan_lst += vlan_id   
+                   vlan_lst.append(int(vlan_id))
     if vlan_lst:
-       cmd_str = 'switchport trunk allowed Vlan ' + vlan_lst
+       vstr = find_ranges(vlan_lst)
+       if vstr:
+          cmd_str = 'switchport trunk allowed Vlan ' + vstr
 
     return 'CB_SUCCESS', cmd_str
 

@@ -29,6 +29,7 @@ from scripts.render_cli import show_cli_output
 import subprocess
 import re
 from sonic_intf_utils import name_to_int_val
+from natsort import natsorted
 
 import urllib3
 urllib3.disable_warnings()
@@ -223,10 +224,12 @@ def generate_body(func, args=[]):
             speed = speed_map.get(args[1])
             body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-ethernet:port-speed": speed } )
     elif func == 'patch_ipv6_enabled':
-        body = {
-                 "name": args[0],
-                 "subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }
-               }
+        body = { "name": args[0] }
+        if args[0].startswith("Vlan"):
+            body.update({"openconfig-vlan:routed-vlan" : {"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}}})
+        else:
+            body.update({"subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
+
     else:
         print("%Error: %s not supported" % func)
 
@@ -276,7 +279,10 @@ def invoke_api(func, args=[]):
 
     # Disable IPv6
     elif func == 'delete_if_ip6_enabled':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=args[0], index="0")
+	if args[0].startswith("Vlan"):
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/config/enabled', name=args[0])
+        else:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=args[0], index="0")
         return api.delete(path)
 
     # Get interface
@@ -297,27 +303,27 @@ def invoke_api(func, args=[]):
             responsePortTbl = api.get(path)
             if responsePortTbl.ok():
 		intf_map = responsePortTbl.content
-	    	tbl_key = "sonic-port:PORT_TABLE_LIST"
+                tbl_key = "sonic-port:PORT_TABLE_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["ifname"] for i in intf_map[tbl_key] if i["ifname"].startswith("Eth")]
 	elif args[0] == "Vlan":
-            path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN_TABLE/VLAN_TABLE_LIST')
+            path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST')
             responseVlanTbl = api.get(path)
 	    iflist = []
             if responseVlanTbl.ok():
 		intf_map = responseVlanTbl.content
-	    	tbl_key = "sonic-vlan:VLAN_TABLE_LIST"
+                tbl_key = "sonic-vlan:VLAN_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("Vlan")]
 	elif args[0] == "PortChannel":
-            path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/LAG_TABLE/LAG_TABLE_LIST')
+            path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST')
             responseLagTbl = api.get(path)
 	    iflist = []
             if responseLagTbl.ok():
 		intf_map = responseLagTbl.content
-	    	tbl_key = "sonic-portchannel:LAG_TABLE_LIST"
+	    	tbl_key = "sonic-portchannel:PORTCHANNEL_LIST"
 		if tbl_key in intf_map:
-		    iflist = [i["lagname"] for i in intf_map[tbl_key] if i["lagname"].startswith("PortChannel")]
+		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("PortChannel")]
 	return iflist
 
     elif func == 'create_if_range': 
@@ -405,8 +411,14 @@ def run(func, args):
                 iftype, ifrangelist = rangetolst(givenifrange)
                 iflist = invoke_api("get_available_interface_names_list", [iftype])
                 iflist = intersection(iflist, ifrangelist)
-            res = ",".join(iflist)
+            res = ",".join(natsorted(iflist))
             sys.stdout.write(res)
+
+        elif func == 'expand_if_range_to_list':
+            givenifrange = args[0]
+            _, ifrangelist = rangetolst(givenifrange)
+            res = ",".join(natsorted(ifrangelist))
+            return res
 
         elif func == 'delete_if_range':
             """

@@ -9,7 +9,7 @@ extern "C" {
 extern void pyobj_init();
 extern void nos_extn_init();
 
-extern int call_pyobj(char *cmd, const char *buff);
+extern int call_pyobj(char *cmd, const char *buff, char **out);
 extern int pyobj_set_rest_token(const char*);
 extern int pyobj_update_environ(const char *key, const char *val);
 

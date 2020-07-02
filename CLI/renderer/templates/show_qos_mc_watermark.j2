@@ -1,13 +1,16 @@
-{{'Egress queue watermark per multicast queue:'}}
-{{'----------------------------------------------------------------------------------------'}}
-{{'%-12s'|format("Port")}}{{'%-10s'|format("MC8")}}{{'%-10s'|format("MC9")}}{{'%-10s'|format("MC10")}}{{'%-10s'|format("MC11")}}{{'%-10s'|format("MC12")}}{{'%-10s'|format("MC13")}}{{'%-10s'|format("MC14")}}{{'%-10s'|format("MC15")}}
-{{'----------------------------------------------------------------------------------------'}}
 {% if json_output %}
 {% set watermark = {}%}
+{% set mcindex = {}%}
+{% set mccount = namespace(value=0) %}
+{% set uccount = namespace(value=0) %}
+{% set header = namespace(value=false) %}
+{% set mc_index_start_zero = namespace(value=false) %}
 {% set intf_info_list = json_output['interface'] %}
 {% for intf_info in intf_info_list %}
   {% set intfName = intf_info['interface-id'] %}
   {% if intfName != "CPU" %}
+  {% set uccount.value = 0 %}
+  {% set mccount.value = 0 %}
   {% set output = intf_info['output'] %}
   {% set queues = output['queues'] %}
   {% set queue_info_list = queues['queue'] %}
@@ -15,9 +18,45 @@
     {% set q_stats_info = queue_info['state'] %}
     {% set queue = q_stats_info['name'] %}
     {% set qname = queue.split(':') %}
-    {% if watermark.update({qname[1] :  q_stats_info['openconfig-qos-ext:watermark']}) %} {% endif %}
+    {% set traffic_type = q_stats_info['openconfig-qos-ext:traffic-type'] %}
+    {% if traffic_type == "MC" %}
+       {% if mc_index_start_zero.value  == true %}
+       {% set index = qname[1]|int - uccount.value  %}
+       {% else %}
+       {% set index = qname[1]|int %}
+       {% endif %}
+       {% if mcindex.update({mccount.value|string :  "MC" + index|string }) %} {% endif %}
+       {% set mccount.value = mccount.value + 1 %}
+       {% if watermark.update({ traffic_type + index|string :  q_stats_info['openconfig-qos-ext:watermark']}) %} {% endif %}
+    {% else %}
+       {% set uccount.value = uccount.value + 1 %}
+    {% endif %}
   {% endfor %}
-{{'%-12s'|format(intfName)}}{{'%-10s'|format(watermark['8'])}}{{'%-10s'|format(watermark['9'])}}{{'%-10s'|format(watermark['10'])}}{{'%-10s'|format(watermark['11'])}}{{'%-10s'|format(watermark['12'])}}{{'%-10s'|format(watermark['13'])}}{{'%-10s'|format(watermark['14'])}}{{'%-10s'|format(watermark['15'])}}
+{% if header.value == false %}
+{{'Egress queue watermark per multicast queue:'}}
+{{ '\n' -}}
+{{- '------------'}} 
+{%- for n in range(0, mccount.value) %}
+{{- '----------'}} 
+{%- endfor %}
+{{ '\n' -}}
+{{- '%-12s'|format("Port")}}
+{%- for n in range(0, mccount.value) %}
+{{- '%-10s'|format(mcindex[n|string])}}
+{%- endfor %}
+{{ '\n' -}}
+{{- '------------'}} 
+{%- for n in range(0, mccount.value) %}
+{{- '----------'}}
+{%- endfor %}
+{% set header.value = true %}
+{% endif %}
+{{ '\n' -}}
+{{- '%-12s'|format(intfName)}}
+{%- for n in range(0, mccount.value) %}
+{{- '%-10s'|format(watermark[mcindex[n|string]])}}
+{%- endfor %}
+{{ '\n' -}}
 {% endif %}
 {% endfor %}
 {% endif %}

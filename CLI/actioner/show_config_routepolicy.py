@@ -26,14 +26,7 @@ def show_routemap_setcommunity(render_tables):
         rmap = render_tables['sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST']
         if 'set_community_inline' in rmap:
             coms = rmap['set_community_inline']
-            cmd_prfx = 'set community '
-            #it is leaf list, if thee is more then one means use would have
-            # done using "additive". if its only one no additive is needed.
-            for item in coms:
-               if cmd_str:
-                  cmd_str = cmd_str + cmd_prfx + item + " additive;"
-               else:
-                  cmd_str = cmd_str + cmd_prfx + item + ";"
+            cmd_str = 'set community ' + ' '.join(coms)  
 
     return 'CB_SUCCESS', cmd_str
 
@@ -111,9 +104,10 @@ def show_prefix_lists(render_tables, ip_mode):
     # Fetch IPv4 or Ipv6 mode and store from PREFIX_SET_LIST table and then filter PREFIX_LIST
     if 'sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST' in render_tables:
         prefix_set = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST']
-        for set in prefix_set:
-            name = set["name"]
-            temp[name] = set["mode"]
+        for temp_prefix in prefix_set:
+            name = temp_prefix["name"]
+            if 'mode' in temp_prefix:
+               temp[name] = temp_prefix["mode"]
 
     if 'sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST' in render_tables:
         prefix_list = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST']
@@ -134,15 +128,16 @@ def show_prefix_lists(render_tables, ip_mode):
 
             mask_range = prefix['masklength_range']
 
-            if mask_range != "exact":
-               prefix_val = prefix['ip_prefix'].split("/")
-               mask_range_val = prefix['masklength_range'].split("..")
-               if prefix_val[1] == mask_range_val[0]:
-                  mask_range_str = " le " + mask_range_val[1]
-               else:
-                  mask_range_str = " ge " + mask_range_val[0] + " le " + mask_range_val[1]
+            if 'action' in prefix:
+                if mask_range != "exact":
+                   prefix_val = prefix['ip_prefix'].split("/")
+                   mask_range_val = prefix['masklength_range'].split("..")
+                   if prefix_val[1] == mask_range_val[0]:
+                      mask_range_str = " le " + mask_range_val[1]
+                   else:
+                      mask_range_str = " ge " + mask_range_val[0] + " le " + mask_range_val[1]
 
-            cmd_str = cmd_str + cmd_prfx + prefix['set_name'] + " " + prefix['action'] + " " + prefix['ip_prefix'] + mask_range_str + ";" ;
+                cmd_str = cmd_str + cmd_prfx + prefix['set_name'] + " " + prefix['action'] + " " + prefix['ip_prefix'] + mask_range_str + ";" ;
 
     return 'CB_SUCCESS', cmd_str
 

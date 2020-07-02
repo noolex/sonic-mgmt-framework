@@ -83,7 +83,7 @@ CLISH_PLUGIN_SYM(clish_pyobj)
     sigprocmask(SIG_UNBLOCK, &sigs, NULL);
 
     pthread_mutex_lock(&lock);
-    int ret = call_pyobj(cmd, script);
+    int ret = call_pyobj(cmd, script, out);
     pthread_mutex_unlock(&lock);
 
     return ret;

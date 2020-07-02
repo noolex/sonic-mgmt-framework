@@ -64,6 +64,10 @@ limitations under the License.
     <!-- po-name is po-id prefixed with PortChannel -->
     <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${po-name}</ACTION>
     </VAR>
+    <VAR name="iflist_from_range" dynamic="true">
+    <!-- Expanding given vlan/portchannel range into list of individual interfaces -->
+    <ACTION builtin="clish_pyobj">sonic_cli_if_range expand_if_range_to_list ${vlan_range_num}${po_range_num}</ACTION>
+    </VAR>
 
     <VIEW name="enable-view">
     <!-- show running-configuration interface -->
@@ -641,7 +645,8 @@ limitations under the License.
             help="Physical interface range" 
             ptype="ETHER_INTERFACE_RANGE" 
             mode="subcommand" 
-            viewid="ifacename=${iface_range_num};iface=${iface_range_num};iflist=${ethiflist}" view="configure-if-range-view" 
+            viewid="ifacename=${iface_range_num};iface=${iface_range_num};iflist=${ethiflist}" 
+            view="configure-if-range-view" 
             />
         <PARAM name="vlan_range_num" 
             help="VLAN interface range" 
@@ -675,7 +680,7 @@ limitations under the License.
                     help="VLAN interface range" 
                     ptype="VLAN_INTERFACE_RANGE" 
                     mode="subcommand" 
-                    viewid="vlan_name=${vlan_range_num};vlan_id=${vlan_range_num};iflist=${vlaniflist}" 
+                    viewid="vlan_name=${vlan_range_num};vlan_id=${vlan_range_num};iflist=${iflist_from_range}" 
                     view="configure-vlan-range-view"
                     />
                 <PARAM 
@@ -683,7 +688,7 @@ limitations under the License.
                     help="PortChannel interface range" 
                     ptype="PO_INTERFACE_RANGE" 
                     mode="subcommand" 
-                    viewid="po_name=${po_range_num};po_id=${po_range_num};iflist=${poiflist}" 
+                    viewid="po_name=${po_range_num};po_id=${po_range_num};iflist=${iflist_from_range}" 
                     view="configure-po-range-view"
                     >
                     <PARAM 
