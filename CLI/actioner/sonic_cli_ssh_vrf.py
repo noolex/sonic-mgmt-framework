@@ -17,15 +17,12 @@
 #
 ###########################################################################
 
-import sys
-import time
-import json
-import ast
-from rpipe_utils import pipestr
 import cli_client as cc
+import cli_log as log
 from scripts.render_cli import show_cli_output
 
 def get_ssh_server_vrfs(vrf_name):
+    log.log_info('vrf_name = {}'.format(vrf_name))
     api = cc.ApiClient()
     vrf = {}
     vrf_data = {}
@@ -55,8 +52,8 @@ def invoke_api(func, args=[]):
         return api.delete(keypath)
 
     elif func == 'get_openconfig_system_ssh_server_vrfs':
-        vrf = None
-        if args:
+        vrf = 'all'
+        if args and len(args) != 0:
             vrf = args[0]
         vrf_data = get_ssh_server_vrfs(vrf)
         if vrf_data.ok() and (len(vrf_data.content) != 0):
@@ -79,13 +76,17 @@ def run(func, args):
 
         if not api_response.ok():
             # error response
-            print api_response.error_message()
+            print(api_response.error_message())
 
     except:
             # system/network error
-            print "%Error: Transaction Failure"
+            import traceback
+            log.log_error(traceback.format_exc())
+            print("%Error: Transaction Failure")
 
 if __name__ == '__main__':
+    import sys
+    from rpipe_utils import pipestr
 
     pipestr().write(sys.argv)
     func = sys.argv[1]
