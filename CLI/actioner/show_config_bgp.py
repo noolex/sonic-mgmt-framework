@@ -17,6 +17,186 @@
 
 from show_config_if_cmd import show_get_if_cmd
 
+def show_bgp_cmn_upd_src_cmd(render_tables, name):
+
+  cmd_prfx = 'update-source interface '
+  status, cmd_str = show_get_if_cmd(render_tables,
+                                    name,
+                                    'local_addr',
+                                    cmd_prfx)
+  if not cmd_str:
+      if name in render_tables:
+          inst = render_tables[name]
+          if 'local_addr' in inst:
+              cmd_str = "update-source " + inst['local_addr']
+
+  return 'CB_SUCCESS', cmd_str
+
+def show_bgp_cmn_af_flist_cmd(render_tables, name):
+  cmd_str = ''
+  if name in render_tables:
+      af_inst = render_tables[name]
+      cmd_prfx = 'filter-list '
+      if 'filter_list_in' in af_inst:
+          cmd_str += cmd_prfx + af_inst['filter_list_in'] + " in;"
+      if 'filter_list_out' in af_inst:
+          cmd_str += cmd_prfx + af_inst['filter_list_out'] + " out;"
+
+  return 'CB_SUCCESS', cmd_str
+
+def show_bgp_cmn_af_plist_cmd(render_tables, name):
+  cmd_str = ''
+  if name in render_tables:
+      af_inst = render_tables[name]
+      cmd_prfx = 'prefix-list '
+      if 'prefix_list_in' in af_inst:
+          cmd_str += cmd_prfx + af_inst['prefix_list_in'] + " in;"
+      if 'prefix_list_out' in af_inst:
+          cmd_str += cmd_prfx + af_inst['prefix_list_out'] + " out;"
+
+  return 'CB_SUCCESS', cmd_str
+
+def show_bgp_cmn_af_rmap_cmd(render_tables, name):
+  cmd_str = ''
+  if name in render_tables:
+      af_inst = render_tables[name]
+      cmd_prfx = 'route-map '
+      if 'route_map_in' in af_inst:
+          rmap_list_in = af_inst['route_map_in']
+          for rmap in rmap_list_in:
+              cmd_str += cmd_prfx + rmap + " in;"
+      if 'route_map_out' in af_inst:
+          rmap_list_out = af_inst['route_map_out']
+          for rmap in rmap_list_out:
+              cmd_str += cmd_prfx + rmap + " out;"
+
+  return 'CB_SUCCESS', cmd_str
+
+def show_bgp_cmn_af_attr_cmd(render_tables, name):
+  cmd_str = ''
+  aspath = ''
+  med = ''
+  nexthop = ''
+  if name in render_tables:
+      pgaf_inst = render_tables[name]
+      cmd_prfx = 'attribute-unchanged'
+      if 'unchanged_as_path' in pgaf_inst and pgaf_inst['unchanged_as_path'] == True:
+         aspath = ' as-path'
+      if 'unchanged_med' in pgaf_inst and pgaf_inst['unchanged_med']== True:
+         med = ' med'
+      if 'unchanged_nexthop' in pgaf_inst and pgaf_inst['unchanged_nexthop'] == True:
+         nexthop = ' next-hop'
+
+      if aspath and med and nexthop:
+         cmd_str = cmd_prfx
+      elif aspath or med or nexthop:
+         cmd_str = cmd_prfx + aspath + med + nexthop
+
+  return 'CB_SUCCESS', cmd_str
+
+def show_bgp_cmn_af_max_prefix_cmd(render_tables, name):
+  cmd_str = ''
+  if name in render_tables:
+      af_inst = render_tables[name]
+      cmd_prfx = 'maximum-prefix'
+      if 'max_prefix_limit' in af_inst:
+         cmd_str += cmd_prfx + ' ' + str(af_inst['max_prefix_limit'])
+         if 'max_prefix_warning_threshold' in af_inst:
+            cmd_str += ' ' + str(af_inst['max_prefix_warning_threshold'])
+         if 'max_prefix_warning_only' in af_inst and af_inst['max_prefix_warning_only']== True:
+            cmd_str += ' warning-only'
+         if 'max_prefix_restart_interval' in af_inst:
+            cmd_str += ' restart ' + str(af_inst['max_prefix_restart_interval'])
+
+  return 'CB_SUCCESS', cmd_str
+
+def show_bgp_cmn_af_allowas_cmd(render_tables, name):
+  cmd_str = ''
+  if name in render_tables:
+      af_inst = render_tables[name]
+      cmd_prfx = 'allowas-in'
+      if 'allow_as_in' in af_inst and af_inst['allow_as_in'] == True:
+         cmd_str += cmd_prfx
+         if 'allow_as_origin' in af_inst and af_inst['allow_as_origin'] == True:
+            cmd_str += ' origin'
+         elif 'allow_as_count' in af_inst:
+            cmd_str += ' ' + str(af_inst['allow_as_count'])
+
+  return 'CB_SUCCESS', cmd_str
+
+
+
+# BGP NBR Ipv4 and ipv6 and l2vpn family
+def show_bgp_nbr_upd_src_cmd(render_tables):
+    return show_bgp_cmn_upd_src_cmd(render_tables,
+           'sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST')
+
+def show_bgp_nbr_af_rmap(render_tables):
+    return show_bgp_cmn_af_rmap_cmd(render_tables,
+           'sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST')
+
+def show_bgp_nbr_af_flist_cmd(render_tables):
+    return show_bgp_cmn_af_flist_cmd(render_tables,
+           'sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST')
+
+def show_bgp_nbr_af_plist_cmd(render_tables):
+    return show_bgp_cmn_af_plist_cmd(render_tables,
+           'sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST')
+
+def show_bgp_nbr_af_attr_cmd(render_tables):
+    return show_bgp_cmn_af_attr_cmd(render_tables,
+           'sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST')
+
+def show_bgp_nbr_af_max_prefix_cmd(render_tables):
+    return show_bgp_cmn_af_max_prefix_cmd(render_tables,
+           'sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST')
+
+def show_bgp_nbr_af_allowas_cmd(render_tables):
+    return show_bgp_cmn_af_allowas_cmd(render_tables,
+           'sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST')
+
+# BGP peer group Ipv4 and ipv6 and l2vpn family
+def show_bgp_pg_upd_src_cmd(render_tables):
+    return show_bgp_cmn_upd_src_cmd(render_tables,
+           'sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST')
+
+def show_bgp_pg_af_attr_cmd(render_tables):
+    return show_bgp_cmn_af_attr_cmd(render_tables,
+           'sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST')
+
+def show_bgp_pg_af_flist_cmd(render_tables):
+    return show_bgp_cmn_af_flist_cmd(render_tables,
+           'sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST')
+
+def show_bgp_pg_af_plist_cmd(render_tables):
+    return show_bgp_cmn_af_plist_cmd(render_tables,
+           'sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST')
+
+def show_bgp_pg_af_rmap_cmd(render_tables):
+    return show_bgp_cmn_af_rmap_cmd(render_tables,
+           'sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST')
+
+def show_bgp_pg_af_max_prefix_cmd(render_tables):
+    return show_bgp_cmn_af_max_prefix_cmd(render_tables,
+           'sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST')
+
+def show_bgp_pg_af_allowas_cmd(render_tables):
+    return show_bgp_cmn_af_allowas_cmd(render_tables,
+           'sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST')
+
+def show_router_bgp_confed_cmd(render_tables):
+  cmd_str = ''
+  if 'sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST' in render_tables:
+      inst = render_tables['sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST']
+      cmd_prfx = 'confederation '
+      if 'confed_id' in inst:
+         cmd_str = cmd_prfx + 'identifier ' + str(inst['confed_id']) + ';'
+      if 'confed_peers' in inst:
+         for peer in inst['confed_peers']:
+             cmd_str += cmd_prfx + 'peers ' + str(peer) + ';'
+
+  return 'CB_SUCCESS', cmd_str
+
 def show_router_bgp_neighbor_cmd(render_tables):
 
   cmd_prfx = 'neighbor interface '
@@ -29,7 +209,7 @@ def show_router_bgp_neighbor_cmd(render_tables):
           neighbor_inst = render_tables['sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST']
           if 'neighbor' in neighbor_inst:
               neighbor = neighbor_inst['neighbor']
-              cmd_str = 'neighbor ' + neighbor  
+              cmd_str = 'neighbor ' + neighbor
 
   return 'CB_SUCCESS', cmd_str
 
@@ -95,7 +275,11 @@ def show_router_bgp_af_redist_cmd(render_tables):
             cmd_prefix = 'redistribute'
             if ('vrf_name' in item and item['vrf_name'] == vrf_name)  and ('addr_family' in item and (item['addr_family'] in afi_safi)):
                 if 'src_protocol' in item:
-                    cmd_str = cmd_str + cmd_prefix + ' ' + item['src_protocol']
+                    proto = item['src_protocol']
+                    if proto == 'ospf3':
+                       #in CLI its 'ospfv3'
+                       proto = 'ospfv3'
+                    cmd_str = cmd_str + cmd_prefix + ' ' + proto
                     if 'route_map' in item:
                         cmd_str = cmd_str + ' route-map'
                         for rtm in item['route_map']:

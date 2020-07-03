@@ -28,7 +28,8 @@ from show_config_qos import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
-                         'configure-router-bgp-nbr'],
+                         'configure-router-bgp-template', 'configure-router-bgp-nbr'],
+'configure-router-bgp-template':['configure-router-bgp-template-ipv4', 'configure-router-bgp-template-ipv6', 'configure-router-bgp-template-l2vpn'],
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
 
 config_view_hierarchy= \
@@ -56,6 +57,21 @@ render_filelst  = {}
 
 render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'router_bgp_neighbor'     : show_router_bgp_neighbor_cmd,
+                   'router_bgp_confed'      : show_router_bgp_confed_cmd,
+                  'bgp_nbr_upd_src'         : show_bgp_nbr_upd_src_cmd,
+                  'bgp_pg_upd_src'          : show_bgp_pg_upd_src_cmd,
+                  'bgp_nbr_af_rmap'         : show_bgp_nbr_af_rmap,
+                  'bgp_nbr_af_flist'        : show_bgp_nbr_af_flist_cmd,
+                  'bgp_nbr_af_plist'        : show_bgp_nbr_af_plist_cmd,
+                  'bgp_nbr_af_attr'         : show_bgp_nbr_af_attr_cmd,
+                  'bgp_nbr_af_max_prefix'   : show_bgp_nbr_af_max_prefix_cmd,
+                  'bgp_nbr_af_allowas'      : show_bgp_nbr_af_allowas_cmd,
+                  'bgp_pg_af_rmap'          : show_bgp_pg_af_rmap_cmd,
+                  'bgp_pg_af_flist'         : show_bgp_pg_af_flist_cmd,
+                  'bgp_pg_af_plist'         : show_bgp_pg_af_plist_cmd,
+                  'bgp_pg_af_attr'          : show_bgp_pg_af_attr_cmd,
+                  'bgp_pg_af_max_prefix'    : show_bgp_pg_af_max_prefix_cmd,
+                  'bgp_pg_af_allowas'       : show_bgp_pg_af_allowas_cmd,
                   'if_channel_group'        : show_if_channel_group_cmd,
                   'if_switchport_access'    : show_if_switchport_access,
                   'if_switchport_trunk'     : show_if_switchport_trunk,
