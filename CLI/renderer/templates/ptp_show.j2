@@ -1,25 +1,19 @@
 {% set vars = {'header' : true } %}
-{% for key,value in json_output.items() %}
-	{% for tmp in value %}
 
-		{% if 'port-ds-list' in tmp.keys() %}
-			{% for ports in tmp['port-ds-list'] %}
-				{% if 'port-number' in ports.keys() %}
+{% if 'ietf-ptp:port-ds-list' in json_output.keys() %}
+	{% for ports in json_output['ietf-ptp:port-ds-list'] %}
+		{% if 'port-number' in ports.keys() %}
 
-					{% if vars.header %}
-						{{- '-----------------------------------------------------------\n'}}
-						{{- 'Interface'.ljust(20)}} {{'State\n'}}
-						{{- '-----------------------------------------------------------\n'}}
-						{% if vars.update({'header': False}) %}{% endif %}
-					{% endif %}
-					{% set port_state = ports['port-state'] %}
-					{% if not port_state %}{% set port_state = 'none' %}{% endif %}
-					{% print("%-20s") % ports['underlying-interface'] %} {{ port_state }}
+			{% if vars.header %}
+				{{- '-----------------------------------------------------------\n'}}
+				{{- 'Interface'.ljust(20)}} {{'State\n'}}
+				{{- '-----------------------------------------------------------\n'}}
+				{% if vars.update({'header': False}) %}{% endif %}
+			{% endif %}
+			{% set port_state = ports['port-state'] %}
+			{% if not port_state %}{% set port_state = 'none' %}{% endif %}
+			{% print("%-20s") % ports['underlying-interface'] %} {{ port_state }}
 
-				{% endif %}
-			{% endfor %}
 		{% endif %}
-
-
 	{% endfor %}
-{% endfor %}
+{% endif %}
