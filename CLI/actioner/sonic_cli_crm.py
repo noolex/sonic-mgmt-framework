@@ -25,6 +25,10 @@ import cli_client as cc
 
 def run(func, args):
 
+    # omit pipe arguments
+    if '\\|' in args:
+        args = args[:args.index('\\|')]
+
     last = len(args)
     if func == "patch":
         if last > 0:
@@ -103,7 +107,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/config/polling-interval')
 
     elif func == "patch-crm-thresholds-acl-group-counter-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/acl/group/counter/config/type')
     elif func == "patch-crm-thresholds-acl-group-counter-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -113,7 +117,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/acl/group/counter/config/low')
 
     elif func == "patch-crm-thresholds-acl-group-entry-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/acl/group/entry/config/type')
     elif func == "patch-crm-thresholds-acl-group-entry-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -123,7 +127,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/acl/group/entry/config/low')
 
     elif func == "patch-crm-thresholds-acl-group-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/acl/group/config/type')
     elif func == "patch-crm-thresholds-acl-group-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -133,7 +137,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/acl/group/config/low')
 
     elif func == "patch-crm-thresholds-acl-table-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/acl/table/config/type')
     elif func == "patch-crm-thresholds-acl-table-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -143,7 +147,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/acl/table/config/low')
 
     elif func == "patch-crm-thresholds-dnat-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/dnat/config/type')
     elif func == "patch-crm-thresholds-dnat-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -153,7 +157,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/dnat/config/low')
 
     elif func == "patch-crm-thresholds-snat-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/snat/config/type')
     elif func == "patch-crm-thresholds-snat-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -163,7 +167,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/snat/config/low')
 
     elif func == "patch-crm-thresholds-fdb-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/fdb/config/type')
     elif func == "patch-crm-thresholds-fdb-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -173,7 +177,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/fdb/config/low')
 
     elif func == "patch-crm-thresholds-ipmc-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipmc/config/type')
     elif func == "patch-crm-thresholds-ipmc-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -183,7 +187,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/ipmc/config/low')
 
     elif func == "patch-crm-thresholds-ipv4-neighbor-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv4/neighbor/config/type')
     elif func == "patch-crm-thresholds-ipv4-neighbor-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -193,7 +197,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/ipv4/neighbor/config/low')
 
     elif func == "patch-crm-thresholds-ipv4-nexthop-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv4/nexthop/config/type')
     elif func == "patch-crm-thresholds-ipv4-nexthop-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -203,7 +207,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/ipv4/nexthop/config/low')
 
     elif func == "patch-crm-thresholds-ipv4-route-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv4/route/config/type')
     elif func == "patch-crm-thresholds-ipv4-route-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -213,7 +217,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/ipv4/route/config/low')
 
     elif func == "patch-crm-thresholds-ipv6-neighbor-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv6/neighbor/config/type')
     elif func == "patch-crm-thresholds-ipv6-neighbor-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -223,7 +227,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/ipv6/neighbor/config/low')
 
     elif func == "patch-crm-thresholds-ipv6-nexthop-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv6/nexthop/config/type')
     elif func == "patch-crm-thresholds-ipv6-nexthop-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -233,7 +237,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/ipv6/nexthop/config/low')
 
     elif func == "patch-crm-thresholds-ipv6-route-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv6/route/config/type')
     elif func == "patch-crm-thresholds-ipv6-route-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -243,7 +247,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/ipv6/route/config/low')
 
     elif func == "patch-crm-thresholds-nexthop-group-member-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/nexthop/group-member/config/type')
     elif func == "patch-crm-thresholds-nexthop-group-member-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -253,7 +257,7 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/nexthop/group-member/config/low')
 
     elif func == "patch-crm-thresholds-nexthop-group-object-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config/type')
     elif func == "patch-crm-thresholds-nexthop-group-object-high":
         body = { "openconfig-system-crm:high": int(data) }
@@ -263,52 +267,52 @@ def run(func, args):
         path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config/low')
 
     elif func == "patch-crm-thresholds-all-type":
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/acl/group/counter/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/acl/group/entry/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/acl/group/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/acl/table/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/dnat/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/snat/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/fdb/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipmc/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv4/neighbor/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv4/nexthop/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv4/route/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv6/neighbor/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv6/nexthop/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/ipv6/route/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/nexthop/group-member/config/type')
         aa.patch(path, body)
-        body = { "openconfig-system-crm:type": data }
+        body = { "openconfig-system-crm:type": data.upper() }
         path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config/type')
         aa.patch(path, body)
         return
@@ -416,6 +420,78 @@ def run(func, args):
         return
 
     # DELETE CONFIG
+    elif func == "no-crm-all":
+        path = cc.Path(uri_conf + '/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/acl/group/counter/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/acl/group/entry/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/acl/group/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/acl/table/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/dnat/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/snat/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipmc/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/fdb/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv4/neighbor/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv4/nexthop/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv4/route/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv6/neighbor/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv6/nexthop/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv6/route/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/nexthop/group-member/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config')
+        aa.delete(path)
+        return
+
+    elif func == "no-crm-thresholds-all":
+        path = cc.Path(uri_conf + '/threshold/acl/group/counter/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/acl/group/entry/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/acl/group/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/acl/table/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/dnat/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/snat/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipmc/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/fdb/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv4/neighbor/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv4/nexthop/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv4/route/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv6/neighbor/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv6/nexthop/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/ipv6/route/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/nexthop/group-member/config')
+        aa.delete(path)
+        path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config')
+        aa.delete(path)
+        return
+
     elif func == "no-crm-polling-interval":
         path = cc.Path(uri_conf + '/config/polling-interval')
 
@@ -531,108 +607,6 @@ def run(func, args):
     elif func == "no-crm-thresholds-nexthop-group-object-low":
         path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config/low')
 
-    elif func == "no-crm-thresholds-all":
-        # TYPE
-        path = cc.Path(uri_conf + '/threshold/acl/group/counter/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/group/entry/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/group/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/table/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/dnat/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/snat/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/fdb/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipmc/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/neighbor/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/nexthop/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/route/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/neighbor/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/nexthop/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/route/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/nexthop/group-member/config/type')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config/type')
-        aa.delete(path)
-        # HIGH
-        path = cc.Path(uri_conf + '/threshold/acl/group/counter/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/group/entry/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/group/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/table/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/dnat/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/snat/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/fdb/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipmc/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/neighbor/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/nexthop/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/route/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/neighbor/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/nexthop/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/route/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/nexthop/group-member/config/high')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config/high')
-        aa.delete(path)
-        # LOW
-        path = cc.Path(uri_conf + '/threshold/acl/group/counter/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/group/entry/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/group/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/acl/table/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/dnat/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/snat/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/fdb/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipmc/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/neighbor/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/nexthop/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv4/route/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/neighbor/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/nexthop/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/ipv6/route/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/nexthop/group-member/config/low')
-        aa.delete(path)
-        path = cc.Path(uri_conf + '/threshold/nexthop/group-object/config/low')
-        aa.delete(path)
-        return
-
     # SHOW ACL_GROUP_STATS
     elif func == "show-crm-resources-acl-group":
         tmpl = "show_crm_resources_acl_group.j2"
@@ -683,11 +657,11 @@ def run(func, args):
         tmpl = "show_crm_resources_all.j2"
         path = cc.Path(uri_stat)
         resp = aa.get(path)
-        if (resp is not None) and resp.ok():
+        if (resp is not None) and resp.ok() and 'openconfig-system-crm:statistics' in resp.content:
             stat.update(resp.content['openconfig-system-crm:statistics'])
         path = cc.Path(uri_stat_acl)
         resp = aa.get(path)
-        if (resp is not None) and resp.ok():
+        if (resp is not None) and resp.ok() and 'openconfig-system-crm:acl-statistics' in resp.content:
             stat.update(resp.content['openconfig-system-crm:acl-statistics'])
         show_cli_output(tmpl, stat)
         return

@@ -52,106 +52,152 @@
 {% set dict = json_output[key_json] %}
 
 {% if 'acl' in dict -%}
+
 {% if 'group' in dict['acl'] -%}
 {% if vars.update({'acl_group_high':dict['acl']['group']['config']['high']}) %}{% endif %}
 {% if vars.update({'acl_group_low':dict['acl']['group']['config']['low']}) %}{% endif %}
-{% if vars.update({'acl_group_type':dict['acl']['group']['config']['type']}) %}{% endif %}
+{% if dict['acl']['group']['config']['type'] -%}
+  {% if vars.update({'acl_group_type':dict['acl']['group']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 {% if 'counter' in dict['acl']['group'] -%}
 {% if vars.update({'acl_group_counter_high':dict['acl']['group']['counter']['config']['high']}) %}{% endif %}
 {% if vars.update({'acl_group_counter_low':dict['acl']['group']['counter']['config']['low']}) %}{% endif %}
-{% if vars.update({'acl_group_counter_type':dict['acl']['group']['counter']['config']['type']}) %}{% endif %}
+{% if dict['acl']['group']['counter']['config']['type'] -%}
+  {% if vars.update({'acl_group_counter_type':dict['acl']['group']['counter']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 {% endif %}
 {% if 'entry' in dict['acl']['group'] -%}
 {% if vars.update({'acl_group_entry_high':dict['acl']['group']['entry']['config']['high']}) %}{% endif %}
 {% if vars.update({'acl_group_entry_low':dict['acl']['group']['entry']['config']['low']}) %}{% endif %}
-{% if vars.update({'acl_group_entry_type':dict['acl']['group']['entry']['config']['type']}) %}{% endif %}
+{% if dict['acl']['group']['entry']['config']['type'] -%}
+  {% if vars.update({'acl_group_entry_type':dict['acl']['group']['entry']['config']['type'].lower()}) %}{% endif %}
 {% endif %}
 {% endif %}
+{% endif %}
+
 {% if 'table' in dict['acl'] -%}
 {% if vars.update({'acl_table_high':dict['acl']['table']['config']['high']}) %}{% endif %}
 {% if vars.update({'acl_table_low':dict['acl']['table']['config']['low']}) %}{% endif %}
-{% if vars.update({'acl_table_type':dict['acl']['table']['config']['type']}) %}{% endif %}
+{% if dict['acl']['table']['config']['type'] -%}
+  {% if vars.update({'acl_table_type':dict['acl']['table']['config']['type'].lower()}) %}{% endif %}
 {% endif %}
+{% endif %}
+
 {% endif %}
 
 {% if 'dnat' in dict -%}
 {% if vars.update({'dnat_entry_high':dict['dnat']['config']['high']}) %}{% endif %}
 {% if vars.update({'dnat_entry_low':dict['dnat']['config']['low']}) %}{% endif %}
-{% if vars.update({'dnat_entry_type':dict['dnat']['config']['type']}) %}{% endif %}
+{% if dict['dnat']['config']['type'] -%}
+  {% if vars.update({'dnat_entry_type':dict['dnat']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 {% endif %}
 
 {% if 'fdb' in dict -%}
 {% if vars.update({'fdb_entry_high':dict['fdb']['config']['high']}) %}{% endif %}
 {% if vars.update({'fdb_entry_low':dict['fdb']['config']['low']}) %}{% endif %}
-{% if vars.update({'fdb_entry_type':dict['fdb']['config']['type']}) %}{% endif %}
+{% if dict['fdb']['config']['type'] -%}
+  {% if vars.update({'fdb_entry_type':dict['fdb']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 {% endif %}
 
 {% if 'ipmc' in dict -%}
 {% if vars.update({'ipmc_entry_high':dict['ipmc']['config']['high']}) %}{% endif %}
 {% if vars.update({'ipmc_entry_low':dict['ipmc']['config']['low']}) %}{% endif %}
-{% if vars.update({'ipmc_entry_type':dict['ipmc']['config']['type']}) %}{% endif %}
+{% if dict['ipmc']['config']['type'] -%}
+  {% if vars.update({'ipmc_entry_type':dict['ipmc']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 {% endif %}
 
 {% if 'ipv4' in dict -%}
+
 {% if 'neighbor' in dict['ipv4'] -%}
 {% if vars.update({'ipv4_neighbor_high':dict['ipv4']['neighbor']['config']['high']}) %}{% endif %}
 {% if vars.update({'ipv4_neighbor_low':dict['ipv4']['neighbor']['config']['low']}) %}{% endif %}
-{% if vars.update({'ipv4_neighbor_type':dict['ipv4']['neighbor']['config']['type']}) %}{% endif %}
+{% if dict['ipv4']['neighbor']['config']['type'] -%}
+  {% if vars.update({'ipv4_neighbor_type':dict['ipv4']['neighbor']['config']['type'].lower()}) %}{% endif %}
 {% endif %}
+{% endif %}
+
 {% if 'nexthop' in dict['ipv4'] -%}
 {% if vars.update({'ipv4_nexthop_high':dict['ipv4']['nexthop']['config']['high']}) %}{% endif %}
 {% if vars.update({'ipv4_nexthop_low':dict['ipv4']['nexthop']['config']['low']}) %}{% endif %}
-{% if vars.update({'ipv4_nexthop_type':dict['ipv4']['nexthop']['config']['type']}) %}{% endif %}
+{% if dict['ipv4']['nexthop']['config']['type'] -%}
+  {% if vars.update({'ipv4_nexthop_type':dict['ipv4']['nexthop']['config']['type'].lower()}) %}{% endif %}
 {% endif %}
+{% endif %}
+
 {% if 'route' in dict['ipv4'] -%}
 {% if vars.update({'ipv4_route_high':dict['ipv4']['route']['config']['high']}) %}{% endif %}
 {% if vars.update({'ipv4_route_low':dict['ipv4']['route']['config']['low']}) %}{% endif %}
-{% if vars.update({'ipv4_route_type':dict['ipv4']['route']['config']['type']}) %}{% endif %}
+{% if dict['ipv4']['route']['config']['type'] -%}
+  {% if vars.update({'ipv4_route_type':dict['ipv4']['route']['config']['type'].lower()}) %}{% endif %}
 {% endif %}
+{% endif %}
+
 {% endif %}
 
 {% if 'ipv6' in dict -%}
+
 {% if 'neighbor' in dict['ipv6'] -%}
 {% if vars.update({'ipv6_neighbor_high':dict['ipv6']['neighbor']['config']['high']}) %}{% endif %}
 {% if vars.update({'ipv6_neighbor_low':dict['ipv6']['neighbor']['config']['low']}) %}{% endif %}
-{% if vars.update({'ipv6_neighbor_type':dict['ipv6']['neighbor']['config']['type']}) %}{% endif %}
-{% endif %}
-{% if 'nexthop' in dict['ipv6'] -%}
-{% if vars.update({'ipv6_nexthop_high':dict['ipv6']['nexthop']['config']['high']}) %}{% endif %}
-{% if vars.update({'ipv6_nexthop_low':dict['ipv6']['nexthop']['config']['low']}) %}{% endif %}
-{% if vars.update({'ipv6_nexthop_type':dict['ipv6']['nexthop']['config']['type']}) %}{% endif %}
-{% endif %}
-{% if 'route' in dict['ipv6'] -%}
-{% if vars.update({'ipv6_route_high':dict['ipv6']['route']['config']['high']}) %}{% endif %}
-{% if vars.update({'ipv6_route_low':dict['ipv6']['route']['config']['low']}) %}{% endif %}
-{% if vars.update({'ipv6_route_type':dict['ipv6']['route']['config']['type']}) %}{% endif %}
+{% if dict['ipv6']['neighbor']['config']['type'] -%}
+  {% if vars.update({'ipv6_neighbor_type':dict['ipv6']['neighbor']['config']['type'].lower()}) %}{% endif %}
 {% endif %}
 {% endif %}
 
+{% if 'nexthop' in dict['ipv6'] -%}
+{% if vars.update({'ipv6_nexthop_high':dict['ipv6']['nexthop']['config']['high']}) %}{% endif %}
+{% if vars.update({'ipv6_nexthop_low':dict['ipv6']['nexthop']['config']['low']}) %}{% endif %}
+{% if dict['ipv6']['nexthop']['config']['type'] -%}
+  {% if vars.update({'ipv6_nexthop_type':dict['ipv6']['nexthop']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
+{% endif %}
+
+{% if 'route' in dict['ipv6'] -%}
+{% if vars.update({'ipv6_route_high':dict['ipv6']['route']['config']['high']}) %}{% endif %}
+{% if vars.update({'ipv6_route_low':dict['ipv6']['route']['config']['low']}) %}{% endif %}
+{% if dict['ipv6']['route']['config']['type'] -%}
+  {% if vars.update({'ipv6_route_type':dict['ipv6']['route']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
+{% endif %}
+
+{% endif %}
+
 {% if 'nexthop' in dict -%}
+
 {% if 'group-object' in dict['nexthop'] -%}
 {% if vars.update({'nexthop_group_high':dict['nexthop']['group-object']['config']['high']}) %}{% endif %}
 {% if vars.update({'nexthop_group_low':dict['nexthop']['group-object']['config']['low']}) %}{% endif %}
-{% if vars.update({'nexthop_group_type':dict['nexthop']['group-object']['config']['type']}) %}{% endif %}
+{% if dict['nexthop']['group-object']['config']['type'] -%}
+  {% if vars.update({'nexthop_group_type':dict['nexthop']['group-object']['config']['type'].lower()}) %}{% endif %}
 {% endif %}
+{% endif %}
+
 {% if 'group-member' in dict['nexthop'] -%}
 {% if vars.update({'nexthop_group_member_high':dict['nexthop']['group-member']['config']['high']}) %}{% endif %}
 {% if vars.update({'nexthop_group_member_low':dict['nexthop']['group-member']['config']['low']}) %}{% endif %}
-{% if vars.update({'nexthop_group_member_type':dict['nexthop']['group-member']['config']['type']}) %}{% endif %}
+{% if dict['nexthop']['group-member']['config']['type'] -%}
+  {% if vars.update({'nexthop_group_member_type':dict['nexthop']['group-member']['config']['type'].lower()}) %}{% endif %}
 {% endif %}
+{% endif %}
+
 {% endif %}
 
 {% if 'snat' in dict -%}
 {% if vars.update({'snat_entry_high':dict['snat']['config']['high']}) %}{% endif %}
 {% if vars.update({'snat_entry_low':dict['snat']['config']['low']}) %}{% endif %}
-{% if vars.update({'snat_entry_type':dict['snat']['config']['type']}) %}{% endif %}
+{% if dict['snat']['config']['type'] -%}
+  {% if vars.update({'snat_entry_type':dict['snat']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 {% endif %}
 
 Resource Name         Threshold Type      Low Threshold    High Threshold
 --------------------  ----------------  ---------------  ----------------
 {{'%-22s'|format('acl_group')}}{{'%-18s'|format(vars.acl_group_type)}}{{'%15s'|format(vars.acl_group_low)}}{{'%18s'|format(vars.acl_group_high)}}
-{{'%-22s'|format('acl_group_counter')}}{{'%-18s'|format(vars.acl_group_counter_type)}}{{'%15s'|format(vars.acl_group_counter_low)}}{{'%18s'|format(vars.acl_group_counter_high)}}
-{{'%-22s'|format('acl_group_entry')}}{{'%-18s'|format(vars.acl_group_entry_type)}}{{'%15s'|format(vars.acl_group_entry_low)}}{{'%18s'|format(vars.acl_group_entry_high)}}
+{{'%-22s'|format('acl_counter')}}{{'%-18s'|format(vars.acl_group_counter_type)}}{{'%15s'|format(vars.acl_group_counter_low)}}{{'%18s'|format(vars.acl_group_counter_high)}}
+{{'%-22s'|format('acl_entry')}}{{'%-18s'|format(vars.acl_group_entry_type)}}{{'%15s'|format(vars.acl_group_entry_low)}}{{'%18s'|format(vars.acl_group_entry_high)}}
 {{'%-22s'|format('acl_table')}}{{'%-18s'|format(vars.acl_table_type)}}{{'%15s'|format(vars.acl_table_low)}}{{'%18s'|format(vars.acl_table_high)}}
 {{'%-22s'|format('dnat_entry')}}{{'%-18s'|format(vars.dnat_entry_type)}}{{'%15s'|format(vars.dnat_entry_low)}}{{'%18s'|format(vars.dnat_entry_high)}}
 {{'%-22s'|format('fdb_entry')}}{{'%-18s'|format(vars.fdb_entry_type)}}{{'%15s'|format(vars.fdb_entry_low)}}{{'%18s'|format(vars.fdb_entry_high)}}

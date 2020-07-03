@@ -12,7 +12,9 @@ Resource Name         Threshold Type      Low Threshold    High Threshold
 
 {% if vars.update({'high':info['config']['high']}) %}{% endif %}
 {% if vars.update({'low':info['config']['low']}) %}{% endif %}
-{% if vars.update({'type':info['config']['type']}) %}{% endif %}
+{% if info['config']['type'] -%}
+  {% if vars.update({'type':info['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 
 {{'%-22s'|format('acl_group')}}{{'%-18s'|format(vars.type)}}{{'%15s'|format(vars.low)}}{{'%18s'|format(vars.high)}}
 
@@ -20,9 +22,11 @@ Resource Name         Threshold Type      Low Threshold    High Threshold
 
 {% if vars.update({'high':info['counter']['config']['high']}) %}{% endif %}
 {% if vars.update({'low':info['counter']['config']['low']}) %}{% endif %}
-{% if vars.update({'type':info['counter']['config']['type']}) %}{% endif %}
+{% if info['counter']['config']['type'] -%}
+  {% if vars.update({'type':info['counter']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 
-{{'%-22s'|format('acl_group_counter')}}{{'%-18s'|format(vars.type)}}{{'%15s'|format(vars.low)}}{{'%18s'|format(vars.high)}}
+{{'%-22s'|format('acl_counter')}}{{'%-18s'|format(vars.type)}}{{'%15s'|format(vars.low)}}{{'%18s'|format(vars.high)}}
 
 {% endif %}
 
@@ -31,9 +35,11 @@ Resource Name         Threshold Type      Low Threshold    High Threshold
 
 {% if vars.update({'high':info['entry']['config']['high']}) %}{% endif %}
 {% if vars.update({'low':info['entry']['config']['low']}) %}{% endif %}
-{% if vars.update({'type':info['entry']['config']['type']}) %}{% endif %}
+{% if info['entry']['config']['type'] -%}
+  {% if vars.update({'type':info['entry']['config']['type'].lower()}) %}{% endif %}
+{% endif %}
 
-{{'%-22s'|format('acl_group_entry')}}{{'%-18s'|format(vars.type)}}{{'%15s'|format(vars.low)}}{{'%18s'|format(vars.high)}}
+{{'%-22s'|format('acl_entry')}}{{'%-18s'|format(vars.type)}}{{'%15s'|format(vars.low)}}{{'%18s'|format(vars.high)}}
 
 {% endif %}
 
