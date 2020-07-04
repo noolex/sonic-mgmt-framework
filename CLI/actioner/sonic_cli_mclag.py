@@ -81,13 +81,10 @@ def invoke(func, args):
     if (func == 'patch_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_peer_link' or
         func == 'delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_peer_link'):
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}/peer_link', domain_id=args[0])
-
+ 
         if (func.startswith("patch") is True):
             if_name = None
-            if args[2] == 'PortChannel':
-                if_name = args[1]
-            else:
-                if_name = args[1]
+            if_name = args[1]
             body = {
                 "sonic-mclag:peer_link": if_name
             }
