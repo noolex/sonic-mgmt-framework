@@ -1170,22 +1170,22 @@ limitations under the License.
         </PARAM>
 
         <PARAM name="database" help="Database summary" ptype="SUBCOMMAND" mode="subcommand" >
-          <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true" >
             <PARAM name="asbr-summary" help="ASBR summary link states" ptype="SUBCOMMAND" mode="subcommand">
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM>
 
             <PARAM name="external" help="External link states" ptype="SUBCOMMAND" mode="subcommand">
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR"  />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
@@ -1195,60 +1195,60 @@ limitations under the License.
             </PARAM>
 
             <PARAM name="network" help="Network link states" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR"  />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM> 
 
             <PARAM name="nssa-external" help="NSSA external link state" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR"  optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM> 
 
             <PARAM name="opaque-area" help="Link area Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR"  />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM> 
 
             <PARAM name="opaque-as" help="Link AS Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR"  optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM>
 
             <PARAM name="opaque-link" help="Link local Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM> 
 
             <PARAM name="router" help="Router link states" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR"  />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
@@ -1258,10 +1258,10 @@ limitations under the License.
             </PARAM> 
 
             <PARAM name="summary" help="Network summary link states" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
@@ -1313,6 +1313,32 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_route show_ip_ospf_route.j2 ${vrf-name} &#xA;
         elif test "${cmdtype}" = "border-routers"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_border_routers show_ip_ospf_border_routers.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "database"; then&#xA;
+            if test "${databasetype}" = ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_short show_ip_ospf_database_short.j2 ${vrf-name} &#xA;
+            else&#xA;
+                if test "${databasetype}" = "router"; then&#xA;
+                    if test "${lsid}" != ""; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_router show_ip_ospf_database_router.j2 ${vrf-name} ls-id ${lsid} &#xA;
+                    elif test "${lsid}" = ""  &amp;&amp; test "${lstype}" = "adv-router"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_router show_ip_ospf_database_router.j2 ${vrf-name} adv-router ${advrouter}  &#xA;
+                    elif test "${lsid}" = ""  &amp;&amp; test "${lstype}" = "self-originate"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_router show_ip_ospf_database_router.j2 ${vrf-name} self-originate   &#xA;
+                    else
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_router show_ip_ospf_database_router.j2 ${vrf-name} &#xA;
+                    fi&#xA;
+                elif test "${databasetype}" = "network"; then&#xA;
+                    if test "${lsid}" != ""; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_network show_ip_ospf_database_network.j2 ${vrf-name} ls-id ${lsid} &#xA;
+                    elif test "${lsid}" = ""  &amp;&amp; test "${lstype}" = "adv-router"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_network show_ip_ospf_database_network.j2 ${vrf-name} adv-router ${advrouter}  &#xA;
+                    elif test "${lsid}" = ""  &amp;&amp; test "${lstype}" = "self-originate"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_network show_ip_ospf_database_network.j2 ${vrf-name} self-originate   &#xA;
+                    else
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_network show_ip_ospf_database_network.j2 ${vrf-name} &#xA;
+                    fi&#xA;
+                fi&#xA;
+            fi&#xA;
         fi&#xA;
       </ACTION>
         <DOCGEN>
