@@ -31,8 +31,13 @@ def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
     body = None
+    internal_op = "REPLACE"
 
     op, attr = func.split('_', 1)
+    if op == 'patchRemove':
+        internal_op = "REMOVE"
+        op = 'patch'
+
     if op == 'patch':
         uri = restconf_map[attr]
         if attr == 'openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_config_policy_result':
@@ -71,7 +76,26 @@ def invoke_api(func, args=[]):
             return api.patch(keypath, body)
         elif attr == 'bgp_actions_set_community':
             keypath = cc.Path(uri, name=args[0], name1=args[1])
-            body = { "openconfig-bgp-policy:set-community": { "config" : { "method":"INLINE", "options": "ADD" if 'additive' in args[4:] else args[3]}, "inline": {"config": {"communities":[args[2]]}}}}
+            comm_list = []
+            i = 0
+            for arg in args[2:]:
+                if arg == "additive":
+                    comm_val = "ADDITIVE"
+                elif arg == "local-as": 
+                    comm_val = "NO_EXPORT_SUBCONFED"
+                elif arg == "no-advertise":
+                    comm_val = "NO_ADVERTISE"
+                elif arg == "no-export":
+                    comm_val = "NO_EXPORT"  
+                elif arg == "no-peer": 
+                    comm_val = "NOPEER"
+                else:
+                    comm_val = arg
+
+                comm_list.insert(i, comm_val)
+                i = i + 1
+
+            body = { "openconfig-bgp-policy:set-community": { "config" : { "method":"INLINE", "options": internal_op }, "inline": {"config": {"communities":comm_list}}}}
             return api.patch(keypath, body)
         elif attr == 'bgp_actions_set_ext_community':
             keypath = cc.Path(uri, name=args[0], name1=args[1])
@@ -125,31 +149,13 @@ def invoke_api(func, args=[]):
                 return invoke_api("patch_bgp_actions_set_ext_community", args[0:5] + [ "REMOVE" ])
 
         elif attr == 'set_community':
-            replace_add = [ 'REPLACE', 'additive' ] if args[-1] == 'additive' else [ 'REPLACE' ]
-            if args[2] == "comm-num":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + args[3:4] + replace_add)
-            elif args[2] == "local-AS":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT_SUBCONFED" ] + replace_add)
-            elif args[2] == "no-advertise":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_ADVERTISE" ] + replace_add)
-            elif args[2] == "no-export":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT" ] + replace_add)
-            elif args[2] == "no-peer":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NOPEER" ] + replace_add)
+            return invoke_api("patch_bgp_actions_set_community", args)
 
         elif attr == 'no_set_community':
-            if args[2] == "comm-opt:":
-                return invoke_api("delete_bgp_actions_set_community", args[0:2])
-            elif args[2] == "comm-opt:comm-num":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ args[3], "REMOVE" ])
-            elif args[2] == "comm-opt:local-AS":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT_SUBCONFED", "REMOVE" ])
-            elif args[2] == "comm-opt:no-advertise":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_ADVERTISE", "REMOVE" ])
-            elif args[2] == "comm-opt:no-export":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NO_EXPORT", "REMOVE" ])
-            elif args[2] == "comm-opt:no-peer":
-                return invoke_api("patch_bgp_actions_set_community", args[0:2] + [ "NOPEER", "REMOVE" ])
+            if len(args) == 2:
+                return invoke_api("delete_bgp_actions_set_community", args)
+            else:
+                return invoke_api("patchRemove_bgp_actions_set_community", args)
 
     return api.cli_not_implemented(func)
 

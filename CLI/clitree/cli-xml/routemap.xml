@@ -148,14 +148,9 @@ limitations under the License.
   </COMMAND>-->
   <COMMAND name="set community" help="BGP community attribute" render_command_cb="routemap_set_community">
     <PARAM name="comm-opt" mode="switch" ptype="SUBCOMMAND" help="Community options">
-      <PARAM name="comm-num" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN"/>
-      <PARAM name="local-AS" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)"/>
-      <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)"/>
-      <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)"/>
-      <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)"/>
-    </PARAM>
-    <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
-    <ACTION builtin="clish_pyobj">sonic_cli_routemap PyParse_set_community ${name} ${seq_num} ${comm-opt} ${comm-num} ${additive}</ACTION>
+      <MACRO name="ROUTE_MAP_SET_COMMUNITY_OPTIONS" arg=""></MACRO>
+    </PARAM>  
+    <ACTION builtin="clish_pyobj">sonic_cli_routemap PyParse_set_community ${name} ${seq_num} ${comm-num1} ${comm-num2} ${comm-num3} ${comm-num4} ${comm-num5} ${local-as} ${no-advertise} ${no-export} ${no-peer} ${additive}</ACTION>
   </COMMAND>
   <COMMAND name="set extcommunity" help="BGP extended community attribute" render_command_cb="routemap_set_extcommunity">
     <PARAM name="extcommunity-opt" mode="switch" ptype="SUBCOMMAND" help="Extcommunity option">
@@ -227,13 +222,9 @@ limitations under the License.
   </COMMAND>-->
   <COMMAND name="no set community" help="BGP community attribute">
     <PARAM name="comm-opt" mode="switch" ptype="SUBCOMMAND" help="Community options" optional="true">
-      <PARAM name="comm-num" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN"/>
-      <PARAM name="local-AS" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)"/>
-      <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)"/>
-      <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)"/>
-      <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)"/>
-    </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_routemap PyParse_no_set_community ${name} ${seq_num} comm-opt:${comm-opt} ${comm-num}</ACTION>
+      <MACRO name="ROUTE_MAP_SET_COMMUNITY_OPTIONS" arg=""></MACRO>
+    </PARAM>  
+    <ACTION builtin="clish_pyobj">sonic_cli_routemap PyParse_no_set_community ${name} ${seq_num} ${comm-num1} ${comm-num2} ${comm-num3} ${comm-num4} ${comm-num5} ${local-as} ${no-advertise} ${no-export} ${no-peer} ${additive}</ACTION>
   </COMMAND>
   <COMMAND name="no set extcommunity" help="BGP extended community attribute">
     <PARAM name="extcommunity-opt" mode="switch" ptype="SUBCOMMAND" help="Extcommunity option" optional="true">
