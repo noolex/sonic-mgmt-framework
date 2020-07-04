@@ -23,17 +23,22 @@ limitations under the License.
     http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
     <VIEW name="enable-view">
-      <COMMAND help="show ssh-server on vrf" name="show ssh-server">
-        <ACTION builtin="clish_nop"/>
-        <xi:include href="include/pipe.xml"/>
+      <COMMAND help="Displays SSH server information" name="show ssh-server">
       </COMMAND>
-      <COMMAND name="show ssh-server vrfs" help="Show ssh server VRF information">
-        <PARAM 
+
+      <COMMAND name="show ssh-server vrf" help="Displays SSH server status for VRF">
+        <PARAM name="vrf-switch" help="" ptype="SUBCOMMAND" mode="switch">
+          <PARAM 
+            name = "all"
+            help = "Displays SSH server status for all VRFs"
+            ptype = "SUBCOMMAND"
+            mode = "subcommand"
+            />
+          <PARAM 
             name = "vrf-name"
-            help = "Name of VRF"
+            help = "VRF name (up to 15 characters)"
             ptype = "STRING_15"
-            optional = "true"
-            >
+            />
         </PARAM>
 		<ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf get_openconfig_system_ssh_server_vrfs ${vrf-name} </ACTION>
         <DOCGEN>
@@ -46,7 +51,7 @@ limitations under the License.
                             Vrf34                            enable
                             Vrf5                             enable
 
-                sonic# show ssh-server vrfs Vrf5
+                sonic# show ssh-server vrf Vrf5
                             VRF Name                          Status
                  -------------------------------- --------------------------------
                             Vrf5                             enable
@@ -55,21 +60,29 @@ limitations under the License.
       </COMMAND>
     </VIEW>
 
+    <VIEW name="hidden-view">
+      <COMMAND name="show ssh-server vrfs" help="Displays SSH server status for all VRFs">
+        <ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf get_openconfig_system_ssh_server_vrfs</ACTION>
+      </COMMAND>
+    </VIEW>
+
     <VIEW name="configure-view">
       <!-- ssh -->
     <COMMAND name="ssh-server"
-             help="SSH server configuration"/>
+             help="Configures SSH server"/>
     <!-- vrf configuration commands -->
     <COMMAND
       name="ssh-server vrf"
-      help="enable ssh server on given VRF"
+      help="Enables SSH server on a VRF"
       mode="subcommand"
       ptype="SUBCOMMAND"
+      command_tables="sonic-ssh-server-vrf:sonic-ssh-server-vrf/SSH_SERVER_VRF/SSH_SERVER_VRF_LIST/vrf_name"
       >
       <PARAM
         name="vrf-name"
-        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        help="VRF name (up to 15 characters)"
         ptype="STRING_15"
+        dbpath="sonic-ssh-server-vrf:sonic-ssh-server-vrf/SSH_SERVER_VRF/SSH_SERVER_VRF_LIST/vrf_name"
         >
       </PARAM>
 	  <ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf patch_openconfig_system_ssh_server_vrf ${vrf-name}</ACTION>
@@ -84,16 +97,16 @@ limitations under the License.
 
     <!-- no vrf commands -->
     <COMMAND name="no ssh-server"
-             help="SSH server configuration"/>
+             help="Disables SSH server"/>
     <COMMAND
       name="no ssh-server vrf"
-      help="delete ssh server on given VRF"
+      help="Disables SSH server on a VRF"
       mode="subcommand"
       ptype="SUBCOMMAND"
       >
       <PARAM
         name="vrf-name"
-        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        help="VRF name (up to 15 characters)"
         ptype="STRING_15"
         >
       </PARAM>
