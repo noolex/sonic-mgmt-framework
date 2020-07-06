@@ -55,7 +55,7 @@ Flags: U-Unnumbered interface
                     {% endfor -%}
                 {% endif -%}
 
-                {% if "sonic-port:PORT_TABLE_LIST" in key -%}
+                {% if "sonic-port:PORT_TABLE_LIST" in nKey -%}
                     {% set portTblList = json_output["sonic-port:PORT_TABLE_LIST"] %}
                     {% for port in portTblList -%}
                         {% if vars.name == port["ifname"] -%}
