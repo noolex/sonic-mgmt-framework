@@ -6,8 +6,8 @@
 {% set qos_mode = tunnel['qos-mode'] %}
 {% if qos_mode == 'pipe' %}
 {% set dscp_value = tunnel.dscp %}
-{{'QoS Mode         : '}} {{'pipe (dscp:%s)'|format(dscp_value)}}
-{% else %}
+{{'QoS Mode         : '}} {{'pipe(dscp:%s)'|format(dscp_value)}}
+{% elif qos_mode == 'uniform' %}
 {{'QoS Mode         : '}} {{'uniform'}}
 {% endif %}
 {% endfor %}

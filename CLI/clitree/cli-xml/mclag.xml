@@ -74,9 +74,7 @@
     <COMMAND name="peer-link" help="Set mclag Peer Interface">
       <PARAM name="if-subcommands" help="Interface subcommands" mode="switch" ptype="SUBCOMMAND">
           <PARAM name="PLK" help="Physical Interface" ptype="PHY_INTERFACE"> </PARAM>
-          <PARAM name="PortChannel" help="Port-channel ID" ptype="SUBCOMMAND" mode="subcommand">
-              <PARAM name="PLK" help="PortChannel interface" ptype="LAG_ID"></PARAM>
-          </PARAM>
+          <PARAM name="PLK" help="PortChannel interface" ptype="PO_INTERFACE"></PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_peer_link ${id} ${PLK} ${if-subcommands} </ACTION>
     </COMMAND>

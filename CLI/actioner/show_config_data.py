@@ -23,6 +23,7 @@ from show_config_table_sort import *
 from show_config_ptp import *
 from show_config_routepolicy import *
 from show_config_copp import *
+from show_config_static_routes import *
 from show_config_qos_map import *
 from show_config_qos import *
 
@@ -111,6 +112,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'bgp_af_ipv6_redist'      : show_router_bgp_af_redist_cmd,
                   'v4prefix_lists_cmd'      : show_v4prefix_lists,
                   'v6prefix_lists_cmd'      : show_v6prefix_lists,
+                  'static_routes_entry'     : show_ntwk_static_v4route,
+                  'static_routes_v6entry'   : show_ntwk_static_v6route,
                   'bgp_com_list'            : show_bgpcom_lists,
                   'bgp_extcom_list'         : show_bgpextcom_lists,
                   'bgp_aspath_list'         : show_bgpaspath_lists,

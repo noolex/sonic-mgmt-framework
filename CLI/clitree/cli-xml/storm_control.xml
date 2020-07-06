@@ -1,63 +1,169 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE CLISH_MODULE [
-]>
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
     <VIEW name="enable-view">
         <!--show storm-control -->
         <COMMAND name="show storm-control" help="Storm-control information">
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-storm-control.py get_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list show_storm_control.j2
+            <ACTION builtin="clish_pyobj"> sonic_cli_storm_control get_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list show_storm_control.j2 ${__full_line__}
             </ACTION>
-            <xi:include href="include/pipe.xml"/>
+            <DOCGEN>
+                <DESCRIPTION>
+                    show command to display all BUM storm-control configurations. 
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli# show storm-control
+                </USAGE>
+                <EXAMPLE summary="show storm-control">
+                    sonic-cli# show storm-control
+                    -----------------------------------------------------
+                    Interface Name      Storm-type          Rate (kbps)
+                    -----------------------------------------------------
+                    Ethernet0           broadcast           10000
+                    Ethernet0           unknown-unicast     20000
+                    Ethernet0           unknown-multicast   30000
+                    Ethernet4           unknown-unicast     20000
+                    Ethernet4           unknown-multicast   30000
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
-        <COMMAND name="show storm-control interface" help="show storm-control interface">
-        </COMMAND>
-        <COMMAND name="show storm-control interface Ethernet" help="Storm-control interface information">
-            <PARAM name="phy-if-id" help="Physical interface" ptype="UINT"> </PARAM>
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-storm-control.py get_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list show_storm_control.j2 interface Ethernet${phy-if-id}&#xA;
+        <COMMAND name="show storm-control interface" help="Storm-control interface information">
+            <PARAM name="cfg-if-type" help="Interface type" mode="switch" ptype="SUBCOMMAND">
+                <PARAM name="Ethernet" help="Ethernet interface type" ptype="PHY_INTERFACE" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj"> 
+                sonic_cli_storm_control get_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list show_storm_control.j2 ${Ethernet} ${__full_line__}
             </ACTION>
-            <xi:include href="include/pipe.xml"/>
-
+            <DOCGEN>
+                <DESCRIPTION>
+                    show command to display BUM storm-control configurations on the given interface. 
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli# show storm-control interface Ethernet 4
+                </USAGE>
+                <EXAMPLE summary="show storm-control">
+                    sonic-cli# show storm-control interface Ethernet 4
+                    -----------------------------------------------------
+                    Interface Name      Storm-type          Rate (kbps)
+                    -----------------------------------------------------
+                    Ethernet4           unknown-unicast     20000
+                    Ethernet4           unknown-multicast   30000
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     </VIEW>
     <VIEW name="configure-if-view">
         <COMMAND name="storm-control" help="Configure storm-control"/>
         <COMMAND name="storm-control broadcast" help="Configure storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=broadcast">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/kbps"> </PARAM>
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-storm-control.py patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "broadcast" ${kbps}
+            <ACTION builtin="clish_pyobj"> 
+                sonic_cli_storm_control patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} broadcast ${kbps}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to enable broadcast storm-control on the given interface. 
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli(conf-if-Ethernet0)# storm-control broadcast 10000
+                </USAGE>
+                <EXAMPLE summary="storm-control broadcast 10000">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0
+                    sonic-cli(conf-if-Ethernet0)# storm-control broadcast 10000
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="storm-control unknown-unicast" help="Configure storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=unknown-unicast">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/kbps"> </PARAM>
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-storm-control.py patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "unknown-unicast" ${kbps}
+            <ACTION builtin="clish_pyobj"> 
+                sonic_cli_storm_control patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} unknown-unicast ${kbps}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to enable unknown-unicast storm-control on the given interface. 
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli(conf-if-Ethernet0)# storm-control unknown-unicast 20000
+                </USAGE>
+                <EXAMPLE summary="storm-control unknown-unicast 20000">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0
+                    sonic-cli(conf-if-Ethernet0)# storm-control unknown-unicast 20000
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="storm-control unknown-multicast" help="Configure storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=unknown-multicast">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/kbps"> </PARAM>
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-storm-control.py patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "unknown-multicast" ${kbps}
+            <ACTION builtin="clish_pyobj"> 
+                sonic_cli_storm_control patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} unknown-multicast ${kbps}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to enable unknown-multicast storm-control on the given interface. 
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli(conf-if-Ethernet0)# storm-control unknown-multicast 30000
+                </USAGE>
+                <EXAMPLE summary="storm-control unknown-multicast 30000">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0
+                    sonic-cli(conf-if-Ethernet0)# storm-control unknown-multicast 30000
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
-
         <!-- no storm-control -->
         <COMMAND name="no storm-control" help="Configure storm-control"/>
         <COMMAND name="no storm-control broadcast" help="Configure storm-control">
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-storm-control.py delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "broadcast" 
+            <ACTION builtin="clish_pyobj"> 
+                sonic_cli_storm_control delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} broadcast
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to delete broadcast storm-control on the given interface. 
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli(conf-if-Ethernet0)# no storm-control broadcast
+                </USAGE>
+                <EXAMPLE summary="no storm-control broadcast">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0
+                    sonic-cli(conf-if-Ethernet0)# no storm-control broadcast
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="no storm-control unknown-unicast" help="Configure storm-control">
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-storm-control.py delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "unknown-unicast" 
+            <ACTION builtin="clish_pyobj"> 
+                sonic_cli_storm_control delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} unknown-unicast
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to delete unknown-unicast storm-control on the given interface. 
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli(conf-if-Ethernet0)# no storm-control unknown-unicast
+                </USAGE>
+                <EXAMPLE summary="no storm-control unknown-unicast">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0
+                    sonic-cli(conf-if-Ethernet0)# no storm-control unknown-unicast
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="no storm-control unknown-multicast" help="Configure storm-control">
-            <ACTION> 
-                python $SONIC_CLI_ROOT/sonic-cli-storm-control.py delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} "unknown-multicast" 
+            <ACTION builtin="clish_pyobj"> 
+                sonic_cli_storm_control delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} unknown-multicast
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to delete unknown-multicast storm-control on the given interface. 
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli(conf-if-Ethernet0)# no storm-control unknown-multicast
+                </USAGE>
+                <EXAMPLE summary="no storm-control unknown-multicast">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0
+                    sonic-cli(conf-if-Ethernet0)# no storm-control unknown-multicast
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>

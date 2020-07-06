@@ -453,6 +453,12 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="VRF_OR_DEFAULT"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(default)$"
+        help="VRF name (prefixed by Vrf, Max: 15 characters) or default"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="STR_ASN_LST"
         pattern="^[0-9\,]*$"
         help="asn list"

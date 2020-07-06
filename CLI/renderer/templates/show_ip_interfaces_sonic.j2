@@ -48,6 +48,9 @@ Flags: U-Unnumbered interface
                            {% if "vrf_name" in port %}
                                {% if vars.update({'vrf':port["vrf_name"]}) %}{% endif %}
                            {% endif %}
+                           {% if "unnumbered" in port %}
+                               {% if vars.update({'flags':"U"}) %}{% endif %}
+                           {% endif %}
                         {% endif -%}
                     {% endfor -%}
                 {% endif -%}
@@ -82,6 +85,9 @@ Flags: U-Unnumbered interface
                             {% if 'vrf_name' in portchannel %}
                                 {% if vars.update({'vrf':portchannel["vrf_name"]}) %}{% endif %}
                             {% endif %}
+                            {% if "unnumbered" in portchannel %}
+                                {% if vars.update({'flags':"U"}) %}{% endif %}
+                            {% endif %}
                         {% endif -%}
                     {% endfor -%}
                 {% endif -%}
@@ -114,6 +120,9 @@ Flags: U-Unnumbered interface
                         {% if vars.name == vlan["vlanName"] -%}
                             {% if "vrf_name" in vlan %}
                                 {% if vars.update({'vrf':vlan["vrf_name"]}) %}{% endif %}
+                            {% endif %}
+                            {% if "unnumbered" in vlan %}
+                                {% if vars.update({'flags':"U"}) %}{% endif %}
                             {% endif %}
                         {% endif -%}
                     {% endfor -%}

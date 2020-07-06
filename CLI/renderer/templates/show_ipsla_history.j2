@@ -1,0 +1,17 @@
+{% if json_output %}
+
+{% set ip_sla_history = json_output['openconfig-ip-sla:output'] %}
+
+{{ '%-25s %-25s'|format("Timestamp", "Event") }}
+{{ '%-25s %-25s'|format("---------", "-----") }}
+
+{% for ip_sla_item in ip_sla_history %}
+
+{% set sla_timestamp = ip_sla_item['timestamp'] %}
+{% set sla_event = ip_sla_item['event'] %}
+
+{{ '%-25s %-25s'|format(sla_timestamp, sla_event) }}
+
+{% endfor %}
+
+{% endif %}

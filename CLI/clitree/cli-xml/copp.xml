@@ -199,42 +199,9 @@ limitations under the License.
                     <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
                         <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES" dbpath="sonic-copp:sonic-copp/COPP_GROUP/cbs"/>
                     </PARAM>
-                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS" dbpath="sonic-copp:sonic-copp/COPP_GROUP/pir"/>
-                    </PARAM>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES" dbpath="sonic-copp:sonic-copp/COPP_GROUP/pbs" />
-                    </PARAM>
                 </PARAM>
                 <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
                     <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    </PARAM>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                </PARAM>
-                <PARAM name="mode" help="CoPP mode" ptype="SUBCOMMAND" mode="subcommand" >
-                    <PARAM name="mode-value" help="mode value" ptype="COPP_MODE" dbpath="sonic-copp:sonic-copp/COPP_GROUP/mode"/>
-                    <PARAM name="green" help="Green trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-                        <PARAM name="green-value" help="green trap action" ptype="COPP_TRAP_ACTION" dbpath="sonic-copp:sonic-copp/COPP_GROUP/green"/>
-                    </PARAM>
-                    <PARAM name="yellow" help="Yellow trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-                        <PARAM name="yellow-value" help="yellow trap action" ptype="COPP_TRAP_ACTION" dbpath="sonic-copp:sonic-copp/COPP_GROUP/yellow"/>
-                    </PARAM>
-                    <PARAM name="red" help="Red trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-                        <PARAM name="red-value" help="red trap action" ptype="COPP_TRAP_ACTION" dbpath="sonic-copp:sonic-copp/COPP_GROUP/red"/>
-                    </PARAM>
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_policer_action ${copp-action-name} ${__params}</ACTION>
@@ -252,15 +219,8 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="no police" help="Clears or resets rate limiting parameters">
-            <PARAM name="meter-type" help="Clears meter-type" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <PARAM name="cir" help="Clears committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <PARAM name="cbs" help="Clears committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="pir" help="Clears peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="pbs" help="Clears peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="mode" help="Clears mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="red" help="Clears red trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="yellow" help="Clear yellow trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="green" help="Clear green trap action" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_copp_policer_action ${copp-action-name} ${__params}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>Clear rate limiting parameters</DESCRIPTION>

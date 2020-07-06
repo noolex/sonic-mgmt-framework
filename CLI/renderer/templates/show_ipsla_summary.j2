@@ -1,0 +1,39 @@
+{% if json_output %}
+
+{% set ipslaoutput = json_output['openconfig-ip-sla:ip-slas'] %}
+
+{% if 'ip-sla' in ipslaoutput %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format("SLA#", "Type", "State", "Target", "VRF", "Transitions", "Last change") }}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format("----", "----", "-----", "------------------------", "-----------", "-----------", "-----------") }}
+{% endif %}
+
+{% set ip_sla_entry = ipslaoutput['ip-sla'] %}
+
+{% for ip_sla_instance in ip_sla_entry %}
+
+{% set sla_config = ip_sla_instance['config'] %}
+{% set sla_state = ip_sla_instance['state'] %}
+{% set sla_id = ip_sla_instance['ip-sla-id']%}
+
+{% if 'tcp-dst-ip' in sla_config %}
+
+{% if sla_state['tcp-operation-state'] == 'OPER_UP' %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "TCP", "Up", sla_config['tcp-dst-ip'], sla_config['vrf'], sla_state['transition-count'], sla_state['timestamp']) }}
+{% else %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "TCP", "Down", sla_config['tcp-dst-ip'], sla_config['vrf'], sla_state['transition-count'], sla_state['timestamp']) }}
+{% endif %}
+
+{% elif 'icmp-dst-ip' in sla_config %}
+
+{% if sla_state['icmp-operation-state'] == 'OPER_UP' %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "ICMP", "Up", sla_config['icmp-dst-ip'], sla_config['vrf'], sla_state['transition-count'], sla_state['timestamp']) }}
+{% else %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "ICMP", "Down", sla_config['icmp-dst-ip'], sla_config['vrf'], sla_state['transition-count'], sla_state['timestamp']) }}
+{% endif %}
+
+{% else %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "None", "None", "(none)", "default", sla_state['transition-count'], sla_state['timestamp']) }}
+{% endif %}
+
+{% endfor %}
+{% endif %}
