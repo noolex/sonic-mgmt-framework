@@ -630,4 +630,31 @@ limitations under the License.
      </COMMAND>
 </VIEW>
 
+
+<VIEW name="enable-view">
+<!--clear ipsla all -->
+    <COMMAND name = "clear ip sla"
+        help = "Reset IP SLA counter information"
+        >
+        <PARAM
+            name="id"
+            help="IP SLA ID (1 to 255)"
+            ptype="RANGE_1_255"
+            >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla clear_ipsla ${id}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND name = "clear ip sla all"
+        help = "Reset IP SLA counter information for all instances"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla clear_ipsla_all
+        </ACTION>
+    </COMMAND>
+</VIEW>
+
 </CLISH_MODULE>

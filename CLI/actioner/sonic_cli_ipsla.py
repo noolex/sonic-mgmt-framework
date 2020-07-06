@@ -50,6 +50,17 @@ def invoke(func, args):
             body = {"sonic-ip-sla:input": {"ip_sla_id": args[0]}}
             return aa.post(keypath, body)
 
+    # IP SLA clear
+    if func == 'clear_ipsla':
+        keypath = cc.Path('/restconf/operations/sonic-ip-sla:clear-ipsla-counters')
+        body = {"sonic-ip-sla:input": {"ip_sla_id": args[0]}}
+        return aa.post(keypath, body)
+
+    if func == 'clear_ipsla_all':
+        keypath = cc.Path('/restconf/operations/sonic-ip-sla:clear-ipsla-counters')
+        body = {"sonic-ip-sla:input": {"ip_sla_id": "all"}}
+        return aa.post(keypath, body)
+
     # IP SLA delete
     if func == 'del_ipsla' :
         keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}', slaid=args[0])
