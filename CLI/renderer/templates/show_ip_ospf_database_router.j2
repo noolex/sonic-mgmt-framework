@@ -1,0 +1,103 @@
+{% set vars = {'interface_name': "", 'area_id': ''} %}
+{% set ospf_global_list = json_output  %}
+{% for list_elem in ospf_global_list %}
+    {% if 'vrfName' in list_elem   %}
+VRF Name: {{list_elem['vrfName']}}
+    {% endif -%}
+    {% if 'self_router_id' in list_elem   %}
+    {{' '}}
+       OSPF Router with ID ({{list_elem['self_router_id']}})
+    {{' '}}
+    {% endif -%}
+    {% if 'interfacename' in list_elem %}
+        {% if vars.update({'interface_name':list_elem['interfacename']}) %}{% endif -%}
+    {% endif -%}
+    {% if 'openconfig-network-instance:areas' in  list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
+        {% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
+        {% for areainfo in area_list %}
+            {% if 'lsdb' in areainfo and 'state' in areainfo['lsdb'] and 'identifier' in areainfo['lsdb']['state'] %}
+                {% if vars.update({'area_id':areainfo['lsdb']['state']['identifier']}) %}{% endif %}
+				{% if 'openconfig-ospfv2-ext:stub' in areainfo and 'state' in areainfo['openconfig-ospfv2-ext:stub'] and 'enable' in areainfo['openconfig-ospfv2-ext:stub']['state'] and areainfo['openconfig-ospfv2-ext:stub']['state']['enable'] == True %}
+				{% if vars.update({'area_id':vars.area_id + " [Stub]"}) %}{% endif %}
+				{% endif %}
+                {{' '}}
+                Router Link States (Area {{vars.area_id}})
+                {{' '}}
+            {% endif %}
+            {% if 'lsdb' in areainfo and 'lsa-types' in areainfo['lsdb'] and 'lsa-type' in areainfo['lsdb']['lsa-types']  %}
+                {% set lsa_type_list = areainfo['lsdb']['lsa-types']['lsa-type'] %}
+                {% for lsa_type in lsa_type_list %}
+                    {% if 'type' in lsa_type and lsa_type['type'] == 'openconfig-ospf-types:ROUTER_LSA' %}
+                        {% if 'lsas' in lsa_type and 'lsa' in lsa_type['lsas'] %}
+                            {% set lsa_list = lsa_type['lsas']['lsa'] %}
+                            {% for lsa in lsa_list %}
+                                {% if 'state' in lsa and 'age' in lsa['state'] %}
+  LS age: {{lsa['state']['age']}}
+                                {% endif %}
+                                {% if 'state' in lsa and 'openconfig-ospfv2-ext:option' in lsa['state'] and 'openconfig-ospfv2-ext:option-expanded' in  lsa['state'] %}
+  Options: 0x{{lsa['state']['openconfig-ospfv2-ext:option']}}  : {{lsa['state']['openconfig-ospfv2-ext:option-expanded']}}
+                                {% endif %}
+                                {% if 'state' in lsa and 'openconfig-ospfv2-ext:flags' in lsa['state'] %}
+  LS Flags: 0x{{lsa['state']['openconfig-ospfv2-ext:flags']}}
+                                {% endif %}
+                                {% if 'router-lsa' in lsa and 'state' in lsa['router-lsa'] and 'openconfig-ospfv2-ext:flags' in lsa['router-lsa']['state']%}
+  Flags: 0x{{lsa['router-lsa']['state']['openconfig-ospfv2-ext:flags']}} {{lsa['router-lsa']['state']['openconfig-ospfv2-ext:flags-description']}}
+                                {% endif %}
+  LS Type: router-LSA
+                                {% if 'link-state-id' in lsa %}
+  Link State ID: {{lsa['link-state-id']}}
+                                {% endif %}
+                                {% if 'state' in lsa and 'advertising-router' in lsa['state'] %}
+  Advertising Router: {{lsa['state']['advertising-router']}}
+                                {% endif %}
+                                {% if 'state' in lsa and 'sequence-number'  in lsa['state'] %}
+  LS Seq Number: {{'%8x'|format(lsa['state']['sequence-number'])}}
+                                {% endif %}
+                                {% if 'state' in lsa and 'checksum'   in lsa['state'] %}
+  Checksum: 0x{{'%04x'|format(lsa['state']['checksum'])}}
+                                {% endif %}
+                                {% if 'state' in lsa and 'openconfig-ospfv2-ext:length'   in lsa['state'] %}
+  Length: {{lsa['state']['openconfig-ospfv2-ext:length']}}
+                                {% endif %}
+  {{' '}}
+                                {% if 'router-lsa' in lsa and 'state' in lsa['router-lsa'] and 'number-links' in lsa['router-lsa']['state']%}
+   Number of Links: {{lsa['router-lsa']['state']['number-links']}}
+   {{' '}}
+                                    {% if 'openconfig-ospfv2-ext:link-information' in lsa['router-lsa']['state'] %}
+                                        {% for link in lsa['router-lsa']['state']['openconfig-ospfv2-ext:link-information'] %}
+                                            {% if link['state']['type'] == 'openconfig-ospf-types:ROUTER_LSA_TRANSIT_NETWORK'%}
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: {{link['state']['link-id']}}
+     (Link Data) Router Interface address: {{link['state']['link-data']}}
+      Number of TOS metrics: {{link['state']['number-tos-metrics']}}
+       TOS 0 Metric: {{link['state']['metric']}}
+   {{' '}}
+                                            {% endif %}
+                                            {% if link['state']['type'] == 'openconfig-ospf-types:ROUTER_LSA_P2P'%}
+    Link connected to: another Router (point-to-point)
+     (Link ID) Neighboring Router ID: {{link['state']['link-id']}}
+     (Link Data) Router Interface address: {{link['state']['link-data']}}
+      Number of TOS metrics: 0
+       TOS 0 Metric: {{link['state']['metric']}}
+   {{' '}}
+                                            {% endif %}
+                                            {% if link['state']['type'] == 'openconfig-ospf-types:ROUTER_LSA_STUB_NETWORK'%}
+    Link connected to: Stub Network
+     (Link ID) Net: {{link['state']['link-id']}}
+     (Link Data) Network Mask: {{link['state']['link-data']}}
+      Number of TOS metrics: 0
+       TOS 0 Metric: {{link['state']['metric']}}
+   {{' '}}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endif %}
+                            {{' '}}
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endfor %}

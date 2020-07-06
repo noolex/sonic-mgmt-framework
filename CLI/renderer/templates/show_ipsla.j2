@@ -1,0 +1,183 @@
+{% if json_output %}
+
+{% set sla_entry = json_output['openconfig-ip-sla:ip-sla'][0] %}
+{% set sla_config = sla_entry['config'] %}
+{% set sla_state = sla_entry['state'] %}
+{% set sla_index = sla_entry['ip-sla-id'] %}
+
+{{'IP SLA Operation Number: %d'|format(sla_index)}}
+
+{% if 'icmp-dst-ip' in sla_config %}
+    {{'Type of Operation: ICMP-echo'}}
+    {{'ICMP destination IP address: %s'|format(sla_config['icmp-dst-ip'])}}
+
+    {% if 'icmp-source-ip' in sla_config %}
+    {{'ICMP source IP address: %s'|format(sla_config['icmp-source-ip'])}}
+    {% endif %}
+
+    {% if 'icmp-source-interface' in sla_config %}
+    {{'ICMP source interface: %s'|format(sla_config['icmp-source-interface'])}}
+    {% endif %}
+
+    {% if 'icmp-size' in sla_config %}
+    {{'ICMP request data size: %s'|format(sla_config['icmp-size'])}}
+    {% endif %}
+
+    {% if 'icmp-ttl' in sla_config %}
+    {{'ICMP Time-To-Live(TTL): %s'|format(sla_config['icmp-ttl'])}}
+    {% endif %}
+
+    {% if 'icmp-tos' in sla_config %}
+    {{'ICMP Type-of-Service(ToS): %s'|format(sla_config['icmp-tos'])}}
+    {% endif %}
+
+    {% if 'vrf' in sla_config %}
+    {{'Source VRF: %s'|format(sla_config['vrf'])}}
+    {% endif %}
+
+    {% if 'frequency' in sla_config %}
+    {{'Operation frequency (sec): %d'|format(sla_config['frequency'])}}
+    {% endif %}
+
+    {% if 'timeout' in sla_config %}
+    {{'Operation timeout (sec): %d'|format(sla_config['timeout'])}}
+    {% endif %}
+
+    {% if 'threshold' in sla_config %}
+    {{'Operation threshold: %d'|format(sla_config['threshold'])}}
+    {% endif %}
+
+
+    {% if 'icmp-operation-state' in sla_state %}
+    {% if sla_state['icmp-operation-state'] == 'OPER_UP' %}
+    {{'Operation state: Up'}}
+    {% else %}
+    {{'Operation state: Down'}}
+    {% endif %}
+    {% endif %}
+
+    {% if 'transition-count' in sla_state %}
+    {{'Operation state transitions: %d'|format(sla_state['transition-count'])}}
+    {% endif %}
+
+    {% if 'timestamp' in sla_state %}
+    {{'Operation last state change: %s'|format(sla_state['timestamp'])}}
+    {% endif %}
+
+    {% if 'icmp-echo-req-counter' in sla_state %}
+    {{'ICMP Echo Request counter: %s'|format(sla_state['icmp-echo-req-counter'])}}
+    {% endif %}
+
+    {% if 'icmp-echo-reply-counter' in sla_state %}
+    {{'ICMP Echo Reply counter: %s'|format(sla_state['icmp-echo-reply-counter'])}}
+    {% endif %}
+
+    {% if 'icmp-error-counter' in sla_state %}
+    {{'ICMP Error counter: %s'|format(sla_state['icmp-error-counter'])}}
+    {% endif %}
+
+    {% if 'icmp-fail-counter' in sla_state %}
+    {{'ICMP Invalid responses: %s'|format(sla_state['icmp-fail-counter'])}}
+    {% endif %}
+{% elif 'tcp-dst-ip' in sla_config %}
+    {{'Type of Operation: TCP-connect'}}
+    {{'TCP destination IP address: %s'|format(sla_config['tcp-dst-ip'])}}
+
+    {% if 'tcp-dst-port' in sla_config %}
+    {{'TCP destination port: %d'|format(sla_config['tcp-dst-port'])}}
+    {% endif %}
+
+    {% if 'tcp-source-ip' in sla_config %}
+    {{'TCP source IP address: %s'|format(sla_config['tcp-source-ip'])}}
+    {% endif %}
+
+    {% if 'tcp-source-port' in sla_config %}
+    {{'TCP source port: %d'|format(sla_config['tcp-source-port'])}}
+    {% endif %}
+
+    {% if 'icmp-source-ip' in sla_config %}
+    {{'TCP source interface: %s'|format(sla_config['tcp-source-interface'])}}
+    {% endif %}
+
+    {% if 'tcp-source-interface' in sla_config %}
+    {{'TCP Time-To-Live(TTL): %s'|format(sla_config['tcp-ttl'])}}
+    {% endif %}
+
+    {% if 'tcp-tos' in sla_config %}
+    {{'TCP Type-of-Service(ToS): %s'|format(sla_config['tcp-tos'])}}
+    {% endif %}
+
+    {% if 'vrf' in sla_config %}
+    {{'Source VRF: %s'|format(sla_config['vrf'])}}
+    {% endif %}
+
+    {% if 'frequency' in sla_config %}
+    {{'Operation frequency (sec): %d'|format(sla_config['frequency'])}}
+    {% endif %}
+
+    {% if 'timeout' in sla_config %}
+    {{'Operation timeout (sec): %d'|format(sla_config['timeout'])}}
+    {% endif %}
+
+    {% if 'threshold' in sla_config %}
+    {{'Operation threshold: %d'|format(sla_config['threshold'])}}
+    {% endif %}
+
+    {% if 'tcp-operation-state' in sla_state %}
+    {% if sla_state['tcp-operation-state'] == 'OPER_UP' %}
+    {{'Operation state: Up'}}
+    {% else %}
+    {{'Operation state: Down'}}
+    {% endif %}
+    {% endif %}
+
+    {% if 'transition-count' in sla_state %}
+    {{'Operation state transitions: %d'|format(sla_state['transition-count'])}}
+    {% endif %}
+
+    {% if 'timestamp' in sla_state %}
+    {{'Operation last state change: %s'|format(sla_state['timestamp'])}}
+    {% endif %}
+
+    {% if 'tcp-connect-req-counter' in sla_state %}
+    {{'TCP connect request counter: %s'|format(sla_state['tcp-connect-req-counter'])}}
+    {% endif %}
+
+    {% if 'tcp-operation-success-counter' in sla_state %}
+    {{'TCP connect success counter: %s'|format(sla_state['tcp-operation-success-counter'])}}
+    {% endif %}
+
+    {% if 'tcp-operation-fail-counter' in sla_state %}
+    {{'TCP connect error counter: %s'|format(sla_state['tcp-operation-fail-counter'])}}
+    {% endif %}
+
+{% else %}
+    {{'Type of Operation: None'}}
+    {% if 'vrf' in sla_config %}
+    {{'Source VRF: %s'|format(sla_config['vrf'])}}
+    {% endif %}
+
+    {% if 'frequency' in sla_config %}
+    {{'Operation frequency (sec): %d'|format(sla_config['frequency'])}}
+    {% endif %}
+
+    {% if 'timeout' in sla_config %}
+    {{'Operation timeout (sec): %d'|format(sla_config['timeout'])}}
+    {% endif %}
+
+    {% if 'threshold' in sla_config %}
+    {{'Operation threshold: %d'|format(sla_config['threshold'])}}
+    {% endif %}
+
+    {{'Operation state: None'}}
+
+    {% if 'transition-count' in sla_state %}
+    {{'Operation state transitions: %d'|format(sla_state['transition-count'])}}
+    {% endif %}
+
+    {% if 'timestamp' in sla_state %}
+    {{'Operation last state change: %s'|format(sla_state['timestamp'])}}
+    {% endif %}
+
+{% endif %}
+{% endif %}

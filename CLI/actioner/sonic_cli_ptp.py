@@ -27,7 +27,7 @@ def decode_base64(string):
 
 
 def get_unicast_table(aa, instance_num, port_num):
-    tmp_keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}',
+    tmp_keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}/port-ds-list',
                           instance_number=instance_num)
     tmp_response = aa.get(tmp_keypath)
     if tmp_response is None:
@@ -38,17 +38,15 @@ def get_unicast_table(aa, instance_num, port_num):
         response = tmp_response.content
 
         if response is not None and response != {}:
-            for i in response['ietf-ptp:instance-list']:
-                if 'port-ds-list' in i:
-                    for j in i['port-ds-list']:
-                        if 'port-number' in j:
-                            if j['port-number'] == int(port_num):
-                                found = 1
-                                if 'ietf-ptp-ext:unicast-table' in j:
-                                    if j['ietf-ptp-ext:unicast-table'] == '':
-                                        return found, "None"
-                                    else:
-                                        return found, j['ietf-ptp-ext:unicast-table']
+            for j in response['ietf-ptp:port-ds-list']:
+                if 'port-number' in j:
+                    if j['port-number'] == int(port_num):
+                        found = 1
+                        if 'ietf-ptp-ext:unicast-table' in j:
+                            if j['ietf-ptp-ext:unicast-table'] == '':
+                                return found, "None"
+                            else:
+                                return found, j['ietf-ptp-ext:unicast-table']
 
     return found, "None"
 
@@ -223,7 +221,7 @@ def invoke(func, args):
                           instance_number=args[0])
         rc = aa.get(keypath)
     elif func == 'get_ietf_ptp_ptp_instance_list':
-        keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}',
+        keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}/port-ds-list',
                           instance_number=args[0])
         rc = aa.get(keypath)
     elif func == 'get_ietf_ptp_ptp_instance_list_current_ds':

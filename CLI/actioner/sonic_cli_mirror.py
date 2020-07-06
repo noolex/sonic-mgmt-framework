@@ -42,6 +42,9 @@ def invoke(func, args):
         if args.destination is not '':
             if args.destination != "erspan":
                 entry["dst_port"] = args.destination
+            else:
+                if not args.dst_ip and not args.src_ip and not args.dscp and not args.ttl:
+                    return aa._make_error_response('%Error: Invalid ERSPAN session configuration')
 
         if args.source is not '':
             entry["src_port"] = args.source

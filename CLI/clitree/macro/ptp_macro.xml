@@ -2,7 +2,7 @@
 
 	<MACRODEF name="PTP-CFG-IF-TYPE">
 		<PARAM name="cfg-if-type" help="Interface type" mode="switch" ptype="SUBCOMMAND">
-			<PARAM name="Ethernet" help="Ethernet interface type" ptype="PHY_INTERFACE" dbpath="sonic-ptp:sonic-ptp/PTP_PORT/underlying-interface" />
+			<PARAM name="Ethernet" help="Ethernet interface type" ptype="PHY_INTERFACE" dbpath="sonic-ptp:sonic-ptp/PTP_PORT/PTP_PORT_LIST/underlying-interface" />
 			<!-- Comment out portchannel support <PARAM name="PortChannel" help="PortChannel Interface type" ptype="SUBCOMMAND" mode="subcommand"> <PARAM name="ptp_port_number" help="Enter PTP port number" ptype="UINT"/> </PARAM> -->
 		</PARAM>
 	</MACRODEF>
@@ -14,7 +14,7 @@
 	</MACRODEF>
 	<MACRODEF name="PTP-DEST-NODE">
 		<PARAM name="cfg-ptp-master_node" help="PTP master-table subcommands" mode="switch" ptype="SUBCOMMAND">
-			<PARAM name="l3_ip" help="IP address" ptype="IPV4V6_ADDR" dbpath="sonic-ptp:sonic-ptp/PTP_PORT/unicast-table" />
+			<PARAM name="l3_ip" help="IP address" ptype="IPV4V6_ADDR" dbpath="sonic-ptp:sonic-ptp/PTP_PORT/PTP_PORT_LIST/unicast-table" />
 			<PARAM name="mac" help="MAC address" ptype="MAC_ADDR" />
 		</PARAM>
 	</MACRODEF>

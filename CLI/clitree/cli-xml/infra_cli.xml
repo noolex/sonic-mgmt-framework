@@ -55,5 +55,12 @@
                 builtin="clish_pyobj">sonic_cli_infra get_openconfig_infra_state uptime infra_show.j2
             </ACTION>
         </COMMAND>
+        <COMMAND
+            name="show reboot-cause"
+            help="Show cause of most recent reboot">
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra get_openconfig_infra_state reboot-cause infra_show.j2
+            </ACTION>
+        </COMMAND>
     </VIEW>
 </CLISH_MODULE>

@@ -23,10 +23,10 @@
 		<EXAMPLE>
                sonic# show logging servers
 			   --------------------------------------------------------------------------------
-			   HOST            PORT      SOURCE-IP       VRF
+			   HOST            PORT      SOURCE-INTERFACE       VRF
 			   --------------------------------------------------------------------------------
-			   30.1.1.1        514       -               Vrf2
-			   40.1.1.1        514       -               -
+			   30.1.1.1        514       -                      Vrf2
+			   40.1.1.1        514       -                      -
 			   sonic#
 
         </EXAMPLE>
@@ -59,15 +59,14 @@
       <DOCGEN>
         <DESCRIPTION>Configure remote syslog server to forward syslog messages</DESCRIPTION>
 		<EXAMPLE>
-			   sonic(config)# logging server host 20.1.1.1 source-ip 2.1.1.1 vrf-name Vrf1
+			   sonic(config)# logging server 20.1.1.1 source-iinterface Ethernet 2 vrf Vrf1
                sonic(config)#
            </EXAMPLE>
       </DOCGEN>
     </COMMAND>
     <!-- no commands -->
     <COMMAND name="no logging" help="Unconfigure syslog server configuration"/>
-    <COMMAND name="no logging server" help="Unconfigure syslog server configuration"/>
-    <COMMAND name="no logging server host" help="Unconfigure a server for syslog">
+    <COMMAND name="no logging server" help="Unconfigure syslog server configuration">
       <PARAM name="host" help="IPV4|IPV6 address" ptype="IPV4V6_ADDR"> </PARAM>
       <PARAM name="attribute" help="" ptype="STRING" mode="switch" optional="true">
         <PARAM name="remote-port" help="Unconfigure remote syslog server's port" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
@@ -78,7 +77,7 @@
       <DOCGEN>
         <DESCRIPTION>Unconfigure given syslog server</DESCRIPTION>
         <EXAMPLE>
-               sonic(config)# no logging server host 30.1.1.1
+               sonic(config)# no logging server 30.1.1.1
                sonic(config)# 
         </EXAMPLE>
       </DOCGEN>
