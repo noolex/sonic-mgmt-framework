@@ -28,8 +28,10 @@ limitations under the License.
       <NAMESPACE ref="configure-view" help="false" completion="false" />
       <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
       <NAMESPACE ref="configure-router-bgp-l2vpn-view" help="false" completion="false" />
-
-      <COMMAND name="advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN">
+      <COMMAND name="show configuration" help="show bgp configuration">
+          <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-l2vpn-vni view_keys="vrf-name=${vrf-name},afi-safi-name=L2VPN_EVPN,vni-number=${vninum}" </ACTION>
+      </COMMAND>
+      <COMMAND name="advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/advertise-default-gw=true">
         <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_vni_advertise_default_gw ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -49,7 +51,7 @@ limitations under the License.
       </COMMAND>
 
       <COMMAND name="rd" help="Route distinguisher" >
-        <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD"/>
+        <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/route-distinguisher"/>
         <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_vni_rd ${vrf-name} L2VPN_EVPN ${vninum} ${rdvalue}</ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -68,7 +70,7 @@ limitations under the License.
         </DOCGEN>
       </COMMAND>
 
-      <COMMAND name="route-target" help="Route target">
+      <COMMAND name="route-target" help="Route target" render_command_cb="bgp_af_l2vpn_vni_rt">
         <PARAM name="rttype" help="advertise options" ptype="ADVERTISE_OPTIONS">
           <PARAM name="rt" help="Route target value" ptype="RT"/>
         </PARAM>
