@@ -142,3 +142,33 @@ func (t *CustomValidation) ValidateMtuForPOMemberCount(vc *CustValidationCtxt) C
 
 	return CVLErrorInfo{ErrCode: CVL_SUCCESS}
 }
+
+
+//ValidatePortChannelCreationDeletion Custom validation for PortChannel creation or deletion
+func (t *CustomValidation) ValidatePortChannelCreationDeletion(vc *CustValidationCtxt) CVLErrorInfo {
+	if vc.CurCfg.VOp == OP_CREATE {
+
+	        keys := strings.Split(vc.CurCfg.Key, "|")
+	        if len(keys) > 0 {
+		        if keys[0] == "PORTCHANNEL" {
+			        poKeys, err := vc.RClient.Keys("PORTCHANNEL" + "|*").Result()
+			        if err != nil {
+				         return CVLErrorInfo{ErrCode: CVL_SEMANTIC_KEY_NOT_EXIST}
+			        }
+
+			        if len(poKeys) >= 128 {
+				        util.TRACE_LEVEL_LOG(util.TRACE_SEMANTIC, "Maximum number of portchannels already created.")
+				        return CVLErrorInfo{
+					        ErrCode:          CVL_SEMANTIC_ERROR,
+					        TableName:        "PORTCHANNEL",
+					        Keys:             strings.Split(vc.CurCfg.Key, "|"),
+					        ConstraintErrMsg: "Maximum number(128) of portchannels already created in the system. Cannot create new portchannel.",
+					        ErrAppTag:        "max-reached",
+				        }
+			        }
+                       }
+                }
+        }
+
+	return CVLErrorInfo{ErrCode: CVL_SUCCESS}
+}
