@@ -28,7 +28,7 @@ limitations under the License.
     <!--=================================  PTYPES =================================-->
     <PTYPE name="COPP_RANGE_0_1023" method="integer" pattern="0..1023" help=""/>
     <PTYPE name="COPP_TRAP_ACTION" method="select" pattern="drop(DROP) forward(FORWARD) copy(COPY) copy_cancel(COPY_CANCEL) trap(TRAP) log(LOG) deny(DENY) transit(TRANSIT)" help=""/>
-    <PTYPE name="COPP_RANGE_0_47" method="integer" pattern="0..47" help=""/>
+    <PTYPE name="COPP_RANGE_0_23" method="integer" pattern="0..23" help=""/>
     <PTYPE name="COPP_METER_TYPE" method="select" pattern="pps(PACKETS) bps(BYTES)" help=""/>
     <PTYPE name="COPP_MODE" method="select" pattern="sr_tcm(SR_TCM) tr_tcm(TR_TCM)" help=""/>
 
@@ -104,8 +104,8 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-view">
         <COMMAND name="copp-action" help="Configures a CoPP action group" view="copp-action-view"
-                 viewid="copp-action-name=${copp-action-name}" view_keys="name=*" view_tables="sonic-copp:sonic-copp/COPP_GROUP/name={name}" >
-            <PARAM name="copp-action-name" help="Name of the classifier (up to 63 characters)" ptype="STRING_63" dbpath="sonic-copp:sonic-copp/COPP_GROUP/name"/>
+            viewid="copp-action-name=${copp-action-name}" view_keys="name=*" view_tables="sonic-copp:sonic-copp/COPP_GROUP/COPP_GROUP_LIST/name={name}" >
+        <PARAM name="copp-action-name" help="Name of the classifier (up to 63 characters)" ptype="STRING_63" dbpath="sonic-copp:sonic-copp/COPP_GROUP/COPP_GROUP_LIST/name"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_copp_action ${copp-action-name}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>Configure CoPP action group</DESCRIPTION>
@@ -135,7 +135,7 @@ limitations under the License.
         <COMMAND name="no set" help="Clears parameters" />
 
 		<COMMAND name="set trap-action" help="Sets CoPP trap action" >
-            <PARAM name="trap-action-value" help="CoPP trap action" ptype="COPP_TRAP_ACTION" dbpath="sonic-copp:sonic-copp/COPP_GROUP/trap_action" />
+            <PARAM name="trap-action-value" help="CoPP trap action" ptype="COPP_TRAP_ACTION" dbpath="sonic-copp:sonic-copp/COPP_GROUP/COPP_GROUP_LIST/trap_action" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_trap_action ${copp-action-name} ${trap-action-value}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>Set a CoPP trap action</DESCRIPTION>
@@ -147,7 +147,7 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="set trap-queue" help="Sets CoPP queue id" >
-            <PARAM name="queue-id-value" help="Queue ID value (0 to 47)" ptype="COPP_RANGE_0_47" dbpath="sonic-copp:sonic-copp/COPP_GROUP/queue"/>
+            <PARAM name="queue-id-value" help="Queue ID value (0 to 23)" ptype="COPP_RANGE_0_23" dbpath="sonic-copp:sonic-copp/COPP_GROUP/COPP_GROUP_LIST/queue"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_queue_id_action ${copp-action-name} ${queue-id-value}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>Set a CoPP queue id</DESCRIPTION>
@@ -170,7 +170,7 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="set trap-priority" help="Sets CoPP trap priority">
-            <PARAM name="trap-priority-value" help="Trap priority value (0 to 1023)" ptype="COPP_RANGE_0_1023" dbpath="sonic-copp:sonic-copp/COPP_GROUP/trap_priority"/>
+            <PARAM name="trap-priority-value" help="Trap priority value (0 to 1023)" ptype="COPP_RANGE_0_1023" dbpath="sonic-copp:sonic-copp/COPP_GROUP/COPP_GROUP_LIST/trap_priority"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_trap_priority_action ${copp-action-name} ${trap-priority-value}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>Set a CoPP trap priority</DESCRIPTION>
@@ -195,9 +195,9 @@ limitations under the License.
         <COMMAND name="police" help="Sets rate limiting parameters" render_command_cb="copp_police">
             <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch" db_flag="SEP_CLI">
                 <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS" dbpath="sonic-copp:sonic-copp/COPP_GROUP/cir"/>
+                    <PARAM name="cir-value" help="CIR value. Default is packets per second" ptype="POLICER_RATE_BITS" dbpath="sonic-copp:sonic-copp/COPP_GROUP/COPP_GROUP_LIST/cir"/>
                     <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES" dbpath="sonic-copp:sonic-copp/COPP_GROUP/cbs"/>
+                        <PARAM name="cbs-value" help="CBS value. Default is packets" ptype="POLICER_RATE_BYTES" dbpath="sonic-copp:sonic-copp/COPP_GROUP/COPP_GROUP_LIST/cbs"/>
                     </PARAM>
                 </PARAM>
                 <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
