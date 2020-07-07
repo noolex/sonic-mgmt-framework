@@ -41,7 +41,7 @@
           {% if "counters" in interface[key]["state"] %}
             {% if vars.update({'in_oversize':interface[key]["state"]["counters"]["in-oversize-frames"]}) %}{% endif %}
             {% if vars.update({'out_oversize':interface[key]["state"]["counters"]["openconfig-interfaces-ext:out-oversize-frames"]}) %}{% endif %}
-            {% if vars.update({'in_frames_128_255':interface[key]["state"]["counters"]["openconfig-if-ethernet-ext:in-distribution"]["in-frames-128-255-octets"]}) %}{% endif %}
+            {% if vars.update({'in_frames_128_255':interface[key]["state"]["counters"]["openconfig-if-ethernet-ext2:eth-in-distribution"]["in-frames-128-255-octets"]}) %}{% endif %}
           {% endif %}
         {% endif %}
       {% endif %}
