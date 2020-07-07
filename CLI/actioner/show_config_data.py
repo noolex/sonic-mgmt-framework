@@ -31,7 +31,8 @@ view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
                          'configure-router-bgp-template', 'configure-router-bgp-nbr'],
 'configure-router-bgp-template':['configure-router-bgp-template-ipv4', 'configure-router-bgp-template-ipv6', 'configure-router-bgp-template-l2vpn'],
-'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
+'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn'],
+'configure-router-bgp-l2vpn':['configure-router-bgp-l2vpn-vni']}
 
 config_view_hierarchy= \
       ['configure',
@@ -126,6 +127,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'bgp_af_ipv6_nw'          : show_router_bgp_af_nw_cmd,
                   'bgp_af_ipv6_ag'          : show_router_bgp_af_ag_cmd,
                   'bgp_af_ipv6_redist'      : show_router_bgp_af_redist_cmd,
+                  'bgp_af_l2vpn_rt'         : show_router_bgp_af_l2vpn_rt_cmd,
+                  'bgp_af_l2vpn_vni_rt'     : show_router_bgp_af_l2vpn_vni_rt_cmd,
                   'v4prefix_lists_cmd'      : show_v4prefix_lists,
                   'v6prefix_lists_cmd'      : show_v6prefix_lists,
                   'static_routes_entry'     : show_ntwk_static_v4route,

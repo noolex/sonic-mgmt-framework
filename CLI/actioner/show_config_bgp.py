@@ -383,3 +383,35 @@ def show_bgpaspath_lists(render_tables):
                       cmd_str += cmd_prfx + aspath['name']+ " " + member + ";"
 
   return 'CB_SUCCESS', cmd_str
+
+def util_show_router_bgp_af_rt(render_tables, sonic_uri):
+    cmd_str=''
+    if sonic_uri in render_tables:
+        cmd_prfx = "route-target"
+        af_map = render_tables[sonic_uri]
+
+        rt_imp = rt_exp = []
+        if 'import-rts' in af_map:
+            rt_imp = af_map['import-rts']
+        if 'export-rts' in af_map:
+            rt_exp = af_map['export-rts']
+
+        if len(rt_imp) > 0:
+            for rt in rt_imp:
+                if len(rt_exp) > 0 and rt in rt_exp:
+                    cmd_str = cmd_str + cmd_prfx + ' both ' + rt + ';'
+                else:
+                    cmd_str = cmd_str + cmd_prfx + ' import ' + rt + ';'
+
+        if len(rt_exp) > 0:
+            for rt in rt_exp:
+                if rt not in rt_imp:
+                    cmd_str = cmd_str + cmd_prfx + ' export ' + rt + ';'
+
+    return 'CB_SUCCESS', cmd_str
+
+def show_router_bgp_af_l2vpn_rt_cmd(render_tables):
+    return util_show_router_bgp_af_rt(render_tables, 'sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST')
+
+def show_router_bgp_af_l2vpn_vni_rt_cmd(render_tables):
+    return util_show_router_bgp_af_rt(render_tables, 'sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST')
