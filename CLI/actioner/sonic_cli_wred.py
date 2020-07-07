@@ -30,7 +30,7 @@ def invoke(func, args=[]):
         g_min_val = int(args[1]) * kb_to_bytes
         g_min_val_str = str(g_min_val)
         g_max_val = int(args[2]) * kb_to_bytes
-        g_max_val_str = str(g_min_val)
+        g_max_val_str = str(g_max_val)
         body = {"openconfig-qos-ext:config" : {"green-min-threshold" : g_min_val_str,
                                                "green-max-threshold" : g_max_val_str,
                                                "green-drop-probability" : args[3],
