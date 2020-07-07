@@ -1,8 +1,8 @@
 {{'========================================'}}
 {{'ZTP'}}
 {{'========================================'}}
-{% if 'admin_mode' in json_output %}
-{{'ZTP Admin Mode'.ljust(20)}}: {{json_output['admin_mode']}}
+{% if 'admin-mode' in json_output %}
+{{'ZTP Admin Mode'.ljust(20)}}: {{json_output['admin-mode']}}
 {% endif %}
 {% if 'service' in json_output %}
 {{'ZTP Service'.ljust(20)}}: {{json_output['service']}}
@@ -25,13 +25,16 @@
 {% if 'error' in json_output and json_output['error'] != 'NONE' %}
 {{'Error'.ljust(20)}}: {{json_output['error']}}
 {% endif %}
-{% if 'activity_string' in json_output %}
+{% if 'activity-string' in json_output %}
 {{' '}}
 {{json_output['activity_string']}}
 {% endif %}
-{% if 'CONFIG_SECTION_LIST' in json_output %}
-{% set c_dict = json_output['CONFIG_SECTION_LIST'] %}
-{% for val in c_dict %}
+
+{% if 'config-section' in json_output %}
+{% if 'config-section-list' in json_output['config-section'] %}
+{% set c_dict = json_output['config-section']['config-section-list'] %}
+{% for item in c_dict %}
+{% set val = item['state'] %}
 {{' '}}
 {{'---------------------------------------------'}}
 {{val['sectionname'].ljust(20)}}
@@ -53,4 +56,5 @@
 {{'Halt on Failure'.ljust(20)}}: {{val['haltonfailure']}}
 {% endif %}
 {% endfor %}
+{% endif %}
 {% endif %}

@@ -1,0 +1,15 @@
+{% set vars = {'module': ""} %}
+{% set vars = {'res_cnt': ""} %}
+{% set vars = {'state': ""} %}
+{% if json_output -%}
+{{'------------------------------------------------------'}}
+{{'Module'.ljust(20)}}{{'Restore_count'.ljust(15)}} {{'State'.ljust(15)}}
+{{'------------------------------------------------------'}}
+{% for modules in json_output['openconfig-warm-restart:submodules']|sort(attribute='state.submodule') %}
+      {% if vars.update({'module':modules["state"]["submodule"]}) %}{% endif %}
+      {% if vars.update({'res_cnt':modules["state"]["restore-count"]}) %}{% endif %}
+      {% if vars.update({'state':modules["state"]["state"]}) %}{% endif %}
+{{'%-20s'|format(vars.module)}}{{'%-15s'|format(vars.res_cnt)}} {{'%-15s'|format(vars.state)}}
+{% endfor %}
+{% endif %}
+

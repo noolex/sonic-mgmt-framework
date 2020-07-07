@@ -61,24 +61,27 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/counters', name=args[0])
         return api.get(path)
 
+    if func == 'get_sonic_portchannel_sonic_portchannel_portchannel_global_portchannel_global_list':
+        path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL/PORTCHANNEL_GLOBAL_LIST=GLOBAL')
+        return api.get(path)
+
     return api.cli_not_implemented(func)
     
 
-def get_lag_data():
+def get_lag_data(lagName):
 
     api_response = {}
     output = {}
+    args = [lagName]
 
-    try:  
-        if sys.argv[1] == "get_all_portchannels":
+    try:
+        if lagName == "all": #get_all_portchannels
             portchannel_func = 'get_sonic_portchannel_sonic_portchannel_lag_table'
             portchannel_conf_func = 'get_sonic_portchannel_sonic_portchannel_portchannel'
         else :
             portchannel_func = 'get_sonic_portchannel_sonic_portchannel_lag_table_lag_table_list'
             portchannel_conf_func = 'get_sonic_portchannel_sonic_portchannel_portchannel_portchannel_list'
-            
-        args = sys.argv[2:]
-        
+
         output = {}
         response = invoke_api(portchannel_func, args)
         if response.ok():
@@ -120,19 +123,18 @@ def get_lag_data():
     return output
 
 
-def get_lacp_data():
+def get_lacp_data(lagName):
 
     api_response1 = {}
     resp = {}
-    
+    args = [lagName]
+
     try:
-        if sys.argv[1] == "get_all_portchannels":
+        if lagName == "all":
             lacp_func = 'get_openconfig_lacp_lacp_interfaces'
         else :
             lacp_func = 'get_openconfig_lacp_lacp_interfaces_interface'
 
-        args = sys.argv[2:]
-        
         response = invoke_api(lacp_func, args)
         if response.ok():
             if response.content is not None:
@@ -175,32 +177,54 @@ def get_counters(api_response):
     except Exception as e:
         print("Exception when calling get_counters : %s\n" %(e))
 
+def get_global_config_data():
+
+    try:
+        lacp_func = 'get_sonic_portchannel_sonic_portchannel_portchannel_global_portchannel_global_list'
+
+        args = []
+        value = {}
+        api_response = invoke_api(lacp_func, args)
+        if api_response.ok():
+            response = api_response.content
+            if response is not None:
+                if 'sonic-portchannel:PORTCHANNEL_GLOBAL_LIST' in response.keys():
+                    value = response['sonic-portchannel:PORTCHANNEL_GLOBAL_LIST']
+
+    except Exception as e:
+        print("Exception when calling get_global_config_data : %s\n" %(e))
+
+    return value
 
 def run():
-    
-    api_response = get_lag_data()
-    api_response1 = get_lacp_data()
-    get_counters(api_response)
-    
 
-    # Combine Outputs
-    response = {"portchannel": api_response, "lacp": api_response1}
-    
     if sys.argv[1] == "get_all_portchannels":
+        iflist = ["all"]
         template_file = sys.argv[2]
     else:
+        iflist = sys.argv[2].rstrip().split(',') 
         template_file = sys.argv[3]
 
-    # Check for PortChannel existence
-    if 'LAG_TABLE_LIST' not in response['portchannel']['sonic-portchannel:LAG_TABLE'] or \
-        'admin_status' not in response['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0].keys():
-        response = {}
+    global_config_response = get_global_config_data()
 
-    show_cli_output(template_file, response)
+    for intf in iflist:
+        api_response = get_lag_data(intf)
+        api_response1 = get_lacp_data(intf)
+        get_counters(api_response)
+
+        # Combine Outputs
+        response = {"portchannel": api_response, "lacp": api_response1, "global": global_config_response}
+
+        # Check for PortChannel existence
+        if 'LAG_TABLE_LIST' not in response['portchannel']['sonic-portchannel:LAG_TABLE'] or \
+            'admin_status' not in response['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0].keys():
+            response = {}
+
+        show_cli_output(template_file, response)
 
 
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)
-    run()       
+    run()
 

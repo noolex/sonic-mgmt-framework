@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2020 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<ROOT>
+    <MACRODEF name="ROUTE_MAP_SET_COMMUNITY_OPTIONS">
+        <PARAM name="comm-num1" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN" optional="true">
+           <PARAM name="comm-num2" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN" optional="true">
+              <PARAM name="comm-num3" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN" optional="true">
+                 <PARAM name="comm-num4" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN" optional="true">
+                    <PARAM name="comm-num5" help="Community number aa:nn format 0..65535:0..65535" ptype="AA_NN" optional="true">
+                       <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true"/>
+                       <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true"/>
+                       <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+                       <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+                       <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+                    </PARAM>
+                    <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true"/>
+                    <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true"/>
+                    <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+                    <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+                    <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+                 </PARAM>
+                 <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true"/>
+                 <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true"/>
+                 <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+                 <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+                 <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+              </PARAM>
+              <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true"/>
+              <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true"/>
+              <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+              <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+              <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+           </PARAM>
+           <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true"/>
+           <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true"/>
+           <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+           <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+           <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+        </PARAM>
+
+        <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true">
+           <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true"/>
+           <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+           <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+           <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+        </PARAM>
+        <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true">
+           <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true"/>
+           <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+           <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+           <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+         </PARAM>
+        <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true">
+           <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true"/>
+           <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true"/>
+           <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+           <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+        </PARAM>   
+        <PARAM name="no-peer" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true">
+           <PARAM name="local-as" mode="subcommand" ptype="SUBCOMMAND" help="Do not send outside local AS (well-known community)" optional="true"/>
+           <PARAM name="no-advertise" mode="subcommand" ptype="SUBCOMMAND" help="Do not advertise to any peer (well-known community)" optional="true"/>
+           <PARAM name="no-export" mode="subcommand" ptype="SUBCOMMAND" help="Do not export to next AS (well-known community)" optional="true"/>
+           <PARAM name="additive" mode="subcommand" ptype="SUBCOMMAND" help="Add to existing community" optional="true"/>
+        </PARAM>
+    </MACRODEF>
+</ROOT>
+

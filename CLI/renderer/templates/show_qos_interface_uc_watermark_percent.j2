@@ -1,0 +1,35 @@
+{% if json_output %}
+{% set ucindex = {}%}
+{% set watermark = {}%}
+{% set uccount = namespace(value=0) %}
+{% set queue_info_list = json_output['queue'] %}
+{% for queue_info in queue_info_list %}
+    {% set q_stats_info = queue_info['state'] %}
+    {% set queue =  q_stats_info['name'] %}
+    {% set qname = queue.split(':') %}
+    {% set traffic_type = q_stats_info['openconfig-qos-ext:traffic-type'] %}
+    {% if traffic_type == "UC" %}
+       {% if ucindex.update({qname[1] :  "UC" + qname[1] }) %} {% endif %}
+       {% set uccount.value = uccount.value + 1 %}
+    {% endif %}
+    {% if watermark.update({traffic_type + qname[1] :  q_stats_info['openconfig-qos-ext:watermark-percent']}) %} {% endif %}
+{% endfor %}
+{{'Egress queue watermark percent per unicast queue:'}}
+{{ '\n' -}}
+{%- for n in range(0, uccount.value) %}
+{{- '-----'}} 
+{%- endfor %}
+{{ '\n' -}}
+{%- for n in range(0, uccount.value) %}
+{{- '%-5s'|format(ucindex[n|string])}}
+{%- endfor %}
+{{ '\n' -}}
+{%- for n in range(0, uccount.value) %}
+{{- '-----'}}
+{%- endfor %}
+{{ '\n' -}}
+{%- for n in range(0, uccount.value) %}
+{{- '%-5s'|format(watermark[ucindex[n|string]])}}
+{%- endfor %}
+{{ '\n' -}}
+{% endif %}

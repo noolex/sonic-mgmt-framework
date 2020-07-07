@@ -1,0 +1,16 @@
+{% set vars = {'polling_interval': ""} %}
+
+{% if json_output -%}
+{% for key_json in json_output %}
+{% set cfg = json_output[key_json] %}
+
+{% if vars.update({'polling_interval':cfg['polling-interval']}) %}{% endif %}
+
+--------------------------------------------------------------------------------
+{{'%-20s'|format("Attribute")}}{{'%-4s'|format("Value/State")}}
+--------------------------------------------------------------------------------
+
+{{'%-20s'|format("Polling Interval")}}{{'%-1s'|format(vars.polling_interval)}} second(s)
+
+{% endfor %}
+{% endif %}

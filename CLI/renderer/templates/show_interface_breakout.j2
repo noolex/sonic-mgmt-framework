@@ -1,11 +1,14 @@
+{% if json_output -%}
+-----------------------------------------------
+{{'%-6s'|format("Port")}}{{'%-15s'|format("Breakout Mode")}}{{'%-14s'|format("Status")}}{{'%-20s'|format("Interfaces")}}
+-----------------------------------------------
+{% for key, entry in json_output.iteritems() %}
 {% set vars = {'name': ""} %}
 {% set vars = {'channels': ""} %}
 {% set vars = {'speed': ""} %}
-{% if json_output -%}
------------------------------------
-{{'%-20s'|format("Interface")}}{{'%-20s'|format("Breakout Mode")}}
------------------------------------
-{% for key, entry in json_output.iteritems() %}
+{% set vars = {'status': ""} %}
+{% set vars = {'members': ""} %}
+{% set vars = {'first': true} %}
 {% if vars.update({'name':key|string}) %} {% endif %}
 {% for field, value in entry.iteritems() %}
 {% if 'speed' in field %}
@@ -15,14 +18,27 @@
 {% if 'channel' in field %}
     {% if vars.update({'channels':value}) %}{% endif %}
 {% endif %}
+{% if 'openconfig-port-breakout-ext:status' in field %}
+    {% if vars.update({'status':value}) %}{% endif %}
+{% endif %}
+{% if 'openconfig-port-breakout-ext:members' in field %}
+    {% if vars.update({'members':value}) %}{% endif %}
+{% endif %}
 {% endfor %}
 {% if 'G' in vars.speed %}
 {% set mode = vars.channels|string + "x" + vars.speed %}
 {% else %}
-{% set mode = "not-set" %}
+{% set mode = "Default" %}
 {% endif %}
-{% if 'Ethernet' in vars.name %}
-{{'%-20s'|format(vars.name)}}{{'%-20s'|format(mode)}}
+{% if '/' in vars.name %}
+{% for member in vars.members %}
+{% if vars.first %}
+{{'%-6s'|format(vars.name)}}{{'%-15s'|format(mode)}}{{'%-14s'|format(vars.status)}}{{'%-20s'|format(member)}}
+{% if vars.update({'first':false}) %}{% endif %}
+{% elif "Default" not in mode %}
+{{'%-35s'|format("")}}{{'%-20s'|format(member)}}
+{% endif %}
+{% endfor %}
 {% endif %}
 {% endfor %}
 {% endif %}

@@ -1,0 +1,27 @@
+{% set vars = {'interface-id': "None", 'src-addr': "0.0.0.0", 'mcastgrp-addr': "0.0.0.0", 'timer': "0", 'source-forwarding': "N", 'uptime': "0", 'ip-addr': "0"} %}
+
+{% set igmp_global_list = json_output %}
+{% for list_elem in igmp_global_list %}
+
+{% if 'openconfig-igmp-ext:sourcess' in list_elem %}
+{{'Interface'.ljust(15)}}{{'Address'.ljust(20)}}{{'Group'.ljust(20)}}{{'Source'.ljust(20)}}{{'Timer'.ljust(15)}}{{'Fwd'.ljust(10)}}{{'Uptime'}}
+{% set igmpsourcelist = list_elem['openconfig-igmp-ext:sources'] %}
+
+{% for igmpsourceinfo in igmpsourcelist %}
+
+{% if 'source' in igmpsourceinfo %}
+{% set sourcelist = list_elem['openconfig-igmp-ext:sources']['source'] %}
+{% endif %}
+
+{% for sourceinfo in sourcelist %}
+
+{% if 'state' in sourceinfo %}
+{{(sourceinfo['interface-id']|string).ljust(15)}}{{(sourceinfo['state']['ip-addr']|string).ljust(20)}}{{(sourceinfo['mcastgrp-addr']|string).ljust(20)}}{{(sourceinfo['state']['src-addr']|string).ljust(20)}}{{(sourceinfo['state']['timer']|string).ljust(15)}}{{(sourceinfo['state']['sources-forwarding']|string).ljust(10)}}{{(sourceinfo['state']['uptime'])}}
+{% endif %}
+
+{%endfor %}
+
+{% endfor %}
+{% endif %}
+{% endfor %}
+

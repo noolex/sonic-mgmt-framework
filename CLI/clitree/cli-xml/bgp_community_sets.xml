@@ -24,12 +24,7 @@ limitations under the License.
     <COMMAND name="show bgp" help="Show BGP community, ext community, as list information"> </COMMAND>
     <COMMAND name="show bgp community-list" help="Community list">
         <PARAM name="list-name" help="Community list name" ptype="STRING" optional="true"> </PARAM>
-      <ACTION> if test "${list-name}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_community_show_specific show_bgp_com.j2 ${list-name}&#xA;
-        else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_community_show_all show_bgp_com.j2&#xA;
-        fi&#xA;
-      </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_community_show_specific show_bgp_com.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
           This command displays BGP community lists configured on the device.
@@ -58,12 +53,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND name="show bgp ext-community-list" help="Extended community list">
         <PARAM name="list-name" help="Extended community list name" ptype="STRING" optional="true"> </PARAM>
-      <ACTION> if test "${list-name}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_ext_community_show_specific show_bgp_extcom.j2 ${list-name}&#xA;
-        else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_ext_community_show_all show_bgp_extcom.j2&#xA;
-        fi&#xA;
-      </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_ext_community_show_specific show_bgp_extcom.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
           This command displays BGP extended community lists configured on the device.
@@ -89,12 +79,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND name="show bgp as-path-access-list" help="AS path access list">
         <PARAM name="list-name" help="AS path list name" ptype="STRING" optional="true"> </PARAM>
-      <ACTION> if test "${list-name}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_aspath_show_specific show_bgp_aspath.j2 ${list-name}&#xA;
-        else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_aspath_show_all show_bgp_aspath.j2&#xA;
-        fi&#xA;
-      </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_aspath_show_specific show_bgp_aspath.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
           This command displays BGP AS Path lists configured on the device.
@@ -128,7 +113,10 @@ limitations under the License.
 
     <COMMAND
         name="bgp community-list"
-        help="Add BGP community-list entry">
+        help="Add BGP community-list entry" escape_chars=""
+        command_keys="name=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/COMMUNITY_SET/COMMUNITY_SET_LIST/name={name}"
+        render_command_cb="bgp_com_list">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -158,7 +146,7 @@ limitations under the License.
                             ptype="AA_NN"
                             >
                             <PARAM
-                                name="local-AS"
+                                name="local-as"
                                 help="Do not send outside local AS (well-known community)"
                                 ptype="SUBCOMMAND"
                                 mode="subcommand"
@@ -214,7 +202,7 @@ limitations under the License.
                             </PARAM>
                         </PARAM>
                         <PARAM
-                            name="local-AS"
+                            name="local-as"
                             help="Do not send outside local AS (well-known community)"
                             ptype="SUBCOMMAND"
                             mode="subcommand"
@@ -288,7 +276,7 @@ limitations under the License.
                                 >
                             </PARAM>
                             <PARAM
-                                name="local-AS"
+                                name="local-as"
                                 help="Do not send outside local AS (well-known community)"
                                 ptype="SUBCOMMAND"
                                 mode="subcommand"
@@ -349,7 +337,7 @@ limitations under the License.
                                 >
                             </PARAM>
                             <PARAM
-                                name="local-AS"
+                                name="local-as"
                                 help="Do not send outside local AS (well-known community)"
                                 ptype="SUBCOMMAND"
                                 mode="subcommand"
@@ -410,7 +398,7 @@ limitations under the License.
                                 >
                             </PARAM>
                             <PARAM
-                                name="local-AS"
+                                name="local-as"
                                 help="Do not send outside local AS (well-known community)"
                                 ptype="SUBCOMMAND"
                                 mode="subcommand"
@@ -468,7 +456,7 @@ limitations under the License.
                 mode="subcommand"
                 >
                 <PARAM
-                    name="community-expanded-list-name"
+                    name="community-list-name"
                     help="Communty list name"
                     ptype="STRING"
                     >
@@ -504,17 +492,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION>
-        if test "${bgp-subcommands}" = "standard"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_community_standard ${community-list-name} ${__full_line}&#xA;
-
-        elif test "${bgp-subcommands}" = "expanded"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_community_expanded ${community-expanded-list-name} ${__full_line}&#xA;
-
-        else&#xA;
-            builtin="clish_nop"&#xA;
-        fi
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_community_${bgp-subcommands} ${community-list-name} ${__full_line}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command creates BGP community list
@@ -541,6 +519,10 @@ limitations under the License.
     <COMMAND
         name="bgp as-path-list"
         help="BGP autonomous system path"
+        escape_chars=""
+        command_keys="name=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/AS_PATH_SET/AS_PATH_SET_LIST/name={name}"
+        render_command_cb="bgp_aspath_list"
         >
         <PARAM
             name="as-path-list-name"
@@ -548,22 +530,13 @@ limitations under the License.
             ptype="STRING"
             >
             <PARAM
-                name="regex"
-                help="Regular expression to match the BGP AS paths"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
+                name="regx-id"
+                help="Regular expression"
+                ptype="STRING"
                 >
-                <PARAM
-                    name="regx-id"
-                    help="Regular expression"
-                    ptype="STRING"
-                    >
-                </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_as_path_list ${as-path-list-name} ${regx-id}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_as_path_list ${as-path-list-name} ${regx-id}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command creates BGP AS Path list
@@ -577,8 +550,8 @@ limitations under the License.
       <EXAMPLE summary="The following command creates two entries for a as-path list named
         asp_private">
         sonic# configure terminal
-        sonic(config)# bgp as-path-list asp_private regex ^65000.*6510565109$
-        sonic(config)# bgp as-path-list asp_private regex 65107.*65200
+        sonic(config)# bgp as-path-list asp_private ^65000.*6510565109$
+        sonic(config)# bgp as-path-list asp_private 65107.*65200
       </EXAMPLE>
      </DOCGEN>
     </COMMAND>
@@ -589,7 +562,7 @@ limitations under the License.
 
     <COMMAND
         name="no bgp community-list"
-        help="Delete BGP community-list entry">
+        help="Delete BGP community-list entry" escape_chars="">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -621,7 +594,7 @@ limitations under the License.
                             >
                         </PARAM>
                         <PARAM
-                            name="local-AS"
+                            name="local-as"
                             help="Do not send outside local AS (well-known community)"
                             ptype="SUBCOMMAND"
                             mode="subcommand"
@@ -659,7 +632,7 @@ limitations under the License.
                 mode="subcommand"
                 >
                 <PARAM
-                    name="community-expanded-list-name"
+                    name="community-list-name"
                     help="Communty list name"
                     ptype="STRING"
                     >
@@ -674,22 +647,13 @@ limitations under the License.
             </PARAM>
         </PARAM>
 
-    <ACTION>
-        if test "${bgp-subcommands}" = "standard"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_community_standard_delete ${community-list-name} ${__full_line}&#xA;
-
-        elif test "${bgp-subcommands}" = "expanded"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_community_expanded_delete ${community-expanded-list-name} ${__full_line}&#xA;
-
-        else&#xA;
-            builtin="clish_nop"&#xA;
-        fi
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_community_${bgp-subcommands}_delete ${community-list-name} ${__full_line}</ACTION>
     </COMMAND>
 
     <COMMAND
         name="no bgp as-path-list"
         help="Deleting BGP autonomous system path"
+        escape_chars=""
         >
         <PARAM
             name="as-path-list-name"
@@ -697,23 +661,14 @@ limitations under the License.
             ptype="STRING"
             >
             <PARAM
-                name="regex"
-                help="Regular expression to match the BGP AS paths"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
+                name="regx-id"
+                help="Regular expression"
+                ptype="STRING"
                 optional="true"
                 >
-                <PARAM
-                    name="regx-id"
-                    help="Regular expression"
-                    ptype="STRING"
-                    >
-                </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_as_path_list_delete ${as-path-list-name} ${regx-id}&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_as_path_list_delete ${as-path-list-name} ${regx-id}</ACTION>
     </COMMAND>
 </VIEW>
 </CLISH_MODULE>

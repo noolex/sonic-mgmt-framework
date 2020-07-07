@@ -23,21 +23,11 @@ limitations under the License.
    <VIEW name="enable-view">
     <COMMAND name="show ip prefix-list" help="IPv4 prefix list">
         <PARAM name="list-name" help="prefix list name" ptype="STRING" optional="true"> </PARAM>
-      <ACTION> if test "${list-name}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ip_prefix_show_specific show_ip_prefix.j2 ${list-name}&#xA;
-        else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ip_prefix_show_all show_ip_prefix.j2&#xA;
-        fi&#xA;
-      </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ip_prefix_show_specific show_ip_prefix.j2 ${list-name}</ACTION>
     </COMMAND>
     <COMMAND name="show ipv6 prefix-list" help="IPv6 prefix list">
         <PARAM name="list-name" help="prefix list name" ptype="STRING" optional="true"> </PARAM>
-      <ACTION> if test "${list-name}" != ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ipv6_prefix_show_specific show_ipv6_prefix.j2 ${list-name}&#xA;
-        else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ipv6_prefix_show_all show_ipv6_prefix.j2&#xA;
-        fi&#xA;
-      </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ipv6_prefix_show_specific show_ipv6_prefix.j2 ${list-name}</ACTION>
     </COMMAND>
    </VIEW>
 
@@ -48,6 +38,9 @@ limitations under the License.
     <COMMAND
         name="ip prefix-list"
         help="Build a prefix list"
+        command_keys="name=*,prefix=*,mask=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
+        render_command_cb="v4prefix_lists_cmd"
         >
         <PARAM
             name="prefix-name"
@@ -144,14 +137,15 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION>
-    python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ip_prefix_create ${__full_line}
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ip_prefix_create ${__full_line}</ACTION>
     </COMMAND>
 
     <COMMAND
         name="ipv6 prefix-list"
         help="Build a prefix list"
+        command_keys="name=*,prefix=*,mask=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
+        render_command_cb="v6prefix_lists_cmd"
         >
         <PARAM
             name="prefix-name"
@@ -248,9 +242,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION> 
-       python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ip_prefix_create ${__full_line}
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ip_prefix_create ${__full_line}</ACTION>
     </COMMAND>
     <COMMAND
         name="no ip prefix-list"
@@ -352,9 +344,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION>
-    python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ip_prefix_delete ${__full_line}
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ip_prefix_delete ${__full_line}</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -457,9 +447,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION>
-    python $SONIC_CLI_ROOT/sonic-cli-ip-prefix.py ip_prefix_delete ${__full_line}
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ip_prefix_delete ${__full_line}</ACTION>
     </COMMAND>
 </VIEW>
 </CLISH_MODULE>

@@ -36,8 +36,8 @@ Route map {{'%s'| format(vars.pol_name)}}:
      {% for match in conditions %}
        {% if "config" is in match  %}
          {% set match_config = conditions[match] %}
-         {% if "name" in match_config %} 
-          {% if vars.update({'call_rmap': match_config['name']}) %} {% endif %}
+         {% if "call-policy" in match_config %}
+          {% if vars.update({'call_rmap': match_config['call-policy']}) %} {% endif %}
          {% endif %}
          {% if "install-protocol-eq" in match_config %}
           {% if vars.update({'protocol': conditions['config']['install-protocol-eq']}) %} {% endif %}
@@ -124,10 +124,47 @@ Route map {{'%s'| format(vars.pol_name)}}:
        {% if "set-as-path-prepend" is in set_bgp %}
         {% set set_bgpas =  set_bgp['set-as-path-prepend'] %}
         {% if "asn" in set_bgpas['config'] %}
-      {{"as-path prepend " + set_bgpas['config']['asn']|string()}}
+          {{"as-path prepend " + set_bgpas['config']['asn']|string()}}
         {% endif %}
         {% if "repeat-n" in set_bgpas['config'] %}
-      {{"repeat-n " + set_bgpas['config']['repeat-n']|string()}}
+          {{"repeat-n " + set_bgpas['config']['repeat-n']|string()}}
+        {% endif %}
+       {% endif %}
+       {% if "set-community" is in set_bgp %}
+        {% set temp_comm = [] %}
+        {% set set_bgp_set_comm_method =  set_bgp['set-community']['config']['method'] %}
+        {% if set_bgp_set_comm_method == "INLINE" %}
+         {% set comm = set_bgp['set-community']['inline']['config']['communities'] %}
+         {% for item in comm %}
+           {% if item == "openconfig-bgp-types:NO_EXPORT_SUBCONFED" %}
+            {% set item = "local-as" %}
+           {% elif item == "openconfig-bgp-types:NO_ADVERTISE" %}
+            {% set item = "no-advertise" %}
+           {% elif item == "openconfig-bgp-types:NO_EXPORT" %}
+            {% set item = "no-export" %}
+           {% elif item == "openconfig-bgp-types:NOPEER" %}
+            {% set item = "no-peer" %}
+           {% elif item == "openconfig-routing-policy-ext:ADDITIVE" %}
+            {% set item = "additive" %}
+           {% endif %}
+          {% do temp_comm.append(item) %}
+         {% endfor %}
+      {{"communities " + temp_comm|join(",")}}
+        {% elif set_bgp_set_comm_method == "REFERENCE" %}
+      {{"communities reference " + set_bgp['set-community']['reference']['config']['community-set-ref']|string()}}
+        {% endif %}
+       {% endif %}
+       {% if "set-ext-community" is in set_bgp %}
+        {% set temp_comm = [] %}
+        {% set set_bgp_set_comm_method =  set_bgp['set-ext-community']['config']['method'] %}
+        {% if set_bgp_set_comm_method == "INLINE" %}
+         {% set comm = set_bgp['set-ext-community']['inline']['config']['communities'] %}
+         {% for item in comm %}
+          {% do temp_comm.append(item) %}
+         {% endfor %}
+      {{"extcommunities " + temp_comm|join(",")}}
+        {% elif set_bgp_set_comm_method == "REFERENCE" %}
+      {{"extcommunities reference " + set_bgp['set-ext-community']['reference']['config']['ext-community-set-ref']|string()}}
         {% endif %}
        {% endif %}
        {% set set_bgpconf = actions[set]['config'] %}

@@ -1,0 +1,20 @@
+{% set vars = {'ipv6_nexthop_high_threshold': ""} %}
+{% set vars = {'ipv6_nexthop_low_threshold': ""} %}
+{% set vars = {'ipv6_nexthop_threshold_type': ""} %}
+
+{% if json_output -%}
+{% for key_json in json_output %}
+
+Resource Name         Threshold Type      Low Threshold    High Threshold
+--------------------  ----------------  ---------------  ----------------
+
+{% set info = json_output[key_json] %}
+
+{% if vars.update({'ipv6_nexthop_high_threshold':info['high']}) %}{% endif %}
+{% if vars.update({'ipv6_nexthop_low_threshold':info['low']}) %}{% endif %}
+{% if vars.update({'ipv6_nexthop_threshold_type':info['type']}) %}{% endif %}
+
+{{'%-22s'|format('ipv6_nexthop')}}{{'%-18s'|format(vars.ipv6_nexthop_threshold_type)}}{{'%15s'|format(vars.ipv6_nexthop_low_threshold)}}{{'%18s'|format(vars.ipv6_nexthop_high_threshold)}}
+
+{% endfor %}
+{% endif %}

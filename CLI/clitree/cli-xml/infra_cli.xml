@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<CLISH_MODULE
+      xmlns="http://www.dellemc.com/sonic/XMLSchema"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema 
+      http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+      >
+
+    <PTYPE
+        name="BOOT_OPTIONS"
+        pattern="-[a-z|\?]"
+        help="options"
+        />
+
+    <!--MODE : boot view -->
+    <VIEW name="enable-view">
+        <COMMAND
+            name="reboot"
+            help="reboot [options] (-h shows help)">
+            <PARAM name = "options" help = "reboot [options] (-h for help)" optional = "true" ptype = "BOOT_OPTIONS" default="null"> </PARAM>
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra get_sonic_infra_reboot reboot ${options} infra_reboot.j2
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="warm-reboot"
+            help="warm-reboot [options] (-h shows help)">
+            <PARAM name = "options" help = "warm-reboot [options] (-h for help)" optional = "true" ptype = "BOOT_OPTIONS" default="null"> </PARAM>
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra get_sonic_infra_reboot warm-reboot ${options} infra_reboot.j2
+            </ACTION>
+        </COMMAND>
+        <COMMAND 
+            name="fast-reboot"
+            help="fast-reboot [options] (-h shows help)">
+            <PARAM name = "options" help = "fast-reboot [options] (-h for help)" optional = "true" ptype = "BOOT_OPTIONS" default="null"> </PARAM>
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra get_sonic_infra_reboot fast-reboot ${options} infra_reboot.j2 
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="show clock"
+            help="Show system date and time">
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra get_openconfig_infra_state clock infra_show.j2
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="show uptime"
+            help="Show system uptime">
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra get_openconfig_infra_state uptime infra_show.j2
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="show reboot-cause"
+            help="Show cause of most recent reboot">
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra get_openconfig_infra_state reboot-cause infra_show.j2
+            </ACTION>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>

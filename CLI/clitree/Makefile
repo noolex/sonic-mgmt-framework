@@ -41,11 +41,13 @@ $(cli_done): $(CLI_XML_FILES) $(CLI_XML_MACRO_FILES)
 	python scripts/klish_preproc_cmdtree.py ${TGT_DIR}/command-tree ${TGT_DIR}/cli-macro 3
 	cp ./../actioner/*.py ${TGT_DIR}/.
 	cp ../renderer/scripts/*.py ${TGT_DIR}/scripts
-	cp ../renderer/templates/* ${TGT_DIR}/render-templates
+	cp -r ../renderer/templates/* ${TGT_DIR}/render-templates
 	cp scripts/sonic-clish.xsd ${TGT_DIR}/command-tree
 	(cd ${TGT_DIR}/command-tree ; xmllint --noout --schema sonic-clish.xsd ${TGT_DIR}/command-tree/*.xml && \
             xmllint --noout --schema sonic-clish.xsd ${TGT_DIR}/command-tree/include/*.xml) || exit 1
-	rm -rf ${TGT_DIR}/cli-macro
+	python scripts/config_db.py ${TGT_DIR}/command-tree ${TGT_DIR}/render-templates/DB.txt
+	python scripts/reformDB.py ${TGT_DIR}/render-templates/DB.txt ${TGT_DIR}/render-templates/DB.txt
+	rm -rf {TGT_DIR}/cli-macro
 	rm -rf scripts/*.pyc
 	touch $@
 

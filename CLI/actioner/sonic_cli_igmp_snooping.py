@@ -55,7 +55,7 @@ def invoke(func, args):
         
         body=collections.defaultdict(dict)
         
-        if len(args) == 2 :
+        if len(args) == 1 :
             body = { "interface": [                    
                       { 
                         "name": args[0],   
@@ -66,7 +66,7 @@ def invoke(func, args):
                     ]
                    }
             
-        elif args[2] == 'querier' :
+        elif args[1] == 'querier' :
             body = { "interface": [                    
                       { 
                         "name": args[0],   
@@ -78,7 +78,7 @@ def invoke(func, args):
                     ]
                    }
             
-        elif args[2] == 'fast-leave' :
+        elif args[1] == 'fast-leave' :
             body = { "interface": [                    
                       { 
                         "name": args[0],   
@@ -90,77 +90,68 @@ def invoke(func, args):
                     ]
                    }
             
-        elif args[2] == 'version' :
+        elif args[1] == 'version' :
             body = { "interface": [                    
                       { 
                         "name": args[0],   
                         "config" : {
-                        "version": int(args[3]),
+                        "version": int(args[2]),
                         "enabled": True
                         }
                       }
                     ]
                    }
             
-        elif args[2] == 'query-interval' :
+        elif args[1] == 'query-interval' :
             body = { "interface": [                    
                       { 
                         "name": args[0],   
                         "config" : {
-                        "query-interval": int(args[3]),
+                        "query-interval": int(args[2]),
                         "enabled": True
                         }
                       }
                     ]
                    }
             
-        elif args[2] == 'last-member-query-interval' :
+        elif args[1] == 'last-member-query-interval' :
             body = { "interface": [                    
                       { 
                         "name": args[0],   
                         "config" : {
-                        "last-member-query-interval": int(args[3]),
+                        "last-member-query-interval": int(args[2]),
                         "enabled": True
                         }
                       }
                     ]
                    }
             
-        elif args[2] == 'query-max-response-time' :
+        elif args[1] == 'query-max-response-time' :
             body = { "interface": [                    
                       { 
                         "name": args[0],   
                         "config" : {
-                        "query-max-response-time": int(args[3]),
+                        "query-max-response-time": int(args[2]),
                         "enabled": True
                         }
                       }
                     ]
                    }
             
-        elif args[2] == 'mrouter' :
+        elif args[1] == 'mrouter' :
             body = { "interface": [                    
                       { 
                         "name": args[0],   
                         "config" : {
-                        "mrouter-interface": [(args[4])],
+                        "mrouter-interface": [(args[3])],
                         "enabled": True
                         }
                       }
                     ]
                    }
                         
-        elif args[2] == 'static-group' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "static-multicast-group": [ { "group": args[3], "outgoing-interface": [args[5]] } ],
-                        "enabled": True
-                        }
-                      }
-                    ]
-                   }
+        elif args[1] == 'static-group' :
+            body = {"interface":[{"config":{"enabled":True,"name":args[0]},"name":args[0],"staticgrps":{"static-multicast-group":[{"config":{"outgoing-interface":[args[4]]},"group":args[2],"source-addr":"0.0.0.0"}]}}]}
         else:    
             print("%Error: Invalid command")
             exit(1)
@@ -169,41 +160,41 @@ def invoke(func, args):
     elif func == 'delete_igmp_snooping_interfaces_interface_config' :
         keypath = None
         
-        if len(args) == 2 :
+        if len(args) == 1 :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}',
                 vlanid=args[0])
-        elif args[2] == 'querier' :
+        elif args[1] == 'querier' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/querier',
                 vlanid=args[0])            
-        elif args[2] == 'fast-leave' :
+        elif args[1] == 'fast-leave' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/fast-leave',
                 vlanid=args[0])
-        elif args[2] == 'version' :
+        elif args[1] == 'version' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/version',
                 vlanid=args[0])
-        elif args[2] == 'query-interval' :
+        elif args[1] == 'query-interval' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/query-interval',
                 vlanid=args[0])
-        elif args[2] == 'last-member-query-interval' :
+        elif args[1] == 'last-member-query-interval' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/last-member-query-interval',
                 vlanid=args[0])
-        elif args[2] == 'query-max-response-time' :
+        elif args[1] == 'query-max-response-time' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/query-max-response-time',
                 vlanid=args[0])
-        elif args[2] == 'mrouter' :
+        elif args[1] == 'mrouter' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/mrouter-interface={ifname}',
-                vlanid=args[0], ifname=args[4])
-        elif args[2] == 'static-group' :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/static-multicast-group={grpAddr}/outgoing-interface={ifname}',
-                vlanid=args[0], grpAddr=args[3], ifname=args[5])
+                vlanid=args[0], ifname=args[3])
+        elif args[1] == 'static-group' :
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/staticgrps/static-multicast-group={grpAddr},0.0.0.0/outgoing-interface={ifname}',
+                vlanid=args[0], grpAddr=args[2], ifname=args[4])
             api_response = aa.delete (keypath)
             if api_response.ok():
-                keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/static-multicast-group={grpAddr}/outgoing-interface',
-                                  vlanid=args[0], grpAddr=args[3])
+                keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/staticgrps/static-multicast-group={grpAddr},0.0.0.0/outgoing-interface',
+                                  vlanid=args[0], grpAddr=args[2])
                 get_response = aa.get(keypath)
                 if get_response.ok() and len(get_response.content) == 0:
-                    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/static-multicast-group={grpAddr}',
-                        vlanid=args[0], grpAddr=args[3])
+                    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/staticgrps/static-multicast-group={grpAddr},0.0.0.0',
+                        vlanid=args[0], grpAddr=args[2])
                     return aa.delete (keypath)
                 else:
                     return api_response
@@ -247,10 +238,10 @@ def run(func, args):
             #error response
             print api_response.error_message()
 
-    except:
-            # system/network error
-            print "%Error: Transaction Failure"
-
+    except Exception as e:
+        # system/network error
+        print e
+        print "%Error: Transaction Failure"
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

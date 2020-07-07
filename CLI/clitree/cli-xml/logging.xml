@@ -15,9 +15,6 @@
   <!--=======================================================-->
   <VIEW name="enable-view">
     <COMMAND help="show logging servers" name="show logging">
-      <ACTION builtin="clish_nop"/>
-      <xi:include href="include/pipe.xml"/>
-      <xi:include href="include/pipe.xml"/>
     </COMMAND>
     <COMMAND name="show logging servers" help="Show logging server information">
       <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_servers </ACTION>
@@ -26,10 +23,10 @@
 		<EXAMPLE>
                sonic# show logging servers
 			   --------------------------------------------------------------------------------
-			   HOST            PORT      SOURCE-IP       VRF
+			   HOST            PORT      SOURCE-INTERFACE       VRF
 			   --------------------------------------------------------------------------------
-			   30.1.1.1        514       -               Vrf2
-			   40.1.1.1        514       -               -
+			   30.1.1.1        514       -                      Vrf2
+			   40.1.1.1        514       -                      -
 			   sonic#
 
         </EXAMPLE>
@@ -40,43 +37,47 @@
   <VIEW name="configure-view">
     <!-- syslog -->
     <COMMAND name="logging" help="Syslog server configuration"/>
-    <COMMAND name="logging server" help="Syslog server configuration"/>
     <!-- logging server configuration commands -->
-    <COMMAND name="logging server host" help="Configure remote syslog server">
-      <PARAM name="host" help="IPV4|IPV6 address" ptype="IPV4V6_ADDR"> </PARAM>
-      <PARAM name="remote-port" help="RADIUS server's authentication port" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+    <COMMAND name="logging server" help="Configure remote syslog server">
+      <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="STRING"> </PARAM>
+      <PARAM name="remote-port" help="Remote syslog server's port" mode="subcommand" ptype="SUBCOMMAND" optional="true">
         <PARAM name="vrport" help="(default: 514)" ptype="LOGGING_REMOTE_PORT"> </PARAM>
       </PARAM>
-      <PARAM name="source-ip" help="Source ip address" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="vsource-ip" help="" ptype="IPV4V6_ADDR"> </PARAM>
+      <PARAM name="source-interface" help="Source ip address" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+        <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
+          <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+        </PARAM>
       </PARAM>
-      <PARAM name="vrf-name" help="VRF to use" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+      <PARAM name="vrf" help="VRF to use" mode="subcommand" ptype="SUBCOMMAND" optional="true">
         <PARAM name="vvrf" help="" ptype="LOGGING_SERVER_VRF"> </PARAM>
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_logging patch_openconfig_system_logging_server_config_host ${host} rport=${vrport} source_ip=${vsource-ip} vrf=${vvrf}</ACTION>
+	  <ACTION builtin="clish_pyobj">sonic_cli_logging patch_openconfig_system_logging_server_config_host ${host} rport=${vrport} vrf=${vvrf} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
       <DOCGEN>
         <DESCRIPTION>Configure remote syslog server to forward syslog messages</DESCRIPTION>
 		<EXAMPLE>
-			   sonic(config)# logging server host 20.1.1.1 source-ip 2.1.1.1 vrf-name Vrf1
+			   sonic(config)# logging server 20.1.1.1 source-iinterface Ethernet 2 vrf Vrf1
                sonic(config)#
            </EXAMPLE>
       </DOCGEN>
     </COMMAND>
     <!-- no commands -->
     <COMMAND name="no logging" help="Unconfigure syslog server configuration"/>
-    <COMMAND name="no logging server" help="Unconfigure syslog server configuration"/>
-    <COMMAND name="no logging server host" help="Unconfigure a server for syslog">
+    <COMMAND name="no logging server" help="Unconfigure syslog server configuration">
       <PARAM name="host" help="IPV4|IPV6 address" ptype="IPV4V6_ADDR"> </PARAM>
       <PARAM name="attribute" help="" ptype="STRING" mode="switch" optional="true">
         <PARAM name="remote-port" help="Unconfigure remote syslog server's port" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
-        <PARAM name="source-ip" help="Unconfigure syslog server source-ip" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
-        <PARAM name="vrf-name" help="Unconfigure syslog server's vrf" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
+        <PARAM name="source-interface" help="Unconfigure syslog server source-interface" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
+        <PARAM name="vrf" help="Unconfigure syslog server's vrf" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_logging delete_openconfig_system_looging_server_config_host ${host} ${attribute}</ACTION>
       <DOCGEN>
         <DESCRIPTION>Unconfigure given syslog server</DESCRIPTION>
         <EXAMPLE>
-               sonic(config)# no logging server host 30.1.1.1
+               sonic(config)# no logging server 30.1.1.1
                sonic(config)# 
         </EXAMPLE>
       </DOCGEN>

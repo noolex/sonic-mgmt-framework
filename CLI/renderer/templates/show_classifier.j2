@@ -1,78 +1,82 @@
 {% set class_list = json_output.keys() %}
 {% set last_elem = class_list|last %}
-{% for class_name in class_list %}
+{% for class_name in json_output %}
     {% set class_data = json_output[class_name] %}
+    {% if class_data["MATCH_TYPE"].lower() == "copp" %}
+        {% if 'TRAP_IDS' in class_data %}
+            {{- 'Classifier' }} {{ class_name }} {{ 'match-type copp' }}
+            {% set list = class_data['TRAP_IDS'].split(',') %}
+            {% for i in list %}
+                {{- '  protocol' }} {{ i }}
+            {% endfor %}
+        {% endif %}
+    {% else %}
     {{- 'Classifier'}} {{ class_name }} {{ 'match-type' }} {{ class_data["MATCH_TYPE"].lower() }}{{ "\n" }}
-    {{- '  Description: ' }} {{ class_data["DESCRIPTION"] }}{{ "\n" }}
+    {{- '  Description:' }} {{ class_data["DESCRIPTION"] }}{{ "\n" }}
     {{- '  Match:' }}{{ "\n" }}
     {% if ("ACL_NAME" in class_data) and (class_data["ACL_NAME"] ) %}
-    {% if class_data["ACL_NAME"].endswith("_ACL_L2") %}
-    {{ "mac" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-7] }}
-    {% elif class_data["ACL_NAME"].endswith("_ACL_IPV4") %}
-    {{ "ip" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-9] }}
-    {% elif class_data["ACL_NAME"].endswith("_ACL_IPV6") %}
-    {{ "ipv6" }} {{ 'access-group' }} {{ class_data["ACL_NAME"][:-9] }}
-    {% else %}
-    {{ 'match access-group' }} {{ class_data["ACL_NAME"] }}
+        {% if class_data["ACL_TYPE"] == "L2" %}
+            {{- "    mac" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% elif class_data["ACL_TYPE"] == "L3" %}
+            {{- "    ip" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% elif class_data["ACL_TYPE"] == "L3V6" %}
+            {{- "    ipv6" }} {{ 'access-group' }} {{ class_data["ACL_NAME"] }}
+        {% endif %}
     {% endif %}
+    {% if "ETHER_TYPE" in class_data %}
+        {{- '    ethertype' }} {{ ethertype_to_user_fmt(class_data["ETHER_TYPE"]) }}
     {% endif %}
-    {% if ("ETHER_TYPE" in class_data) and (class_data["ETHER_TYPE"] ) %}
-        {{- '    ether-type' }} {{ class_data["ETHER_TYPE"] }}
+    {% if "SRC_MAC" in class_data %}
+        {{- '    src-mac' }} {{ mac_addr_to_user_fmt(class_data["SRC_MAC"]) }}
     {% endif %}
-    {% if ("SRC_MAC" in class_data) and (class_data["SRC_MAC"])  %}
-        {{- '    src-mac' }} {{ class_data["SRC_MAC"] }}
+    {% if "DST_MAC" in class_data %}
+        {{- '    dst-mac' }} {{ mac_addr_to_user_fmt(class_data["DST_MAC"]) }}
     {% endif %}
-    {% if ("DST_MAC" in class_data) and (class_data["DST_MAC"]) %}
-        {{- '    dst-mac' }} {{ class_data["DST_MAC"] }}
+    {% if "VLAN" in class_data %}
+        {{- '    vlan' }} {{ class_data["VLAN"] }}
     {% endif %}
-    {% if ("VLAN" in class_data) and (class_data["VLAN"] != 0) %}
-        {{ '-    vlan' }} {{ class_data["VLAN"] }}
+    {% if "PCP" in class_data %}
+        {{- '    pcp' }} {{ pcp_to_user_fmt(class_data["PCP"]) }}
     {% endif %}
-    {% if ("PCP" in class_data) and (class_data["PCP"] != 0) %}
-        {{- '    pcp' }} {{ class_data["PCP"] }}
-    {% endif %}
-    {% if ("DEI" in class_data) and (class_data["DEI"] != 0) %}
+    {% if "DEI" in class_data %}
         {{- '    dei' }} {{ class_data["DEI"] }}
     {% endif %}
-    {% if ("IP_PROTOCOL" in class_data) and (class_data["IP_PROTOCOL"] != 0) %}
-        {{- '    ip-proto' }} {{ ip_proto_to_keyword(class_data["IP_PROTOCOL"]) }}
+    {% if "IP_PROTOCOL" in class_data %}
+        {{- '    ip protocol' }} {{ ip_proto_to_user_fmt(class_data["IP_PROTOCOL"]) }}
     {% endif %}
-    {% if ("SRC_IP" in class_data) and (class_data["SRC_IP"] ) %}
-        {{- '    src-ip' }} {{ class_data["SRC_IP"] }}
+    {% if "SRC_IP" in class_data %}
+        {{- '    src-ip' }} {{ ip_addr_to_user_fmt(class_data["SRC_IP"], True) }}
     {% endif %}
-    {% if ("SRC_IPV6" in class_data) and (class_data["SRC_IPV6"] ) %}
-        {{- '    src-ipv6' }} {{ class_data["SRC_IPV6"] }}
+    {% if "SRC_IPV6" in class_data %}
+        {{- '    src-ipv6' }} {{ ip_addr_to_user_fmt(class_data["SRC_IPV6"],False) }}
     {% endif %}
-    {% if ("DST_IP" in class_data) and (class_data["DST_IP"] ) %}
-        {{- '    dst-ip' }} {{ class_data["DST_IP"] }}
+    {% if "DST_IP" in class_data %}
+        {{- '    dst-ip' }} {{ ip_addr_to_user_fmt(class_data["DST_IP"], True) }}
     {% endif %}
-    {% if ("DST_IPV6" in class_data) and (class_data["DST_IPV6"] ) %}
-        {{- '    dst-ipv6' }} {{ class_data["DST_IPV6"] }}
+    {% if "DST_IPV6" in class_data %}
+        {{- '    dst-ipv6' }} {{ ip_addr_to_user_fmt(class_data["DST_IPV6"], False) }}
     {% endif %}
-    {% if ("DSCP" in class_data) and (class_data["DSCP"] ) %}
-        {{- '    dscp' }} {{ class_data["DSCP"] }}
+    {% if "DSCP" in class_data %}
+        {{- '    dscp' }} {{ dscp_to_user_fmt(class_data["DSCP"]) }}
     {% endif %}
-    {% if ("L4_SRC_PORT" in class_data) and (class_data["L4_SRC_PORT"] != 0) %}
+    {% if "L4_SRC_PORT" in class_data %}
         {{- '    src-port' }} {{ class_data["L4_SRC_PORT"] }}
-    {%  elif ("L4_SRC_PORT_RANGE" in class_data) and (class_data["L4_SRC_PORT_RANGE"] ) %}
+    {%  elif "L4_SRC_PORT_RANGE" in class_data %}
         {{- '    src-port' }} {{ class_data["L4_SRC_PORT_RANGE"] }}
     {% endif %}
-    {% if ("L4_DST_PORT" in class_data) and (class_data["L4_DST_PORT"] != 0) %}
+    {% if "L4_DST_PORT" in class_data %}
         {{- '    dst-port' }} {{ class_data["L4_DST_PORT"] }}
-    {% elif ("L4_DST_PORT_RANGE" in class_data) and (class_data["L4_DST_PORT_RANGE"] ) %}
+    {% elif "L4_DST_PORT_RANGE" in class_data %}
         {{- '    dst-port' }} {{ class_data["L4_DST_PORT_RANGE"] }}
     {% endif %}
-    {% if ("TCP_FLAGS" in class_data) and (class_data["TCP_FLAGS"] ) %}
-        {{- '    tcp-flags' }} {{ tcp_flags_to_keyword(class_data["TCP_FLAGS"]) }}
+    {% if "TCP_FLAGS" in class_data %}
+        {{- '    tcp-flags' }} {{ tcp_flags_to_user_fmt(class_data["TCP_FLAGS"]) }}
     {% endif %}
 
     {{- '  Referenced in flows:' }}
-    {% if "REF_POLICY_LIST" in class_data %}
-    {% if class_data["REF_POLICY_LIST"] is not none %}
-        {% for referring_policy in class_data["REF_POLICY_LIST"] %}
-            {{- '    policy' }}  {{ referring_policy["POLICY_NAME"] }} at priority {{ referring_policy["PRIORITY"] }}
-        {% endfor %}
-    {% endif %}
+    {% for referring_policy in class_data.get("REFERENCES", []) %}
+        {{- '    policy' }} {{ referring_policy["POLICY_NAME"] }} at priority {{ referring_policy["PRIORITY"] }}
+    {% endfor %}
     {% endif %}
     {% if class_name != last_elem %}
         {{ "\n" }}

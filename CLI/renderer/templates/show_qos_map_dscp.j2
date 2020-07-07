@@ -1,0 +1,28 @@
+{% if json_output %}
+{% for key_json in json_output %}
+    {% if key_json == "openconfig-qos-maps-ext:dscp-maps" %}
+        {% set map_list = json_output[key_json]["dscp-map"] %}
+    {% else %}
+      {% if key_json == "openconfig-qos-maps-ext:dscp-map" %}
+        {% set map_list = json_output[key_json] %}
+      {% endif %}
+    {% endif %}
+{% for map in map_list %}
+
+{{'DSCP-TC-MAP: '}}{{map['name']}}
+
+{{'----------------------------'}}
+    {{'%-5s'|format("DSCP")}}{{'%-5s'|format("TC")}}
+{{'----------------------------'}}
+  {% set map_info = map['dscp-map-entries'] %}
+  {% if map_info %}
+      {% set entries = map_info['dscp-map-entry'] %}
+      {% for entry in entries %}
+    {{'%-5s'|format(entry['dscp'])}}{{'%-5s'|format(entry['config']['fwd-group'])}}
+      {% endfor %}
+  {% endif %}
+{{'----------------------------'}}
+
+{% endfor %}
+{% endfor %}
+{% endif %}

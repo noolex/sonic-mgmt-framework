@@ -5,8 +5,10 @@ import json
 import sys
 import gc
 import select
+import termios
 from rpipe_utils import pipestr
 import datetime
+import json_tools
 
 # Capture our current directory
 #THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -42,20 +44,27 @@ def cli_getch():
     # Disable canonical mode of input stream
     # Set min bytes as 1 and read operation as blocking
     fd = sys.stdin.fileno()
+    term_settings_old = termios.tcgetattr(fd)
+    term_settings_new = termios.tcgetattr(fd)
+    term_settings_new[3] = term_settings_new[3] & ~termios.ICANON
+    term_settings_new[6][termios.VMIN] = 1
+    term_settings_new[6][termios.VTIME] = 0
+    termios.tcsetattr(fd, termios.TCSANOW, term_settings_new)
     c = None
 
     #global ctrc_rfd
     #fds = [fd, ctrlc_rfd]
     fds = [fd]
     try:
+        termios.tcflush(fd, termios.TCIFLUSH)
         read_fds, write_fds, excep_fds = select.select(fds, [], [])
         """
         # Return immediately for Ctrl-C interrupt
         if ctrlc_rfd in read_fds:
             return 'q'
         """
-
         c = os.read(fd, 1)
+        termios.tcflush(fd, termios.TCIFLUSH)
     except KeyboardInterrupt:
         return 'q'
     except select.error as e:
@@ -63,6 +72,8 @@ def cli_getch():
             return 'q'
         else:
             sys.stdout.write("Received error : " + str(e))
+    finally:
+        termios.tcsetattr(fd, termios.TCSANOW, term_settings_old)
     return c
 
 def _write(string, disable_page=False):
@@ -105,9 +116,8 @@ def _write(string, disable_page=False):
                 # key when CLISH executes commands from non-TTY
                 # Example : clish_source plugin
                 elif c == '\n' or c == '\r':
-                    #line_count = page_len_local - 1
-                    line_count = 0
-                    terminal.write('\x1b[2K'+'\x1b[0G')
+                    line_count = page_len_local - 1
+                    terminal.write('\x1b[1A'+'\x1b[2K')
                     terminal.flush()
                     break
     return False
@@ -146,11 +156,12 @@ def show_cli_output(template_file, response, **kwargs):
         return datetime.datetime.fromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S')
 
     j2_env.globals.update(datetimeformat=datetimeformat)
+    j2_env.globals.update(json_tools=json_tools)
 
     full_cmd = os.getenv('USER_COMMAND', None)
     if full_cmd is not None:
         pipestr().write(full_cmd.split())
 
-    if response:
+    if response is not None:
         t_str = (j2_env.get_template(template_file).render(json_output=response, **kwargs))
         return write(t_str)

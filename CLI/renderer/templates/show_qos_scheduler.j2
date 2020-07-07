@@ -1,18 +1,24 @@
 {% if json_output %}
+{% set bps_to_kbps = 1000 %}
 {% set schedulers = json_output['openconfig-qos:schedulers'] %}
 {% if schedulers %}
 {% set scheduler_list = schedulers['scheduler'] %}
 {% for scheduler in scheduler_list %}
-  {{' Scheduler: '}}{{scheduler['sequence']}}
+{% if scheduler['sequence'] != 255 %}
+  {{' Queue: '}}{{scheduler['sequence']}}
+{% endif %}
+{% if scheduler['sequence'] == 255 %}
+  {{' Port: '}}{{'port'}}
+{% endif %}
 
   {% set config = scheduler['config'] %}
   {% if config %}
     {% if config['priority'] %}
-            {{'  Strict Priority scheduler '}}
+            {{'  type: '}}{{config['priority']|lower}}
     {% endif %}
 
     {% if config['openconfig-qos-ext:weight'] %}
-            {{'  Weight: '}}{{config['openconfig-qos-ext:weight']}}
+            {{'  weight: '}}{{config['openconfig-qos-ext:weight']}}
     {% endif %}
   {% endif %}
 
@@ -21,16 +27,18 @@
     {% set rate_config = rate['config'] %}
     {% if rate_config %}
         {% if rate_config['cir'] %}
-            {{'  Cir: '}}{{rate_config['cir']}}
-        {% endif %}
-        {% if rate_config['pir'] %}
-            {{'  Pir: '}}{{rate_config['pir']}}
+            {% set temp = rate_config['cir']|int//bps_to_kbps %}
+            {{'  cir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
         {% endif %}
         {% if rate_config['bc'] %}
-            {{'  Min-burst: '}}{{rate_config['bc']}}
+            {{'  cbs: '}}{{'%-12s'|format(rate_config['bc'])}}{{ 'Bytes' }}
+        {% endif %}
+        {% if rate_config['pir'] %}
+            {% set temp = rate_config['pir']|int//bps_to_kbps %}
+            {{'  pir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
         {% endif %}
         {% if rate_config['be'] %}
-            {{'  Max-burst: '}}{{rate_config['be']}}
+            {{'  pbs: '}}{{'%-12s'|format(rate_config['be'])}}{{ 'Bytes' }}
         {% endif %}
     {% endif %}
   {% endif %}

@@ -677,33 +677,25 @@ def invoke(func, args):
         while len(groupDict) > 0:
           row = groupDict.pop(0)
           group = row['name']
-          # Simple get request for '/restconf/data/ietf-snmp:snmp/vacm/group={name}/access'
-          # returns 'not found' but a search for every possible combo should return one match
-          # if an access entry exists. Could be a member entry.
-          # path = '/restconf/data/ietf-snmp:snmp/vacm/group={name}/access'
-          for security in [('any', 'no-auth-no-priv'), ('v1', 'no-auth-no-priv'), ('v2c', 'no-auth-no-priv'), ('usm', 'no-auth-no-priv'), ('usm', 'auth-no-priv'), ('usm', 'auth-priv')]:
-            secModel, secLevel = security
-            path = '/restconf/data/ietf-snmp:snmp/vacm/group={name}/access=Default,{securityModel},{securityLevel}'
-            keypath = cc.Path(path, name = group, securityModel=secModel, securityLevel=secLevel)
-            response = aa.get(keypath)
-            if response.ok():
-              if 'ietf-snmp:access' in response.content.keys():
-                data = response.content['ietf-snmp:access']
-                while len(data) > 0:
-                  entry = data.pop(0)
-                  if 'read-view' in entry.keys():
-                    g = {}
-                    g['name'] = group
-                    g['context'] = entry['context']
-                    if secModel == "usm":
-                      g['model'] = 'v3'
-                    else:
-                      g['model'] = secModel
-                    g['security'] = secLevel
-                    g['read-view']   = entry['read-view']
-                    g['write-view']  = entry['write-view']
-                    g['notify-view'] = entry['notify-view']
-                    groups.append(g)
+          if 'access' in row.keys():
+            access = row['access']
+
+            while len(access) > 0:
+              entry = access.pop(0)
+              if 'read-view' in entry.keys():
+                g = {}
+                g['name'] = group
+                g['context'] = entry['context']
+                secModel = entry['security-model']
+                if secModel == "usm":
+                  g['model'] = 'v3'
+                else:
+                  g['model'] = secModel
+                g['security'] = entry['security-level']
+                g['read-view']   = entry['read-view']
+                g['write-view']  = entry['write-view']
+                g['notify-view'] = entry['notify-view']
+                groups.append(g)
 
       response=aa.cli_not_implemented("group")              # just to get the proper format
       response.content = {}

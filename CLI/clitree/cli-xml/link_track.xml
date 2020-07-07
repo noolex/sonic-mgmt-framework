@@ -22,78 +22,81 @@ limitations under the License.
     xmlns:xi="http://www.w3.org/2001/XInclude"
     xsi:schemaLocation="https://raw.githubusercontent.com/project-arlo/sonic-mgmt-framework/master/src/CLI/clitree/scripts/sonic-clish.xsd">
 
-<VIEW name="configure-view">
-    <COMMAND name="link" help="Create link state tracking group" />
-    <COMMAND name="link state" help="Create link state tracking group" />
-    <COMMAND name="link state track" help="Create link state tracking group" view="configure-link-state-track-view" viewid="group=${grp-name}">
-        <PARAM name="grp-name" help="Name (Max size 63)" ptype="STRING_63"/>
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking create_link_state_tracking_group ${grp-name}</ACTION>
-    </COMMAND>
+    <PTYPE name="LST_TIMEOUT" method="integer" pattern="1..1800" help=""/>
+    <PTYPE name="LST_GROUP_NAME" pattern="(^([a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,62})))$" help="name"/>
 
-    <COMMAND name="no link" help="Delete link state tracking group" />
-    <COMMAND name="no link state" help="Delete link state tracking group" />
-    <COMMAND name="no link state track" help="Delete link state tracking group">
-        <PARAM name="grp-name" help="Name (Max size 63)" ptype="STRING_63"/>
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group ${grp-name}</ACTION>
-    </COMMAND>
-</VIEW>
+    <VIEW name="configure-view">
+        <COMMAND name="link" help="Create link state tracking group" />
+        <COMMAND name="link state" help="Create link state tracking group" />
+        <COMMAND name="link state track" help="Create link state tracking group" view="configure-link-state-track-view" viewid="group=${grp-name}">
+            <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking create_link_state_tracking_group ${grp-name}</ACTION>
+        </COMMAND>
 
-<VIEW name="configure-link-state-track-view" prompt="${SYSTEM_NAME}(config-link-track)# " depth="2">
-    <!-- Inheritance -->
-    <NAMESPACE ref="configure-view" help="false" completion="false"/>
+        <COMMAND name="no link" help="Delete link state tracking group" />
+        <COMMAND name="no link state" help="Delete link state tracking group" />
+        <COMMAND name="no link state track" help="Delete link state tracking group">
+            <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group ${grp-name}</ACTION>
+        </COMMAND>
+    </VIEW>
 
-    <COMMAND name="no" help="Negate a command or set its defaults"/>
-    
-    <COMMAND name="description" help="Description of the group (Max size 255)">
-        <PARAM name="grp-descr" help="Description" ptype="STRING" />
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_description ${group} ${grp-descr}</ACTION>
-    </COMMAND>
-    <COMMAND name="no description" help="Clear the description">
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_description ${group}</ACTION>
-    </COMMAND>
+    <VIEW name="configure-link-state-track-view" prompt="${SYSTEM_NAME}(config-link-track)# " depth="2">
+        <!-- Inheritance -->
+        <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
-    <COMMAND name="timeout" help="Timeout value (1-999)">
-        <PARAM name="grp-tmout" help="Timeout" ptype="UINT" />
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_timeout ${group} ${grp-tmout}</ACTION>
-    </COMMAND>
-    <COMMAND name="no timeout" help="Rest timeout value">
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_timeout ${group}</ACTION>
-    </COMMAND>
-    
-    <COMMAND name="downstream" help="Set downstream ports">
-        <PARAM name="grp-downstream" help="Downstream ports" ptype="SUBCOMMAND" mode="switch">
-            <PARAM name="all-mclag" help="All MCLAGs" ptype="SUBCOMMAND" mode="subcommand" />
-        </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_downstream ${group} ${grp-downstream}</ACTION>
-    </COMMAND>
-    <COMMAND name="no downstream" help="Remove downstream ports">
-        <PARAM name="grp-downstream" help="Downstream ports" ptype="SUBCOMMAND" mode="switch">
-            <PARAM name="all-mclag" help="All MCLAGs" ptype="SUBCOMMAND" mode="subcommand" />
-        </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_downstream ${group} ${grp-downstream}</ACTION>
-    </COMMAND>
-</VIEW>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        
+        <COMMAND name="description" help="Description of the group (Max size 255)">
+            <PARAM name="grp-descr" help="Description" ptype="STRING" />
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_description ${group} ${grp-descr}</ACTION>
+        </COMMAND>
+        <COMMAND name="no description" help="Clear the description">
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_description ${group}</ACTION>
+        </COMMAND>
 
-<VIEW name="configure-if-view">
-    <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="2" />
-</VIEW>
+        <COMMAND name="timeout" help="Timeout value (1-1800)">
+            <PARAM name="grp-tmout" help="Timeout" ptype="LST_TIMEOUT" />
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_timeout ${group} ${grp-tmout}</ACTION>
+        </COMMAND>
+        <COMMAND name="no timeout" help="Rest timeout value">
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_timeout ${group}</ACTION>
+        </COMMAND>
+        
+        <COMMAND name="downstream" help="Set downstream ports">
+            <PARAM name="grp-downstream" help="Downstream ports" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="all-mclag" help="All MCLAGs" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_all_mclag_downstream ${group}</ACTION>
+        </COMMAND>
+        <COMMAND name="no downstream" help="Remove downstream ports">
+            <PARAM name="grp-downstream" help="Downstream ports" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="all-mclag" help="All MCLAGs" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_all_mclag_downstream ${group}</ACTION>
+        </COMMAND>
+    </VIEW>
 
-<VIEW name="configure-lag-view">
-    <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="2" />
-</VIEW>
+    <VIEW name="configure-if-view">
+        <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="2" />
+    </VIEW>
 
-<VIEW name="configure-vlan-view">
-    <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="1" />
-</VIEW>
+    <VIEW name="configure-lag-view">
+        <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="2" />
+    </VIEW>
 
-<VIEW name="enable-view">
-    <COMMAND name="show link" help="Show link state tracking information" />
-    <COMMAND name="show link state" help="Show link state tracking information" />
-    <COMMAND name="show link state tracking" help="Show link state tracking information">
-        <PARAM name="grp-name" help="Name (Max size 63)" ptype="STRING_63" optional = "true"/>
-        <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking show_link_state_tracking_group_info ${grp-name}</ACTION>
-    </COMMAND>
-</VIEW>
+    <VIEW name="configure-vlan-view">
+        <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="1" />
+    </VIEW>
+
+    <VIEW name="enable-view">
+        <COMMAND name="show link" help="Show link state tracking information" />
+        <COMMAND name="show link state" help="Show link state tracking information" />
+        <COMMAND name="show link state tracking" help="Show link state tracking information">
+            <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME" optional = "true"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking show_link_state_tracking_group_info ${grp-name}</ACTION>
+        </COMMAND>
+    </VIEW>
 
 </CLISH_MODULE>
 

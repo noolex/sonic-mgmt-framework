@@ -49,6 +49,8 @@ export SONIC_CLI_ROOT=$CLISOURCE/actioner
 
 export RENDERER_TEMPLATE_PATH=$CLISOURCE/renderer/templates
 
+export SHOW_CONFIG_TOOLS=$CLIBUILD/render-templates
+
 #export CLISH_PATH=$CLISOURCE/clitree/cli-xml
 export CLISH_PATH=$CLIBUILD/command-tree
 
@@ -65,6 +67,11 @@ export PYTHONPATH
 [ ! -d "$KLISH_BIN" ] && KLISH_BIN=$CLIBUILD
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$KLISH_BIN/.libs
+
+DBCLI="$(type -t sonic-db-cli > /dev/null && echo sonic-db-cli CONFIG_DB || echo redis-cli -n 4)"
+
+export SONIC_CLI_IFACE_MODE=$(${DBCLI} hget "DEVICE_METADATA|localhost" intf_naming_mode)
+[[ -z ${DEBUG} ]] || echo "SONIC_CLI_IFACE_MODE = '${SONIC_CLI_IFACE_MODE}'"
 
 (cd ${BUILDDIR} && ${KLISH_BIN}/clish "${ARGS[@]}")
 

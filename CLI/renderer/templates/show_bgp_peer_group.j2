@@ -17,7 +17,7 @@
 {% set listen_prefixes = json_output['openconfig-network-instance:dynamic-neighbor-prefixes']['dynamic-neighbor-prefix'] %}
 {% endif %}
 {% for pg in pg_list %}
-{% set ns.v4status = " IPv4 Unicast;" %}
+{% set ns.v4status = "" %}
 {% set ns.v6status = "" %}
 {% set ns.v4prefix = [] %}
 {% set ns.v6prefix = [] %}
@@ -34,8 +34,8 @@
 {% set pg_af_list = pg['afi-safis'] ['afi-safi']%}
   {% for af in pg_af_list %}
       {% if "config" in af %}
-      {% if af['config']['afi-safi-name'] == "openconfig-bgp-types:IPV4_UNICAST" and  af['config']['enabled'] == false %}
-      {% set ns.v4status = "" %}
+      {% if af['config']['afi-safi-name'] == "openconfig-bgp-types:IPV4_UNICAST" and  af['config']['enabled'] == true %}
+      {% set ns.v4status = " IPv4 Unicast;" %}
       {% elif af['config']['afi-safi-name'] == "openconfig-bgp-types:IPV6_UNICAST" and  af['config']['enabled'] == true %}
       {% set ns.v6status = " IPv6 Unicast;" %}
       {% endif %}
@@ -83,7 +83,7 @@ BGP peer-group {{'%s'| format(vars.pg_name)}}{{'%s' |format(rAS)}}
    {% set mems =  pg['openconfig-bgp-ext:members-state']['member'] %}
   Peer-group members:
    {% for mem in mems %}
-   {{ mem['neighbor'] }} {{ mem['state'] }}
+   {{ mem['neighbor'] }} {{ mem['state']['state'] }}
    {% endfor %}
    {% endif %}
 {% endif %}

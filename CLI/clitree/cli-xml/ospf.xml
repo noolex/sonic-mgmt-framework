@@ -54,9 +54,11 @@ limitations under the License.
         <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="defaultcost" help="Stub's advertised default summary cost" ptype="RANGE_0_16777215" />
         </PARAM>
+<!--
         <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="exportlistname" help="Name of the access-list" ptype="STRING" />
         </PARAM>
+-->
         <PARAM name="filter-list" help="Filter networks between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="prefix" help="Filter prefixes between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" >
             <PARAM name="prefixlistname" help="Name of an IP prefix-list" ptype="STRING" >
@@ -67,9 +69,11 @@ limitations under the License.
             </PARAM> 
           </PARAM>   
         </PARAM>
+<!--
         <PARAM name="import-list" help="Set the filter for networks from other areas announced to the specified one" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="importlistname" help="Name of the access-list" ptype="STRING" />
         </PARAM>
+-->
 <!--
         <PARAM name="nssa" help="Configure OSPF area as nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="no-summary" help="Do not inject inter-area routes into nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
@@ -86,11 +90,9 @@ limitations under the License.
                   <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_0_16777215" />
                 </PARAM>
               </PARAM>
-<!--
               <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
+                <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_0_16777215" />
               </PARAM>
--->
               <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "rangenetworkprefix" help = "Network prefix to be announced instead of range" ptype = "IP_ADDR_MASK" /> 
@@ -217,7 +219,7 @@ limitations under the License.
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_propagation_policy_address_prefix_substitute ${vrf-name} ${areaid} ${rangeprefix} ${rangenetworkprefix} &#xA;
         fi&#xA;
       fi&#xA;
-
+<!--
       if test "${areacmdtype}" = "import-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist ${vrf-name} ${areaid} ${importlistname} &#xA;
       fi&#xA;
@@ -225,6 +227,7 @@ limitations under the License.
       if test "${areacmdtype}" = "export-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_exportlist ${vrf-name} ${areaid} ${exportlistname} &#xA;
       fi&#xA;
+-->
 
       if test "${areacmdtype}" = "filter-list"; then&#xA;
         if test "${filterdirection}" = "in"; then&#xA;
@@ -250,7 +253,9 @@ limitations under the License.
           <PARAM name="message-digest" help="Use message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
         </PARAM>
         <PARAM name="default-cost" help="Set the summary-default cost of a NSSA or stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
         <PARAM name="export-list" help="Set the filter for networks announced to other areas" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
         <PARAM name="filter-list" help="Filter networks between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="prefix" help="Filter prefixes between OSPF areas" ptype="SUBCOMMAND" mode="subcommand" >
             <PARAM name = "filterdirection" help = "" ptype = "SUBCOMMAND" mode="switch" >
@@ -259,7 +264,9 @@ limitations under the License.
             </PARAM>
           </PARAM>
         </PARAM>
+<!--
         <PARAM name="import-list" help="Set the filter for networks from other areas announced to the specified one" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
 <!--
         <PARAM name="nssa" help="Configure OSPF area as nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true">
           <PARAM name="no-summary" help="Do not inject inter-area routes into nssa" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
@@ -274,11 +281,7 @@ limitations under the License.
               <PARAM name="advertise" help="Advertise this range (default)" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               </PARAM>
-<!--
-              <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                <PARAM name = "metriccost" help = "Advertised metric for this range" ptype = "RANGE_1_16777215" />
-              </PARAM>
--->
+              <PARAM name="cost" help="User specified metric for this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="not-advertise" help="DoNotAdvertise this range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
               <PARAM name="substitute" help="Announce area range as another prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
             </PARAM>
@@ -383,6 +386,7 @@ limitations under the License.
         fi&#xA;
       fi&#xA;
 
+<!--
       if test "${areacmdtype}" = "import-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_importlist ${vrf-name} ${areaid} &#xA;
       fi&#xA;
@@ -390,6 +394,7 @@ limitations under the License.
       if test "${areacmdtype}" = "export-list"; then&#xA;
           python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_area_exportlist ${vrf-name} ${areaid} &#xA;
       fi&#xA;
+-->
 
       if test "${areacmdtype}" = "filter-list"; then&#xA;
         if test "${filterdirection}" = "in"; then&#xA;
@@ -506,7 +511,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="default-metric" help="Set metric of redistributed routes" >
-    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_1_16777214" />
+    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_0_16777214" />
     <ACTION>
     python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_config_default_metric ${vrf-name} ${defaultmetric} &#xA;
     </ACTION>
@@ -574,6 +579,7 @@ limitations under the License.
     </ACTION>
   </COMMAND>
 
+<!--
   <COMMAND name="distribute-list" help="Filter networks in routing updates" >
     <PARAM name="aclname" help="Access-list name" ptype="STRING_15"  >
       <PARAM name="out" help="Filter outgoing routing updates" ptype="SUBCOMMAND" mode="subcommand" >
@@ -587,7 +593,7 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION>
-    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_route_map ${vrf-name} ${protocol} ${aclname} &#xA;
+    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_access_list ${vrf-name} ${protocol} ${aclname} &#xA;
     </ACTION>
   </COMMAND>
 
@@ -602,9 +608,10 @@ limitations under the License.
       </PARAM>
     </PARAM>
     <ACTION>
-    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_route_map ${vrf-name} ${protocol} &#xA;
+    python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_access_list ${vrf-name} ${protocol} &#xA;
     </ACTION>
   </COMMAND>
+-->
 
   <COMMAND name="log-adjacency-changes" help="Log changes in adjacency state" >
     <PARAM name="detail" help="Log all state changes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
@@ -632,9 +639,11 @@ limitations under the License.
     <PARAM name="router-lsa" help="Advertise own Router-LSA with infinite distance (stub router)" ptype="SUBCOMMAND" mode="subcommand" >
       <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
         <PARAM name="on-shutdown" help="Advertise stub-router prior to full shutdown of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="extdistance" help="Time (seconds) to wait till full shutdown" ptype="RANGE_5_100" />
         </PARAM>
+-->
         <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="interdistance" help="Time (seconds) to advertise self as stub-router" ptype="RANGE_5_86400" />
         </PARAM>
@@ -644,10 +653,11 @@ limitations under the License.
     if test "${maxmetrictype}" = "administrative"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative ${vrf-name} &#xA;
     fi&#xA;
-
+<!--
     if test "${maxmetrictype}" = "on-shutdown"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_shutdown ${vrf-name} ${extdistance} &#xA;
     fi&#xA;
+-->
 
     if test "${maxmetrictype}" = "on-startup"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_startup ${vrf-name} ${interdistance} &#xA;
@@ -659,7 +669,9 @@ limitations under the License.
     <PARAM name="router-lsa" help="Advertise own Router-LSA with infinite distance (stub router)" ptype="SUBCOMMAND" mode="subcommand" >
       <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="administrative" help="Administratively applied,  for an indefinite period" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
         <PARAM name="on-shutdown" help="Advertise stub-router prior to full shutdown of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
         <PARAM name="on-startup" help="Automatically advertise stub Router-LSA on startup of OSPF" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       </PARAM>
     </PARAM>
@@ -668,9 +680,11 @@ limitations under the License.
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_administrative ${vrf-name} &#xA;
     fi&#xA;
 
+<!--
     if test "${maxmetrictype}" = "on-shutdown"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_shutdown ${vrf-name} &#xA;
     fi&#xA;
+-->
 
     if test "${maxmetrictype}" = "on-startup"; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config_on_startup ${vrf-name} &#xA;
@@ -734,43 +748,42 @@ limitations under the License.
           <PARAM name="standard" help="Standard behavior (RFC2328)" ptype="SUBCOMMAND" mode="subcommand" />
         </PARAM>
       </PARAM>
+      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name = "routerid" help = "OSPF router-id in IP address format" ptype = "IP_ADDR" />
+      </PARAM>
 <!--
       <PARAM name="opaque-lsa" help="Enable the Opaque-LSA capability (rfc2370)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
--->
-      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-        <PARAM name = "routerid" help = "OSPF router-id in IP address format" ptype = "IP_ADDR" /> 
-      </PARAM>
       <PARAM name="write-multiplier" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
         <PARAM name = "writemaxinterface" help = "Maximum number of interface serviced per write" ptype = "RANGE_1_100" /> 
       </PARAM>
+-->
     </PARAM>
     <ACTION> 
       if test "${ospf_cmd}" = "abr-type"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_abr_type ${vrf-name} ${abrtype} &#xA;
       fi&#xA;
+      if test "${ospf_cmd}" = "router-id"; then&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id ${vrf-name} ${routerid} &#xA;
+      fi&#xA;
 <!--
       if test "${ospf_cmd}" = "opaque-lsa"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_opaque_lsa_capability ${vrf-name} &#xA;
       fi&#xA;
--->
-      if test "${ospf_cmd}" = "router-id"; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id ${vrf-name} ${routerid} &#xA;
-      fi&#xA;
-
       if test "${ospf_cmd}" = "write-multiplier"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} ${writemaxinterface} &#xA;
       fi&#xA;
+-->
     </ACTION>
   </COMMAND>
 
   <COMMAND name="no ospf" help="OSPF specific commands" >
     <PARAM name = "ospf_cmd" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="abr-type" help="OSPF network prefix" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
 <!--
       <PARAM name="opaque-lsa" help="Enable the Opaque-LSA capability (rfc2370)" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
--->
-      <PARAM name="router-id" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       <PARAM name="write-multiplier" help="router-id for the OSPF process" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
     </PARAM>
     <ACTION>
       if test "${ospf_cmd}" = "abr-type"; then&#xA;
@@ -779,16 +792,18 @@ limitations under the License.
       if test "${ospf_cmd}" = "router-id"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id ${vrf-name} &#xA;
       fi&#xA;
+<!--
       if test "${ospf_cmd}" = "write-multiplier"; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} &#xA;
       fi&#xA;
+-->
     </ACTION>
   </COMMAND>
 
   <COMMAND name="passive-interface" help="Suppress routing updates on an interface" >
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand"/>
-      <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" >
+      <PARAM name = "interfacename" help = "Interface's name" ptype = "PHY_VL_PO_LB_INTERFACE" >
         <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" />
       </PARAM>
     </PARAM>
@@ -804,7 +819,7 @@ limitations under the License.
   <COMMAND name="no passive-interface" help="Suppress routing updates on an interface" >
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
-      <PARAM name = "interfacename" help = "Interface's name" ptype = "STRING" >
+      <PARAM name = "interfacename" help = "Interface's name" ptype = "PHY_VL_PO_LB_INTERFACE" >
         <PARAM name = "ipaddr" help = "IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" />
       </PARAM>
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
@@ -881,7 +896,7 @@ limitations under the License.
     <ACTION>
     if test "${protocol}" = "bgp"; then&#xA;
       if test "${bgpmetricval}" = "" &amp;&amp; test "${bgpmertrictype}" = "" &amp;&amp; test "${bgproutemapname}" = ""; then&#xA; 
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import ${vrf-name} ${protocol} &#xA;
       fi&#xA;
       if test "${bgpmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${bgpmetricval} &#xA;
@@ -896,7 +911,7 @@ limitations under the License.
 <!--
     if test "${protocol}" = "ospf"; then&#xA;
       if test "${ospfmetricval}" = "" &amp;&amp; test "${ospfmertrictype}" = "" &amp;&amp; test "${ospfroutemapname}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import ${vrf-name} ${protocol} &#xA;
       fi&#xA;
       if test "${ospfmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${ospfmetricval} &#xA;
@@ -911,7 +926,7 @@ limitations under the License.
 -->
     if test "${protocol}" = "static"; then&#xA;
       if test "${staticmetricval}" = "" &amp;&amp; test "${staticmertrictype}" = "" &amp;&amp; test "${staticroutemapname}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import ${vrf-name} ${protocol} &#xA;
       fi&#xA;
       if test "${staticmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${staticmetricval} &#xA;
@@ -925,7 +940,7 @@ limitations under the License.
     fi&#xA;
     if test "${protocol}" = "connected"; then&#xA;
       if test "${connmetricval}" = "" &amp;&amp; test "${connmertrictype}" = "" &amp;&amp; test "${connroutemapname}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import ${vrf-name} ${protocol} &#xA;
       fi&#xA;
       if test "${connmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${connmetricval} &#xA;
@@ -939,7 +954,7 @@ limitations under the License.
     fi&#xA;
     if test "${protocol}" = "kernel"; then&#xA;
       if test "${kernelmetricval}" = "" &amp;&amp; test "${kernelmertrictype}" = "" &amp;&amp; test "${kernelroutemapname}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import ${vrf-name} ${protocol} &#xA;
       fi&#xA;
       if test "${kernelmetricval}" != ""; then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} ${kernelmetricval} &#xA;
@@ -984,7 +999,7 @@ limitations under the License.
     </PARAM>
     <ACTION>
     if test "${metric}" = "" &amp;&amp; test "${metric-type}" = "" &amp;&amp; test "${route-map}" = ""; then&#xA;
-      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_export ${vrf-name} ${protocol} &#xA;
+      python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import ${vrf-name} ${protocol} &#xA;
     fi&#xA;
     if test "${metric}" != ""; then&#xA;
       python $SONIC_CLI_ROOT/sonic-cli-ospfv2.py delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_metric ${vrf-name} ${protocol} &#xA;
@@ -1105,6 +1120,40 @@ limitations under the License.
 
 <VIEW name="enable-view">   
 
+  <COMMAND name="clear ip ospf" help="Clear OSPFv2 sessions">
+    <PARAM name="clear_ospf_subcommands" help="Clear OSPFv2 commands" ptype="SUBCOMMAND" mode="switch">
+      <PARAM name="interface" help="Interface" ptype="SUBCOMMAND" mode="subcommand">
+         <PARAM name="interface-name" help="Interface name" ptype="PHY_VL_PO_LB_INTERFACE" optional="true"/>
+      </PARAM>
+      <PARAM name="vrf" help="OSPFv2 interface VRF name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="vrf-name" help="VRF Name" ptype="STRING" optional="false" >
+           <PARAM name="interface" help="Interface" ptype="SUBCOMMAND" mode="subcommand">
+               <PARAM name="interface-name" help="Interface name" ptype="PHY_VL_PO_LB_INTERFACE" optional="true"/>
+           </PARAM>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_ospfv2 clear_ospfv2 intf=${interface-name} vrf=${vrf-name} ${__full_line}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command clears/resets OSPFv2 sessions on an OSPFv2 interface.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to clear OSPFv2 sessions. Following is a partial list of
+        information with command syntax that can be cleared.
+        - clear ip ospf interface IF-NAME
+          This command clears all OSPF sessions on an OSPF interface
+        - clear ip ospf vrf VRF-NAME interface IF-NAME
+          This command clears all OSPF sessions on interface in VRF VRF-NAME
+      </USAGE>
+      <EXAMPLE summary="Below command clear sessions on Ethernt64">
+        sonic# clear ip ospf interface  Ethernet64
+        sonic# clear ip ospf vrf default interface Ethernet64
+      </EXAMPLE>
+    </DOCGEN>
+  </COMMAND>
+
+
     <COMMAND name = "show ip ospf" help = "OSPF information" >
       <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
@@ -1121,22 +1170,22 @@ limitations under the License.
         </PARAM>
 
         <PARAM name="database" help="Database summary" ptype="SUBCOMMAND" mode="subcommand" >
-          <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true" >
             <PARAM name="asbr-summary" help="ASBR summary link states" ptype="SUBCOMMAND" mode="subcommand">
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM>
 
             <PARAM name="external" help="External link states" ptype="SUBCOMMAND" mode="subcommand">
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR"  />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
@@ -1146,60 +1195,60 @@ limitations under the License.
             </PARAM>
 
             <PARAM name="network" help="Network link states" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR"  />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM> 
 
             <PARAM name="nssa-external" help="NSSA external link state" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR"  optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM> 
 
             <PARAM name="opaque-area" help="Link area Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR"  />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM> 
 
             <PARAM name="opaque-as" help="Link AS Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR"  optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM>
 
             <PARAM name="opaque-link" help="Link local Opaque-LSA" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
             </PARAM> 
 
             <PARAM name="router" help="Router link states" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR"  />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
@@ -1209,10 +1258,10 @@ limitations under the License.
             </PARAM> 
 
             <PARAM name="summary" help="Network summary link states" ptype="SUBCOMMAND" mode="subcommand" >
-              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" mode="subcommand" optional="true" />
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
               <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="adv-router" help="Advertising Router link states" ptype="SUBCOMMAND" mode="subcommand">
-                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" mode="subcommand" />
+                  <PARAM name = "advrouter" help = "Advertising Router link states" ptype = "IP_ADDR" />
                 </PARAM>
                 <PARAM name="self-originate" help="Self-originated link statess" ptype="SUBCOMMAND" mode="subcommand" />
               </PARAM>
@@ -1264,6 +1313,32 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_route show_ip_ospf_route.j2 ${vrf-name} &#xA;
         elif test "${cmdtype}" = "border-routers"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_border_routers show_ip_ospf_border_routers.j2 ${vrf-name} &#xA;
+        elif test "${cmdtype}" = "database"; then&#xA;
+            if test "${databasetype}" = ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_short show_ip_ospf_database_short.j2 ${vrf-name} &#xA;
+            else&#xA;
+                if test "${databasetype}" = "router"; then&#xA;
+                    if test "${lsid}" != ""; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_router show_ip_ospf_database_router.j2 ${vrf-name} ls-id ${lsid} &#xA;
+                    elif test "${lsid}" = ""  &amp;&amp; test "${lstype}" = "adv-router"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_router show_ip_ospf_database_router.j2 ${vrf-name} adv-router ${advrouter}  &#xA;
+                    elif test "${lsid}" = ""  &amp;&amp; test "${lstype}" = "self-originate"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_router show_ip_ospf_database_router.j2 ${vrf-name} self-originate   &#xA;
+                    else
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_router show_ip_ospf_database_router.j2 ${vrf-name} &#xA;
+                    fi&#xA;
+                elif test "${databasetype}" = "network"; then&#xA;
+                    if test "${lsid}" != ""; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_network show_ip_ospf_database_network.j2 ${vrf-name} ls-id ${lsid} &#xA;
+                    elif test "${lsid}" = ""  &amp;&amp; test "${lstype}" = "adv-router"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_network show_ip_ospf_database_network.j2 ${vrf-name} adv-router ${advrouter}  &#xA;
+                    elif test "${lsid}" = ""  &amp;&amp; test "${lstype}" = "self-originate"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_network show_ip_ospf_database_network.j2 ${vrf-name} self-originate   &#xA;
+                    else
+                        python $SONIC_CLI_ROOT/sonic-cli-show-ospfv2.py show_ip_ospf_database_network show_ip_ospf_database_network.j2 ${vrf-name} &#xA;
+                    fi&#xA;
+                fi&#xA;
+            fi&#xA;
         fi&#xA;
       </ACTION>
         <DOCGEN>
@@ -1332,7 +1407,8 @@ limitations under the License.
 
      <COMMAND name="show ip ospf router-info" help="Router Information" >
         <ACTION builtin="clish_nop"></ACTION>
-     </COMMAND>
+  </COMMAND>
+
 </VIEW>
 
 <!--=======================================================-->

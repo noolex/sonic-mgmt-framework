@@ -67,8 +67,13 @@ limitations under the License.
 	   optional="true"
 	   order="true">
            <PARAM
+	       name="address"
+	       help="Match this IP address"
+	       ptype="IP_ADDR">
+           </PARAM>
+           <PARAM
 	       name="prefix"
-	       help="Destination prefix"
+	       help="Match this IP prefix"
 	       ptype="IP_ADDR_MASK">
            </PARAM>
            <PARAM
@@ -95,10 +100,19 @@ limitations under the License.
                mode="subcommand"
                ptype="SUBCOMMAND">
            </PARAM>
+           <PARAM
+               help="Open Shortest Path First (OSPFv2)"
+               optional="true"
+               name="ospf"
+               mode="subcommand"
+               ptype="SUBCOMMAND">
+           </PARAM>
         </PARAM>
         <ACTION>
             if test -n "${prefix}"; then&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 prefix ${prefix} ${__full_line}&#xA;
+            elif test -n "${address}"; then&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 address ${address} ${__full_line}&#xA;
             elif test -n "${summary}"; then&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route_summary show_ip_route_summary_rpc.j2 ${__full_line}&#xA;
             else&#xA;
@@ -146,13 +160,15 @@ limitations under the License.
     />
     <COMMAND
         name="no ip"
-	    help="Interface Internet Protocol config commands"
-	>
+        help="Interface Internet Protocol config commands"
+    >
     </COMMAND>
 
     <COMMAND
         name="ip address"
-        help="IP address" >
+        help="IP address"
+        command_tables="sonic-interface:sonic-interface/INTERFACE/INTERFACE_IPADDR_LIST/portname={name},ip_prefix={prfx}"
+        render_command_cb="ipv4_eth_ip_address">
         <PARAM
             name="addr"
             help="IP address with mask"
@@ -173,58 +189,358 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True</ACTION>
     </COMMAND>
 
+    <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},ipv4_eth_dhcp_relay,sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST"> </MACRO>
+    <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
+
+    <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${iface}"> </MACRO>
+    <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${iface}"> </MACRO>
+
     <COMMAND
-        name="ip dhcp-relay"
-        help="Add DHCP relay on an interface" >
-        <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${ifName} ${hop-count} ${__full_line}</ACTION>
-    </COMMAND>
-    <COMMAND
-        name="no ip dhcp-relay"
-        help="Remove DHCP relay on an interface" >
-        <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-        <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${__full_line}</ACTION>
-    </COMMAND>
-    <COMMAND
-        name="ip unnumbered"
-        help="Configure IPv4 unnumbered interface" >
+        name="ip arp"
+        command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
+        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4"
+        help="Configure static ARP" >
         <PARAM
-            name="donor-interface"
-            help="Donor Interface Name"
-            ptype="LOOPBACK_INTERFACE" />
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
-		<DOCGEN>
-			<DESCRIPTION>
-				Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
-			</DESCRIPTION>
-			<USAGE>
-				Use this command to configure IPv4 unnumbered interface at the interface level.
-			</USAGE>
-			<EXAMPLE summary="Configure IPv4 unnumbered interface">
-				sonic-cli(config)# interface Ethernet 0
-				sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
-			</EXAMPLE>
-		</DOCGEN>
+            name="static-ip"
+            help="IP Address"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure static ARP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure static ARP.
+            </USAGE>
+            <EXAMPLE summary="Configure static ARP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
-        name="no ip unnumbered"
-	    help="Unconfigure IPv4 unnumbered interface" >
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface</ACTION>
+        name="no ip arp"
+        help="Unconfigure static ARP" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
 
-		<DOCGEN>
-			<DESCRIPTION>
-				Unconfigure IPv4 unnumbered interface.
-			</DESCRIPTION>
-			<USAGE>
-				Use this command to unconfigure IPv4 unnumbered interface at the interface level.
-			</USAGE>
-			<EXAMPLE summary="Unconfigure IPv4 unnumbered interface">
-				sonic-cli(config)# interface Ethernet 0
-				sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
-				sonic-cli(conf-if-Ethernet0)# no ip unnumbered
-			</EXAMPLE>
-		</DOCGEN>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure static ARP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure static ARP.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure static ARP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+  <COMMAND
+        name="ip igmp"
+        help="Enable IGMP operation">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${iface} True</ACTION>
+  </COMMAND>
+  <COMMAND
+        name="ip igmp join"
+        help="IGMP join multicast group"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="mcastgrpaddr"
+            help="Multicast Group Address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="srcaddr"
+            help="Source Address"
+            ptype="IP_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${iface} ${mcastgrpaddr}
+             ${srcaddr}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp join mcastgrpaddr srcaddr
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp"
+        help="Enable IGMP operation">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${iface} False</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp join"
+        help="IGMP join multicast group"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="mcastgrpaddr"
+            help="Multicast group address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="srcaddr"
+            help="Source address"
+            ptype="IP_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${iface} ${mcastgrpaddr}
+             ${srcaddr}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp join mcastgrpaddr srcaddr
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+  <COMMAND
+        name="ip igmp version"
+        help="IGMP version"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="version"
+            help="IGMP version number 2 or 3 (Default: 3)"
+            ptype="IGMP_VERSION" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${iface} ${version}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp join version number
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp version"
+        help="IGMP version number 2 or 3 (Default: 3)"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_version_config ${iface} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp version
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp query-interval"
+        help="IGMP host query interval"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="queryinterval"
+            help="Query interval in seconds"
+            ptype="IGMP_QUERY_INTERVALS" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${iface} ${queryinterval}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp query-interval interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp query-interval"
+        help="IGMP host query interval"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_queryinterval_config ${iface} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp query-interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp last-member-query-count"
+        help="IGMP last member query count"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="lmquerycount"
+            help="Last Member Query Count"
+            ptype="IGMP_LAST_MEM_QUERY_COUNT" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${iface} ${lmquerycount}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp last-member-query-count count
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp last-member-query-count"
+        help="Last member query count"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_lmquerycount_config ${iface}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp last-member-query-count
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp last-member-query-interval"
+        help="IGMP last member query interval"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="lmqueryinterval"
+            help="Last member query interval in deciseconds"
+            ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${iface} ${lmqueryinterval}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp last-member-query-interval interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp last-member-query-interval"
+        help="Last member query interval in deciseconds"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_lmqueryinterval_config ${iface}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp last-member-query-interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp query-max-response-time"
+        help="IGMP max query response value (seconds)"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="querymaxrestime"
+            help="Query response value"
+            ptype="IGMP_QUERY_MAX_RES_TIME" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${iface} ${querymaxrestime}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                IGMP Query response value
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp query-max-response-time time
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp query-max-response-time"
+        help="IGMP max query response value"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_querymaxrestime_config ${iface}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp query-max-response-time
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 </VIEW>
 
@@ -240,12 +556,14 @@ limitations under the License.
     <COMMAND
         name="no ip"
         help="Interface Internet Protocol config commands"
-	>
+    >
     </COMMAND>
 
     <COMMAND
         name="ip address"
-        help="IP address" >
+        help="IP address"
+        command_tables="sonic-mgmt-interface:sonic-mgmt-interface/MGMT_INTERFACE/MGMT_INTERFACE_IPADDR_LIST/portname={name},ip_prefix={prfx}"
+        render_command_cb="ipv4_mgmt_ip_address" >
         <PARAM
             name="addr"
             help="IP address with mask"
@@ -294,12 +612,14 @@ limitations under the License.
       </COMMAND>
       <COMMAND
           name="ip address"
-          help="IP address" >
+          help="IP address"
+          command_tables="sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_IPADDR_LIST/vlanName={name},ip_prefix={prfx}" 
+          render_command_cb="ipv4_vlan_ip_address">
           <PARAM
               name="addr"
               help="IP address with mask"
               ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${vlan_name} ${addr}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_routed_vlan_ipv4_addresses_address_config ${vlan_name} ${addr}</ACTION>
       </COMMAND>
       <COMMAND
           name="no ip address"
@@ -312,19 +632,350 @@ limitations under the License.
              ptype="IP_ADDR_MASK" />
         <ACTION builtin="clish_pyobj">sonic_cli_if delete_vlan_if_ip ${vlan_name} ${addr} True</ACTION>
       </COMMAND>
-      <COMMAND
-         name="ip dhcp-relay"
-         help="Add DHCP relay on an interface" >
-         <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
-         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${vlan_name} ${ifName} ${hop-count} ${__full_line}</ACTION>
-      </COMMAND>
-      <COMMAND
-         name="no ip dhcp-relay"
-         help="Remove DHCP relay on an interface" >
-         <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-         <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config  ${vlan_name} ${__full_line}</ACTION>
-      </COMMAND>
 
+      <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{vlan_name},sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name={name},ipv4_vlan_dhcp_relay,sonic-vlan:sonic-vlan/VLAN/VLAN_LIST"> </MACRO>
+      <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{vlan_name} "> </MACRO>
+
+      <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${vlan_name} "> </MACRO>
+      <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${vlan_name} "> </MACRO>
+
+      <COMMAND
+        name="ip arp"
+        command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
+        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4"        
+        help="Configure static ARP" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${vlan_name} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure static ARP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure static ARP.
+            </USAGE>
+            <EXAMPLE summary="Configure static ARP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no ip arp"
+        help="Unconfigure static ARP" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${vlan_name} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure static ARP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure static ARP.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure static ARP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp join"
+        help="IGMP join multicast group"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="mcastgrpaddr"
+            help="Multicast group address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="srcaddr"
+            help="Source address"
+            ptype="IP_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${vlan_name} ${mcastgrpaddr}
+             ${srcaddr}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP join multicast group.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP join.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP join">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp join mcastgrpaddr srcaddr
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp join"
+        help="IGMP join multicast group"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="mcastgrpaddr"
+            help="Multicast group address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="srcaddr"
+            help="Source address"
+            ptype="IP_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${vlan_name} ${mcastgrpaddr}
+             ${srcaddr}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP join multicast group.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP join.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP join">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp join mcastgrpaddr srcaddr
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="ip igmp version"
+        help="IGMP version"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="version"
+            help="IGMP version 2 or 3 (Default: 3)"
+            ptype="IGMP_VERSION" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${vlan_name} ${version}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP version.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP version.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP version">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp version number
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp version"
+        help="IGMP version number 2 or 3 (Default: 3)"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_version_config ${vlan_name} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP version config.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP version config.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp version
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp query-interval"
+        help="IGMP host query interval"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="queryinterval"
+            help="Query interval in seconds"
+            ptype="IGMP_QUERY_INTERVALS" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${vlan_name} ${queryinterval}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP query-interval.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp query-interval interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp query-interval"
+        help="IGMP host query interval"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_queryinterval_config ${vlan_name} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP query-interval.
+            </USAGE>
+            <EXAMPLE summary="IGMP host query interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp query-interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp last-member-query-count"
+        help="IGMP last member query count"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="lmquerycount"
+            help="Last member query count"
+            ptype="IGMP_LAST_MEM_QUERY_COUNT" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${vlan_name} ${lmquerycount}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP last-member-query-count.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP last-member-query-count.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP last-member-query-count">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp last-member-query-count count
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp last-member-query-count"
+        help="Last member query count"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_lmquerycount_config ${vlan_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP last-member-query-count.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP last-member-query-count.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP last-member-query-count">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp last-member-query-count
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp last-member-query-interval"
+        help="IGMP last member query interval"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+        <PARAM
+            name="lmqueryinterval"
+            help="Last member query interval in deciseconds"
+            ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${vlan_name} ${lmqueryinterval}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP last-member-query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP last-member-query-interval.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP last-member-query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp last-member-query-interval interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp last-member-query-interval"
+        help="IGMP last member query interval"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_lmqueryinterval_config ${vlan_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP last-member-query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP last-member-query-interval.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP last-member-query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp last-member-query-interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp query-max-response-time"
+        help="Configure IGMP query-max-response-time"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="querymaxrestime"
+            help="Query response value"
+            ptype="IGMP_QUERY_MAX_RES_TIME" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${vlan_name} ${querymaxrestime}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP query-max-response-time.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP query-max-response-time">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp query-max-response-time time
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp query-max-response-time"
+        help="IGMP query response value"
+        ptype="SUBCOMMAND"
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_querymaxrestime_config ${vlan_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP query-max-response-time.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP query-max-response-time.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP query-max-response-time">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp query-max-response-time
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
 </VIEW>
 
 <!--=======================================================-->
@@ -344,11 +995,13 @@ limitations under the License.
       </COMMAND>
       <COMMAND
           name="ip address"
-          help="IP address" >
+          help="IP address" 
+          command_tables="sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST/pch_name={name},ip_prefix={prfx}"
+          render_command_cb="ipv4_lag_ip_address" >
           <PARAM
               name="addr"
               help="IP address with mask"
-              ptype="IP_ADDR_MASK" />
+              ptype="IP_ADDR_MASK"/>
            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${po_name} ${addr}</ACTION>
       </COMMAND>
       <COMMAND
@@ -362,61 +1015,360 @@ limitations under the License.
              ptype="IP_ADDR_MASK" />
          <ACTION builtin="clish_pyobj">sonic_cli_if delete_po_if_ip ${po_name} ${addr} True</ACTION>
       </COMMAND>
-      <COMMAND
-         name="ip dhcp-relay"
-         help="Add DHCP relay on an interface" >
-         <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg=""/>
-         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${po_name} ${ifName} ${hop-count} ${__full_line}</ACTION> 
-      </COMMAND>
-      <COMMAND
-         name="no ip dhcp-relay"
-         help="Remove DHCP relay on an interface" >
-         <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg=""/>
-         <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${po_name}  ${__full_line}</ACTION>
-      </COMMAND>
+      <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{po_name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/portname={name},ipv4_po_dhcp_relay,sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST"> </MACRO>
+      <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{po_name} "> </MACRO>
 
-      <COMMAND
-         name="ip unnumbered"
-         help="Configure IPv4 unnumbered interface" >
-         <PARAM
-             name="donor-interface"
-             help="Donor Interface Name"
-             ptype="LOOPBACK_INTERFACE" />
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
+	<MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${po_name} "> </MACRO>
+	<MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${po_name} "> </MACRO>
 
-		<DOCGEN>
-			<DESCRIPTION>
-				Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
-			</DESCRIPTION>
-			<USAGE>
-				Use this command to configure IPv4 unnumbered interface at the interface level.
-			</USAGE>
-			<EXAMPLE summary="Configure IPv4 unnumbered interface">
-				sonic-cli(config)# interface PortChannel 1 
-				sonic-cli(conf-if-po1)# ip unnumbered Loopback1
-			</EXAMPLE>
-		</DOCGEN>
-     </COMMAND>
+    <COMMAND
+        name="ip arp"
+        command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
+        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv4"        
+        help="Configure static ARP" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"            
+            ptype="IP_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh"            
+             />
 
-     <COMMAND
-         name="no ip unnumbered"
-         help="Unconfigure IPv4 unnumbered interface" >
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${po_name} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure static ARP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure static ARP.
+            </USAGE>
+            <EXAMPLE summary="Configure static ARP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
 
-		<DOCGEN>
-			<DESCRIPTION>
-				Unconfigure IPv4 unnumbered interface.
-			</DESCRIPTION>
-			<USAGE>
-				Use this command to unconfigure IPv4 unnumbered interface at the interface level.
-			</USAGE>
-			<EXAMPLE summary="Unconfigure IPv4 unnumbered interface">
-				sonic-cli(config)# interface PortChannel 1 
-				sonic-cli(conf-if-po1)# ip unnumbered Loopback1
-				sonic-cli(conf-if-po1)# no ip unnumbered
-			</EXAMPLE>
-		</DOCGEN>
-     </COMMAND>
+    <COMMAND
+        name="no ip arp"
+        help="Unconfigure static ARP" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${po_name} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure static ARP.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure static ARP.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no arp ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp"
+        help="Enable IGMP operation">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${po_name} True</ACTION>
+  </COMMAND>
+  <COMMAND
+        name="ip igmp join"
+        help="IGMP join multicast group"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="mcastgrpaddr"
+            help="Multicast group address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="srcaddr"
+            help="Source address"
+            ptype="IP_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${po_name} ${mcastgrpaddr}
+             ${srcaddr}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP join multicast group.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP Join.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP join multicast group">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp join mcastgrpaddr srcaddr
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp"
+        help="Enable IGMP operation">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${po_name} False</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp join"
+        help="IGMP join multicast group" 
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="mcastgrpaddr"
+            help="Multicast group address"
+            ptype="IP_ADDR" />
+        <PARAM
+            name="srcaddr"
+            help="Source address"
+            ptype="IP_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${po_name} ${mcastgrpaddr}
+             ${srcaddr}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP Join config
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP join.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)#no ip igmp join mcastgrpaddr srcaddr
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+  <COMMAND
+        name="ip igmp version"
+        help="IGMP version"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="version"
+            help="IGMP version number"
+            ptype="IGMP_VERSION" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${po_name} ${version}
+        </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP version.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP version.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP version">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp version number
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp version"
+        help="IGMP version number"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_version_config ${po_name} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP version config.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP version config.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp version
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp query-interval"
+        help="Configure IGMP host query interval"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="queryinterval"
+            help="IGMP host query interval"
+            ptype="IGMP_QUERY_INTERVALS" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${po_name} ${queryinterval}
+        </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP query-interval.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp query-interval interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp query-interval"
+        help="Query interval in seconds"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_queryinterval_config ${po_name} </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP query-interval.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP query interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp query-interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp last-member-query-count"
+        help="Configure IGMP last-member-query-count"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="lmquerycount"
+            help="Last member query count"
+            ptype="IGMP_LAST_MEM_QUERY_COUNT" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${po_name} ${lmquerycount}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP last-member-query-count.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP last-member-query-count.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP last-member-query-count">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp last-member-query-count count
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp last-member-query-count"
+        help="Last member query count"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_lmquerycount_config ${po_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP last-member-query-count.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP last-member-query-count.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP last-member-query-count">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp last-member-query-count
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp last-member-query-interval"
+        help="Configure IGMP last-member-query-interval"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="lmqueryinterval"
+            help="Last member query interval"
+            ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${po_name} ${lmqueryinterval}
+        </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP last-member-query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP last-member-query-interval.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP last-member-query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp last-member-query-interval interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp last-member-query-interval"
+        help="IGMP last member query interval"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_lmqueryinterval_config ${po_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP last-member-query-interval.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP last-member-query-interval.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP last-member-query-interval">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp last-member-query-interval
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="ip igmp query-max-response-time"
+        help="Configure IGMP query-max-response-time"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+        <PARAM
+            name="querymaxrestime"
+            help="Query max response time"
+            ptype="IGMP_QUERY_MAX_RES_TIME" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${po_name} ${querymaxrestime}
+        </ACTION> 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IGMP query-max-response-time.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure IGMP.
+            </USAGE>
+            <EXAMPLE summary="Configure IGMP query-max-response-time">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ip igmp query-max-response-time time
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="no ip igmp query-max-response-time"
+        help="Query max response time"
+        ptype="SUBCOMMAND" 
+        mode="subcommand" >
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_igmp_querymaxrestime_config ${po_name}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove IGMP query-max-response-time.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to remove IGMP query-max-response-time.
+            </USAGE>
+            <EXAMPLE summary="Remove IGMP query-max-response-time">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ip igmp query-max-response-time
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
 </VIEW>
 
 <!--=======================================================-->
@@ -436,11 +1388,15 @@ limitations under the License.
       </COMMAND>
       <COMMAND
           name="ip address"
-          help="IP address" >
+          help="IP address"
+          command_tables="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_IPADDR_LIST/loIfName={name},ip_prefix={prfx}"          
+          render_command_cb="ipv4_lo_ip_address" 
+           >
           <PARAM
               name="addr"
               help="IP address with mask (/32 is supported)"
-              ptype="IP_ADDR_MASK" />
+              ptype="IP_ADDR_MASK"                        
+               />
            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${lo_name} ${addr}</ACTION>
       </COMMAND>
       <COMMAND
@@ -455,4 +1411,46 @@ limitations under the License.
          <ACTION builtin="clish_pyobj">sonic_cli_if delete_lo_if_ip ${lo_name} ${addr} True</ACTION>
       </COMMAND>
 </VIEW>
+
+
+<!--=======================================================-->
+<!--                Config Interface RANGE-MODE         -->
+<!--=======================================================-->
+  <VIEW name="configure-if-range-view">
+    <COMMAND
+        name="ip"
+        help="Interface Internet Protocol config commands"/>
+    <COMMAND
+        name="no ip"
+        help="Interface Internet Protocol config commands">
+    </COMMAND>
+
+    <MACRO name="NO_INTF_RANGE_IPv4" arg="${iflist}"></MACRO>
+    <MACRO name="NO_INTF_RANGE_IPv6" arg="${iflist}"></MACRO>
+  </VIEW>
+
+  <VIEW name="configure-vlan-range-view">
+    <COMMAND
+        name="ip"
+        help="Interface Internet Protocol config commands"/>
+    <COMMAND
+        name="no ip"
+        help="Interface Internet Protocol config commands">
+    </COMMAND>
+    <MACRO name="NO_INTF_RANGE_IPv4" arg="${iflist}"></MACRO>
+    <MACRO name="NO_INTF_RANGE_IPv6" arg="${iflist}"></MACRO>
+  </VIEW>
+  <VIEW name="configure-po-range-view">
+    <COMMAND
+        name="ip"
+        help="Interface Internet Protocol config commands"/>
+    <COMMAND
+        name="no ip"
+        help="Interface Internet Protocol config commands">
+    </COMMAND>
+    <MACRO name="NO_INTF_RANGE_IPv4" arg="${iflist}"></MACRO>
+    <MACRO name="NO_INTF_RANGE_IPv6" arg="${iflist}"></MACRO>
+  </VIEW>
+
 </CLISH_MODULE>
+

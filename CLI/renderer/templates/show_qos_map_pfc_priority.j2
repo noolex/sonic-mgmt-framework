@@ -1,0 +1,28 @@
+{% if json_output %}
+{% for key_json in json_output %}
+    {% if key_json == "openconfig-qos-maps-ext:pfc-priority-queue-maps" %}
+        {% set map_list = json_output[key_json]["pfc-priority-queue-map"] %}
+    {% else %}
+      {% if key_json == "openconfig-qos-maps-ext:pfc-priority-queue-map" %}
+        {% set map_list = json_output[key_json] %}
+      {% endif %}
+    {% endif %}
+{% for map in map_list %}
+
+{{'PFC-Priority-Queue-MAP: '}}{{map['name']}}
+
+{{'----------------------------'}}
+    {{'%-15s'|format("PFC Priority")}}{{'%-5s'|format("Queue")}}
+{{'----------------------------'}}
+  {% set map_info = map['pfc-priority-queue-map-entries'] %}
+  {% if map_info %}
+      {% set entries = map_info['pfc-priority-queue-map-entry'] %}
+      {% for entry in entries %}
+    {{'%-15s'|format(entry['dot1p'])}}{{'%-5s'|format(entry['config']['output-queue-index'])}}
+      {% endfor %}
+  {% endif %}
+{{'----------------------------'}}
+
+{% endfor %}
+{% endfor %}
+{% endif %}

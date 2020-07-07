@@ -1,0 +1,13 @@
+{% if json_output -%}
+{% if 'header' in json_output and json_output["header"] == 'True' -%}
+{{'---------------------------------------------------------'}}
+LDAP Maps
+{{'---------------------------------------------------------'}}
+{% else %}
+{{name}}:
+{% for to,from in json_output.items() %}
+  {{"%-20s"|format(from)}} : {{to}}
+{% endfor %}
+{% endif %}
+{% endif %}
+

@@ -47,6 +47,8 @@ $(GO_DEPS): $(GO_MOD)
 	$(MGMT_COMMON_DIR)/patches/apply.sh vendor
 	touch  $@
 
+go-deps: $(GO_DEPS)
+
 go-deps-clean:
 	$(RM) -r vendor
 
@@ -56,7 +58,13 @@ cli:
 clish:
 	SONIC_CLI_ROOT=$(BUILD_DIR) $(MAKE) -C CLI/klish
 
-clitree:
+pylint:
+	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI pylint
+
+pylint-clean:
+	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI pylint-clean
+
+clitree: pylint
 	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C CLI/clitree
 
 clidocgen:
@@ -110,10 +118,6 @@ install:
 	$(INSTALL) -d $(DESTDIR)/lib/x86_64-linux-gnu/
 	$(INSTALL) -D $(TOPDIR)/ham/libnss_ham/libnss_ham.so.2 $(DESTDIR)/lib/x86_64-linux-gnu/.
 	
-	# Scripts for the certificate fixer oneshot service
-	$(INSTALL) -D $(TOPDIR)/certfix/usr/sbin/*             $(DESTDIR)/usr/sbin/
-	$(INSTALL) -D $(TOPDIR)/certfix/lib/systemd/system/*   $(DESTDIR)/lib/systemd/system/
-	
 ifeq ($(SONIC_COVERAGE_ON),y)
 	echo "" > $(DESTDIR)/usr/sbin/.test
 endif
@@ -124,6 +128,7 @@ $(addprefix $(DEST)/, $(MAIN_TARGET)): $(DEST)/% :
 clean: rest-clean models-clean
 	(cd ham; ./build.sh clean)
 	git check-ignore debian/* | xargs -r $(RM) -r
+	$(RM) -r debian/.debhelper
 	$(RM) -r $(BUILD_DIR)
 
 cleanall: clean

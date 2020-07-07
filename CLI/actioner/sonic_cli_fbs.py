@@ -24,100 +24,127 @@ import cli_client as cc
 from scripts.render_cli import show_cli_output
 import traceback
 import cli_log as log
-from sonic_cli_acl import pcp_map
-from sonic_cli_acl import dscp_map
+from sonic_cli_acl import pcp_map, proto_number_map, dscp_map, ethertype_map
 from natsort import natsorted
 import sonic_cli_acl
-
 
 fbs_client = cc.ApiClient()
 TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
 
 
-def create_policy(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST')
-    body = dict()
-    body["POLICY_TABLE_LIST"] = [{
-        "POLICY_NAME": args[0]
-    }]
+def create_policy_copp(args):
+    if args[0] != "copp-system-policy":
+        raise Exception("copp type classes must have the name 'copp-system-policy'")
+    return
 
-    if len(args) == 2:
-        body["POLICY_TABLE_LIST"][0]["TYPE"] = args[1].upper()
+
+def create_policy(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy')
+    body = {
+    "openconfig-fbs-ext:policy": [{
+        "policy-name": args[0],
+            "config": {
+                "name": args[0],
+                "type": "POLICY_" + args[1].upper()
+            }
+        }]
+    }
 
     return fbs_client.patch(keypath, body)
 
 
 def delete_policy(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST={policy_name}', policy_name=args[0])
-    return fbs_client.delete(keypath)
+    if args[0] == "copp-system-policy":
+        print("%Error: copp-system-policy cannot be deleted")
+        return
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}', policy_name=args[0])
+        return fbs_client.delete(keypath)
 
 
 def set_policy_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST={policy_name}/DESCRIPTION', policy_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/config/description', policy_name=args[0])
     if len(args) > 2:
-        body = {'DESCRIPTION': '"{}"'.format(" ".join(args[1:]))}
+        body = {"openconfig-fbs-ext:description": '"{}"'.format(" ".join(args[1:]))}
     else:
-        body = {'DESCRIPTION': args[1]}
+        body = {"openconfig-fbs-ext:description": args[1]}
     return fbs_client.patch(keypath, body)
 
 
 def clear_policy_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_TABLE/POLICY_TABLE_LIST={policy_name}/DESCRIPTION', policy_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/config/description', policy_name=args[0])
     return fbs_client.delete(keypath)
 
 
+def create_classifier_copp(args):
+    pass
+
+
 def create_classifier(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST')
-    body = dict()
-    body["CLASSIFIER_TABLE_LIST"] = [{
-        "CLASSIFIER_NAME": args[0]
-    }]
-
-    if len(args) == 2:
-        body["CLASSIFIER_TABLE_LIST"][0]["MATCH_TYPE"] = args[1].upper()
-
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier')
+    body = {
+        "openconfig-fbs-ext:classifier": [{
+            "class-name": args[0],
+                "config": {
+                "name": args[0],
+                "match-type": "MATCH_" + args[1].upper()
+            }
+        }]
+    }
     return fbs_client.patch(keypath, body)
 
 
 def delete_classifier(args):
+    # try to delete fbs entry first by checking if fbs object exists, else delete copp entry
     keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}', classifier_name=args[0])
-    return fbs_client.delete(keypath)
+    response = fbs_client.get(keypath)
+    if response.ok() and response.content:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={classifier_name}', classifier_name=args[0])
+        return fbs_client.delete(keypath)
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}', copp_name=args[0])
+        return fbs_client.delete(keypath)
 
 
 def set_classifier_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DESCRIPTION', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/config/description', class_name=args[0])
     if len(args) > 2:
-        body = {'DESCRIPTION': '"{}"'.format(" ".join(args[1:]))}
+        body = {"openconfig-fbs-ext:description": '"{}"'.format(" ".join(args[1:]))}
     else:
-        body = {'DESCRIPTION': args[1]}
+        body = {"openconfig-fbs-ext:description": args[1]}
 
     return fbs_client.patch(keypath, body)
 
 
 def clear_classifier_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DESCRIPTION', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/config/description', class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_classifier_match_acl(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_NAME', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-acl/config', class_name=args[0])
     if 'mac' == args[1]:
-        acl_name = args[2] + '_ACL_L2'
+        acl_type = 'ACL_L2'
     elif 'ip' == args[1]:
-        acl_name = args[2] + '_ACL_IPV4'
+        acl_type = 'ACL_IPV4'
     elif 'ipv6' == args[1]:
-        acl_name = args[2] + '_ACL_IPV6'
+        acl_type = 'ACL_IPV6'
     else:
-        print('Unknown ACL Type')
+        print('%Error: Unknown ACL Type')
         return
 
-    body = {'ACL_NAME': acl_name}
+    body = {
+        "openconfig-fbs-ext:config": {
+            "acl-name": args[2],
+            "acl-type": acl_type
+        }
+    }
 
     return fbs_client.patch(keypath, body)
 
 
 def clear_classifier_match_acl(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ACL_NAME', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-acl', class_name=args[0])
     return fbs_client.delete(keypath)
 
 
@@ -125,203 +152,171 @@ def __format_mac_addr(macaddr):
     return "{}{}:{}{}:{}{}:{}{}:{}{}:{}{}".format(*macaddr.translate(None, ".:-"))
 
 
-def __match_mac_address(addr_type, args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
-                      classifier_name=args[0], addr_type=addr_type)
-
+def __set_match_address(addr_type, args):
     if 'mac' == args[1]:
-        value = "{}/{}".format(args[2], args[3]) if args[2] != 'host' else args[3]
-        value = value.split('/')
-        for idx in range(len(value)):
-            value[idx] = __format_mac_addr(value[idx])
-        value = '/'.join(value)
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config', class_name=args[0])
+        body = {
+            "openconfig-fbs-ext:config": {
+            }
+        }
+        if args[2] == 'host':
+            body["openconfig-fbs-ext:config"]["{}-mac".format(addr_type)] = __format_mac_addr(args[3])
+        else:
+            body["openconfig-fbs-ext:config"]["{}-mac".format(addr_type)] = __format_mac_addr(args[2])
+            body["openconfig-fbs-ext:config"]["{}-mac-mask".format(addr_type)] = __format_mac_addr(args[3])
     elif 'ip' == args[1]:
-        value = args[2] if args[2] != 'host' else args[3] + '/32'
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/{addr_type}-address',
+                          class_name=args[0], addr_type=addr_type)
+        body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/32'}
     elif 'ipv6' == args[1]:
-        value = args[2] if args[2] != 'host' else args[3] + '/128'
-    else:
-        print('%Error: Unknown address type {}'.format(args[1]))
-        return
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/{addr_type}-address',
+                          class_name=args[0], addr_type=addr_type)
+        body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/128'}
 
-    body = {
-        addr_type: value
-    }
     return fbs_client.patch(keypath, body)
 
 
 def set_match_source_address(args):
-    addr_type = 'SRC_{}'.format(args[1].upper())
-    return __match_mac_address(addr_type, args)
+    return __set_match_address('source', args)
 
 
 def clear_match_source_address(args):
-    addr_type = 'SRC_{}'.format(args[1].upper())
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
-                      classifier_name=args[0], addr_type=addr_type)
+    if 'mac' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/source-mac', class_name=args[0])
+    elif 'ip' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/source-address', class_name=args[0])
+    elif 'ipv6' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/source-address', class_name=args[0])
+
     return fbs_client.delete(keypath)
 
 
 def set_match_destination_address(args):
-    addr_type = 'DST_{}'.format(args[1].upper())
-    return __match_mac_address(addr_type, args)
+    return __set_match_address('destination', args)
 
 
 def clear_match_destination_address(args):
-    addr_type = 'DST_{}'.format(args[1].upper())
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/{addr_type}',
-                      classifier_name=args[0], addr_type=addr_type)
+    if 'mac' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/destination-mac', class_name=args[0])
+    elif 'ip' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/destination-address', class_name=args[0])
+    elif 'ipv6' == args[1]:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/destination-address', class_name=args[0])
+
     return fbs_client.delete(keypath)
 
 
 def set_match_ethertype(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ETHER_TYPE',
-                      classifier_name=args[0])
-    ether_type_map = {
-        "ip": "0x800",
-        "ipv6": "0x86dd",
-        "arp": "0x806"
-    }
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/ethertype',
+                      class_name=args[0])
     body = {
-        "ETHER_TYPE": args[1] if args[1] not in ether_type_map else ether_type_map[args[1]]
+        "openconfig-fbs-ext:ethertype": int(args[1], 0) if args[1] not in ethertype_map else ethertype_map[args[1]]
     }
+
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_ethertype(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/ETHER_TYPE',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/ethertype',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_vlan(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/VLAN',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/vlanid',
+                      class_name=args[0])
     body = {
-        "VLAN": int(args[1])
+        "openconfig-fbs-ext:vlanid": int(args[1])
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_vlan(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/VLAN',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/vlanid',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_pcp(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/PCP',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/pcp',
+                      class_name=args[0])
     body = {
-        "PCP": int(args[1]) if args[1] not in pcp_map.keys() else pcp_map[args[1]]
+        "openconfig-fbs-ext:pcp": int(args[1]) if args[1] not in pcp_map.keys() else pcp_map[args[1]]
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_pcp(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/PCP',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/pcp',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_dei(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DEI',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/dei',
+                      class_name=args[0])
     body = {
-        "DEI": int(args[1])
+        "openconfig-fbs-ext:dei": int(args[1])
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_dei(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DEI',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config/dei',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_ip_protocol(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/IP_PROTOCOL',
-                      classifier_name=args[0])
-    protocol_map = {
-        'icmp': 1,
-        'tcp': 6,
-        'udp': 17,
-        'icmpv6': 58
-    }
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ip/config/protocol',
+                      class_name=args[0])
     body = {
-        "IP_PROTOCOL": int(args[1]) if args[1] not in protocol_map.keys() else protocol_map[args[1]]
+        "openconfig-fbs-ext:protocol": int(args[1]) if args[1] not in proto_number_map.keys() else proto_number_map[args[1]]
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_ip_protocol(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/IP_PROTOCOL',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ip/config/protocol',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_dscp(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DSCP',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ip/config/dscp',
+                      class_name=args[0])
     body = {
-        "DSCP": int(args[1]) if args[1] not in dscp_map.keys() else dscp_map[args[1]]
+        "openconfig-fbs-ext:dscp": int(args[1]) if args[1] not in dscp_map.keys() else dscp_map[args[1]]
     }
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_dscp(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/DSCP',
-                      classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ip/config/dscp',
+                      class_name=args[0])
     return fbs_client.delete(keypath)
 
 
 def set_match_layer4_port(args):
-    if args[1] == 'source':
-        if args[2] == 'eq':
-            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_SRC_PORT',
-                              classifier_name=args[0])
-            body = {
-                'L4_SRC_PORT': int(args[3])
-            }
-        else:
-            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_SRC_PORT_RANGE',
-                              classifier_name=args[0])
-            body = {
-                'L4_SRC_PORT_RANGE': '-'.join(args[3:])
-            }
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/{dir}-port',
+                      class_name=args[0], dir=args[1])
+
+    if args[2] == 'eq':
+        body = {
+            "openconfig-fbs-ext:{}-port".format(args[1]): int(args[3])
+        }
     else:
-        if args[2] == 'eq':
-            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_DST_PORT',
-                              classifier_name=args[0])
-            body = {
-                'L4_DST_PORT': int(args[3])
-            }
-        else:
-            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/L4_DST_PORT_RANGE',
-                              classifier_name=args[0])
-            body = {
-                'L4_DST_PORT_RANGE': '-'.join(args[3:])
-            }
+        body = {
+            "openconfig-fbs-ext:{}-port".format(args[1]): '{}..{}'.format(args[3], args[4])
+        }
+
     return fbs_client.patch(keypath, body)
 
 
 def clear_match_layer4_port(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}',
-                      classifier_name=args[0])
-    response = fbs_client.get(keypath)
-    if response.ok():
-        data = response.content
-        if args[1] == 'source':
-            delete_params = ['L4_SRC_PORT', 'L4_SRC_PORT_RANGE']
-        else:
-            delete_params = ['L4_DST_PORT', 'L4_DST_PORT_RANGE']
-
-        for feat in delete_params:
-            if feat in data['sonic-flow-based-services:CLASSIFIER_TABLE_LIST'][0].keys():
-                del data['sonic-flow-based-services:CLASSIFIER_TABLE_LIST'][0][feat]
-
-        return fbs_client.put(keypath, data)
-    else:
-        print('Error:{}'.format(response.error_message()))
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/{dir}-port',
+                      class_name=args[0], dir=args[1])
+    return fbs_client.delete(keypath)
 
 
 def __convert_tcp_flags(flags):
@@ -340,42 +335,41 @@ def __convert_tcp_flags(flags):
 
 
 def __update_tcp_flags(classifier, flags, delete=False):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/TCP_FLAGS',
-                      classifier_name=classifier)
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/tcp-flags',
+                      class_name=classifier)
     response = fbs_client.get(keypath)
     data = None
-    if response.ok():
+    if response.ok() and bool(response.content):
         data = response.content
-
-    if not bool(data):
+    else:
         data = {
-            'sonic-flow-based-services:TCP_FLAGS': '0/0'
+            "openconfig-fbs-ext:tcp-flags": []
         }
 
-    tcp_flags = data['sonic-flow-based-services:TCP_FLAGS']
-    tcp_flags = tcp_flags.split('/')
+    tcp_flags = data["openconfig-fbs-ext:tcp-flags"]
     for idx in range(len(tcp_flags)):
-        try:
-            tcp_flags[idx] = int(tcp_flags[idx])
-        except ValueError:
-            tcp_flags[idx] = int(tcp_flags[idx], 0)
+        tcp_flags[idx] = tcp_flags[idx].split(":")[-1]
 
-    ex_tcp_flags = __convert_tcp_flags(flags)
-    for idx in range(len(tcp_flags)):
+    for flag in flags:
+        oc_flag = "TCP_" + flag.replace("-", "_").upper()
         if delete:
-            ex_tcp_flags[idx] = ex_tcp_flags[idx] ^ tcp_flags[idx]
+            try:
+                tcp_flags.remove(oc_flag)
+            except ValueError:
+                pass
         else:
-            ex_tcp_flags[idx] = ex_tcp_flags[idx] | tcp_flags[idx]
+            tcp_flags.append(oc_flag)
 
-    if 0 == ex_tcp_flags[1]:
+    tcp_flags = list(set(tcp_flags))
+    if len(tcp_flags) == 0:
         if delete:
             response = fbs_client.delete(keypath)
         else:
             print('%Error: No TCP Flags configured')
             return None
     else:
-        data['sonic-flow-based-services:TCP_FLAGS'] = '0x{:x}/0x{:x}'.format(ex_tcp_flags[0], ex_tcp_flags[1])
-        response = fbs_client.patch(keypath, data)
+        data["openconfig-fbs-ext:tcp-flags"] = tcp_flags
+        response = fbs_client.put(keypath, data)
 
     return response
 
@@ -386,88 +380,130 @@ def set_match_tcp_flags(args):
 
 def clear_match_tcp_flags(args):
     if len(args) == 1:
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}/TCP_FLAGS',
-                          classifier_name=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/tcp-flags',
+                          class_name=args[0])
         return fbs_client.delete(keypath)
+    #elif len(args) == 2:
+    #    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/tcp-flags={flag}',
+    #                      class_name=args[0], flag="TCP_" + args[1].replace("-", "_").upper())
+    #    return fbs_client.delete(keypath)
     else:
         return __update_tcp_flags(args[0], args[1:], True)
 
 
+def create_flow_copp(args):
+    # inputs: <policy_name> <class_name> [priority]
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}',
+                      copp_name=args[1])
+    response = fbs_client.get(keypath)
+    if response.ok() and bool(response.content):
+        if len(args) == 3:
+            content = response.content
+            if 'openconfig-copp-ext:copp-trap' in response.content:
+                if 'config' in content['openconfig-copp-ext:copp-trap'][0]:
+                    if 'trap-group' in content['openconfig-copp-ext:copp-trap'][0]['config']:
+                        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
+                                          copp_name=content['openconfig-copp-ext:copp-trap'][0]['config']['trap-group'])
+                        body = {"openconfig-copp-ext:trap-priority": int(args[2])}
+
+                        return fbs_client.patch(keypath, body)
+    else:
+        raise Exception('Class not found')
+
+
 def create_flow(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST')
-    body = dict()
-    body["POLICY_SECTIONS_TABLE_LIST"] = [{
-        "POLICY_NAME": args[0],
-        "CLASSIFIER_NAME": args[1]
-    }]
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section', policy_name=args[0])
+    body = {"openconfig-fbs-ext:section": [{
+        "class": args[1],
+        "config": {
+            "name": args[1],
+        }}]}
 
     if len(args) == 3:
-        body["POLICY_SECTIONS_TABLE_LIST"][0]["PRIORITY"] = int(args[2])
+        body["openconfig-fbs-ext:section"][0]["config"]["priority"] = int(args[2])
 
     return fbs_client.patch(keypath, body)
 
 
+def delete_flow_copp(args):
+    # inputs: <policy_name> <class_name>
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-group', copp_name=args[1])
+    return fbs_client.delete(keypath)
+
+
 def delete_flow(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_flow_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/DESCRIPTION',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/config/description',
+                      policy_name=args[0], class_name=args[1])
     if len(args) > 3:
-        body = {'DESCRIPTION': '"{}"'.format(" ".join(args[2:]))}
+        body = {'openconfig-fbs-ext:description': '"{}"'.format(" ".join(args[2:]))}
     else:
-        body = {'DESCRIPTION': args[2]}
+        body = {'openconfig-fbs-ext:description': args[2]}
     return fbs_client.patch(keypath, body)
 
 
 def clear_flow_description(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/DESCRIPTION',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/config/description',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_pcp_remarking_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_PCP',
-                      policy_name=args[0], classifier_name=args[1])
-    body = {'SET_PCP': int(args[2])}
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/remark/config/set-dot1p',
+                      policy_name=args[0], class_name=args[1])
+    body = {'openconfig-fbs-ext:set-dot1p': int(args[2])}
     return fbs_client.patch(keypath, body)
 
 
 def clear_pcp_remarking_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_PCP',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/remark/config/set-dot1p',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_dscp_remarking_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_DSCP',
-                      policy_name=args[0], classifier_name=args[1])
-    body = {'SET_DSCP': int(args[2])}
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/remark/config/set-dscp',
+                      policy_name=args[0], class_name=args[1])
+    body = {'openconfig-fbs-ext:set-dscp': int(args[2])}
     return fbs_client.patch(keypath, body)
 
 
 def clear_dscp_remarking_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_DSCP',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/remark/config/set-dscp',
+                      policy_name=args[0], class_name=args[1])
+    return fbs_client.delete(keypath)
+
+
+def set_traffic_class_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/queuing/config/output-queue-index',
+                      policy_name=args[0], class_name=args[1])
+    body = {'openconfig-fbs-ext:output-queue-index': int(args[2])}
+    return fbs_client.patch(keypath, body)
+
+
+def clear_traffic_class_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/queuing/config/output-queue-index',
+                      policy_name=args[0], class_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_policer_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
-                      policy_name=args[0], classifier_name=args[1])
-    body = dict()
-    data = {
-        "POLICY_NAME": args[0],
-        "CLASSIFIER_NAME": args[1]
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/policer/config',
+                      policy_name=args[0], class_name=args[1])
+    body = {
+        "openconfig-fbs-ext:config": {
+        }
     }
 
     index = 2
     while index < len(args):
         if args[index] == 'cir':
-            key = 'SET_POLICER_CIR'
+            key = 'cir'
             value = args[index + 1]
             if value.endswith('kbps'):
                 value = value.replace('kbps', '000')
@@ -479,8 +515,8 @@ def set_policer_action(args):
                 value = value.replace('tbps', '000000000000')
             elif value.endswith('bps'):
                 value = value.replace('bps', '')
-        elif args[index] == 'cbs':
-            key = 'SET_POLICER_CBS'
+        elif args[index] == 'cbs' or args[index] == 'bc':
+            key = 'bc'
             value = args[index + 1]
             if value.endswith('KB'):
                 value = value.replace('KB', '000')
@@ -493,7 +529,7 @@ def set_policer_action(args):
             elif value.endswith('B'):
                 value = value.replace('B', '')
         elif args[index] == 'pir':
-            key = 'SET_POLICER_PIR'
+            key = 'pir'
             value = args[index+1]
             if value.endswith('kbps'):
                 value = value.replace('kbps', '000')
@@ -505,8 +541,8 @@ def set_policer_action(args):
                 value = value.replace('tbps', '000000000000')
             elif value.endswith('bps'):
                 value = value.replace('bps', '')
-        elif args[index] == 'pbs':
-            key = 'SET_POLICER_PBS'
+        elif args[index] == 'pbs' or args[index] == 'be':
+            key = 'be'
             value = args[index + 1]
             if value.endswith('KB'):
                 value = value.replace('KB', '000')
@@ -522,33 +558,40 @@ def set_policer_action(args):
             print('%Error: Unknown argument {}'.format(args[index]))
             return
 
-        data[key] = value
+        body["openconfig-fbs-ext:config"][key] = value
         index += 2
 
-    body["POLICY_SECTIONS_TABLE_LIST"] = [data]
     return fbs_client.patch(keypath, body)
 
 
 def clear_policer_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}',
-                      policy_name=args[0], classifier_name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/policer/config',
+                      policy_name=args[0], class_name=args[1])
+    if len(args) == 2:
+        return fbs_client.delete(keypath)
+
     response = fbs_client.get(keypath)
     if response.ok():
         data = response.content
         if len(args) == 2:
-            delete_params = ['SET_POLICER_PBS', 'SET_POLICER_PIR', 'SET_POLICER_CBS', 'SET_POLICER_CIR']
+            delete_params = ['cir', 'bc', 'pir', 'be']
         else:
             delete_params = []
             for feat in args[2:]:
-                delete_params.append('SET_POLICER_' + feat.upper())
+                if feat == 'cir' or feat == 'pir':
+                    delete_params.append(feat)
+                elif feat == 'cbs':
+                    delete_params.append('bc')
+                elif feat == 'pbs':
+                    delete_params.append('be')
 
         for feat in delete_params:
-            if feat in data['sonic-flow-based-services:POLICY_SECTIONS_TABLE_LIST'][0].keys():
-                del data['sonic-flow-based-services:POLICY_SECTIONS_TABLE_LIST'][0][feat]
+            if feat in data['openconfig-fbs-ext:config'].keys():
+                del data['openconfig-fbs-ext:config'][feat]
 
         return fbs_client.put(keypath, data)
     else:
-        print('Error:{}'.format(response.error_message()))
+        print(response.error_message())
 
 
 def set_mirror_session_action(args):
@@ -612,11 +655,11 @@ def set_egress_interface_action(args):
         keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_INTERFACE',
                           policy_name=args[0], classifier_name=args[1])
         pri = ''
-        if len(args) == 6:
+        if len(args) == 5:
             pri = args[5]
 
         data = {
-            "sonic-flow-based-services:SET_INTERFACE": ["{}{}|{}".format(args[2], args[3], pri)]
+            "sonic-flow-based-services:SET_INTERFACE": ["{}|{}".format(args[2], pri)]
         }
         return fbs_client.patch(keypath, data)
 
@@ -652,8 +695,11 @@ def unbind_policy(args):
 
 
 def show_policy_summary(args):
-    if len(args) > 4 and args[3] == 'interface':
-        interface_name = args[4] + args[5]
+    if len(args) > 1 and args[0] == 'interface':
+        if args[1] == 'Vlan':
+            interface_name = args[1] + args[2]
+        else:
+            interface_name = args[1]
         keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
                           interface_name=interface_name)
     else:
@@ -663,94 +709,362 @@ def show_policy_summary(args):
 
 
 def show_policy(args):
-    policy_name = ""
-    match_type = ""
-    if len(args) > 1 and args[1] == 'qos':
-        match_type = "QOS"
-    elif len(args) > 1 and args[1] == 'monitoring':
-        match_type = "MONITORING"
-    elif len(args) > 1 and args[1] == 'forwarding':
-        match_type = "FORWARDING"
-    else:
+    body = {"sonic-flow-based-services:input": {}}
+    if len(args) > 1:
+        body = {"sonic-flow-based-services:input": {"TYPE": args[1].upper()}}
+    elif len(args) == 1:
         policy_name = args[0]
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_policy')
-    body = {"sonic-flow-based-services:input": {"POLICY_NAME": policy_name, "TYPE": match_type}}
+        body = {"sonic-flow-based-services:input": {"POLICY_NAME": policy_name}}
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-policy')
     return fbs_client.post(keypath, body)
 
 
 def show_classifier(args):
-    class_name = ""
-    match_type = ""
-    if len(args) > 1 and args[1] == 'acl':
-        match_type = "ACL"
-    elif len(args) > 1 and args[1] == 'fields':
-        match_type = "FIELDS"
+    body = {"sonic-flow-based-services:input": {}}
+    if len(args) > 1:
+        body = {"sonic-flow-based-services:input": {"MATCH_TYPE": args[1].upper()}}
     elif len(args) == 1:
-        class_name = args[0]
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_classifier')
-    body = {"sonic-flow-based-services:input": {"CLASSIFIER_NAME": class_name, "MATCH_TYPE": match_type}}
+        body = {"sonic-flow-based-services:input": {"CLASSIFIER_NAME": args[0]}}
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-classifier')
     return fbs_client.post(keypath, body)
 
 
 def show_details_by_policy(args):
-    policy_name= ""
-    interface_name= ""
-    if len(args) >= 1:
-        policy_name = 'policy ' + args[0]
-    if len(args) > 2 and args[1] == 'interface':
-        interface_name = "interface " + args[2]
-        if len(args) > 3:
-            interface_name = interface_name + args[3]
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
-    body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": policy_name, "MATCH_SUB_TYPE": interface_name} }
+    body = {"sonic-flow-based-services:input": dict()}
+    if len(args) > 0:
+        body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
+    if len(args) > 1:
+        if args[1] == "interface":
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+        else:
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)
 
 
 def show_details_by_interface(args):
-    interface_name = ""
-    policy_type = ""
-    last_arg_index = 0
-    if len(args) >= 1: 
-        interface_name = 'interface ' + args[0]
-        if len(args) > 1 and args[1] != 'type':
-            interface_name = interface_name + args[1]
-            last_arg_index = 1
-            
-    if len(args) > (last_arg_index + 1) and args[last_arg_index+1] == 'type':
-        policy_type = 'type ' + args[last_arg_index+2]
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:show_service_policy')
-    body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": interface_name, "MATCH_SUB_TYPE": policy_type } }
+    body = {"sonic-flow-based-services:input": dict()}
+    if args[0] == "Switch":
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+        if len(args) == 3:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[2]
+    else:
+        if args[0] == "Vlan":
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
+            if len(args) == 5:
+                body["sonic-flow-based-services:input"]["TYPE"] = args[4]
+        else:
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+            if len(args) == 4:
+                body["sonic-flow-based-services:input"]["TYPE"] = args[3]
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-service-policy')
     return fbs_client.post(keypath, body)
 
+
 def clear_details_by_policy(args):
-    policy_name= ""
-    interface_name= ""
-    if len(args) >= 1:
-        policy_name = 'policy ' + args[0]
-    if len(args) > 2 and args[1] == 'interface':
-        interface_name = "interface " + args[2]
-        if len(args) > 3:
-            interface_name = interface_name + args[3]
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
-    body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": policy_name, "MATCH_SUB_TYPE": interface_name} }
+    body = {"sonic-flow-based-services:input": dict()}
+    if len(args) > 0:
+        body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
+    if len(args) > 1:
+        if args[1] == "interface":
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+        else:
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
 
 
 def clear_details_by_interface(args):
-    interface_name = ""
-    policy_type = ""
-    last_arg_index = 0
-    if len(args) >= 1: 
-        interface_name = 'interface ' + args[0]
-        if len(args) > 1 and args[1] != 'type':
-            interface_name = interface_name + args[1]
-            last_arg_index = 1
-            
-    if len(args) > (last_arg_index + 1) and args[last_arg_index+1] == 'type':
-        policy_type = 'type ' + args[last_arg_index+2]
-    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear_service_policy')
-    body    = { "sonic-flow-based-services:input": { "MATCH_TYPE": interface_name, "MATCH_SUB_TYPE": policy_type } }
+    body = {"sonic-flow-based-services:input": dict()}
+    if args[0] == "Switch":
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+        if len(args) == 3:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[2]
+    else:
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
+        if len(args) == 4:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[3]
+
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
+
+
+def get_copp_trap_id(name):
+    trap_id_val = ""
+    tmp_keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
+                          copp_name=name)
+    tmp_response = fbs_client.get(tmp_keypath)
+    if tmp_response is None:
+        trap_id_val = ""
+
+    if tmp_response.ok():
+        response = tmp_response.content
+        if 'openconfig-copp-ext:trap-ids' in response:
+            trap_id_val = response['openconfig-copp-ext:trap-ids']
+
+    return trap_id_val
+
+
+def set_classifier_match_protocol(args):
+    trap_id_val = get_copp_trap_id(args[0])
+
+    nd_list = []
+    if trap_id_val != "":
+        nd_list = trap_id_val.split(',')
+    if args[1] in nd_list:
+        # entry already exists
+        return
+    nd_list.append(args[1])
+    outval = ','.join(nd_list)
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
+                      copp_name=args[0])
+    body = {"openconfig-copp-ext:trap-ids": outval}
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_classifier_match_protocol(args):
+    trap_id_val = get_copp_trap_id(args[0])
+
+    nd_list = []
+    if trap_id_val != "":
+        nd_list = trap_id_val.split(',')
+    if args[1] not in nd_list:
+        # entry does not exist
+        return
+    nd_list.remove(args[1])
+    outval = ','.join(nd_list)
+    if outval == "":
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
+                          copp_name=args[0])
+        return fbs_client.delete(keypath)
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
+                          copp_name=args[0])
+        body = {"openconfig-copp-ext:trap-ids": outval}
+
+        return fbs_client.patch(keypath, body)
+
+
+def set_trap_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-action',
+                      copp_name=args[0])
+    body = {"openconfig-copp-ext:trap-action": args[1]}
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_trap_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-action',
+                      copp_name=args[0])
+
+    return fbs_client.delete(keypath)
+
+
+def set_queue_id_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/queue',
+                      copp_name=args[0])
+    body = {"openconfig-copp-ext:queue": int(args[1])}
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_queue_id_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/queue',
+                      copp_name=args[0])
+
+    return fbs_client.delete(keypath)
+
+
+def set_copp_policer_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                      copp_name=args[0])
+    body = dict()
+    data = {
+        "name": args[0],
+        "config": dict()
+    }
+
+    index = 1
+    while index < len(args):
+        if args[index] == 'cir':
+            key = 'cir'
+            value = args[index + 1]
+            if value.endswith('kbps'):
+                value = value.replace('kbps', '000')
+            elif value.endswith('mbps'):
+                value = value.replace('mbps', '000000')
+            elif value.endswith('gbps'):
+                value = value.replace('gbps', '000000000')
+            elif value.endswith('tbps'):
+                value = value.replace('tbps', '000000000000')
+            elif value.endswith('bps'):
+                value = value.replace('bps', '')
+        elif args[index] == 'cbs':
+            key = 'cbs'
+            value = args[index + 1]
+            if value.endswith('KB'):
+                value = value.replace('KB', '000')
+            elif value.endswith('MB'):
+                value = value.replace('MB', '000000')
+            elif value.endswith('GB'):
+                value = value.replace('GB', '000000000')
+            elif value.endswith('TB'):
+                value = value.replace('TB', '000000000000')
+            elif value.endswith('B'):
+                value = value.replace('B', '')
+        elif args[index] == 'pir':
+            key = 'pir'
+            value = args[index + 1]
+            if value.endswith('kbps'):
+                value = value.replace('kbps', '000')
+            elif value.endswith('mbps'):
+                value = value.replace('mbps', '000000')
+            elif value.endswith('gbps'):
+                value = value.replace('gbps', '000000000')
+            elif value.endswith('tbps'):
+                value = value.replace('tbps', '000000000000')
+            elif value.endswith('bps'):
+                value = value.replace('bps', '')
+        elif args[index] == 'pbs':
+            key = 'pbs'
+            value = args[index + 1]
+            if value.endswith('KB'):
+                value = value.replace('KB', '000')
+            elif value.endswith('MB'):
+                value = value.replace('MB', '000000')
+            elif value.endswith('GB'):
+                value = value.replace('GB', '000000000')
+            elif value.endswith('TB'):
+                value = value.replace('TB', '000000000000')
+            elif value.endswith('B'):
+                value = value.replace('B', '')
+        elif args[index] == 'meter-type':
+            key = 'meter-type'
+            value = args[index + 1]
+        elif args[index] == 'mode':
+            key = 'mode'
+            value = args[index + 1]
+        elif args[index] == 'green':
+            key = 'green-action'
+            value = args[index + 1]
+        elif args[index] == 'red':
+            key = 'red-action'
+            value = args[index + 1]
+        elif args[index] == 'yellow':
+            key = 'yellow-action'
+            value = args[index + 1]
+        else:
+            print('%Error: Unknown argument {}'.format(args[index]))
+            return
+
+        data["config"][key] = value
+        index += 2
+
+    body["openconfig-copp-ext:copp-group"] = [data]
+    return fbs_client.patch(keypath, body)
+
+
+def clear_copp_policer_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                      copp_name=args[0])
+
+    response = fbs_client.get(keypath)
+    if response.ok():
+        data = response.content
+        if len(args) == 1:
+            delete_params = ['pbs', 'pir', 'cbs', 'cir', 'meter-type', 'mode', 'green-action', 'red-action', 'yellow-action']
+        else:
+            delete_params = []
+        for feat in args[1:]:
+            if feat == 'mode':
+                delete_params.append('mode')
+                delete_params.append('green-action')
+                delete_params.append('red-action')
+                delete_params.append('yellow-action')
+            elif feat == 'red':
+                delete_params.append('red-action')
+            elif feat == 'green':
+                delete_params.append('green-action')
+            elif feat == 'yellow':
+                delete_params.append('yellow-action')
+            elif feat == 'cir':
+                delete_params.append('cir')
+                delete_params.append('cbs')
+                delete_params.append('pir')
+                delete_params.append('pbs')
+            elif feat == 'cbs':
+                delete_params.append('cbs')
+                delete_params.append('pir')
+                delete_params.append('pbs')
+            elif feat == 'pir':
+                delete_params.append('pir')
+                delete_params.append('pbs')
+            else:
+                delete_params.append(feat)
+
+        for feat in delete_params:
+            if feat in data['openconfig-copp-ext:copp-group'][0]['config'].keys():
+                del data['openconfig-copp-ext:copp-group'][0]['config'][feat]
+        if 'state' in data['openconfig-copp-ext:copp-group'][0].keys():
+            del data['openconfig-copp-ext:copp-group'][0]['state']
+
+        return fbs_client.put(keypath, data)
+    else:
+        print('Error:{}'.format(response.error_message()))
+
+
+def create_copp_action(args):
+    pass
+
+
+def delete_copp_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                      copp_name=args[0])
+
+    return fbs_client.delete(keypath)
+
+
+def set_copp_action_group(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-group',
+                      copp_name=args[1])
+    body = {"openconfig-copp-ext:trap-group": args[2]}
+
+    return fbs_client.patch(keypath, body)
+
+
+def set_copp_trap_priority_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
+                      copp_name=args[0])
+    body = {"openconfig-copp-ext:trap-priority": int(args[1])}
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_copp_trap_priority_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
+                      copp_name=args[0])
+
+    return fbs_client.delete(keypath)
+
+
+def show_copp_protocols(args):
+    if args[0] == "actions":
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group')
+        return fbs_client.get(keypath)
+    elif args[0] == "classifiers":
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
+        return fbs_client.get(keypath)
+    elif args[0] == "policy":
+        keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
+        return fbs_client.get(keypath)
+    keypath = cc.Path('/restconf/operations/sonic-copp:get-match-protocols')
+    return fbs_client.post(keypath, {})
 
 
 ########################################################################################################################
@@ -787,6 +1101,7 @@ def handle_generic_delete_response(response, args, op_str):
         return -1
     else:
         return 0
+
 
 def __natsort_intf_prio(ifname):
     if ifname[0].startswith('Ethernet'):
@@ -843,88 +1158,178 @@ def handle_show_policy_summary_response(response, args, op_str):
         if response.status_code != 404:
             print(response.error_message())
 
+
 def policy_util_form_ip_nexthop_list(if_name, remote_if_list):
     ip_nexthop_dict = {}
     ip_nexthop_list = []
     return ip_nexthop_dict, ip_nexthop_list
 
+
 def handle_show_policy_response(response, args, op_str):
     if response.ok():
-        if response.content is not None:
-            output = response.content
-            if len(output) != 0:
-                #print output["sonic-flow-based-services:output"]
-                show_cli_output('show_policy.j2',  output["sonic-flow-based-services:output"])
-    elif response.status_code != '404':
+        if response.content is not None and bool(response.content):
+            render_data = OrderedDict()
+
+            output = response.content["sonic-flow-based-services:output"]["POLICIES"]
+            policy_names = []
+            data = dict()
+            for entry in output:
+                policy_names.append(entry["POLICY_NAME"])
+                data[entry["POLICY_NAME"]] = entry
+
+            policy_names = natsorted(policy_names)
+            for name in policy_names:
+                render_data[name] = OrderedDict()
+                policy_data = data[name]
+                render_data[name]["TYPE"] = policy_data["TYPE"].lower()
+                render_data[name]["DESCRIPTION"] = policy_data.get("DESCRIPTION", "")
+
+                render_data[name]["FLOWS"] = OrderedDict()
+                flows = dict()
+                for flow in policy_data.get("FLOWS", list()):
+                    flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
+
+                flow_keys = natsorted(flows.keys(), reverse=True)
+                for flow in flow_keys:
+                    render_data[name]["FLOWS"][flow] = flows[flow]
+
+                render_data[name]["APPLIED_INTERFACES"] = policy_data.get("APPLIED_INTERFACES", [])
+            show_cli_output('show_policy.j2', render_data)
+    else:
         print(response.error_message())
 
 
 def handle_show_classifier_response(response, args, op_str):
     if response.ok():
-        if response.content is not None:
-            output = response.content
-            if len(output) != 0:
-                show_cli_output('show_classifier.j2',
-                                output["sonic-flow-based-services:output"]["MATCHING_CLASSIFIER_TABLE_LIST"],
-                                ip_proto_to_keyword=sonic_cli_acl.ip_proto_to_keyword,
-                                tcp_flags_to_keyword=sonic_cli_acl.tcp_flags_to_keyword)
-    elif response.status_code != '404':
+        if response.content is not None and bool(response.content):
+            output = response.content["sonic-flow-based-services:output"]["CLASSIFIERS"]
+            render_data = OrderedDict()
+            output_dict = dict()
+            for entry in output:
+                output_dict[entry["CLASSIFIER_NAME"]] = entry
+            sorted_keys = natsorted(output_dict.keys())
+            for key in sorted_keys:
+                render_data[key] = output_dict[key]
+
+            # TODO Sort references also
+            show_cli_output('show_classifier.j2',
+                            render_data,
+                            mac_addr_to_user_fmt=sonic_cli_acl.mac_addr_to_user_fmt,
+                            ip_addr_to_user_fmt=sonic_cli_acl.convert_ip_addr_to_user_fmt,
+                            ip_proto_to_user_fmt=sonic_cli_acl.ip_protocol_to_user_fmt,
+                            tcp_flags_to_user_fmt=sonic_cli_acl.tcp_flags_to_user_fmt,
+                            ethertype_to_user_fmt=ethertype_to_user_fmt,
+                            pcp_to_user_fmt=sonic_cli_acl.pcp_to_user_fmt,
+                            dscp_to_user_fmt=sonic_cli_acl.dscp_to_user_fmt)
+    else:
         print(response.error_message())
 
 
-def handle_show_details_by_policy_response(response, args, op_str):
+def handle_show_service_policy_details_response(response, args, op_str):
     if response.ok():
-        if response.content is not None:
-            output = response.content
-            if len(output) != 0:
-                show_cli_output('show_service_policy.j2', output["sonic-flow-based-services:output"])
-    elif response.status_code != '404':
-        print(response.error_message())
+        if response.content is not None and bool(response.content):
+            output = response.content["sonic-flow-based-services:output"]["INTERFACES"]
+            render_data = OrderedDict()
+            output_dict = dict()
+            for entry in output:
+                output_dict[entry["INTERFACE_NAME"]] = entry
 
+            # sort by intf name
+            sorted_intfs = natsorted(output_dict.keys(), key=__natsort_intf_prio)
+            for intf_name in sorted_intfs:
+                intf_data = output_dict[intf_name]
+                render_data[intf_name] = OrderedDict()
 
-def handle_show_details_by_interface_response(response, args, op_str):
-    if response.ok():
-        if response.content is not None:
-            output = response.content
-            if len(output) != 0:
-                show_cli_output('show_service_policy.j2', output["sonic-flow-based-services:output"])
-    elif response.status_code != '404':
+                # Assume ingress and egress. Will not be displayed if not present
+                render_data[intf_name]["ingress"] = OrderedDict()
+                render_data[intf_name]["egress"] = OrderedDict()
+
+                for policy_data in intf_data["APPLIED_POLICIES"]:
+                    # Sort policies applied by ingress and egress
+                    for stage in ["INGRESS", "EGRESS"]:
+                        policy_names = list()
+                        data = dict()
+                        if policy_data["STAGE"] == stage:
+                            policy_names.append(policy_data["POLICY_NAME"])
+                            data[policy_data["POLICY_NAME"]] = policy_data
+
+                        policy_names = natsorted(policy_names)
+                        for name in policy_names:
+                            policy_sort_data = OrderedDict()
+                            policy_data = data[name]
+                            policy_sort_data["TYPE"] = policy_data["TYPE"].lower()
+                            policy_sort_data["DESCRIPTION"] = policy_data.get("DESCRIPTION", "")
+                            policy_sort_data["FLOWS"] = OrderedDict()
+                            flows = dict()
+                            for flow in policy_data.get("FLOWS", list()):
+                                flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
+
+                            # Sort Policy flows by priority
+                            flow_keys = natsorted(flows.keys(), reverse=True)
+                            for flow in flow_keys:
+                                policy_sort_data["FLOWS"][flow] = flows[flow]
+
+                            render_data[intf_name][stage.lower()][name] = policy_sort_data
+
+            # Finally render the sorted data
+            show_cli_output('show_service_policy.j2', render_data)
+    else:
         print(response.error_message())
 
 
 def handle_clear_details_by_policy_response(response, args, op_str):
-    if response.ok():
-        if response.content is not None:
-            output = response.content
-            #if len(output) != 0:
-            #    print output["sonic-flow-based-services:output"]
-    elif response.status_code != '404':
+    if not response.ok():
         print(response.error_message())
 
 
 def handle_clear_details_by_interface_response(response, args, op_str):
-    if response.ok():
-        if response.content is not None:
-            output = response.content
-            #if len(output) != 0:
-            #    print output["sonic-flow-based-services:output"]
-    elif response.status_code != '404':
+    if not response.ok():
         print(response.error_message())
 
 
+def handle_show_copp_protocols_response(response, args, op_str):
+    if response.ok():
+        content = response.content
+        if "openconfig-copp-ext:copp-group" in content:
+            show_cli_output('show_copp_actions.j2', content)
+        if 'sonic-copp:output' in content:
+            if 'Match_protocols' in content['sonic-copp:output']:
+                show_cli_output('show_copp_protocols.j2', sorted(content['sonic-copp:output']['Match_protocols'], key = lambda i: i['Protocol']))
+        if "openconfig-copp-ext:copp-trap" in content:
+            if args[0] == "policy":
+                if "openconfig-copp-ext:copp-trap" in content:
+                    for entry in content["openconfig-copp-ext:copp-trap"]:
+                        if "config" in entry and "trap-group" in entry["config"]:
+                            keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
+                                              copp_name=entry["config"]["trap-group"])
+                            resp2 = fbs_client.get(keypath)
+                            if resp2.ok():
+                                content2 = resp2.content
+                                if "openconfig-copp-ext:copp-group" in content2:
+                                    for entry2 in resp2.content["openconfig-copp-ext:copp-group"]:
+                                        if "config" in entry2:
+                                            for key, value in entry2["config"].items():
+                                                entry[key] = value
+                show_cli_output('show_copp_policy.j2', content)
+            else:
+                show_cli_output('show_copp_classifier.j2', content)
 
 
-
-########################################################################################################################
+# ######################################################################################################################
 #
-########################################################################################################################
+# #######################################################################################################################
 
 request_handlers = {
-    'create_policy': create_policy,
+    'create_policy_qos': create_policy,
+    'create_policy_monitoring': create_policy,
+    'create_policy_forwarding': create_policy,
+    'create_policy_copp': create_policy_copp,
     'delete_policy': delete_policy,
     'set_policy_description': set_policy_description,
     'clear_policy_description': clear_policy_description,
-    'create_classifier': create_classifier,
+    'create_classifier_acl': create_classifier,
+    'create_classifier_fields': create_classifier,
+    'create_classifier_copp': create_classifier_copp,
     'delete_classifier': delete_classifier,
     'set_classifier_description': set_classifier_description,
     'clear_classifier_description': clear_classifier_description,
@@ -950,14 +1355,22 @@ request_handlers = {
     'clear_match_layer4_port': clear_match_layer4_port,
     'set_match_tcp_flags': set_match_tcp_flags,
     'clear_match_tcp_flags': clear_match_tcp_flags,
-    'create_flow': create_flow,
-    'delete_flow': delete_flow,
+    'create_flow_qos': create_flow,
+    'create_flow_monitoring': create_flow,
+    'create_flow_forwarding': create_flow,
+    'create_flow_copp': create_flow_copp,
+    'delete_flow_qos': delete_flow,
+    'delete_flow_monitoring': delete_flow,
+    'delete_flow_forwarding': delete_flow,
+    'delete_flow_copp': delete_flow_copp,
     'set_flow_description': set_flow_description,
     'clear_flow_description': clear_flow_description,
     'set_pcp_remarking_action': set_pcp_remarking_action,
     'clear_pcp_remarking_action': clear_pcp_remarking_action,
     'set_dscp_remarking_action': set_dscp_remarking_action,
     'clear_dscp_remarking_action': clear_dscp_remarking_action,
+    'set_traffic_class_action': set_traffic_class_action,
+    'clear_traffic_class_action': clear_traffic_class_action,
     'set_policer_action': set_policer_action,
     'clear_policer_action': clear_policer_action,
     'set_mirror_session_action': set_mirror_session_action,
@@ -974,16 +1387,35 @@ request_handlers = {
     'show_details_by_policy': show_details_by_policy,
     'show_details_by_interface': show_details_by_interface,
     'clear_details_by_policy': clear_details_by_policy,
-    'clear_details_by_interface': clear_details_by_interface
+    'clear_details_by_interface': clear_details_by_interface,
+    'set_classifier_match_protocol': set_classifier_match_protocol,
+    'clear_classifier_match_protocol': clear_classifier_match_protocol,
+    'set_trap_action': set_trap_action,
+    'clear_trap_action': clear_trap_action,
+    'set_queue_id_action': set_queue_id_action,
+    'clear_queue_id_action': clear_queue_id_action,
+    'set_copp_policer_action': set_copp_policer_action,
+    'clear_copp_policer_action': clear_copp_policer_action,
+    'show_copp_protocols': show_copp_protocols,
+    'create_copp_action': create_copp_action,
+    'delete_copp_action': delete_copp_action,
+    'set_copp_action_group': set_copp_action_group,
+    'set_copp_trap_priority_action': set_copp_trap_priority_action,
+    'clear_copp_trap_priority_action': clear_copp_trap_priority_action
 }
 
 
 response_handlers = {
-    'create_policy': handle_generic_set_response,
+    'create_policy_qos': handle_generic_set_response,
+    'create_policy_monitoring': handle_generic_set_response,
+    'create_policy_forwarding': handle_generic_set_response,
+    'create_policy_copp': handle_generic_set_response,
     'delete_policy': handle_generic_delete_response,
     'set_policy_description': handle_generic_set_response,
     'clear_policy_description': handle_generic_delete_response,
-    'create_classifier': handle_generic_set_response,
+    'create_classifier_acl': handle_generic_set_response,
+    'create_classifier_fields': handle_generic_set_response,
+    'create_classifier_copp': handle_generic_set_response,
     'delete_classifier': handle_generic_delete_response,
     'set_classifier_description': handle_generic_set_response,
     'clear_classifier_description': handle_generic_delete_response,
@@ -1009,14 +1441,22 @@ response_handlers = {
     'clear_match_layer4_port': handle_generic_delete_response,
     'set_match_tcp_flags': handle_generic_set_response,
     'clear_match_tcp_flags': handle_generic_delete_response,
-    'create_flow': handle_generic_set_response,
-    'delete_flow': handle_generic_delete_response,
+    'create_flow_qos': handle_generic_set_response,
+    'create_flow_monitoring': handle_generic_set_response,
+    'create_flow_forwarding': handle_generic_set_response,
+    'create_flow_copp': handle_generic_set_response,
+    'delete_flow_qos': handle_generic_delete_response,
+    'delete_flow_monitoring': handle_generic_delete_response,
+    'delete_flow_forwarding': handle_generic_delete_response,
+    'delete_flow_copp': handle_generic_set_response,
     'set_flow_description': handle_generic_set_response,
     'clear_flow_description': handle_generic_delete_response,
     'set_pcp_remarking_action': handle_generic_set_response,
     'clear_pcp_remarking_action': handle_generic_delete_response,
     'set_dscp_remarking_action': handle_generic_set_response,
     'clear_dscp_remarking_action': handle_generic_delete_response,
+    'set_traffic_class_action': handle_generic_set_response,
+    'clear_traffic_class_action': handle_generic_delete_response,
     'set_policer_action': handle_generic_set_response,
     'clear_policer_action': handle_generic_delete_response,
     'set_mirror_session_action': handle_generic_set_response,
@@ -1030,19 +1470,40 @@ response_handlers = {
     'show_policy': handle_show_policy_response,
     'show_classifier': handle_show_classifier_response,
     'show_policy_summary': handle_show_policy_summary_response,
-    'show_details_by_policy': handle_show_details_by_policy_response,
-    'show_details_by_interface': handle_show_details_by_interface_response,
+    'show_details_by_policy': handle_show_service_policy_details_response,
+    'show_details_by_interface': handle_show_service_policy_details_response,
     'clear_details_by_policy': handle_clear_details_by_policy_response,
-    'clear_details_by_interface': handle_clear_details_by_interface_response
+    'clear_details_by_interface': handle_clear_details_by_interface_response,
+    'set_classifier_match_protocol': handle_generic_set_response,
+    'clear_classifier_match_protocol': handle_generic_delete_response,
+    'set_trap_action': handle_generic_set_response,
+    'clear_trap_action': handle_generic_delete_response,
+    'set_queue_id_action': handle_generic_set_response,
+    'clear_queue_id_action': handle_generic_delete_response,
+    'set_copp_policer_action': handle_generic_set_response,
+    'clear_copp_policer_action': handle_generic_delete_response,
+    'show_copp_protocols': handle_show_copp_protocols_response,
+    'create_copp_action': handle_generic_set_response,
+    'delete_copp_action': handle_generic_delete_response,
+    'set_copp_action_group': handle_generic_set_response,
+    'set_copp_trap_priority_action': handle_generic_set_response,
+    'clear_copp_trap_priority_action': handle_generic_delete_response
 }
 
 
 def run(op_str, args):
     try:
         log.log_debug(str(args))
-        resp = request_handlers[op_str](args)
+        correct_args = list()
+        for arg in args:
+            if arg == "|" or arg == "\\|":
+                break
+            else:
+                correct_args.append(arg)
+        log.log_debug(str(correct_args))
+        resp = request_handlers[op_str](correct_args)
         if resp:
-            return response_handlers[op_str](resp, args, op_str)
+            return response_handlers[op_str](resp, correct_args, op_str)
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))
@@ -1052,3 +1513,15 @@ def run(op_str, args):
 
 if __name__ == '__main__':
     run(sys.argv[1], sys.argv[2:])
+
+
+def ethertype_to_user_fmt(val):
+    if val == '0x800':
+        return 'ip'
+    elif val == '0x86dd':
+        return 'ipv6'
+    elif val == '0x806':
+        return 'arp'
+    else:
+        return val
+

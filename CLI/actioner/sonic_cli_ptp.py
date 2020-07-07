@@ -27,7 +27,7 @@ def decode_base64(string):
 
 
 def get_unicast_table(aa, instance_num, port_num):
-    tmp_keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}',
+    tmp_keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}/port-ds-list',
                           instance_number=instance_num)
     tmp_response = aa.get(tmp_keypath)
     if tmp_response is None:
@@ -38,26 +38,36 @@ def get_unicast_table(aa, instance_num, port_num):
         response = tmp_response.content
 
         if response is not None and response != {}:
-            for i in response['ietf-ptp:instance-list']:
-                if 'port-ds-list' in i:
-                    for j in i['port-ds-list']:
-                        if 'port-number' in j:
-                            if j['port-number'] == int(port_num):
-                                found = 1
-                                if 'ietf-ptp-ext:unicast-table' in j:
-                                    if j['ietf-ptp-ext:unicast-table'] == '':
-                                        return found, "None"
-                                    else:
-                                        return found, j['ietf-ptp-ext:unicast-table']
+            for j in response['ietf-ptp:port-ds-list']:
+                if 'port-number' in j:
+                    if j['port-number'] == int(port_num):
+                        found = 1
+                        if 'ietf-ptp-ext:unicast-table' in j:
+                            if j['ietf-ptp-ext:unicast-table'] == '':
+                                return found, "None"
+                            else:
+                                return found, j['ietf-ptp-ext:unicast-table']
 
     return found, "None"
 
 
-def get_port_num(interface):
-    if 'Ethernet' in interface:
-        port_num = interface.replace("Ethernet", "")
+def get_port_num(aa, interface):
     if 'Vlan' in interface:
         port_num = str(int(interface.replace("Vlan", "")) + 1000)
+    else:
+        path = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode', name="localhost")
+        tmp_response = aa.get(path)
+        if tmp_response.ok():
+            response = tmp_response.content
+            if 'sonic-device-metadata:intf_naming_mode' in response and response['sonic-device-metadata:intf_naming_mode'] == 'alias':
+                path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=interface)
+                tmp_response = aa.get(path)
+                if tmp_response.ok():
+                    response = tmp_response.content
+                    if 'sonic-port:alias' in response:
+                        interface = response['sonic-port:alias']
+    if 'Ethernet' in interface:
+        port_num = interface.replace("Ethernet", "")
     return port_num
 
 
@@ -136,7 +146,7 @@ def invoke(func, args):
         body = {"ietf-ptp-ext:udp6-scope": int(args[1], 0)}
         rc = aa.patch(keypath, body)
     elif func == 'add_master_table':
-        port_num = get_port_num(args[1])
+        port_num = get_port_num(aa, args[1])
         found, uc_tbl = get_unicast_table(aa, args[0], port_num)
 
         if not found:
@@ -165,7 +175,7 @@ def invoke(func, args):
         body = {"ietf-ptp-ext:unicast-table": args[2]}
         rc = aa.patch(keypath, body)
     elif func == 'del_master_table':
-        port_num = get_port_num(args[1])
+        port_num = get_port_num(aa, args[1])
         found, uc_tbl = get_unicast_table(aa, args[0], port_num)
 
         nd_list = []
@@ -183,13 +193,13 @@ def invoke(func, args):
         body = {"ietf-ptp-ext:unicast-table": args[2]}
         rc = aa.patch(keypath, body)
     elif func == 'post_ietf_ptp_ptp_instance_list_port_ds_list_port_state':
-        port_num = get_port_num(args[1])
+        port_num = get_port_num(aa, args[1])
         keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}/port-ds-list={port_number}/underlying-interface',
                           instance_number=args[0], port_number=port_num)
         body = {"ietf-ptp:underlying-interface": args[1]}
         rc = aa.patch(keypath, body)
     elif func == 'delete_ietf_ptp_ptp_instance_list_port_ds_list':
-        port_num = get_port_num(args[1])
+        port_num = get_port_num(aa, args[1])
         keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}/port-ds-list={port_number}',
                           instance_number=args[0], port_number=port_num)
         rc = aa.delete(keypath)
@@ -202,7 +212,7 @@ def invoke(func, args):
                           instance_number=args[0])
         rc = aa.get(keypath)
     elif func == 'get_ietf_ptp_ptp_instance_list_port_ds_list':
-        port_num = get_port_num(args[1])
+        port_num = get_port_num(aa, args[1])
         keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}/port-ds-list={port_number}',
                           instance_number=args[0], port_number=port_num)
         rc = aa.get(keypath)
@@ -211,7 +221,7 @@ def invoke(func, args):
                           instance_number=args[0])
         rc = aa.get(keypath)
     elif func == 'get_ietf_ptp_ptp_instance_list':
-        keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}',
+        keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}/port-ds-list',
                           instance_number=args[0])
         rc = aa.get(keypath)
     elif func == 'get_ietf_ptp_ptp_instance_list_current_ds':

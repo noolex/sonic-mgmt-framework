@@ -1,0 +1,18 @@
+{% set vars = {'ipv6_route_used': ""} %}
+{% set vars = {'ipv6_route_available': ""} %}
+
+{% if json_output -%}
+{% for key_json in json_output %}
+{% set info = json_output[key_json] %}
+
+{% if vars.update({'ipv6_route_used':info['ipv6-routes-used']}) %}{% endif %}
+{% if vars.update({'ipv6_route_available':info['ipv6-routes-available']}) %}{% endif %}
+
+Resource Name           Used Count    Available Count
+--------------------  ------------  -----------------
+
+{{'%-22s'|format('ipv6_route')}}{{'%12s'|format(vars.ipv6_route_used)}}{{'%19s'|format(vars.ipv6_route_available)}}
+
+
+{% endfor %}
+{% endif %}

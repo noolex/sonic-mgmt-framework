@@ -558,12 +558,12 @@ def handle_get_acl_details_request(args):
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
             response = acl_client.get(keypath)
         else:
-            keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname='{}_{}'.format(args[1], args[0]))
+            keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname=args[1])
             response = acl_client.get(keypath)
     else:
         if counter_mode != "INTERFACE_ONLY":
             raise SonicAclCLIError("Per interface counter mode not set")
-        keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname='{}_{}'.format(args[1], args[0]))
+        keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname=args[1])
         response = acl_client.get(keypath)
 
     response.counter_mode = counter_mode
@@ -735,7 +735,7 @@ def __convert_oc_l4_port_to_user_fmt(l4_port, rule_data):
         rule_data.append(l4_port)
 
 
-def __convert_ip_addr_to_user_fmt(ip_addr, rule_data, ipv4=True):
+def convert_ip_addr_to_user_fmt(ip_addr, ipv4=True):
     if ipv4:
         pl = '/32'
     else:
@@ -743,10 +743,9 @@ def __convert_ip_addr_to_user_fmt(ip_addr, rule_data, ipv4=True):
 
     if ip_addr.endswith(pl):
         ip_addr = ip_addr.replace(pl, '')
-        rule_data.append('host')
-        rule_data.append(ip_addr)
+        return "host {}".format(ip_addr).lower()
     else:
-        rule_data.append(ip_addr)
+        return ip_addr.lower()
 
 
 def __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, ipv4=True):
@@ -765,7 +764,7 @@ def __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, ipv4=True):
     rule_data.append(proto)
 
     try:
-        __convert_ip_addr_to_user_fmt(acl_entry[field]['state']['source-address'], rule_data, ipv4)
+        rule_data.append(convert_ip_addr_to_user_fmt(acl_entry[field]['state']['source-address'], ipv4))
     except KeyError:
         rule_data.append('any')
 
@@ -776,7 +775,7 @@ def __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, ipv4=True):
             pass
 
     try:
-        __convert_ip_addr_to_user_fmt(acl_entry[field]['state']['destination-address'], rule_data, ipv4)
+        rule_data.append(convert_ip_addr_to_user_fmt(acl_entry[field]['state']['destination-address'], ipv4))
     except KeyError:
         rule_data.append('any')
 
@@ -817,12 +816,14 @@ def __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, ipv4=True):
             pass
 
 
-def __convert_mac_addr_to_user_fmt(acl_entry, rule_data, field):
+def __convert_oc_mac_addr_to_user_fmt(acl_entry, rule_data, field):
     mac = None
     mac_mask = None
     try:
         mac = acl_entry['l2']['state'][field]
+        mac = mac.lower()
         mac_mask = acl_entry['l2']['state'][field + '-mask']
+        mac_mask = mac_mask.lower()
     except KeyError:
         pass
 
@@ -840,8 +841,8 @@ def __convert_mac_addr_to_user_fmt(acl_entry, rule_data, field):
 
 
 def __convert_l2_rule_to_user_fmt(acl_entry, rule_data):
-    __convert_mac_addr_to_user_fmt(acl_entry, rule_data, 'source-mac')
-    __convert_mac_addr_to_user_fmt(acl_entry, rule_data, 'destination-mac')
+    __convert_oc_mac_addr_to_user_fmt(acl_entry, rule_data, 'source-mac')
+    __convert_oc_mac_addr_to_user_fmt(acl_entry, rule_data, 'destination-mac')
 
     try:
         ethertype = acl_entry['l2']['state']['ethertype']
@@ -1234,24 +1235,10 @@ if __name__ == '__main__':
     run(sys.argv[1], sys.argv[2:])
 
 
-
-#
-# Jinja2 functions
-#
-def ip_proto_to_keyword(proto):
-    if proto == 6 or proto == '6':
-        return 'tcp'
-    if proto == 17 or proto == '17':
-        return 'udp'
-    if proto == 1 or proto == '1':
-        return 'icmp'
-    if proto == 58 or proto == '58':
-        return 'icmpv6'
-
-    return str(proto)
-
-
-def tcp_flags_to_keyword(value):
+# ================================================
+#            Jinja2 functions
+# ================================================
+def tcp_flags_to_user_fmt(value):
     tcp_flags, tcp_flags_mask = value.split('/')
     tcp_flags = int(tcp_flags, 0)
     tcp_flags_mask = int(tcp_flags_mask, 0)
@@ -1264,3 +1251,45 @@ def tcp_flags_to_keyword(value):
                 flags_str = flags_str + ' not-' + TCP_FLAG_VALUES_REV[1 << i]
 
     return flags_str.strip()
+
+
+def mac_addr_to_user_fmt(mac_val):
+    mac_val = str(mac_val).upper()
+    parts = mac_val.split("/")
+    if len(parts) == 2:
+        mac_addr = parts[0]
+        mac_mask = parts[1]
+    else:
+        mac_addr = mac_val
+        mac_mask = 'FF:FF:FF:FF:FF:FF'
+
+    if mac_mask == 'FF:FF:FF:FF:FF:FF':
+        return "host " + mac_addr.lower()
+    else:
+        return "{}/{}".format(mac_addr, mac_mask).lower()
+
+
+def ip_protocol_to_user_fmt(val):
+    val = str(val)
+    if val == "6":
+        return "tcp"
+    if val == "17":
+        return "udp"
+    if val == "1":
+        return "icmp"
+    if val == "58":
+        return "icmpv6"
+
+    return val
+
+
+def pcp_to_user_fmt(pcp):
+    return pcp_rev_map[pcp]
+
+
+def dscp_to_user_fmt(dscp):
+    if dscp in dscp_rev_map:
+        return dscp_rev_map[dscp]
+
+    return dscp
+

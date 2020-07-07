@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+<!--=========================================================================-->
+<VIEW name="enable-view">
+<!--show vrrp -->
+    <COMMAND name = "show vrrp"
+        help = "Shows IPv4 VRRP instance information"
+        >
+        <PARAM
+            name="interface"
+            help="VRRP information for the interface"
+            ptype="SUBCOMMAND" optional="true"
+            mode="subcommand"
+        >
+        <PARAM
+            name="ifname"
+            help="VRRP interface name (up to 63 characters)"
+            ptype="STRING_63"
+            >
+            <PARAM
+                name="vrid"
+                help="VRID"
+                ptype="SUBCOMMAND" mode="subcommand" optional="false"
+                >
+                <PARAM
+                    name = "id"
+                    help="VRRP ID (1 to 255)"
+                    ptype="RANGE_1_255"
+                >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+    </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state ipv4 show_vrrp.j2 ${ifname} ${id}
+        </ACTION>
+    </COMMAND>
+
+<!--show vrrp6 -->
+    <COMMAND name = "show vrrp6"
+        help = "Shows IPv6 VRRP instance information"
+        >
+        <PARAM
+            name="interface"
+            help="VRRP information for the interface"
+            ptype="SUBCOMMAND" optional="true"
+            mode="subcommand"
+        >
+        <PARAM
+            name="ifname"
+            help="VRRP interface name (up to 63 characters)"
+            ptype="STRING_63"
+            >
+            <PARAM
+                name="vrid"
+                help="VRID"
+                ptype="SUBCOMMAND" mode="subcommand" optional="false"
+                >
+                <PARAM
+                    name = "id"
+                    help="VRRP ID (1 to 255)"
+                    ptype="RANGE_1_255"
+                >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+    </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state ipv6 show_vrrp.j2 ${ifname} ${id}
+        </ACTION>
+    </COMMAND>
+</VIEW>
+
+<!--MODE : interface -->
+
+<VIEW name="configure-if-view">
+
+<!-- vrrp -->
+   <COMMAND
+         name="vrrp"
+         help="Configure VRRP"
+         view="configure-vrrp-view"
+         viewid="vrrp-id=${vrrp-id};afi-name=${afi-name};iface=${iface}"
+         >
+         <PARAM
+             name="vrrp-id"
+             help="VRRP ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+        </PARAM>
+        <PARAM
+             name="afi-name"
+             help="Address-Family (ipv4 or ipv6)"
+             ptype="STRING"
+             >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config ${iface} ${vrrp-id} ${afi-name}
+        </ACTION>
+
+    </COMMAND>
+
+<!-- no vrrp -->
+   <COMMAND name="no vrrp"
+         help="Unconfigure VRRP"
+     >
+         <PARAM name="vrrp-id"
+             help="VRRP ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+        </PARAM>
+        <PARAM
+             name="afi-name"
+             help="Address-Family (ipv4 or ipv6)"
+             ptype="STRING"
+             >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${iface} ${vrrp-id} ${afi-name}
+        </ACTION>
+    </COMMAND>
+
+</VIEW>
+
+<VIEW name="configure-vrrp-view"
+        prompt="${SYSTEM_NAME}(conf-if-${iface}-vrrp-${afi-name}-${vrrp-id})# "
+        depth="3">
+
+<!-- Inheritance -->
+
+     <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+     <!-- show configuration -->
+     <COMMAND
+         name="show configuration"
+         help="Current configuration"
+      >
+     <ACTION builtin="clish_nop"> </ACTION>
+     </COMMAND>
+
+     <COMMAND name="no"
+              help="Negate a command or set its defaults">
+     </COMMAND>
+
+    <COMMAND
+        name="no preempt"
+        help="Preempt enable"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} false ${afi-name}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="preempt"
+        help="Preempt disable"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} true ${afi-name}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="priority"
+        help="Priority for MASTER election"
+        >
+        <PARAM
+            name="priority-value"
+            help="Priority value"
+            ptype="RANGE_1_254"
+            />
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority ${iface} ${vrrp-id} ${priority-value} ${afi-name}
+            </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no priority"
+        help="Priority for MASTER election"
+        >
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority ${iface} ${vrrp-id} ${afi-name}
+            </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="advertisement-interval"
+        help="Advertisement interval in sec"
+        >
+        <PARAM
+            name="adv_interval"
+            help="Advertisement interval in sec"
+            ptype="RANGE_1_255"
+            />
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval ${iface} ${vrrp-id} ${adv_interval} ${afi-name}
+            </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no advertisement-interval"
+        help="Advertisement interval in sec"
+        >
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval ${iface} ${vrrp-id} ${afi-name}
+            </ACTION>
+
+    </COMMAND>
+
+    <COMMAND
+        name="version"
+        help="Version 2 or 3"
+        >
+        <PARAM
+            name="ver"
+            help="Version 2 or 3"
+            ptype="RANGE_1_255"
+            />
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_version ${iface} ${vrrp-id} ${ver} ${afi-name}
+        </ACTION>
+
+    </COMMAND>
+
+    <COMMAND
+        name="no version"
+        help="Version 2 or 3"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp delete_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_version ${iface} ${vrrp-id} ${afi-name}
+        </ACTION>
+
+    </COMMAND>
+    <COMMAND
+        name="vip"
+        help="Virtual IP address"
+        >
+        <PARAM
+            name="vip_addr"
+            help="Virtual IPaddress"
+            ptype="STRING"
+            />
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_virtual_address ${iface} ${vrrp-id} ${vip_addr} ${afi-name}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no vip"
+        help="Virtual IPv4 address"
+        >
+        <PARAM
+            name="vip_addr"
+            help="Virtual IP address"
+            ptype="STRING"
+            />
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp del_llist_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_virtual_address ${iface} ${vrrp-id} ${vip_addr} ${afi-name}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="track-interface"
+        help="VRRP track interface for priority change"
+        >
+        <PARAM
+            name="interface-name"
+            help="Interface name"
+            ptype="STRING"
+            >
+            <PARAM
+                name="weight"
+                help="Weight for changing priority"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="wt_value"
+                    help="Weight for changing priority"
+                    ptype="RANGE_1_254"
+                    >
+                </PARAM>
+
+            </PARAM>
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp patch_openconfig_interfaces_ext ${iface} ${vrrp-id} ${interface-name} ${wt_value} ${afi-name}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no track-interface"
+        help="VRRP track interface for priority change"
+        >
+        <PARAM
+            name="interface-name"
+            help="Interface name"
+            ptype="STRING"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp delete_openconfig_interfaces_ext ${iface} ${vrrp-id} ${interface-name} ${afi-name}
+        </ACTION>
+    </COMMAND>
+</VIEW>
+
+
+<!--=======================================================-->
+<!--                Config Interface PO-CH-MODE            -->
+<!--=======================================================-->
+<VIEW name="configure-lag-view">
+   <!-- vrrp -->
+   <COMMAND
+         name="vrrp"
+         help="Configure IPv4 VRRP"
+         view="configure-vrrp-view"
+         viewid="vrrp-id=${vrrp-id};afi-name=${afi-name};iface=${po_name}"
+         >
+         <PARAM
+             name="vrrp-id"
+             help="VRRP ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+        </PARAM>
+        <PARAM
+             name="afi-name"
+             help="Address-Family (ipv4 or ipv6)"
+             ptype="STRING"
+             >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config ${po_name} ${vrrp-id} ${afi-name}
+        </ACTION>
+
+    </COMMAND>
+
+<!-- no vrrp -->
+   <COMMAND name="no vrrp"
+         help="Configure IPv4 VRRP"
+     >
+         <PARAM name="vrrp-id"
+             help="VRRP ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+        </PARAM>
+        <PARAM
+             name="afi-name"
+             help="Address-Family (ipv4 or ipv6)"
+             ptype="STRING"
+             >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${po_name} ${vrrp-id} ${afi-name}
+        </ACTION>
+    </COMMAND>
+
+</VIEW>
+
+
+<!--=======================================================-->
+<!--                Config Interface VLAN-MODE            -->
+<!--=======================================================-->
+<VIEW name="configure-vlan-view">
+   <!-- vrrp -->
+   <COMMAND
+         name="vrrp"
+         help="Configure IPv4 VRRP"
+         view="configure-vrrp-view"
+         viewid="vrrp-id=${vrrp-id};afi-name=${afi-name};iface=${vlan_name}"
+         >
+         <PARAM
+             name="vrrp-id"
+             help="VRRP ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+        </PARAM>
+        <PARAM
+             name="afi-name"
+             help="Address-Family (ipv4 or ipv6)"
+             ptype="STRING"
+             >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config ${vlan_name} ${vrrp-id} ${afi-name}
+        </ACTION>
+
+    </COMMAND>
+
+<!-- no vrrp -->
+   <COMMAND name="no vrrp"
+         help="Configure IPv4 VRRP"
+     >
+         <PARAM name="vrrp-id"
+             help="VRRP ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+        </PARAM>
+        <PARAM
+             name="afi-name"
+             help="Address-Family (ipv4 or ipv6)"
+             ptype="STRING"
+             >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">
+                sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${vlan_name} ${vrrp-id} ${afi-name}
+        </ACTION>
+    </COMMAND>
+
+</VIEW>
+
+</CLISH_MODULE>

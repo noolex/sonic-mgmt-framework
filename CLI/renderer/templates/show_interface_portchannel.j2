@@ -1,4 +1,11 @@
-{% set mode, minlinks, fallback = "LACP", "1", "Disabled" %}
+{% set mode, minlinks, fallback, gracefulshutdown, fallbackoper = "LACP", "1", "Disabled", "Disabled", "Nonoperational" %}
+
+{% set global = json_output['global'][0] %}
+{% if global %}
+{% if global['graceful_shutdown_mode'] == 'enable' %}
+{% set gracefulshutdown = "Enabled" %}
+{% endif %}
+{% endif %}
 
 {% if json_output['portchannel']['sonic-portchannel:LAG_TABLE'] and json_output['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] %}
 {% for po_intf in json_output['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] %}
@@ -25,10 +32,28 @@
 
 {{po_intf['lagname']}} is {{po_intf['admin_status']}}, line protocol is {{po_intf['oper_status']}}, mode {{mode}}
 Minimum number of links to bring PortChannel up is {{minlinks}}
+
 {% if mode == "LACP" %}
+{% if fallback == "Disabled" %}
 Fallback: {{fallback}}
+{% else %}
+{% if po_intf['fallback_operational'] == True and gracefulshutdown == "Disabled" %}
+{% set fallbackoper = "Operational"  %}
 {% endif %}
+Fallback: {{fallback}}, {{fallbackoper}}
+{% endif %}
+{% endif %}
+
+Graceful shutdown: {{gracefulshutdown}}
+
 MTU {{po_intf['mtu']}}
+{% if 'speed' in po_intf %}
+{% if po_intf['speed']|int < 1000 %}
+LineSpeed {{ po_intf['speed'] }}MB
+{% else %}
+LineSpeed {{ (po_intf['speed']|int / 1000) }}GB
+{% endif %}
+{% endif %}
 
 {% endif %}
 
@@ -46,6 +71,7 @@ MTU {{po_intf['mtu']}}
 
 
 {% if 'state' in intf %}
+
 LACP mode {{intf['state']['lacp-mode']}} interval {{intf['state']['interval']}} priority {{intf['state']['system-priority']}} address {{intf['state']['system-id-mac']}}
 
 {% else %}

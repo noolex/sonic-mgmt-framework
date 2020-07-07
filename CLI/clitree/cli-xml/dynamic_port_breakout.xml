@@ -8,23 +8,31 @@
 ]>
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show interface breakout" help="Show port-breakout information">
+    <COMMAND name="show interface breakout" help="Show port breakout information">
         <PARAM
              name="dpb-subcommands"
              help="Breakout subcommands"
              mode="switch"
              ptype="SUBCOMMAND"
+             optional="true"
              >
-            <PARAM name="dependencies" help="Show dependent configuations on interface" ptype="SUBCOMMAND" mode="subcommand">
-                <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE"/>
+            <PARAM name="dependencies" help="Dependent configuations on interface" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="port" help="Breakout capable port" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT"/>
+                </PARAM>
             </PARAM>
-            <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE"/>
+            <PARAM name="modes" help="Breakout modes supported on ports" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="port" help="Breakout capable port" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT"/>
+            </PARAM>
         </PARAM>
         <ACTION>
             if test "${dpb-subcommands}" = "dependencies"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_dependencies show_breakout_deps.j2 ${iface}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_dependencies show_breakout_deps.j2 ${slotport}&#xA;
+            elif test "${dpb-subcommands}" = "modes"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_capabilities show_breakout_caps.j2&#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_breakout.py get_openconfig_platform_port_components_component_port_breakout_mode_config show_interface_breakout.j2 ${iface}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_breakout.py get_openconfig_platform_port_components_component_port_breakout_mode_state show_interface_breakout.j2 ${slotport}&#xA;
             fi&#xA;
         </ACTION>
       <xi:include href="include/pipe.xml"/>
@@ -37,26 +45,33 @@
 
           </USAGE>
           <EXAMPLE>
-              sonic# show interface breakout Ethernet 0
-              =============================
-              Interface     Breakout mode
-              =============================
-              Ethernet0     4x25G
+              sonic# show interface breakout port 1/1
+              ========================================
+              Interface     Breakout mode   Status
+              ========================================
+              Ethernet0     4x25G           Completed
+              Ethernet1
+              Ethernet2
+              Ethernet3
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
   </VIEW>
   <VIEW name="configure-view">
     <COMMAND name="no interface breakout" help="Change the port breakout mode to default">
-       <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_breakout delete_openconfig_platform_port_components_component_port_breakout_mode_config ${iface} </ACTION>
-    </COMMAND>
-    <COMMAND name="interface breakout" help="Port breakout configuration commands">
-       <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand">
-        <PARAM name="breakout_mode" help="breakout mode" ptype="DPB_MODE">
+       <PARAM name="port" help="Breakout capable port" ptype="SUBCOMMAND" mode="subcommand">
+            <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT"/>
         </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_breakout delete_openconfig_platform_port_components_component_port_breakout_mode_config ${slotport} </ACTION>
+    </COMMAND>
+    <COMMAND name="interface breakout" help="Port breakout configuration">
+       <PARAM name="port" help="Breakout capable port" ptype="SUBCOMMAND" mode="subcommand">
+            <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT"/>
        </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_breakout patch_openconfig_platform_port_components_component_port_breakout_mode_config ${iface} ${breakout_mode}</ACTION>
+       <PARAM name="mode" help="Breakout mode" ptype="SUBCOMMAND" mode="subcommand">
+            <PARAM name="breakout_mode" help="breakout mode" ptype="DPB_MODE"/>
+        </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_breakout patch_openconfig_platform_port_components_component_port_breakout_mode_config ${slotport} ${breakout_mode}</ACTION>
       <DOCGEN>
           <DESCRIPTION>
               Breakout a port
@@ -66,8 +81,8 @@
           </USAGE>
           <EXAMPLE>
               sonic# configure terminal
-              sonic(config)# interface breakout Ethernet 0 4x25
-              sonic(config)# no interface breakout Ethernet 0
+              sonic(config)# interface breakout port 1/1 mode 4x25
+              sonic(config)# no interface breakout port 1/1
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>

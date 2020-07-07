@@ -64,6 +64,12 @@ limitations under the License.
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>
+              <PARAM
+                  name="all"
+                  help="Show ARP entries from all VRFs"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
             </PARAM>
         </PARAM>
 
@@ -171,22 +177,17 @@ limitations under the License.
             mode="switch"
             ptype="SUBCOMMAND">
             <PARAM
-                name="Ethernet"
-                help="Select an interface"
-                mode="subcommand"
-                ptype="SUBCOMMAND">
-                <PARAM
-                    name="phy-if-name"
-                    help="Physical interface"
-                    ptype="UINT">
-                    <PARAM
-                        help="Summary of ARP entries"
-                        name="summary"
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        optional="true">
-                    </PARAM>
-                </PARAM>
+                 name="phy-if-name"
+                 help="Select an interface"
+                 ptype="PHY_INTERFACE"
+                 >
+                 <PARAM
+                    help="Summary of ARP entries"
+                    name="summary"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                 </PARAM>
             </PARAM>
             <PARAM
                 name="Loopback"
@@ -280,8 +281,8 @@ limitations under the License.
           </PARAM>
         </PARAM>
         <ACTION>
-            if test "${iftype}" = "Ethernet"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${phy-if-name} summary:${summary}&#xA;
+            if test "${iftype}" = "phy-if-name"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${phy-if-name} summary:${summary}&#xA;
             fi&#xA;
             if test "${iftype}" = "Loopback"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors intf:${iftype}${lo-id} summary:${summary}&#xA;
@@ -313,17 +314,39 @@ limitations under the License.
         help="clear ARP entries for this interface"
         name="clear ip arp interface">
         <PARAM
-            name="if-type"
-            help=""
-            ptype="INTF_TYPE">
-            <PARAM
-                name="if-id"
-                help="Numeric ID for the given interface type"
-                ptype="UINT">
+            name="interface-switch"
+            help="interface type"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+            <PARAM 
+                name="phy-if-name"
+                help="Clear Ethernet interface ARP entries"
+                ptype="PHY_INTERFACE"
+                >
             </PARAM>
+            <PARAM 
+                name="mgmt-if-name"
+                help="Clear Management interface ARP entries"
+                ptype="MGMT_INTERFACE"
+                >
+            </PARAM>
+            <PARAM 
+                name="po-if-name"
+                help="Clear PortChannel interface ARP entries"
+                ptype="PO_INTERFACE"
+                >
+            </PARAM>
+            <PARAM 
+                name="vlan-if-name"
+                help="Clear Vlan interface ARP entries"
+                ptype="VLAN_INTERFACE"
+                >
+            </PARAM>
+            
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 intf:${if-type}${if-id}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 intf:${interface-switch} phyIf:${phy-if-name} mgmtIf:eth0 vlanIf:${vlan-if-name} poIf:${po-if-name}&#xA;
         </ACTION>
     </COMMAND>
 
@@ -364,6 +387,12 @@ limitations under the License.
               <PARAM
                   name="mgmt"
                   help="Clear ARP entries of the management VRF"
+                  mode="subcommand"
+                  ptype="SUBCOMMAND">
+              </PARAM>
+              <PARAM
+                  name="all"
+                  help="Clear ARP entries from all VRFs"
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>
@@ -446,9 +475,9 @@ limitations under the License.
 
 <VIEW name="configure-view">
 	<!-- ip arp timeout -->
-	<COMMAND name="ip arp" help="Configure ARP" ptype="SUBCOMMAND" mode="subcommand">
+	<COMMAND name="ip arp" help="Configure ARP" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST/name={name}" command_keys="name=Values">
 		<PARAM name="timeout" help="Set ARP timeout value" ptype="SUBCOMMAND" mode="subcommand">
-			<PARAM name="value" help="Timeout in seconds" ptype="NEIGH_TIMEOUT"> </PARAM>
+			<PARAM name="value" help="Timeout in seconds" ptype="NEIGH_TIMEOUT" dbpath="sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST/ipv4_arp_timeout"> </PARAM>
 		</PARAM>
 
 		<ACTION>python $SONIC_CLI_ROOT/sonic-cli-neighbors.py set_ipv4_arp_timeout ${value}&#xA; </ACTION>

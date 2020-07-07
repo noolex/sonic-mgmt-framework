@@ -25,15 +25,17 @@ limitations under the License.
         help="Configure forwarding table"
         mode="subcommand"
         ptype="SUBCOMMAND"
+        command_tables="arg3"
         >
         <PARAM
           name="vrf-name"
           help="Name of VRF"
           ptype="STRING_15"
+          dbpath="arg4"
           >
         </PARAM>
         <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/interfaces/interface=arg1 body={ "openconfig-network-instance:interface": [ { "id": "arg1", "config" : { "id": "arg1" } } ] }
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/interfaces/interface=arg1 body={ "openconfig-network-instance:interface": [ { "id": "arg2", "config" : { "id": "arg2" } } ] }
         </ACTION>
     </COMMAND>
 
@@ -53,6 +55,42 @@ limitations under the License.
         <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/interfaces/interface=arg1
         </ACTION>
+    </COMMAND>
+
+</MACRODEF>
+
+<MACRODEF name="BIND-INTF-RNG-TO-VRF">
+
+    <COMMAND name="ip vrf" help="Bind interface to specified VRF domain"/>
+    <COMMAND
+        name="ip vrf forwarding"
+        help="Configure forwarding table"
+        mode="subcommand"
+        ptype="SUBCOMMAND"
+        >
+        <PARAM
+          name="vrf-name"
+          help="Name of VRF"
+          ptype="STRING_15"
+          >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_vrf config_if_range iflist=arg1 patch_network_instance_interface ${vrf-name}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip vrf" help="Unbind interface from specified VRF domain"/>
+    <COMMAND
+        name="no ip vrf forwarding"
+        help="Configure forwarding table"
+        mode="subcommand"
+        ptype="SUBCOMMAND"
+        >
+        <PARAM
+          name="vrf-name"
+          help="Name of VRF"
+          ptype="STRING_15"
+          >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_vrf delete_if_range iflist=arg1 delete_network_instance_interface ${vrf-name}</ACTION>
     </COMMAND>
 
 </MACRODEF>

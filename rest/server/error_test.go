@@ -100,21 +100,41 @@ func TestErrorEntry(t *testing.T) {
 		tlerr.InvalidArgsError{Format: "hii", Path: "xyz"},
 		400, "application", "invalid-value", "xyz", "hii"))
 
+	t.Run("InvalidArgs-T", testErrorEntry2(
+		tlerr.InvalidArgsErr("a-tag", "a-path", "bad %v", 1),
+		400, "application", "invalid-value", "a-tag", "a-path", "bad 1"))
+
 	t.Run("ResourceNotFound", testErrorEntry(
 		tlerr.NotFoundError{Format: "hii", Path: "xyz"},
 		404, "application", "invalid-value", "xyz", "hii"))
+
+	t.Run("ResourceNotFound-T", testErrorEntry2(
+		tlerr.NotFoundErr("a-tag", "a-path", "missing %d", 123),
+		404, "application", "invalid-value", "a-tag", "a-path", "missing 123"))
 
 	t.Run("AlreadyExists", testErrorEntry(
 		tlerr.AlreadyExistsError{Format: "hii", Path: "xyz"},
 		409, "application", "resource-denied", "xyz", "hii"))
 
+	t.Run("AlreadyExists-T", testErrorEntry2(
+		tlerr.AlreadyExistsErr("a-tag", "a-path", "dup %d%s", 10, "1"),
+		409, "application", "resource-denied", "a-tag", "a-path", "dup 101"))
+
 	t.Run("UnsupportedOper", testErrorEntry(
 		tlerr.NotSupportedError{Format: "hii", Path: "xyz"},
 		405, "application", "operation-not-supported", "xyz", "hii"))
 
+	t.Run("UnsupportedOper-T", testErrorEntry2(
+		tlerr.NotSupportedErr("a-tag", "a-path", "no support %d%s", 1, "23"),
+		405, "application", "operation-not-supported", "a-tag", "a-path", "no support 123"))
+
 	t.Run("AppGenericErr", testErrorEntry(
 		tlerr.InternalError{Format: "hii", Path: "xyz"},
 		500, "application", "operation-failed", "xyz", "hii"))
+
+	t.Run("AppGenericErr-T", testErrorEntry2(
+		tlerr.NewError("a-tag", "a-path", "err-%d%s", 1, "23"),
+		500, "application", "operation-failed", "a-tag", "a-path", "err-123"))
 
 	// errorEntry mapping for DB errors
 
@@ -170,10 +190,18 @@ func TestErrorEntry(t *testing.T) {
 
 func testErrorEntry(err error,
 	expStatus int, expType, expTag, expPath, expMessage string) func(*testing.T) {
+		return testErrorEntry2(err, expStatus, expType, expTag, "", expPath, expMessage)
+}
+
+func testErrorEntry2(err error,
+	expStatus int, expType, expTag, expAppTag, expPath, expMessage string) func(*testing.T) {
 	return func(t *testing.T) {
 		status, entry := toErrorEntry(err, nil)
-		if status != expStatus || string(entry.Type) != expType ||
-			string(entry.Tag) != expTag || entry.Path != expPath ||
+		if status != expStatus ||
+			string(entry.Type) != expType ||
+			string(entry.Tag) != expTag ||
+			entry.AppTag != expAppTag ||
+			entry.Path != expPath ||
 			chkmsg(entry.Message, expMessage) == false {
 			t.Errorf("%T: expecting %d/%s/%s/\"%s\"/\"%s\"; found %d/%s/%s/\"%s\"/\"%s\"",
 				err, expStatus, expType, expTag, expPath, expMessage,

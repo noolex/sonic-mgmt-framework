@@ -1,13 +1,13 @@
-{{'Egress queue persistent watermark per unicast queue:'}}
-{{'-------------------------------------------------------------------'}}
-{{'%-12s'|format("Port")}}{{'%-5s'|format("UC0")}}{{'%-5s'|format("UC1")}}{{'%-5s'|format("UC2")}}{{'%-5s'|format("UC3")}}{{'%-5s'|format("UC4")}}{{'%-5s'|format("UC5")}}{{'%-5s'|format("UC6")}}{{'%-5s'|format("UC7")}}
-{{'-------------------------------------------------------------------'}}
 {% if json_output %}
 {% set watermark = {}%}
+{% set ucindex = {}%}
+{% set uccount = namespace(value=0) %}
+{% set header = namespace(value=false) %}
 {% set intf_info_list = json_output['interface'] %}
 {% for intf_info in intf_info_list %}
   {% set intfName = intf_info['interface-id'] %}
   {% if intfName != "CPU" %}
+  {% set uccount.value = 0 %}
   {% set output = intf_info['output'] %}
   {% set queues = output['queues'] %}
   {% set queue_info_list = queues['queue'] %}
@@ -15,9 +15,38 @@
     {% set q_stats_info = queue_info['state'] %}
     {% set queue = q_stats_info['name'] %}
     {% set qname = queue.split(':') %}
-    {% if watermark.update({qname[1] :  q_stats_info['openconfig-qos-ext:persistent-watermark']}) %} {% endif %}
+    {% set traffic_type = q_stats_info['openconfig-qos-ext:traffic-type'] %}
+    {% if traffic_type == "UC" %}
+       {% if ucindex.update({qname[1] :  "UC" + qname[1] }) %} {% endif %}
+       {% set uccount.value = uccount.value + 1 %}
+    {% endif %}
+    {% if watermark.update({ traffic_type + qname[1] :  q_stats_info['openconfig-qos-ext:persistent-watermark']}) %} {% endif %}
   {% endfor %}
-{{'%-12s'|format(intfName)}}{{'%-5s'|format(watermark['0'])}}{{'%-5s'|format(watermark['1'])}}{{'%-5s'|format(watermark['2'])}}{{'%-5s'|format(watermark['3'])}}{{'%-5s'|format(watermark['4'])}}{{'%-5s'|format(watermark['5'])}}{{'%-5s'|format(watermark['6'])}}{{'%-5s'|format(watermark['7'])}}
+{% if header.value == false %}
+{{'Egress shared pool persistent watermark occupancy per unicast queue:'}}
+{{ '\n' -}}
+{{- '------------'}} 
+{%- for n in range(0, uccount.value) %}
+{{- '----------'}} 
+{%- endfor %}
+{{ '\n' -}}
+{{- '%-12s'|format("Port")}}
+{%- for n in range(0, uccount.value) %}
+{{- '%-10s'|format(ucindex[n|string])}}
+{%- endfor %}
+{{ '\n' -}}
+{{- '------------'}} 
+{%- for n in range(0, uccount.value) %}
+{{- '----------'}}
+{%- endfor %}
+{% set header.value = true %}
+{% endif %}
+{{ '\n' -}}
+{{- '%-12s'|format(intfName)}}
+{%- for n in range(0, uccount.value) %}
+{{- '%-10s'|format(watermark[ucindex[n|string]])}}
+{%- endfor %}
+{{ '\n' -}}
 {% endif %}
 {% endfor %}
 {% endif %}

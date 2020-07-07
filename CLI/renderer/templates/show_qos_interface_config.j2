@@ -10,9 +10,49 @@
   {% set map_config = json_output['openconfig-qos-maps-ext:config'] %}
   {% if map_config %}
   {% if map_config['dscp-to-forwarding-group'] %}
-      {{'    dscp-to-tc-map: '}}{{map_config['dscp-to-forwarding-group']}}
+      {{'    dscp-tc-map: '}}{{map_config['dscp-to-forwarding-group']}}
+  {% endif %}
+  {% if map_config['dot1p-to-forwarding-group'] %}
+      {{'    dot1p-tc-map: '}}{{map_config['dot1p-to-forwarding-group']}}
+  {% endif %}
+  {% if map_config['forwarding-group-to-queue'] %}
+      {{'    tc-queue-map: '}}{{map_config['forwarding-group-to-queue']}}
+  {% endif %}
+  {% if map_config['forwarding-group-to-priority-group'] %}
+      {{'    tc-pg-map: '}}{{map_config['forwarding-group-to-priority-group']}}
+  {% endif %}
+  {% if map_config['forwarding-group-to-dscp'] %}
+      {{'    tc-dscp-map: '}}{{map_config['forwarding-group-to-dscp']}}
+  {% endif %}
+  {% if map_config['forwarding-group-to-dot1p'] %}
+      {{'    tc-dot1p-map: '}}{{map_config['forwarding-group-to-dot1p']}}
+  {% endif %}
+  {% if map_config['pfc-priority-to-queue'] %}
+      {{'    pfc-priority-queue-map: '}}{{map_config['pfc-priority-to-queue']}}
   {% endif %}
   {% endif %}
-
-
+  {% if json_output['openconfig-qos-ext:pfc'] %}
+  {% set pfc_config = json_output['openconfig-qos-ext:pfc']['config'] %}
+  {% if pfc_config %}
+  {% if pfc_config['asymmetric'] == true %}
+      {{'    pfc-asymmetric: '}}{{ 'on' }}
+  {% else %}
+      {{'    pfc-asymmetric: '}}{{ 'off' }}
+  {% endif %}
+  {% else %}
+      {{'    pfc-asymmetric: '}}{{ 'off' }}
+  {% endif %}
+  {% set temp = [ ] %}
+  {% set prio_list = json_output['openconfig-qos-ext:pfc']['pfc-priorities']['pfc-priority'] %}
+  {% if prio_list %}
+  {% for prio_info in prio_list %}
+    {% set prio_state_info = prio_info['state'] %}
+    {% if prio_state_info['enable'] == true %}
+       {% set pfc_enable = prio_state_info['dot1p']|string %}
+       {% do temp.append(pfc_enable) %}
+    {% endif %}
+  {% endfor %}
+      {{'    pfc-priority  : '}}{{'%s'| format(temp|join(","))}}
+  {% endif %}
+  {% endif %}
 {% endif %}

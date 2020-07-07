@@ -26,7 +26,10 @@ limitations under the License.
 
     <COMMAND
         name="bgp extcommunity-list"
-        help="Add BGP extended community-list entry">
+        help="Add BGP extended community-list entry" escape_chars=""
+        command_keys="name=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/EXTENDED_COMMUNITY_SET/EXTENDED_COMMUNITY_SET_LIST/name={name}"
+        render_command_cb="bgp_extcom_list">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -189,17 +192,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION>
-        if test "${bgp-subcommands}" = "standard"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_extcommunity_standard ${extcommunity-list-name} ${__full_line}&#xA;
-
-        elif test "${bgp-subcommands}" = "expanded"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_extcommunity_expanded ${extcommunity-list-name} ${__full_line}&#xA;
-
-        else&#xA;
-            builtin="clish_nop"&#xA;
-        fi
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_extcommunity_${bgp-subcommands} ${extcommunity-list-name} ${__full_line}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command creates BGP extended community list entries
@@ -227,7 +220,7 @@ limitations under the License.
 
     <COMMAND
         name="no bgp extcommunity-list"
-        help="Delete a extended community-list entry">
+        help="Delete a extended community-list entry" escape_chars="">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -327,17 +320,7 @@ limitations under the License.
             </PARAM>
         </PARAM>
 
-      <ACTION>
-        if test "${bgp-subcommands}" = "standard"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_extcommunity_standard_delete ${extcommunity-list-name} ${__full_line}&#xA;
-
-        elif test "${bgp-subcommands}" = "expanded"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-bgp-community.py bgp_extcommunity_expanded_delete ${extcommunity-list-name} ${__full_line}&#xA;
-
-        else&#xA;
-            builtin="clish_nop"&#xA;
-        fi
-    </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_extcommunity_${bgp-subcommands}_delete ${extcommunity-list-name} ${__full_line}</ACTION>
     </COMMAND>
 
 </VIEW>

@@ -1,0 +1,28 @@
+{% if json_output %}
+{% for key_json in json_output %}
+    {% if key_json == "openconfig-qos-maps-ext:dot1p-maps" %}
+        {% set map_list = json_output[key_json]["dot1p-map"] %}
+    {% else %}
+      {% if key_json == "openconfig-qos-maps-ext:dot1p-map" %}
+        {% set map_list = json_output[key_json] %}
+      {% endif %}
+    {% endif %}
+{% for map in map_list %}
+
+{{'DOT1P-TC-MAP: '}}{{map['name']}}
+
+{{'----------------------------'}}
+    {{'%-7s'|format("DOT1P")}}{{'%-5s'|format("TC")}}
+{{'----------------------------'}}
+  {% set map_info = map['dot1p-map-entries'] %}
+  {% if map_info %}
+      {% set entries = map_info['dot1p-map-entry'] %}
+      {% for entry in entries %}
+    {{'%-7s'|format(entry['dot1p'])}}{{'%-5s'|format(entry['config']['fwd-group'])}}
+      {% endfor %}
+  {% endif %}
+{{'----------------------------'}}
+
+{% endfor %}
+{% endfor %}
+{% endif %}

@@ -36,8 +36,10 @@ def invoke_api(func, args=[]):
     if func == 'patch_openconfig_system_logging_server_config_host':
 
         rport=(args[1])[6:]
-        source_ip=(args[2])[10:]
-        vrf=(args[3])[4:]
+        vrf=(args[2])[4:]
+        src_intf = ""
+        if len(args) > 3:
+            src_intf = args[3]
 
         #keypath = cc.Path(LOG_SERVERS +
         #    '/remote-server={address}', address=args[0])
@@ -69,9 +71,9 @@ def invoke_api(func, args=[]):
         if len(rport) != 0:
             body["openconfig-system:remote-server"][0]\
                 ["config"]["remote-port"] = int(rport)
-        if len(source_ip) != 0:
+        if len(src_intf) != 0:
             body["openconfig-system:remote-server"][0]\
-                ["config"]["source-address"] = source_ip
+					["config"]["openconfig-system-ext:source-interface"] = src_intf
         if len(vrf) != 0:
             body["openconfig-system:remote-server"][0]\
                 ["config"]["openconfig-system-ext:vrf-name"] = vrf
@@ -105,12 +107,12 @@ def invoke_api(func, args=[]):
                 if (args[1] == "remote-port"):
                     return invoke_api(
                         'patch_openconfig_system_logging_server_config_host',
-                        [args[0], "rport=514", "source-ip=", "vrf="])
+                        [args[0], "rport=514", "vrf="])
 
             uri_suffix = {
                 "remote-port": "/config/remote-port",
-                "source-ip": "/config/source-address",
-                "vrf-name": "/config/openconfig-system-ext:vrf-name",
+				"source-interface": "/config/openconfig-system-ext:source-interface",
+                "vrf": "/config/openconfig-system-ext:vrf-name",
             }
 
             path = path + uri_suffix.get(args[1], "Invalid Attribute")
@@ -149,8 +151,8 @@ def get_sonic_logging_servers(args=[]):
 
         api_response['source'] = "-"
         if 'config' in server \
-                and 'source-address' in server['config']:
-            api_response['source'] = server['config']['source-address']
+                and 'openconfig-system-ext:source-interface' in server['config']:
+            api_response['source'] = server['config']['openconfig-system-ext:source-interface']
 
         api_response['port'] = "-"
         if 'config' in server \

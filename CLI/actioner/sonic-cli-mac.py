@@ -30,13 +30,9 @@ urllib3.disable_warnings()
 
 def mac_fill_count(mac_entries):
     static = dynamic = 0
-    for mac_entry in mac_entries:
-        if mac_entry['state']['entry-type'] == 'STATIC':
-            static += 1
-        else:
-            dynamic += 1
-
-    mac_entry_table = {'vlan-mac': len(mac_entries),
+    static = mac_entries['openconfig-network-instance-ext:static-count']
+    dynamic = mac_entries['openconfig-network-instance-ext:dynamic-count']
+    mac_entry_table = {'vlan-mac': (static + dynamic),
                        'static-mac': static,
                        'dynamic-mac': dynamic,
                        'total-mac': (static + dynamic)
@@ -69,10 +65,23 @@ def invoke(func, args):
     if func == 'get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries', name='default')
         return aa.get(keypath)
+    elif func == 'add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', 
+                name='default', macaddress=args[0], vlan=args[1])
+        body = {"entry": [{"mac-address": args[0], "vlan": int(args[1]), "interface": {"interface-ref": {"config": {"interface": args[2], "subinterface": 0}}}}]}
+        return aa.patch(keypath, body)
+    elif func == 'del_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', 
+                name='default', macaddress=args[0], vlan=args[1])
+        body = {"entry": [{"mac-address": args[0], "vlan": int(args[1])}]}
+        return aa.delete(keypath, body)
     elif func == 'rpc_sonic_fdb_clear_fdb':
         keypath = cc.Path('/restconf/operations/sonic-fdb:clear_fdb')
         body = {"sonic-fdb:input": { args[0]: args[1]}}
         return aa.post(keypath, body)
+    elif func == 'get_openconfig_network_instance_ext_network_instances_network_instance_fdb_state':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/state', name='default')
+        return aa.get(keypath)
     else:
         return body
 
@@ -85,6 +94,8 @@ def run(func, args):
             if response is not None and len(response) is not 0:
                 if 'openconfig-network-instance:entries' in response:
                     mac_entries = response['openconfig-network-instance:entries']['entry']
+                elif 'openconfig-network-instance:state' in response:
+                    mac_entries = response['openconfig-network-instance:state']
                 else:
                     return
             else:
@@ -108,8 +119,9 @@ def run(func, args):
  
             elif args[1] == 'interface': #### -- show mac address table [interface {Ethernet <id> | Portchannel <id>}]--- ###
                 for mac_entry in mac_entries:
-                    if args[2] == mac_entry['interface']['interface-ref']['state']['interface']:
-                        mac_table_list.append(fill_mac_info(mac_entry))
+                    if 'interface' in mac_entry:
+                        if args[2] == mac_entry['interface']['interface-ref']['state']['interface']:
+                            mac_table_list.append(fill_mac_info(mac_entry))
 
             #### -- show mac address table [static {address <mac-address> | vlan <vlan-id> | interface {Ethernet <id>| Portchannel <id>}}]--- ###
             elif args[1] == 'static':
@@ -125,8 +137,9 @@ def run(func, args):
                 
                 elif args[2] == 'interface':
                     for mac_entry in mac_entries:
-                        if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'STATIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                        if 'interface' in mac_entry:
+                            if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'STATIC':
+                                mac_table_list.append(fill_mac_info(mac_entry))
 
                 else:
                     for mac_entry in mac_entries:
@@ -148,8 +161,9 @@ def run(func, args):
 
                 elif args[2] == 'interface':
                     for mac_entry in mac_entries:
-                        if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'DYNAMIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                        if 'interface' in mac_entry:
+                            if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'DYNAMIC':
+                                mac_table_list.append(fill_mac_info(mac_entry))
 
                 else:
                     for mac_entry in mac_entries:
@@ -157,13 +171,14 @@ def run(func, args):
                             mac_table_list.append(fill_mac_info(mac_entry))
 
 
-            elif args[1] == 'count': #### -- show mac address table count --- ###
+        elif func == 'get_openconfig_network_instance_ext_network_instances_network_instance_fdb_state':
+            if args[1] == 'count': #### -- show mac address table count --- ###
                 mac_table_list.append(mac_fill_count(mac_entries))
-            show_cli_output(args[0], mac_table_list)
-            return
-    except:
-            # system/network error
-            print "Error: Transaction Failure"
+        show_cli_output(args[0], mac_table_list)
+        return
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print "% Error: Internal error"
 
 if __name__ == '__main__':
 

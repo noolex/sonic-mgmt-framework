@@ -26,7 +26,7 @@ limitations under the License.
   <VIEW name="configure-view">
     <!-- scheduler policy -->
     <COMMAND
-        name="scheduler-policy"
+        name="qos scheduler-policy"
         help="Scheduler Policy Configuration"
         mode="subcommand"
         ptype="SUBCOMMAND"
@@ -45,7 +45,7 @@ limitations under the License.
     </COMMAND>
 
     <!-- no scheduler policy -->
-    <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
+    <COMMAND name="no qos scheduler-policy" help="Unconfigure a scheduler policy">
       <PARAM name="name" help="Name of the scheduler policy" ptype="STRING_32"> </PARAM>
         <ACTION builtin="clish_restcl">
             oper=DELETE
@@ -67,96 +67,69 @@ limitations under the License.
         completion="false"
         />
 
-     <COMMAND
-            name="scheduler"
-            help="configure scheduler"
-            mode="subcommand"
-            ptype="SUBCOMMAND"
-            >
-            <PARAM
-                name="scheduler-type-subcommands"
-                help="scheduler type subcommands"
-                mode="switch"
-                ptype="SUBCOMMAND"
-                >
-                <PARAM
-                    name="queue"
-                    help="Scheduler for queues"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-		            view="configure-qos-scheduler-policy-per-queue-view"
-		            viewid="top_scheduler_policy_name=${scheduler_policy_name};scheduler_type=${scheduler-type-subcommands};scheduler_policy_per_queue_name=${sequence}; "
-		            >
-                    <PARAM
-                        name="sequence"
-                        help="Queue id: 0-7 for interface queues, 0-31 for CPU queues."
-                        ptype="RANGE_0_31">
-                    </PARAM>
-                </PARAM>
-                <PARAM
-                    name="port"
-                    help="Scheduler for interface"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-		            view="configure-qos-scheduler-policy-per-port-view"
-		            viewid="top_scheduler_policy_name=${scheduler_policy_name};scheduler_type=${scheduler-type-subcommands}; "
-                    >
-                </PARAM>
-            </PARAM>
-        <ACTION>  if test "${sequence}" = "" ; then&#xA;
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} 255&#xA;
-            else&#xA;
+    <COMMAND
+        name="queue"
+        help="Scheduler for queues"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        view="configure-qos-scheduler-policy-per-queue-view"
+        viewid="top_scheduler_policy_name=${scheduler_policy_name};scheduler_policy_per_queue_name=${sequence}; "
+        >
+        <PARAM
+            name="sequence"
+            help="Queue id: 0-7 for interface queues, 0-31 for CPU queues."
+            ptype="RANGE_0_31">
+        </PARAM>
+        <ACTION>
             python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}&#xA;
-            fi&#xA;
+        </ACTION>
+      </COMMAND>
+      <COMMAND
+          name="port"
+          help="Scheduler for interface"
+          ptype="SUBCOMMAND"
+          mode="subcommand"
+          view="configure-qos-scheduler-policy-per-port-view"
+          viewid="top_scheduler_policy_name=${scheduler_policy_name};"
+          >
+        <ACTION> 
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} 255&#xA;
         </ACTION>
       </COMMAND>
 
       <!-- no scheduler id-->
       <COMMAND
-            name="no scheduler"
-            help="Unconfigure scheduler"
-            mode="subcommand"
-            ptype="SUBCOMMAND"
-            >
-            <PARAM
-                name="scheduler-type-subcommands"
-                help="scheduler type subcommands"
-                mode="switch"
-                ptype="SUBCOMMAND"
-                >
-                <PARAM
-                    name="queue"
-                    help="Scheduler for queues"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-		            >
-                    <PARAM
-                        name="sequence"
-                        help="Queue id: 0-7 for interface queues, 0-31 for CPU queues."
-                        ptype="RANGE_0_31">
-                    </PARAM>
-                </PARAM>
-                <PARAM
-                    name="port"
-                    help="Scheduler for interface"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    >
-                </PARAM>
-            </PARAM>
-        <ACTION>  if test "${sequence}" = "" ; then&#xA;
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} 255&#xA;
-            else&#xA;
+          name="no queue"
+          help="Scheduler for queues"
+          ptype="SUBCOMMAND"
+          mode="subcommand"
+          >
+          <PARAM
+              name="sequence"
+              help="Queue id: 0-7 for interface queues, 0-31 for CPU queues."
+              ptype="RANGE_0_31">
+          </PARAM>
+          <ACTION>
             python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}&#xA;
-            fi&#xA;
         </ACTION>
       </COMMAND>
+      <COMMAND
+          name="no port"
+          help="Scheduler for interface"
+          ptype="SUBCOMMAND"
+          mode="subcommand"
+          >
+       <ACTION>
+      python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} 255&#xA;
+        </ACTION>
+      </COMMAND>
+
   </VIEW>
 
 
   <VIEW
     name="configure-qos-scheduler-policy-per-queue-view"
-    prompt="${SYSTEM_NAME}(conf-scheduler-${top_scheduler_policy_name}-${scheduler_type}-${scheduler_policy_per_queue_name})# "
+    prompt="${SYSTEM_NAME}(conf-scheduler-${top_scheduler_policy_name}-queue-${scheduler_policy_per_queue_name})# "
     depth="3"
     >
     <!-- Inheritance -->
@@ -166,24 +139,28 @@ limitations under the License.
         completion="false"
         />
         <COMMAND
-            name="priority"
-            help="scheduler is set to strict priority"
-        >
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_priority ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}  
-        </ACTION>
+            name="type"
+            help="scheduler type (strict/dwrr/wrr)"
+            >
+            <PARAM
+                name="type"
+                help="Configure scheduler type"
+                ptype="SCHEDULER_TYPE_OPTION" />
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_priority ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${type} 
+            </ACTION>
         </COMMAND>
 
         <COMMAND name="no" help="Negate a commands"/>
-        <COMMAND name="no priority" help="scheduler is set to WRR">
+        <COMMAND name="no type" help="Unconfigure scheduler type">
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py  delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_priority ${top_scheduler_policy_name}${scheduler_policy_per_queue_name} 
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py  delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_priority ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} 
         </ACTION>
         </COMMAND>
 
         <COMMAND
             name="weight"
-            help="weight of DWRR"
+            help="scheduer weight"
         >
         <PARAM
             name="weight"
@@ -195,11 +172,19 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_weight ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${weight}
         </ACTION>
         </COMMAND>
-
+        
+        <COMMAND
+            name="no weight"
+            help="Delete weight"
+        >
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_weight ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}
+        </ACTION>
+        </COMMAND>
 
         <COMMAND
-            name="min"
-            help="mininum bandwidth rate in kbps"
+            name="cir"
+            help="Committed Information Rate in kbps"
         >
         <PARAM
             name="cir"
@@ -212,14 +197,19 @@ limitations under the License.
         </ACTION>
         </COMMAND>
 
+        <COMMAND name="no cir" help="Committed Information Rate">
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}
+        </ACTION>
+        </COMMAND>
 
         <COMMAND
-            name="min-burst"
-            help="minimum burst in kbps"
+            name="cbs"
+            help="Committed Burst Size in bytes"
         >
         <PARAM
             name="bc"
-            help="minimum burst in bytes"
+            help="Committed Burst Size in bytes"
             ptype="BURST"
             >
         </PARAM>
@@ -228,10 +218,15 @@ limitations under the License.
         </ACTION>
         </COMMAND>
 
+        <COMMAND name="no cbs" help="delete Committed Burst Size">
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_bc ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}
+        </ACTION>
+        </COMMAND>
 
         <COMMAND
-            name="max"
-            help="maxinum bandwidth rate in Kbps"
+            name="pir"
+            help="Peak Information Rate in Kbps"
         >
         <PARAM
             name="pir"
@@ -244,14 +239,22 @@ limitations under the License.
         </ACTION>
         </COMMAND>
 
+        <COMMAND
+            name="no pir"
+            help="Delete Peak Information Rate"
+        >
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}
+        </ACTION>
+        </COMMAND>
 
         <COMMAND
-            name="max-burst"
-            help="maximum burst size in bytes"
+            name="pbs"
+            help="Peak Burst Size in bytes"
         >
         <PARAM
             name="be"
-            help="maximum burst in bytes"
+            help="Peak Burst Size in bytes"
             ptype="BURST"
             >
         </PARAM>
@@ -259,10 +262,19 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_be ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${be}
         </ACTION>
         </COMMAND>
+        <COMMAND
+            name="no pbs"
+            help="Delete Peak Burst Size"
+        >
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_be ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}
+        </ACTION>
+        </COMMAND>
+
   </VIEW>
   <VIEW
     name="configure-qos-scheduler-policy-per-port-view"
-    prompt="${SYSTEM_NAME}(conf-scheduler-${top_scheduler_policy_name}-${scheduler_type})# "
+    prompt="${SYSTEM_NAME}(conf-scheduler-${top_scheduler_policy_name}-port)# "
     depth="3"
     >
     <!-- Inheritance -->
@@ -273,8 +285,8 @@ limitations under the License.
         />
 
         <COMMAND
-            name="max"
-            help="maxinum bandwidth rate in Kbps"
+            name="pir"
+            help="Peak Information Rate in Kbps"
         >
         <PARAM
             name="pir"
@@ -286,27 +298,43 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} 255 ${pir}
         </ACTION>
         </COMMAND>
-
+        <COMMAND
+            name="no pir"
+            help="Delete Peak Information Rate"
+        >
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} 255
+        </ACTION>
+        </COMMAND>
 
         <COMMAND
-            name="max-burst"
-            help="maximum burst size in bytes"
+            name="pbs"
+            help="Peak Burst Size in bytes"
         >
         <PARAM
-            name="be"
-            help="maximum burst in bytes"
+            name="pbs"
+            help="Peak Burst Size in bytes"
             ptype="BURST"
             >
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_be ${top_scheduler_policy_name} 255 ${be}
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_be ${top_scheduler_policy_name} 255 ${pbs}
         </ACTION>
         </COMMAND>
+        <COMMAND
+            name="no pbs"
+            help="Delete Peak Burst Size"
+        >
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_be ${top_scheduler_policy_name} 255
+        </ACTION>
+        </COMMAND>
+
   </VIEW>
 
 
   <VIEW name="enable-view">
-    <COMMAND name="show scheduler-policy" help="Show scheduler policy information">
+    <COMMAND name="show qos scheduler-policy" help="Show scheduler policy information">
         <PARAM 
             name="name"
             help="name of scheduler policy"

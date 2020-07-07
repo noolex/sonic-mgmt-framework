@@ -113,7 +113,7 @@ limitations under the License.
      </DOCGEN>
     </COMMAND>
     <!-- no ip anycast-mac-address -->
-    <COMMAND name="no ip anycast-mac-address" help="Configure Anycast Gateway MAC address">
+    <COMMAND name="no ip anycast-mac-address" help="Unconfigure Anycast Gateway MAC address">
       <PARAM name="anycast-mac" help="Anycast Gateway MAC Address" ptype="MAC_ADDR"> </PARAM>
       <ACTION>python $SONIC_CLI_ROOT/sonic-cli-sag.py delete_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_anycast_mac ${anycast-mac}&#xA; </ACTION>
      <DOCGEN>

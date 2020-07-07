@@ -1,48 +1,66 @@
-{%- set vars = {'adminState' : ""} %} 
-{%- set vars = {'agentId' : ""} %} 
-{%- set vars = {'colCnt' : "" } %} 
-{%- set vars = {'pollIntvl': ""} %}
-{%- set vars = {'colPort': ""} %}
+{%- set vars = {'adminState' : "down"} %}
+{%- set vars = {'agentId' : "default"} %}
+{%- set vars = {'colCnt' : "0" } %}
+{%- set vars = {'pollIntvl': "default"} %}
+{%- set vars = {'colPort': "6343"} %}
+{%- set vars = {'colVrf': "default"} %}
 {{'---------------------------------------------------------'}}
 {{'Global sFlow Information'.ljust(20)}}
 {{'---------------------------------------------------------'}}
-{% if 'sonic-sflow:sonic-sflow' in json_output %}
-{% set resp = json_output['sonic-sflow:sonic-sflow'] %}
-{% if 'SFLOW' in resp and 'SFLOW_LIST' in resp['SFLOW'] %}
-{% set sfl_gbl = resp['SFLOW']['SFLOW_LIST'][0] %}
-{% if 'admin_state' in sfl_gbl %}
-{% if vars.update({'adminState' : sfl_gbl['admin_state']}) %} {% endif %}
+{% if 'openconfig-sampling:sflow' in json_output %}
+{% set resp = json_output['openconfig-sampling:sflow'] %}
+
+{% if 'state' in resp %}
+{% set sfl_gbl = resp['state'] %}
+
+{% if 'enabled' in sfl_gbl and sfl_gbl['enabled'] %}
+{% if vars.update({'adminState' : "up"}) %} {% endif %}
 {% else %}
 {% if vars.update({'adminState' : "down"}) %} {% endif %}
 {% endif %}
-{% if 'agent_id' in sfl_gbl %}
-{% if vars.update({'agentId' : sfl_gbl['agent_id']}) %}{% endif %}
+
+{% if 'openconfig-sampling-ext:agent' in sfl_gbl %}
+{% if vars.update({'agentId' : sfl_gbl['openconfig-sampling-ext:agent']}) %}{% endif %}
 {% else %}
 {% if vars.update({'agentId' : "default"}) %} {% endif %}
 {% endif %}
-{% if 'polling_interval' in sfl_gbl %}
-{% if vars.update({'pollIntvl' : sfl_gbl['polling_interval']}) %}{% endif %}
+
+{% if 'openconfig-sampling-ext:polling-interval' in sfl_gbl %}
+
+{% if vars.update({'pollIntvl' : sfl_gbl['openconfig-sampling-ext:polling-interval']}) %}{% endif %}
 {% else %}
 {% if vars.update({'pollIntvl' : "default"}) %} {% endif %}
 {% endif %}
+
 {% endif %}
-{% if 'SFLOW_COLLECTOR' in resp and 'SFLOW_COLLECTOR_LIST' in resp['SFLOW_COLLECTOR'] %}
-{% if vars.update({'colCnt' : resp['SFLOW_COLLECTOR']['SFLOW_COLLECTOR_LIST']|count }) %}{% endif %}
+
+{% if 'collectors' in resp and 'collector' in resp['collectors'] %}
+{% if vars.update({'colCnt' : resp['collectors']['collector']|count }) %}{% endif %}
 {% else %}
 {% if vars.update({'colCnt' : "0"}) %} {% endif %}
 {% endif %}
+
 {% endif %}
+
 {{'	admin state:            '}}{{vars.adminState}}
 {{'	polling-interval:       '}}{{vars.pollIntvl}}
 {{'	agent-id:               '}}{{vars.agentId}}
 {{'	configured collectors:  '}}{{vars.colCnt}}
-{% if 'SFLOW_COLLECTOR' in resp and 'SFLOW_COLLECTOR_LIST' in resp['SFLOW_COLLECTOR'] %}
-{% for collector in  resp['SFLOW_COLLECTOR']['SFLOW_COLLECTOR_LIST'] %}
-{% if 'collector_port' in collector %}
-{% if vars.update({'colPort' : collector['collector_port']}) %} {% endif %}
+
+
+{% if 'collectors' in resp and 'collector' in resp['collectors'] %}
+
+{% for collector in  resp['collectors']['collector'] %}
+{% if 'port' in collector['state'] %}
+{% if vars.update({'colPort' : collector['state']['port']}) %} {% endif %}
 {% else %}
 {% if vars.update({'colPort' : "6343"}) %} {% endif %}
 {% endif %}
-	    {{collector['collector_name']}}		{{collector['collector_ip']}}   {{vars.colPort}}
+{% if 'vrf' in collector['state'] %}
+{% if vars.update({'colVrf' : collector['state']['vrf']}) %} {% endif %}
+{% else %}
+{% if vars.update({'colVrf' : "default"}) %} {% endif %}
+{% endif %}
+             {{collector['state']['address'].ljust(20)}}{{'%d'.ljust(10)|format(vars.colPort | int)}}{{vars.colVrf}}
 {% endfor %}
 {% endif %}

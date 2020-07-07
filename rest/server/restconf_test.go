@@ -279,7 +279,7 @@ func testCapability(t *testing.T, path string) {
 		cap = top["ietf-restconf-monitoring:capability"]
 	}
 
-	if c, ok := cap.([]interface{}); !ok || len(c) != 2 {
+	if c, ok := cap.([]interface{}); !ok || len(c) == 0 {
 		log.Fatalf("Could not parse capability info: %s", w.Body.String())
 	}
 }
@@ -287,6 +287,8 @@ func testCapability(t *testing.T, path string) {
 func TestQuery(t *testing.T) {
 	t.Run("none", testQuery("GET", "", 0, translibArgs{}))
 	t.Run("unknown", testQuery("GET", "one=1", 400, translibArgs{}))
+
+	restconfCapabilities.depth = true
 	t.Run("depth_def", testQuery("GET", "depth=unbounded", 0, translibArgs{depth: 0}))
 	t.Run("depth_0", testQuery("GET", "depth=0", 400, translibArgs{}))
 	t.Run("depth_1", testQuery("GET", "depth=1", 0, translibArgs{depth: 1}))
@@ -298,6 +300,9 @@ func TestQuery(t *testing.T) {
 	t.Run("depth_head", testQuery("HEAD", "depth=5", 0, translibArgs{depth: 5}))
 	t.Run("depth_head_bad", testQuery("HEAD", "depth=bad", 400, translibArgs{}))
 	t.Run("depth_patch", testQuery("PATCH", "depth=1", 400, translibArgs{}))
+
+	restconfCapabilities.depth = false
+	t.Run("no_depth_1", testQuery("GET", "depth=1", 400, translibArgs{}))
 }
 
 func testQuery(method, queryStr string, expStatus int, expData translibArgs) func(*testing.T) {

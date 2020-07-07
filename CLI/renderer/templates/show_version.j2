@@ -14,9 +14,10 @@
 {{ 'Mfg'.ljust(18) }}: {{ json_output['mfg-name'] }}
 {{ ' ' }}
 
-{% set docker_version = json_output["docker-version"] %}
+{% set docker_version = json_output["docker"]["docker-version"] %}
 {{'REPOSITORY'.ljust(40)}} {{'TAG'.ljust(20)}}{{'IMAGE ID'.ljust(20)}} {{'SIZE'.ljust(20)}}
-{% for docker_ver in docker_version %}
+{% for dv in docker_version %}
+{% set docker_ver = dv['state'] %}
 {{(docker_ver['docker-name'] | string).ljust(40)}}{{(docker_ver['docker-tag-id'] | string).ljust(20)}}{{(docker_ver['docker-image-id'] | string).ljust(20)}}{{(docker_ver['docker-size'] | string).ljust(20)}}
 {% endfor %}
 
