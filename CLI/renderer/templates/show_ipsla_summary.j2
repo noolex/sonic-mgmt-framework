@@ -43,7 +43,6 @@
 {% endif %}
 
 {% if sla_state['icmp-operation-state'] == 'OPER_UP' %}
-{% set vec = namespace(vrf = "default") %}
 {{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "ICMP-echo", "Up", sla_config['icmp-dst-ip'], vec.vrf, gvec.transition, sla_state['timestamp']) }}
 {% else %}
 {{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "ICMP-echo", "Down", sla_config['icmp-dst-ip'], vec.vrf, gvec.transition, sla_state['timestamp']) }}

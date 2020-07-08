@@ -42,7 +42,7 @@
     {% endif %}
 
     {% if 'icmp-vrf' in sla_config %}
-    {{'Source VRF: %s'|format(sla_config['vrf'])}}
+    {{'Source VRF: %s'|format(sla_config['icmp-vrf'])}}
     {% else %}
     {{'Source VRF: default'}}
     {% endif %}
