@@ -52,7 +52,8 @@ config_view_hierarchy= \
        'configure-route-map',
        'configure-router-bgp',
        'configure-vxlan',
-       'copp-action']
+       'copp-action',
+       'configure-mclag']
 
 render_filelst  = {}
 
