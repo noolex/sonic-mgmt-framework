@@ -11,11 +11,15 @@
 {% for sensor_cat_inst in sub_comp_state['openconfig-platform-ext:sensor-category'] %}
 {% set sensor_cat_name = sensor_cat_inst['category'].strip() %}
 {{' '.ljust(3) }}{{sensor_cat_name.ljust(20)}}
+
+{% if 'sensors' in sensor_cat_inst and 'sensor' in sensor_cat_inst['sensors'] %}
 {% for sensor_inst in sensor_cat_inst['sensors']['sensor'] %}
 {% set sensor_name = sensor_inst['name'].strip() + ':'  %}
 {% set sensor_state = sensor_inst['state']['state'].strip() %}
 {{ ' '.ljust(7) }}{{sensor_name.ljust(30)}}{{sensor_state.ljust(20)}}
 {% endfor %}
+{% endif %}
+
 {% if state == 'openconfig-platform:state' %}
 {% for key in component %}
 {% set key_val = component[key] %}
