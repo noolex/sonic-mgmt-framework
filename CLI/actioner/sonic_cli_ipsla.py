@@ -72,8 +72,8 @@ def invoke(func, args):
         keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
 
         body=collections.defaultdict(dict)
-        def_freq = 30
-        body = {"openconfig-ip-sla:config": {"ip-sla-id": int(args[0]), "frequency": int(def_freq)}}
+        def_enable_value = True 
+        body = {"openconfig-ip-sla:config": {"ip-sla-id": int(args[0]), "enabled": def_enable_value}}
         return aa.patch(keypath, body)
 
     # IP SLA frequency delete
