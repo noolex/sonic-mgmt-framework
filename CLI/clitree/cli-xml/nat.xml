@@ -40,8 +40,11 @@ limitations under the License.
     <!-- nat commands -->
     <COMMAND
         name="nat"
-	view="configure-nat-view"
+        view="configure-nat-view"
         help="Enter NAT global configuration"
+        view_keys="name=Values"
+        view_tables="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/name={name}"
+        dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/name=Values"
         />
 
    </VIEW>
@@ -59,15 +62,16 @@ limitations under the License.
         <COMMAND
             name="no"
             help="Negate a command or set its defaults"
-	    />
+        />
         <COMMAND
             name="enable"
             help="Enable NAT feature"
-	    >
+            dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/admin_mode=enabled"
+        >
         <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_config_enable True</ACTION>
         </COMMAND>
 
-	<COMMAND
+        <COMMAND
             name="no enable"
             help="Disable NAT feature"
             >
@@ -84,6 +88,7 @@ limitations under the License.
              name="timeout-value"
              help="NAT Timeout"
              ptype="NAT_TIMEOUT"
+             dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_timeout"
              >
          </PARAM>
          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/timeout body={"openconfig-nat:timeout": ${timeout-value}}</ACTION>
@@ -93,7 +98,7 @@ limitations under the License.
        <COMMAND
          name="no timeout"
          help="Set default NAT entry aging timeout in seconds"
-	 >
+       >
          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/timeout body={"openconfig-nat:timeout": 600}</ACTION>
      </COMMAND>
 
@@ -107,6 +112,7 @@ limitations under the License.
              name="tcp-timeout-value"
              help="TCP NAT Timeout"
              ptype="NAT_TCP_TIMEOUT"
+             dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_tcp_timeout"
              >
          </PARAM>
          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/tcp-timeout body={"openconfig-nat:tcp-timeout": ${tcp-timeout-value}}</ACTION>
@@ -129,6 +135,7 @@ limitations under the License.
              name="udp-timeout-value"
              help="UDP NAT Timeout"
              ptype="NAT_UDP_TIMEOUT"
+            dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_udp_timeout"
              >
          </PARAM>
          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/udp-timeout body={"openconfig-nat:udp-timeout": ${udp-timeout-value}}</ACTION>
@@ -146,17 +153,20 @@ limitations under the License.
          help="Create NAT Pool"
          mode="subcommand"
          ptype="SUBCOMMAND"
+         command_tables="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/pool_name={pool-name}"
          >
          <PARAM
              name="pool-name"
              help="NAT Pool name"
              ptype="STRING"
+             dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/pool_name"
              >
          </PARAM>
          <PARAM
              name="global-ip-range"
              help="Global IP range"
              ptype="STRING"
+             dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/nat_ip"
              >
          </PARAM>
          <PARAM
@@ -164,6 +174,7 @@ limitations under the License.
              help="Global Port Range"
              ptype="STRING"
              optional="true"
+             dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/nat_port"
              >
          </PARAM>
 
@@ -189,7 +200,7 @@ limitations under the License.
      <COMMAND
          name="no pools"
          help="Remove all NAT Pools"
-	 >
+     >
      <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-pool</ACTION>
      </COMMAND>
 
@@ -198,17 +209,20 @@ limitations under the License.
          help="Create binding between an ACL and a NAT pool"
          mode="subcommand"
          ptype="SUBCOMMAND"
+         command_tables="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/name={binding-name}"
          >
-	 <PARAM
+         <PARAM
              name="binding-name"
              help="NAT binding name"
              ptype="STRING"
+             dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/name"
              >
          </PARAM>
          <PARAM
              name="pool-name"
              help="NAT pool name"
              ptype="STRING"
+             dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/nat_pool"
              >
          </PARAM>
          <PARAM
@@ -216,6 +230,7 @@ limitations under the License.
              help="ACL Name"
              ptype="STRING"
              optional="true"
+             dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/access_list"
              >
          </PARAM>
          <PARAM
@@ -223,6 +238,7 @@ limitations under the License.
              help=""
              ptype="TYPE"
              optional="true"
+             dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/nat_type"
              >
          </PARAM>
          <PARAM
@@ -236,6 +252,7 @@ limitations under the License.
                  name="twice-nat-id-value"
                  help="Twice NAT ID value"
                  ptype="UINT"
+                 dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/twice_nat_id"
                  >
              </PARAM>
          </PARAM>
@@ -270,6 +287,8 @@ limitations under the License.
          help="Add static NAT entry"
          mode="subcommand"
          ptype="SUBCOMMAND"
+         command_tables="sonic-nat:sonic-nat/STATIC_NAPT/STATIC_NAPT_LIST/global_ip={global_ip},ip_pro tocol={ip_protocol}, global_l4_port=${global-port};sonic-nat:sonic-nat/STATIC_NAT/STATIC_NAT_LIST/global_ip={global_ip}"
+         render_command_cb="nat_napt_entry"
          >
          <PARAM
              name="static-subcommands"
@@ -288,6 +307,7 @@ limitations under the License.
                  name="global-ip"
                  help="Global IP"
                  ptype="IP_ADDR"
+                 dbpath="sonic-nat:sonic-nat/STATIC_NAT/STATIC_NAT_LIST/global_ip"
                  >
              </PARAM>
 

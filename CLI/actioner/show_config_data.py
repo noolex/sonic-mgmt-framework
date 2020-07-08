@@ -26,6 +26,7 @@ from show_config_copp import *
 from show_config_static_routes import *
 from show_config_qos_map import *
 from show_config_qos import *
+from show_config_nat import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -36,6 +37,7 @@ view_dependency= \
 
 config_view_hierarchy= \
       ['configure',
+       'configure-nat',
        'configure-wred',
        'configure-dscp-tc-map',
        'configure-dot1p-tc-map',
@@ -142,12 +144,12 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'queue_wred_policy'       : show_queue_wred_policy,
                   'qos_intf_map_dscp_tc'    : show_qos_intf_map_dscp_tc,
                   'qos_intf_map_dot1p_tc'   : show_qos_intf_map_dot1p_tc,
-                  'qos_intf_map_tc_queue'  : show_qos_intf_map_tc_queue,
-                  'qos_intf_map_tc_pg'     : show_qos_intf_map_tc_pg,
-                  'qos_intf_map_tc_dscp'   : show_qos_intf_map_tc_dscp,
-                  'qos_intf_map_tc_dot1p'  : show_qos_intf_map_tc_dot1p,
+                  'qos_intf_map_tc_queue'   : show_qos_intf_map_tc_queue,
+                  'qos_intf_map_tc_pg'      : show_qos_intf_map_tc_pg,
+                  'qos_intf_map_tc_dscp'    : show_qos_intf_map_tc_dscp,
+                  'qos_intf_map_tc_dot1p'   : show_qos_intf_map_tc_dot1p,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
-                  'qos_intf_pfc'  : show_qos_intf_pfc
-
+                  'qos_intf_pfc'            : show_qos_intf_pfc,
+                  'nat_napt_entry'          : show_nat_napt_entry
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
