@@ -20,6 +20,7 @@
 from scripts.render_cli import show_cli_output
 import cli_client as cc
 import sys
+import sonic_intf_utils as ifutils
 
 aa = cc.ApiClient()
 
@@ -46,6 +47,10 @@ def stp_mode_get(aa):
 
     return g_stp_resp,g_stp_mode
 
+def getId(item):
+    state_dict = item['state']
+    ifName = state_dict['name']
+    return ifutils.name_to_int_val(ifName)
 
 def generic_set_response_handler(response, args):
     #if response.ok():
@@ -564,14 +569,23 @@ def delete_stp_intf_edge_port_subcmds(args):
 def get_stp_response():
     if g_stp_mode == 'PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst')  
+        str = 'openconfig-spanning-tree-ext:pvst'
     elif g_stp_mode == 'RAPID_PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst')
+        str = 'openconfig-spanning-tree:rapid-pvst'
     else:
         return None
 
     output = {}
     api_response = aa.get(uri, None)
     if api_response.ok():
+        value = api_response.content[str]['vlan']
+        for item in value:
+            if 'interfaces' in item:
+                tup = item['interfaces']
+                if 'interface' in tup:
+                   tup2 = tup['interface']
+                   tup['interface'] = sorted(tup2, key=getId)
         output.update(g_stp_resp.content)
         output.update(api_response.content)
     return output
@@ -580,14 +594,24 @@ def get_stp_response():
 def get_stp_vlan_response(vlan):
     if g_stp_mode == 'PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}', vlan_id=vlan)
+        str = 'openconfig-spanning-tree-ext:vlan'
     elif g_stp_mode == 'RAPID_PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}', vlan_id=vlan)
+        str = 'openconfig-spanning-tree:vlan'
     else:
         return None
 
     output = {}
     api_response = aa.get(uri, None)
     if api_response.ok():
+        value = api_response.content[str]
+        for item in value:
+            if 'interfaces' in item:
+                tup = item['interfaces']
+                if 'interface' in tup:
+                    tup2 = tup['interface']
+                    tup['interface'] = sorted(tup2, key=getId)
+     
         output.update(g_stp_resp.content)
         output.update(api_response.content)
     return output
@@ -597,6 +621,10 @@ def show_stp_intfs(args):
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces')
     stp_intf_response = aa.get(uri, None)
     if stp_intf_response.ok():
+        value = stp_intf_response.content['openconfig-spanning-tree:interfaces']
+        if 'interface' in value:
+            tup = value['interface']
+            value['interface'] = sorted(tup, key=getId)
         return stp_intf_response.content
     else:
         return None
@@ -647,6 +675,9 @@ def show_stp_vlan_intfs(args):
     #stp_intf_response = aa.api_client.sanitize_for_serialization(stp_intf_response)
     if stp_intf_response.ok():
         output.update(stp_intf_response.content)
+    else:
+        print ("% Error: Internal error")
+        return None
 
     return output
 

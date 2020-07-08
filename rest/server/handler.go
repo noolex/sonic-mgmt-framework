@@ -27,8 +27,8 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"github.com/Azure/sonic-mgmt-common/translib"
 
+	"github.com/Azure/sonic-mgmt-common/translib"
 	"github.com/golang/glog"
 )
 
@@ -247,16 +247,6 @@ func isOperationsRequest(r *http.Request) bool {
 	//Use swagger generated API name instead???
 }
 
-// parseQueryParams parses the http request's query parameters
-// into a translibArgs args.
-func parseQueryParams(args *translibArgs, r *http.Request) error {
-	if strings.HasPrefix(r.URL.Path, restconfPathPrefix) {
-		return parseRestconfQueryParams(args, r)
-	}
-
-	return nil
-}
-
 // parseClientVersion parses the Accept-Version request header value
 func parseClientVersion(args *translibArgs, r *http.Request) error {
 	if v := r.Header.Get("Accept-Version"); len(v) != 0 {
@@ -277,6 +267,7 @@ type translibArgs struct {
 	data        []byte             // payload
 	version     translib.Version   // client version
 	depth       uint               // RESTCONF depth, for Get API only
+	deleteEmpty bool               // Delete empty entry during field delete
 	AuthEnabled bool               // Enable Authorization
 	User        translib.UserRoles // User and role info for RBAC
 }
@@ -369,10 +360,11 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		status = 204
 
 		req := translib.SetRequest{
-			Path:          args.path,
-			ClientVersion: args.version,
-			AuthEnabled:   args.AuthEnabled,
-			User:          args.User,
+			Path:             args.path,
+			ClientVersion:    args.version,
+			AuthEnabled:      args.AuthEnabled,
+			User:             args.User,
+			DeleteEmptyEntry: args.deleteEmpty,
 		}
 		_, err = translib.Delete(req)
 

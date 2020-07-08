@@ -450,7 +450,7 @@ def invoke(func, args):
       response = aa.patch(keypath, entry)
     else:
       # Remove Engine ID
-      keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/engine-id')
+      keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine')
       response = aa.delete(keypath)
 
     return response
@@ -798,6 +798,22 @@ def invoke(func, args):
       path = '/restconf/data/ietf-snmp:snmp/vacm/view={name}/%s={oidtree}' %action
       keypath = cc.Path(path, name=args[0], oidtree=args[1])
       response = aa.delete(keypath)
+
+    path = '/restconf/data/ietf-snmp:snmp/vacm/view={name}'
+    keypath = cc.Path(path, name=args[0])
+    response=aa.get(keypath)
+    if response.ok():
+      if 'ietf-snmp:view' in response.content.keys():
+        for key, data in response.content.items():
+          while len(data) > 0:
+            row = data.pop(0)
+            notfound = True
+            for action in ['include', 'exclude']:
+              if row.has_key(action):
+                notfound = False
+            if notfound == True:
+              response = aa.delete(keypath)
+
     return response
 
   # Get the configured users.

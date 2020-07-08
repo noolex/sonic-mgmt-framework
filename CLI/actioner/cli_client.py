@@ -114,18 +114,21 @@ class ApiClient(object):
     def patch(self, path, data={}):
         return self.request("PATCH", path, data)
 
-    def delete(self, path, ignore404=True):
-        resp = self.request("DELETE", path, data=None)
+    def delete(self, path, ignore404=True, deleteEmptyEntry=False):
+        q = self.prepare_query(deleteEmptyEntry=deleteEmptyEntry)
+        resp = self.request("DELETE", path, data=None, query=q)
         if ignore404 and resp.status_code == 404:
             resp.status_code = 204
             resp.content = None
         return resp
 
     @staticmethod
-    def prepare_query(depth=None):
+    def prepare_query(depth=None, deleteEmptyEntry=None):
         query = {}
         if depth != None and depth != "unbounded":
             query["depth"] = depth
+        if deleteEmptyEntry is True:
+            query["deleteEmptyEntry"] = "true"
         return query
 
     @staticmethod
