@@ -1370,14 +1370,14 @@ limitations under the License.
        <PTYPE
         name="CIR_PIR_KBPS"
         method="integer"
-        pattern="0..400000000"
+        pattern="32..400000000"
         help=""
         />
     <!--=======================================================-->
        <PTYPE
         name="BURST"
         method="integer"
-        pattern="0..100000"
+        pattern="256..128000000"
         help=""
         />
     <!--=======================================================-->
