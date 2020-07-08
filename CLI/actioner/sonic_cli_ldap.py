@@ -18,9 +18,6 @@
 ###########################################################################
 
 import sys
-import json
-import collections
-import re
 import cli_client as cc
 from rpipe_utils import pipestr
 
@@ -228,9 +225,9 @@ def run(func, args):
             #error response
             print api_response.error_message()
 
-    except Exception as e:
-            # system/network error
-            print "%Error: Transaction Failure"
+    except Exception:
+        # system/network error
+        print "%Error: Transaction Failure"
 
 
 if __name__ == '__main__':
