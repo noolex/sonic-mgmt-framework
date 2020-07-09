@@ -34,7 +34,7 @@ Standard community list {{'%s'| format(vars.list_name)}}:  match: {{'%s'| format
      {% elif mem == "openconfig-bgp-types:NO_EXPORT" %}
      {% set mem = "no-export" %}
      {% elif mem == "openconfig-bgp-types:NO_EXPORT_SUBCONFED" %}
-     {% set mem = "local-AS" %}
+     {% set mem = "local-as" %}
      {% elif "REGEX" is in mem  %}
      {% set mem = mem[6:] %}
      {% endif %}

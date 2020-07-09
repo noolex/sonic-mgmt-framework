@@ -156,7 +156,7 @@ def generate_show_bgp_routes(args):
         elif "community" == arg:
            querytype = 'COMMUNITY-STRING'
            aann = args[i+1]
-        elif "local-AS" == arg:
+        elif "local-as" == arg:
            querytype = 'COMMUNITY-LOCAL-AS'
         elif "no-advertise" == arg:
            querytype = 'COMMUNITY-NO-ADVERTISE'
