@@ -123,7 +123,6 @@ limitations under the License.
 
         <!-- clear counters service-policy Switch [type qos|monitoring|forwarding] -->
         <COMMAND name="clear counters service-policy Switch" help="Clear counters for policy-maps applied Switch/Global interface">
-            <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_details_by_interface Switch ${__params}</ACTION>
         </COMMAND>
