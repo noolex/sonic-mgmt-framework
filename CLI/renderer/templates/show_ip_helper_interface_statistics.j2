@@ -1,0 +1,30 @@
+{% if json_output %}
+{% for key in json_output %}
+{% if 'openconfig-if-ip:counters' in json_output[key] %}
+{% set counter_data = json_output[key]['openconfig-if-ip:counters'] %}
+{% set received = 0 %}
+{% set relayed = 0 %}
+{% set dropped = 0 %}
+{% set invalid = 0 %}
+{% set bcast = 0 %}
+{% set netbcast = 0 %}
+{% if 'received-packets' in counter_data %}{% set received = counter_data['received-packets'] %}{% endif %}
+{% if 'relayed-packets' in counter_data %}{% set relayed = counter_data['relayed-packets'] %}{% endif %}
+{% if 'dropped-packets' in counter_data %}{% set dropped = counter_data['dropped-packets'] %}{% endif %}
+{% if 'packets-with-invalid-ttl' in counter_data %}{% set invalid = counter_data['packets-with-invalid-ttl'] %}{% endif %}
+{% if 'broadcast-packets' in counter_data %}{% set bcast = counter_data['broadcast-packets'] %}{% endif %}
+{% if 'net-broadcast-packets' in counter_data %}{% set netbcast = counter_data['net-broadcast-packets'] %}{% endif %}
+
+  Packets received                         : {{received}}
+  Packets relayed                          : {{relayed}}
+  Packets dropped                          : {{dropped}}
+  Invalid TTL packets                      : {{invalid}}
+  All ones broadcast packets received      : {{bcast}}
+  Net directed broadcast packets received  : {{netbcast}}
+
+{% endif %}
+
+{% endfor %}
+{% else %}
+No output
+{% endif %}

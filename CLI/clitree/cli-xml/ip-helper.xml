@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.  
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+<!--=========================================================================-->
+<!--=======================================================-->
+<!--              show ip forward-protocol .......         -->
+<!--=======================================================-->
+
+  <VIEW name="enable-view">
+    <COMMAND
+        help="show IP helper global configuration"
+        name="show ip forward-protocol"
+        >
+      <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper global_config show_ip_helper_global.j2</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Displays IP helper global information.
+        </DESCRIPTION>
+      </DOCGEN> 
+    </COMMAND>
+
+    <COMMAND help="show IP helper server addresses" name="show ip helper-address">
+      <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
+      <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper iface_config show_ip_helper_interface_config.j2 ${iface}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Displays IP helper server addresses configured on interface.
+        </DESCRIPTION>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND help="show IP helper statistics" name="show ip helper-address statistics">
+      <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
+      <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper iface_stats show_ip_helper_interface_statistics.j2 ${iface}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Displays IP helper packet counters and statistics on interface.
+        </DESCRIPTION>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND help="clear IP helper" name="clear ip helper-address" />
+    <COMMAND help="clear IP helper counters" name="clear ip helper-address statistics">
+        <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
+        <ACTION builtin="clish_restcl">
+          oper=POST 
+          url=/restconf/operations/openconfig-ip-helper:clear-ip-helper 
+          body={"openconfig-ip-helper:input":{"interface":"${iface}"}} 
+        </ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            Clears IP helper counters on interface.
+          </DESCRIPTION>
+        </DOCGEN>
+    </COMMAND>
+
+  </VIEW>
+
+  <VIEW name="configure-view">
+
+    <COMMAND name="ip forward-protocol" help="Configure IP helper global parameters"/>
+    <COMMAND name="ip forward-protocol udp" help="Configure IP helper global parameters"/>
+      <COMMAND name="ip forward-protocol udp enable" help="Enable IP helper globally"
+        command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/admin_mode=enable">     
+      <ACTION builtin="clish_restcl">
+          oper=PATCH
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/enable
+          body={"openconfig-ip-helper:enable": true}
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip forward-protocol" help="Unconfigure IP helper global parameters"/>
+    <COMMAND name="no ip forward-protocol udp" help="Unconfigure IP helper global parameters"/>
+    <COMMAND name="no ip forward-protocol udp enable" help="Disable IP helper globally">     
+      <ACTION builtin="clish_restcl">
+          oper=DELETE
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/enable
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="ip forward-protocol udp include" help="Include UDP ports to forward"
+        command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
+        render_command_cb="ip_helper_include_ports">  
+      <PARAM name="portoption" mode="switch" ptype="SUBCOMMAND" help="UDP Port input option">
+      <PARAM name="port" help="UDP Port" ptype="UDP_FORWARDING_PORT"
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/include_ports"/> 
+      <PARAM name="port" help="UDP Port" ptype="RANGE_0_65535"
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/include_ports"/>
+      </PARAM>   
+      <ACTION builtin="clish_restcl">
+          oper=PATCH
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/ports
+          body={"openconfig-ip-helper:ports": [ ${port} ]}
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="ip forward-protocol udp exclude" help="Exclude UDP ports to forward"
+        command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
+        render_command_cb="ip_helper_exclude_ports">
+      <PARAM name="portoption" mode="switch" ptype="SUBCOMMAND" help="UDP Port input option">
+      <PARAM name="port" help="UDP Port" ptype="UDP_FORWARDING_PORT" 
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/exclude_ports"/> 
+      <PARAM name="port" help="UDP Port" ptype="RANGE_0_65535" 
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/exclude_ports"/>
+      </PARAM>   
+      <ACTION builtin="clish_restcl">
+          oper=DELETE
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/ports=${port}
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="ip forward-protocol udp rate-limit" help="Configure incoming rate limit"
+        command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"> 
+      <PARAM name="rate" help="Incoming rate limit" ptype="IP_HELPER_RATE_LIMIT" 
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/rate_limit_pps"/>     
+      <ACTION builtin="clish_restcl">
+          oper=PATCH
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/incoming-rate-limit
+          body={"openconfig-ip-helper:incoming-rate-limit": ${rate} }
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no ip forward-protocol udp rate-limit" help="Unconfigure incoming rate limit">      
+      <ACTION builtin="clish_restcl">
+          oper=DELETE
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/incoming-rate-limit
+      </ACTION>
+    </COMMAND>
+
+  </VIEW>
+
+</CLISH_MODULE>
