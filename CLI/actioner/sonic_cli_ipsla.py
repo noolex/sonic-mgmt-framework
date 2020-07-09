@@ -50,10 +50,20 @@ def invoke(func, args):
             body = {"sonic-ip-sla:input": {"ip_sla_id": args[0]}}
             return aa.post(keypath, body)
 
+    # IP SLA clear
+    if func == 'clear_ipsla':
+        keypath = cc.Path('/restconf/operations/sonic-ip-sla:clear-ipsla-counters')
+        body = {"sonic-ip-sla:input": {"ip_sla_id": args[0]}}
+        return aa.post(keypath, body)
+
+    if func == 'clear_ipsla_all':
+        keypath = cc.Path('/restconf/operations/sonic-ip-sla:clear-ipsla-counters')
+        body = {"sonic-ip-sla:input": {"ip_sla_id": "all"}}
+        return aa.post(keypath, body)
 
     # IP SLA delete
     if func == 'del_ipsla' :
-        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}', slaid=args[0])
         return aa.delete(keypath)
 
     # IP SLA set
@@ -62,7 +72,8 @@ def invoke(func, args):
         keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
 
         body=collections.defaultdict(dict)
-        body = {"openconfig-ip-sla:config": {"ip-sla-id": int(args[0])}}
+        def_freq = 30
+        body = {"openconfig-ip-sla:config": {"ip-sla-id": int(args[0]), "frequency": int(def_freq)}}
         return aa.patch(keypath, body)
 
     # IP SLA frequency delete
@@ -163,9 +174,9 @@ def invoke(func, args):
 
         body=collections.defaultdict(dict)
         if len(args) == 3:
-            body = {"openconfig-ip-sla:config": {"tcp-dst-ip":args[1],"tcp-dst-port":args[2]}}
+            body = {"openconfig-ip-sla:config": {"tcp-dst-ip":args[1],"tcp-dst-port":int(args[2])}}
         else:
-            body = {"openconfig-ip-sla:config": {"tcp-dst-ip":args[1],"tcp-dst-port":args[2],"tcp-vrf":args[3]}}
+            body = {"openconfig-ip-sla:config": {"tcp-dst-ip":args[1],"tcp-dst-port":int(args[2]),"tcp-vrf":args[3]}}
         return aa.patch(keypath, body)
 
     # IP SLA icmp-echo source-ip delete
@@ -253,7 +264,6 @@ def invoke(func, args):
         return aa.patch(keypath, body)
 
 
-
     # IP SLA tcp-connect source-ip delete
     if func == 'del_tcp_src_ip' :
         keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config/tcp-source-ip', slaid=args[0])
@@ -266,6 +276,19 @@ def invoke(func, args):
 
         body=collections.defaultdict(dict)
         body = {"openconfig-ip-sla:config": {"tcp-source-ip":args[1]}}
+        return aa.patch(keypath, body)
+
+    # IP SLA tcp-connect source-port delete
+    if func == 'del_tcp_src_port' :
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config/tcp-source-port', slaid=args[0])
+        return aa.delete(keypath)
+
+    # IP SLA tcp-connect source-port set
+    if func == 'patch_tcp_src_port' :
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+
+        body=collections.defaultdict(dict)
+        body = {"openconfig-ip-sla:config": {"tcp-source-port":int(args[1])}}
         return aa.patch(keypath, body)
 
     # IP SLA tcp-connect source-if delete
@@ -335,19 +358,15 @@ def run(func, args):
 
         if api_response.ok():
             response = api_response.content
-            print(response)
             if response is None:
                 pass
             elif 'openconfig-ip-sla:ip-sla' in response.keys():
-                print("**single entity**")
                 show_cli_output("show_ipsla.j2", response)
                 return
             elif 'openconfig-ip-sla:ip-slas' in response.keys():
-                print("**summary**")
                 show_cli_output("show_ipsla_summary.j2", response)
                 return
-            else:
-                print("**history**")
+            elif 'history' in response.keys():
                 show_cli_output("show_ipsla_summary.j2", response)
         else:
             print(api_response.error_message())

@@ -1312,16 +1312,23 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="CRM_POLLING_INTERVAL"
+        method="unsignedInteger"
+        pattern="0..9999"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="CRM_THRESHOLD"
         method="unsignedInteger"
-        pattern="0..4294967295"
+        pattern="0..9999"
         help=""
         />
     <!--=======================================================-->
     <PTYPE
         name="CRM_THRESHOLD_TYPE"
         method="select"
-        pattern="PERCENTAGE USED FREE"
+        pattern="percentage used free"
         help=""
         />
     <!--=======================================================-->

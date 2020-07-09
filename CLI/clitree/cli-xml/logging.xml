@@ -53,9 +53,21 @@
         </PARAM>
       </PARAM>
       <PARAM name="vrf" help="VRF to use" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="vvrf" help="" ptype="LOGGING_SERVER_VRF"> </PARAM>
+        <PARAM name="vrf-switch" help="" ptype="SUBCOMMAND" mode="switch">
+          <PARAM 
+            name = "mgmt"
+            help="Management VRF name"
+            ptype = "SUBCOMMAND"
+            mode = "subcommand"
+            />
+          <PARAM 
+            name = "vrf-name"
+            help="Name of VRF (Max size 15, prefixed by Vrf)"
+            ptype = "STRING_15"
+            />
+        </PARAM>
       </PARAM>
-	  <ACTION builtin="clish_pyobj">sonic_cli_logging patch_openconfig_system_logging_server_config_host ${host} rport=${vrport} vrf=${vvrf} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
+		<ACTION builtin="clish_pyobj">sonic_cli_logging patch_openconfig_system_logging_server_config_host ${host} rport=${vrport} vrf=${mgmt}${vrf-name} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
       <DOCGEN>
         <DESCRIPTION>Configure remote syslog server to forward syslog messages</DESCRIPTION>
 		<EXAMPLE>
@@ -67,7 +79,7 @@
     <!-- no commands -->
     <COMMAND name="no logging" help="Unconfigure syslog server configuration"/>
     <COMMAND name="no logging server" help="Unconfigure syslog server configuration">
-      <PARAM name="host" help="IPV4|IPV6 address" ptype="IPV4V6_ADDR"> </PARAM>
+      <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="STRING"> </PARAM>
       <PARAM name="attribute" help="" ptype="STRING" mode="switch" optional="true">
         <PARAM name="remote-port" help="Unconfigure remote syslog server's port" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
         <PARAM name="source-interface" help="Unconfigure syslog server source-interface" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>

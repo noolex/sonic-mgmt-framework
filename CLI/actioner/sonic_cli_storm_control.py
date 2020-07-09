@@ -60,12 +60,19 @@ def run(func, args):
             return
 
         api_response = generate_body(func, args)
+        response = api_response.content
         if api_response.ok():
-            response = api_response.content
-            if response is None:
-                print "Success"
+            if response is not None:
+                print ("Error: {}".format(str(response)))
+        else:
+            error_data = response['ietf-restconf:errors']['error'][0]
+            err_msg = 'NOERROR'
+            if 'error-message' in error_data:
+                err_msg = error_data['error-message']
+            if err_msg is not 'NOERROR':
+                print (err_msg)
             else:
-                print "Failure"
+                print ("Error: {}".format(str(response)))
     except:
         print "%Error: Transaction Failure"
         traceback.print_exc()

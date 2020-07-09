@@ -32,8 +32,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Azure/sonic-mgmt-framework/rest/server"
 	"github.com/Azure/sonic-mgmt-framework/build/rest_server/dist/openapi"
+	"github.com/Azure/sonic-mgmt-framework/rest/server"
 
 	"github.com/golang/glog"
 	"github.com/pkg/profile"
@@ -47,6 +47,7 @@ var (
 	caFile     string // Client CA certificate file path
 	cliCAFile  string // CLI client CA certificate file path
 	noSocket   bool   // Do not start unix domain socket lister
+	internal   bool   // Enable internal features on https listener
 	clientAuth = server.NewUserAuth()
 )
 
@@ -59,6 +60,7 @@ func init() {
 	flag.StringVar(&cliCAFile, "clicacert", "", "CA certificate for CLI client validation")
 	flag.Var(clientAuth, "client_auth", "Client auth mode(s) - <none,cert,jwt,password|user(deprecated)> default: password,jwt")
 	flag.BoolVar(&noSocket, "no-sock", false, "Do not start unix domain socket listener")
+	flag.BoolVar(&internal, "internal", false, "Enable internal, non-standard features on https listener")
 	flag.Parse()
 
 	//Below is for setting the default client_auth to password,jwt.
@@ -119,7 +121,10 @@ func main() {
 	server.JwtRefreshInt = time.Duration(30 * time.Second)
 	server.JwtValidInt = time.Duration(3600 * time.Second)
 
-	rtrConfig := server.RouterConfig{Auth: clientAuth}
+	rtrConfig := server.RouterConfig{
+		Auth:     clientAuth,
+		Internal: internal,
+	}
 	router := server.NewRouter(&rtrConfig)
 
 	address := fmt.Sprintf(":%d", port)
@@ -157,7 +162,8 @@ func main() {
 func spawnUnixListener() {
 	var CLIAuth = server.UserAuth{"clisock": true, "cert": true, "jwt": true}
 	rtrConfig := server.RouterConfig{
-		Auth: CLIAuth,
+		Auth:     CLIAuth,
+		Internal: true,
 	}
 
 	// Reuse the handler between the two listeners. This avoids creating an
@@ -210,7 +216,7 @@ func spawnUnixListener() {
 	}
 
 	localServer := &http.Server{
-		Handler: handler,
+		Handler:     handler,
 		ConnContext: server.CLIConnectionContextFactory,
 	}
 
