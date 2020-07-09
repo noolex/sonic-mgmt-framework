@@ -67,14 +67,14 @@ limitations under the License.
 	   optional="true"
 	   order="true">
            <PARAM
-	       name="address"
-	       help="Match this IP address"
-	       ptype="IP_ADDR">
+              name="address"
+              help="Match this IP address"
+              ptype="IP_ADDR">
            </PARAM>
            <PARAM
-	       name="prefix"
-	       help="Match this IP prefix"
-	       ptype="IP_ADDR_MASK">
+              name="prefix"
+              help="Match this IP prefix"
+              ptype="IP_ADDR_MASK">
            </PARAM>
            <PARAM
                name="summary"
@@ -256,21 +256,26 @@ limitations under the License.
     </COMMAND>
   <COMMAND
         name="ip igmp"
-        help="Enable IGMP operation">
+        help="Enable IGMP operation"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
+        dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/enabled">
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${iface} True</ACTION>
   </COMMAND>
   <COMMAND
         name="ip igmp join"
         help="IGMP join multicast group"
         ptype="SUBCOMMAND"
-        mode="subcommand" >
+        mode="subcommand"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/igmpintfname={name},mcastgrpaddr={mcastgrpaddr},srcaddr={srcaddr}">
         <PARAM
             name="mcastgrpaddr"
             help="Multicast Group Address"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/mcastgrpaddr"
             ptype="IP_ADDR" />
         <PARAM
             name="srcaddr"
             help="Source Address"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/srcaddr"
             ptype="IP_ADDR" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${iface} ${mcastgrpaddr}
@@ -326,10 +331,12 @@ limitations under the License.
         name="ip igmp version"
         help="IGMP version"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="version"
             help="IGMP version number 2 or 3 (Default: 3)"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/version"
             ptype="IGMP_VERSION" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${iface} ${version}
         </ACTION>
@@ -370,10 +377,12 @@ limitations under the License.
         name="ip igmp query-interval"
         help="IGMP host query interval"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="queryinterval"
             help="Query interval in seconds"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/query-interval"
             ptype="IGMP_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${iface} ${queryinterval}
         </ACTION>
@@ -414,10 +423,12 @@ limitations under the License.
         name="ip igmp last-member-query-count"
         help="IGMP last member query count"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="lmquerycount"
             help="Last Member Query Count"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/last-member-query-count"
             ptype="IGMP_LAST_MEM_QUERY_COUNT" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${iface} ${lmquerycount}</ACTION>
@@ -457,11 +468,13 @@ limitations under the License.
     <COMMAND
         name="ip igmp last-member-query-interval"
         help="IGMP last member query interval"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="lmqueryinterval"
             help="Last member query interval in deciseconds"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/last-member-query-interval"
             ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${iface} ${lmqueryinterval}
         </ACTION>
@@ -502,10 +515,12 @@ limitations under the License.
         name="ip igmp query-max-response-time"
         help="IGMP max query response value (seconds)"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="querymaxrestime"
             help="Query response value"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/query-max-response-time"
             ptype="IGMP_QUERY_MAX_RES_TIME" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${iface} ${querymaxrestime}
         </ACTION>
@@ -701,14 +716,17 @@ limitations under the License.
         name="ip igmp join"
         help="IGMP join multicast group"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/igmpintfname={name},mcastgrpaddr={mcastgrpaddr},srcaddr={srcaddr}"
         mode="subcommand" >
         <PARAM
             name="mcastgrpaddr"
             help="Multicast group address"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/mcastgrpaddr"
             ptype="IP_ADDR" />
         <PARAM
             name="srcaddr"
             help="Source address"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/srcaddr"
             ptype="IP_ADDR" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${vlan_name} ${mcastgrpaddr}
@@ -760,10 +778,12 @@ limitations under the License.
         name="ip igmp version"
         help="IGMP version"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="version"
             help="IGMP version 2 or 3 (Default: 3)"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/version"
             ptype="IGMP_VERSION" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${vlan_name} ${version}
         </ACTION>
@@ -804,10 +824,12 @@ limitations under the License.
         name="ip igmp query-interval"
         help="IGMP host query interval"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="queryinterval"
             help="Query interval in seconds"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/query-interval"
             ptype="IGMP_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${vlan_name} ${queryinterval}
         </ACTION>
@@ -848,10 +870,12 @@ limitations under the License.
         name="ip igmp last-member-query-count"
         help="IGMP last member query count"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="lmquerycount"
             help="Last member query count"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/last-member-query-count"
             ptype="IGMP_LAST_MEM_QUERY_COUNT" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${vlan_name} ${lmquerycount}</ACTION>
@@ -892,10 +916,12 @@ limitations under the License.
         name="ip igmp last-member-query-interval"
         help="IGMP last member query interval"
         ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="lmqueryinterval"
             help="Last member query interval in deciseconds"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/last-member-query-interval"
             ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${vlan_name} ${lmqueryinterval}
         </ACTION>
@@ -936,10 +962,12 @@ limitations under the License.
         name="ip igmp query-max-response-time"
         help="Configure IGMP query-max-response-time"
         ptype="SUBCOMMAND" 
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="querymaxrestime"
             help="Query response value"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/query-max-response-time"
             ptype="IGMP_QUERY_MAX_RES_TIME" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${vlan_name} ${querymaxrestime}
         </ACTION>
@@ -1083,6 +1111,8 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="ip igmp"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
+        dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/enabled"
         help="Enable IGMP operation">
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${po_name} True</ACTION>
   </COMMAND>
@@ -1090,14 +1120,17 @@ limitations under the License.
         name="ip igmp join"
         help="IGMP join multicast group"
         ptype="SUBCOMMAND" 
-        mode="subcommand" >
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/igmpintfname={name},mcastgrpaddr={mcastgrpaddr},srcaddr={srcaddr}"
+        mode="subcommand">
         <PARAM
             name="mcastgrpaddr"
             help="Multicast group address"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/mcastgrpaddr"
             ptype="IP_ADDR" />
         <PARAM
             name="srcaddr"
             help="Source address"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE/IGMP_INTERFACE_LIST/srcaddr"
             ptype="IP_ADDR" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config ${po_name} ${mcastgrpaddr}
@@ -1122,8 +1155,8 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip igmp join"
-        help="IGMP join multicast group" 
-        ptype="SUBCOMMAND" 
+        help="IGMP join multicast group"
+        ptype="SUBCOMMAND"
         mode="subcommand" >
         <PARAM
             name="mcastgrpaddr"
@@ -1153,10 +1186,12 @@ limitations under the License.
         name="ip igmp version"
         help="IGMP version"
         ptype="SUBCOMMAND" 
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="version"
             help="IGMP version number"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/version" 
             ptype="IGMP_VERSION" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_version_config ${po_name} ${version}
         </ACTION> 
@@ -1197,10 +1232,12 @@ limitations under the License.
         name="ip igmp query-interval"
         help="Configure IGMP host query interval"
         ptype="SUBCOMMAND" 
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="queryinterval"
             help="IGMP host query interval"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/query-interval"
             ptype="IGMP_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_queryinterval_config ${po_name} ${queryinterval}
         </ACTION> 
@@ -1240,11 +1277,13 @@ limitations under the License.
     <COMMAND
         name="ip igmp last-member-query-count"
         help="Configure IGMP last-member-query-count"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         ptype="SUBCOMMAND" 
         mode="subcommand" >
         <PARAM
             name="lmquerycount"
             help="Last member query count"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/last-member-query-count"
             ptype="IGMP_LAST_MEM_QUERY_COUNT" />
 
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmquerycount_config ${po_name} ${lmquerycount}</ACTION>
@@ -1284,11 +1323,13 @@ limitations under the License.
     <COMMAND
         name="ip igmp last-member-query-interval"
         help="Configure IGMP last-member-query-interval"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}" 
         ptype="SUBCOMMAND" 
         mode="subcommand" >
         <PARAM
             name="lmqueryinterval"
             help="Last member query interval"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/last-member-query-interval"
             ptype="IGMP_LAST_MEM_QUERY_INTERVALS" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_lmqueryinterval_config ${po_name} ${lmqueryinterval}
         </ACTION> 
@@ -1328,11 +1369,13 @@ limitations under the License.
     <COMMAND
         name="ip igmp query-max-response-time"
         help="Configure IGMP query-max-response-time"
-        ptype="SUBCOMMAND" 
+        ptype="SUBCOMMAND"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
         mode="subcommand" >
         <PARAM
             name="querymaxrestime"
             help="Query max response time"
+            dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/query-max-response-time"
             ptype="IGMP_QUERY_MAX_RES_TIME" />
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_igmp_querymaxrestime_config ${po_name} ${querymaxrestime}
         </ACTION> 
