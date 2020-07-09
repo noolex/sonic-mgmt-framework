@@ -24,7 +24,7 @@ limitations under the License.
     >
     <VIEW name="enable-view">
     <!--show mirror-session -->
-    <COMMAND name="show mirror-session" help="Show Mirror session information">
+    <COMMAND name="show mirror-session" help="Show mirror session information">
         <PARAM
             name="session-name"
             help="Mirror session name"
@@ -53,6 +53,11 @@ limitations under the License.
             </DOCGEN>
    </COMMAND>
 
+    <!-- show running-configuration mirror-session -->
+    <COMMAND name="show running-configuration mirror-session" help="Show mirror session info">
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mirror </ACTION>
+      </COMMAND>
+
    </VIEW>
   <VIEW name="configure-view">
     <COMMAND
@@ -62,11 +67,14 @@ limitations under the License.
          ptype="SUBCOMMAND"
         view="configure-mirror-view"
         viewid="session_name=${session-name}"
+        view_keys="name=*"
+        view_tables="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/name={name}"
         >
         <PARAM
             name="session-name"
             help="Mirror session name"
             ptype="STRING_72"
+            dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/name"
             >
         </PARAM>
      <ACTION builtin="clish_nop"></ACTION>
@@ -101,6 +109,9 @@ limitations under the License.
     <NAMESPACE ref="configure-view" help="false" completion="false"/>
     <!-- destination Ethernet <idx> source Ethernet <idx> direction [rx|tx|both] -->
 
+  <COMMAND name="show configuration" help = "show configuration">
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mirror-view view_keys="name=${session_name}" </ACTION>
+  </COMMAND>
     <COMMAND name="destination" help="Mirror session destination interface">
       <PARAM name="phy-if-id" help="Physical interface" ptype="PHY_INTERFACE" optional="false"> </PARAM>
 
@@ -133,33 +144,33 @@ limitations under the License.
 
     </COMMAND>
 
-    <COMMAND name="destination erspan" help="Mirror session destination ERSPAN">
+    <COMMAND name="destination erspan" help="Mirror session destination ERSPAN" render_command_cb="mirror_session">
       <PARAM name="dst-ip" help="ERSPAN Destination ip address" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="dst_ip" help="ERSPAN destination ip address" ptype="IP_ADDR" optional="false"> </PARAM>
+        <PARAM name="dst_ip" help="ERSPAN destination ip address" ptype="IP_ADDR" optional="false"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/dst_ip"> </PARAM>
       </PARAM>
       <PARAM name="src-ip" help="ERSPAN source ip address" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="src_ip" help="ERSPAN source ip address" ptype="IP_ADDR" optional="false"> </PARAM>
+        <PARAM name="src_ip" help="ERSPAN source ip address" ptype="IP_ADDR" optional="false"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/src_ip"> </PARAM>
       </PARAM>
       <PARAM name="dscp" help="ERSPAN destination dscp" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="ip_dscp" help="ERSPAN dscp" ptype="RANGE_0_63" optional="false"> </PARAM>
+        <PARAM name="ip_dscp" help="ERSPAN dscp" ptype="RANGE_0_63" optional="false"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/dscp"> </PARAM>
       </PARAM>
       <PARAM name="gre" help="ERSPAN destination gre-type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="ip_gre" help="ERSPAN gre-type" ptype="HEX_TYPE" optional="false"> </PARAM>
+        <PARAM name="ip_gre" help="ERSPAN gre-type" ptype="HEX_TYPE" optional="false"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/gre_type"> </PARAM>
       </PARAM>
       <PARAM name="ttl" help="ERSPAN destination ttl" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="ip_ttl" help="ERSPAN ttl" ptype="RANGE_0_63" optional="false"> </PARAM>
+        <PARAM name="ip_ttl" help="ERSPAN ttl" ptype="RANGE_0_63" optional="false"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/ttl"> </PARAM>
       </PARAM>
       <PARAM name="queue" help="ERSPAN destination queue" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="queue_val" help="ERSPAN destination queue number" ptype="RANGE_0_63" optional="false"> </PARAM>
+        <PARAM name="queue_val" help="ERSPAN destination queue number" ptype="RANGE_0_63" optional="false"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/queue"> </PARAM>
       </PARAM>
       <PARAM name="source" help="Mirror session source interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="mirror-subcommands" help="Interface subcommands" mode="switch" ptype="SUBCOMMAND" >
-          <PARAM name="phy-if-name" help="Physical Interface" ptype="PHY_INTERFACE"> </PARAM>
-          <PARAM name="po-if-name" help="PortChannel interface" ptype="PO_INTERFACE"></PARAM>
+          <PARAM name="phy-if-name" help="Physical Interface" ptype="PHY_INTERFACE"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/src_port"> </PARAM>
+          <PARAM name="po-if-name" help="PortChannel interface" ptype="PO_INTERFACE"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/src_port"></PARAM>
         </PARAM>
       </PARAM>
       <PARAM name="direction" help="Mirror session direction" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="sess-direction" help="Mirror session direction. Supported rx/tx/both " ptype="MIRROR_DIRECTION" optional="false"> </PARAM>
+        <PARAM name="sess-direction" help="Mirror session direction. Supported rx/tx/both " ptype="MIRROR_DIRECTION" optional="false"  dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/direction"> </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_mirror create_mirror_session --session=${session_name} --destination=erspan --source=${phy-if-name} --source_lag=${po-if-name} --direction=${sess-direction} --dst_ip=${dst_ip} --src_ip=${src_ip} --dscp=${ip_dscp} --ttl=${ip_ttl} --queue=${queue_val} --gre=${ip_gre} </ACTION>
       <DOCGEN>
