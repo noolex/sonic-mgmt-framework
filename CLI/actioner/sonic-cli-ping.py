@@ -26,12 +26,6 @@ import re
 #Invalid chars
 blocked_chars = frozenset(['&', ';', '<', '>', '|', '`', '\''])
 
-def contains_valid_intf(args):
-    op = re.search(r'-I\s*(Ethernet|Loopback|Management|PortChannel|Vlan)', args)
-    if op is not None:
-        return True
-    return False
-
 def print_and_log(msg):
     print "% Error: ", msg
     log.syslog(log.LOG_ERR, msg)
@@ -81,14 +75,7 @@ def validate_input(args):
     if(set(args) & blocked_chars):
         print_and_log("Invalid argument")
         return False
-    #check if valid interface is provided or not
-    if " -I" in args:
-        if "vrf" in args:
-            print_and_log("VRF name is not allowed with -I option")
-            return False
-        if contains_valid_intf(args) is False:
-            print_and_log("Invalid interface, valid options are Ethernet<id>|Management<id>|Vlan<id>|PortChannel<id>|Loopback<id>")
-            return False
+
     if ("fe80:" in args.lower()
         or "ff01:" in args.lower()
         or "ff02:" in args.lower()):

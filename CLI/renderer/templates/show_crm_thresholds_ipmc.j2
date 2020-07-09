@@ -12,7 +12,9 @@ Resource Name         Threshold Type      Low Threshold    High Threshold
 
 {% if vars.update({'ipmc_entry_high_threshold':info['high']}) %}{% endif %}
 {% if vars.update({'ipmc_entry_low_threshold':info['low']}) %}{% endif %}
-{% if vars.update({'ipmc_entry_threshold_type':info['type']}) %}{% endif %}
+{% if info['type'] -%}
+  {% if vars.update({'ipmc_entry_threshold_type':info['type'].lower()}) %}{% endif %}
+{% endif %}
 
 {{'%-22s'|format('ipmc_entry')}}{{'%-18s'|format(vars.ipmc_entry_threshold_type)}}{{'%15s'|format(vars.ipmc_entry_low_threshold)}}{{'%18s'|format(vars.ipmc_entry_high_threshold)}}
 

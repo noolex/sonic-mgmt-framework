@@ -53,7 +53,7 @@ limitations under the License.
 <VIEW name="enable-view">
 <!--show ipsla [id] [history] -->
     <COMMAND name = "show ip sla"
-        help = "Shows IPv4 VRRP instance information"
+        help = "Shows IP SLA instance information"
         >
         <PARAM
             name="id"
@@ -77,7 +77,7 @@ limitations under the License.
 
 <VIEW name="configure-view">
 
-<!-- vrrp -->
+<!-- ip sla -->
    <COMMAND
          name="ip sla"
          help="Configure IP SLA"
@@ -97,7 +97,7 @@ limitations under the License.
 
     </COMMAND>
 
-<!-- no vrrp -->
+<!-- no ip sla -->
    <COMMAND name="no ip sla"
          help="Unconfigure IP SLA"
      >
@@ -178,7 +178,7 @@ limitations under the License.
         <PARAM
             name="threshold-value"
             help="Threshold value"
-            ptype="RANGE_1_1000"
+            ptype="RANGE_1_300"
             />
 
         <ACTION builtin="clish_pyobj">
@@ -203,7 +203,7 @@ limitations under the License.
         <PARAM
             name="timeout-value"
             help="Timeout value"
-            ptype="RANGE_1_1000"
+            ptype="RANGE_1_300"
             />
 
         <ACTION builtin="clish_pyobj">
@@ -262,12 +262,20 @@ limitations under the License.
 
             <PARAM
                 name="port"
-                help="TCP Destination port"
-                ptype="RANGE_0_65535"
-                />
+                help="TCP Destination Port"
+                ptype="SUBCOMMAND" mode="subcommand" optional="false"
+                >
+
+                <PARAM
+                    name="portno"
+                    help="TCP Destination port"
+                    ptype="RANGE_1_65535"
+                    >
+                </PARAM>
+            </PARAM>
 
         <ACTION builtin="clish_pyobj">
-            sonic_cli_ipsla patch_tcp ${sla-id} ${addr} ${port}
+            sonic_cli_ipsla patch_tcp ${sla-id} ${addr} ${portno}
         </ACTION>
     </COMMAND>
 
@@ -520,6 +528,31 @@ limitations under the License.
          </ACTION>
      </COMMAND>
 
+      <COMMAND
+          name="no source-interface"
+          help="Remove source interface"
+          >
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla del_tcp_src_if ${sla-id}
+          </ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="source-interface"
+          help="Set source address"
+          >
+
+          <PARAM
+              name="intf"
+              help="TCP Source interface"
+              ptype="STRING"
+              />
+
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla patch_tcp_src_if ${sla-id} ${intf}
+          </ACTION>
+      </COMMAND>
+
      <COMMAND
          name="no ttl"
          help="Remove TCP TTL"
@@ -595,6 +628,33 @@ limitations under the License.
              sonic_cli_ipsla patch_tcp_vrf ${sla-id} ${vrf-name}
          </ACTION>
      </COMMAND>
+</VIEW>
+
+
+<VIEW name="enable-view">
+<!--clear ipsla all -->
+    <COMMAND name = "clear ip sla"
+        help = "Reset IP SLA counter information"
+        >
+        <PARAM
+            name="id"
+            help="IP SLA ID (1 to 255)"
+            ptype="RANGE_1_255"
+            >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla clear_ipsla ${id}
+        </ACTION>
+    </COMMAND>
+
+    <COMMAND name = "clear ip sla all"
+        help = "Reset IP SLA counter information for all instances"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla clear_ipsla_all
+        </ACTION>
+    </COMMAND>
 </VIEW>
 
 </CLISH_MODULE>
