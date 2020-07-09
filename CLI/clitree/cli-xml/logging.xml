@@ -1,22 +1,30 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE CLISH_MODULE [
-<!ENTITY START_PORT_ID "1">
-<!ENTITY MAX_PORT_ID "32">
-<!ENTITY START_SUB_PORT_ID "1">
-<!ENTITY MAX_SUB_PORT_ID "4">
-<!ENTITY MAX_MTU "9216">
-]>
-<!-- Copyright 2019 Dell, Inc.  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at  http://www.apache.org/licenses/LICENSE-2.0  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. -->
+<!--
+Copyright 2020 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <!--=========================================================================-->
   <PTYPE name="LOGGING_REMOTE_PORT" method="integer" pattern="1..65535" help="port"/>
   <!--=======================================================-->
-  <PTYPE name="LOGGING_SERVER_VRF" pattern="(Vrf(([0-9A-Za-z]){1,28}))|(mgmt)" help="Name of VRF (Max size 32, (mgmt, or prefixed by Vrf_)"/>
-  <!--=======================================================-->
+
   <VIEW name="enable-view">
-    <COMMAND help="show logging servers" name="show logging">
+    <COMMAND help="Displays logging information" name="show logging">
     </COMMAND>
-    <COMMAND name="show logging servers" help="Show logging server information">
+    <COMMAND name="show logging servers" help="Displays logging server information">
       <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_servers </ACTION>
       <DOCGEN>
         <DESCRIPTION>Shows list of remote syslog servers are configured</DESCRIPTION>
@@ -31,19 +39,24 @@
 
         </EXAMPLE>
       </DOCGEN>
-      <xi:include href="include/pipe.xml"/>
     </COMMAND>
   </VIEW>
+
   <VIEW name="configure-view">
     <!-- syslog -->
-    <COMMAND name="logging" help="Syslog server configuration"/>
+    <COMMAND name="logging" help="Configures syslog"/>
+
     <!-- logging server configuration commands -->
-    <COMMAND name="logging server" help="Configure remote syslog server">
+    <COMMAND name="logging server"
+      help="Configures remote syslog server"
+      command_tables="sonic-system-logging:sonic-system-logging/SYSLOG_SERVER/SYSLOG_SERVER_LIST/ipaddress={address}"
+      render_command_cb="logging_server_cmd"
+      >
       <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="STRING"> </PARAM>
-      <PARAM name="remote-port" help="Remote syslog server's port" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="vrport" help="(default: 514)" ptype="LOGGING_REMOTE_PORT"> </PARAM>
+      <PARAM name="remote-port" help="Configures remote server port" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+        <PARAM name="vrport" help="Port number (default 514)" ptype="LOGGING_REMOTE_PORT"> </PARAM>
       </PARAM>
-      <PARAM name="source-interface" help="Source ip address" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+      <PARAM name="source-interface" help="Configures source interface" mode="subcommand" ptype="SUBCOMMAND" optional="true">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
           <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
@@ -52,18 +65,18 @@
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
         </PARAM>
       </PARAM>
-      <PARAM name="vrf" help="VRF to use" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+      <PARAM name="vrf" help="Configures VRF to use for connection" mode="subcommand" ptype="SUBCOMMAND" optional="true">
         <PARAM name="vrf-switch" help="" ptype="SUBCOMMAND" mode="switch">
           <PARAM 
             name = "mgmt"
-            help="Management VRF name"
+            help="Management VRF"
             ptype = "SUBCOMMAND"
             mode = "subcommand"
             />
           <PARAM 
             name = "vrf-name"
-            help="Name of VRF (Max size 15, prefixed by Vrf)"
-            ptype = "STRING_15"
+            help="VRF name (up to 15 characters)"
+            ptype = "VRF_NAME"
             />
         </PARAM>
       </PARAM>
@@ -77,13 +90,13 @@
       </DOCGEN>
     </COMMAND>
     <!-- no commands -->
-    <COMMAND name="no logging" help="Unconfigure syslog server configuration"/>
-    <COMMAND name="no logging server" help="Unconfigure syslog server configuration">
+    <COMMAND name="no logging" help="Unconfigures syslog configuration"/>
+    <COMMAND name="no logging server" help="Unconfigures syslog server configuration">
       <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="STRING"> </PARAM>
       <PARAM name="attribute" help="" ptype="STRING" mode="switch" optional="true">
-        <PARAM name="remote-port" help="Unconfigure remote syslog server's port" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
-        <PARAM name="source-interface" help="Unconfigure syslog server source-interface" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
-        <PARAM name="vrf" help="Unconfigure syslog server's vrf" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
+        <PARAM name="remote-port" help="Unconfigures syslog server port" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
+        <PARAM name="source-interface" help="Unconfigures source interface" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
+        <PARAM name="vrf" help="Unconfigures VRF to use for connection" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_logging delete_openconfig_system_looging_server_config_host ${host} ${attribute}</ACTION>
       <DOCGEN>

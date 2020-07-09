@@ -18,13 +18,9 @@
 #
 ###########################################################################
 
-import sys
-import time
-import json
-import ast
-from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+
 SYSTEM='/restconf/data/openconfig-system:system/'
 LOG_SERVERS=SYSTEM+'logging/remote-servers'
 
@@ -39,7 +35,7 @@ def invoke_api(func, args=[]):
         vrf=(args[2])[4:]
         src_intf = ""
         if len(args) > 3:
-            src_intf = args[3]
+            src_intf = replace_prefix(args[3], 'Management', 'eth')
 
         #keypath = cc.Path(LOG_SERVERS +
         #    '/remote-server={address}', address=args[0])
@@ -124,6 +120,11 @@ def invoke_api(func, args=[]):
 
     return api.cli_not_implemented(func)
 
+def replace_prefix(value, prefix, new_prefix):
+    if value.startswith(prefix):
+        return new_prefix + value[len(prefix):]
+    return value
+
 def get_sonic_logging_servers(args=[]):
     api_response = {}
     api = cc.ApiClient()
@@ -152,7 +153,8 @@ def get_sonic_logging_servers(args=[]):
         api_response['source'] = "-"
         if 'config' in server \
                 and 'openconfig-system-ext:source-interface' in server['config']:
-            api_response['source'] = server['config']['openconfig-system-ext:source-interface']
+            src_intf = server['config']['openconfig-system-ext:source-interface']
+            api_response['source'] = replace_prefix(src_intf, 'eth', 'Management')
 
         api_response['port'] = "-"
         if 'config' in server \
@@ -181,6 +183,8 @@ def run(func, args):
         print(response.error_message())
 
 if __name__ == '__main__':
+    import sys
+    from rpipe_utils import pipestr
 
     pipestr().write(sys.argv)
     func = sys.argv[1]

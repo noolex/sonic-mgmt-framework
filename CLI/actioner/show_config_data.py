@@ -25,6 +25,7 @@ from show_config_routepolicy import *
 from show_config_copp import *
 from show_config_qos_map import *
 from show_config_qos import *
+from show_config_logging import *
 from show_config_nat import *
 from show_config_ip_helper import *
 
@@ -130,9 +131,11 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_tc_dot1p'   : show_qos_intf_map_tc_dot1p,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
+                  'logging_server_cmd'      : show_logging_server_cmd,
                   'nat_napt_entry'          : show_nat_napt_entry,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports
  }
+
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
