@@ -62,7 +62,7 @@ class ApiClient(object):
 
     def sig_handler(self, signum, frame):
         # got interrupt, perform graceful termination
-        sys.exit(0)
+        return
 
     def request(self, method, path, data=None, headers={}, query=None):
 
