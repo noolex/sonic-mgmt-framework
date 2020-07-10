@@ -447,7 +447,7 @@ def run(func, args):
                 if iflistStr == "":
                     print("%Error: No interface exist in given range")
                     return 1
-                print("%Info: Configure existing interfaces in range")
+                print("%Info: Configuring only existing interfaces in range")
             else:
                 # Create range of interfaces
                 return check_response(invoke_api(func, args[2:]), func, args)

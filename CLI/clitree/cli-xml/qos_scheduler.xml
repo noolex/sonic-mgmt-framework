@@ -32,6 +32,8 @@ limitations under the License.
         ptype="SUBCOMMAND"
         view="configure-qos-scheduler-policy-view"
         viewid="scheduler_policy_name=${name}"
+        command_tables="sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST/name={name}"
+        render_command_cb="qos_scheduler_policy_cb"
         >
         <PARAM
            name="name"
@@ -66,6 +68,9 @@ limitations under the License.
         help="false"
         completion="false"
         />
+    <COMMAND name="show configuration" help="show scheduler-policy configuration">
+           <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy view_keys="name=${scheduler_policy_name}" </ACTION>
+    </COMMAND>
 
     <COMMAND
         name="queue"
@@ -74,6 +79,9 @@ limitations under the License.
         mode="subcommand"
         view="configure-qos-scheduler-policy-per-queue-view"
         viewid="top_scheduler_policy_name=${scheduler_policy_name};scheduler_policy_per_queue_name=${sequence}; "
+        view_keys="name=${scheduler_policy_name}@${sequence}"
+        view_tables="sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST/name={name}"
+        render_command_cb="qos_scheduler_policy_q_cb"
         >
         <PARAM
             name="sequence"
@@ -90,7 +98,10 @@ limitations under the License.
           ptype="SUBCOMMAND"
           mode="subcommand"
           view="configure-qos-scheduler-policy-per-port-view"
-          viewid="top_scheduler_policy_name=${scheduler_policy_name};"
+          viewid="top_scheduler_policy_name=${scheduler_policy_name}"
+          view_keys="name=${scheduler_policy_name}@255"
+          view_tables="sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST/name={name}"
+          render_command_cb="qos_scheduler_policy_port_cb"
           >
         <ACTION> 
             python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} 255&#xA;
@@ -138,6 +149,11 @@ limitations under the License.
         help="false"
         completion="false"
         />
+    <COMMAND name="show configuration" help="show scheduler_policy queue configuration">
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy-per-queue view_keys="name=${top_scheduler_policy_name}@${scheduler_policy_per_queue_name}" </ACTION>
+    </COMMAND>
+
+
         <COMMAND
             name="type"
             help="scheduler type (strict/dwrr/wrr)"
@@ -283,6 +299,10 @@ limitations under the License.
         help="false"
         completion="false"
         />
+    <COMMAND name="show configuration" help="show scheduler_policy port configuration" >
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy-per-port view_keys="name=${top_scheduler_policy_name}@255" </ACTION>
+    </COMMAND>
+
 
         <COMMAND
             name="pir"

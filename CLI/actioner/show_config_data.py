@@ -35,10 +35,12 @@ view_dependency= \
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn'],
 'configure-router-bgp-l2vpn':['configure-router-bgp-l2vpn-vni']}
 
+
 config_view_hierarchy= \
       ['configure',
        'configure-nat',
        'configure-wred',
+       'configure-qos-scheduler-policy',
        'configure-dscp-tc-map',
        'configure-dot1p-tc-map',
        'configure-tc-queue-map',
@@ -142,6 +144,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_wred_policy_yellow'  : show_wred_policy_yellow,
                   'qos_wred_policy_red'     : show_wred_policy_red,
                   'queue_wred_policy'       : show_queue_wred_policy,
+                  'qos_scheduler_policy_cb' : show_scheduler_policy,
+                  'qos_scheduler_policy_q_cb' : show_scheduler_policy_q,
+                  'qos_scheduler_policy_port_cb' : show_scheduler_policy_port,
                   'qos_intf_map_dscp_tc'    : show_qos_intf_map_dscp_tc,
                   'qos_intf_map_dot1p_tc'   : show_qos_intf_map_dot1p_tc,
                   'qos_intf_map_tc_queue'   : show_qos_intf_map_tc_queue,
@@ -150,6 +155,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_tc_dot1p'   : show_qos_intf_map_tc_dot1p,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
+                  'qos_intf_sched_policy'   : show_qos_intf_scheduler_policy,
                   'nat_napt_entry'          : show_nat_napt_entry
  }
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
