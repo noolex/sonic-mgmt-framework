@@ -23,11 +23,8 @@ from show_config_table_sort import *
 from show_config_ptp import *
 from show_config_routepolicy import *
 from show_config_copp import *
-<<<<<<< HEAD
 from show_config_static_routes import *
-=======
 from show_config_mirror import *
->>>>>>> origin/broadcom_sonic_3.x_share
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
@@ -163,17 +160,14 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_tc_dot1p'   : show_qos_intf_map_tc_dot1p,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
-<<<<<<< HEAD
                   'qos_intf_sched_policy'   : show_qos_intf_scheduler_policy,
-                  'nat_napt_entry'          : show_nat_napt_entry
-=======
+                  'nat_napt_entry'          : show_nat_napt_entry,
                   'logging_server_cmd'      : show_logging_server_cmd,
                   'nat_napt_entry'          : show_nat_napt_entry,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports,
                   'mirror_session'          : show_mirror_session
->>>>>>> origin/broadcom_sonic_3.x_share
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
