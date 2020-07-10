@@ -241,6 +241,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="MIN_NONE"
+        method="select"
+        pattern="min(min) none(none)"
+        help="min|none"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="LOOPBACK_NUM"
         method="integer"
         pattern="0..16383"
