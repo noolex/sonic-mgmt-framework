@@ -24,6 +24,7 @@ from show_config_ptp import *
 from show_config_routepolicy import *
 from show_config_copp import *
 from show_config_mirror import *
+from show_config_static_routes import *
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
@@ -32,8 +33,10 @@ from show_config_ip_helper import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
-                         'configure-router-bgp-nbr'],
-'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn']}
+                         'configure-router-bgp-template', 'configure-router-bgp-nbr'],
+'configure-router-bgp-template':['configure-router-bgp-template-ipv4', 'configure-router-bgp-template-ipv6', 'configure-router-bgp-template-l2vpn'],
+'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn'],
+'configure-router-bgp-l2vpn':['configure-router-bgp-l2vpn-vni']}
 
 config_view_hierarchy= \
       ['configure',
@@ -63,6 +66,21 @@ render_filelst  = {}
 
 render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'router_bgp_neighbor'     : show_router_bgp_neighbor_cmd,
+                   'router_bgp_confed'      : show_router_bgp_confed_cmd,
+                  'bgp_nbr_upd_src'         : show_bgp_nbr_upd_src_cmd,
+                  'bgp_pg_upd_src'          : show_bgp_pg_upd_src_cmd,
+                  'bgp_nbr_af_rmap'         : show_bgp_nbr_af_rmap,
+                  'bgp_nbr_af_flist'        : show_bgp_nbr_af_flist_cmd,
+                  'bgp_nbr_af_plist'        : show_bgp_nbr_af_plist_cmd,
+                  'bgp_nbr_af_attr'         : show_bgp_nbr_af_attr_cmd,
+                  'bgp_nbr_af_max_prefix'   : show_bgp_nbr_af_max_prefix_cmd,
+                  'bgp_nbr_af_allowas'      : show_bgp_nbr_af_allowas_cmd,
+                  'bgp_pg_af_rmap'          : show_bgp_pg_af_rmap_cmd,
+                  'bgp_pg_af_flist'         : show_bgp_pg_af_flist_cmd,
+                  'bgp_pg_af_plist'         : show_bgp_pg_af_plist_cmd,
+                  'bgp_pg_af_attr'          : show_bgp_pg_af_attr_cmd,
+                  'bgp_pg_af_max_prefix'    : show_bgp_pg_af_max_prefix_cmd,
+                  'bgp_pg_af_allowas'       : show_bgp_pg_af_allowas_cmd,
                   'if_channel_group'        : show_if_channel_group_cmd,
                   'if_switchport_access'    : show_if_switchport_access,
                   'if_switchport_trunk'     : show_if_switchport_trunk,
@@ -116,8 +134,12 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'bgp_af_ipv6_nw'          : show_router_bgp_af_nw_cmd,
                   'bgp_af_ipv6_ag'          : show_router_bgp_af_ag_cmd,
                   'bgp_af_ipv6_redist'      : show_router_bgp_af_redist_cmd,
+                  'bgp_af_l2vpn_rt'         : show_router_bgp_af_l2vpn_rt_cmd,
+                  'bgp_af_l2vpn_vni_rt'     : show_router_bgp_af_l2vpn_vni_rt_cmd,
                   'v4prefix_lists_cmd'      : show_v4prefix_lists,
                   'v6prefix_lists_cmd'      : show_v6prefix_lists,
+                  'static_routes_entry'     : show_ntwk_static_v4route,
+                  'static_routes_v6entry'   : show_ntwk_static_v6route,
                   'bgp_com_list'            : show_bgpcom_lists,
                   'bgp_extcom_list'         : show_bgpextcom_lists,
                   'bgp_aspath_list'         : show_bgpaspath_lists,

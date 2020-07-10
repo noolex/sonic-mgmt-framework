@@ -35,7 +35,7 @@ limitations under the License.
 <!ENTITY VLAN_ALL_INTF   "(^[vV]([l]|(lan))?\s*&VLAN_NUM;$)">
 <!ENTITY VLAN_RNG        "(&VLAN_NUM;-&VLAN_NUM;)">
 <!ENTITY VLAN_ALL_INTF_RANGE    "(^[vV]([l]|(lan))?\s*((&VLAN_NUM;|&VLAN_RNG;)(,(&VLAN_NUM;|&VLAN_RNG;))*)$)">
-<!ENTITY PO_INTF_VALUE   "(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[1-9])">
+<!ENTITY PO_INTF_VALUE   "(25[0-6]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])">
 <!ENTITY PO_ALL_INTF     "^[pP]([o]|(ortChannel))?\s*&PO_INTF_VALUE;$">
 <!ENTITY PO_PAIR "((&PO_INTF_VALUE;)(\-(&PO_INTF_VALUE;))?)">
 <!ENTITY PO_RNG "((&PO_INTF_VALUE;|&PO_PAIR;)(,(&PO_INTF_VALUE;|&PO_PAIR;))*)">
@@ -117,7 +117,7 @@ limitations under the License.
     <PTYPE 
         name="PO_INTERFACE_RANGE"
         method="regexp_select"
-        ext_pattern="PortChannel(1-128)"
+        ext_pattern="PortChannel(1..256)"
         pattern="&PO_ALL_INTF_RANGE;"
         help="Interface PortChannel Range"
         />
@@ -450,6 +450,12 @@ limitations under the License.
         name="HOSTNAME_STR"
         pattern="(&HOSTNAME_PATTERN;)"
         help="Hostname string"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="VRF_OR_DEFAULT"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(default)$"
+        help="VRF name (prefixed by Vrf, Max: 15 characters) or default"
         />
     <!--=======================================================-->
     <PTYPE
