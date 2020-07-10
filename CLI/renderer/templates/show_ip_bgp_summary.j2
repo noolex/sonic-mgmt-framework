@@ -8,7 +8,7 @@
         {{-'BGP router identifier '}}{{'0.0.0.0'}}{{', local AS number '}}{{config['as']}}
     {% endif %}
     {{-'\n' }}
-    {{-'Neighbor        V   AS    MsgRcvd   MsgSent   InQ     OutQ    Up/Down                 State/PfxRcd'}}
+    {{-'Neighbor        V   AS      MsgRcvd   MsgSent   InQ     OutQ    Up/Down                 State/PfxRcd'}}
     {% set neighbor_list = json_output['openconfig-network-instance:neighbors'] %}
     {% if 'neighbor' in neighbor_list %}
         {% set neighbors = neighbor_list['neighbor'] %}
@@ -33,9 +33,9 @@
             {{-neighbor['neighbor-address'].ljust(16)-}}
             {{-'4'.ljust(4)-}}
             {% if 'peer-as' in n_state %}
-                {{-(n_state['peer-as']|string).ljust(6)-}}
+                {{-(n_state['peer-as']|string).ljust(7)~" "-}}
             {% else %}
-                {{-' '.ljust(6)-}}
+                {{-' '.ljust(8)-}}
             {% endif %}
             {% if 'messages' in n_state %}
                 {% set n_sent = 0 %}
@@ -53,8 +53,8 @@
                 {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:route-refresh']|int %}
                 {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:capability']|int %}
                 {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:capability']|int %}
-                {{-(n_rcvd|string).ljust(10)-}}
-                {{-(n_sent|string).ljust(10)-}}
+                {{-(n_rcvd|string).ljust(9)~" "-}}
+                {{-(n_sent|string).ljust(9)~" "-}}
             {% else %}
                 {{-'0'.ljust(10)-}}
                 {{-'0'.ljust(10)-}}
