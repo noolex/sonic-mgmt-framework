@@ -186,8 +186,6 @@ def run(func, in_args=None):
         if api_response.ok():
             # Get Command Output
             response = api_response.content
-            if not response:
-                print("Failure")
         else:
             #error response
             print(api_response.error_message())
