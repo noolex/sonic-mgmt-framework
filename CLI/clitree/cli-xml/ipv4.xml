@@ -195,6 +195,9 @@ limitations under the License.
     <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${iface}"> </MACRO>
     <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${iface}"> </MACRO>
 
+    <MACRO name="IP-HELPER-CONFIG-OPTIONS" arg="sonic-interface,INTERFACE,portname,iface"> </MACRO>
+    <MACRO name="IP-HELPER-NO-CONFIG-OPTIONS" arg=""> </MACRO>
+
     <COMMAND
         name="ip arp"
         command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
@@ -639,6 +642,9 @@ limitations under the License.
       <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${vlan_name} "> </MACRO>
       <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${vlan_name} "> </MACRO>
 
+      <MACRO name="IP-HELPER-CONFIG-OPTIONS" arg="sonic-vlan-interface,VLAN_INTERFACE,vlanName,vlan_name"> </MACRO>
+      <MACRO name="IP-HELPER-NO-CONFIG-OPTIONS" arg=""> </MACRO>
+
       <COMMAND
         name="ip arp"
         command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
@@ -1020,6 +1026,9 @@ limitations under the License.
 
 	<MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${po_name} "> </MACRO>
 	<MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${po_name} "> </MACRO>
+
+      <MACRO name="IP-HELPER-CONFIG-OPTIONS" arg="sonic-portchannel-interface,PORTCHANNEL_INTERFACE,pch_name,po_name"> </MACRO>
+      <MACRO name="IP-HELPER-NO-CONFIG-OPTIONS" arg=""> </MACRO>
 
     <COMMAND
         name="ip arp"
