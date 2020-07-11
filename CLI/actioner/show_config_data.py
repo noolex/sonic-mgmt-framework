@@ -28,6 +28,7 @@ from show_config_static_routes import *
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
+from show_config_ldap import *
 from show_config_nat import *
 from show_config_ip_helper import *
 
@@ -156,6 +157,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
                   'logging_server_cmd'      : show_logging_server_cmd,
+                  'ldap_server_src_intf'    : show_ldap_server_src_intf,
                   'nat_napt_entry'          : show_nat_napt_entry,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
