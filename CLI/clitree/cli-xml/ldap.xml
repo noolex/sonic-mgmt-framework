@@ -85,10 +85,9 @@ limitations under the License.
 <PTYPE
      name="LDAP_USE_TYPE"
      method="select"
-     pattern="all(all) nss(nss) sudo(sudo) pam(pam)"
+     pattern="all(all) nss(nss) sudo(sudo) pam(pam) nss_sudo(nss_sudo) nss_pam(nss_pam) sudo_pam(sudo_pam)"
      help=""
      />
- 
     
 <PTYPE
      name="LDAP_SERVER_PORT"

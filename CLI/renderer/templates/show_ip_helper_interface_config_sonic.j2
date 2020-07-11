@@ -1,0 +1,23 @@
+Interface    Vrf    Relay Address
+-----------  -----  ---------------
+{% for key in json_output %}
+{% set servers = json_output[key] %}
+
+{% set global = namespace(first_iter=True) %}
+{% for server in servers %}
+{% if '|' in server %}
+{% set vrf = server.split('|')[0] %}
+{% set ip = server.split('|')[1] %}
+{% else %}
+{% set vrf = '' %}
+{% set ip = server %}
+{% endif %}
+{% if global.first_iter == True %}
+  {{'%-12s %-6s %-s'|format(key, vrf, ip)}}
+  {% set global.first_iter = False %}
+{% else %}
+  {{'%-12s %-6s %-s'|format('', vrf, ip)}}
+{% endif %}
+{% endfor %}
+
+{% endfor %}
