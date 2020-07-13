@@ -621,11 +621,14 @@ def show_stp_intfs(args):
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces')
     stp_intf_response = aa.get(uri, None)
     if stp_intf_response.ok():
-        value = stp_intf_response.content['openconfig-spanning-tree:interfaces']
-        if 'interface' in value:
-            tup = value['interface']
-            value['interface'] = sorted(tup, key=getId)
-        return stp_intf_response.content
+        if 'openconfig-spanning-tree:interfaces' in stp_intf_response.content:
+            value = stp_intf_response.content['openconfig-spanning-tree:interfaces']
+            if 'interface' in value:
+                tup = value['interface']
+                value['interface'] = sorted(tup, key=getId)
+                return stp_intf_response.content
+            else:
+                return None
     else:
         return None
  

@@ -533,9 +533,13 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="ldap-server source-interface"
-             help="Configure source interface to be used as  source IP for the LDAP packets"
+             help="Configures source interface to be used as source IP for the LDAP packets"
              ptype="SUBCOMMAND"
-			 mode="subcommand">
+             mode="subcommand"
+             command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}"
+             command_keys="ldap_type=global"
+             render_command_cb="ldap_server_src_intf"
+             >
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
           <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
@@ -553,8 +557,13 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ldap-server vrf" help="Configure  VRF to be used for LDAP server connection">
-        <PARAM name="vrf_name" help="" ptype="LDAP_VRF" >
+    <COMMAND name="ldap-server vrf" help="Configures VRF to be used for LDAP server connection"
+      command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}"
+      command_keys="ldap_type=global"
+      >
+        <PARAM name="vrf_name" help="" ptype="LDAP_VRF"
+          dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/vrf_name"
+          >
         </PARAM>
 		  <ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_vrf_config ${__params}</ACTION>
       <DOCGEN>
@@ -1030,7 +1039,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no ldap-server source-interface"
-             help="Unconfigure global source interface for LDAP">
+             help="Unconfigures global source interface for LDAP">
       <ACTION
 		  builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/source-interface
       </ACTION>
@@ -1044,7 +1053,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no ldap-server vrf"
-             help="Unconfigure global vrf for LDAP">
+             help="Unconfigures global vrf for LDAP">
       <ACTION
 		  builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/vrf-name
       </ACTION>

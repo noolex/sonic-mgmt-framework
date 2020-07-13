@@ -142,6 +142,8 @@
 <VIEW name="configure-vlan-view">
     <COMMAND
         name="ip igmp"
+        command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
+        dbpath="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/enabled"
         help="Enable IGMP operation">
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${vlan_name} True</ACTION>
     </COMMAND>
