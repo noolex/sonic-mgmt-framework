@@ -86,6 +86,18 @@ def get_helper_adr_str(args):
 
     return ipAdrStr[:-1];
 
+def extract_if(func, args=[]):
+    match = False
+    for ar in args:
+        if match:
+            if ar != '|':
+                return ar
+            else:
+                return None
+        if ar == func:
+            match = True
+    return None
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
@@ -779,17 +791,18 @@ def invoke_api(func, args=[]):
         body = {"sonic-config-mgmt:input": { "ifname": args[0] }}
         return api.post(path, body)
     elif func == 'rpc_interface_counters':
-        if len(args) > 4:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/counters', name=args[4])
+        ifname = extract_if("counters", args)
+        if ifname is not None:
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/counters', name=ifname)
             ifcounters = api.get(keypath)
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/state/counters', name=args[4])
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/state/counters', name=ifname)
             response = api.get(keypath)
             if response.ok():
-                if response.content is not None:
-                    response.content[args[4]] = ifcounters.content.pop("openconfig-interfaces:counters")
-                    response.content[args[4]].update(response.content["openconfig-if-ethernet:counters"].pop("openconfig-if-ethernet-ext2:eth-out-distribution"))
-                    response.content[args[4]].update(response.content["openconfig-if-ethernet:counters"].pop("openconfig-if-ethernet-ext2:eth-in-distribution"))
-                    response.content[args[4]].update(response.content.pop("openconfig-if-ethernet:counters"))
+                if response.content:
+                    response.content[ifname] = ifcounters.content.pop("openconfig-interfaces:counters")
+                    response.content[ifname].update(response.content["openconfig-if-ethernet:counters"].pop("openconfig-if-ethernet-ext2:eth-out-distribution"))
+                    response.content[ifname].update(response.content["openconfig-if-ethernet:counters"].pop("openconfig-if-ethernet-ext2:eth-in-distribution"))
+                    response.content[ifname].update(response.content.pop("openconfig-if-ethernet:counters"))
 
             return response
         else:
@@ -882,9 +895,8 @@ def run(func, args):
                 elif func == 'get_openconfig_relay_agent_relay_agent_detail_dhcpv6':
                     show_cli_output(args[0], api_response)
                 elif func == 'rpc_interface_counters':
-                    if len(args) > 4:
-                        #resp = OrderedDict()
-                        #resp[args[4]] = api_response.pop("openconfig-interfaces:counters")
+                    ifname = extract_if("counters", args)
+                    if ifname is not None:
                         show_cli_output(args[0], api_response)
                     else:
                         show_cli_output(args[0], api_response)

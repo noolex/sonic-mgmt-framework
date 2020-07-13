@@ -14,7 +14,6 @@
 {{'%-15s'|format("Interface")}}{{'%-10s'|format("State")}}{{'%-22s'|format("RX_OK")}}{{'%-22s'|format("RX_ERR")}}{{'%-22s'|format("RX_DRP")}}{{'%-22s'|format("RX_OVERSIZE")}}{{'%-22s'|format("TX_OK")}}{{'%-22s'|format("TX_ERR")}}{{'%-22s'|format("TX_DRP")}}{{'%-22s'|format("TX_OVERSIZE")}}
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {% for key_json in json_output %}
-{{ key_json }}
     {% if "interfaces" in json_output[key_json] %}
         {% set interface_list = json_output[key_json]["interfaces"] %}
         {% if "interface" in interface_list %}
