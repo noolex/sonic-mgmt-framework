@@ -67,7 +67,7 @@ BFD Peer:
             {% if "session-type" in peer['state'] %}
                 {% if vars.update({'type':peer['state']['session-type']}) %}{% endif %}
             {% endif %}        
-            {% if "desired-minimum-tx-interval['state']" in peer %}
+            {% if "desired-minimum-tx-interval" in peer['state'] %}
                 {% if vars.update({'localTx':peer['state']['desired-minimum-tx-interval']}) %}{% endif %}
             {% endif %}
             {% if "required-minimum-receive" in peer['state'] %}
