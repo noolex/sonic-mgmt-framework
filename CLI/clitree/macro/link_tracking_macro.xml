@@ -20,7 +20,7 @@ limitations under the License.
 <MACRODEF name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR">
     <COMMAND name="link" help="Interface link" />
     <COMMAND name="link state" help="Link state" />
-    <COMMAND name="link state track" help="Link state tracking">
+    <COMMAND name="link state track" help="Link state tracking" data_and_render_cb="show_running_lst_interface">
         <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME"/>
         <PARAM name="group-direction" help="Upstream interface" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="upstream" help="Upstream interface" ptype="SUBCOMMAND" mode="subcommand" test="arg1 -ge 1" />
