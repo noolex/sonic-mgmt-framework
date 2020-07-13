@@ -24,13 +24,8 @@ from show_config_ptp import *
 from show_config_errdisable import *
 from show_config_routepolicy import *
 from show_config_copp import *
-<<<<<<< HEAD
-from show_config_static_routes import *
-from show_config_mirror import *
-=======
 from show_config_mirror import *
 from show_config_static_routes import *
->>>>>>> origin/broadcom_sonic_3.x_share
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
