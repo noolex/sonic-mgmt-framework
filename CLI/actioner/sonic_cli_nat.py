@@ -101,33 +101,33 @@ def invoke_api(func, args=[]):
 
     # Config NAT Pool
     elif func == 'patch_openconfig_nat_nat_instances_instance_nat_pool_nat_pool_entry_config':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-pool/nat-pool-entry={poolname}/config', id=args[0],poolname=args[1])
-        body = { "openconfig-nat:config": {"nat-ip": args[2]} }
-
+        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-pool', id=args[0])
+        body = { "openconfig-nat:nat-pool": { "nat-pool-entry": [ { "pool-name": args[1], "config": { "pool-name": args[1], "nat-ip": args[2] } } ] }}
         if len(args) > 3:
-            body["openconfig-nat:config"].update( {"nat-port": args[3] } )
+            body["openconfig-nat:nat-pool"]["nat-pool-entry"][0]["config"].update( {"nat-port": args[3] } )
+
         return api.patch(path, body)
 
     # Config NAT Binding
     elif func == 'patch_openconfig_nat_nat_instances_instance_nat_acl_pool_binding_nat_acl_pool_binding_entry_config':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-acl-pool-binding/nat-acl-pool-binding-entry={name}/config', id=args[0],name=args[1])
+        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-acl-pool-binding', id=args[0])
 
-        body = { "openconfig-nat:config": {"nat-pool": args[2] }}
+        body = { "openconfig-nat:nat-acl-pool-binding": { "nat-acl-pool-binding-entry": [ { "name": args[1], "config": { "name": args[1], "nat-pool": args[2] } } ] }}
 
         # ACL Name
         acl_name = args[3].split("=")[1]
         if acl_name != "" :
-            body["openconfig-nat:config"].update( {"access-list": acl_name } )
+            body["openconfig-nat:nat-acl-pool-binding"]["nat-acl-pool-binding-entry"][0]["config"].update( {"access-list": acl_name } )
 
         # NAT Type
         nat_type = args[4].split("=")[1]
         if nat_type != "":
-            body["openconfig-nat:config"].update( {"type": nat_type_map[nat_type] } )
+            body["openconfig-nat:nat-acl-pool-binding"]["nat-acl-pool-binding-entry"][0]["config"].update( {"type": nat_type_map[nat_type] } )
 
         # Twice NAT ID
         twice_nat_id = args[5].split("=")[1]
         if twice_nat_id != "":
-            body["openconfig-nat:config"].update( {"twice-nat-id": int(twice_nat_id)} )
+            body["openconfig-nat:nat-acl-pool-binding"]["nat-acl-pool-binding-entry"][0]["config"].update( {"twice-nat-id": int(twice_nat_id) } )
 
         return api.patch(path, body)
 
