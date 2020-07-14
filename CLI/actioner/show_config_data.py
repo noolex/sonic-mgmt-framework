@@ -24,6 +24,7 @@ from show_config_ptp import *
 from show_config_errdisable import *
 from show_config_routepolicy import *
 from show_config_copp import *
+from show_config_crm import *
 from show_config_mirror import *
 from show_config_static_routes import *
 from show_config_qos_map import *
@@ -122,6 +123,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
                   'copp_police'             : show_copp_police,
+                  'crm_config'              : show_crm_config,
                   'sflow_source_if'         : show_sflow_source_if,
                   'qos_map_dscp_tc_cb'      : qos_map_dscp_tc_cb,
                   'qos_map_dot1p_tc_cb'     : qos_map_dot1p_tc_cb,
