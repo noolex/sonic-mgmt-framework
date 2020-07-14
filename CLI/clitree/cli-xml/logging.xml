@@ -22,6 +22,10 @@ limitations under the License.
   <!--=======================================================-->
 
   <VIEW name="enable-view">
+    <!-- clear logging  -->
+    <COMMAND help="clear logging" name="clear logging">
+        <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_clear_logging infra_reboot.j2</ACTION>
+    </COMMAND>
     <COMMAND help="Displays logging information" name="show logging">
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging infra_reboot.j2</ACTION>
     </COMMAND>
