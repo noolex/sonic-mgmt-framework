@@ -52,8 +52,6 @@ void flush_ctrlc_pipe(void);
 
 void mask_password(const char *line, char **masked_line);
 
-void log_user_command(clish_shell_t * cli_shell, char *cmd_str, int result);
-
 #ifdef __cplusplus
 }
 #endif

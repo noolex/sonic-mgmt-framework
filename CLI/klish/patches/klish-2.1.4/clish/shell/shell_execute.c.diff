@@ -1,7 +1,3 @@
-diff --git a/clish/shell/shell_execute.c b/clish/shell/shell_execute.c
-index 7ccca0f..91358f4 100644
---- a/clish/shell/shell_execute.c
-+++ b/clish/shell/shell_execute.c
 @@ -18,6 +18,53 @@
  #include <sys/uio.h>
  #include <signal.h>
@@ -53,31 +49,31 @@ index 7ccca0f..91358f4 100644
 +        }
 +        return NULL;
 +}
- 
+
  /* Empty signal handler to ignore signal but don't use SIG_IGN. */
  static void sigignore(int signo)
 @@ -157,25 +204,63 @@ int clish_shell_execute(clish_context_t *context, char **out)
- 		clish_shell_unlock(lock_fd);
- 
- 	/* Move into the new view */
--	if (!result) {
--		char *viewname = clish_shell_expand(clish_command__get_viewname(cmd), SHELL_VAR_NONE, context);
--		if (viewname) {
--			/* Search for the view */
--			clish_view_t *view = clish_shell_find_view(this, viewname);
--			if (!view)
--				fprintf(stderr, "System error: Can't "
--					"change view to %s\n", viewname);
--			lub_string_free(viewname);
--			/* Save the PWD */
--			if (view) {
--				char *line = clish_shell__get_line(context);
--				clish_shell__set_pwd(this, line, view,
--					clish_command__get_viewid(cmd), context);
--				lub_string_free(line);
--			}
--		}
--	}
+                clish_shell_unlock(lock_fd);
+
+        /* Move into the new view */
+-       if (!result) {
+-               char *viewname = clish_shell_expand(clish_command__get_viewname(cmd), SHELL_VAR_NONE, context);
+-               if (viewname) {
+-                       /* Search for the view */
+-                       clish_view_t *view = clish_shell_find_view(this, viewname);
+-                       if (!view)
+-                               fprintf(stderr, "System error: Can't "
+-                                       "change view to %s\n", viewname);
+-                       lub_string_free(viewname);
+-                       /* Save the PWD */
+-                       if (view) {
+-                               char *line = clish_shell__get_line(context);
+-                               clish_shell__set_pwd(this, line, view,
+-                                       clish_command__get_viewid(cmd), context);
+-                               lub_string_free(line);
+-                       }
+-               }
+-       }
 -
 +        if (!result) {
 +                int cnt, i;
@@ -135,73 +131,73 @@ index 7ccca0f..91358f4 100644
 +                        }
 +                }
 +        }
-+   	
- 	/* Set appropriate timeout. Workaround: Don't turn on  watchdog
- 	on the "set watchdog <timeout>" command itself. */
- 	if (this->wdog_timeout && saved_wdog_timeout) {
++
+        /* Set appropriate timeout. Workaround: Don't turn on  watchdog
+        on the "set watchdog <timeout>" command itself. */
+        if (this->wdog_timeout && saved_wdog_timeout) {
 @@ -297,15 +382,38 @@ stdout_error:
- 	return -1;
+        return -1;
  }
- 
+
 +static int clish_shell_exec_sym_api(const clish_sym_t *sym, clish_hook_action_fn_t *func,
-+	       				clish_context_t *context, char *script, char **out)	
++                                       clish_context_t *context, char *script, char **out)
 +{
-+	int result = -1;
-+	/* CLISH_SYM_API_SIMPLE */
-+	if (clish_sym__get_api(sym) == CLISH_SYM_API_SIMPLE) {
-+		result = ((clish_hook_action_fn_t *)func)(context, script, out);
-+	/* CLISH_SYM_API_STDOUT and output is not needed */
-+	} else if ((clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) && (!out)) {
-+		result = ((clish_hook_oaction_fn_t *)func)(context, script);
-+	/* CLISH_SYM_API_STDOUT and outpus is needed */
-+	} else if (clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) {
-+		result = clish_shell_exec_oaction((clish_hook_oaction_fn_t *)func,
-+							context, script, out);
-+	}
-+	return result;
++       int result = -1;
++       /* CLISH_SYM_API_SIMPLE */
++       if (clish_sym__get_api(sym) == CLISH_SYM_API_SIMPLE) {
++               result = ((clish_hook_action_fn_t *)func)(context, script, out);
++       /* CLISH_SYM_API_STDOUT and output is not needed */
++       } else if ((clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) && (!out)) {
++               result = ((clish_hook_oaction_fn_t *)func)(context, script);
++       /* CLISH_SYM_API_STDOUT and outpus is needed */
++       } else if (clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) {
++               result = clish_shell_exec_oaction((clish_hook_oaction_fn_t *)func,
++                                                       context, script, out);
++       }
++       return result;
 +}
 +
  /*----------------------------------------------------------- */
  int clish_shell_exec_action(clish_context_t *context, char **out)
  {
- 	int result = -1;
- 	const clish_sym_t *sym;
- 	char *script;
--	const void *func = NULL; /* We don't know the func API at this time */
-+	clish_hook_action_fn_t *func = NULL;
+        int result = -1;
+        const clish_sym_t *sym;
+        char *script;
+-       const void *func = NULL; /* We don't know the func API at this time */
++       clish_hook_action_fn_t *func = NULL;
 +
- 	const clish_action_t *action = clish_context__get_action(context);
- 	clish_shell_t *shell = clish_context__get_shell(context);
-+	clish_parg_t *parg = NULL;
+        const clish_action_t *action = clish_context__get_action(context);
+        clish_shell_t *shell = clish_context__get_shell(context);
++       clish_parg_t *parg = NULL;
 +        clish_ptype_t *ptype = NULL;
 +        clish_ptype_method_e method = CLISH_PTYPE_METHOD_REGEXP;
 +
- 	bool_t intr = clish_action__get_interrupt(action);
- 	/* Signal vars */
- 	struct sigaction old_sigint, old_sigquit, old_sighup;
+        bool_t intr = clish_action__get_interrupt(action);
+        /* Signal vars */
+        struct sigaction old_sigint, old_sigquit, old_sighup;
 @@ -343,20 +451,103 @@ int clish_shell_exec_action(clish_context_t *context, char **out)
- 		sigprocmask(SIG_BLOCK, &sigs, &old_sigs);
- 	}
- 
--	/* Find out the function API */
--	/* CLISH_SYM_API_SIMPLE */
--	if (clish_sym__get_api(sym) == CLISH_SYM_API_SIMPLE) {
--		result = ((clish_hook_action_fn_t *)func)(context, script, out);
+                sigprocmask(SIG_BLOCK, &sigs, &old_sigs);
+        }
+
+-       /* Find out the function API */
+-       /* CLISH_SYM_API_SIMPLE */
+-       if (clish_sym__get_api(sym) == CLISH_SYM_API_SIMPLE) {
+-               result = ((clish_hook_action_fn_t *)func)(context, script, out);
 -
--	/* CLISH_SYM_API_STDOUT and output is not needed */
--	} else if ((clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) && (!out)) {
--		result = ((clish_hook_oaction_fn_t *)func)(context, script);
+-       /* CLISH_SYM_API_STDOUT and output is not needed */
+-       } else if ((clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) && (!out)) {
+-               result = ((clish_hook_oaction_fn_t *)func)(context, script);
 -
--	/* CLISH_SYM_API_STDOUT and outpus is needed */
--	} else if (clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) {
--		result = clish_shell_exec_oaction((clish_hook_oaction_fn_t *)func,
--			context, script, out);
--	}
-+	parg = (clish_parg_t*)clish_shell__get_parg(context);
-+	if (!parg || !(ptype = (clish_ptype_t *)clish_parg__get_ptype(parg)))
-+	{
-+		result = clish_shell_exec_sym_api(sym, func, context, script, out);
-+	} else {
+-       /* CLISH_SYM_API_STDOUT and outpus is needed */
+-       } else if (clish_sym__get_api(sym) == CLISH_SYM_API_STDOUT) {
+-               result = clish_shell_exec_oaction((clish_hook_oaction_fn_t *)func,
+-                       context, script, out);
+-       }
++       parg = (clish_parg_t*)clish_shell__get_parg(context);
++       if (!parg || !(ptype = (clish_ptype_t *)clish_parg__get_ptype(parg)))
++       {
++               result = clish_shell_exec_sym_api(sym, func, context, script, out);
++       } else {
 +                method = clish_ptype__get_method(ptype);
 +                if (method == CLISH_PTYPE_METHOD_REGEXP_SELECT)
 +                {
@@ -223,7 +219,7 @@ index 7ccca0f..91358f4 100644
 +                         * like po 10 then start at array index 3 and
 +                         * skip if any space lies between po and 10.
 +                         * If given CLI is like p 10 then start at
-+			                          * array index 2 and skip if any space lies
++                                                 * array index 2 and skip if any space lies
 +                         * between p and 10.
 +                         */
 +                        for (j = 0; j < lub_argv__get_count(pargv); j++) {
@@ -257,7 +253,7 @@ index 7ccca0f..91358f4 100644
 +                                                res = new_result;
 +                                                break;
 +                                        }
-+				} else {
++                               } else {
 +                                        /* CLI is given matches with complete help string
 +                                         * such as ethernet, vlan, portchannel, so nothing
 +                                         * do to here.
@@ -275,34 +271,35 @@ index 7ccca0f..91358f4 100644
 +                                res = NULL;
 +                        }
 +
-+			result = clish_shell_exec_sym_api(sym, func, context, script, out);
++                       result = clish_shell_exec_sym_api(sym, func, context, script, out);
 +                        isEthernet = BOOL_FALSE;
 +                        lub_string_free(res);
 +
-+            		/* Free memory to avoid resource leak */
-+            		if(name != NULL) {
-+                		lub_string_free(name);
-+                		name = NULL;
-+            		}
-+            		if(value != NULL) {
-+                		lub_string_free(value);
-+                		value = NULL;
-+            		}
++                       /* Free memory to avoid resource leak */
++                       if(name != NULL) {
++                               lub_string_free(name);
++                               name = NULL;
++                       }
++                       if(value != NULL) {
++                               lub_string_free(value);
++                               value = NULL;
++                       }
 +                } else {
-+			result = clish_shell_exec_sym_api(sym, func, context, script, out);
++                       result = clish_shell_exec_sym_api(sym, func, context, script, out);
 +                }
 +        }
 +
-+        log_user_command(shell, context->commandstr, result);
- 
- 	/* Restore SIGINT, SIGQUIT, SIGHUP */
- 	if (!intr) {
++        CLISH_HOOK_LOG(clish_hook_log);
+
+        /* Restore SIGINT, SIGQUIT, SIGHUP */
+        if (!intr) {
 @@ -374,7 +565,7 @@ int clish_shell_exec_action(clish_context_t *context, char **out)
- 	sigaction(SIGQUIT, &old_sigquit, NULL);
- 	sigaction(SIGHUP, &old_sighup, NULL);
- 
--	lub_string_free(script);
-+	if (script) lub_string_free(script);
- 
- 	return result;
+        sigaction(SIGQUIT, &old_sigquit, NULL);
+        sigaction(SIGHUP, &old_sighup, NULL);
+
+-       lub_string_free(script);
++       if (script) lub_string_free(script);
+
+        return result;
  }
+
