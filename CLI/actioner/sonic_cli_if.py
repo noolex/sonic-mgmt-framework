@@ -789,7 +789,16 @@ def invoke_api(func, args=[]):
     elif func == 'default_port_config':
         path = cc.Path('/restconf/operations/sonic-config-mgmt:default-port-config')
         body = {"sonic-config-mgmt:input": { "ifname": args[0] }}
-        return api.post(path, body)
+        resp = api.post(path, body)
+        result = False
+        if resp.ok() and resp.content is not None and \
+           resp.content.get("sonic-config-mgmt:output") is not None and \
+           resp.content.get("sonic-config-mgmt:output").get("status") is not None and \
+           resp.content["sonic-config-mgmt:output"]["status"] == 0:
+            result = True
+        if not result:
+            print("Failed to restore port " + args[0] + " to its default configuration")
+        return resp
     elif func == 'rpc_interface_counters':
         ifname = extract_if("counters", args)
         if ifname is not None:
