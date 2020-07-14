@@ -164,7 +164,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports,
                   'mirror_session'          : show_mirror_session,
-                  'errdisable_cause'        : show_config_errdisable_cause
+                  'errdisable_cause'        : show_config_errdisable_cause,
+                  'ldap_map_config'         : show_ldap_map_config
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
