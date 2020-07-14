@@ -33,3 +33,22 @@ def get_ldap_entry(data, ldap_type):
             return entry 
     return {}
 
+# To show the running configuration of the ldap-server map
+def show_ldap_map_config(render_tables):
+
+    cmd_str = ''
+    cmd_prfx = 'ldap-server map '
+    if 'sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST' in render_tables:
+        for ldap_map_inst in render_tables['sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST']:
+            mapName = ""
+            if ldap_map_inst['name'] == 'ATTRIBUTE':
+                mapName = 'attribute '
+            elif ldap_map_inst['name'] == 'OBJECTCLASS':
+                mapName = 'objectclass '
+            elif ldap_map_inst['name'] == 'DEFAULT_ATTRIBUTE_VALUE':
+                mapName = 'default-attribute-value ' 
+            elif ldap_map_inst['name'] == 'OVERRIDE_ATTRIBUTE_VALUE':
+                mapName = 'override-attribute-value '
+            cmd_str += cmd_prfx + mapName + ldap_map_inst['from'] + ' to ' + ldap_map_inst['to'] + ';'                
+            
+    return 'CB_SUCCESS', cmd_str
