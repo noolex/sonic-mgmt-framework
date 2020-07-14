@@ -183,6 +183,21 @@ def get_sonic_logging(args):
     except Exception as e:
         print "%Error: Traction Failure"
 
+def clear_sonic_logging(args):
+    aa = cc.ApiClient()
+    keypath = cc.Path('/restconf/operations/sonic-system-infra:clear-sys-log')
+    body = None
+    templ=args[0]
+    api_response = aa.post(keypath, body)
+
+    try:
+        if api_response.ok():
+           response = api_response.content
+           if response is not None and 'sonic-system-infra:output' in response:
+                show_cli_output(templ, response['sonic-system-infra:output']['result'])
+    except Exception as e:
+        print "%Error: Traction Failure"
+
 
 def run(func, args):
     if func == 'get_openconfig_system_logging_servers':
@@ -191,6 +206,10 @@ def run(func, args):
 
     if func == 'get_openconfig_system_logging':
         get_sonic_logging(args)
+        return 0
+
+    if func == 'get_openconfig_clear_logging':
+        clear_sonic_logging(args)
         return 0
 
     response = invoke_api(func, args)
@@ -212,6 +231,8 @@ if __name__ == '__main__':
         get_sonic_logging_servers(sys.argv[2:])
     elif func == 'get_openconfig_system_logging':
         get_sonic_logging(sys.argv[2:])
+    elif func == 'get_openconfig_clear_logging':
+        clear_sonic_logging(sys.argv[2:])
     else:
         run(func, sys.argv[2:])
 
