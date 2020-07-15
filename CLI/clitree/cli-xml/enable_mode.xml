@@ -75,13 +75,14 @@ limitations under the License.
             name="renew"
             help="Renew commands" />
         <!-- Debug commands -->
+        <!-- Debug not supported now
         <COMMAND
             name="debug"
             help="Debug commands" />
         <COMMAND
             name="no debug"
             help="No Debug commands" />
-        
+        -->
         <COMMAND
             name="terminal"
             help="Set terminal settings" />
