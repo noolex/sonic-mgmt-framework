@@ -167,14 +167,10 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_tc_dot1p'   : show_qos_intf_map_tc_dot1p,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
-<<<<<<< HEAD
                   'qos_intf_sched_policy'   : show_qos_intf_scheduler_policy,
-                  'nat_napt_entry'          : show_nat_napt_entry,
-=======
                   'show_running_lst_group'  : show_running_lst_group,
                   'show_running_lst_interface': show_running_lst_interface,
                   'vlanvrfvnimap'           : show_vlanvrfvnimap,
->>>>>>> origin/broadcom_sonic_3.x_share
                   'logging_server_cmd'      : show_logging_server_cmd,
                   'ldap_server_src_intf'    : show_ldap_server_src_intf,
                   'nat_napt_entry'          : show_nat_napt_entry,
