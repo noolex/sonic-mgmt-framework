@@ -109,7 +109,7 @@ limitations under the License.
     <PTYPE 
         name="VLAN_INTERFACE_RANGE"
         method="regexp_select"
-        ext_pattern="Vlan(1-4094)"
+        ext_pattern="Vlan(1..4094)"
         pattern="&VLAN_ALL_INTF_RANGE;"
         help="Interface Vlan Range"
         />
@@ -124,8 +124,10 @@ limitations under the License.
     <!--=======================================================-->
     <PTYPE 
         name="PO_RANGE"
+        method="regexp_select"
+        ext_pattern="(1..256)"
         pattern="&PO_RNG;"
-        help="Interface PortChannel Range"
+        help="PortChannel Range"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1434,6 +1436,32 @@ limitations under the License.
         method="integer"
         pattern="1..10000"
         help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="IP_HELPER_RATE_LIMIT"
+        method="unsignedInteger"
+        pattern="600..10000"
+        help="600 to 10,000 pps (default 600 pps)"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="UDP_FORWARDING_PORT"
+        method="select"
+        pattern="tftp(69) dns(53) ntp(37) netbios-name-server(137) netbios-datagram-server(138) tacacs(49)"
+        help="Well known ports"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="PHY_VL_PO_INTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(Port) PortChannel(1-128) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[/subport]) PortChannel(1-128) Vlan(1-4093)"
+        ext_help="(Ethernet interface type) (PortChannel interface type) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF;|&PO_ALL_INTF;|&VLAN_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_ALIAS;|&PO_ALL_INTF;|&VLAN_ALL_INTF;"
+        help="Interface Type - Ranges"
+        preprocess="mode"
         />
     <!--=======================================================-->
 </CLISH_MODULE>

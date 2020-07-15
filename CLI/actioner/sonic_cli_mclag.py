@@ -22,6 +22,7 @@ import sys
 import json
 import collections
 import re
+import time
 #import pdb
 import cli_client as cc
 from rpipe_utils import pipestr
@@ -81,7 +82,7 @@ def invoke(func, args):
     if (func == 'patch_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_peer_link' or
         func == 'delete_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_peer_link'):
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}/peer_link', domain_id=args[0])
- 
+
         if (func.startswith("patch") is True):
             if_name = None
             if_name = args[1]
@@ -465,16 +466,28 @@ def mclag_show_mclag_brief(args):
                 domain_cfg_info['session_timeout']   = 30;
             if domain_cfg_info.get("delay_restore") is None:
                 domain_cfg_info['delay_restore'] = MCLAG_DEFAULT_DELAY_RESTORE;
-            peer_link_name = domain_cfg_info.get("peer_link") 
+            peer_link_name = domain_cfg_info.get("peer_link")
             domain_cfg_info['peer_link_status'] = mclag_get_peer_link_status(peer_link_name)
-            
+
             domain_state_info = {}
             #domain_state_info  = {"oper_status":"down", "role":"", "system_mac":""}
             if "MCLAG_TABLE" in response["sonic-mclag:sonic-mclag"]:
                 domain_state_info = mclag_convert_list_to_dict(response['sonic-mclag:sonic-mclag']['MCLAG_TABLE']['MCLAG_TABLE_LIST'], "domain_id", domain_cfg_info['domain_id'])
+            if domain_state_info.get("delay_restore_start_time") is None:
+                domain_state_info['delay_restore_time_left'] = 0
+            else:
+                start_time = long(domain_state_info.get("delay_restore_start_time"))
+                if start_time == 0:
+                    domain_state_info['delay_restore_time_left'] = 0
+                else:
+                    elapse_time = long(float(time.time())) - start_time
+                    if (elapse_time < domain_cfg_info['delay_restore']):
+                        domain_state_info['delay_restore_time_left'] = domain_cfg_info['delay_restore'] - elapse_time
+                    else:
+                        domain_state_info['delay_restore_time_left'] = 0;
             mclag_info['domain_info'] = domain_cfg_info.copy()
             mclag_info['domain_info'].update(domain_state_info)
-            
+
             mclag_info['gateway_mac_info'] = {}
             if "MCLAG_GW_MAC" in response["sonic-mclag:sonic-mclag"]:
                 mclag_gw_mac_list = response['sonic-mclag:sonic-mclag']['MCLAG_GW_MAC']['MCLAG_GW_MAC_LIST']
@@ -484,16 +497,6 @@ def mclag_show_mclag_brief(args):
                     gateway_mac=list_item["gw_mac"]
                     gateway_mac_info['gateway_mac']=gateway_mac
                 mclag_info['gateway_mac_info'].update(gateway_mac_info)
- 
-            mclag_info['delay_restore_info'] = {}
-            if "MCLAG_DELAY_RESTORE" in response["sonic-mclag:sonic-mclag"]:
-                mclag_delay_restore_list = response['sonic-mclag:sonic-mclag']['MCLAG_DELAY_RESTORE']['MCLAG_DELAY_RESTORE_LIST']
-                delay_restore_info = {}
-                #MCLAG_DELAY_RESTORE_LIST has only one entry
-                for list_item  in mclag_delay_restore_list:
-                    delay_restore=list_item["delay_restore"]
-                    delay_restore_info['delay_restore']=delay_restore
-                mclag_info['delay_restore_info'].update(delay_restore_info)
 
             mclag_local_if_list  = []
             if "MCLAG_INTERFACE" in response["sonic-mclag:sonic-mclag"]:

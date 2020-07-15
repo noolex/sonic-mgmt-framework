@@ -1,0 +1,41 @@
+{% set comm_list = { 37:"NTP", 49:"TACACS", 53:"DNS", 69:"TFTP", 137:"NetBios-Name-Server", 138:"NetBios-Datagram-Server"} %}
+{% set enablestr = "Disabled" %}
+{% set rate = 600 %}
+{% set include_ports = [69,53,37,137,138,49] %}
+{% set exclude_ports = [] %}
+
+{% if json_output %}
+
+{% if 'openconfig-ip-helper:config' in json_output %}
+{% set gbldata = json_output['openconfig-ip-helper:config'] %}
+{% if 'enable' in gbldata and gbldata['enable'] == True %}{% set enablestr = "Enabled" %}{% endif %}
+{% if 'incoming-rate-limit' in gbldata %}{% set rate = gbldata['incoming-rate-limit'] %}{% endif %}
+{% if 'include-custom-ports' in gbldata %}{% set include_ports = gbldata['include-custom-ports'] %}{% endif %}
+{% if 'exclude-default-ports' in gbldata %}{% set exclude_ports = gbldata['exclude-default-ports'] %}{% endif %}
+{% endif %}
+
+{% endif %}
+
+UDP forwarding  : {{enablestr}}
+
+UDP rate limit  : {{rate}} pps
+
+UDP forwarding enabled on the ports:{{' '}} 
+{%- for port in include_ports -%}
+{%- if port in comm_list -%}
+{{ comm_list[port]}}
+{%- else -%}
+{{ port}}
+{%- endif -%}
+{%- if not loop.last %}, {% endif %}
+{%- endfor %}{{''}}
+
+UDP forwarding disabled on the ports:{{' '}}
+{%- for port in exclude_ports -%}
+{%- if port in comm_list -%}
+{{ comm_list[port]}}
+{%- else -%}
+{{ port}}
+{%- endif -%}
+{%- if not loop.last %}, {% endif %}
+{%- endfor %}{{''}}

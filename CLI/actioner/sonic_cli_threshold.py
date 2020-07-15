@@ -225,7 +225,6 @@ def get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_lis
         get_print_cpu_port_config(args[2], args[3], renderer_template)
     else:
         get_print_all_port_config(args[2], args[3], renderer_template)
-    sys.exit(0)
 
 if __name__ == '__main__':
      pipestr().write(sys.argv)
