@@ -18,23 +18,19 @@ def run(func, args):
         if response.ok():
             print(response.content["sonic-show-auditlog:output"]["audit-content"])
         else:
-            print "%Error: Transaction Failure "
             print(response.error_message())
-            print(response.status_code)
 
     if func == 'rpc_sonic_auditlog_clear_auditlog':
         keypath = cc.Path('/restconf/operations/sonic-auditlog:clear-auditlog')
         body = { "sonic-auditlog:input": "" }
         response = aa.post(keypath, body)
         if not response.ok():
-            print "%Error: Transaction Failure "
             print(response.error_message())
-            print(response.status_code)
 
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)
-    if (len(sys.argv) == 2) :
+    if (len(sys.argv) == 2):
         func = sys.argv[1]
         itype = "brief"
         run(func, sys.argv[1:])
