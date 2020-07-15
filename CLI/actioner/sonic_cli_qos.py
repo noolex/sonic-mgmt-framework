@@ -30,8 +30,8 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:threshold-breaches/breach')
         return api.get(path)
     if func == 'patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/queues/queue={name}/wred/config/openconfig-qos-ext:wred-profile', name=args[0])
-        body = {"openconfig-qos-ext:wred-profile" : args[1]}
+        path = cc.Path('/restconf/data/openconfig-qos:qos/queues/')
+        body = {"openconfig-qos:queues": {"queue": [{"name": args[0], "wred": {"config": {"openconfig-qos-ext:wred-profile" : args[1]}}}]}}
         return api.patch(path, body)
     if func == 'delete_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile':
         path = cc.Path('/restconf/data/openconfig-qos:qos/queues/queue={name}/wred/config/openconfig-qos-ext:wred-profile', name=args[0])
@@ -180,7 +180,8 @@ def run(func, args):
                         value['interface'] = sorted(tup, key=getIfId)
                 show_cli_output('show_qos_interface_pfc_summary.j2', response['openconfig-qos:interfaces'])
        else:
-          print response.error_message()
+          if response.status_code != 404:
+              print response.error_message()
 
     except Exception as e:
         syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
