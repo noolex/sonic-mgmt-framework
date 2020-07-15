@@ -29,8 +29,8 @@ limitations under the License.
         >
         <PARAM
           name="vrf-name"
-          help="Name of VRF"
-          ptype="STRING_15"
+          help=""
+          ptype="DATA_AND_MGMT_VRF_NAME"
           dbpath="arg4"
           >
         </PARAM>
@@ -44,7 +44,7 @@ limitations under the License.
             </DESCRIPTION>
             <USAGE>
                 sonic(conf-if-INTF)# ip vrf forwarding VRF
-                VRF:  Name of VRF(Max: 15 characters)
+                VRF:  Name of VRF (Max size 15, (mgmt, or prefixed by Vrf_)
                 INTF: View identifier of Ethernet, Loopback, PortChannel or Vlan interface
             </USAGE>
             <EXAMPLE summary="Assign interface to VRF">
@@ -69,8 +69,8 @@ limitations under the License.
         >
         <PARAM
           name="vrf-name"
-          help="Name of VRF"
-          ptype="STRING_15"
+          help=""
+          ptype="DATA_AND_MGMT_VRF_NAME"
           >
         </PARAM>
         <ACTION
@@ -82,7 +82,7 @@ limitations under the License.
             </DESCRIPTION>
             <USAGE>
                 sonic(conf-if-INTF)# no ip vrf forwarding VRF
-                VRF:  Name of VRF(Max: 15 characters)
+                VRF:  Name of VRF (Max size 15, (mgmt, or prefixed by Vrf_)
                 INTF: View identifier of Ethernet, Loopback, PortChannel or Vlan interface
             </USAGE>
             <EXAMPLE summary="Remove interface assignment to VRF">
@@ -111,8 +111,8 @@ limitations under the License.
         >
         <PARAM
           name="vrf-name"
-          help="Name of VRF"
-          ptype="STRING_15"
+          help=""
+          ptype="DATA_AND_MGMT_VRF_NAME"
           >
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_vrf config_if_range iflist=arg1 patch_network_instance_interface ${vrf-name}</ACTION>
@@ -127,8 +127,8 @@ limitations under the License.
         >
         <PARAM
           name="vrf-name"
-          help="Name of VRF"
-          ptype="STRING_15"
+          help=""
+          ptype="DATA_AND_MGMT_VRF_NAME"
           >
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_vrf delete_if_range iflist=arg1 delete_network_instance_interface ${vrf-name}</ACTION>

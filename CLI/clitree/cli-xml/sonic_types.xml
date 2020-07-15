@@ -1279,6 +1279,11 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="DATA_AND_MGMT_VRF_NAME"
+        pattern="(Vrf_(([0-9A-Za-z]){1,}))|(mgmt)"
+        help="Name of VRF (Max size 15, (mgmt, or prefixed by Vrf_)"
+    />
+    <PTYPE
         name="INTF_TYPE"
         method="select"
         pattern="Ethernet Vlan PortChannel Management(eth)"
