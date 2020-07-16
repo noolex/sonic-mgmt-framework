@@ -78,6 +78,10 @@ module sonic-port {
                 leaf admin_status {
                     type scommon:admin-status;
                 }
+
+                leaf portchannel_admin_down {
+                    type string;
+                }
             }
         }
         container PORT_TABLE {

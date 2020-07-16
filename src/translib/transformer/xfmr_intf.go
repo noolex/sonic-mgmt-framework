@@ -643,8 +643,31 @@ var YangToDb_intf_enabled_xfmr FieldXfmrYangToDb = func(inParams XfmrParams) (ma
     enabled, _ := inParams.param.(*bool)
     var enStr string
     if *enabled == true {
+        log.Infof("Checking if Interface is member of an admin DOWN portchannel ", ifName)
+        tmp := isIntfMemberOfAdminDownPortChannel(inParams , &ifName)
+        if tmp == true {
+            /* If the port is member of an admin DOWN portchannel, do not bring UP the member. Let
+             * the member continue to be admin DOWN. Reset the portchannel_admin_down to true (this
+             * field is used to check if member was admin DOWN due to portchannel admin DOWN.
+             */
+            log.Infof("DbToYang_intf_enabled_xfmr Interface is in admin down portchannel ", ifName)
+            res_map["portchannel_admin_down"] = "true"
+            return res_map, nil
+        }
+
         enStr = "up"
     } else {
+        log.Infof("Checking if Interface is associated with portchannel ", ifName)
+        tmp := validateIntfAssociatedWithPortChannel(inParams.d, &ifName)
+        if tmp != nil {
+            /* If the port is member of a portchannel, set portchannel_admin_down to false.
+             * When the port is removed from portchannel or when portchannel is no-shutdown,
+             * the member port will be brought UP by checking this field.
+             */
+            log.Infof("DbToYang_intf_enabled_xfmr Interface is associated with portchannel ", ifName)
+            res_map["portchannel_admin_down"] = "false"
+        }
+
         enStr = "down"
     }
     res_map[PORT_ADMIN_STATUS] = enStr
@@ -2298,6 +2321,41 @@ func retrievePortChannelAssociatedWithIntf(inParams *XfmrParams, ifName *string)
     }
     return nil, err
 }
+
+func isIntfMemberOfAdminDownPortChannel(inParams XfmrParams, ifName *string) (bool) {
+
+    if strings.HasPrefix(*ifName, ETHERNET) == true {
+        intTbl := IntfTypeTblMap[IntfTypePortChannel]
+        tblName, _ := getMemTableNameByDBId(intTbl, inParams.curDb)
+        var lagStr string
+
+        lagKeys, err := inParams.d.GetKeys(&db.TableSpec{Name:tblName})
+        /* Find the port-channel the given ifname is part of */
+        if err != nil {
+            return false
+        }
+
+        for i, _ := range lagKeys {
+            if *ifName == lagKeys[i].Get(1) {
+
+                lagStr = lagKeys[i].Get(0)
+                curr, err := inParams.d.GetEntry(&db.TableSpec{Name:intTbl.cfgDb.portTN}, db.Key{Comp: []string{lagStr}})
+                if err != nil {
+                    errStr := "Failed to Get PortChannel details"
+                    log.Info(errStr)
+                    return false
+                }
+                val := curr.Field["admin_status"]
+                if val == "down" {
+                   log.Info("Given interface part of admin DOWN PortChannel ", lagStr)
+                   return true
+                }
+            }
+        }
+    }
+    return false
+}
+
 
 /* Handle port-speed, auto-neg and aggregate-id config */
 var YangToDb_intf_eth_port_config_xfmr SubTreeXfmrYangToDb = func(inParams XfmrParams) (map[string]map[string]db.Value, error) {
