@@ -37,6 +37,27 @@ limitations under the License.
         <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/interfaces/interface=arg1 body={ "openconfig-network-instance:interface": [ { "id": "arg2", "config" : { "id": "arg2" } } ] }
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Assign an interface to a VRF. VRF is data VRF and interface can be
+                ethernet, loop back, port channel or vlan interface.
+            </DESCRIPTION>
+            <USAGE>
+                sonic(conf-if-INTF)# ip vrf forwarding VRF
+                VRF:  Name of VRF(Max: 15 characters)
+                INTF: View identifier of Ethernet, Loopback, PortChannel or Vlan interface
+            </USAGE>
+            <EXAMPLE summary="Assign interface to VRF">
+                sonic(config)# interface Ethernet 8
+                sonic(conf-if-Ethernet8)# ip vrf forwarding Vrf_red
+                sonic(config)# interface Loopback 8
+                sonic(conf-if-lo8)# ip vrf forwarding Vrf_red
+                sonic(config)# interface PortChannel 8
+                sonic(conf-if-po8)# ip vrf forwarding Vrf_red
+                sonic(config)# interface Vlan 8
+                sonic(conf-if-Vlan8)# ip vrf forwarding Vrf_red
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip vrf" help="Unbind interface from specified VRF domain"/>
@@ -55,6 +76,26 @@ limitations under the License.
         <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/interfaces/interface=arg1
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Remove the assignment of an interface to VRF.
+            </DESCRIPTION>
+            <USAGE>
+                sonic(conf-if-INTF)# no ip vrf forwarding VRF
+                VRF:  Name of VRF(Max: 15 characters)
+                INTF: View identifier of Ethernet, Loopback, PortChannel or Vlan interface
+            </USAGE>
+            <EXAMPLE summary="Remove interface assignment to VRF">
+                sonic(config)# interface Ethernet 8
+                sonic(conf-if-Ethernet8)# no ip vrf forwarding Vrf_red
+                sonic(config)# interface Loopback 8
+                sonic(conf-if-lo8)# no ip vrf forwarding Vrf_red
+                sonic(config)# interface PortChannel 8
+                sonic(conf-if-po8)# no ip vrf forwarding Vrf_red
+                sonic(config)# interface Vlan 8
+                sonic(conf-if-Vlan8)# no ip vrf forwarding Vrf_red
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
 </MACRODEF>

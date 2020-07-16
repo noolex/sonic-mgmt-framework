@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 ###########################################################################
-
 import sys
 from collections import OrderedDict
 import cli_client as cc
@@ -789,7 +788,7 @@ def show_details_by_policy(args):
         body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
     if len(args) > 1:
         if args[1] == "interface":
-            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2]
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
@@ -838,9 +837,9 @@ def clear_details_by_interface(args):
         if len(args) == 3:
             body["sonic-flow-based-services:input"]["TYPE"] = args[2]
     else:
-        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
-        if len(args) == 4:
-            body["sonic-flow-based-services:input"]["TYPE"] = args[3]
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+        if len(args) == 3:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[2]
 
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)

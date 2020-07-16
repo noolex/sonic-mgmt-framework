@@ -2,7 +2,9 @@
 
 {% set igmp_global_list = json_output %}
 {% for list_elem in igmp_global_list %}
-
+{% if 'vrfName' in list_elem %}
+VRF : {{list_elem['vrfName']}}
+{% endif%}
 {% if 'openconfig-igmp-ext:groups' in list_elem %}
 {{'Interface'.ljust(15)}}{{'Address'.ljust(20)}}{{'Group'.ljust(20)}}{{'Mode'.ljust(10)}}{{'Timer'.ljust(15)}}{{'Srcs'.ljust(10)}}{{'V'.ljust(10)}}{{'Uptime'}}
 {% set igmpgrouplist = list_elem['openconfig-igmp-ext:groups'] %}

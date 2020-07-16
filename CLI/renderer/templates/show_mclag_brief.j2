@@ -35,6 +35,7 @@
 {% if vars.update({'system_mac':domain_info["system_mac"]}) %}{% endif %}
 {% if vars.update({'mclag_system_mac':domain_info["mclag_system_mac"]}) %}{% endif %}
 {% if vars.update({'delay_restore':domain_info["delay_restore"]}) %}{% endif %}
+{% if vars.update({'delay_restore_time_left':domain_info["delay_restore_time_left"]}) %}{% endif %}
 
 {{'Domain ID'.ljust(20)}} : {{ vars.domain_id }}
 {{'Role'.ljust(20)}} : {{ vars.role}}
@@ -45,7 +46,11 @@
 {{'Peer Link'.ljust(20)}} : {{ vars.peer_link}}
 {{'Keepalive Interval'.ljust(20)}} : {{ vars.keepalive_interval}} {{'secs'}}
 {{'Session Timeout'.ljust(20)}} : {{ vars.session_timeout}} {{'secs'}}
+{% if vars.delay_restore_time_left > 0 -%}
+{{'Delay Restore'.ljust(20)}} : {{ vars.delay_restore}} {{'secs'}} {{'('}}{{vars.delay_restore_time_left}} {{'secs left on timer)'}}
+{% else %}
 {{'Delay Restore'.ljust(20)}} : {{ vars.delay_restore}} {{'secs'}}
+{% endif %}
 {{'System Mac'.ljust(20)}} : {{ vars.system_mac}}
 {{'Mclag System Mac'.ljust(20)}} : {{ vars.mclag_system_mac}}
 

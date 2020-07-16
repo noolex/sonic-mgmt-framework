@@ -25,7 +25,7 @@ import collections
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-
+import sonic_intf_utils as ifutils
 vlanDict = {}
 suppressVlanList = []
 
@@ -211,7 +211,7 @@ def run(func, args):
                 for key, val in vlanDict.iteritems():
                     vDict[key] = vlanDict[key].asdict()
                 for key, val in vDict.iteritems():
-                    sortMembers = collections.OrderedDict(sorted(val['vlanMembers'].items(), key=lambda t: t[1]))
+                    sortMembers = collections.OrderedDict(sorted(val['vlanMembers'].items(), key=lambda t: (t[1],ifutils.name_to_int_val(t[0]))))
                     val['vlanMembers'] = sortMembers
                 vDictSorted = collections.OrderedDict(sorted(vDict.items(), key = lambda t: getVlanId(t[0])))
                 vlanDict.clear()

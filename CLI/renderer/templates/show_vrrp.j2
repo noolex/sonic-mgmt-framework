@@ -5,7 +5,6 @@
     {% set vrrpstate = json_output['openconfig-if-ip:vrrp-group'][0]['state'] %}
     {% set vrrpconfig = json_output['openconfig-if-ip:vrrp-group'][0]['config'] %}
     {% set vrrpbase = json_output['openconfig-if-ip:vrrp-group'][0] %}
-    {% set trackinterface = json_output['openconfig-if-ip:vrrp-group'][0]['openconfig-interfaces-ext:vrrp-track-interface'] %}
 
     {{'%s, VRID %s'|format(json_output['ifname'], json_output['vrid'])}}
 
@@ -51,9 +50,9 @@
 
     {{'Track interface:'}}
 
-    {% if 'openconfig-interfaces-ext:vrrp-track-interface' in vrrpbase %}
+    {% if 'openconfig-interfaces-ext:vrrp-track' in vrrpbase %}
         {{'Interface       State  Priority'}}
-        {% for track in vrrpbase['openconfig-interfaces-ext:vrrp-track-interface'] %}
+        {% for track in vrrpbase['openconfig-interfaces-ext:vrrp-track']['vrrp-track-interface'] %}
 
         {% if track['state']['priority-increment'] != 0 %}
         {{ '%-14s     Up  %-8s'|format(track['track-intf'], track['config']['priority-increment']) }}

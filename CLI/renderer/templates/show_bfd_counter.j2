@@ -44,7 +44,7 @@
                     {% if vars.update({'sessionUp':peer['state']['async']['up-transitions']}) %}{% endif %}
                 {% endif %}
             {% endif %}
-            {% if "echo" in peer %}
+            {% if "echo" in peer['state'] %}
                 {% if "transmitted-packets" in peer['state']['echo'] %}
                     {% if vars.update({'echoPktOut':peer['state']['echo']['transmitted-packets']}) %}{% endif %}
                 {% endif %}

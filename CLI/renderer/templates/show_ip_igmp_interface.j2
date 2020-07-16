@@ -1,20 +1,13 @@
 {% set vars = {'all-multicast' : "yes", 'mtrace_response' : "0", 'unsupported' : "0",'v1': "0", 'v2': "0", 'v3': "0"} %}
 
-{% set igmp_global_list = json_output  %}
-{% for list_elem in igmp_global_list %}
-
-{% if 'interfacename' in list_elem %}
-Interface : {{list_elem['interfacename']}}
-{%endif%}
-
-{% if 'openconfig-network-instance:interface' in list_elem %}
-{% set interfacelist = list_elem['openconfig-network-instance:interface'] %}
+{% if 'openconfig-network-instance:interface' in json_output %}
+{% set interfacelist = json_output['openconfig-network-instance:interface'] %}
 {% for interfaceinfo in interfacelist %}
-
 {% if 'state' in interfaceinfo %}
 {% set statelist = interfaceinfo['state']%}
 {% if 'openconfig-igmp-ext:querier' in statelist %}
 {% set querierlist = statelist['openconfig-igmp-ext:querier'] %}
+Interface : {{interfaceinfo['interface-id']}}
 UpTime    : {{statelist['filter-prefixes']}}
 State     : {{querierlist['status']}}
 Address   : {{querierlist['ip-addr']}}
@@ -60,5 +53,4 @@ Promiscuous     : {{flagslist['promiscous']}}
 {% endfor %}
 
 {% endif %}
-{% endfor %}
 
