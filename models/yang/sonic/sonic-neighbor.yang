@@ -117,7 +117,7 @@ module sonic-neighbor {
 							error-message "Invalid ARP timeout value";
 						}
 					}
-					default 1800;
+					default 180;
 					
 					description "ARP timeout value";
 				}
@@ -128,7 +128,7 @@ module sonic-neighbor {
 							error-message "Invalid ND cache expiry value";
 						}
 					}
-					default 1800;
+					default 180;
 					
 					description "ND cache expiry value";
 				}
