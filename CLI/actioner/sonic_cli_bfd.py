@@ -95,6 +95,9 @@ def invoke_api(func, args=[]):
             if intfname == "null":
                 return api._make_error_response('%Error: Interface must be configured for single-hop peer')
 
+            if (("fe80:" in peeraddr) and (localaddr == "null")):
+                return api._make_error_response('%Error: Local address must be configured for IPv6 link-local peer')             
+
             keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-shop-sessions/single-hop={address},{interfacename},{vrfname},{localaddress}/config/enabled', address=peeraddr, interfacename=intfname, vrfname=vrf, localaddress=localaddr)
 
         body = {"openconfig-bfd-ext:enabled": True}
@@ -192,6 +195,9 @@ def invoke_api(func, args=[]):
             if intfname == "null":
                 return api._make_error_response('%Error: Interface must be configured for single-hop peer')
 
+            if (("fe80:" in peeraddr) and (localaddr == "null")):
+                return api._make_error_response('%Error: Local address must be configured for IPv6 link-local peer')
+
             keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-shop-sessions/single-hop={address},{interfacename},{vrfname},{localaddress}',address=peeraddr, interfacename=intfname, vrfname=vrf,localaddress=localaddr)
 
         return api.delete(keypath)
@@ -229,6 +235,9 @@ def invoke_show_api(func, args=[]):
 		else:
                     if intfname == "null":
                         return api._make_error_response('%Error: Interface must be configured for single-hop peer')
+
+                    if (("fe80:" in peeraddr) and (localaddr == "null")):
+                        return api._make_error_response('%Error: Local address must be configured for IPv6 link-local peer')
 
                     keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-shop-sessions/single-hop={address},{interfacename},{vrfname},{localaddress}', address=peeraddr, interfacename=intfname, vrfname=vrf, localaddress=localaddr)
 

@@ -33,6 +33,8 @@ from show_config_logging import *
 from show_config_ldap import *
 from show_config_nat import *
 from show_config_ip_helper import *
+from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
+from show_config_vxlan import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -54,6 +56,7 @@ config_view_hierarchy= \
        'configure-pfc-priority-queue-map',
        'configure-tc-dot1p-map',
        'configure-tc-dscp-map',
+       'configure-link-state-track',
        'config-if-CPU',
        'configure-vlan',
        'configure-lo',
@@ -165,7 +168,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
                   'qos_intf_sched_policy'   : show_qos_intf_scheduler_policy,
-                  'nat_napt_entry'          : show_nat_napt_entry,
+                  'show_running_lst_group'  : show_running_lst_group,
+                  'show_running_lst_interface': show_running_lst_interface,
+                  'vlanvrfvnimap'           : show_vlanvrfvnimap,
                   'logging_server_cmd'      : show_logging_server_cmd,
                   'ldap_server_src_intf'    : show_ldap_server_src_intf,
                   'nat_napt_entry'          : show_nat_napt_entry,

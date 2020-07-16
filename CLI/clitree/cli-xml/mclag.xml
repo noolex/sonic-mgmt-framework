@@ -100,10 +100,11 @@
     </COMMAND>
     <COMMAND name="peer-link" help="Configures MCLAG peer interface">
       <PARAM name="if-subcommands" help="Interface subcommands" mode="switch" ptype="SUBCOMMAND" >
-          <PARAM name="PLK" help="Physical Interface" ptype="PHY_INTERFACE" dbpath="sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST/peer_link"> </PARAM>
-          <PARAM name="PLK" help="PortChannel interface" ptype="PO_INTERFACE" dbpath="sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST/peer_link"></PARAM>
+          <PARAM name="eth-if" help="Physical Interface" ptype="PHY_INTERFACE" dbpath="sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST/peer_link"> </PARAM>
+          <PARAM name="po-if" help="PortChannel interface" ptype="PO_INTERFACE" dbpath="sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST/peer_link"></PARAM>
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_peer_link ${id} ${PLK} ${if-subcommands} </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_mclag
+          patch_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list_peer_link ${id} ${eth-if} ${po-if} ${if-subcommands} </ACTION>
       <DOCGEN>
         <DESCRIPTION>
           Configures MCLAG peer interface 
