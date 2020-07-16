@@ -30,7 +30,7 @@ def run(func, args):
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)
-    if (len(sys.argv) == 2):
+    if sys.argv[1] == 'rpc_sonic_auditlog_show_auditlog':
         func = sys.argv[1]
         itype = "brief"
         run(func, sys.argv[1:])
@@ -38,4 +38,3 @@ if __name__ == '__main__':
         itype = sys.argv[1]
         func = sys.argv[2]
         run(func, sys.argv[2:])
-
