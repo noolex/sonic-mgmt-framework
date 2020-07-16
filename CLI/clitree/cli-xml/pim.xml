@@ -31,6 +31,9 @@ limitations under the License.
     <VIEW name="configure-view">
         <COMMAND
             name="ip pim"
+            command_tables="sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST/vrf-name={vrf_name},address-family={address-family}"
+            command_keys="address-family=ipv4"
+            render_command_cb="pim_ipv4_gbl"
             help="PIM configuration">
             <PARAM
                 name="vrf"

@@ -30,6 +30,7 @@ from show_config_qos import *
 from show_config_logging import *
 from show_config_nat import *
 from show_config_ip_helper import *
+from show_config_pim import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -167,6 +168,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports,
+                  'pim_ipv4_gbl'            : show_pim_ipv4_gbl,
                   'mirror_session'          : show_mirror_session
  }
 
