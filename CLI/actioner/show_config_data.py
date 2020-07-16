@@ -22,6 +22,7 @@ from show_config_bgp import *
 from show_config_table_sort import *
 from show_config_ptp import *
 from show_config_errdisable import *
+from show_config_spanning_tree import *
 from show_config_routepolicy import *
 from show_config_copp import *
 from show_config_crm import *
@@ -219,7 +220,17 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'if_lag_config'           : show_if_lag_config,
 		  'tam_config'              : show_tam_config,
                   'ip_sla_config'           : show_ip_sla_config,
-		  'switch_resource_flow_scale_entry' : show_switch_resource_flow_scale_entry
+		  'switch_resource_flow_scale_entry' : show_switch_resource_flow_scale_entry,
+                  'ldap_map_config'         : show_ldap_map_config,
+                  'spanning_tree_vlan'      : show_config_spanning_tree_vlan,
+                  'no_spanning_tree_vlan'   : show_config_no_spanning_tree_vlan,
+                  'spanning_tree_intf'      : show_config_spanning_tree_intf,
+                  'spanning_tree_intf_vlan' : show_config_spanning_tree_intf_vlan,
+                  'spanning_tree_global_hello_time'  : show_config_spanning_tree_global_hello_time,
+                  'spanning_tree_global_max_age'     : show_config_spanning_tree_global_max_age,
+                  'spanning_tree_global_priority'    : show_config_spanning_tree_global_priority,
+                  'spanning_tree_global_fwd_delay'   : show_config_spanning_tree_global_fwd_delay,
+                  'spanning_tree_global_root_guard_timeout' : show_config_spanning_tree_global_root_guard_time,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
