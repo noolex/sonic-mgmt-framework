@@ -21,16 +21,21 @@ from show_config_interface import *
 from show_config_bgp import *
 from show_config_table_sort import *
 from show_config_ptp import *
+from show_config_errdisable import *
 from show_config_routepolicy import *
 from show_config_copp import *
-from show_config_static_routes import *
+from show_config_crm import *
 from show_config_mirror import *
+from show_config_static_routes import *
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
+from show_config_ldap import *
 from show_config_nat import *
 from show_config_ip_helper import *
 from show_config_pim import *
+from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
+from show_config_vxlan import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -52,6 +57,7 @@ config_view_hierarchy= \
        'configure-pfc-priority-queue-map',
        'configure-tc-dot1p-map',
        'configure-tc-dscp-map',
+       'configure-link-state-track',
        'config-if-CPU',
        'configure-vlan',
        'configure-lo',
@@ -123,6 +129,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
                   'copp_police'             : show_copp_police,
+                  'crm_config'              : show_crm_config,
                   'sflow_source_if'         : show_sflow_source_if,
                   'qos_map_dscp_tc_cb'      : qos_map_dscp_tc_cb,
                   'qos_map_dot1p_tc_cb'     : qos_map_dot1p_tc_cb,
@@ -162,14 +169,19 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
                   'qos_intf_sched_policy'   : show_qos_intf_scheduler_policy,
-                  'nat_napt_entry'          : show_nat_napt_entry,
+                  'show_running_lst_group'  : show_running_lst_group,
+                  'show_running_lst_interface': show_running_lst_interface,
+                  'vlanvrfvnimap'           : show_vlanvrfvnimap,
                   'logging_server_cmd'      : show_logging_server_cmd,
+                  'ldap_server_src_intf'    : show_ldap_server_src_intf,
                   'nat_napt_entry'          : show_nat_napt_entry,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports,
                   'pim_ipv4_gbl'            : show_pim_ipv4_gbl,
-                  'mirror_session'          : show_mirror_session
+                  'mirror_session'          : show_mirror_session,
+                  'errdisable_cause'        : show_config_errdisable_cause,
+                  'ldap_map_config'         : show_ldap_map_config
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

@@ -52,7 +52,7 @@
     </VIEW>
     <VIEW name="configure-if-view">
         <COMMAND name="storm-control" help="Configure storm-control"/>
-        <COMMAND name="storm-control broadcast" help="Configure storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=broadcast">
+        <COMMAND name="storm-control broadcast" help="Configure broadcast storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=broadcast">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/kbps"> </PARAM>
             <ACTION builtin="clish_pyobj"> 
                 sonic_cli_storm_control patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} broadcast ${kbps}
@@ -71,7 +71,7 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name="storm-control unknown-unicast" help="Configure storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=unknown-unicast">
+        <COMMAND name="storm-control unknown-unicast" help="Configure unknown-unicast storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=unknown-unicast">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/kbps"> </PARAM>
             <ACTION builtin="clish_pyobj"> 
                 sonic_cli_storm_control patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} unknown-unicast ${kbps}
@@ -90,7 +90,7 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name="storm-control unknown-multicast" help="Configure storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=unknown-multicast">
+        <COMMAND name="storm-control unknown-multicast" help="Configure unknown-multicast storm-control" command_tables="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/ifname={name},storm_type={type}" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/storm_type=unknown-multicast">
             <PARAM name="kbps" help="kbps value" ptype="RL_RATE_TYPE" dbpath="sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST/kbps"> </PARAM>
             <ACTION builtin="clish_pyobj"> 
                 sonic_cli_storm_control patch_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} unknown-multicast ${kbps}
@@ -110,8 +110,8 @@
             </DOCGEN>
         </COMMAND>
         <!-- no storm-control -->
-        <COMMAND name="no storm-control" help="Configure storm-control"/>
-        <COMMAND name="no storm-control broadcast" help="Configure storm-control">
+        <COMMAND name="no storm-control" help="Unconfigure storm-control"/>
+        <COMMAND name="no storm-control broadcast" help="Unconfigure broadcast storm-control">
             <ACTION builtin="clish_pyobj"> 
                 sonic_cli_storm_control delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} broadcast
             </ACTION>
@@ -129,7 +129,7 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name="no storm-control unknown-unicast" help="Configure storm-control">
+        <COMMAND name="no storm-control unknown-unicast" help="Unconfigure unknown-unicast storm-control">
             <ACTION builtin="clish_pyobj"> 
                 sonic_cli_storm_control delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} unknown-unicast
             </ACTION>
@@ -147,7 +147,7 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name="no storm-control unknown-multicast" help="Configure storm-control">
+        <COMMAND name="no storm-control unknown-multicast" help="Unconfigure unknown-multicast storm-control">
             <ACTION builtin="clish_pyobj"> 
                 sonic_cli_storm_control delete_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list ${iface} unknown-multicast
             </ACTION>

@@ -620,8 +620,8 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="no snmp-server enable" help="Configure SNMP Traps">
-    <PARAM name="trap" help="Enable traps" ptype="SUBCOMMAND"  mode="subcommand"/>
+  <COMMAND name="no snmp-server enable" help="Disable SNMP Traps">
+    <PARAM name="trap" help="Disable traps" ptype="SUBCOMMAND"  mode="subcommand"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_trap disable</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -637,7 +637,7 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="no snmp-server engine" help="Configure SNMP Engine ID">
+  <COMMAND name="no snmp-server engine" help="Remove SNMP Engine ID">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_engine</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -653,7 +653,7 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="no snmp-server agentaddress" help="Configure SNMP Agent Address">
+  <COMMAND name="no snmp-server agentaddress" help="Remove SNMP Agent Address">
     <PARAM name="host-addr" help="Host address, IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR">
       <PARAM name="port" help="UDP Listening Port" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="udp-port" help="UDP Listening Port" ptype="LISTEN_PORT" />
@@ -739,7 +739,7 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
         no snmp-server user username
 ========================================================================= -->
   <COMMAND name="no snmp-server user" help="Remove SNMP User" ptype="SUBCOMMAND" mode="subcommand">
-    <PARAM name="username" help="Unique SNMP Group Name" ptype="SNMP_IDENTIFIER">
+    <PARAM name="username" help="Unique SNMP User Name" ptype="SNMP_IDENTIFIER">
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_user_delete  ${username}</ACTION>
     <DOCGEN>
