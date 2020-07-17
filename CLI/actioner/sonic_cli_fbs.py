@@ -26,9 +26,16 @@ import cli_log as log
 from sonic_cli_acl import pcp_map, proto_number_map, dscp_map, ethertype_map
 from natsort import natsorted
 import sonic_cli_acl
+import ipaddress
+
 
 fbs_client = cc.ApiClient()
 TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
+
+
+class FbsAclCLIError(RuntimeError):
+    """Indicates CLI processing errors that needs to be displayed to user"""
+    pass 
 
 
 def create_policy_copp(args):
@@ -151,6 +158,23 @@ def __format_mac_addr(macaddr):
     return "{}{}:{}{}:{}{}:{}{}:{}{}:{}{}".format(*macaddr.translate(None, ".:-"))
 
 
+def __validate_ip_address(addr, af):
+    try:
+        if 'ip' == af:
+            ipaddress.IPv4Network(addr.decode('utf-8'))
+        else:
+            ipaddress.IPv6Network(addr.decode('utf-8'))
+    except ipaddress.AddressValueError as e:
+        log.log_error(str(e))
+        raise FbsAclCLIError("Invalid {} prefix {}".format("IPv4" if 'ip' == af else 'IPv6', addr))
+    except ipaddress.NetmaskValueError as e:
+        log.log_error(str(e))
+        raise FbsAclCLIError("Invalid mask for {} address {}".format("IPv4" if 'ip' == af else 'IPv6', addr))
+    except ValueError as e:
+        log.log_error(str(e))
+        raise FbsAclCLIError("{}. Please fix the {} address or prefix length".format(str(e), "IPv4" if 'ip' == af else 'IPv6'))
+
+
 def __set_match_address(addr_type, args):
     if 'mac' == args[1]:
         keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/l2/config', class_name=args[0])
@@ -163,14 +187,17 @@ def __set_match_address(addr_type, args):
         else:
             body["openconfig-fbs-ext:config"]["{}-mac".format(addr_type)] = __format_mac_addr(args[2])
             body["openconfig-fbs-ext:config"]["{}-mac-mask".format(addr_type)] = __format_mac_addr(args[3])
-    elif 'ip' == args[1]:
-        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/{addr_type}-address',
-                          class_name=args[0], addr_type=addr_type)
-        body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/32'}
-    elif 'ipv6' == args[1]:
-        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/{addr_type}-address',
-                          class_name=args[0], addr_type=addr_type)
-        body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/128'}
+    else: 
+        __validate_ip_address(args[2] if args[2] != 'host' else args[3], args[1])
+
+        if 'ip' == args[1]:
+            keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/{addr_type}-address',
+                              class_name=args[0], addr_type=addr_type)
+            body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/32'}
+        elif 'ipv6' == args[1]:
+            keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/{addr_type}-address',
+                              class_name=args[0], addr_type=addr_type)
+            body = {"openconfig-fbs-ext:{}-address".format(addr_type): args[2] if args[2] != 'host' else args[3] + '/128'}
 
     return fbs_client.patch(keypath, body)
 
@@ -1557,6 +1584,9 @@ def run(op_str, args):
         resp = request_handlers[op_str](correct_args)
         if resp:
             return response_handlers[op_str](resp, correct_args, op_str)
+    except FbsAclCLIError as e:
+        print("%Error: {}".format(e.message))
+        return -1
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))
