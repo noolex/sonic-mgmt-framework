@@ -198,7 +198,7 @@ def invoke(func, args):
             body = { modName+"to": args[3] } 
             return aa.patch(keypath, body)
         else:
-            keypath = cc.Path(baseLdapUri+modName+'ldap/maps/map='+mapName+','+args[1]+'/config/to')
+            keypath = cc.Path(baseLdapUri+modName+'ldap/maps/map='+mapName+','+args[1])
             return aa.delete(keypath)
     elif func == 'ldap_server_src_if_config':
         path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/source-interface')
