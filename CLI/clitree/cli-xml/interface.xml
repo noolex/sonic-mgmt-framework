@@ -199,7 +199,7 @@ limitations under the License.
              </PARAM>
              <PARAM
                  name="iface_range_num"
-                 help="Physical Interface range"
+                 help="Physical interface ID/range"
                  ptype="ETHER_INTERFACE_RANGE"
                  >
              </PARAM>
@@ -212,7 +212,7 @@ limitations under the License.
                  >
                  <PARAM
                      name="po-id"
-                     help="PortChannel ID"
+                     help="PortChannel ID/range"
                      ptype="PO_RANGE"
                      optional="true"
                      >
@@ -227,7 +227,7 @@ limitations under the License.
                  >
                  <PARAM
                     name="mgmt-if-id"
-                    help="Management interface id"
+                    help="Management interface ID"
                     ptype="MGMT_INTF_ID"
                     optional="true"
                     >
@@ -236,7 +236,7 @@ limitations under the License.
              <!-- show interface Vlan-->
              <PARAM
                  name="vlan_range_num"
-                 help="Vlan Interface range"
+                 help="VLAN ID/range"
                  ptype="VLAN_INTERFACE_RANGE"
                  >
              </PARAM>
@@ -664,13 +664,13 @@ limitations under the License.
             >
             <PARAM
                 name="vlan_range_num"
-                help="VLAN interface range"
+                help="VLAN ID/range"
                 ptype="VLAN_INTERFACE_RANGE"
                 >
             </PARAM>
             <PARAM
                 name="po_range_num"
-                help="PortChannel interface range"
+                help="PortChannel ID/range"
                 ptype="PO_INTERFACE_RANGE"
                 >
             </PARAM>

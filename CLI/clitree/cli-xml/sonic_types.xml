@@ -109,7 +109,7 @@ limitations under the License.
     <PTYPE 
         name="VLAN_INTERFACE_RANGE"
         method="regexp_select"
-        ext_pattern="Vlan(1-4094)"
+        ext_pattern="Vlan(1..4094)"
         pattern="&VLAN_ALL_INTF_RANGE;"
         help="Interface Vlan Range"
         />
@@ -124,8 +124,10 @@ limitations under the License.
     <!--=======================================================-->
     <PTYPE 
         name="PO_RANGE"
+        method="regexp_select"
+        ext_pattern="(1..256)"
         pattern="&PO_RNG;"
-        help="Interface PortChannel Range"
+        help="PortChannel Range"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1377,14 +1379,14 @@ limitations under the License.
        <PTYPE
         name="CIR_PIR_KBPS"
         method="integer"
-        pattern="0..400000000"
+        pattern="32..400000000"
         help=""
         />
     <!--=======================================================-->
        <PTYPE
         name="BURST"
         method="integer"
-        pattern="0..100000"
+        pattern="256..128000000"
         help=""
         />
     <!--=======================================================-->

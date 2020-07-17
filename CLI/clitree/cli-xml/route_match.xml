@@ -241,8 +241,8 @@ limitations under the License.
         help="Set routing policy match criteria to local-preference"
         >
         <PARAM name="match-loc"
-                     help="local-preference (1-4294967295)"
-                     ptype="UINT"
+                     help="local-preference"
+                     ptype="RANGE_0_4294967295"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_local_pref"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_local_pref_eq ${name} ${seq_num} ${match-loc}</ACTION>

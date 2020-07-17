@@ -69,21 +69,23 @@ def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
     if func == 'put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
-        name = args[0] + ',' + args[1]
+        name = args[0] + ',' + args[1] + ',' + args[2]
         path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/collectors/collector=' + name)
         body = {
               "collector": [
               {
                   "address": args[0],
                   "port": int(args[1]),
+                  "vrf": args[2],
                   "config": {
                       "address": args[0],
                       "port": int(args[1]),
+                      "vrf": args[2]
                   }
               }]}
         return api.put(path, body)
     elif func == 'delete_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
-        name = args[0] + ',' + args[1]
+        name = args[0] + ',' + args[1] + ',' + args[2]
         path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/collectors/collector=' + name)
         return api.delete(path)
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
