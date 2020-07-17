@@ -33,7 +33,7 @@ NAME1='bgp'
 DELETE_OCPREFIX='delete_'
 DELETE_OCPREFIX_LEN=len(DELETE_OCPREFIX)
 
-GLOBAL_OCSTRG='openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global'
+GLOBAL_OCSTRG='openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp'
 GLOBAL_OCSTRG_LEN=len(GLOBAL_OCSTRG)
 DELETE_GLOBAL_OCPREFIX=DELETE_OCPREFIX+GLOBAL_OCSTRG
 DELETE_GLOBAL_OCPREFIX_LEN=len(DELETE_GLOBAL_OCPREFIX)
@@ -2071,7 +2071,7 @@ def parseGlobl(vrf_name, cmd, args=[]):
                  if aft == 'IPV6_UNICAST' and proto == 'ospf':
                     rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name ] + [ aft, 'ospf3' ])
                  rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name ] + [ aft, proto ])
-         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global', [ vrf_name ])
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp', [ vrf_name ])
     elif cmd == 'max-med':
          if not argds.get('maxmedval'):
              if argds.get('maxmedopts') == 'on-startup':
