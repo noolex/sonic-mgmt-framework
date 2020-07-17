@@ -165,7 +165,7 @@ def invoke_api(func, args=[]):
     keypath = []
     
     if func == 'global_config':
-        keypath = cc.Path('/restconf/data/openconfig-ip-helper:ip-helper/config')
+        keypath = cc.Path('/restconf/data/openconfig-ip-helper:ip-helper/state')
         response = api.get(keypath)
         return response
     elif func == 'iface_config':

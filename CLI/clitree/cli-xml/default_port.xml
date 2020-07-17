@@ -26,5 +26,26 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
+        <COMMAND
+            name="default interface range"
+            help="Apply default configuration on an interface range"
+            mode="subcommand"
+            ptype="STRING"
+            >
+            <PARAM
+                name="range_option"
+                help=""
+                mode="switch"
+                ptype="SUBCOMMAND"
+            >
+            <PARAM
+                name="iface_range_num"
+                help="Physical interface range"
+                ptype="ETHER_INTERFACE_RANGE"
+                mode="subcommand"
+                />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range default_port_config_range iflist=${ethiflist}</ACTION>
+        </COMMAND>
     </VIEW>
 </CLISH_MODULE>

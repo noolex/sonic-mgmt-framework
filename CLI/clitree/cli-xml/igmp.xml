@@ -37,6 +37,26 @@
             </DOCGEN>
     </COMMAND>
     <COMMAND
+        name="show ip igmp join"
+        help="IGMP joins information">
+        <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_joins show_ip_igmp_joins.j2 ${vrf-name} </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IGMP static join information
+                </DESCRIPTION>
+                <USAGE>
+                    sonic# show ip igmp join
+                </USAGE>
+                <EXAMPLE summary="show ip igmp join">
+                    #show ip igmp join
+                    Interface        Address         Source          Group           Socket Uptime  
+                    Ethernet8        *               90.0.0.2        232.1.1.1           15 00:00:07
+                    Ethernet8        *               91.0.0.2        232.1.1.1           16 00:00:07
+
+                </EXAMPLE>
+            </DOCGEN>
+    </COMMAND>
+    <COMMAND
         name="show ip igmp interface"
         help="IGMP interface information">
         <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="false">
@@ -159,6 +179,10 @@
 
       <PARAM name = "sources" help="IGMP sources information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
       </PARAM>
+
+      <PARAM name = "join" help="IGMP static join information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      </PARAM>
+
       </PARAM>
 
       <ACTION builtin="clish_pyobj">
