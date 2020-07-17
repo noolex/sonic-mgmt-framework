@@ -19,7 +19,7 @@ limitations under the License.
 
 <MACRODEF name="BIND-INTF-TO-OSPF">
 
-    <COMMAND name = "ip ospf" help = "OSPF interface commands" >
+    <COMMAND name = "ip ospf" help = "OSPF interface commands" command_keys="name=*,address=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE/OSPFV2_INTERFACE_LIST/name={name},address={address}" render_command_cb='interface_ip_ospf'>
     </COMMAND>
 
     <COMMAND name = "no ip ospf" help = "OSPF interface commands" >

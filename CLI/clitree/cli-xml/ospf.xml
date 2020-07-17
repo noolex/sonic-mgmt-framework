@@ -24,7 +24,7 @@ limitations under the License.
     >
 
 <VIEW name="configure-view">
-  <COMMAND name="router ospf" help="Start OSPF configuration" view="configure-router-ospf-view" viewid="vrf-name=${vrf-name}">
+  <COMMAND name="router ospf" help="Start OSPF configuration" view="configure-router-ospf-view" viewid="vrf-name=${vrf-name}" view_keys="vrf_name=*" view_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER/OSPFV2_ROUTER_LIST/vrf_name={vrf-name}" render_command_cb='router_ospf'>
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
       <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
     </PARAM>
@@ -45,7 +45,11 @@ limitations under the License.
 <VIEW name="configure-router-ospf-view" prompt="${SYSTEM_NAME}(config-router-ospf)# " depth="2">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
 
-  <COMMAND name="area" help="OSPF area parameters" >
+  <COMMAND name="show configuration" help="show ospf configuration">
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-ospf view_keys="vrf-name=${vrf-name}"</ACTION>
+  </COMMAND>
+
+  <COMMAND name="area" help="OSPF area parameters" command_keys="vrf_name=*,area-id=*,prefix=*,remote-router-id=*,protocol=*,direction=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST/vrf_name={vrf-name},area-id={area-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_VIRTUAL_LINK/OSPFV2_ROUTER_AREA_VIRTUAL_LINK_LIST/vrf_name={vrf-name},area-id={area-id},remote-router-id={remote-router-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE/OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE_LIST/vrf_name={vrf-name},area-id={area-id},prefix={prefix};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_DISTRIBUTE_ROUTE/OSPFV2_ROUTER_DISTRIBUTE_ROUTE_LIST/vrf_name={vrf-name},protocol={protocol},direction={direction}" render_command_cb='router_ospf_area'>
       <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "AREA_NUM_DOT" />
       <PARAM name = "areacmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" > 
         <PARAM name="authentication" help="Enable authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true">
@@ -716,7 +720,7 @@ limitations under the License.
     <ACTION builtin="clish_nop"></ACTION>
   </COMMAND>
 -->
-  <COMMAND name="network" help="Enable routing on an IP network" >
+  <COMMAND name="network" help="Enable routing on an IP network" command_keys="vrf_name=*,area-id=*,prefix=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_NETWORK/OSPFV2_ROUTER_AREA_NETWORK_LIST/vrf_name={vrf-name},area-id={area-id},prefix={prefix}" render_command_cb='router_ospf_area_network'>
     <PARAM name="ipaddrmask" help="OSPF network prefix" ptype="IP_ADDR_MASK" >
       <PARAM name="area" help="Set the OSPF area ID" ptype="SUBCOMMAND" mode="subcommand">
         <PARAM name = "areaid" help = "OSPF area ID as a decimal value/IP address format" ptype = "AREA_NUM_DOT" />
@@ -800,7 +804,7 @@ limitations under the License.
     </ACTION>
   </COMMAND>
 
-  <COMMAND name="passive-interface" help="Suppress routing updates on an interface" >
+  <COMMAND name="passive-interface" help="Suppress routing updates on an interface" command_keys="vrf_name=*,name=*,address=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_PASSIVE_INTERFACE/OSPFV2_ROUTER_PASSIVE_INTERFACE_LIST/vrf_name={vrf-name},name={name},address={address}" render_command_cb='router_ospf_passive_interface'>
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="default" help="Suppress routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand"/>
       <PARAM name = "interfacename" help = "Interface's name" ptype = "PHY_VL_PO_LB_INTERFACE" >
@@ -1153,6 +1157,20 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
 
+
+  <COMMAND name="show running-configuration ospf" help="Show all OSPFv2 router configurations">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-router-ospf</ACTION>
+  </COMMAND>
+
+<!--
+  <COMMAND name="show running-configuration ospf all" help="Show all OSPFv2 configurations">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-lo,configure-if,configure-lag,configure-vlan,configure-router-ospf</ACTION>
+  </COMMAND>
+
+  <COMMAND name="show running-configuration interface ospf" help="Show all OSPFv2 interface configurations">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-lo,configure-if,configure-lag,configure-vlan</ACTION>
+  </COMMAND>
+-->
 
     <COMMAND name = "show ip ospf" help = "OSPF information" >
       <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">

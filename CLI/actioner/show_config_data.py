@@ -32,6 +32,7 @@ from show_config_qos import *
 from show_config_logging import *
 from show_config_ldap import *
 from show_config_nat import *
+from show_config_ospfv2 import *
 from show_config_ip_helper import *
 from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
 from show_config_vxlan import *
@@ -63,6 +64,7 @@ config_view_hierarchy= \
        'configure-lag',
        'configure-route-map',
        'configure-router-bgp',
+       'configure-router-ospf',
        'configure-vxlan',
        'copp-action',
        'configure-mclag',
@@ -171,6 +173,14 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports,
+                  'router_ospf'             : show_router_ospf_config,
+                  'router_ospf_area'        : show_router_ospf_area_config,
+                  'router_ospf_area_network' : show_router_ospf_area_network_config,
+                  'router_ospf_area_vlink'   : show_router_ospf_area_vlink_config,
+                  'router_ospf_area_addr_range' : show_router_ospf_area_addr_range_config,
+                  'router_ospf_distribute_route' : show_router_ospf_distribute_route_config,
+                  'router_ospf_passive_interface' : show_router_ospf_passive_interface_config,
+                  'interface_ip_ospf' : show_interface_ip_ospf_config,
                   'mirror_session'          : show_mirror_session,
                   'errdisable_cause'        : show_config_errdisable_cause,
                   'ldap_map_config'         : show_ldap_map_config
