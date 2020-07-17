@@ -190,5 +190,62 @@
 
     </COMMAND>
 
+    <COMMAND
+        help="clear IP  commands"
+        name="clear ip igmp"
+        >
+    </COMMAND>
+
+
+    <COMMAND name = "clear ip igmp vrf"
+        help = "Clear igmp for all interfaces for vrf"
+        >
+        <PARAM name="vrf-name" help="VRF Name" ptype="STRING" optional="false" >
+            <PARAM name="interfaces" help="Interface" ptype="SUBCOMMAND" mode="subcommand">
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_igmp clear_igmp_vrf vrf=${vrf-name}
+        </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          This command clears/resets igmp .
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to clear igmp. Following is a partial list of
+          information with command syntax that can be cleared.
+          - clear ip igmp vrf VRF-NAME interfaces
+            This command clears all igmp in VRF VRF-NAME
+        </USAGE>
+        <EXAMPLE summary="Below command clear igmp">
+          sonic# clear ip igmp vrf default interfaces
+        </EXAMPLE>
+      </DOCGEN>
+
+    </COMMAND>
+
+    <COMMAND name = "clear ip igmp interfaces"
+        help = "Clear ip for all interfaces"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_igmp clear_igmp
+        </ACTION>
+        <DOCGEN>
+        <DESCRIPTION>
+          This command clears/resets igmp .
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to clear igmp. Following is a partial list of
+          information with command syntax that can be cleared.
+          - clear ip igmp interfaces
+            This command clears all igmp
+        </USAGE>
+        <EXAMPLE summary="Below command clear igmp">
+          sonic# clear ip igmp interfaces
+        </EXAMPLE>
+      </DOCGEN>
+
+    </COMMAND>
+
 </VIEW>
 </CLISH_MODULE>

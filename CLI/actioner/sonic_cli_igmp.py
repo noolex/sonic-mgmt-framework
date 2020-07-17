@@ -242,6 +242,17 @@ def invoke_show_api(func, args=[]):
                  generate_show_ip_igmp_vrf_all_joins(args)
               else:
                  generate_show_ip_igmp_joins(args)
+    elif func == 'clear_igmp' :
+        keypath = cc.Path('/restconf/operations/sonic-igmp:clear-igmp')
+        vrfname = "default"
+        body = {"sonic-igmp:input": { "vrf-name" : vrfname,"interface_all" : True } }
+        return api.post(keypath, body)
+    elif func == 'clear_igmp_vrf' :
+        vrfname = ""
+        keypath = cc.Path('/restconf/operations/sonic-igmp:clear-igmp')
+        _, vrfname = args[0].split("=")
+        body = {"sonic-igmp:input": { "vrf-name" : vrfname,"interface_all" : True } }
+        return api.post(keypath, body)
     else: 
         return api.cli_not_implemented(func)
 
