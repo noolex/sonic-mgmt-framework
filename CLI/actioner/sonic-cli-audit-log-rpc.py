@@ -16,7 +16,8 @@ def run(func, args):
             body = { "sonic-auditlog:input": {"content-type" : ""} }
         response = aa.post(keypath, body)
         if response.ok():
-            print(response.content["sonic-show-auditlog:output"]["audit-content"])
+            api_response = response.content["sonic-show-auditlog:output"]["audit-content"] 
+            show_cli_output("show_audit_log_rpc.j2", api_response)
         else:
             print(response.error_message())
 
