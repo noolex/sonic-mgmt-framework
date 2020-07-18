@@ -104,8 +104,6 @@ write_resp:
 	if r.RemoteAddr != "@" {
 		auditMsg := fmt.Sprintf("[%s] User \"%s@%s\" request \"%s %s\" status - %d",
 				reqID, rc.Auth.User, r.RemoteAddr, r.Method, r.URL.Path, status)
-		//auditMsg := fmt.Sprintf("[%s] %s received from '%s@%s' for %s status - %d",
-	        //		reqID, r.Method, rc.Auth.User, r.RemoteAddr, r.URL.Path, status)
 		Writer.Info(auditMsg)
 	}
 
