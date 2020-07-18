@@ -13,5 +13,9 @@
 {%else %}
 {{'bpduguard           disabled'}}
 {%endif%}
+{% if errdisable_info['config']['interval'] %}
 {{'Timeout for Auto-recovery: '}} {{errdisable_info['config']['interval']}} seconds
+{%else %}
+{{'Timeout for Auto-recovery: 300 seconds'}}
+{%endif%}
 {%endif%}
