@@ -1289,14 +1289,14 @@ limitations under the License.
 
         <PARAM name="interface" help="Interface information" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name="traffic" help="Protocol Packet counters" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
-          <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="true"/>
+          <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" optional="true"/>
         </PARAM>
 
         <PARAM name="neighbor" help="Neighbor list" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name = "neighborshowtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
             <PARAM name = "neighip" help = "Neighbor ID" ptype = "IP_ADDR" optional="true" />
             <PARAM name="all" help="include down status neighbor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
-            <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="true"/>
+            <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" optional="true"/>
           </PARAM>
           <PARAM name="detail" help="detail of all neighbors" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
         </PARAM>
