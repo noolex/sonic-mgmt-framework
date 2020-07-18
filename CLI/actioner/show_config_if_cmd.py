@@ -43,6 +43,18 @@ def show_render_if_cmd(table_rec, attr_name, cmd_prfx, cmd_str):
            pass
     return cmd_str
 
+def format_intf_name(intf):
+    if intf.startswith('Eth'):
+        return intf
+    if intf.startswith('Vlan'):
+        return 'Vlan ' + intf[len('Vlan'):]
+    if intf.startswith('PortChannel'):
+        return 'PortChannel ' + intf[len('PortChannel'):]
+    if intf.startswith('Loopback'):
+        return 'Loopback ' + intf[len('Loopback'):]
+    if intf.startswith('eth'):
+        return 'Management ' + intf[len('eth'):]
+    return intf
 
 def show_get_if_cmd(render_tables, table_name, attr_name, cmd_prfx):
 

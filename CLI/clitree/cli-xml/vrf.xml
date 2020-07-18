@@ -37,12 +37,50 @@ limitations under the License.
         <ACTION 
             builtin="clish_pyobj">sonic_cli_vrf get_openconfig_network_instance_network_instances_network_instances show_vrf.j2 ${vrf-name}
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Display configuration information for a specified VRF and its associated interfaces or
+                all VRF and their associated interfaces.
+            </DESCRIPTION>
+            <USAGE>
+                sonic# show ip vrf
+            </USAGE>
+            <EXAMPLE summary="Display all VRF with their associated interfaces">
+                sonic# show ip vrf
+                VRF-NAME            INTERFACES
+                ----------------------------------------------------------------
+                mgmt                eth0
+                Vrf_red             Ethernet16
+                                    Ethernet8
+            </EXAMPLE>
+            <EXAMPLE summary="Display a specified VRF with its associated interface">
+                sonic# show ip vrf Vrf_red
+                VRF-NAME            INTERFACES
+                ----------------------------------------------------------------
+                Vrf_red             Ethernet16
+                                    Ethernet8
+            </EXAMPLE>
+        </DOCGEN>
       </COMMAND>
 
       <COMMAND name="show ip vrf mgmt" help="Show management VRF information">
         <ACTION 
           builtin="clish_pyobj">sonic_cli_vrf get_openconfig_network_instance_network_instances_network_instances show_vrf.j2 mgmt
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Display configuration information for management VRF.
+            </DESCRIPTION>
+            <USAGE>
+                sonic# show ip vrf mgmt
+            </USAGE>
+            <EXAMPLE summary="Display management VRF">
+                sonic# show ip vrf mgmt
+                VRF-NAME            INTERFACES
+                ----------------------------------------------------------------
+                mgmt                eth0
+            </EXAMPLE>
+        </DOCGEN>
       </COMMAND>
     </VIEW>
 
@@ -52,6 +90,18 @@ limitations under the License.
       <ACTION 
         builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances body={ "openconfig-network-instance:network-instances":{"network-instance": [ { "name": "mgmt", "config" : { "name": "mgmt", "type": "L3VRF", "enabled": true } } ] } }
       </ACTION> 
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure management VRF.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# ip vrf mgmt
+          </USAGE>
+          <EXAMPLE summary="Configure management VRF">
+              sonic# configure terminal
+              sonic(config)# ip vrf mgmt
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
     
     <COMMAND
@@ -63,7 +113,7 @@ limitations under the License.
       >
       <PARAM
         name="vrf-name"
-        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        help="Name of VRF (prefixed by Vrf)"
         ptype="STRING_15"
         dbpath="sonic-vrf:sonic-vrf/VRF/VRF_LIST/vrf_name"
         >
@@ -72,6 +122,19 @@ limitations under the License.
         builtin="clish_restcl">oper=PATCH
 url=/restconf/data/openconfig-network-instance:network-instances body={ "openconfig-network-instance:network-instances": {"network-instance":[ { "name": "${vrf-name}", "config" : { "name": "${vrf-name}", "type": "L3VRF", "enabled": true } } ] } }
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure a data VRF.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# ip vrf VRF
+              VRF: Name of VRF (Max: 15 characters, prefixed by Vrf)
+          </USAGE>
+          <EXAMPLE summary="Configure a data VRF">
+              sonic# configure terminal
+              sonic(config)# ip vrf Vrf_red
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <!-- no vrf commands -->
@@ -79,6 +142,18 @@ url=/restconf/data/openconfig-network-instance:network-instances body={ "opencon
       <ACTION 
         builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=mgmt
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Delete management VRF.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# no ip vrf mgmt
+          </USAGE>
+          <EXAMPLE summary="Delete management VRF">
+              sonic# configure terminal
+              sonic(config)# no ip vrf mgmt
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -89,13 +164,26 @@ url=/restconf/data/openconfig-network-instance:network-instances body={ "opencon
       >
       <PARAM
         name="vrf-name"
-        help="Name of VRF (Max size 15, prefixed by Vrf)"
+        help="Name of VRF (prefixed by Vrf)"
         ptype="STRING_15"
         >
       </PARAM>
       <ACTION
         builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Delete a data VRF.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# no ip vrf VRF
+              VRF: Name of VRF (Max: 15 characters, prefixed by Vrf)
+          </USAGE>
+          <EXAMPLE summary="Delete a data VRF">
+              sonic# configure terminal
+              sonic(config)# no ip vrf Vrf_red
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     </VIEW>
@@ -116,7 +204,7 @@ url=/restconf/data/openconfig-network-instance:network-instances body={ "opencon
     <MACRO name="BIND-INTF-TO-VRF" arg="${po_name},${po_name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/pch_name={name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/vrf_name"></MACRO>
 </VIEW>
 
-<VIEW name="configure-lag-range-view">
+<VIEW name="configure-po-range-view">
     <MACRO name="BIND-INTF-RNG-TO-VRF" arg="${iflist}"></MACRO>
 </VIEW>
 

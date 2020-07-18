@@ -155,7 +155,12 @@ limitations under the License.
     </COMMAND>
   </VIEW>
   <VIEW name="configure-view">
-    <COMMAND name="crm" help="Configure Critical Resource Monitoring">
+    <COMMAND name="crm"
+             help="Configure Critical Resource Monitoring"
+             command_keys="type=Config"
+             command_tables="sonic-system-crm:sonic-system-crm/CRM/CRM_LIST={type}"
+             render_command_cb="crm_config"
+             >
       <PARAM name="crm-subcmd-1st" help="" mode="switch" ptype="SUBCOMMAND">
         <!-- crm polling interval <seconds> -->
         <PARAM name="polling" help="CRM Polling Configuration" mode="subcommand" ptype="SUBCOMMAND">

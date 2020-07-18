@@ -81,10 +81,14 @@ limitations under the License.
   </VIEW>
   <VIEW name="configure-view">
     <COMMAND name="sflow" help="sFlow Configurations"/>
-    <COMMAND name="sflow collector" help="sFlow Collector" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_name={ip}_{port}_default">
+    <COMMAND name="sflow collector" help="sFlow Collector" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_name={ip}_{port}_{vrf_name}">
        <PARAM name="ip" help="Collector IP address" ptype="IPV4_OR_IPV6_ADDR" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_ip"/>
        <PARAM name="port" help="Collector port number (default: 6343)" ptype="RANGE_0_65535" optional="true" default="6343" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_port"/>
-        <ACTION builtin="clish_pyobj">sonic_cli_sflow put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list ${ip} ${port} default</ACTION>
+
+       <PARAM name="vrf" help="sFlow Collector VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name="vrf_name" help="Collector VRF name (default or mgmt)" ptype="STRING_16" default="default" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_vrf"/>
+       </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_sflow put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list ${ip} ${port} ${vrf_name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>Add an sFLow Collector</DESCRIPTION>
         <EXAMPLE summary="Add an sFlow collector using default port 6343">
@@ -93,6 +97,10 @@ limitations under the License.
            </EXAMPLE>
         <EXAMPLE summary="Add an sFlow collector with port number">
                sonic(config)# sflow collector 1.1.1.2 port 4451
+               sonic(config)#
+        </EXAMPLE>
+        <EXAMPLE summary="Add an sFlow collector with port number and mgmt VRF">
+               sonic(config)# sflow collector 1.1.1.2 port 4451 vrf mgmt
                sonic(config)#
         </EXAMPLE>
       </DOCGEN>
@@ -147,7 +155,10 @@ limitations under the License.
     <COMMAND name="no sflow collector" help="Remove a collector" ptype="SUBCOMMAND" mode="subcommand">
        <PARAM name="ip" help="Collector IP address" ptype="IPV4_OR_IPV6_ADDR"/>
        <PARAM name="port" help="Collector port number (default: 6343)" ptype="RANGE_0_65535" optional="true" default="6343"/>
-      <ACTION builtin="clish_pyobj">sonic_cli_sflow delete_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list ${ip} ${port} default </ACTION>
+       <PARAM name="vrf" help="sFlow Collector VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name="vrf_name" help="Collector VRF name (default or mgmt)" ptype="STRING_16" default="default"/>
+       </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_sflow delete_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list ${ip} ${port} ${vrf_name} </ACTION>
       <DOCGEN>
         <DESCRIPTION>Remove an sFlow collector</DESCRIPTION>
         <EXAMPLE>
@@ -156,6 +167,10 @@ limitations under the License.
         </EXAMPLE>
         <EXAMPLE>
                sonic(config)# no sflow collector 1.1.1.1 4551
+               sonic(config)#
+        </EXAMPLE>
+        <EXAMPLE>
+               sonic(config)# no sflow collector 1.1.1.1 4551 vrf mgmt
                sonic(config)#
         </EXAMPLE>
       </DOCGEN>

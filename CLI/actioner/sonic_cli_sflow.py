@@ -69,45 +69,53 @@ def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
     if func == 'put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
-        name = args[0] + ',' + args[1]
-        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/collectors/collector=' + name)
-        body = {
-              "collector": [
-              {
-                  "address": args[0],
-                  "port": int(args[1]),
-                  "config": {
-                      "address": args[0],
-                      "port": int(args[1]),
-                  }
-              }]}
+        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/collectors')
+        body = {"openconfig-sampling:collectors": {
+                "collector": [
+                {
+                    "address": args[0],
+                    "port": int(args[1]),
+                    "vrf": args[2],
+                    "config": {
+                        "address": args[0],
+                        "port": int(args[1]),
+                        "vrf": args[2]
+                    }
+                }]}}
         return api.put(path, body)
     elif func == 'delete_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
-        name = args[0] + ',' + args[1]
+        name = args[0] + ',' + args[1] + ',' + args[2]
         path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/collectors/collector=' + name)
         return api.delete(path)
+
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
-        path = cc.Path('restconf/data/openconfig-sampling:sampling/sflow/interfaces/interface={ifname}/config/sampling-rate',
-                       ifname=args[0])
-        body = {
-            "openconfig-sampling:sampling-rate": int(args[1])
-        }
+        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/interfaces')
+        body = {"openconfig-sampling:interfaces": {
+                "interface": [{
+                    "name": args[0],
+                    "config": {
+                        "name": args[0],
+                        "sampling-rate": int(args[1])
+               }}]}}
         return api.patch(path, body)
     elif func == 'delete_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
-        path = cc.Path('restconf/data/openconfig-sampling:sampling/sflow/interfaces/interface={ifname}/config/sampling-rate',
+        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/interfaces/interface={ifname}/config/sampling-rate',
                        ifname=args[0])
         return api.delete(path)
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_admin_state':
-        path = cc.Path('restconf/data/openconfig-sampling:sampling/sflow/interfaces/interface={ifname}/config/enabled',
-                       ifname=args[0])
-        body = {
-            "openconfig-sampling:enabled": (args[1] == "up")
-        }
+        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/interfaces')
+        body = {"openconfig-sampling:interfaces": {
+                "interface": [{
+                    "name": args[0],
+                    "config": {
+                        "name": args[0],
+                        "enabled": (args[1] == "up"),
+               }}]}}
         return api.patch(path, body)
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state':
         path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/config/enabled')
         body = {
-              "openconfig-sampling:enabled": args[0] == "up"
+              "openconfig-sampling:enabled": (args[0] == "up")
         }
         return api.patch(path, body)
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id':
@@ -142,7 +150,13 @@ def run(func, args):
     try:
         response = invoke_api(func, args)
 
-        if response.ok() is False:
+        '''
+        We ignore the response from DELETE operations on interface sFlow sample rate because
+        a user may run 'no sflow sample-rate ...` more than once and that may result in
+        error since resource check won't find a dB entry
+        '''
+        if (response.ok() is False and
+            func != 'delete_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate'):
             print response.error_message()
             return
 

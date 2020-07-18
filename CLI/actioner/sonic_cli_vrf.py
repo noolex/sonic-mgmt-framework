@@ -25,6 +25,7 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 import collections
+from natsort import natsorted, ns
 
 IDENTIFIER='VRF'
 NAME1='vrf'
@@ -106,7 +107,7 @@ def build_intf_vrf_binding (intf_vrf_binding):
                      "LOOPBACK_INTERFACE_LIST",
                      "loIfName")
 
-    requests = [tIntf, tVlanIntf, tPortChannelIntf, tLoopbackIntf]
+    requests = [tIntf, tLoopbackIntf, tPortChannelIntf, tVlanIntf]
 
     for request in requests:
         keypath = cc.Path(request[0])
@@ -136,6 +137,9 @@ def build_intf_vrf_binding (intf_vrf_binding):
                     continue
 
                 intf_vrf_binding.setdefault(vrfName, []).append(intfName)
+
+            for vrf in intf_vrf_binding:
+                intf_vrf_binding[vrf] = natsorted(intf_vrf_binding[vrf], alg=ns.IGNORECASE)
 
         except  Exception as e:
             log.syslog(log.LOG_ERR, str(e))

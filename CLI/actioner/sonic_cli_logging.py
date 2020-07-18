@@ -18,13 +18,9 @@
 #
 ###########################################################################
 
-import sys
-import time
-import json
-import ast
-from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+
 SYSTEM='/restconf/data/openconfig-system:system/'
 LOG_SERVERS=SYSTEM+'logging/remote-servers'
 
@@ -39,7 +35,7 @@ def invoke_api(func, args=[]):
         vrf=(args[2])[4:]
         src_intf = ""
         if len(args) > 3:
-            src_intf = args[3]
+            src_intf = replace_prefix(args[3], 'Management', 'eth')
 
         #keypath = cc.Path(LOG_SERVERS +
         #    '/remote-server={address}', address=args[0])
@@ -124,6 +120,11 @@ def invoke_api(func, args=[]):
 
     return api.cli_not_implemented(func)
 
+def replace_prefix(value, prefix, new_prefix):
+    if value.startswith(prefix):
+        return new_prefix + value[len(prefix):]
+    return value
+
 def get_sonic_logging_servers(args=[]):
     api_response = {}
     api = cc.ApiClient()
@@ -152,7 +153,8 @@ def get_sonic_logging_servers(args=[]):
         api_response['source'] = "-"
         if 'config' in server \
                 and 'openconfig-system-ext:source-interface' in server['config']:
-            api_response['source'] = server['config']['openconfig-system-ext:source-interface']
+            src_intf = server['config']['openconfig-system-ext:source-interface']
+            api_response['source'] = replace_prefix(src_intf, 'eth', 'Management')
 
         api_response['port'] = "-"
         if 'config' in server \
@@ -166,10 +168,29 @@ def get_sonic_logging_servers(args=[]):
                 server['config']['openconfig-system-ext:vrf-name']
         show_cli_output("show_logging_server.j2", api_response)
 
+def get_sonic_logging(args):
+    aa = cc.ApiClient()
+    keypath = cc.Path('/restconf/operations/sonic-system-infra:show-sys-log')
+    body = None
+    templ=args[0]
+    api_response = aa.post(keypath, body)
+
+    try:
+        if api_response.ok():
+           response = api_response.content
+           if response is not None and 'sonic-system-infra:output' in response:
+                show_cli_output(templ, response['sonic-system-infra:output']['result'])
+    except Exception as e:
+        print "%Error: Traction Failure"
+
 
 def run(func, args):
     if func == 'get_openconfig_system_logging_servers':
         get_sonic_logging_servers()
+        return 0
+
+    if func == 'get_openconfig_system_logging':
+        get_sonic_logging(args)
         return 0
 
     response = invoke_api(func, args)
@@ -181,12 +202,16 @@ def run(func, args):
         print(response.error_message())
 
 if __name__ == '__main__':
+    import sys
+    from rpipe_utils import pipestr
 
     pipestr().write(sys.argv)
     func = sys.argv[1]
 
     if func == 'get_openconfig_system_logging_servers':
         get_sonic_logging_servers(sys.argv[2:])
+    elif func == 'get_openconfig_system_logging':
+        get_sonic_logging(sys.argv[2:])
     else:
         run(func, sys.argv[2:])
 
