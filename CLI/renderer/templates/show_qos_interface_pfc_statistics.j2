@@ -1,0 +1,26 @@
+{% if json_output %}
+
+{{ ' ' }}
+Flow Control frames received
+Interface           PFC0        PFC1        PFC2        PFC3        PFC4        PFC5        PFC6        PFC7
+------------  ----------  ----------  ----------  ----------  ----------  ----------  ----------  ----------
+{% for ifname in json_output %}
+{% for direction in json_output[ifname] %}
+{% if direction == 'rx' %}
+{{'%-12s'|format(ifname)}}{{'%12s'|format(json_output[ifname]['rx'][0])}}{{'%12s'|format(json_output[ifname]['rx'][1])}}{{'%12s'|format(json_output[ifname]['rx'][2])}}{{'%12s'|format(json_output[ifname]['rx'][3])}}{{'%12s'|format(json_output[ifname]['rx'][4])}}{{'%12s'|format(json_output[ifname]['rx'][5])}}{{'%12s'|format(json_output[ifname]['rx'][6])}}{{'%12s'|format(json_output[ifname]['rx'][7])}}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{{ ' ' }}
+Flow Control frames transmitted
+Interface           PFC0        PFC1        PFC2        PFC3        PFC4        PFC5        PFC6        PFC7
+------------  ----------  ----------  ----------  ----------  ----------  ----------  ----------  ----------
+{% for ifname in json_output %}
+{% for direction in json_output[ifname] %}
+{% if direction == 'tx' %}
+{{'%-12s'|format(ifname)}}{{'%12s'|format(json_output[ifname]['tx'][0])}}{{'%12s'|format(json_output[ifname]['tx'][1])}}{{'%12s'|format(json_output[ifname]['tx'][2])}}{{'%12s'|format(json_output[ifname]['tx'][3])}}{{'%12s'|format(json_output[ifname]['tx'][4])}}{{'%12s'|format(json_output[ifname]['tx'][5])}}{{'%12s'|format(json_output[ifname]['tx'][6])}}{{'%12s'|format(json_output[ifname]['tx'][7])}}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{{ ' ' }}
