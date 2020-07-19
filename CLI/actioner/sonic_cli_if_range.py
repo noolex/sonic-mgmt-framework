@@ -271,10 +271,16 @@ def invoke_api(func, args=[]):
 
     # Remove IP addresses from interface
     elif func == 'delete_if_ip':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
+	if args[0].startswith("Vlan"):
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/addresses', name=args[0])
+        else:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
         return api.delete(path)
     elif func == 'delete_if_ip6':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+	if args[0].startswith("Vlan"):
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses', name=args[0])
+        else:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
         return api.delete(path)
 
     # Disable IPv6
@@ -447,7 +453,7 @@ def run(func, args):
                 if iflistStr == "":
                     print("%Error: No interface exist in given range")
                     return 1
-                print("%Info: Configure existing interfaces in range")
+                print("%Info: Configuring only existing interfaces in range")
             else:
                 # Create range of interfaces
                 return check_response(invoke_api(func, args[2:]), func, args)

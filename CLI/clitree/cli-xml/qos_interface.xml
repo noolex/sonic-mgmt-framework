@@ -55,7 +55,10 @@ limitations under the License.
 
         <COMMAND
             name="scheduler-policy"
-            help="Scheduler Policy configuration">
+            help="Scheduler Policy configuration"
+            command_tables="sonic-queue:sonic-queue/QUEUE/QUEUE_LIST/ifname={name},qindex={qindex};sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_sched_policy"
+            >
            <PARAM
                name="sp_name"
                help="Scheduler Policy name"
