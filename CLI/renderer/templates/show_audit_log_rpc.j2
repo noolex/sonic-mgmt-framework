@@ -1,6 +1,5 @@
 {% if json_output %}
-{% set audit_log = json_output %}
-{% for entry in audit_log %}
+{% for entry in json_output %}
 {{entry}}
 {% endfor %}
 {% endif %}

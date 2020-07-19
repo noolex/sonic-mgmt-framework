@@ -5,7 +5,14 @@ from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 import cli_client as cc
 
-def run(func, args):
+def run(args):
+    if args[1] == 'rpc_sonic_auditlog_show_auditlog' or args[1] == 'rpc_sonic_auditlog_clear_auditlog':
+        func = args[1]
+        itype = "brief"
+    else:
+        itype = args[1]
+        func = args[2]
+    
     aa = cc.ApiClient()
 
     if func == 'rpc_sonic_auditlog_show_auditlog':
@@ -31,11 +38,4 @@ def run(func, args):
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)
-    if sys.argv[1] == 'rpc_sonic_auditlog_show_auditlog':
-        func = sys.argv[1]
-        itype = "brief"
-        run(func, sys.argv[1:])
-    else:
-        itype = sys.argv[1]
-        func = sys.argv[2]
-        run(func, sys.argv[2:])
+    run(sys.argv)
