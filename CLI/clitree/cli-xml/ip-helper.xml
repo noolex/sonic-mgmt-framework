@@ -65,7 +65,7 @@ limitations under the License.
         <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
         <ACTION builtin="clish_restcl">
           oper=POST 
-          url=/restconf/operations/openconfig-ip-helper:clear-ip-helper 
+          url=/restconf/operations/openconfig-ip-helper:clear-ip-helper-statistics 
           body={"openconfig-ip-helper:input":{"interface":"${iface}"}} 
         </ACTION>
         <DOCGEN>

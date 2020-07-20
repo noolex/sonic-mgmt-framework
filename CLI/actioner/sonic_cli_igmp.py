@@ -110,6 +110,31 @@ def generate_show_ip_igmp_groups(args):
                 return
     return api_response
 
+def generate_show_ip_igmp_joins(args):
+    api = cc.ApiClient()
+    keypath = []
+    body = None
+    vrfName = "default"
+    i = 0
+    for arg in args:
+        if "vrf" in arg or "Vrf" in arg:
+            vrfName = args[i]
+        i = i + 1
+    d = {}
+    method = "rpc"
+    keypath = cc.Path('/restconf/operations/sonic-igmp:get-igmp-join')
+    inputs = {"vrf-name":vrfName}
+    body = {"sonic-igmp:input": inputs}
+    response = api.post(keypath, body)
+    if(response.ok()):
+        d = response.content['sonic-igmp:output']['response']
+        if len(d) != 0 and "warning" not in d and "Unknown command:" not in d:
+             try:
+                 d = json.loads(d)
+             except:
+                 return 1
+             show_cli_output('show_ip_igmp_joins.j2',d)
+
 def generate_show_ip_igmp_vrf_all_groups(args):
     api = cc.ApiClient()
     keypath = []
@@ -149,12 +174,28 @@ def generate_show_ip_igmp_vrf_all_sources(args):
                args[1] = vrf_name
                d = {}
                dlist = []
-               d = { 'vrfName': vrfName }
+               d = { 'vrfName': vrf_name }
                dlist.append(d)
                api_response = generate_show_ip_igmp_sources(args)
                dlist.append(api_response)
                show_cli_output(args[0], dlist)
 
+def generate_show_ip_igmp_vrf_all_joins(args):
+    api = cc.ApiClient()
+    keypath = []
+    body = None
+    vrfName = "default"
+    # Use SONIC model to get all configued VRF names
+    keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
+    sonic_vrfs = api.get(keypath)
+    if sonic_vrfs.ok():
+        if 'sonic-vrf:VRF_LIST' in sonic_vrfs.content:
+            vrf_list = sonic_vrfs.content['sonic-vrf:VRF_LIST']
+            for vrf in vrf_list:
+               vrf_name = vrf['vrf_name']
+               args[1] = vrf_name
+               print("VRF : "+vrf_name)
+               generate_show_ip_igmp_joins(args)
 
 def invoke_show_api(func, args=[]):
     api = cc.ApiClient()
@@ -169,6 +210,8 @@ def invoke_show_api(func, args=[]):
         api_response = generate_show_ip_igmp_sources(args)
         dlist.append(api_response)
         show_cli_output(args[0], dlist)
+    elif func == 'show_ip_igmp_joins':
+        return generate_show_ip_igmp_joins(args)
     elif func == 'show_ip_igmp_statistics':
         return generate_show_ip_igmp_statistics(args)
     elif func == 'show_ip_igmp_interface':
@@ -194,6 +237,22 @@ def invoke_show_api(func, args=[]):
               api_response = generate_show_ip_igmp_sources(args)
               dlist.append(api_response)
               show_cli_output('show_ip_igmp_sources.j2', dlist)
+        elif args[2].lower() == 'join':
+              if args[1].lower() == 'all':
+                 generate_show_ip_igmp_vrf_all_joins(args)
+              else:
+                 generate_show_ip_igmp_joins(args)
+    elif func == 'clear_igmp' :
+        keypath = cc.Path('/restconf/operations/sonic-igmp:clear-igmp')
+        vrfname = "default"
+        body = {"sonic-igmp:input": { "vrf-name" : vrfname,"interface_all" : True } }
+        return api.post(keypath, body)
+    elif func == 'clear_igmp_vrf' :
+        vrfname = ""
+        keypath = cc.Path('/restconf/operations/sonic-igmp:clear-igmp')
+        _, vrfname = args[0].split("=")
+        body = {"sonic-igmp:input": { "vrf-name" : vrfname,"interface_all" : True } }
+        return api.post(keypath, body)
     else: 
         return api.cli_not_implemented(func)
 
