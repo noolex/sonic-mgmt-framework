@@ -42,11 +42,12 @@ def invoke_api(fn, args):
     body = None
 
     if fn == 'get_openconfig_lldp_lldp_interfaces':
-       path = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces')
-       return api.get(path)
-    elif fn == 'get_openconfig_lldp_lldp_interfaces_interface':
-       path = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}', name=args[1])
-       return api.get(path)
+       if args[0] == "":
+           path = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces')
+           return api.get(path)
+       else:
+           path = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}', name=args[0])
+           return api.get(path)
     elif fn == 'disable_lldp_global':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/config/enabled')
         body = { "openconfig-lldp:enabled": str2bool(args[0]) } 
