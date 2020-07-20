@@ -26,21 +26,18 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 
-def generate_show_ip_ospf(args):
+def generate_show_ip_ospf(vrf):
     api = cc.ApiClient()
     keypath = []
-    vrfName = "default"
+    vrfName = ""
     i = 0
-    for arg in args:
-        if "vrf" in arg or "Vrf" in arg:
-            vrfName = args[i]
-        i = i + 1
+    vrfName = vrf
 
     d = {}
     dlist = []
     d = { 'vrfName': vrfName }
     dlist.append(d)
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -52,7 +49,7 @@ def generate_show_ip_ospf(args):
             if api_response['openconfig-network-instance:state'] is not None:
                 api_response['openconfig-network-instance:global_state'] = api_response.pop('openconfig-network-instance:state')
                 dlist.append(api_response)
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/state', name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/state', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -65,7 +62,7 @@ def generate_show_ip_ospf(args):
                 api_response['openconfig-network-instance:spf_state'] = api_response.pop('openconfig-network-instance:state')
                 dlist.append(api_response)
     
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/lsa-generation/state', name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/lsa-generation/state', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -78,7 +75,7 @@ def generate_show_ip_ospf(args):
                 api_response['openconfig-network-instance:lsa_gen_state'] = api_response.pop('openconfig-network-instance:state')
                 dlist.append(api_response)
 
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -88,23 +85,18 @@ def generate_show_ip_ospf(args):
                 print("Failed")
                 return
             dlist.append(api_response)
-    show_cli_output(args[0], dlist)
+    show_cli_output("show_ip_ospf.j2", dlist)
 
 
 
-def generate_show_ip_ospf_areas(args):
+def generate_show_ip_ospf_areas(vrf, template, intfname):
     api = cc.ApiClient()
     keypath = []
-    vrfName = "default"
     interfacename = ""
-    i = 0
-    for arg in args:
-        if "vrf" in arg or "Vrf" in arg:
-            vrfName = args[i]
-        i = i + 1
+    
+    vrfName = vrf
+    interfacename = intfname
 
-    if(len(args) > 2):
-       interfacename = args[2]
     d = {}
     dlist = []
     d = { 'vrfName': vrfName }
@@ -112,7 +104,7 @@ def generate_show_ip_ospf_areas(args):
     if interfacename != "":
         intfparam = {'interfacename': interfacename }
         dlist.append(intfparam)
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -122,25 +114,20 @@ def generate_show_ip_ospf_areas(args):
                 print("Failed")
                 return
             dlist.append(api_response)
-    show_cli_output(args[0], dlist)
+    show_cli_output(template, dlist)
 
 
 
-def generate_show_ip_ospf_route(args):
+def generate_show_ip_ospf_route(vrf, template):
     api = cc.ApiClient()
     keypath = []
-    vrfName = "default"
-    i = 0
-    for arg in args:
-        if "vrf" in arg or "Vrf" in arg:
-            vrfName = args[i]
-        i = i + 1
+    vrfName = vrf
 
     d = {}
     dlist = []
     d = { 'vrfName': vrfName }
     dlist.append(d)
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/openconfig-ospfv2-ext:route-tables', name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/openconfig-ospfv2-ext:route-tables', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -150,34 +137,22 @@ def generate_show_ip_ospf_route(args):
                 print("Failed")
                 return
             dlist.append(api_response)
-    show_cli_output(args[0], dlist)
+    show_cli_output(template, dlist)
 
 
-def generate_show_ip_ospf_database_router(args):
+def generate_show_ip_ospf_database_router(vrf, template, ls_id, adv_router, selforg):
     api = cc.ApiClient()
     keypath = []
-    vrfName = "default"
-    self_originate = False
-    self_router_id = ""
-    advRouter = ""
-    lsId = ""
-    i = 0
-    for arg in args:
-        if "vrf" in arg or "Vrf" in arg:
-            vrfName = args[i]
-        if "self-originate" in arg:
-            self_originate = True
-        if "adv-router" in arg:
-            advRouter = args[i+1]
-        if "ls-id" in arg:
-            lsId = args[i+1]
-        i = i + 1
+    vrfName = vrf
+    self_originate = selforg
+    advRouter = adv_router
+    lsId = ls_id
 
     d = {}
     dlist = []
     d = { 'vrfName': vrfName }
     dlist.append(d)
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -191,7 +166,7 @@ def generate_show_ip_ospf_database_router(args):
                 self_router_id = api_response['openconfig-network-instance:state']['router-id']
                 d = { 'self_router_id': self_router_id }
                 dlist.append(d)
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=args[1])
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -207,7 +182,7 @@ def generate_show_ip_ospf_database_router(args):
             if lsId != "":
                 ospfv2_filter_lsdb_by_ls_id(api_response, lsId)
             dlist.append(api_response)
-    show_cli_output(args[0], dlist)
+    show_cli_output(template, dlist)
 
 
 def ospfv2_filter_lsdb_by_adv_router(response, advRouter):
@@ -245,31 +220,99 @@ def ospfv2_filter_lsdb_by_ls_id(response, ls_id):
 
 
 def invoke_show_api(func, args=[]):
-    api = cc.ApiClient()
-    keypath = []
-    body = None
-    if func == 'show_ip_ospf':
-        return generate_show_ip_ospf(args)
-    elif func == 'show_ip_ospf_neighbor_detail':
-        return generate_show_ip_ospf_areas(args)
-    elif func == 'show_ip_ospf_neighbor':
-        return generate_show_ip_ospf_areas(args)
-    elif func == 'show_ip_ospf_interface':
-        return generate_show_ip_ospf_areas(args)
-    elif func == 'show_ip_ospf_interface_traffic':
-        return generate_show_ip_ospf_areas(args)
-    elif func == 'show_ip_ospf_route':
-        return generate_show_ip_ospf_route(args)
-    elif func == 'show_ip_ospf_border_routers':
-        return generate_show_ip_ospf_route(args)
-    elif func == 'show_ip_ospf_database_router':
-        return generate_show_ip_ospf_database_router(args)
-    elif func == 'show_ip_ospf_database_network':
-        return generate_show_ip_ospf_database_router(args)
-    else: 
-        return api.cli_not_implemented(func)
+    vrf = args[0]
+    i = 3
 
+    if (len(args[i:]) == 1):
+        return generate_show_ip_ospf(vrf)
+    else:
+        i = i + 1
+        for arg in args[i:]:
+            if (arg == "neighbor"):
+                j = i + 1
+                neighip = ""
+                intfname = ""
+                allneigh = False
+                detail = False
 
+                for neiarg in args[j:]:
+                    if (neiarg == "detail"):
+                        detail = True
+                    elif (neiarg == "all"):
+                        allneigh = true
+                    elif (("." in neiarg) or (":" in neiarg)):
+                        intfname = neiarg
+                    elif (neiarg == "\|"):
+                        break
+                    elif  (neiarg != "vrf" and args[j - 1] != "vrf" and neiarg != "neighbor"):
+                        intfname = neiarg
+
+                    j = j + 1               
+               
+                if (detail == True):
+                    return generate_show_ip_ospf_areas(vrf, "show_ip_ospf_neighbor_detail.j2", intfname)
+                else:
+                    return generate_show_ip_ospf_areas(vrf, "show_ip_ospf_neighbor.j2", intfname)
+
+            elif (arg == "interface"):
+                j = i
+                trafficcmd = False
+                intfname = ""
+
+                for intfarg in args[j:]:
+                    if (intfarg == "traffic"):
+                        trafficcmd = True
+                    elif (intfarg == "interface"):
+                        intfname = ""
+                    elif (intfarg == "\|"):
+                        break
+                    elif (intfarg != "vrf" and args[j - 1] != "vrf"):
+                        intfname = intfarg
+
+                    j = j + 1
+
+                if (trafficcmd == True):
+                    return generate_show_ip_ospf_areas(vrf, "show_ip_ospf_interface_traffic.j2", intfname)
+                else:
+                    return generate_show_ip_ospf_areas(vrf, "show_ip_ospf_interface.j2", intfname)
+            elif (arg == "route"):
+                return generate_show_ip_ospf_route(vrf, "show_ip_ospf_route.j2")
+            elif (arg == "border-routers"):
+                return generate_show_ip_ospf_route(vrf, "show_ip_ospf_border_routers.j2")
+
+            elif (arg == "database"):
+                j = i
+                dbtype = ""
+                lsid = ""
+                advrouter = ""
+                selforg = False
+
+                for dbarg in args[j:]:
+                    if (dbarg == "router"):
+                        dbtype = "router"
+                    elif (dbarg == "network"):
+                        dbtype = "network"
+                    elif (dbarg == "lsid"):
+                        lsid = dbarg[j + 1]
+                    elif (dbarg == "adv-router"):
+                        advrouter = dbarg[j + 1]
+                    elif (dbarg == "self-originate"):
+                        selforg = True
+
+                    j = j + 1
+
+                if (dbtype == "router"):
+                    return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database_router.j2", lsid, advrouter, selforg)
+                elif (dbtype == "network"):
+                    return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database_network.j2", lsid, advrouter, selforg)
+            elif (arg == "vrf" or arg == "\|"):
+                if (arg == "vrf" and (len(args[(i + 1):]) > 1) and args[i + 2] != "\|"):
+                    continue
+
+                return generate_show_ip_ospf(vrf)
+            else:
+                continue 
+            i = i + 1
 def run(func, args):
     invoke_show_api(func, args)
 
