@@ -548,7 +548,7 @@ limitations under the License.
                 ptype="LO_ID"
                 >
         </PARAM>
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=Loopback${lo-id}/config body={"openconfig-interfaces:config": {"name": "Loopback${lo-id}"}}</ACTION>
+         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces body={"openconfig-interfaces:interfaces": {"interface": [{"name": "Loopback${lo-id}","config": {"name": "Loopback${lo-id}"}}]}}</ACTION>
     </COMMAND>
 
     <COMMAND
