@@ -34,16 +34,16 @@ limitations under the License.
             command_tables="sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST/vrf-name={vrf_name},address-family={address-family}"
             command_keys="address-family=ipv4"
             render_command_cb="pim_ipv4_gbl"
-            help="PIM configuration">
+            help="Configure PIM">
             <PARAM
                 name="vrf"
-                help="VRF name"
+                help="VRF instance configuration"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vrf-name"
-                    help="Configure PIM for the given VRF name"
+                    help=""
                     ptype="VRF_OR_DEFAULT"></PARAM>
             </PARAM>
             <PARAM
@@ -54,43 +54,43 @@ limitations under the License.
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="join-prune-interval"
-                    help="Join prune interval in seconds"
+                    help="Join Prune interval"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
-                        help="Range 60-600 seconds"
+                        help="Join Prune interval in seconds"
                         name="jpi"
                         ptype="RANGE_60_600"></PARAM>
                 </PARAM>
                 <PARAM
                     name="keep-alive-timer"
-                    help="Keep alive timer in seconds"
+                    help="Keep Alive timer"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
-                        help="Range 31-60000 seconds"
+                        help="Keep Alive timer in seconds"
                         name="kat"
                         ptype="RANGE_31_60000"></PARAM>
                 </PARAM>
                 <PARAM
                     name="ssm"
-                    help="Configure SSM mode"
+                    help="Configure SSM"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
                         name="prefix-list"
-                        help="Configure prefix list name"
+                        help="Configure SSM prefix list"
                         ptype="SUBCOMMAND"
                         mode="subcommand">
                         <PARAM
-                            help="Prefix list name"
+                            help="Name of a prefix list"
                             name="pln"
                             ptype="STRING"></PARAM>
                     </PARAM>
                 </PARAM>
                 <PARAM
                     name="ecmp"
-                    help="Configure ECMP"
+                    help="Enable ECMP"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
@@ -109,16 +109,16 @@ limitations under the License.
         <!-- no ip pim -->
         <COMMAND
             name="no ip pim"
-            help="PIM configuration">
+            help="Delete PIM configuration">
             <PARAM
                 name="vrf"
-                help="VRF name"
+                help="VRF instance configuration"
                 mode="subcommand"
                 ptype="SUBCOMMAND"
                 optional="true">
                 <PARAM
                     name="vrf-name"
-                    help="Configure PIM for the given VRF name"
+                    help=""
                     ptype="VRF_OR_DEFAULT"></PARAM>
             </PARAM>
             <PARAM
@@ -130,38 +130,38 @@ limitations under the License.
                 <PARAM
                     name="jpi"
                     value="join-prune-interval"
-                    help="Join prune interval in seconds"
+                    help="Clear Join Prune interval"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
                 <PARAM
                     name="kat"
                     value="keep-alive-timer"
-                    help="Keep alive timer in seconds"
+                    help="Clear Keep Alive timer"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
                 <PARAM
                     name="ssm"
-                    help="Configure SSM mode"
+                    help="Remove SSM configuration"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
                         name="pln"
                         value="prefix-list"
-                        help="Configure prefix list name"
+                        help="Remove SSM prefix list"
                         ptype="SUBCOMMAND"
                         mode="subcommand">
                     </PARAM>
                 </PARAM>
                 <PARAM
                     name="ecmp"
-                    help="Configure ECMP mode"
+                    help="Disable ECMP"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
                         name="rebalance"
-                        help="Enable ECMP rebalance"
+                        help="Disable ECMP rebalance"
                         ptype="SUBCOMMAND"
                         optional="true"
                         mode="subcommand"></PARAM>
