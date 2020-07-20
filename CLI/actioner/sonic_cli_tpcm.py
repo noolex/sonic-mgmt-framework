@@ -80,7 +80,7 @@ def run_tpcm_install(func, method, argv):
 
     docker_name="name " + argv[0]
     if method == "scp" or method == "sftp":
-       image_name= method + " " + argv[6]
+       image_name= method + " " + argv[5]
     else:
        image_name= method + " " + argv[1]
 

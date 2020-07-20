@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2020 Broadcom, Inc.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+<!--=================================  PTYPES =================================-->
+  <PTYPE name="POLL_INTERVAL" method="integer" pattern="100..3000" help=""/>
+  <PTYPE name="DETECT_TIME" method="integer" pattern="100..5000" help=""/>
+  <PTYPE name="RESTORE_TIME" method="integer" pattern="100..60000" help=""/>
+
+<!--=========================================================================-->
+  <VIEW name="enable-view">
+    <!-- show pfc watchdog -->
+    <COMMAND name="show pfc" help="Show PFC Watchdog Summary">
+      <PARAM name="watchdog" help="PFC Watchdog" ptype="SUBCOMMAND" mode="subcommand"/>
+      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_pfc_watchdog  show_qos_pfc_watchdog.j2&#xA; </ACTION>
+      <xi:include href="include/pipe.xml"/>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+  </VIEW>
+
+<!--=========================================================================
+  Config mode commands
+========================================================================= -->
+  <VIEW name="configure-view">
+
+    <COMMAND name="pfc" help="PFC configuration"/>
+    <COMMAND name="pfc watchdog" help="PFC configuration"/>
+
+    <COMMAND name="pfc watchdog polling-interval" help="Configure watchdog">
+      <PARAM name="interval" help="Watchdog poll interval" ptype="POLL_INTERVAL" />
+      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  interval  ${interval}&#xA; </ACTION>
+    </COMMAND>
+
+    <COMMAND name="pfc watchdog counter-poll" help="Enable PFC watchdog FLEX counters">
+      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  counter-poll enable&#xA; </ACTION>
+    </COMMAND>
+
+<!--=========================================================================
+  Config mode "no" commands
+========================================================================= -->
+    <COMMAND name="no pfc" help="PFC configuration"/>
+    <COMMAND name="no pfc watchdog" help="PFC configuration"/>
+
+    <COMMAND name="no pfc watchdog polling-interval" help="Configure watchdog">
+      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  interval&#xA; </ACTION>
+    </COMMAND>
+
+    <COMMAND name="no pfc watchdog counter-poll" help="Disable PFC watchdog FLEX counters">
+      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  counter-poll disable&#xA; </ACTION>
+    </COMMAND>
+  </VIEW>
+  
+</CLISH_MODULE>

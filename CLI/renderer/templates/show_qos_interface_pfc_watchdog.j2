@@ -1,0 +1,11 @@
+{{ '          PFC Watchdog' }}
+{% for key in json_output %}
+  {% if "action" in key %}
+{{ '            Action'.ljust(30) }}: {{ json_output[key] }}
+  {% elif "detection-time" in key %}
+{{ '            Detection Time'.ljust(30) }}: {{ json_output[key] }}ms
+  {% elif "restoration-time" in key %}
+{{ '            Restoration Time'.ljust(30) }}: {{ json_output[key] }}ms
+  {% endif %}
+{% endfor %}
+{{ ' ' }}
