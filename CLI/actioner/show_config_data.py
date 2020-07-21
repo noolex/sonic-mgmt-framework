@@ -39,6 +39,7 @@ from show_config_ip_helper import *
 from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
 from show_config_vxlan import *
 from show_config_lldp import *
+from show_config_igmp_snooping import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -198,7 +199,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'lldp_mode'               : show_lldp_mode_config,
                   'lldp_intf_mode'          : show_lldp_intf_mode_config,
                   'lldp_tlv_select'         : show_lldp_tlv_select_config,
-                  'ldap_map_config'         : show_ldap_map_config
+                  'ldap_map_config'         : show_ldap_map_config,
+                  'igmp_snooping_config'    : show_igmp_snooping_intf_config
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
