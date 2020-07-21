@@ -155,12 +155,17 @@ limitations under the License.
     </COMMAND>
   </VIEW>
   <VIEW name="configure-view">
-    <COMMAND name="crm" help="Configure Critical Resource Monitoring">
+    <COMMAND name="crm"
+             help="Configure Critical Resource Monitoring"
+             command_keys="type=Config"
+             command_tables="sonic-system-crm:sonic-system-crm/CRM/CRM_LIST={type}"
+             render_command_cb="crm_config"
+             >
       <PARAM name="crm-subcmd-1st" help="" mode="switch" ptype="SUBCOMMAND">
         <!-- crm polling interval <seconds> -->
         <PARAM name="polling" help="CRM Polling Configuration" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="interval" help="CRM Polling Interval" mode="subcommand" ptype="SUBCOMMAND">
-            <PARAM name="crm-subcmd-data" help="Seconds (1...9999)" ptype="CRM_THRESHOLD">
+            <PARAM name="crm-subcmd-data" help="Seconds (1...9999)" ptype="CRM_POLLING_INTERVAL">
             </PARAM>
           </PARAM>
         </PARAM>
@@ -487,13 +492,16 @@ limitations under the License.
     </COMMAND>
     <COMMAND name="no crm" help="Clear CRM Configuration">
       <PARAM name="crm-subcmd-1st" help="" mode="switch" ptype="SUBCOMMAND">
+        <!-- no crm all -->
+        <PARAM name="all" help="Clear all CRM Configuration" mode="subcommand" ptype="SUBCOMMAND">
+        </PARAM>
         <!-- no crm polling interval -->
-        <PARAM name="polling" help="CRM Polling Configuration" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="polling" help="Clear CRM Polling Configuration" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="interval" help="CRM Polling Interval" mode="subcommand" ptype="SUBCOMMAND">
           </PARAM>
         </PARAM>
         <!-- no crm thresholds <all/acl/...> -->
-        <PARAM name="thresholds" help="CRM Threshold Configuration" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="thresholds" help="Clear CRM Threshold Configuration" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="crm-subcmd-2nd" help="" mode="switch" ptype="SUBCOMMAND">
             <!-- crm thresholds all -->
             <PARAM name="all" help="CRM configuration for all resource" mode="subcommand" ptype="SUBCOMMAND">

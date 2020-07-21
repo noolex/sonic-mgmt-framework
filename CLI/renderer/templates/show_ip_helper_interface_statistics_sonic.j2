@@ -1,0 +1,25 @@
+{% for key in json_output %}
+{% set counter_data = json_output[key] %}
+{% set received = 0 %}
+{% set relayed = 0 %}
+{% set dropped = 0 %}
+{% set invalid = 0 %}
+{% set bcast = 0 %}
+{% set netbcast = 0 %}
+{{key}}
+{{'-----------'}}
+{% if 'PKTS_RECEIVED' in counter_data %}{% set received = counter_data['PKTS_RECEIVED'] %}{% endif %}
+{% if 'PKTS_RELAYED' in counter_data %}{% set relayed = counter_data['PKTS_RELAYED'] %}{% endif %}
+{% if 'PKTS_DROPPED' in counter_data %}{% set dropped = counter_data['PKTS_DROPPED'] %}{% endif %}
+{% if 'PKTS_INVALID_TTL' in counter_data %}{% set invalid = counter_data['PKTS_INVALID_TTL'] %}{% endif %}
+{% if 'PKTS_BROADCAST' in counter_data %}{% set bcast = counter_data['PKTS_BROADCAST'] %}{% endif %}
+{% if 'PKTS_NET_BROADCAST' in counter_data %}{% set netbcast = counter_data['PKTS_NET_BROADCAST'] %}{% endif %}
+
+  Packets received                         : {{received}}
+  Packets relayed                          : {{relayed}}
+  Packets dropped                          : {{dropped}}
+  Invalid TTL packets                      : {{invalid}}
+  All ones broadcast packets received      : {{bcast}}
+  Net directed broadcast packets received  : {{netbcast}}
+
+{% endfor %}

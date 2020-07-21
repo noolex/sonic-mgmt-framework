@@ -53,14 +53,36 @@
         <COMMAND name="no errdisable" help="Disables ERRDISABLE recovery"/>
         <COMMAND name="errdisable recovery" help="Enables ERRDISABLE recovery"/>
         <COMMAND name="no errdisable recovery" help="Disables ERRDISABLE recovery"/>
-        <COMMAND name="errdisable recovery cause" help="Enables ERRDISABLE recovery for the given cause">
+        <COMMAND name="errdisable recovery cause" help="Enables ERRDISABLE recovery for the given cause"
+            command_tables="sonic-errdisable:sonic-errdisable/ERRDISABLE/id={id}"
+            command_keys="id=RECOVERY"
+            render_command_cb="errdisable_cause">
             <PARAM
-                name="cause"
-                help="Enables ERRDISABLE for the given cause"
-                ptype="ERR_DISABLE_RECOVERY_CAUSE"
+                name="mode-subcmds"
+                help="ERRDISABLE cause"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="false"
                 >
+                <PARAM
+                    name="udld"
+                    help="Enables ERRDISABLE for UDLD"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+                <PARAM
+                    name="bpduguard"
+                    help="Enables ERRDISABLE for STP bpduguard"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_cause ${cause}</ACTION>
+
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_cause ${__params}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Enables ERRDISABLE recovery for the given cause.
@@ -77,12 +99,31 @@
 
         <COMMAND name="no errdisable recovery cause" help="ERRDISABLE recovery cause">
             <PARAM
-                name="cause"
-                help="Disables ERRDISABLE for the given cause"
-                ptype="ERR_DISABLE_RECOVERY_CAUSE"
+                name="mode-subcmds"
+                help="ERRDISABLE cause"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="false"
                 >
+                <PARAM
+                    name="udld"
+                    help="Enables ERRDISABLE for UDLD"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+                <PARAM
+                    name="bpduguard"
+                    help="Enables ERRDISABLE for STP bpduguard"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_cause ${cause}</ACTION>
+
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_cause ${__params}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                 Disables ERRDISABLE recovery for the given cause.
@@ -98,11 +139,13 @@
         </COMMAND>
 
         <COMMAND name = "errdisable recovery interval"
-            help = "Configures ERRDISABLE recovery interval (30 to 65535)">
+            help = "Configures ERRDISABLE recovery interval (30 to 65535)"
+            command_tables="sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST/id">
             <PARAM
                 name="interval"
                 help="ERRDISABLE recovery interval (30 to 65535)"
                 ptype="ERR_DISABLE_INTERVAL"
+                dbpath="sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST/interval"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_interval ${interval}</ACTION>

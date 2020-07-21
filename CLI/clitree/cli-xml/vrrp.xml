@@ -36,8 +36,8 @@ limitations under the License.
         >
         <PARAM
             name="ifname"
-            help="VRRP interface name (up to 63 characters)"
-            ptype="STRING_63"
+            help="VRRP interface name"
+            ptype="STRING"
             >
             <PARAM
                 name="vrid"
@@ -70,8 +70,8 @@ limitations under the License.
         >
         <PARAM
             name="ifname"
-            help="VRRP interface name (up to 63 characters)"
-            ptype="STRING_63"
+            help="VRRP interface name"
+            ptype="STRING"
             >
             <PARAM
                 name="vrid"

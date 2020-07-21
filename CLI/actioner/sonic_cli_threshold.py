@@ -139,6 +139,15 @@ def invoke_api(func, args):
     return api.cli_not_implemented(func)
 
 def run(func, args):
+    if func == 'get_threshold_breach_event_reports':
+	get_threshold_breach_event_reports(args)
+	return
+    elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list':
+        get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list(args)
+	return
+    elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list':
+        get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list(args)
+	return
     try:
          api_response = invoke_api(func, args)
 
@@ -216,17 +225,8 @@ def get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_lis
         get_print_cpu_port_config(args[2], args[3], renderer_template)
     else:
         get_print_all_port_config(args[2], args[3], renderer_template)
-    sys.exit(0)
 
 if __name__ == '__main__':
      pipestr().write(sys.argv)
-     func = sys.argv[1]
 
-     if func == 'get_threshold_breach_event_reports':
-        get_threshold_breach_event_reports(sys.argv[2:])
-     elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list':
-        get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list(sys.argv[2:])
-     elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list':
-        get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list(sys.argv[2:])
-     else:
-        run(sys.argv[1], sys.argv[2:])
+     run(sys.argv[1], sys.argv[2:])

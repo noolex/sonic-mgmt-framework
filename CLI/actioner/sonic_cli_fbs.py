@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 ###########################################################################
-
 import sys
 from collections import OrderedDict
 import cli_client as cc
@@ -96,9 +95,9 @@ def create_classifier(args):
 
 def delete_classifier(args):
     # try to delete fbs entry first by checking if fbs object exists, else delete copp entry
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/CLASSIFIER_TABLE/CLASSIFIER_TABLE_LIST={classifier_name}', classifier_name=args[0])
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={classifier_name}', classifier_name=args[0])
     response = fbs_client.get(keypath)
-    if response.ok() and response.content:
+    if response.ok():
         keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={classifier_name}', classifier_name=args[0])
         return fbs_client.delete(keypath)
     else:
@@ -595,21 +594,28 @@ def clear_policer_action(args):
 
 
 def set_mirror_session_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_MIRROR_SESSION',
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={classifier_name}/monitoring/mirror-sessions/mirror-session',
                       policy_name=args[0], classifier_name=args[1])
-    body = {'SET_MIRROR_SESSION': args[2]}
+    body = {
+        "openconfig-fbs-ext:mirror-session": [{
+            "session-name": args[2],
+            "config": {
+                "session-name": args[2]
+            }
+        }]
+    }
     return fbs_client.patch(keypath, body)
 
 
 def clear_mirror_session_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_MIRROR_SESSION',
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={classifier_name}/monitoring/mirror-sessions/mirror-session',
                       policy_name=args[0], classifier_name=args[1])
     return fbs_client.delete(keypath)
 
 
 def set_next_hop_action(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_{ip_type}_NEXTHOP',
-                      policy_name=args[0], classifier_name=args[1], ip_type=args[2].upper())
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={classifier_name}/forwarding/next-hops/next-hop',
+                      policy_name=args[0], classifier_name=args[1])
     vrf = ''
     pri = ''
 
@@ -619,9 +625,20 @@ def set_next_hop_action(args):
         elif args[idx] == 'priority':
             pri = args[idx+1]
 
-    body = {
-        "sonic-flow-based-services:SET_{}_NEXTHOP".format(args[2].upper()): ['{}|{}|{}'.format(args[4], vrf, pri)]
+    if vrf == "":
+        vrf = "openconfig-fbs-ext:INTERFACE_NETWORK_INSTANCE"
+
+    body = {"openconfig-fbs-ext:next-hop": [{
+      "ip-address": args[4],
+      "network-instance": vrf,
+      "config": {
+        "ip-address": args[4],
+        "network-instance": vrf
+      }}]
     }
+
+    if pri != '':
+        body["openconfig-fbs-ext:next-hop"][0]["config"]["priority"] = int(pri)
 
     return fbs_client.patch(keypath, body)
 
@@ -636,72 +653,106 @@ def clear_next_hop_action(args):
         elif args[idx] == 'priority':
             pri = args[idx+1]
 
-    next_hop = '{}|{}|{}'.format(args[4], vrf, pri)
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_{ip_type}_NEXTHOP={next_hop}',
-                      policy_name=args[0], classifier_name=args[1], ip_type=args[2].upper(), next_hop=next_hop)
+    if pri != '':
+        next_hop = '{}|{}|{}'.format(args[4], vrf, pri)
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_{ip_type}_NEXTHOP={next_hop}',
+                          policy_name=args[0], classifier_name=args[1], ip_type=args[2].upper(), next_hop=next_hop)
+    else:
+        if vrf == "":
+            vrf = "openconfig-fbs-ext:INTERFACE_NETWORK_INSTANCE"
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={classifier_name}/forwarding/next-hops/next-hop={ip_address},{network_instance}',
+                          policy_name=args[0], classifier_name=args[1], ip_address=args[4], network_instance=vrf)
 
     return fbs_client.delete(keypath)
 
 
 def set_egress_interface_action(args):
     if args[2] == 'null':
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/DEFAULT_PACKET_ACTION',
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={classifier_name}/forwarding/config/discard',
                           policy_name=args[0], classifier_name=args[1])
         data = {
-            "sonic-flow-based-services:DEFAULT_PACKET_ACTION": "DROP"
+            "openconfig-fbs-ext:discard": True
         }
         return fbs_client.patch(keypath, data)
     else:
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_INTERFACE',
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={classifier_name}/forwarding/egress-interfaces/egress-interface',
                           policy_name=args[0], classifier_name=args[1])
-        pri = ''
-        if len(args) == 5:
-            pri = args[5]
 
         data = {
-            "sonic-flow-based-services:SET_INTERFACE": ["{}|{}".format(args[2], pri)]
+            "openconfig-fbs-ext:egress-interface": [{
+                "intf-name": args[2],
+                "config": {
+                    "intf-name": args[2]
+                }
+            }]
         }
+
+        if len(args) == 5:
+            data["openconfig-fbs-ext:egress-interface"][0]["config"]["priority"] = int(args[4])
+
         return fbs_client.patch(keypath, data)
 
 
 def clear_egress_interface_action(args):
     if args[2] == 'null':
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/DEFAULT_PACKET_ACTION',
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={classifier_name}/forwarding/config/discard',
                           policy_name=args[0], classifier_name=args[1])
         return fbs_client.delete(keypath)
     else:
-        pri = ''
-        if len(args) == 6:
-            pri = args[5]
+        if len(args) == 5:
+            egr_if = "{}|{}".format(args[2], args[4])
+            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_INTERFACE={egr_if}',
+                              policy_name=args[0], classifier_name=args[1], egr_if=egr_if)
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={classifier_name}/forwarding/egress-interfaces/egress-interface={intf_name}',
+                              policy_name=args[0], classifier_name=args[1], intf_name=args[2])
 
-        egr_if = "{}{}|{}".format(args[2], args[3], pri)
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_INTERFACE={egr_if}',
-                          policy_name=args[0], classifier_name=args[1], egr_if=egr_if)
         return fbs_client.delete(keypath)
 
 
 def bind_policy(args):
-    binding_type = '{}_{}_POLICY'.format('INGRESS' if args[2] =='in' else "EGRESS", args[1].upper())
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}/{binding_type}',
-                      interface_name=args[3] if len(args) == 4 else "Switch", binding_type=binding_type)
-    body = {binding_type: args[0]}
-    return fbs_client.patch(keypath, body)
+    ifname = args[3] if len(args) == 4 else "Switch"
+    body = {
+        "openconfig-fbs-ext:config": {
+            "id": ifname
+        },
+        "openconfig-fbs-ext:interface-ref": {
+            "config": {
+                "interface": ifname
+            }
+        },
+        "openconfig-fbs-ext:{}-policies".format('ingress' if args[2] =='in' else 'egress'): {
+            args[1]: {
+                "config": {
+                    "policy-name": args[0]
+                }
+            }
+        }
+    }
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={interface_name}',
+                      interface_name=ifname)
+    return fbs_client.post(keypath, body)
 
 
 def unbind_policy(args):
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}/{policy_dir}_{policy_type}_POLICY',
-                      interface_name=(args[2] if len(args) == 3 else "Switch"), policy_dir=('INGRESS' if args[1] =='in' else "EGRESS"), policy_type=args[0].upper())
+    ifname = args[2] if len(args) == 3 else "Switch"
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={interface_name}/{direction}-policies/{policy_type}', 
+            interface_name=ifname, direction='ingress' if args[1] =='in' else 'egress', policy_type=args[0])
     return fbs_client.delete(keypath)
 
 
 def show_policy_summary(args):
-    if len(args) > 1 and args[0] == 'interface':
-        if args[1] == 'Vlan':
-            interface_name = args[1] + args[2]
-        else:
+    if len(args) > 0:
+        if args[0] == 'interface':
             interface_name = args[1]
-        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
-                          interface_name=interface_name)
+            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
+                              interface_name=interface_name)
+        elif args[0] == "Switch":
+            interface_name = args[0]
+            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
+                              interface_name=interface_name)
+        else:
+            keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST')
     else:
         keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST')
 
@@ -737,7 +788,7 @@ def show_details_by_policy(args):
         body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
     if len(args) > 1:
         if args[1] == "interface":
-            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2]
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
@@ -786,9 +837,9 @@ def clear_details_by_interface(args):
         if len(args) == 3:
             body["sonic-flow-based-services:input"]["TYPE"] = args[2]
     else:
-        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
-        if len(args) == 4:
-            body["sonic-flow-based-services:input"]["TYPE"] = args[3]
+        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+        if len(args) == 3:
+            body["sonic-flow-based-services:input"]["TYPE"] = args[2]
 
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
@@ -1079,8 +1130,11 @@ def handle_generic_set_response(response, args, op_str):
     else:
         try:
             error_data = response.errors().get('error', list())[0]
-            if 'error-app-tag' in error_data and error_data['error-app-tag'] == 'too-many-elements':
-                print('%Error: Configuration limit reached.')
+            if 'error-app-tag' in error_data:
+                if error_data['error-app-tag'] == 'too-many-elements':
+                    print('%Error: Configuration limit reached.')
+                elif error_data['error-app-tag'] != 'same-policy-already-applied':
+                    print(response.error_message())
             else:
                 print(response.error_message())
         except Exception as e:
@@ -1128,12 +1182,11 @@ def handle_show_policy_summary_response(response, args, op_str):
                 filter_type = [args[next + 1]]
                 next = next + 2
             elif args[next] == 'interface':
-                if args[next + 1] != 'Switch':
-                    if_filter = args[next + 1] + args[next + 2]
-                    next = next + 3
-                else:
-                    if_filter = args[next + 1]
-                    next = next + 2
+                if_filter = args[next + 1]
+                next = next + 2
+            elif args[next] == 'Switch':
+                if_filter = args[next + 1]
+                next = next + 1
 
         render_data = OrderedDict()
         for binding in response.content.get('sonic-flow-based-services:POLICY_BINDING_TABLE_LIST', []):

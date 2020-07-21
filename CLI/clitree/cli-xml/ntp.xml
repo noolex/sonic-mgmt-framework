@@ -37,6 +37,23 @@ limitations under the License.
       <ACTION
         builtin="clish_pyobj">sonic_cli_ntp get_ntp_global show_ntp.j2  
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Display global configuration for NTP, which includes VRF configuration and
+              source interface configuration.
+          </DESCRIPTION>
+          <USAGE>
+              sonic# show ntp global
+          </USAGE>
+          <EXAMPLE summary="Display NTP global configuraion">
+              sonic# show ntp global
+              ----------------------------------------------
+              NTP Global Configuration
+              ----------------------------------------------
+              NTP source-interface:   Ethernet8
+              NTP vrf:                default
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="show ntp server" 
@@ -46,6 +63,22 @@ limitations under the License.
       <ACTION
         builtin="clish_pyobj">sonic_cli_ntp get_ntp_server show_ntp.j2  
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Display configured NTP servers.
+          </DESCRIPTION>
+          <USAGE>
+              sonic# show ntp server
+          </USAGE>
+          <EXAMPLE summary="Display configured NTP servers">
+              sonic# show ntp server
+              --------------------------------
+              NTP Servers
+              --------------------------------
+              10.11.0.1
+              10.11.0.2
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="show ntp associations" 
@@ -55,6 +88,23 @@ limitations under the License.
       <ACTION
         builtin="clish_pyobj">sonic_cli_ntp get_ntp_associations show_ntp.j2  
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Display associated NTP servers and their properties.
+          </DESCRIPTION>
+          <USAGE>
+              sonic# show ntp associations
+          </USAGE>
+          <EXAMPLE summary="Display associated NTP servers and their properties">
+              sonic# show ntp associations
+              remote                       refid            st   t  when   poll   reach  delay offset       jitter
+              ------------------------------------------------------------------------------------------------------
+              *10.11.0.1                   10.14.1.1        4    u  44     64     255    0.258 17915.100    151.732
+              +10.11.0.2                   10.11.0.1        5    u  48     64     255    0.306 17774.800    86.586
+              ------------------------------------------------------------------------------------------------------
+              * master (synced), # master (unsynced), + selected, - candidate, ~ configured
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
   </VIEW>
@@ -91,8 +141,25 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <ACTION
-        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/servers/server=${ip}${server-name}/config body={"openconfig-system:config": {"address": "${ip}${server-name}"}}
+        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/servers body={"openconfig-system:servers":{"server":[ {"address": "${ip}${server-name}","config":{"address":"${ip}${server-name}"}}]}}
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure a NTP server in configuration mode. NTP sever can be identified by
+              IPv4, IPv6 address or host name.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# ntp server NTP-SERVER-IP
+              sonic(config)# ntp server NTP-SERVER-HOST-NAME
+              NTP-SERVER-IP:        A.B.C.D/A::B                         NTP server IPv4/IPv6 address
+              NTP-SERVER-HOST-NAME: Hostname string(Max: 64 characters)  NTP server name
+          </USAGE>
+          <EXAMPLE summary="Configure a NTP server">
+              sonic# configure
+              sonic(config)# ntp server 10.11.0.1
+              sonic(config)# ntp server pool.ntp.org
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <!-- no NTP server configuration commands -->
@@ -114,6 +181,23 @@ limitations under the License.
       <ACTION
         builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/servers/server=${ip}${server-name}
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Delete a configured NTP server in configuration mode. NTP server can be identified by
+              IPv4, IPv6 address or host name.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# no ntp server NTP-SERVER-IP
+              sonic(config)# no ntp server NTP-SERVER-HOST-NAME
+              NTP-SERVER-IP:        A.B.C.D/A::B                         NTP server IPv4/IPv6 address
+              NTP-SERVER-HOST-NAME: Hostname string(Max: 64 characters)  NTP server name
+          </USAGE>
+          <EXAMPLE summary="Delete a NTP server">
+              sonic# configure
+              sonic(config)# no ntp server 10.11.0.1
+              sonic(config)# no ntp server pool.ntp.org
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <!-- NTP source configuration commands -->
@@ -157,6 +241,28 @@ limitations under the License.
       <ACTION
         builtin="clish_pyobj">sonic_cli_ntp set_ntp_source ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure NTP source interface in configuration mode. NTP source interface can be
+              an ethernet, loopback, management, port channel or vlan interface.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# ntp source-interface INTERFACE
+              INTERFACE: Ethernet     Ethernet interface
+                         Loopback     Loopback interface
+                         Management   Management Interface
+                         PortChannel  PortChannel interface
+                         Vlan         Vlan interface
+          </USAGE>
+          <EXAMPLE summary="Configure NTP source interface">
+              sonic# configure
+              sonic(config)# ntp source-interface Ethernet 8
+              sonic(config)# ntp source-interface Management 0
+              sonic(config)# ntp source-interface Loopback 88
+              sonic(config)# ntp source-interface PortChannel 18
+              sonic(config)# ntp source-interface Vlan 888
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <!-- no NTP source configuration commands -->
@@ -165,6 +271,18 @@ limitations under the License.
       <ACTION
         builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Delete configured NTP source interface in configuration mode.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# no ntp source-interface
+          </USAGE>
+          <EXAMPLE summary="Delete NTP source interface">
+              sonic# configure
+              sonic(config)# no ntp source-interface
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <!-- NTP VRF configuration commands -->
@@ -193,6 +311,21 @@ limitations under the License.
       <ACTION
         builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/config body={"openconfig-system:config":{"openconfig-system-ext:vrf":"${mgmt}${default}"}}
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Enable NTP on VRF in configuration mode. NTP can be enabled on management VRF or default VRF.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# ntp vrf VRF
+              VRF: mgmt     Enable NTP on management VRF
+                   default  Enable NTP on default VRF
+          </USAGE>
+          <EXAMPLE summary="Enable NTP on VRF">
+              sonic# configure
+              sonic(config)# ntp vrf mgmt
+              sonic(config)# ntp vrf default
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <!-- no NTP VRF configuration commands -->
@@ -201,6 +334,18 @@ limitations under the License.
       <ACTION
         builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:vrf
       </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Disable NTP on VRF in configuration mode.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# no ntp vrf
+          </USAGE>
+          <EXAMPLE summary="Disable NTP on VRF">
+              sonic# configure
+              sonic(config)# no ntp vrf
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
   </VIEW>

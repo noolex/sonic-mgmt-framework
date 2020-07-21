@@ -286,8 +286,7 @@
         </COMMAND>
         <COMMAND name = "udld message-time"
             help = "Configure UDLD message time value in seconds (1 to 30 sec)"
-            command_tables="sonic-udld:sonic-udld/UDLD/id={id}"
-            command_keys="id=GLOBAL">
+            command_tables="sonic-udld:sonic-udld/UDLD/UDLD_LIST/id">
             <PARAM
                 name="msg-time"
                 help="Message time value (1 to 30 sec)"
@@ -328,8 +327,7 @@
 
         <COMMAND name = "udld multiplier"
             help = "Configure UDLD multiplier value (3 to 10)"
-            command_tables="sonic-udld:sonic-udld/UDLD/id={id}"
-            command_keys="id=GLOBAL">
+            command_tables="sonic-udld:sonic-udld/UDLD/UDLD_LIST/id">
             <PARAM
                 name="multiplier"
                 help="Multiplier value (3 to 10)"

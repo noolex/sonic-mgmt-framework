@@ -53,6 +53,10 @@ type Router struct {
 type RouterConfig struct {
 	// Auth holds client authentication modes
 	Auth UserAuth
+
+	// Internal indicates if this router can support internal,
+	// non-standard features.
+	Internal bool
 }
 
 // ServeHTTP resolves and invokes the handler for http request r.
