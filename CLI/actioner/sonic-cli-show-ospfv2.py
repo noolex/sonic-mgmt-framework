@@ -158,6 +158,7 @@ def generate_show_ip_ospf_database_router(args):
     keypath = []
     vrfName = "default"
     self_originate = False
+    self_router_id = ""
     advRouter = ""
     lsId = ""
     i = 0
@@ -187,7 +188,8 @@ def generate_show_ip_ospf_database_router(args):
                 return
             if api_response['openconfig-network-instance:state'] is not None:
                 d = {}
-                d = { 'self_router_id': api_response['openconfig-network-instance:state']['router-id'] }
+                self_router_id = api_response['openconfig-network-instance:state']['router-id']
+                d = { 'self_router_id': self_router_id }
                 dlist.append(d)
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/areas', name=args[1])
     response = api.get(keypath)
@@ -198,8 +200,48 @@ def generate_show_ip_ospf_database_router(args):
             if api_response is None:
                 print("Failed")
                 return
+            if advRouter != "":
+                ospfv2_filter_lsdb_by_adv_router(api_response, advRouter)
+            if self_originate == True and self_router_id != "":
+                ospfv2_filter_lsdb_by_adv_router(api_response, self_router_id)
+            if lsId != "":
+                ospfv2_filter_lsdb_by_ls_id(api_response, lsId)
             dlist.append(api_response)
     show_cli_output(args[0], dlist)
+
+
+def ospfv2_filter_lsdb_by_adv_router(response, advRouter):
+    if 'openconfig-network-instance:areas' in  response and 'area' in response['openconfig-network-instance:areas']:
+        for i in range(len(response['openconfig-network-instance:areas']['area'])):
+            areainfo = response['openconfig-network-instance:areas']['area'][i]
+            if 'lsdb' in areainfo and 'lsa-types' in areainfo['lsdb'] and 'lsa-type' in areainfo['lsdb']['lsa-types']:
+                for j in range(len(areainfo['lsdb']['lsa-types']['lsa-type'])):
+                    lsa_type = areainfo['lsdb']['lsa-types']['lsa-type'][j]
+                    if 'lsas' in lsa_type and 'lsa' in lsa_type['lsas']:
+                        temp_lsa_list = []
+                        while lsa_type['lsas']['lsa']:
+                            lsainfo = lsa_type['lsas']['lsa'].pop()
+                            if 'state' in lsainfo and 'advertising-router' in lsainfo['state'] and lsainfo['state']['advertising-router'] == advRouter:
+                                temp_lsa_list.append(lsainfo)
+                        if temp_lsa_list:
+                            lsa_type['lsas']['lsa'].append(temp_lsa_list.pop())
+                                
+                            
+def ospfv2_filter_lsdb_by_ls_id(response, ls_id):
+    if 'openconfig-network-instance:areas' in  response and 'area' in response['openconfig-network-instance:areas']:
+        for i in range(len(response['openconfig-network-instance:areas']['area'])):
+            areainfo = response['openconfig-network-instance:areas']['area'][i]
+            if 'lsdb' in areainfo and 'lsa-types' in areainfo['lsdb'] and 'lsa-type' in areainfo['lsdb']['lsa-types']:
+                for j in range(len(areainfo['lsdb']['lsa-types']['lsa-type'])):
+                    lsa_type = areainfo['lsdb']['lsa-types']['lsa-type'][j]
+                    if 'lsas' in lsa_type and 'lsa' in lsa_type['lsas']:
+                        temp_lsa_list = []
+                        while lsa_type['lsas']['lsa']:
+                            lsainfo = lsa_type['lsas']['lsa'].pop()
+                            if 'link-state-id' in lsainfo and lsainfo['link-state-id'] == ls_id:
+                                temp_lsa_list.append(lsainfo)
+                        if temp_lsa_list:
+                            lsa_type['lsas']['lsa'].append(temp_lsa_list.pop())
 
 
 def invoke_show_api(func, args=[]):
@@ -221,6 +263,8 @@ def invoke_show_api(func, args=[]):
     elif func == 'show_ip_ospf_border_routers':
         return generate_show_ip_ospf_route(args)
     elif func == 'show_ip_ospf_database_router':
+        return generate_show_ip_ospf_database_router(args)
+    elif func == 'show_ip_ospf_database_network':
         return generate_show_ip_ospf_database_router(args)
     else: 
         return api.cli_not_implemented(func)

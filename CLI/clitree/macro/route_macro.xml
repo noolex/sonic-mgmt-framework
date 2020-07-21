@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2020 Dell, Inc.  
+Copyright 2020 Dell, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,12 +13,19 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
---> 
+-->
 
 <ROOT>
 
-<MACRODEF name="STATIC_ROUTE_DIST_CFG"> 
-     <PARAM name="pref" help="Route preference" ptype="RANGE_1_255" optional="true"></PARAM> 
+<MACRODEF name="STATIC_ROUTE_DIST_CFG">
+     <PARAM name="pref" help="Route preference" ptype="RANGE_1_255" optional="true"></PARAM>
+</MACRODEF>
+
+<MACRODEF name ="STATIC_ROUTE_TRACK_CFG">
+     <PARAM name="track" help="track id for sla" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+           <PARAM name="trackid" help="trackid" ptype="RANGE_1_255" ></PARAM>
+           <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+     </PARAM>
 </MACRODEF>
 
 <MACRODEF name ="STATIC_ROUTE_INTF_CFG">
@@ -28,9 +35,13 @@ limitations under the License.
                       <PARAM help="Set next hop VRF" name="nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand">
                             <PARAM name="next-hop-vrf" help="Name of next hop VRF" ptype="VRF_OR_DEFAULT">
                                <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+                               <MACRO name="STATIC_ROUTE_TRACK_CFG" arg=""/>
                             </PARAM>
                       </PARAM>
-                      <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/> 
+                      <PARAM name="track" help="track id for sla" ptype="SUBCOMMAND" mode="subcommand">
+                            <PARAM name="trackid" help="trackid" ptype="RANGE_1_255" ></PARAM>
+                      </PARAM>
+                      <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
                  </PARAM>
           </PARAM>
      </PARAM>
@@ -76,9 +87,11 @@ limitations under the License.
                       <PARAM help="switch subcommand" name="type" mode="switch" ptype="SUBCOMMAND" optional="true">
                            <MACRO name="STATIC_ROUTE_INTF_CFG" arg=""/>
                            <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+                           <MACRO name="STATIC_ROUTE_TRACK_CFG" arg=""/>
                            <PARAM name="nexthop-vrf" help="Select next hop VRF" ptype="SUBCOMMAND" mode="subcommand">
                                <PARAM name="next-hop-vrf" help="Name of next hop VRF" ptype="VRF_OR_DEFAULT">
                                    <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+                                   <MACRO name="STATIC_ROUTE_TRACK_CFG" arg=""/>
                                </PARAM>
                            </PARAM>
                       </PARAM>
@@ -87,4 +100,3 @@ limitations under the License.
          </PARAM>
 </MACRODEF>
 </ROOT>
-

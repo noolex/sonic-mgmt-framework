@@ -1,0 +1,11 @@
+{{ ' ' }}
+{{ 'Watchdog Summary' }}
+{{ '----------------' }}
+{% for key in json_output %}
+  {% if "poll-interval" in key %}
+{{ 'Polling Interval:'.ljust(20) }}: {{ json_output[key] }}
+  {% elif "counter-poll" in key %}
+{{ 'Flex Counters:'.ljust(20) }}: {{ json_output[key] }}
+  {% endif %}
+{% endfor %}
+{{ ' ' }}

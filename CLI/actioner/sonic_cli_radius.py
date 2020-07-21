@@ -54,9 +54,9 @@ def invoke_api(func, args):
         keypath = cc.Path(RADIUS_CONFIG + 'statistics')
         if args[0] == 'enable':
             body = {"openconfig-aaa-radius-ext:statistics": True}
+            return api.patch(keypath, body)
         else:
-            body = {"openconfig-aaa-radius-ext:statistics": False}
-        return api.patch(keypath, body)
+            return api.delete(keypath)
     elif func == 'patch_openconfig_radius_global_config_timeout':
         keypath = cc.Path(RADIUS_SERVER_GROUP +
             'config/openconfig-system-ext:timeout')
@@ -251,7 +251,8 @@ def get_sonic_radius_global():
         if response.content and 'openconfig-aaa-radius-ext:config' in response.content:
             api_response.update((response.content)['openconfig-aaa-radius-ext:config'])
 
-    show_cli_output("show_radius_global.j2", api_response)
+    if len(api_response) > 0:
+        show_cli_output("show_radius_global.j2", api_response)
     return api_response
 
 def get_sonic_radius_servers(globals):

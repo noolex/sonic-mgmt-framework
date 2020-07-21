@@ -18,7 +18,7 @@ def run_tpcm_list(argv):
             show_cli_output(templ, response)
 
 def build_options(func, method, argv):
-    parameters = { "args" : "null",
+    parameters = { "args" : ["null"],
                    "skip" : "null",
                    "username" : "null",
                    "password" : "null",
@@ -26,18 +26,22 @@ def build_options(func, method, argv):
     options_cmd=[]
  
     if func == 'tpcm_install':
-       parameters["args"] = argv[3]
+       if method == 'scp' or method == 'sftp':
+          parameters["args"] = argv[6:]
+       else:
+          parameters["args"] = argv[3:]
 
     if func == 'tpcm_upgrade':
-       parameters["args"] = argv[3]
        if method == 'scp' or  method =='sftp':
-          parameters["skip"] = argv[7]
+          parameters["skip"] = argv[6]
+          parameters["args"] = argv[7:]
        else:
-          parameters["skip"] = argv[4]
+          parameters["skip"] = argv[3]
+          parameters["args"] = argv[4:]
 
     if method == 'scp' or method == 'sftp':
-       parameters["username"] = argv[4]
-       parameters["password"] = argv[5]
+       parameters["username"] = argv[3]
+       parameters["password"] = argv[4]
        parameters["filename"] = argv[1]
 
     if func == 'tpcm_uninstall':
@@ -54,11 +58,12 @@ def build_options(func, method, argv):
     if parameters["filename"] != "null":
        options_cmd.append("--filename")
        options_cmd.append(parameters["filename"])
-       
-    if parameters["args"] != "null":
-       options_cmd.append("--args")
+
+    args_string = " ".join(parameters["args"])
+    if args_string != "null":
+       options_cmd.append("--args ")
        options_cmd.append("'")
-       options_cmd.append(parameters["args"])
+       options_cmd.append(args_string)
        options_cmd.append("'")
        
     if parameters["skip"] == "yes":
@@ -75,7 +80,7 @@ def run_tpcm_install(func, method, argv):
 
     docker_name="name " + argv[0]
     if method == "scp" or method == "sftp":
-       image_name= method + " " + argv[6]
+       image_name= method + " " + argv[5]
     else:
        image_name= method + " " + argv[1]
 
@@ -102,7 +107,6 @@ def run_tpcm_upgrade(func, method, argv):
        image_name= method + " " + argv[5]
     else:
        image_name= method + " " + argv[1]
-
     options_list = build_options(func,method, argv)
 
     body = {"sonic-tpcm:input":{"options":' '.join(options_list),"docker-name":docker_name, "image-name": image_name}}

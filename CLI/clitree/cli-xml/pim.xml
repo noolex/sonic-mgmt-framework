@@ -22,8 +22,183 @@ limitations under the License.
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
     <VIEW name="enable-view">
+        <!-- show ip pim -->
+        <COMMAND
+            help="Show PIM commands"
+            name="show ip pim">
+            <PARAM
+                name="vrf"
+                help="VRF instance information"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help=""
+                    ptype="VRF_OR_DEFAULT_OR_ALL">
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="options: rpf, interface, neighbor, ssm, topology"
+                optional="true"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="rpf"
+                    help="Show RPF details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="ssm"
+                    help="Show SSM details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="topology"
+                    help="Show topology information"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="grp-addr"
+                        help="IPv4 address of the group"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                    <PARAM
+                        name="src-addr"
+                        help="IPv4 address of the source"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    value="neighbor"
+                    name="nbr"
+                    help="Show PIM neighbor details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="nbr-addr"
+                        help="IPv4 address of the PIM neighbor"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    name="interface"
+                    help="Show interface details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                <PARAM
+                    name="iftype"
+                    help="interface type"
+                    mode="switch"
+                    optional="true"
+                    ptype="SUBCOMMAND">
+                    <PARAM
+                         name="port-id"
+                         help="Physical interface"
+                         ptype="PHY_INTERFACE">
+                    </PARAM>
+                    <PARAM
+                        name="PortChannel"
+                        help="PortChannel interface"
+                        mode="subcommand"
+                        ptype="SUBCOMMAND">
+                        <PARAM
+                            name="port-id"
+                            help="PortChannel ID"
+                            ptype="LAG_ID">
+                        </PARAM>
+                    </PARAM>
+                    <PARAM
+                        name="Vlan"
+                        help="VLAN interface"
+                        mode="subcommand"
+                        ptype="SUBCOMMAND">
+                        <PARAM
+                            name="port-id"
+                            help="VLAN ID"
+                            ptype="VLAN_ID">
+                        </PARAM>
+                    </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+             <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} intf:${interface} ifType:${iftype} port:${port-id} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
 
-    </VIEW>
+  <!-- ============== -->
+  <!-- Clear commands -->
+  <!-- ============== -->
+        <COMMAND
+            name="clear ip pim"
+            help="Reset PIM protocol information">
+            <PARAM
+                name="vrf"
+                help="VRF instance information"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help=""
+                    ptype="VRF_OR_DEFAULT">
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="options: interfaces, oil"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="interfaces"
+                    help="Reset all PIM interfaces of a particular VRF"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="oil"
+                    help="Rescan PIM OIL (Outgoing Interfaces List) of all multicast entries of a particular VRF"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_pim vrf:${vrf-name} interfaces:{interfaces} oil:${oil} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="clear ip mroute"
+            help="Reset IP Multicast routes">
+            <PARAM
+                name="vrf"
+                help="VRF instance information"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help=""
+                    ptype="VRF_OR_DEFAULT">
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_mroute vrf:${vrf-name} 2>/dev/stdout
+            </ACTION>
+            </COMMAND>
+        </VIEW>
 
     <!-- ============= -->
     <!-- Global Config -->
@@ -34,16 +209,16 @@ limitations under the License.
             command_tables="sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST/vrf-name={vrf_name},address-family={address-family}"
             command_keys="address-family=ipv4"
             render_command_cb="pim_ipv4_gbl"
-            help="PIM configuration">
+            help="Configure PIM">
             <PARAM
                 name="vrf"
-                help="VRF name"
+                help="VRF instance configuration"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vrf-name"
-                    help="Configure PIM for the given VRF name"
+                    help=""
                     ptype="VRF_OR_DEFAULT"></PARAM>
             </PARAM>
             <PARAM
@@ -53,44 +228,8 @@ limitations under the License.
                 order="true"
                 ptype="SUBCOMMAND">
                 <PARAM
-                    name="join-prune-interval"
-                    help="Join prune interval in seconds"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand">
-                    <PARAM
-                        help="Range 60-600 seconds"
-                        name="jpi"
-                        ptype="RANGE_60_600"></PARAM>
-                </PARAM>
-                <PARAM
-                    name="keep-alive-timer"
-                    help="Keep alive timer in seconds"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand">
-                    <PARAM
-                        help="Range 31-60000 seconds"
-                        name="kat"
-                        ptype="RANGE_31_60000"></PARAM>
-                </PARAM>
-                <PARAM
-                    name="ssm"
-                    help="Configure SSM mode"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand">
-                    <PARAM
-                        name="prefix-list"
-                        help="Configure prefix list name"
-                        ptype="SUBCOMMAND"
-                        mode="subcommand">
-                        <PARAM
-                            help="Prefix list name"
-                            name="pln"
-                            ptype="STRING"></PARAM>
-                    </PARAM>
-                </PARAM>
-                <PARAM
                     name="ecmp"
-                    help="Configure ECMP"
+                    help="Enable ECMP"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
@@ -99,6 +238,42 @@ limitations under the License.
                         ptype="SUBCOMMAND"
                         optional="true"
                         mode="subcommand"></PARAM>
+                </PARAM>
+                <PARAM
+                    name="join-prune-interval"
+                    help="Join Prune interval"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        help="Join Prune interval in seconds"
+                        name="jpi"
+                        ptype="RANGE_60_600"></PARAM>
+                </PARAM>
+                <PARAM
+                    name="keep-alive-timer"
+                    help="Keep Alive timer"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        help="Keep Alive timer in seconds"
+                        name="kat"
+                        ptype="RANGE_31_60000"></PARAM>
+                </PARAM>
+                <PARAM
+                    name="ssm"
+                    help="Configure SSM"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        name="prefix-list"
+                        help="Configure SSM prefix list"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand">
+                        <PARAM
+                            help="Name of a prefix list"
+                            name="pln"
+                            ptype="STRING"></PARAM>
+                    </PARAM>
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">
@@ -109,16 +284,16 @@ limitations under the License.
         <!-- no ip pim -->
         <COMMAND
             name="no ip pim"
-            help="PIM configuration">
+            help="Delete PIM configuration">
             <PARAM
                 name="vrf"
-                help="VRF name"
+                help="VRF instance configuration"
                 mode="subcommand"
                 ptype="SUBCOMMAND"
                 optional="true">
                 <PARAM
                     name="vrf-name"
-                    help="Configure PIM for the given VRF name"
+                    help=""
                     ptype="VRF_OR_DEFAULT"></PARAM>
             </PARAM>
             <PARAM
@@ -128,43 +303,43 @@ limitations under the License.
                 order="true"
                 ptype="SUBCOMMAND">
                 <PARAM
+                    name="ecmp"
+                    help="Disable ECMP"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        name="rebalance"
+                        help="Disable ECMP rebalance"
+                        ptype="SUBCOMMAND"
+                        optional="true"
+                        mode="subcommand"></PARAM>
+                </PARAM>
+                <PARAM
                     name="jpi"
                     value="join-prune-interval"
-                    help="Join prune interval in seconds"
+                    help="Clear Join Prune interval"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
                 <PARAM
                     name="kat"
                     value="keep-alive-timer"
-                    help="Keep alive timer in seconds"
+                    help="Clear Keep Alive timer"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
                 <PARAM
                     name="ssm"
-                    help="Configure SSM mode"
+                    help="Remove SSM configuration"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM
                         name="pln"
                         value="prefix-list"
-                        help="Configure prefix list name"
+                        help="Remove SSM prefix list"
                         ptype="SUBCOMMAND"
                         mode="subcommand">
                     </PARAM>
-                </PARAM>
-                <PARAM
-                    name="ecmp"
-                    help="Configure ECMP mode"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand">
-                    <PARAM
-                        name="rebalance"
-                        help="Enable ECMP rebalance"
-                        ptype="SUBCOMMAND"
-                        optional="true"
-                        mode="subcommand"></PARAM>
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">

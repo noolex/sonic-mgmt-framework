@@ -796,7 +796,7 @@ def invoke_api(func, args=[]):
            resp.content["sonic-config-mgmt:output"]["status"] == 0:
             result = True
         if not result:
-            print("Failed to restore port " + args[0] + " to its default configuration")
+            print("%Error: Failed to restore port " + args[0] + " to its default configuration")
         return resp
     elif func == 'rpc_interface_counters':
         ifname = extract_if("counters", args)

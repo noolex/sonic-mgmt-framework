@@ -98,7 +98,7 @@ def invoke_api(func, args):
         return api.patch(path, body)
 
     elif func == 'delete_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold':
-	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST={buffer},{threshold_buffer_type},{interface_name},{buffer_index_per_port}/threshold', buffer = args[2], threshold_buffer_type = args[4], interface_name = args[5], buffer_index_per_port = args[3] )
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST={buffer},{threshold_buffer_type},{interface_name},{buffer_index_per_port}', buffer = args[2], threshold_buffer_type = args[4], interface_name = args[5], buffer_index_per_port = args[3] )
 	return api.delete(path)
 
     elif func == 'delete_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list':
