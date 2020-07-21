@@ -23,6 +23,7 @@ limitations under the License.
             <PARAM name="remark" help="Set remark or description for rule" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM name="remark-val" help="Remark or description for rule" ptype="ACL_REMARK"/>
             </PARAM>
+            <PARAM name="do-not-nat" help="Do not allow NAT processing for the packet" ptype="SUBCOMMAND" mode="subcommand"/>
         </PARAM>
     </MACRODEF>
 

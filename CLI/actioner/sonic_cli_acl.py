@@ -204,7 +204,13 @@ def __create_acl_rule_ipv4_ipv6(args):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries',
                       name=args[0], acl_type=args[1])
 
-    forwarding_action = "ACCEPT" if args[3] == 'permit' else 'DROP'
+    if args[3] == 'permit':
+        forwarding_action = "ACCEPT"
+    elif args[3] == 'do-not-nat':
+        forwarding_action = 'DO_NOT_NAT'
+    else :
+        forwarding_action = 'DROP'
+    
     log.log_debug('Forwarding action is {}'.format(forwarding_action))
 
     body = collections.defaultdict()
@@ -896,6 +902,8 @@ def __parse_acl_entry(data, acl_entry, acl_type):
         rule_data.append('permit')
     elif 'openconfig-acl:DROP' == acl_entry['actions']['state']["forwarding-action"]:
         rule_data.append('deny')
+    elif 'openconfig-acl-ext:DO_NOT_NAT' == acl_entry['actions']['state']["forwarding-action"]:
+        rule_data.append('do_not_nat')
 
     if 'ip' == acl_type:
         __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data)
