@@ -23,6 +23,7 @@ limitations under the License.
 <!ENTITY SLOT            "([1])">
 <!ENTITY PORT            "([1-9]|[1-9][0-9]|[1-9][0-9][0-9])">
 <!ENTITY SUB_PORT        "([1-9]|[1-9][0-9])">
+<!ENTITY PORT_GROUP      "([1-9]|[1][0-2])">
 <!ENTITY ETH_PHY_NUM_ALIAS     "(&SLOT;/&PORT;|&SLOT;/&PORT;/&SUB_PORT;)">
 <!ENTITY ETH_ALL_INTF_ALIAS "(^[eE]([t]|(th))?\s*(&ETH_PHY_NUM_ALIAS;$))">
 <!ENTITY ETH_PAIR "((&ETH_PHY_NUM;)(\-(&ETH_PHY_NUM;))?)">
@@ -1332,6 +1333,14 @@ limitations under the License.
         method="select"
         pattern="percentage used free"
         help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="PORT_GROUP_ID"
+        method="regexp_select"
+        ext_pattern="(id)"
+        pattern="&PORT_GROUP;"
+        help="Port-group (id)"
         />
     <!--=======================================================-->
     <PTYPE
