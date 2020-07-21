@@ -58,14 +58,14 @@ def invoke(func, args=[]):
         body = {"openconfig-qos-maps-ext:config": { "dot1p-to-forwarding-group": args[1]} }
         return api.patch(path, body)
     if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities/pfc-priority', interface_id=args[0])
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities', interface_id=args[0])
         prio = int(args[1])
-        body = {"openconfig-qos-ext:pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":True}}]}
+        body = {"openconfig-qos-ext:pfc-priorities", {"openconfig-qos-ext:pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":True}}]}}
         return api.patch(path, body)
     if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities/pfc-priority', interface_id=args[0])
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities', interface_id=args[0])
         prio = int(args[1])
-        body = {"openconfig-qos-ext:pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":False}}]}
+        body = {"openconfig-qos-ext:pfc-priorities", {"openconfig-qos-ext:pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":False}}]}}
         return api.patch(path, body)
 
     if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities':
