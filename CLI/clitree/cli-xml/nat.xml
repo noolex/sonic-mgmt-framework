@@ -251,7 +251,7 @@ limitations under the License.
              <PARAM
                  name="twice-nat-id-value"
                  help="Twice NAT ID value"
-                 ptype="UINT"
+                 ptype="TWICE_NAT_ID"
                  dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/twice_nat_id"
                  >
              </PARAM>
@@ -336,7 +336,7 @@ limitations under the License.
                  <PARAM
                      name="twice-nat-id-value"
                      help="Twice NAT ID value"
-                     ptype="UINT"
+                     ptype="TWICE_NAT_ID"
                      >
                  </PARAM>
              </PARAM>
@@ -394,7 +394,7 @@ limitations under the License.
                  <PARAM
                      name="twice-nat-id-value"
                      help="Twice NAT ID value"
-                     ptype="UINT"
+                     ptype="TWICE_NAT_ID"
                      >
                  </PARAM>
              </PARAM>
