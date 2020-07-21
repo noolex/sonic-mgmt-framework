@@ -28,13 +28,13 @@ limitations under the License.
             name="show ip pim">
             <PARAM
                 name="vrf"
-                help="VRF name"
+                help="VRF instance information"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vrf-name"
-                    help="Show PIM entries of the given VRF"
+                    help=""
                     ptype="VRF_OR_DEFAULT_OR_ALL">
                 </PARAM>
             </PARAM>
@@ -105,30 +105,29 @@ limitations under the License.
                     optional="true"
                     ptype="SUBCOMMAND">
                     <PARAM
-                         val="phy-if-name"
                          name="port-id"
-                         help="Select an interface"
+                         help="Physical interface"
                          ptype="PHY_INTERFACE">
                     </PARAM>
                     <PARAM
                         name="PortChannel"
-                        help="PortChannel interface configuration"
+                        help="PortChannel interface"
                         mode="subcommand"
                         ptype="SUBCOMMAND">
                         <PARAM
                             name="port-id"
-                            help="PortChannel identifier"
+                            help="PortChannel ID"
                             ptype="LAG_ID">
                         </PARAM>
                     </PARAM>
                     <PARAM
                         name="Vlan"
-                        help="VLAN interface configuration"
+                        help="VLAN interface"
                         mode="subcommand"
                         ptype="SUBCOMMAND">
                         <PARAM
                             name="port-id"
-                            help="VLAN identifier"
+                            help="VLAN ID"
                             ptype="VLAN_ID">
                         </PARAM>
                     </PARAM>
@@ -144,16 +143,16 @@ limitations under the License.
   <!-- ============== -->
         <COMMAND
             name="clear ip pim"
-            help="Reset PIM configuration">
+            help="Reset PIM protocol information">
             <PARAM
                 name="vrf"
-                help="VRF name"
+                help="VRF instance information"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vrf-name"
-                    help="Reset PIM configurations the given VRF"
+                    help=""
                     ptype="VRF_OR_DEFAULT">
                 </PARAM>
             </PARAM>
@@ -183,16 +182,16 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="clear ip mroute"
-            help="Reset all IP Multicast routes for the particular VRF">
+            help="Reset IP Multicast routes">
             <PARAM
                 name="vrf"
-                help="VRF name"
+                help="VRF instance information"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vrf-name"
-                    help="Reset multicast route configurations of the given VRF"
+                    help=""
                     ptype="VRF_OR_DEFAULT">
                 </PARAM>
             </PARAM>
