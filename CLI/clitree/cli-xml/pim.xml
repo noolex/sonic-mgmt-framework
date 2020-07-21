@@ -53,6 +53,18 @@ limitations under the License.
                 order="true"
                 ptype="SUBCOMMAND">
                 <PARAM
+                    name="ecmp"
+                    help="Enable ECMP"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        name="rebalance"
+                        help="Enable ECMP rebalance"
+                        ptype="SUBCOMMAND"
+                        optional="true"
+                        mode="subcommand"></PARAM>
+                </PARAM>
+                <PARAM
                     name="join-prune-interval"
                     help="Join Prune interval"
                     ptype="SUBCOMMAND"
@@ -88,18 +100,6 @@ limitations under the License.
                             ptype="STRING"></PARAM>
                     </PARAM>
                 </PARAM>
-                <PARAM
-                    name="ecmp"
-                    help="Enable ECMP"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand">
-                    <PARAM
-                        name="rebalance"
-                        help="Enable ECMP rebalance"
-                        ptype="SUBCOMMAND"
-                        optional="true"
-                        mode="subcommand"></PARAM>
-                </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">
                 sonic_cli_pim patch_pim_global_config vrf:${vrf-name} jpi:${jpi} kat:${kat} pln:${pln} ecmp:${ecmp} rebalance:${rebalance} 2>/dev/stdout
@@ -128,6 +128,18 @@ limitations under the License.
                 order="true"
                 ptype="SUBCOMMAND">
                 <PARAM
+                    name="ecmp"
+                    help="Disable ECMP"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        name="rebalance"
+                        help="Disable ECMP rebalance"
+                        ptype="SUBCOMMAND"
+                        optional="true"
+                        mode="subcommand"></PARAM>
+                </PARAM>
+                <PARAM
                     name="jpi"
                     value="join-prune-interval"
                     help="Clear Join Prune interval"
@@ -153,18 +165,6 @@ limitations under the License.
                         ptype="SUBCOMMAND"
                         mode="subcommand">
                     </PARAM>
-                </PARAM>
-                <PARAM
-                    name="ecmp"
-                    help="Disable ECMP"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand">
-                    <PARAM
-                        name="rebalance"
-                        help="Disable ECMP rebalance"
-                        ptype="SUBCOMMAND"
-                        optional="true"
-                        mode="subcommand"></PARAM>
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">
