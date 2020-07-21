@@ -33,7 +33,7 @@ NAME1='bgp'
 DELETE_OCPREFIX='delete_'
 DELETE_OCPREFIX_LEN=len(DELETE_OCPREFIX)
 
-GLOBAL_OCSTRG='openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_'
+GLOBAL_OCSTRG='openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp'
 GLOBAL_OCSTRG_LEN=len(GLOBAL_OCSTRG)
 DELETE_GLOBAL_OCPREFIX=DELETE_OCPREFIX+GLOBAL_OCSTRG
 DELETE_GLOBAL_OCPREFIX_LEN=len(DELETE_GLOBAL_OCPREFIX)
@@ -1317,7 +1317,6 @@ def invoke_api(func, args=[]):
         body = { "openconfig-bgp-ext:enabled": True if args[2] == 'True' else False }
         return api.patch(keypath, body)
     elif attr == 'openconfig_network_instance_network_instances_network_instance_table_connections_table_connection_config_import_policy':
-        print args
         src_proto = "STATIC" if 'static' == args[2] else "DIRECTLY_CONNECTED" if 'connected' == args[2] else 'OSPF' if 'ospf' == args[2] else 'OSPF3'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/table-connections/table-connection={src_protocol},{dst_protocol},{address_family}/config/import-policy',
                 name=args[0], src_protocol= src_proto, dst_protocol=IDENTIFIER, address_family=args[1].split('_',1)[0])
@@ -1331,7 +1330,6 @@ def invoke_api(func, args=[]):
         else:
             return api.delete(keypath)
     elif attr == 'openconfig_network_instance_ext_network_instances_network_instance_table_connections_table_connection_config_metric':
-        print args
         src_proto = "STATIC" if 'static' == args[2] else "DIRECTLY_CONNECTED" if 'connected' == args[2] else 'OSPF' if 'ospf' == args[2] else 'OSPF3'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/table-connections/table-connection={src_protocol},{dst_protocol},{address_family}/config/openconfig-network-instance-ext:metric',
                 name=args[0], src_protocol=src_proto, dst_protocol=IDENTIFIER, address_family=args[1].split('_',1)[0])
@@ -1346,7 +1344,6 @@ def invoke_api(func, args=[]):
         else:
             return api.delete(keypath)
     elif attr == 'openconfig_network_instance_network_instances_network_instance_table_connections_table_connection_config':
-        print args
         src_proto = "STATIC" if 'static' == args[2] else "DIRECTLY_CONNECTED" if 'connected' == args[2] else 'OSPF' if 'ospf' == args[2] else 'OSPF3'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/table-connections/table-connection={src_protocol},{dst_protocol},{address_family}/config',
                 name=args[0], src_protocol= src_proto, dst_protocol=IDENTIFIER, address_family=args[1].split('_',1)[0])
@@ -1360,7 +1357,6 @@ def invoke_api(func, args=[]):
         else:
             return api.delete(keypath)
     elif attr == 'openconfig_network_instance_network_instances_network_instance_table_connections_table_connection':
-        print args
         src_proto = "STATIC" if 'static' == args[2] else "DIRECTLY_CONNECTED" if 'connected' == args[2] else 'OSPF' if 'ospf' == args[2] else 'OSPF3'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/table-connections/table-connection={src_protocol},{dst_protocol},{address_family}',
                 name=args[0], src_protocol= src_proto, dst_protocol=IDENTIFIER, address_family=args[1].split('_',1)[0])
@@ -2075,7 +2071,7 @@ def parseGlobl(vrf_name, cmd, args=[]):
                  if aft == 'IPV6_UNICAST' and proto == 'ospf':
                     rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name ] + [ aft, 'ospf3' ])
                  rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_table_connections_table_connection', [ vrf_name ] + [ aft, proto ])
-         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_config', [ vrf_name ])
+         rc += parseInvoke_api('delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp', [ vrf_name ])
     elif cmd == 'max-med':
          if not argds.get('maxmedval'):
              if argds.get('maxmedopts') == 'on-startup':
