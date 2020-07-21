@@ -52,8 +52,9 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map=${name}
-            body={"openconfig-qos-maps-ext:dscp-map": [{"name": "${name}"}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps
+            body={"openconfig-qos-maps-ext:dscp-maps": {"dscp-map":[{"name": "${name}", "config": {"name": "${name}"}}]}}
+
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -128,8 +129,8 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map=${map_name}/dscp-map-entries/dscp-map-entry=${dscp}
-            body={"openconfig-qos-maps-ext:dscp-map-entry": [{"dscp":${dscp}, "config": {"fwd-group": "${tc}"}}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dscp-maps/dscp-map=${map_name}/dscp-map-entries/
+            body={"openconfig-qos-maps-ext:dscp-map-entries": {"dscp-map-entry": [{"dscp":${dscp}, "config": {"fwd-group": "${tc}"}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
