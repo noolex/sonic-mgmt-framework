@@ -64,12 +64,14 @@
         </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_breakout delete_openconfig_platform_port_components_component_port_breakout_mode_config ${slotport} </ACTION>
     </COMMAND>
-    <COMMAND name="interface breakout" help="Port breakout configuration">
+    <COMMAND name="interface breakout" help="Port breakout configuration"
+            command_tables="sonic-port-breakout:sonic-port-breakout/BREAKOUT_CFG/BREAKOUT_CFG_LIST/ifname={brkout_ifname}"
+            command_keys="brkout_ifname=*">
        <PARAM name="port" help="Breakout capable port" ptype="SUBCOMMAND" mode="subcommand">
-            <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT"/>
+            <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT" dbpath='sonic-port-breakout:sonic-port-breakout/BREAKOUT_CFG/BREAKOUT_CFG_LIST/port'/>
        </PARAM>
        <PARAM name="mode" help="Breakout mode" ptype="SUBCOMMAND" mode="subcommand">
-            <PARAM name="breakout_mode" help="breakout mode" ptype="DPB_MODE"/>
+            <PARAM name="breakout_mode" help="breakout mode" ptype="DPB_MODE" dbpath='sonic-port-breakout:sonic-port-breakout/BREAKOUT_CFG/BREAKOUT_CFG_LIST/brkout_mode'/>
         </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_breakout patch_openconfig_platform_port_components_component_port_breakout_mode_config ${slotport} ${breakout_mode}</ACTION>
       <DOCGEN>
