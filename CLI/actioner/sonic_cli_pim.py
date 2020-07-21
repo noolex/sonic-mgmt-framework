@@ -19,8 +19,10 @@ import syslog as log
 import sys
 import json
 import cli_client as cc
+import time
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
+from sonic_cli_bgp import seconds_to_wdhm_str
 
 import urllib3
 urllib3.disable_warnings()
@@ -35,19 +37,24 @@ def get_keypath(func,args):
     path_prefix = '/restconf/data/openconfig-network-instance:network-instances/network-instance='
     intf = ""
     vrf = ""
+    path = ""
 
-    #patch global config
-    if func == 'patch_pim_global_config':
+    #patch and show config
+    if ((func == 'patch_pim_global_config') or
+        (func == 'show_pim_config')):
+
         #get vrf, needed for keypath
         vrf = inputDict.get('vrf')
         if vrf == None or vrf == "":
             vrf = "default"
 
+    ##############################################################
+    #patch global cmds
+    ##############################################################
+    if func == 'patch_pim_global_config':
         #generate keypath
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/global'
-        keypath = cc.Path(path)
 
-        #generate body based on the input
         if inputDict.get('jpi') is not None:
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"join-prune-interval": float(inputDict.get('jpi'))}}}
         elif inputDict.get('kat') is not None:
@@ -60,7 +67,9 @@ def get_keypath(func,args):
         elif inputDict.get('ecmp') is not None:
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-enabled": True}}}
 
+    ##############################################################
     #del global config
+    ##############################################################
     if func == 'del_pim_global_config':
         #get vrf, needed for keypath
         vrf = inputDict.get('vrf')
@@ -83,9 +92,9 @@ def get_keypath(func,args):
         elif inputDict.get('ecmp') is not None:
             path = path + "/openconfig-pim-ext:config/ecmp-enabled"
 
-        keypath = cc.Path(path)
-
+    ##############################################################
     #interface level config common code
+    ##############################################################
     if 'pim_interface_config' in func:
         #get interface, needed for VRF lookup and keypath
         intf = inputDict.get('intf')
@@ -95,31 +104,73 @@ def get_keypath(func,args):
         #get vrf, needed for keypath
         vrf=get_vrf(intf)
 
+    ##############################################################
     #patch/delete interface level config
+    ##############################################################
     if func.endswith('config_mode'):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
-        keypath = cc.Path(path)
         if func.startswith('patch'):
             body ={"mode": "PIM_MODE_SPARSE"}
 
     if func.endswith('config_drprio'):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/dr-priority'
-        keypath = cc.Path(path)
         if func.startswith('patch'):
             body = {"dr-priority": float(inputDict.get('drprio'))}
 
     if func.endswith('config_hello'):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/hello-interval'
-        keypath = cc.Path(path)
         if func.startswith('patch'):
             body = {"hello-interval": float(inputDict.get('hello'))}
 
     if func.endswith('config_bfd'):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/openconfig-pim-ext:bfd-enabled'
-        keypath = cc.Path(path)
         if func.startswith('patch'):
             body = {"bfd-enabled": True}
 
+    ##############################################################
+    #show config
+    ##############################################################
+    if 'show_pim_config' in func:
+        #generate keypath
+        path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim'
+
+        if ((inputDict.get('intf') is not None) or
+            (inputDict.get('nbr') is not None)):
+            path = path + "/interfaces"
+            port = inputDict.get('port')
+            if port is not None:
+                if port.lower().startswith('e'):
+                    path = path + "/interface=" + port
+                else:
+                    path = path + "/interface=" + inputDict.get('ifType') + port
+
+        if (inputDict.get('ssm') is not None):
+            path = path + "/global/ssm"
+        if (inputDict.get('srcAddr') is not None):
+            path = path + "/global/openconfig-pim-ext:tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr') + "/state/src-entries/src-entry=" + inputDict.get('srcAddr') + ",SG"
+        elif (inputDict.get('grpAddr') is not None):
+            path = path + "/global/openconfig-pim-ext:tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr')
+        elif (inputDict.get('topology') is not None):
+            path = path + "/global/openconfig-pim-ext:tib"
+        elif (inputDict.get('rpf') is not None):
+            path = "/restconf/operations/sonic-pim-show:show-pim"
+            body = {"sonic-pim-show:input":{"vrf-name": vrf, "address-family": "IPV4_UNICAST", "query-type": "RPF", "rpf": True}}
+
+    ##############################################################
+    #clear config
+    ##############################################################
+    if 'clear_mroute' in func:
+        path = "/restconf/operations/sonic-ipmroute-clear:clear-ipmroute"
+        body = {"sonic-ipmroute-clear:input": {"vrf-name":"default", "address-family":"IPV4_UNICAST", "config-type":"ALL-MROUTES", "all-mroutes": True}}
+
+    if 'clear_pim' in func:
+        path = "/restconf/operations/sonic-pim-clear:clear-pim"
+        if (inputDict.get('interfaces') is not None):
+            body = {"sonic-pim-clear:input": {"vrf-name":"default", "address-family":"IPV4_UNICAST", "config-type":"ALL-INTERFACES", "all-interfaces": True}}
+        elif (inputDict.get('oil') is not None):
+            body = {"sonic-pim-clear:input": {"vrf-name":"default", "address-family":"IPV4_UNICAST", "config-type":"ALL-OIL", "all-oil": True}}
+
+    keypath = cc.Path(path)
     return keypath, body
 
 def get_vrf(intf):
@@ -127,9 +178,9 @@ def get_vrf(intf):
 
     if intf.lower().startswith('e'):
         request = '/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST=' + intf + '/vrf_name'
-    elif intf.lower().startswith('vlan'):
+    elif intf.startswith('Vlan'):
         request = '/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST=' + intf + '/vrf_name'
-    elif intf.lower().startswith('p'):
+    elif intf.startswith('PortChannel'):
         request =  '/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST=' + intf + '/vrf_name'
     else:
         return 'default'
@@ -145,13 +196,7 @@ def get_vrf(intf):
         if response is  None:
             return 'default'
 
-        if intf.lower().startswith('e'):
-            vrf = response.get('sonic-interface:vrf_name')
-        if intf.lower().startswith('vlan'):
-            vrf = response.get('sonic-vlan-interface:vrf_name')
-        if intf.lower().startswith('p'):
-            vrf = response.get('sonic-portchannel-interface:vrf_name')
-
+        vrf = response.get('sonic-interface:vrf_name')
         if vrf is None or vrf == '':
             return 'default'
         return vrf
@@ -160,44 +205,562 @@ def get_vrf(intf):
         log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
 
-def process_args(args):
-  global inputDict
+def show_response(response):
+    if (inputDict.get('intf') is not None):
+        show_intf_info(response)
+    elif (inputDict.get('nbr') is not None):
+        show_nbr_info(response)
+    elif (inputDict.get('ssm') is not None):
+        show_ssm_info(response)
+    elif (inputDict.get('srcAddr') is not None):
+        show_topology_src_info(response)
+    elif (inputDict.get('topology') is not None):
+        show_topology_info(response)
+    elif (inputDict.get('rpf') is not None):
+        show_rpf_info(response)
+    return
 
-  for arg in args:
+def show_intf_info(response):
+    outputList = []
+    intfState = ""
+    intfsContainer = None
+    intfList = None
+
+    if inputDict.get('port') is not None:
+        intfList = response.get('openconfig-network-instance:interface')
+    else:
+        intfsContainer = response.get('openconfig-network-instance:interfaces')
+        if intfsContainer is None:
+            return
+
+        intfList = intfsContainer.get('interface')
+
+    if intfList is None:
+        return
+
+    for intf in intfList:
+        intfState = "down"
+
+        intfId = intf.get('interface-id')
+        if intfId is None:
+            continue
+
+        state = intf.get('state')
+        if state is None:
+           continue
+
+        enabled = state.get('enabled')
+        if enabled is None:
+            intfState = ""
+        elif enabled == True:
+            intfState = "up"
+
+        localAddr = state.get('openconfig-pim-ext:local-address')
+        if localAddr is None:
+            localAddr = ""
+
+        nbrCount = state.get('openconfig-pim-ext:nbrs-count')
+        if nbrCount is None:
+            nbrCount = ""
+
+        pimDrAddr = state.get('openconfig-pim-ext:dr-address')
+        if pimDrAddr is None:
+            pimDrAddr = ""
+
+        helloInterval = state.get('hello-interval')
+        if helloInterval is None:
+            helloInterval = ""
+
+        pimDrPrio = state.get('dr-priority')
+        if pimDrPrio is None:
+            pimDrPrio = ""
+
+        intfEntry = {'intfId':intfId,
+                    'intfState':intfState,
+                    'localAddr':localAddr,
+                    'nbrCount':nbrCount,
+                    'pimDrAddr':pimDrAddr,
+                    'helloInterval':helloInterval,
+                    'pimDrPrio':pimDrPrio,
+                    }
+        outputList.append(intfEntry)
+
+    if inputDict.get('vrf') is None:
+        print "PIM Interface information for VRF: default\n"
+    else:
+        print "PIM Interface information for VRF: ", inputDict.get('vrf'), "\n"
+
+    show_cli_output("show_pim.j2", outputList)
+
+def show_topology_src_info(response):
+    outputList = []
+    oilList2 = None
+    srcList2 = None
+    ipList = None
+
+    grpAddr = inputDict.get('grpAddr')
+    try:
+        srcList = response.get('openconfig-pim-ext:src-entry')
+        if srcList is None:
+            return
+
+        oilList2 = []
+        srcAddr = srcList[0].get('source-address')
+        if srcAddr is None:
+            return
+
+        srcState = srcList[0].get('state')
+        if srcState is None:
+            return
+
+        srcFlags = srcState.get('flags')
+        if srcFlags is None:
+            srcFlags = ""
+
+        srcExpiry = srcState.get('expiry')
+        if srcExpiry is None:
+            srcExpiry = "Never"
+        else:
+            srcExpiry = seconds_to_wdhm_str(srcExpiry)
+
+        srcUpTime = srcState.get('uptime')
+        if srcUpTime is None:
+            srcUpTime = "--:--:--"
+        else:
+            srcUpTime = seconds_to_wdhm_str(time.time() - float(srcUpTime))
+
+        inIntf = srcState.get('incoming-interface')
+        if inIntf is None:
+            inIntf = ""
+
+        rpfNbr = ""
+        rpfState = srcState.get('rpf-info').get('state')
+        if rpfState is not None:
+            rpfNbr = rpfState.get('rpf-neighbor-address')
+            if rpfNbr is None:
+                rpfNbr = ""
+
+        oilList = srcState.get('oil-info-entries').get('oil-info-entry')
+        if oilList is not None:
+            for oil in oilList:
+                outIntf = oil.get('outgoing-interface')
+                if  outIntf is None:
+                    continue
+
+                oilState = oil.get('state')
+                if  oilState is None:
+                    continue
+
+                oilExpiry = oilState.get('expiry')
+                if oilExpiry is None:
+                    oilExpiry = "Never"
+                else:
+                    oilExpiry = seconds_to_wdhm_str(oilExpiry)
+
+                oilUpTime = oilState.get('uptime')
+                if oilUpTime is None:
+                    oilUpTime = "--:--:--"
+                else:
+                    oilUpTime = seconds_to_wdhm_str(time.time() - float(oilUpTime))
+
+                oilEntry = {'outIntf': outIntf,
+                            'oilExpiry': oilExpiry,
+                            'oilUpTime': oilUpTime
+                           }
+                oilList2.append(oilEntry)
+
+        srcEntry = {'grpAddr': grpAddr,
+                    'srcAddr': srcAddr,
+                    'srcFlags': srcFlags ,
+                    'srcExpiry': srcExpiry,
+                    'srcUpTime': srcUpTime,
+                    'inIntf': inIntf,
+                    'rpfNbr': rpfNbr,
+                    'oilList': oilList2
+                    }
+        outputList.append(srcEntry)
+
+        if len(outputList) > 0:
+            print "PIM Multicast Routing Table\n"
+            print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
+            print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
+            print "K - Ack-Pending state\n"
+
+            show_cli_output("show_pim.j2", outputList)
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print "% Error: Internal error"
+
+def show_topology_info(response):
+    outputList = []
+    oilList2 = None
+    srcList2 = None
+    ipList = None
+
+    try:
+        if inputDict.get('grpAddr') is not None:
+            ipList = response.get('openconfig-pim-ext:ipv4-entry')
+        else:
+            ipList = response.get('openconfig-pim-ext:tib').get('ipv4-entries').get('ipv4-entry')
+        if ipList is None:
+            return
+
+        for ip in ipList:
+            srcList2 = []
+
+            state = ip.get('state')
+            if state is None:
+                continue
+
+            grpAddr = state.get('group-address')
+            if grpAddr is None:
+                continue
+
+            srcList = state.get('src-entries').get('src-entry')
+            if srcList is None:
+                continue
+
+            for src in srcList:
+                oilList2 = []
+                srcAddr = src.get('source-address')
+                if srcAddr is None:
+                    srcAddr = ""
+
+                srcState = src.get('state')
+                if srcState is None:
+                    continue
+
+                srcFlags = srcState.get('flags')
+                if srcFlags is None:
+                    srcFlags = ""
+
+                srcExpiry = srcState.get('expiry')
+                if srcExpiry is None:
+                    srcExpiry = "Never"
+                else:
+                    srcExpiry = seconds_to_wdhm_str(srcExpiry)
+
+                srcUpTime = srcState.get('uptime')
+                if srcUpTime is None:
+                    srcUpTime = "--:--:--"
+                else:
+                    srcUpTime = seconds_to_wdhm_str(time.time() - float(srcUpTime))
+
+                inIntf = srcState.get('incoming-interface')
+                if inIntf is None:
+                    inIntf = ""
+
+                rpfNbr = ""
+                rpfState = srcState.get('rpf-info').get('state')
+                if rpfState is not None:
+                    rpfNbr = rpfState.get('rpf-neighbor-address')
+                    if rpfNbr is None:
+                        rpfNbr = ""
+
+                oilList = srcState.get('oil-info-entries').get('oil-info-entry')
+                if oilList is None:
+                    continue
+
+
+                for oil in oilList:
+                    outIntf = oil.get('outgoing-interface')
+                    if  outIntf is None:
+                        continue
+
+                    oilState = oil.get('state')
+                    if  oilState is None:
+                        continue
+
+                    oilExpiry = oilState.get('expiry')
+                    if oilExpiry is None:
+                        oilExpiry = "Never"
+                    else:
+                        oilExpiry = seconds_to_wdhm_str(oilExpiry)
+
+                    oilUpTime = oilState.get('uptime')
+                    if oilUpTime is None:
+                        oilUpTime = "--:--:--"
+                    else:
+                        oilUpTime = seconds_to_wdhm_str(time.time() - float(oilUpTime))
+
+                    oilEntry = {'outIntf': outIntf,
+                                'oilExpiry': oilExpiry,
+                                'oilUpTime': oilUpTime
+                               }
+                    oilList2.append(oilEntry)
+
+                srcEntry = {'grpAddr': grpAddr,
+                            'srcAddr': srcAddr,
+                            'srcFlags': srcFlags ,
+                            'srcExpiry': srcExpiry,
+                            'srcUpTime': srcUpTime,
+                            'inIntf': inIntf,
+                            'rpfNbr': rpfNbr,
+                            'oilList': oilList2
+                            }
+                outputList.append(srcEntry)
+
+        if len(outputList) > 0:
+            print "PIM Multicast Routing Table\n"
+            print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
+            print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
+            print "K - Ack-Pending state\n"
+
+            show_cli_output("show_pim.j2", outputList)
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print "% Error: Internal error"
+
+def show_ssm_info(response):
+    ssmContainer = response.get('openconfig-network-instance:ssm')
+    if ssmContainer is None:
+        return
+
+    ssmState = ssmContainer.get('state')
+    if ssmState is None:
+        return
+
+    ssmRanges = ssmState.get('ssm-ranges')
+    if inputDict.get('vrf') is None:
+        print "PIM SSM information for VRF: default\n"
+    else:
+        print "PIM SSM information for VRF: ", inputDict.get('vrf'), "\n"
+    if ssmRanges is None or ssmRanges == "":
+       print "SSM group range : 232.0.0.0/8"
+    else:
+       print "SSM group range : ", ssmRanges
+
+def show_rpf_info(response):
+    outputList = []
+    rpfList = None
+
+    outputContainer = response.get('sonic-pim-show:output')
+    if outputContainer is None:
+        return
+
+    tmp = outputContainer.get('response')
+    if tmp is None:
+        return
+
+    responseContainer = json.loads(tmp)
+    for key in responseContainer.keys():
+        if key.startswith("rpf") or key.startswith("next"):
+            continue
+
+        rpfEntry = responseContainer.get(key)
+        if rpfEntry is None:
+            continue
+
+        for subkey in rpfEntry.keys():
+            rpfSubEntry = rpfEntry.get(subkey)
+            if rpfSubEntry is not None:
+                outputList.append(rpfSubEntry)
+
+    if inputDict.get('vrf') is None:
+        print "PIM RPF information for VRF: default\n"
+    else:
+        print "PIM RPF information for VRF: ", inputDict.get('vrf'), "\n"
+    show_cli_output("show_pim.j2", outputList)
+
+def show_nbr_info(response):
+    outputList = []
+    intfsContainer = None
+    intfList = None
+
+    givenNbr = inputDict.get('nbrAddr')
+
+    intfsContainer = response.get('openconfig-network-instance:interfaces')
+    if intfsContainer is None:
+        return
+
+    intfList = intfsContainer.get('interface')
+
+    if intfList is None:
+        return
+
+    for intf in intfList:
+
+        intfId = intf.get('interface-id')
+        if intfId is None:
+            continue
+
+        nbrContainer = intf.get('neighbors')
+        if nbrContainer is None:
+           continue
+
+        nbrList = nbrContainer.get('neighbor')
+        if nbrList is None:
+           continue
+
+        for nbr in nbrList:
+            rcvdNbr = nbr.get('neighbor-address')
+            if rcvdNbr is None:
+                continue
+
+            if givenNbr is not None:
+                if givenNbr != rcvdNbr:
+                    continue
+
+            nbrState = nbr.get('state')
+            if nbrState is None:
+                continue
+
+            upTime  = nbrState.get('neighbor-established')
+            if upTime is None:
+                upTime = "--:--:--"
+            else:
+                upTime = seconds_to_wdhm_str(time.time() - float(upTime))
+
+            expiryTime = nbrState.get('neighbor-expires')
+            if expiryTime is None:
+                expiryTime = "Never"
+            else:
+                expiryTime = seconds_to_wdhm_str(expiryTime)
+
+            pimDrPrio = nbrState.get('openconfig-pim-ext:dr-priority')
+            if pimDrPrio is None:
+                pimDrPrio = ""
+
+            nbrEntry = {'intfId':intfId,
+                        'rcvdNbr':rcvdNbr,
+                        'upTime':upTime,
+                        'expiryTime':expiryTime,
+                        'pimDrPrio':pimDrPrio,
+                        }
+            outputList.append(nbrEntry)
+
+    if inputDict.get('vrf') is None:
+        print "PIM Neighbor information for VRF: default\n"
+    else:
+        print "PIM Neighbor information for VRF: ", inputDict.get('vrf'), "\n"
+    show_cli_output("show_pim.j2", outputList)
+
+def get_vrf_list():
+    # Use SONIC model to get all configued VRF names and set the keys in the dictionary
+    vrfList =  []
+    keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
+    response = apiClient.get(keypath)
+    if response.ok():
+        response = response.content
+    else:
+        return None
+
+    if 'sonic-vrf:VRF_LIST' in response:
+        vrf_list = response['sonic-vrf:VRF_LIST']
+        for vrf in vrf_list:
+            vrf_name = vrf['vrf_name']
+            vrfList.append(vrf_name)
+    return vrfList
+
+def process_args(args):
+    global inputDict
+    count = 0
+    for arg in args:
         tmp = arg.split(":", 1)
         if not len(tmp) == 2:
             continue
         if tmp[1] == "":
             tmp[1] = None
         inputDict[tmp[0]] = tmp[1]
+        if (tmp[1] != None) and (tmp[0] != 'vrf'):
+            count = count + 1
+    return count
+
+def handle_patch(func, args):
+    keypath, body = get_keypath(func, args)
+    if keypath is None:
+        print("% Error: Internal error")
+        return -1
+    response = apiClient.patch(keypath, body)
+    if not response.ok():
+        print(response.error_message())
+        return -1
+    return 0
+
+def handle_del(func, args):
+    keypath, body = get_keypath(func, args)
+    if keypath is None:
+        print("% Error: Internal error")
+        return -1
+    response = apiClient.delete(keypath)
+    if not response.ok():
+        print(response.error_message())
+        return -1
+    return 0
+
+def handle_clear(func, args):
+    keypath, body = get_keypath(func, args)
+    if keypath is None:
+        print("% Error: Internal error")
+        return -1
+    response = apiClient.post(keypath, body)
+    if not response.ok():
+        print(response.error_message())
+        return -1
+    return 0
+
+def handle_show_all(func, args):
+    global inputDict
+    vrfList = get_vrf_list()
+    if vrfList is None:
+        return
+    for vrf in vrfList:
+        inputDict['vrf'] = vrf
+        keypath, body = get_keypath(func, args)
+        if keypath is None:
+            print("% Error: Internal error")
+            return -1
+        response = apiClient.get(keypath)
+
+        if response.ok():
+            response = response.content
+            show_response(response)
+        else:
+            print(response.error_message())
+            return -1
+    return 0
+
+def handle_show(func, args):
+    vrfList = []
+    if inputDict.get('vrf') == "all":
+        handle_show_all(func, args)
+        return
+
+    keypath, body = get_keypath(func, args)
+    if keypath is None:
+        print("% Error: Internal error")
+        return -1
+    if "/operations/" in keypath.path:
+        response = apiClient.post(keypath, body)
+    else:
+        response = apiClient.get(keypath)
+
+    if response.ok():
+        response = response.content
+        show_response(response)
+    else:
+        print(response.error_message())
+        return -1
+    return 0
 
 def run(func, args):
     global inputDict
     response = None
-
-    process_args(args)
-
-    # create a body block
-    keypath, body = get_keypath(func, args)
-    if keypath is None:
-        print("% Error: Internal error")
-        inputDict = {}
+    status = 0
+    count = process_args(args)
+    if (count == 0):
         return -1
 
     if func.startswith("patch"):
-        response = apiClient.patch(keypath, body)
-    if func.startswith("del"):
-        response = apiClient.delete(keypath)
-
-    if response.ok():
-        response = response.content
-    else:
-        print(response.error_message())
-        inputDict = {}
-        return -1
-
+      status =  handle_patch(func, args)
+    elif func.startswith("del"):
+      status = handle_del(func, args)
+    elif func.startswith("show"):
+      status = handle_show(func, args)
+    elif func.startswith("clear"):
+      status = handle_clear(func, args)
     inputDict = {}
-    return 0
+    return status
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

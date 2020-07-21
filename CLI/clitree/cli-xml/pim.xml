@@ -22,8 +22,184 @@ limitations under the License.
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
     <VIEW name="enable-view">
+        <!-- show ip pim -->
+        <COMMAND
+            help="Show PIM commands"
+            name="show ip pim">
+            <PARAM
+                name="vrf"
+                help="VRF name"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help="Show PIM entries of the given VRF"
+                    ptype="VRF_OR_DEFAULT_OR_ALL">
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="options: rpf, interface, neighbor, ssm, topology"
+                optional="true"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="rpf"
+                    help="Show RPF details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="ssm"
+                    help="Show SSM details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="topology"
+                    help="Show topology information"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="grp-addr"
+                        help="IPv4 address of the group"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                    <PARAM
+                        name="src-addr"
+                        help="IPv4 address of the source"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    value="neighbor"
+                    name="nbr"
+                    help="Show PIM neighbor details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="nbr-addr"
+                        help="IPv4 address of the PIM neighbor"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    name="interface"
+                    help="Show interface details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                <PARAM
+                    name="iftype"
+                    help="interface type"
+                    mode="switch"
+                    optional="true"
+                    ptype="SUBCOMMAND">
+                    <PARAM
+                         val="phy-if-name"
+                         name="port-id"
+                         help="Select an interface"
+                         ptype="PHY_INTERFACE">
+                    </PARAM>
+                    <PARAM
+                        name="PortChannel"
+                        help="PortChannel interface configuration"
+                        mode="subcommand"
+                        ptype="SUBCOMMAND">
+                        <PARAM
+                            name="port-id"
+                            help="PortChannel identifier"
+                            ptype="LAG_ID">
+                        </PARAM>
+                    </PARAM>
+                    <PARAM
+                        name="Vlan"
+                        help="VLAN interface configuration"
+                        mode="subcommand"
+                        ptype="SUBCOMMAND">
+                        <PARAM
+                            name="port-id"
+                            help="VLAN identifier"
+                            ptype="VLAN_ID">
+                        </PARAM>
+                    </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+             <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} intf:${interface} ifType:${iftype} port:${port-id} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
 
-    </VIEW>
+  <!-- ============== -->
+  <!-- Clear commands -->
+  <!-- ============== -->
+        <COMMAND
+            name="clear ip pim"
+            help="Reset PIM configuration">
+            <PARAM
+                name="vrf"
+                help="VRF name"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help="Reset PIM configurations the given VRF"
+                    ptype="VRF_OR_DEFAULT">
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="options: interfaces, oil"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="interfaces"
+                    help="Reset all PIM interfaces of a particular VRF"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="oil"
+                    help="Rescan PIM OIL (Outgoing Interfaces List) of all multicast entries of a particular VRF"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_pim vrf:${vrf-name} interfaces:{interfaces} oil:${oil} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="clear ip mroute"
+            help="Reset all IP Multicast routes for the particular VRF">
+            <PARAM
+                name="vrf"
+                help="VRF name"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help="Reset multicast route configurations of the given VRF"
+                    ptype="VRF_OR_DEFAULT">
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_mroute vrf:${vrf-name} 2>/dev/stdout
+            </ACTION>
+            </COMMAND>
+        </VIEW>
 
     <!-- ============= -->
     <!-- Global Config -->
