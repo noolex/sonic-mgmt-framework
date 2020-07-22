@@ -42,13 +42,16 @@
     </COMMAND>
   </VIEW>
   <VIEW name="configure-view">
-    <COMMAND name="port-group" help="Port group configurations">
-       <PARAM name="pg" help="Port-group index" ptype="PORT_GROUP_ID">
+    <COMMAND name="port-group" help="Port group configurations"
+        command_tables="sonic-port-group:sonic-port-group/PORT_GROUP/PORT_GROUP_LIST/id={pg_id}"
+        command_keys="pg_id=*">
+       <PARAM name="pg" help="Port-group index" ptype="PORT_GROUP_ID"
+              dbpath="sonic-port-group:sonic-port-group/PORT_GROUP/PORT_GROUP_LIST/id">
             <PARAM name="speed" help="Speed for the ports in port-group" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM
                     name="port_speed"
                     help="Port speed"
-                    dbpath="sonic-port:sonic-port/PORT/PORT_LIST/speed"
+                    dbpath="sonic-port-group:sonic-port-group/PORT_GROUP/PORT_GROUP_LIST/speed"
                     ptype="INTF_SPEED" />
             </PARAM>
        </PARAM>
