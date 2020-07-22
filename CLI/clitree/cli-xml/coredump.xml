@@ -17,7 +17,10 @@
         </COMMAND>
         <COMMAND
             name="no core"
-            help="Disable coredump">
+            help="Disable coredump"
+            command_tables="sonic-coredump:sonic-coredump/COREDUMP/COREDUMP_LIST/id={id}"
+            command_keys="id=config"
+            dbpath="sonic-coredump:sonic-coredump/COREDUMP/COREDUMP_LIST/enabled=false">
             <ACTION
                  builtin="clish_pyobj">sonic_cli_coredump disable
             </ACTION>
@@ -37,7 +40,10 @@
         </COMMAND>
         <COMMAND
             name="core enable"
-            help="Enable coredump">
+            help="Enable coredump"
+            command_tables="sonic-coredump:sonic-coredump/COREDUMP/COREDUMP_LIST/id={id}"
+            command_keys="id=config"
+            dbpath="sonic-coredump:sonic-coredump/COREDUMP/COREDUMP_LIST/enabled=true">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_coredump enable
             </ACTION>
@@ -57,7 +63,6 @@
         </COMMAND>
    </VIEW>
 
-    <!--MODE : kdump view -->
     <VIEW name="enable-view">
         <COMMAND
             name="show core"

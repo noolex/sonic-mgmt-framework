@@ -1,0 +1,18 @@
+{% set vars = {'Pool': ""} %}
+{% set vars = {'Bytes': ""} %}
+
+{% if json_output -%}
+
+---------------------------------------------------------------
+{{'%-50s'|format("Pool")}}{{'%-50s'|format("Bytes")}}
+---------------------------------------------------------------
+{% for buffer_pool_stat_entries in json_output %}
+
+{% if vars.update({'Pool':buffer_pool_stat_entries["Poolname"]}) %}{% endif %}
+    {% if vars.update({'Bytes':buffer_pool_stat_entries["StatsValue"]}) %}{% endif %}
+
+{{'%-50s'|format(vars.Pool)}}{{'%-50s'|format(vars.Bytes)}}
+
+{% endfor %}
+
+{% endif %}
