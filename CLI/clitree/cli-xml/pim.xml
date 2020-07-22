@@ -41,7 +41,6 @@ limitations under the License.
             <PARAM
                 name="filter"
                 help="options: rpf, interface, neighbor, ssm, topology"
-                optional="true"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
@@ -143,7 +142,7 @@ limitations under the License.
   <!-- ============== -->
         <COMMAND
             name="clear ip pim"
-            help="Reset PIM protocol information">
+            help="Clear PIM protocol information">
             <PARAM
                 name="vrf"
                 help="VRF instance information"
@@ -164,14 +163,14 @@ limitations under the License.
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="interfaces"
-                    help="Reset all PIM interfaces of a particular VRF"
+                    help="Clear all PIM interfaces of a particular VRF"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
                 </PARAM>
                 <PARAM
                     name="oil"
-                    help="Rescan PIM OIL (Outgoing Interfaces List) of all multicast entries of a particular VRF"
+                    help="Clear PIM OIL (Outgoing Interfaces List) of all multicast entries of a particular VRF"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
@@ -182,7 +181,7 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="clear ip mroute"
-            help="Reset IP Multicast routes">
+            help="Clear IP Multicast routes">
             <PARAM
                 name="vrf"
                 help="VRF instance information"

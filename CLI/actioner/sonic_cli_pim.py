@@ -18,8 +18,8 @@
 import syslog as log
 import sys
 import json
+import string
 import cli_client as cc
-import time
 from datetime import datetime, timedelta
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
@@ -53,7 +53,6 @@ def seconds_to_wdhm_str(seconds, diff):
         wdhm = '{:02}:{:02}:{:02}'.format(int(d.hour), int(d.minute), int(d.second))
 
     return wdhm
-
 
 def get_keypath(func,args):
     keypath = None
@@ -235,7 +234,6 @@ def get_vrf(intf):
 
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "% Error: Internal error"
         return None
 
 def show_response(response):
@@ -326,13 +324,13 @@ def show_intf_info(response):
     show_cli_output("show_pim.j2", outputList)
 
 def show_topology_src_info(response):
-        outputList = []
-        oilList2 = None
-        srcList2 = None
-        ipList = None
+    outputList = []
+    oilList2 = None
+    srcList2 = None
+    ipList = None
 
-        grpAddr = inputDict.get('grpAddr')
-    #try:
+    grpAddr = inputDict.get('grpAddr')
+    try:
         srcList = response.get('openconfig-pim-ext:src-entry')
         if srcList is None:
             return
@@ -423,9 +421,9 @@ def show_topology_src_info(response):
             print "K - Ack-Pending state\n"
 
             show_cli_output("show_pim.j2", outputList)
-#    except Exception as e:
- #       log.syslog(log.LOG_ERR, str(e))
-  #      print "% Error: Internal error"
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print "% Error: Internal error"
 
 def show_topology_info(response):
     outputList = []
@@ -496,7 +494,6 @@ def show_topology_info(response):
                 oilList = srcState.get('oil-info-entries').get('oil-info-entry')
                 if oilList is None:
                     continue
-
 
                 for oil in oilList:
                     outIntf = oil.get('outgoing-interface')
@@ -744,19 +741,25 @@ def handle_show_all(func, args):
     vrfList = get_vrf_list()
     if vrfList is None:
         return
+
+    vrfList.sort(key=string.lower)
     for vrf in vrfList:
+        if vrf == "mgmt":
+            continue
+
         inputDict['vrf'] = vrf
         keypath, body = get_keypath(func, args)
         if keypath is None:
             print("% Error: Internal error")
             return -1
-    	if "/operations/" in keypath.path:
-	    response = apiClient.post(keypath, body)
-	else:
-	    response = apiClient.get(keypath)
 
-	if response is None:
-	    return -1
+        if "/operations/" in keypath.path:
+            response = apiClient.post(keypath, body)
+        else:
+            response = apiClient.get(keypath)
+
+        if response is None:
+            return -1
 
         if response.ok():
             response = response.content
