@@ -20,9 +20,9 @@ import sys
 import json
 import cli_client as cc
 import time
+from datetime import datetime, timedelta
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-from sonic_cli_bgp import seconds_to_wdhm_str
 
 import urllib3
 urllib3.disable_warnings()
@@ -30,6 +30,30 @@ urllib3.disable_warnings()
 #Define globals
 inputDict = {}
 apiClient = cc.ApiClient()
+
+def seconds_to_wdhm_str(seconds, diff):
+    d = None
+    if diff:
+        d = datetime.now()
+        d = d - timedelta(seconds=int(seconds))
+    else:
+        d = datetime.fromtimestamp(float(seconds))
+    weeks = 0
+    days = d.day
+    if days != 0:
+       days = days - 1
+       if days != 0:
+          weeks = days // 7
+          days = days % 7
+    if weeks != 0:
+        wdhm = '{}w{}d{:02}h'.format(int(weeks), int(days), int(d.hour))
+    elif days != 0:
+        wdhm = '{}d{:02}h{:02}m'.format(int(days), int(d.hour), int(d.minute))
+    else:
+        wdhm = '{:02}:{:02}:{:02}'.format(int(d.hour), int(d.minute), int(d.second))
+
+    return wdhm
+
 
 def get_keypath(func,args):
     keypath = None
@@ -103,6 +127,8 @@ def get_keypath(func,args):
 
         #get vrf, needed for keypath
         vrf=get_vrf(intf)
+        if vrf is None:
+            return None, None
 
     ##############################################################
     #patch/delete interface level config
@@ -210,6 +236,7 @@ def get_vrf(intf):
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
+        return None
 
 def show_response(response):
     if (inputDict.get('intf') is not None):
@@ -299,13 +326,13 @@ def show_intf_info(response):
     show_cli_output("show_pim.j2", outputList)
 
 def show_topology_src_info(response):
-    outputList = []
-    oilList2 = None
-    srcList2 = None
-    ipList = None
+        outputList = []
+        oilList2 = None
+        srcList2 = None
+        ipList = None
 
-    grpAddr = inputDict.get('grpAddr')
-    try:
+        grpAddr = inputDict.get('grpAddr')
+    #try:
         srcList = response.get('openconfig-pim-ext:src-entry')
         if srcList is None:
             return
@@ -323,17 +350,17 @@ def show_topology_src_info(response):
         if srcFlags is None:
             srcFlags = ""
 
-        srcExpiry = srcState.get('expiry')
+        tmp = srcExpiry = srcState.get('expiry')
         if srcExpiry is None:
             srcExpiry = "Never"
         else:
-            srcExpiry = seconds_to_wdhm_str(srcExpiry)
+            srcExpiry = seconds_to_wdhm_str(srcExpiry, False)
 
         srcUpTime = srcState.get('uptime')
         if srcUpTime is None:
             srcUpTime = "--:--:--"
         else:
-            srcUpTime = seconds_to_wdhm_str(time.time() - float(srcUpTime))
+            srcUpTime = seconds_to_wdhm_str(srcUpTime, True)
 
         inIntf = srcState.get('incoming-interface')
         if inIntf is None:
@@ -361,13 +388,13 @@ def show_topology_src_info(response):
                 if oilExpiry is None:
                     oilExpiry = "Never"
                 else:
-                    oilExpiry = seconds_to_wdhm_str(oilExpiry)
+                    oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
 
                 oilUpTime = oilState.get('uptime')
                 if oilUpTime is None:
                     oilUpTime = "--:--:--"
                 else:
-                    oilUpTime = seconds_to_wdhm_str(time.time() - float(oilUpTime))
+                    oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
 
                 oilEntry = {'outIntf': outIntf,
                             'oilExpiry': oilExpiry,
@@ -387,15 +414,18 @@ def show_topology_src_info(response):
         outputList.append(srcEntry)
 
         if len(outputList) > 0:
-            print "PIM Multicast Routing Table\n"
+            if inputDict.get('vrf') is None:
+                print "PIM Multicast Routing Table for VRF: default\n"
+            else:
+                print "PIM Multicast Routing Table for VRF: ", inputDict.get('vrf'), "\n"
             print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
             print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
             print "K - Ack-Pending state\n"
 
             show_cli_output("show_pim.j2", outputList)
-    except Exception as e:
-        log.syslog(log.LOG_ERR, str(e))
-        print "% Error: Internal error"
+#    except Exception as e:
+ #       log.syslog(log.LOG_ERR, str(e))
+  #      print "% Error: Internal error"
 
 def show_topology_info(response):
     outputList = []
@@ -444,13 +474,13 @@ def show_topology_info(response):
                 if srcExpiry is None:
                     srcExpiry = "Never"
                 else:
-                    srcExpiry = seconds_to_wdhm_str(srcExpiry)
+                    srcExpiry = seconds_to_wdhm_str(srcExpiry, False)
 
                 srcUpTime = srcState.get('uptime')
                 if srcUpTime is None:
                     srcUpTime = "--:--:--"
                 else:
-                    srcUpTime = seconds_to_wdhm_str(time.time() - float(srcUpTime))
+                    srcUpTime = seconds_to_wdhm_str(srcUpTime, True)
 
                 inIntf = srcState.get('incoming-interface')
                 if inIntf is None:
@@ -481,13 +511,13 @@ def show_topology_info(response):
                     if oilExpiry is None:
                         oilExpiry = "Never"
                     else:
-                        oilExpiry = seconds_to_wdhm_str(oilExpiry)
+                        oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
 
                     oilUpTime = oilState.get('uptime')
                     if oilUpTime is None:
                         oilUpTime = "--:--:--"
                     else:
-                        oilUpTime = seconds_to_wdhm_str(time.time() - float(oilUpTime))
+                        oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
 
                     oilEntry = {'outIntf': outIntf,
                                 'oilExpiry': oilExpiry,
@@ -507,7 +537,10 @@ def show_topology_info(response):
                 outputList.append(srcEntry)
 
         if len(outputList) > 0:
-            print "PIM Multicast Routing Table\n"
+            if inputDict.get('vrf') is None:
+                print "PIM Multicast Routing Table for VRF: default\n"
+            else:
+                print "PIM Multicast Routing Table for VRF: ", inputDict.get('vrf'), "\n"
             print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
             print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
             print "K - Ack-Pending state\n"
@@ -615,13 +648,13 @@ def show_nbr_info(response):
             if upTime is None:
                 upTime = "--:--:--"
             else:
-                upTime = seconds_to_wdhm_str(time.time() - float(upTime))
+                upTime = seconds_to_wdhm_str(upTime, True)
 
             expiryTime = nbrState.get('neighbor-expires')
             if expiryTime is None:
                 expiryTime = "Never"
             else:
-                expiryTime = seconds_to_wdhm_str(expiryTime)
+                expiryTime = seconds_to_wdhm_str(expiryTime, False)
 
             pimDrPrio = nbrState.get('openconfig-pim-ext:dr-priority')
             if pimDrPrio is None:
@@ -707,6 +740,7 @@ def handle_clear(func, args):
 
 def handle_show_all(func, args):
     global inputDict
+    response = ""
     vrfList = get_vrf_list()
     if vrfList is None:
         return
@@ -716,7 +750,13 @@ def handle_show_all(func, args):
         if keypath is None:
             print("% Error: Internal error")
             return -1
-        response = apiClient.get(keypath)
+    	if "/operations/" in keypath.path:
+	    response = apiClient.post(keypath, body)
+	else:
+	    response = apiClient.get(keypath)
+
+	if response is None:
+	    return -1
 
         if response.ok():
             response = response.content
@@ -741,6 +781,9 @@ def handle_show(func, args):
     else:
         response = apiClient.get(keypath)
 
+    if response is None:
+        return -1
+
     if response.ok():
         response = response.content
         show_response(response)
@@ -754,8 +797,8 @@ def run(func, args):
     response = None
     status = 0
     count = process_args(args)
-    if (count == 0):
-        return -1
+    if (count == 0) and func != "clear_mroute":
+            return -1
 
     if func.startswith("patch"):
       status =  handle_patch(func, args)
