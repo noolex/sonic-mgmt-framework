@@ -718,7 +718,7 @@ def handle_del(func, args):
     if keypath is None:
         print("% Error: Internal error")
         return -1
-    response = apiClient.delete(keypath)
+    response = apiClient.delete(keypath, deleteEmptyEntry=True)
     if not response.ok():
         print(response.error_message())
         return -1
