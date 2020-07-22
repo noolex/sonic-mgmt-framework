@@ -70,12 +70,12 @@ limitations under the License.
                         help="IPv4 address of the group"
                         optional="true"
                         ptype="IP_ADDR">
-                    </PARAM>
-                    <PARAM
-                        name="src-addr"
-                        help="IPv4 address of the source"
-                        optional="true"
-                        ptype="IP_ADDR">
+                        <PARAM
+                            name="src-addr"
+                            help="IPv4 address of the source"
+                            optional="true"
+                            ptype="IP_ADDR">
+                        </PARAM>
                     </PARAM>
                 </PARAM>
                 <PARAM
