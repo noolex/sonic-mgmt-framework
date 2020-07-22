@@ -27,6 +27,7 @@ from show_config_copp import *
 from show_config_crm import *
 from show_config_mirror import *
 from show_config_static_routes import *
+from show_config_fbs import *
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
@@ -71,7 +72,9 @@ config_view_hierarchy= \
        'configure-router-bgp',
        'configure-router-ospf',
        'configure-vxlan',
+       'configure-${fbs-class-type}-classifier',
        'copp-action',
+       'configure-policy',
        'configure-mclag',
        'configure-mirror']
 
@@ -132,6 +135,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
+                  'fbs_classifier_render'   : show_fbs_classifier,
+                  'fbs_policy_render'       : show_fbs_policy,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
                   'sflow_source_if'         : show_sflow_source_if,
