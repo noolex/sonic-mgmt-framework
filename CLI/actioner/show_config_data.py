@@ -25,6 +25,7 @@ from show_config_errdisable import *
 from show_config_routepolicy import *
 from show_config_copp import *
 from show_config_crm import *
+from show_config_snmp import *
 from show_config_mirror import *
 from show_config_static_routes import *
 from show_config_fbs import *
@@ -150,6 +151,15 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'fbs_service_policy_render' : show_running_fbs_service_policy,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
+                  'snmp_contact'            : show_snmp_contact,
+                  'snmp_community'          : show_snmp_community,
+                  'snmp_engine'             : show_snmp_engine,
+                  'snmp_group'              : show_snmp_group,
+                  'snmp_host'               : show_snmp_host,
+                  'snmp_location'           : show_snmp_location,
+                  'snmp_traps'              : show_snmp_traps,
+                  'snmp_user'               : show_snmp_user,
+                  'snmp_view'               : show_snmp_view,
                   'sflow_source_if'         : show_sflow_source_if,
                   'qos_map_dscp_tc_cb'      : qos_map_dscp_tc_cb,
                   'qos_map_dot1p_tc_cb'     : qos_map_dot1p_tc_cb,
