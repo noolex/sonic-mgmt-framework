@@ -206,7 +206,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'lldp_intf_mode'          : show_lldp_intf_mode_config,
                   'lldp_tlv_select'         : show_lldp_tlv_select_config,
                   'ldap_map_config'         : show_ldap_map_config,
-                  'igmp_snooping_config'    : show_igmp_snooping_intf_config
+                  'igmp_snooping_config'    : show_igmp_snooping_intf_config,
+                  'if_lag_config'           : show_if_lag_config
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
