@@ -19,6 +19,7 @@ import syslog as log
 import sys
 import json
 import string
+import time
 import cli_client as cc
 from datetime import datetime, timedelta
 from rpipe_utils import pipestr
@@ -31,13 +32,14 @@ urllib3.disable_warnings()
 inputDict = {}
 apiClient = cc.ApiClient()
 
-def seconds_to_wdhm_str(seconds, diff):
+def seconds_to_wdhm_str(seconds, upTime):
     d = None
-    if diff:
+    if upTime:
         d = datetime.now()
         d = d - timedelta(seconds=int(seconds))
     else:
-        d = datetime.fromtimestamp(float(seconds))
+        seconds = float(seconds) - time.time()
+        d = datetime.fromtimestamp(seconds)
     weeks = 0
     days = d.day
     if days != 0:
