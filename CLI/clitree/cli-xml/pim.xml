@@ -44,6 +44,62 @@ limitations under the License.
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
+
+                <PARAM
+                    name="interface"
+                    help="Show interface details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="iftype"
+                        help="interface type"
+                        mode="switch"
+                        optional="true"
+                        ptype="SUBCOMMAND">
+                        <PARAM
+                             name="port-id"
+                             help="Physical interface"
+                             ptype="PHY_INTERFACE">
+                        </PARAM>
+                        <PARAM
+                            name="PortChannel"
+                            help="PortChannel interface"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND">
+                            <PARAM
+                                name="port-id"
+                                help="PortChannel ID"
+                                ptype="LAG_ID">
+                            </PARAM>
+                        </PARAM>
+                        <PARAM
+                            name="Vlan"
+                            help="VLAN interface"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND">
+                            <PARAM
+                                name="port-id"
+                                help="VLAN ID"
+                                ptype="VLAN_ID">
+                            </PARAM>
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    value="neighbor"
+                    name="nbr"
+                    help="Show PIM neighbor details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="nbr-addr"
+                        help="IPv4 address of the PIM neighbor"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                </PARAM>
                 <PARAM
                     name="rpf"
                     help="Show RPF details"
@@ -75,61 +131,6 @@ limitations under the License.
                             optional="true"
                             ptype="IP_ADDR">
                         </PARAM>
-                    </PARAM>
-                </PARAM>
-                <PARAM
-                    value="neighbor"
-                    name="nbr"
-                    help="Show PIM neighbor details"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
-                    <PARAM
-                        name="nbr-addr"
-                        help="IPv4 address of the PIM neighbor"
-                        optional="true"
-                        ptype="IP_ADDR">
-                    </PARAM>
-                </PARAM>
-                <PARAM
-                    name="interface"
-                    help="Show interface details"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true">
-                <PARAM
-                    name="iftype"
-                    help="interface type"
-                    mode="switch"
-                    optional="true"
-                    ptype="SUBCOMMAND">
-                    <PARAM
-                         name="port-id"
-                         help="Physical interface"
-                         ptype="PHY_INTERFACE">
-                    </PARAM>
-                    <PARAM
-                        name="PortChannel"
-                        help="PortChannel interface"
-                        mode="subcommand"
-                        ptype="SUBCOMMAND">
-                        <PARAM
-                            name="port-id"
-                            help="PortChannel ID"
-                            ptype="LAG_ID">
-                        </PARAM>
-                    </PARAM>
-                    <PARAM
-                        name="Vlan"
-                        help="VLAN interface"
-                        mode="subcommand"
-                        ptype="SUBCOMMAND">
-                        <PARAM
-                            name="port-id"
-                            help="VLAN ID"
-                            ptype="VLAN_ID">
-                        </PARAM>
-                    </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
