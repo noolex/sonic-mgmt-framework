@@ -457,13 +457,13 @@ limitations under the License.
     <PTYPE
         name="VRF_OR_DEFAULT_OR_ALL"
         pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(default)$|^(all)$"
-        help="WORD Name of VRF (Max :15 characters, prefixed with Vrf) or default or all"
+        help="Name of VRF (Max: 15 characters, prefixed with Vrf) or default or all"
         />
     <!--=======================================================-->
     <PTYPE
         name="VRF_OR_DEFAULT"
         pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(default)$"
-        help="WORD Name of VRF (Max :15 characters, prefixed with Vrf) or default"
+        help="Name of VRF (Max: 15 characters, prefixed with Vrf) or default"
         />
     <!--=======================================================-->
     <PTYPE

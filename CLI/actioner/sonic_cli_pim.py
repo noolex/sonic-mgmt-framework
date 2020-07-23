@@ -18,8 +18,8 @@
 import syslog as log
 import sys
 import json
+import string
 import cli_client as cc
-import time
 from datetime import datetime, timedelta
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
@@ -54,7 +54,6 @@ def seconds_to_wdhm_str(seconds, diff):
 
     return wdhm
 
-
 def get_keypath(func,args):
     keypath = None
     body = None
@@ -65,7 +64,8 @@ def get_keypath(func,args):
 
     #patch and show config
     if ((func == 'patch_pim_global_config') or
-        (func == 'show_pim_config')):
+        (func == 'show_pim_config') or
+        (func.startswith('clear'))):
 
         #get vrf, needed for keypath
         vrf = inputDict.get('vrf')
@@ -187,14 +187,14 @@ def get_keypath(func,args):
     ##############################################################
     if 'clear_mroute' in func:
         path = "/restconf/operations/sonic-ipmroute-clear:clear-ipmroute"
-        body = {"sonic-ipmroute-clear:input": {"vrf-name":"default", "address-family":"IPV4_UNICAST", "config-type":"ALL-MROUTES", "all-mroutes": True}}
+        body = {"sonic-ipmroute-clear:input": {"vrf-name": vrf, "address-family":"IPV4_UNICAST", "config-type":"ALL-MROUTES", "all-mroutes": True}}
 
     if 'clear_pim' in func:
         path = "/restconf/operations/sonic-pim-clear:clear-pim"
         if (inputDict.get('interfaces') is not None):
-            body = {"sonic-pim-clear:input": {"vrf-name":"default", "address-family":"IPV4_UNICAST", "config-type":"ALL-INTERFACES", "all-interfaces": True}}
+            body = {"sonic-pim-clear:input": {"vrf-name": vrf, "address-family":"IPV4_UNICAST", "config-type":"ALL-INTERFACES", "all-interfaces": True}}
         elif (inputDict.get('oil') is not None):
-            body = {"sonic-pim-clear:input": {"vrf-name":"default", "address-family":"IPV4_UNICAST", "config-type":"ALL-OIL", "all-oil": True}}
+            body = {"sonic-pim-clear:input": {"vrf-name": vrf, "address-family":"IPV4_UNICAST", "config-type":"ALL-OIL", "all-oil": True}}
 
     keypath = cc.Path(path)
     return keypath, body
@@ -235,7 +235,6 @@ def get_vrf(intf):
 
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "% Error: Internal error"
         return None
 
 def show_response(response):
@@ -319,20 +318,20 @@ def show_intf_info(response):
         outputList.append(intfEntry)
 
     if inputDict.get('vrf') is None:
-        print "PIM Interface information for VRF: default\n"
+        print "\nPIM Interface information for VRF: default"
     else:
-        print "PIM Interface information for VRF: ", inputDict.get('vrf'), "\n"
+        print "\nPIM Interface information for VRF: ", inputDict.get('vrf')
 
     show_cli_output("show_pim.j2", outputList)
 
 def show_topology_src_info(response):
-        outputList = []
-        oilList2 = None
-        srcList2 = None
-        ipList = None
+    outputList = []
+    oilList2 = None
+    srcList2 = None
+    ipList = None
 
-        grpAddr = inputDict.get('grpAddr')
-    #try:
+    grpAddr = inputDict.get('grpAddr')
+    try:
         srcList = response.get('openconfig-pim-ext:src-entry')
         if srcList is None:
             return
@@ -415,17 +414,17 @@ def show_topology_src_info(response):
 
         if len(outputList) > 0:
             if inputDict.get('vrf') is None:
-                print "PIM Multicast Routing Table for VRF: default\n"
+                print "\nPIM Multicast Routing Table for VRF: default"
             else:
-                print "PIM Multicast Routing Table for VRF: ", inputDict.get('vrf'), "\n"
+                print "\nPIM Multicast Routing Table for VRF: ", inputDict.get('vrf')
             print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
             print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
             print "K - Ack-Pending state\n"
 
             show_cli_output("show_pim.j2", outputList)
-#    except Exception as e:
- #       log.syslog(log.LOG_ERR, str(e))
-  #      print "% Error: Internal error"
+    except Exception as e:
+        log.syslog(log.LOG_ERR, str(e))
+        print "% Error: Internal error"
 
 def show_topology_info(response):
     outputList = []
@@ -497,7 +496,6 @@ def show_topology_info(response):
                 if oilList is None:
                     continue
 
-
                 for oil in oilList:
                     outIntf = oil.get('outgoing-interface')
                     if  outIntf is None:
@@ -538,9 +536,9 @@ def show_topology_info(response):
 
         if len(outputList) > 0:
             if inputDict.get('vrf') is None:
-                print "PIM Multicast Routing Table for VRF: default\n"
+                print "\nPIM Multicast Routing Table for VRF: default"
             else:
-                print "PIM Multicast Routing Table for VRF: ", inputDict.get('vrf'), "\n"
+                print "\nPIM Multicast Routing Table for VRF: ", inputDict.get('vrf')
             print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
             print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
             print "K - Ack-Pending state\n"
@@ -561,9 +559,9 @@ def show_ssm_info(response):
 
     ssmRanges = ssmState.get('ssm-ranges')
     if inputDict.get('vrf') is None:
-        print "PIM SSM information for VRF: default\n"
+        print "\nPIM SSM information for VRF: default"
     else:
-        print "PIM SSM information for VRF: ", inputDict.get('vrf'), "\n"
+        print "\nPIM SSM information for VRF: ", inputDict.get('vrf')
     if ssmRanges is None or ssmRanges == "":
        print "SSM group range : 232.0.0.0/8"
     else:
@@ -596,9 +594,9 @@ def show_rpf_info(response):
                 outputList.append(rpfSubEntry)
 
     if inputDict.get('vrf') is None:
-        print "PIM RPF information for VRF: default\n"
+        print "\nPIM RPF information for VRF: default"
     else:
-        print "PIM RPF information for VRF: ", inputDict.get('vrf'), "\n"
+        print "\nPIM RPF information for VRF: ", inputDict.get('vrf')
     show_cli_output("show_pim.j2", outputList)
 
 def show_nbr_info(response):
@@ -669,9 +667,9 @@ def show_nbr_info(response):
             outputList.append(nbrEntry)
 
     if inputDict.get('vrf') is None:
-        print "PIM Neighbor information for VRF: default\n"
+        print "\nPIM Neighbor information for VRF: default"
     else:
-        print "PIM Neighbor information for VRF: ", inputDict.get('vrf'), "\n"
+        print "\nPIM Neighbor information for VRF: ", inputDict.get('vrf')
     show_cli_output("show_pim.j2", outputList)
 
 def get_vrf_list():
@@ -721,7 +719,7 @@ def handle_del(func, args):
     if keypath is None:
         print("% Error: Internal error")
         return -1
-    response = apiClient.delete(keypath)
+    response = apiClient.delete(keypath, deleteEmptyEntry=True)
     if not response.ok():
         print(response.error_message())
         return -1
@@ -744,19 +742,25 @@ def handle_show_all(func, args):
     vrfList = get_vrf_list()
     if vrfList is None:
         return
+
+    vrfList.sort(key=string.lower)
     for vrf in vrfList:
+        if vrf == "mgmt":
+            continue
+
         inputDict['vrf'] = vrf
         keypath, body = get_keypath(func, args)
         if keypath is None:
             print("% Error: Internal error")
             return -1
-    	if "/operations/" in keypath.path:
-	    response = apiClient.post(keypath, body)
-	else:
-	    response = apiClient.get(keypath)
 
-	if response is None:
-	    return -1
+        if "/operations/" in keypath.path:
+            response = apiClient.post(keypath, body)
+        else:
+            response = apiClient.get(keypath)
+
+        if response is None:
+            return -1
 
         if response.ok():
             response = response.content
