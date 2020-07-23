@@ -39,6 +39,8 @@ def seconds_to_wdhm_str(seconds, upTime):
         d = d - timedelta(seconds=int(seconds))
     else:
         seconds = float(seconds) - time.time()
+        if seconds < 0:
+            seconds = 0
         d = datetime.fromtimestamp(seconds)
     weeks = 0
     days = d.day
