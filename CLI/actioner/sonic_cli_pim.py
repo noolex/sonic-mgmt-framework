@@ -19,6 +19,7 @@ import syslog as log
 import sys
 import json
 import string
+import time
 import cli_client as cc
 from datetime import datetime, timedelta
 from rpipe_utils import pipestr
@@ -31,13 +32,16 @@ urllib3.disable_warnings()
 inputDict = {}
 apiClient = cc.ApiClient()
 
-def seconds_to_wdhm_str(seconds, diff):
+def seconds_to_wdhm_str(seconds, upTime):
     d = None
-    if diff:
+    if upTime:
         d = datetime.now()
         d = d - timedelta(seconds=int(seconds))
     else:
-        d = datetime.fromtimestamp(float(seconds))
+        seconds = float(seconds) - time.time()
+        if seconds < 0:
+            seconds = 0
+        d = datetime.fromtimestamp(seconds)
     weeks = 0
     days = d.day
     if days != 0:
@@ -320,7 +324,7 @@ def show_intf_info(response):
     if inputDict.get('vrf') is None:
         print "\nPIM Interface information for VRF: default"
     else:
-        print "\nPIM Interface information for VRF: ", inputDict.get('vrf')
+        print "\nPIM Interface information for VRF:", inputDict.get('vrf')
 
     show_cli_output("show_pim.j2", outputList)
 
@@ -416,7 +420,7 @@ def show_topology_src_info(response):
             if inputDict.get('vrf') is None:
                 print "\nPIM Multicast Routing Table for VRF: default"
             else:
-                print "\nPIM Multicast Routing Table for VRF: ", inputDict.get('vrf')
+                print "\nPIM Multicast Routing Table for VRF:", inputDict.get('vrf')
             print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
             print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
             print "K - Ack-Pending state\n"
@@ -538,7 +542,7 @@ def show_topology_info(response):
             if inputDict.get('vrf') is None:
                 print "\nPIM Multicast Routing Table for VRF: default"
             else:
-                print "\nPIM Multicast Routing Table for VRF: ", inputDict.get('vrf')
+                print "\nPIM Multicast Routing Table for VRF:", inputDict.get('vrf')
             print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
             print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
             print "K - Ack-Pending state\n"
@@ -561,7 +565,7 @@ def show_ssm_info(response):
     if inputDict.get('vrf') is None:
         print "\nPIM SSM information for VRF: default"
     else:
-        print "\nPIM SSM information for VRF: ", inputDict.get('vrf')
+        print "\nPIM SSM information for VRF:", inputDict.get('vrf')
     if ssmRanges is None or ssmRanges == "":
        print "SSM group range : 232.0.0.0/8"
     else:
@@ -596,7 +600,7 @@ def show_rpf_info(response):
     if inputDict.get('vrf') is None:
         print "\nPIM RPF information for VRF: default"
     else:
-        print "\nPIM RPF information for VRF: ", inputDict.get('vrf')
+        print "\nPIM RPF information for VRF:", inputDict.get('vrf')
     show_cli_output("show_pim.j2", outputList)
 
 def show_nbr_info(response):
@@ -669,7 +673,7 @@ def show_nbr_info(response):
     if inputDict.get('vrf') is None:
         print "\nPIM Neighbor information for VRF: default"
     else:
-        print "\nPIM Neighbor information for VRF: ", inputDict.get('vrf')
+        print "\nPIM Neighbor information for VRF:", inputDict.get('vrf')
     show_cli_output("show_pim.j2", outputList)
 
 def get_vrf_list():
