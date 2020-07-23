@@ -53,6 +53,8 @@
   <VIEW name="configure-view">
       <COMMAND
         name="factory"
+        command_keys="name=localhost"
+        command_tables="sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST/name={name}"
         help="Modify factory default configuration">
         <PARAM name="default"
                help="Configures factory default configuration profile"
@@ -67,6 +69,7 @@
         <PARAM
                name="config_profile"
                help="Enter default configuration profile name"
+               dbpath="sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST/default_config_profile"
                ptype="STRING">
         </PARAM>
         <ACTION

@@ -6,11 +6,11 @@
 
 {% if json_output %}
 
-{% if 'openconfig-ip-helper:config' in json_output %}
-{% set gbldata = json_output['openconfig-ip-helper:config'] %}
+{% if 'openconfig-ip-helper:state' in json_output %}
+{% set gbldata = json_output['openconfig-ip-helper:state'] %}
 {% if 'enable' in gbldata and gbldata['enable'] == True %}{% set enablestr = "Enabled" %}{% endif %}
 {% if 'incoming-rate-limit' in gbldata %}{% set rate = gbldata['incoming-rate-limit'] %}{% endif %}
-{% if 'include-custom-ports' in gbldata %}{% set include_ports = gbldata['include-custom-ports'] %}{% endif %}
+{% if 'ports' in gbldata %}{% set include_ports = gbldata['ports'] %}{% endif %}
 {% if 'exclude-default-ports' in gbldata %}{% set exclude_ports = gbldata['exclude-default-ports'] %}{% endif %}
 {% endif %}
 

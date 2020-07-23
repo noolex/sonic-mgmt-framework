@@ -295,14 +295,13 @@
             help="VXLAN Configuration Mode"
             view="configure-vxlan-view"
             viewid="iface=vxlan-${vxlan-if-name}"
-            view_keys="name=*"
-            view_tables="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/name={vxlan-if-name}"
+            view_tables="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST/name={vxlan-if-name}"
             >
             <PARAM
                 name="vxlan-if-name"
                 help="Name of VTEP (Max 10 chars, prefixed by 'vtep')"
                 ptype="VTEP_NAME"
-                dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/name"
+                dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST/name"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list ${vxlan-if-name}
@@ -405,7 +404,7 @@
                 name="SIP"
                 help="Source IPv4 address"
                 ptype="IPV4_ADDR_ABC"
-                dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/src_ip"
+                dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST/src_ip"
                 >
             </PARAM>
             <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_src_ip ${iface} ${SIP} </ACTION>
@@ -423,12 +422,12 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name="qos-mode" help="Configure QoS Mode" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/qos-mode" >
+        <COMMAND name="qos-mode" help="Configure QoS Mode">
             <PARAM name="qos-mode" help="QoS mode" ptype="SUBCOMMAND" mode="switch" >
-                <PARAM name="uniform" help="Uniform Mode" ptype="SUBCOMMAND" mode="subcommand" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/qos-mode=uniform"> </PARAM>
-                <PARAM name="pipe" help="Pipe Mode" ptype="SUBCOMMAND" mode="subcommand" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/qos-mode=pipe">
+                <PARAM name="uniform" help="Uniform Mode" ptype="SUBCOMMAND" mode="subcommand" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST/qos-mode=uniform"> </PARAM>
+                <PARAM name="pipe" help="Pipe Mode" ptype="SUBCOMMAND" mode="subcommand" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST/qos-mode=pipe">
                     <PARAM name="dscp" help="Encap DSCP for Pipe Mode" ptype="SUBCOMMAND" mode="subcommand">
-                        <PARAM name="dscp-value" help="dscp value" ptype="RANGE_0_63" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/dscp"> </PARAM>
+                        <PARAM name="dscp-value" help="dscp value" ptype="RANGE_0_63" dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST/dscp"> </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
@@ -439,14 +438,16 @@
         </COMMAND>
         <COMMAND 
             name="map" 
-            help="Configure VNI to VLAN/VRF Mapping">
-            <PARAM name="vni" help="Configure VNI mapping" ptype="SUBCOMMAND" mode="subcommand"> 
+            help="Configure VNI to VLAN/VRF Mapping" 
+            command_tables="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL_MAP/VXLAN_TUNNEL_MAP_LIST/name={vxlan-if-name},mapname=*;sonic-vrf:sonic-vrf/VRF/VRF_LIST/vrf_name=*" 
+            render_command_cb="vlanvrfvnimap" >
+            <PARAM name="vni" help="Configure VNI mapping" ptype="SUBCOMMAND" mode="subcommand" > 
                 <PARAM name="vnid" help="VNID" ptype="RANGE_1_16777215"> 
                     <PARAM name="mapoptions" help="" ptype="SUBCOMMAND" mode="switch"> 
                         <PARAM name="vlan" help="Configure VLAN VNI mapping" ptype="SUBCOMMAND" mode="subcommand"> 
                             <PARAM name="vid" help="VLAN ID" ptype="VLAN_ID"> 
                                 <PARAM name="count" help="Number of mappings" ptype="SUBCOMMAND" mode="subcommand" optional="true"> 
-                                    <PARAM name="numvid" help="Number" ptype="VLAN_ID" optional="true"> </PARAM>
+                                    <PARAM name="numvid" help="Number" ptype="VLAN_ID" optional="true" > </PARAM>
                                 </PARAM>
                             </PARAM>
                         </PARAM>

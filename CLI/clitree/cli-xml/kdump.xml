@@ -34,14 +34,20 @@
         </COMMAND>
         <COMMAND
             name="no kdump"
-            help="Disable kdump">
+            help="Disable kdump"
+            command_tables="sonic-kdump:sonic-kdump/KDUMP/KDUMP_LIST/id={id}"
+            command_keys="id=config"
+            dbpath="sonic-kdump:sonic-kdump/KDUMP/KDUMP_LIST/enabled=false">
             <ACTION
                  builtin="clish_pyobj">sonic_cli_oc_kdump disable
             </ACTION>
         </COMMAND>
         <COMMAND
             name="kdump enable"
-            help="Enable kdump">
+            help="Enable kdump"
+            command_tables="sonic-kdump:sonic-kdump/KDUMP/KDUMP_LIST/id={id}"
+            command_keys="id=config"
+            dbpath="sonic-kdump:sonic-kdump/KDUMP/KDUMP_LIST/enabled=true">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_oc_kdump enable
             </ACTION>
@@ -67,10 +73,10 @@
         </COMMAND>
         <COMMAND
             name="kdump memory"
-            help="Set the amount of memory reserved for kdump">
-            <PARAM name="kdump_memory" help="The amount of memory reserved for kdump. e.g: kdump memory 512M" ptype="KDUMP_MEMORY"/>
-            <ACTION
-                builtin="clish_pyobj">sonic_cli_oc_kdump config memory ${kdump_memory}
+            help="Set the amount of memory reserved for kdump"
+            command_tables="sonic-kdump:sonic-kdump/KDUMP/KDUMP_LIST/id">
+            <PARAM name="kdump_memory" help="The amount of memory reserved for kdump. e.g: kdump memory 512M" ptype="KDUMP_MEMORY" dbpath="sonic-kdump:sonic-kdump/KDUMP/KDUMP_LIST/memory" />
+            <ACTION builtin="clish_pyobj">sonic_cli_oc_kdump config memory ${kdump_memory}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -91,8 +97,9 @@
         </COMMAND>
         <COMMAND
             name="kdump num-dumps"
-            help="Set the maximum number of kernel core files stored locally">
-            <PARAM name="kdump_num_dumps" help="Maximum number of kernel core files stored locally" ptype="SET_RANGE_1_9"/>
+            help="Set the maximum number of kernel core files stored locally"
+            command_tables="sonic-kdump:sonic-kdump/KDUMP/KDUMP_LIST/id">
+            <PARAM name="kdump_num_dumps" help="Maximum number of kernel core files stored locally" ptype="SET_RANGE_1_9" dbpath="sonic-kdump:sonic-kdump/KDUMP/KDUMP_LIST/num_dumps"/>
             <ACTION
                 builtin="clish_pyobj">sonic_cli_oc_kdump config max-dumps ${kdump_num_dumps}
             </ACTION>

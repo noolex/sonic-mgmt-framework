@@ -63,6 +63,8 @@ def set_link_state_tracking_group_description(args):
     match = re.search('description (["]?.*["]?)', full_cmd)
     if match:
         descr = match.group(1)
+        if descr.startswith('"'):
+            descr = descr[1:-1]
 
     body = {
         "openconfig-lst-ext:description": descr
@@ -234,7 +236,8 @@ def show_link_state_tracking_group_data(groups, details):
     output = ""
     for data in groups:
         output = output + 'Name: {}'.format(data['name']) + '\n'
-        output = output + 'Description: {}'.format(data.get('description', "")) + '\n'
+        descr = data.get('description', "")
+        output = output + 'Description: {}'.format(descr if " " not in descr else '"{}"'.format(descr)) + '\n'
         output = output + 'Timeout: {}'.format(data.get('timeout', "")) + '\n'
 
         if details:
@@ -315,4 +318,64 @@ def run(op_str, args):
         print('%Error: Encountered exception "{}"'.format(str(e)))
         return -1
     return
+
+
+# Show running config related
+def show_running_lst_group(render_tables):
+    status = 'CB_FAIL'
+    output = list()
+
+    aa = cc.ApiClient()
+    if 'group' in render_tables:
+        response = aa.get('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={}'.format(render_tables['group']))
+        if response.ok():
+            status = 'CB_SUCCESS'
+            if bool(response.content):
+                group = response.content["openconfig-lst-ext:lst-group"][0]
+                __show_running_config_group(output, group)
+
+    else:
+        response = aa.get('/restconf/data/openconfig-lst-ext:lst/lst-groups')
+        if response.ok():
+            status = 'CB_SUCCESS'
+            if bool(response.content):
+                groups = response.content["openconfig-lst-ext:lst-groups"]["lst-group"]
+                for group in groups:
+                    __show_running_config_group(output, group)
+
+    return status, ';'.join(output), True
+
+
+def __show_running_config_group(output, grp_data):
+    config = grp_data['config']
+    output.append('link state track {}'.format(config['name']))
+    if 'timeout' in config:
+        output.append('  timeout {}'.format(config['timeout']))
+    if 'description' in config:
+        descr = config['description']
+        if " " in descr:
+            descr = '"{}"'.format(descr)
+        output.append('  description {}'.format(descr))
+    if 'all-mclags-downstream' in config and config['all-mclags-downstream']:
+        output.append('  downstream all-mclag')
+
+
+def show_running_lst_interface(render_tables):
+    status = 'CB_FAIL'
+    output = []
+    aa = cc.ApiClient()
+    response = aa.get('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}'.format(id=render_tables['name']))
+    if response.ok():
+        status = 'CB_SUCCESS'
+        data = response.content['openconfig-lst-ext:interface'][0]
+        if 'upstream-groups' in data:
+            upstr_grps = data['upstream-groups']['upstream-group']
+            for grp in upstr_grps:
+                output.append('link state track {} upstream'.format(grp['group-name']))
+
+        if 'downstream-group' in data:
+            if 'config' in data['downstream-group']:
+                output.append('link state track {} downstream'.format(data['downstream-group']['config']['group-name']))
+
+    return status, ';'.join(output), True
 

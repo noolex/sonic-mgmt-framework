@@ -160,7 +160,8 @@ limitations under the License.
     <!--                            Config Mode commands                                   -->
     <!--===================================================================================-->
     <VIEW name="configure-view">
-        <COMMAND name="policy-map" help="Configure policy-map" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}">
+        <COMMAND name="policy-map" help="Configure policy-map" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}"
+            data_and_render_cb="fbs_policy_render">
             <PARAM name="fbs-policy-name" help="Name of the policy-map (Max size 63)" ptype="STRING_63"/>
             <MACRO name="FBS-POLICY-TYPES" arg="false" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_policy_${fbs-policy-type} ${fbs-policy-name} ${fbs-policy-type}</ACTION>
@@ -199,7 +200,8 @@ limitations under the License.
 
 
 
-        <COMMAND name="classifier" help="Configure flow based services classifier" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}">
+        <COMMAND name="classifier" help="Configure flow based services classifier" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}"
+            data_and_render_cb="fbs_classifier_render">
             <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
             <PARAM name="match-type" help="Classifier match type" ptype="SUBCOMMAND" mode="subcommand" optional="false">
                 <PARAM name="fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch">
@@ -457,7 +459,7 @@ limitations under the License.
         <MACRO name="CLASSIFIER-DESCRIPTION"/>
 
         <COMMAND name="match protocol" help="Matches protocol trap to classifier">
-            <PARAM name="trap-id" help="Name of the trap id" ptype="STRING_63"/>
+            <PARAM name="trap-id" help="Name of the trap id" ptype="STRING_63" dbpath="sonic-copp:sonic-copp/COPP_TRAP/COPP_TRAP_LIST/trap_ids"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_match_protocol ${fbs-class-name} ${trap-id}</ACTION>
         </COMMAND>
 

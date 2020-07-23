@@ -27,12 +27,19 @@ from show_config_copp import *
 from show_config_crm import *
 from show_config_mirror import *
 from show_config_static_routes import *
+from show_config_fbs import *
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
 from show_config_ldap import *
+from show_config_radius import *
+from show_config_aaa import *
 from show_config_nat import *
+from show_config_ospfv2 import *
 from show_config_ip_helper import *
+from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
+from show_config_vxlan import *
+from show_config_lldp import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -54,6 +61,7 @@ config_view_hierarchy= \
        'configure-pfc-priority-queue-map',
        'configure-tc-dot1p-map',
        'configure-tc-dscp-map',
+       'configure-link-state-track',
        'config-if-CPU',
        'configure-vlan',
        'configure-lo',
@@ -62,8 +70,11 @@ config_view_hierarchy= \
        'configure-lag',
        'configure-route-map',
        'configure-router-bgp',
+       'configure-router-ospf',
        'configure-vxlan',
+       'configure-${fbs-class-type}-classifier',
        'copp-action',
+       'configure-policy',
        'configure-mclag',
        'configure-mirror']
 
@@ -120,10 +131,13 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ipv6_lo_ip_address'      : show_ipv6_lo_ip_address,
                   'routemap_set_community'  : show_routemap_setcommunity,
                   'routemap_set_extcommunity' : show_routemap_setextcommunity,
+                  'routemap_set_metric'       : show_routemap_set_metric,
                   'routemap_match_interface'  : show_routemap_matchintf,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
+                  'fbs_classifier_render'   : show_fbs_classifier,
+                  'fbs_policy_render'       : show_fbs_policy,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
                   'sflow_source_if'         : show_sflow_source_if,
@@ -165,15 +179,31 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
                   'qos_intf_sched_policy'   : show_qos_intf_scheduler_policy,
-                  'nat_napt_entry'          : show_nat_napt_entry,
+                  'show_running_lst_group'  : show_running_lst_group,
+                  'show_running_lst_interface': show_running_lst_interface,
+                  'vlanvrfvnimap'           : show_vlanvrfvnimap,
                   'logging_server_cmd'      : show_logging_server_cmd,
                   'ldap_server_src_intf'    : show_ldap_server_src_intf,
+                  'radius_statistics_config': show_radius_statistics_config,
+                  'radius_host_config'      : show_radius_host_config,
+                  'aaa_config'              : show_aaa_config,
                   'nat_napt_entry'          : show_nat_napt_entry,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports,
+                  'router_ospf'             : show_router_ospf_config,
+                  'router_ospf_area'        : show_router_ospf_area_config,
+                  'router_ospf_area_network' : show_router_ospf_area_network_config,
+                  'router_ospf_area_vlink'   : show_router_ospf_area_vlink_config,
+                  'router_ospf_area_addr_range' : show_router_ospf_area_addr_range_config,
+                  'router_ospf_distribute_route' : show_router_ospf_distribute_route_config,
+                  'router_ospf_passive_interface' : show_router_ospf_passive_interface_config,
+                  'interface_ip_ospf' : show_interface_ip_ospf_config,
                   'mirror_session'          : show_mirror_session,
                   'errdisable_cause'        : show_config_errdisable_cause,
+                  'lldp_mode'               : show_lldp_mode_config,
+                  'lldp_intf_mode'          : show_lldp_intf_mode_config,
+                  'lldp_tlv_select'         : show_lldp_tlv_select_config,
                   'ldap_map_config'         : show_ldap_map_config
  }
 
