@@ -527,7 +527,7 @@ limitations under the License.
     <PTYPE
         name="STRING_15"
         pattern="(^([a-zA-Z0-9_-]){1,15})$"
-        help="String(Max: 15 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
@@ -564,6 +564,12 @@ limitations under the License.
         name="STRING_72"
         pattern="(^([a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,71})))$"
         help="String(Max: 72 characters)"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="STRING_240"
+        pattern="([^|]){1,240}"
+        help="STRING"
         />
     <!--=======================================================-->
     <PTYPE
