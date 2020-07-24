@@ -18,10 +18,10 @@ Copyright 2020 Broadcom, Inc.
 
 <!--=========================================================================-->
   <VIEW name="enable-view">
-    <!-- show pfc watchdog -->
-    <COMMAND name="show pfc" help="Show PFC Watchdog Summary">
+    <!-- show priority-flow-control watchdog -->
+    <COMMAND name="show priority-flow-control" help="Show PFC Watchdog Summary">
       <PARAM name="watchdog" help="PFC Watchdog" ptype="SUBCOMMAND" mode="subcommand"/>
-      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_pfc_watchdog  show_qos_pfc_watchdog.j2&#xA; </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  show_pfc_watchdog  show_qos_pfc_watchdog.j2</ACTION>
       <xi:include href="include/pipe.xml"/>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
@@ -32,31 +32,31 @@ Copyright 2020 Broadcom, Inc.
 ========================================================================= -->
   <VIEW name="configure-view">
 
-    <COMMAND name="pfc" help="PFC configuration"/>
-    <COMMAND name="pfc watchdog" help="PFC configuration"/>
+    <COMMAND name="priority-flow-control" help="PFC configuration"/>
+    <COMMAND name="priority-flow-control watchdog" help="PFC configuration"/>
 
-    <COMMAND name="pfc watchdog polling-interval" help="Configure watchdog">
+    <COMMAND name="priority-flow-control watchdog polling-interval" help="Configure watchdog">
       <PARAM name="interval" help="Watchdog poll interval" ptype="POLL_INTERVAL" />
-      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  interval  ${interval}&#xA; </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  interval  ${interval}</ACTION>
     </COMMAND>
 
-    <COMMAND name="pfc watchdog counter-poll" help="Enable PFC watchdog FLEX counters">
-      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  counter-poll enable&#xA; </ACTION>
+    <COMMAND name="priority-flow-control watchdog counter-poll" help="Enable PFC watchdog FLEX counters">
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  counter-poll enable</ACTION>
     </COMMAND>
 
 <!--=========================================================================
   Config mode "no" commands
 ========================================================================= -->
-    <COMMAND name="no pfc" help="PFC configuration"/>
-    <COMMAND name="no pfc watchdog" help="PFC configuration"/>
+    <COMMAND name="no priority-flow-control" help="PFC configuration"/>
+    <COMMAND name="no priority-flow-control watchdog" help="PFC configuration"/>
 
-    <COMMAND name="no pfc watchdog polling-interval" help="Configure watchdog">
-      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  interval&#xA; </ACTION>
+    <COMMAND name="no priority-flow-control watchdog polling-interval" help="Configure watchdog">
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  interval</ACTION>
     </COMMAND>
 
-    <COMMAND name="no pfc watchdog counter-poll" help="Disable PFC watchdog FLEX counters">
-      <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  counter-poll disable&#xA; </ACTION>
+    <COMMAND name="no priority-flow-control watchdog counter-poll" help="Disable PFC watchdog FLEX counters">
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  counter-poll disable</ACTION>
     </COMMAND>
   </VIEW>
-  
+
 </CLISH_MODULE>

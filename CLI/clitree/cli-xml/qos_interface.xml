@@ -271,7 +271,7 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND
-            name="pfc"
+            name="priority-flow-control"
             help="PFC Configuration"
             command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
             render_command_cb="qos_intf_pfc"
@@ -312,37 +312,37 @@ limitations under the License.
             </ACTION>
         </COMMAND>
 
-        <COMMAND name="pfc watchdog" help="PFC watchdog configuration"/>
+        <COMMAND name="priority-flow-control watchdog" help="PFC watchdog configuration"/>
 
-        <COMMAND name="pfc watchdog detect-time" help="PFC watchdog detection time">
+        <COMMAND name="priority-flow-control watchdog detect-time" help="PFC watchdog detection time">
           <PARAM name="detection-time" help="PFC Watchdog detection time in microseconds" ptype="DETECT_TIME"/>
-          <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py pfcwd_if_detect ${iface} ${__params} &#xA; </ACTION>
+          <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc pfcwd_if_detect ${iface} ${__params} </ACTION>
         </COMMAND>
 
-        <COMMAND name="pfc watchdog restore-time" help="PFC watchdog restoration time">
+        <COMMAND name="priority-flow-control watchdog restore-time" help="PFC watchdog restoration time">
           <PARAM name="restore-time" help="PFC Watchdog restoration time in microseconds" ptype="RESTORE_TIME"/>
-          <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py pfcwd_if_restore ${iface} ${__params} &#xA; </ACTION>
+          <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc pfcwd_if_restore ${iface} ${__params} </ACTION>
         </COMMAND>
 
-        <COMMAND name="pfc watchdog action" help="PFC watchdog storm action">
+        <COMMAND name="priority-flow-control watchdog action" help="PFC watchdog storm action">
           <PARAM name="action-option" help="" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="alert"  help="Alert when PFC watchdog storm detected"  ptype="SUBCOMMAND"  mode="subcommand"/>
             <PARAM name="drop"  help="Drop when PFC watchdog storm detected"  ptype="SUBCOMMAND"  mode="subcommand"/>
             <PARAM name="forward"  help="Forward when PFC watchdog storm detected"  ptype="SUBCOMMAND"  mode="subcommand"/>
           </PARAM>
-          <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py pfcwd_if_action ${iface} ${__params} &#xA; </ACTION>
+          <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc pfcwd_if_action ${iface} ${__params} </ACTION>
         </COMMAND>
 
-        <COMMAND name="pfc watchdog on" help="PFC watchdog enable">
-          <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py pfcwd_if_enable ${iface} on&#xA; </ACTION>
+        <COMMAND name="priority-flow-control watchdog on" help="PFC watchdog enable">
+          <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc pfcwd_if_enable ${iface} on</ACTION>
         </COMMAND>
 
-        <COMMAND name="pfc watchdog off" help="PFC watchdog disable">
-          <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py pfcwd_if_enable ${iface} off&#xA; </ACTION>
+        <COMMAND name="priority-flow-control watchdog off" help="PFC watchdog disable">
+          <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc pfcwd_if_enable ${iface} off</ACTION>
         </COMMAND>
 
         <COMMAND
-            name="no pfc"
+            name="no priority-flow-control"
             help="Delete PFC Configuration">
             <PARAM 
                 name="pfc-subcmd"
@@ -385,18 +385,18 @@ limitations under the License.
             </ACTION>
         </COMMAND>
 
-        <COMMAND name="no pfc watchdog" help="PFC watchdog configuration"/>
+        <COMMAND name="no priority-flow-control watchdog" help="PFC watchdog configuration"/>
 
-        <COMMAND name="no pfc watchdog detect-time" help="Clear PFC watchdog detection time">
-          <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py pfcwd_if_no_detect ${iface} &#xA; </ACTION>
+        <COMMAND name="no priority-flow-control watchdog detect-time" help="Clear PFC watchdog detection time">
+          <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc pfcwd_if_no_detect ${iface} </ACTION>
         </COMMAND>
 
-        <COMMAND name="no pfc watchdog restore-time" help="Clear PFC watchdog restoration time">
-          <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py pfcwd_if_no_restore ${iface} &#xA; </ACTION>
+        <COMMAND name="no priority-flow-control watchdog restore-time" help="Clear PFC watchdog restoration time">
+          <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc pfcwd_if_no_restore ${iface} </ACTION>
         </COMMAND>
 
-        <COMMAND name="no pfc watchdog action" help="Clear PFC watchdog storm action">
-          <ACTION>python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py pfcwd_if_no_action ${iface}&#xA; </ACTION>
+        <COMMAND name="no priority-flow-control watchdog action" help="Clear PFC watchdog storm action">
+          <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc pfcwd_if_no_action ${iface}</ACTION>
         </COMMAND>
 
   </VIEW>
@@ -594,7 +594,7 @@ limitations under the License.
                             >
                         </PARAM>
                     </PARAM>
-                    <PARAM name="pfc" help="PFC Statistics" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                    <PARAM name="priority-flow-control" help="PFC Statistics" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                         <PARAM name="statistics" help="PFC Statistics" ptype="SUBCOMMAND" mode="subcommand">
                             <PARAM name="queue" help="PFC Statistics" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
                         </PARAM>
@@ -616,7 +616,7 @@ limitations under the License.
          </PARAM>
          <ACTION>
              if test "${qos-if-subcommands}" = "phy-intf-name"; then&#xA;
-                if test "${pfc}" != ""; then&#xA;
+                if test "${priority-flow-control}" != ""; then&#xA;
                     if test "${queue}" != ""; then&#xA;
                         python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_queue_statistics  ${phy-intf-name}  show_qos_interface_pfc_queue_statistics.j2&#xA;
                     else&#xA;
