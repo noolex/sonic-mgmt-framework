@@ -28,7 +28,6 @@ from natsort import natsorted
 import sonic_cli_acl
 import ipaddress
 
-
 fbs_client = cc.ApiClient()
 TCP_FLAG_VALUES = {"fin": 1, "syn": 2, "rst": 4, "psh": 8, "ack": 16, "urg": 32, "ece": 64, "cwr": 128}
 
