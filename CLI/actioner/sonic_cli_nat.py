@@ -546,6 +546,8 @@ def run(func, args):
     global config
 
     try:
+       config = True
+
        args.insert(0,"0")  # NAT instance 0
        api_response = {}
        file_template = ''
