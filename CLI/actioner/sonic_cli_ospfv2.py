@@ -744,7 +744,7 @@ def invoke_api(func, args=[]):
                 keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrfname}/protocols/protocol=OSPF,ospfv2/ospfv2/areas/area={areaid}/virtual-links/virtual-link={linkid}/config/openconfig-ospfv2-ext:enable', vrfname=vrf, areaid=areaidval, linkid=vlinkid)
                 body = {"openconfig-ospfv2-ext:enable": True}
 
-                response = api.delete(keypath)
+                response = api.patch(keypath)
                 if response.ok() == False : return response
 
                 j = i
