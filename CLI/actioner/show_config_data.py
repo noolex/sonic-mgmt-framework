@@ -37,6 +37,7 @@ from show_config_aaa import *
 from show_config_nat import *
 from show_config_ospfv2 import *
 from show_config_ip_helper import *
+from show_config_pim import *
 from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
 from show_config_vxlan import *
 from show_config_lldp import *
@@ -191,6 +192,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports,
+                  'pim_ipv4_gbl'            : show_pim_ipv4_gbl,
                   'router_ospf'             : show_router_ospf_config,
                   'router_ospf_area'        : show_router_ospf_area_config,
                   'router_ospf_area_network' : show_router_ospf_area_network_config,

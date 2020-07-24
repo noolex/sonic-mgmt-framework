@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+    <VIEW name="enable-view">
+        <!-- show ip pim -->
+        <COMMAND
+            help="Show PIM commands"
+            name="show ip pim">
+            <PARAM
+                name="vrf"
+                help="Show PIM information of the given VRF"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                  name="vrf-name"
+                  help="Show PIM information of the given VRF"
+                  mode="switch"
+                  ptype="SUBCOMMAND">
+                  <PARAM
+                      name="vrf-name"
+                      help="Name of VRF"
+                      ptype="VRF_OR_DEFAULT">
+                  </PARAM>
+                  <PARAM
+                      name="all"
+                      help="All VRFs"
+                      mode="subcommand"
+                      ptype="SUBCOMMAND">
+                  </PARAM>
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="options: rpf, interface, neighbor, ssm, topology"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
+
+                <PARAM
+                    name="interface"
+                    help="Show interface details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="iftype"
+                        help="interface type"
+                        mode="switch"
+                        optional="true"
+                        ptype="SUBCOMMAND">
+                        <PARAM
+                             name="port-id"
+                             help="Physical interface"
+                             ptype="PHY_INTERFACE">
+                        </PARAM>
+                        <PARAM
+                            name="PortChannel"
+                            help="PortChannel interface"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND">
+                            <PARAM
+                                name="port-id"
+                                help="PortChannel ID"
+                                ptype="LAG_ID">
+                            </PARAM>
+                        </PARAM>
+                        <PARAM
+                            name="Vlan"
+                            help="VLAN interface"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND">
+                            <PARAM
+                                name="port-id"
+                                help="VLAN ID"
+                                ptype="VLAN_ID">
+                            </PARAM>
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    value="neighbor"
+                    name="nbr"
+                    help="Show PIM neighbor details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="nbr-addr"
+                        help="IPv4 address of the PIM neighbor"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    name="rpf"
+                    help="Show RPF details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="ssm"
+                    help="Show SSM details"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="topology"
+                    help="Show topology information"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                    <PARAM
+                        name="grp-addr"
+                        help="IPv4 address of the group"
+                        optional="true"
+                        ptype="IP_ADDR">
+                        <PARAM
+                            name="src-addr"
+                            help="IPv4 address of the source"
+                            optional="true"
+                            ptype="IP_ADDR">
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+             <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} intf:${interface} ifType:${iftype} port:${port-id} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+
+  <!-- ============== -->
+  <!-- Clear commands -->
+  <!-- ============== -->
+        <COMMAND
+            name="clear ip pim"
+            help="Clear PIM protocol information">
+            <PARAM
+                name="vrf"
+                help="VRF instance information"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help=""
+                    ptype="VRF_OR_DEFAULT">
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="options: interfaces, oil"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="interfaces"
+                    help="Clear all PIM interfaces of a particular VRF"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+                <PARAM
+                    name="oil"
+                    help="Clear PIM OIL (Outgoing Interfaces List) of all multicast entries of a particular VRF"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_pim vrf:${vrf-name} interfaces:{interfaces} oil:${oil} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="clear ip mroute"
+            help="Clear IP Multicast routes">
+            <PARAM
+                name="vrf"
+                help="VRF instance information"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help=""
+                    ptype="VRF_OR_DEFAULT">
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_mroute vrf:${vrf-name} 2>/dev/stdout
+            </ACTION>
+            </COMMAND>
+        </VIEW>
+
+    <!-- ============= -->
+    <!-- Global Config -->
+    <!-- ============= -->
+    <VIEW name="configure-view">
+        <COMMAND
+            name="ip pim"
+            command_tables="sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST/vrf-name={vrf_name},address-family={address-family}"
+            command_keys="address-family=ipv4"
+            render_command_cb="pim_ipv4_gbl"
+            help="Configure PIM">
+            <PARAM
+                name="vrf"
+                help="VRF instance configuration"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="vrf-name"
+                    help=""
+                    ptype="VRF_OR_DEFAULT"></PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="Pick one command among following options"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="ecmp"
+                    help="Enable ECMP"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        name="rebalance"
+                        help="Enable ECMP rebalance"
+                        ptype="SUBCOMMAND"
+                        optional="true"
+                        mode="subcommand"></PARAM>
+                </PARAM>
+                <PARAM
+                    name="join-prune-interval"
+                    help="Join Prune interval"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        help="Join Prune interval in seconds"
+                        name="jpi"
+                        ptype="RANGE_60_600"></PARAM>
+                </PARAM>
+                <PARAM
+                    name="keep-alive-timer"
+                    help="Keep Alive timer"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        help="Keep Alive timer in seconds"
+                        name="kat"
+                        ptype="RANGE_31_60000"></PARAM>
+                </PARAM>
+                <PARAM
+                    name="ssm"
+                    help="Configure SSM"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        name="prefix-list"
+                        help="Configure SSM prefix list"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand">
+                        <PARAM
+                            help="Name of a prefix list"
+                            name="pln"
+                            ptype="STRING"></PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim patch_pim_global_config vrf:${vrf-name} jpi:${jpi} kat:${kat} pln:${pln} ecmp:${ecmp} rebalance:${rebalance} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+
+        <!-- no ip pim -->
+        <COMMAND
+            name="no ip pim"
+            help="Delete PIM configuration">
+            <PARAM
+                name="vrf"
+                help="VRF instance configuration"
+                mode="subcommand"
+                ptype="SUBCOMMAND"
+                optional="true">
+                <PARAM
+                    name="vrf-name"
+                    help=""
+                    ptype="VRF_OR_DEFAULT"></PARAM>
+            </PARAM>
+            <PARAM
+                name="filter"
+                help="Pick one command among following options"
+                mode="switch"
+                order="true"
+                ptype="SUBCOMMAND">
+                <PARAM
+                    name="ecmp"
+                    help="Disable ECMP"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        name="rebalance"
+                        help="Disable ECMP rebalance"
+                        ptype="SUBCOMMAND"
+                        optional="true"
+                        mode="subcommand"></PARAM>
+                </PARAM>
+                <PARAM
+                    name="jpi"
+                    value="join-prune-interval"
+                    help="Clear Join Prune interval"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                </PARAM>
+                <PARAM
+                    name="kat"
+                    value="keep-alive-timer"
+                    help="Clear Keep Alive timer"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                </PARAM>
+                <PARAM
+                    name="ssm"
+                    help="Remove SSM configuration"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand">
+                    <PARAM
+                        name="pln"
+                        value="prefix-list"
+                        help="Remove SSM prefix list"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand">
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim del_pim_global_config vrf:${vrf-name} jpi:${jpi} kat:${kat} pln:${pln} ecmp:${ecmp} rebalance:${rebalance} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!-- =============== -->
+    <!-- Ethernet Config -->
+    <!-- =============== -->
+    <VIEW name="configure-if-view">
+        <MACRO name="BIND-INTF-TO-PIM" arg="${iface_uri}"></MACRO>
+    </VIEW>
+
+    <!-- ================== -->
+    <!-- PortChannel Config -->
+    <!-- ================== -->
+    <VIEW name="configure-lag-view">
+        <MACRO name="BIND-INTF-TO-PIM" arg="${po_name}"></MACRO>
+    </VIEW>
+
+    <!-- =========== -->
+    <!-- VLAN Config -->
+    <!-- =========== -->
+    <VIEW name="configure-vlan-view">
+        <MACRO name="BIND-INTF-TO-PIM" arg="${vlan_name}"></MACRO>
+    </VIEW>
+
+</CLISH_MODULE>
