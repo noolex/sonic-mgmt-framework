@@ -67,12 +67,12 @@ def invoke(func, args):
         return aa.get(keypath)
     elif func == 'add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table',name='default')
-        body = {"openconfig-network-instance:mac-table": {"entries": {"entry": [{"mac-address": args[0], "vlan":int(args[1]),"config": {"mac-address": args[0], "vlan": int(args[1])}, "interface": {"interface-ref": { "config": { "interface": args[2], "subinterface": 0}}}}]}}}
+        body = {"openconfig-network-instance:mac-table": {"entries": {"entry": [{"mac-address": args[0], "vlan":int(args[1].strip("Vlan")),"config": {"mac-address": args[0], "vlan": int(args[1].strip("Vlan"))}, "interface": {"interface-ref": { "config": { "interface": args[2], "subinterface": 0}}}}]}}}
         return aa.patch(keypath, body)
     elif func == 'del_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', 
-                name='default', macaddress=args[0], vlan=args[1])
-        body = {"entry": [{"mac-address": args[0], "vlan": int(args[1])}]}
+                name='default', macaddress=args[0], vlan=args[1].strip("Vlan"))
+        body = {"entry": [{"mac-address": args[0], "vlan": int(args[1].strip("Vlan"))}]}
         return aa.delete(keypath, body)
     elif func == 'rpc_sonic_fdb_clear_fdb':
         keypath = cc.Path('/restconf/operations/sonic-fdb:clear_fdb')
@@ -113,7 +113,7 @@ def run(func, args):
 
             elif args[1] == 'vlan': #### -- show mac address table [vlan <vlan-id>]--- ###
                 for mac_entry in mac_entries:
-                    if (int(args[2]) == mac_entry['vlan']):
+                    if (int(args[2].strip("Vlan")) == mac_entry['vlan']):
                         mac_table_list.append(fill_mac_info(mac_entry))
  
             elif args[1] == 'interface': #### -- show mac address table [interface {Ethernet <id> | Portchannel <id>}]--- ###
@@ -131,7 +131,7 @@ def run(func, args):
 
                 elif args[2] == 'vlan':
                     for mac_entry in mac_entries:
-                        if (int(args[3]) == mac_entry['vlan']) and mac_entry['state']['entry-type'] == 'STATIC':
+                        if (int(args[3].strip("Vlan")) == mac_entry['vlan']) and mac_entry['state']['entry-type'] == 'STATIC':
                             mac_table_list.append(fill_mac_info(mac_entry))
                 
                 elif args[2] == 'interface':
@@ -155,7 +155,7 @@ def run(func, args):
 
                 elif args[2] == 'vlan':
                     for mac_entry in mac_entries:
-                        if (int(args[3]) == mac_entry['vlan']) and mac_entry['state']['entry-type'] == 'DYNAMIC':
+                        if (int(args[3].strip("Vlan")) == mac_entry['vlan']) and mac_entry['state']['entry-type'] == 'DYNAMIC':
                             mac_table_list.append(fill_mac_info(mac_entry))
 
                 elif args[2] == 'interface':

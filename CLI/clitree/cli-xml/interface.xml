@@ -749,9 +749,9 @@ limitations under the License.
             help="Textual description">
             <PARAM
                 name="desc"
-                help="Textual description of the interface"
+                help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/description"
-                ptype="STRING" />
+                ptype="STRING_240" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
         </COMMAND>
         <COMMAND

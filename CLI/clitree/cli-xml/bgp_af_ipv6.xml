@@ -93,7 +93,7 @@ limitations under the License.
        <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND">
          <PARAM name="route-map-name" help="Route map name" ptype="STRING" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/import_vrf_route_map" />
        </PARAM>
-       <PARAM name="import-vrf-name" help="VRF Name" ptype="STRING_15" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/import_vrf" />
+       <PARAM name="import-vrf-name" help="Name of VRF" ptype="STRING_15" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/import_vrf" />
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_import_vrf ${vrf-name} IPV6_UNICAST ${import-vrf} ${import-vrf-name} ${route-map-name}</ACTION>
   </COMMAND>
@@ -153,7 +153,7 @@ limitations under the License.
        <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
          <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
        </PARAM>
-       <PARAM name="import-vrf-name" help="VRF Name" ptype="STRING_15"/>
+       <PARAM name="import-vrf-name" help="Name of VRF" ptype="STRING_15"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_import_vrf ${vrf-name} IPV6_UNICAST ${import-vrf} ${import-vrf-name} ${route-map-name}</ACTION>
   </COMMAND>

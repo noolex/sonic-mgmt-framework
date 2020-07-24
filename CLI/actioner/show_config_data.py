@@ -27,6 +27,7 @@ from show_config_copp import *
 from show_config_crm import *
 from show_config_mirror import *
 from show_config_static_routes import *
+from show_config_fbs import *
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
@@ -39,6 +40,7 @@ from show_config_ip_helper import *
 from show_config_pim import *
 from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
 from show_config_vxlan import *
+from show_config_lldp import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -71,7 +73,9 @@ config_view_hierarchy= \
        'configure-router-bgp',
        'configure-router-ospf',
        'configure-vxlan',
+       'configure-${fbs-class-type}-classifier',
        'copp-action',
+       'configure-policy',
        'configure-mclag',
        'configure-mirror']
 
@@ -128,10 +132,13 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ipv6_lo_ip_address'      : show_ipv6_lo_ip_address,
                   'routemap_set_community'  : show_routemap_setcommunity,
                   'routemap_set_extcommunity' : show_routemap_setextcommunity,
+                  'routemap_set_metric'       : show_routemap_set_metric,
                   'routemap_match_interface'  : show_routemap_matchintf,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
+                  'fbs_classifier_render'   : show_fbs_classifier,
+                  'fbs_policy_render'       : show_fbs_policy,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
                   'sflow_source_if'         : show_sflow_source_if,
@@ -196,6 +203,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'interface_ip_ospf' : show_interface_ip_ospf_config,
                   'mirror_session'          : show_mirror_session,
                   'errdisable_cause'        : show_config_errdisable_cause,
+                  'lldp_mode'               : show_lldp_mode_config,
+                  'lldp_intf_mode'          : show_lldp_intf_mode_config,
+                  'lldp_tlv_select'         : show_lldp_tlv_select_config,
                   'ldap_map_config'         : show_ldap_map_config
  }
 

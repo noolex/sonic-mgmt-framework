@@ -28,14 +28,26 @@ limitations under the License.
             name="show ip pim">
             <PARAM
                 name="vrf"
-                help="VRF instance information"
+                help="Show PIM information of the given VRF"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
-                    name="vrf-name"
-                    help=""
-                    ptype="VRF_OR_DEFAULT_OR_ALL">
+                  name="vrf-name"
+                  help="Show PIM information of the given VRF"
+                  mode="switch"
+                  ptype="SUBCOMMAND">
+                  <PARAM
+                      name="vrf-name"
+                      help="Name of VRF"
+                      ptype="VRF_OR_DEFAULT">
+                  </PARAM>
+                  <PARAM
+                      name="all"
+                      help="All VRFs"
+                      mode="subcommand"
+                      ptype="SUBCOMMAND">
+                  </PARAM>
                 </PARAM>
             </PARAM>
             <PARAM
