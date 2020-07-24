@@ -54,7 +54,7 @@ limitations under the License.
 	    mode="subcommand"
             ptype="SUBCOMMAND">
 	    <PARAM
-		help="VRF name"
+		help="Name of VRF"
 		name="vrfname"
 		ptype="STRING_15">
             </PARAM>
