@@ -1289,7 +1289,9 @@ limitations under the License.
     <COMMAND
         name="graceful-shutdown"
         help="Enable graceful shutdown for the portchannel"
-        dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/graceful_shutdown=enable">
+        dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/graceful_shutdown=enable"
+        command_tables="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/name={name}"
+        render_command_cb="if_lag_config">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST=${po_name}/graceful_shutdown_mode body={"sonic-portchannel:graceful_shutdown_mode": "enable"}</ACTION>
     </COMMAND>
     <COMMAND

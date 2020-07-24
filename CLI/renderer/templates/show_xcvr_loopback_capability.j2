@@ -1,0 +1,48 @@
+{% set if_name = json_output[1][0] %}
+
+{{if_name}}
+{{'Loopback Support                                        '}}
+{{'--------------------------------------------------------'}}
+
+
+{% for key, val in json_output[1][1].items() %}
+{% if 'lb-' in key %}
+{% set loopback_name = 'Unknown Loopback' %}
+{% set k = key %}
+
+{% if 'lb-simul-host-media-side-support' in key %}
+{% set loopback_name = 'Simultaneous Host/Media Side Loopback' %}
+{% endif %}
+
+{% if 'lb-per-lane-media-side-support' in key %}
+{% set loopback_name = 'Per-lane Media Side Loopback' %}
+{% endif %}
+
+{% if 'lb-per-lane-host-side-support' in key %}
+{% set loopback_name = 'Per-lane Host Side Loopback' %}
+{% endif %}
+
+{% if 'lb-host-side-input-support' in key %}
+{% set loopback_name = 'Host Side Input Loopback' %}
+{% endif %}
+
+{% if 'lb-host-side-output-support' in key %}
+{% set loopback_name = 'Host Side Output Loopback' %}
+{% endif %}
+
+{% if 'lb-media-side-input-support' in key %}
+{% set loopback_name = 'Media Side Input Loopback' %}
+{% endif %}
+
+{% if 'lb-media-side-output-support' in key %}
+{% set loopback_name = 'Media Side Output Loopback' %}
+{% endif %}
+
+{% if val == 'True' %}
+{{loopback_name.ljust(40)}}{{'Supported'}}
+{% else %}
+{{loopback_name.ljust(40)}}{{'Not Supported'}}
+{% endif %}
+
+{% endif %}
+{% endfor %}
