@@ -334,7 +334,7 @@ limitations under the License.
                     <PARAM
                         name="Ethernet"
                         help="Ethernet ID"
-                        ptype="PHY-INTERFACE"
+                        ptype="PHY_INTERFACE"
                         mode="subcommand"
                         >
                     </PARAM>
