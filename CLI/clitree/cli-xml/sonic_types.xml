@@ -220,6 +220,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="TWICE_NAT_ID"
+        method="integer"
+        pattern="1..9999"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="ON_OFF"
         method="select"
         pattern="on(true) off(false)"
