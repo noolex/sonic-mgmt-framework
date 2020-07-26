@@ -67,9 +67,11 @@ def build_options(func, method, argv):
        options_cmd.append("'")
        
     if parameters["skip"] == "yes":
-       options_cmd.append("--skip_data")
+       if func == 'tpcm_upgrade':
+           options_cmd.append("--skip_data_migration")
+       elif func == 'tpcm_uninstall':
+           options_cmd.append("--clean_data")
        
-
     return options_cmd 
 
 

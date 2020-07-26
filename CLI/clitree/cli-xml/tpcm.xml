@@ -186,9 +186,9 @@
                          </PARAM>
                    </PARAM>
               </PARAM>
-              <PARAM name="skip_data" help="Leaves the TPC data from deletion" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name="skip_data_migration" help="Skip the TPC data migration" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                    <PARAM name="skip"
-                       help="Leaves the TPC data from deletion"
+                       help="Skip the TPC data from migration"
                        default="null"
                        ptype="BOOL_SELECT">
                    </PARAM>
@@ -226,9 +226,9 @@
                    <PARAM name="container_name" help="String for container name" ptype="STRING">
                    </PARAM>
              </PARAM>
-              <PARAM name="skip_data" help="Leaves the TPC data from deletion" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name="clean_data" help="Delete the TPC data" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                    <PARAM name="skip"
-                       help="Leaves the TPC data from deletion"
+                       help="Delete the TPC data"
                        default="null"
                        ptype="BOOL_SELECT">
                    </PARAM>
