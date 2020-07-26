@@ -9,7 +9,7 @@
 {% set vars = {'green_drop_probability': ""} %}
 {% set vars = {'yellow_drop_probability': ""} %}
 {% set vars = {'red_drop_probability': ""} %}
-{% set bytes_to_kb = 1024 %}
+{% set bytes_to_kb = 1000 %}
 {% if json_output -%}
 {% for key_json in json_output %}
     {% if key_json == "openconfig-qos-ext:wred-profiles" %}
