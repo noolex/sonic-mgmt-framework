@@ -30,13 +30,13 @@ limitations under the License.
             mode="subcommand">
             <PARAM
                 name="vrf"
-                help="Show IP multicast routing information of the given VRF"
+                help="Show IP multicast routes of the given VRF"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                   name="vrf-name"
-                  help="Show IP multicast routing information of the given VRF"
+                  help="Show IP multicast routes of the given VRF"
                   mode="switch"
                   ptype="SUBCOMMAND">
                   <PARAM
