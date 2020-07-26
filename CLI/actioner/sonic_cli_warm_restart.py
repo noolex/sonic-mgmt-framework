@@ -31,37 +31,67 @@ def invoke_api(func, args=[]):
 
     # Warm restart state information
     if func == 'get_openconfig_warm_restart_warm_restart_status_submodules':
-        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart/status/submodules')
+        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart/status')
         return api.get(path)
 
     # Warm restart system service enable
     if func == 'patch_openconfig_warm_restart_warm_restart_config_enable':
-        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart/config/enable')
-        body = { "openconfig-warm-restart:enable": True }
+        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart')
+        body = {
+                 "openconfig-warm-restart:warm-restart" : {
+                   "config" : {
+                     "enable" : True
+                   }
+                 }
+               }
         return api.patch(path,body)
 
     # Warm restart BGP/TEAMD/SWSS service enable
     if func == 'patch_openconfig_warm_restart_warm_restart_enable_modules_config_enable':
-        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart/enable/modules={module}/config/enable', module=args[0].upper())
-        if args[1] == "true":
-            body = { "openconfig-warm-restart:enable": True }
-        else:
-            body = { "openconfig-warm-restart:enable": False }
+        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart/enable')
+        body = {
+                 "openconfig-warm-restart:enable": {
+                   "modules": [
+                     {
+                       "module": args[0].upper(),
+                       "config": {
+                         "module": args[0].upper(),
+                         "enable": True if args[1] == "true" else False
+                       }
+                     }
+                   ]
+                 }
+               }
         return api.patch(path,body) 
     
     # Warm restart BGP eoiu config
     if func == 'patch_openconfig_warm_restart_warm_restart_config_bgp_eoiu':
-        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart/config/bgp-eoiu')
-        if args[0] == "true":
-            body = { "openconfig-warm-restart:bgp-eoiu": True }
-        else:
-            body = { "openconfig-warm-restart:bgp-eoiu": False }
+        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart')
+        body = {
+                 "openconfig-warm-restart:warm-restart" : {
+                   "config" : {
+                     "bgp-eoiu" : True if args[1] == "true" else False
+                   }
+                 }
+               }
         return api.patch(path,body)
 
     # Warm restart BGP, SWSS, TEAMD timer config
     if func == 'patch_openconfig_warm_restart_warm_restart_timers_timer_config_value':
-        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart/timers/timer={submodule}/config/value', submodule=args[0].upper())
-        body = { "openconfig-warm-restart:value": int(args[1]) }
+        path = cc.Path('/restconf/data/openconfig-warm-restart:warm-restart/timers')
+        body = {
+           "openconfig-warm-restart:timers": {
+             "timer": [
+               {
+                 "submodule": args[0].upper(),
+                 "config": {
+                   "submodule": args[0].upper(),
+                   "value": int(args[1])
+                 }
+               }
+             ]
+           }
+         }
         return api.patch(path,body)
 
     # Disable warm restart system service
