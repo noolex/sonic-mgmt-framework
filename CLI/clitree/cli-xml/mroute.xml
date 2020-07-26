@@ -56,6 +56,7 @@ limitations under the License.
                 name="filter"
                 help="options: grp-addr, summary"
                 mode="switch"
+                optional="true"
                 order="true"
                 ptype="SUBCOMMAND">
                 <PARAM
@@ -78,8 +79,7 @@ limitations under the License.
                     optional="true">
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_mroute show_mroute vrf:${vrf-name} mroute:${mroute} summary:${summary} grpAddr:${grp-addr} srcAddr:${src-addr}
-            </ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_mroute show_mroute vrf:${vrf-name} mroute:${mroute} summary:${summary} grpAddr:${grp-addr} srcAddr:${src-addr}</ACTION>
         </COMMAND>
 
         <!-- ============== -->
@@ -100,8 +100,7 @@ limitations under the License.
                     ptype="VRF_OR_DEFAULT">
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_mroute clear_mroute vrf:${vrf-name}
-            </ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_mroute clear_mroute vrf:${vrf-name} </ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>

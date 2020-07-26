@@ -180,7 +180,11 @@ def show_mroute_info(response):
         if inputDict.get('grpAddr') is not None:
             ipList = response.get('openconfig-aft-ipv4-ext:ipv4-entry')
         else:
-            ipList = response.get('openconfig-aft-ipv4-ext:ipv4-entries').get('ipv4-entry')
+            tmpContainer = response.get('openconfig-aft-ipv4-ext:ipv4-entries')
+            if tmpContainer is None:
+                return
+            ipList = tmpContainer.get('ipv4-entry')
+
         if ipList is None:
             return
 
@@ -351,6 +355,17 @@ def handle_show(func, args):
         response = response.content
         show_response(response)
     else:
+        print(response.error_message())
+        return -1
+    return 0
+
+def handle_clear(func, args):
+    keypath, body = get_keypath(func, args)
+    if keypath is None:
+        print("% Error: Internal error")
+        return -1
+    response = apiClient.post(keypath, body)
+    if not response.ok():
         print(response.error_message())
         return -1
     return 0

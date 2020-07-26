@@ -436,7 +436,14 @@ def show_topology_info(response):
         if inputDict.get('grpAddr') is not None:
             ipList = response.get('openconfig-pim-ext:ipv4-entry')
         else:
-            ipList = response.get('openconfig-pim-ext:tib').get('ipv4-entries').get('ipv4-entry')
+            tmpContainer = response.get('openconfig-pim-ext:tib')
+            if tmpContainer is None:
+                return
+            tmpContainer = tmpContainer.get('ipv4-entries')
+            if tmpContainer is None:
+                return
+            ipList = tmpContainer.get('ipv4-entry')
+
         if ipList is None:
             return
 
