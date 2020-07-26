@@ -146,7 +146,7 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
             </PARAM>
-             <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} intf:${interface} ifType:${iftype} port:${port-id} 2>/dev/stdout
+             <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} intf:${interface} ifType:${iftype} port:${port-id}
             </ACTION>
         </COMMAND>
 
@@ -164,7 +164,7 @@ limitations under the License.
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vrf-name"
-                    help=""
+                    help="Name of VRF"
                     ptype="VRF_OR_DEFAULT">
                 </PARAM>
             </PARAM>
@@ -189,27 +189,9 @@ limitations under the License.
                     optional="true">
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_pim vrf:${vrf-name} interfaces:{interfaces} oil:${oil} 2>/dev/stdout
+            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_pim vrf:${vrf-name} interfaces:{interfaces} oil:${oil}
             </ACTION>
         </COMMAND>
-        <COMMAND
-            name="clear ip mroute"
-            help="Clear IP Multicast routes">
-            <PARAM
-                name="vrf"
-                help="VRF instance information"
-                mode="subcommand"
-                optional="true"
-                ptype="SUBCOMMAND">
-                <PARAM
-                    name="vrf-name"
-                    help=""
-                    ptype="VRF_OR_DEFAULT">
-                </PARAM>
-            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_pim clear_mroute vrf:${vrf-name} 2>/dev/stdout
-            </ACTION>
-            </COMMAND>
         </VIEW>
 
     <!-- ============= -->
@@ -230,7 +212,7 @@ limitations under the License.
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vrf-name"
-                    help=""
+                    help="Name of VRF"
                     ptype="VRF_OR_DEFAULT"></PARAM>
             </PARAM>
             <PARAM
@@ -305,7 +287,7 @@ limitations under the License.
                 optional="true">
                 <PARAM
                     name="vrf-name"
-                    help=""
+                    help="Name of VRF"
                     ptype="VRF_OR_DEFAULT"></PARAM>
             </PARAM>
             <PARAM

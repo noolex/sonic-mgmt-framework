@@ -189,10 +189,6 @@ def get_keypath(func,args):
     ##############################################################
     #clear config
     ##############################################################
-    if 'clear_mroute' in func:
-        path = "/restconf/operations/sonic-ipmroute-clear:clear-ipmroute"
-        body = {"sonic-ipmroute-clear:input": {"vrf-name": vrf, "address-family":"IPV4_UNICAST", "config-type":"ALL-MROUTES", "all-mroutes": True}}
-
     if 'clear_pim' in func:
         path = "/restconf/operations/sonic-pim-clear:clear-pim"
         if (inputDict.get('interfaces') is not None):
@@ -805,7 +801,7 @@ def run(func, args):
     response = None
     status = 0
     count = process_args(args)
-    if (count == 0) and func != "clear_mroute":
+    if (count == 0):
             return -1
 
     if func.startswith("patch"):
