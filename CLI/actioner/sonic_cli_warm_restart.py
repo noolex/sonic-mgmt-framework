@@ -70,7 +70,7 @@ def invoke_api(func, args=[]):
         body = {
                  "openconfig-warm-restart:warm-restart" : {
                    "config" : {
-                     "bgp-eoiu" : True if args[1] == "true" else False
+                     "bgp-eoiu" : True if args[0] == "true" else False
                    }
                  }
                }
