@@ -37,7 +37,7 @@ limitations under the License.
    </COMMAND>
 </VIEW>
 <VIEW name="configure-view">
-   <COMMAND name="authentication" help="authentication modes">
+   <COMMAND name="authentication" help="Authentication modes">
         <ACTION> python $SONIC_CLI_ROOT/sonic_cli_authentication.py set_authentication </ACTION>
    </COMMAND>
    <COMMAND name="authentication telemetry" help="telemetry authentication modes">

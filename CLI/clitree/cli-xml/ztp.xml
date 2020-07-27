@@ -51,7 +51,7 @@
     <COMMAND name="no ztp enable" help="Administratively disable ZTP">
       <ACTION builtin="clish_pyobj">sonic_cli_ztp patch_openconfig_ztp_ztp_config ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="ztp" help="ZTP configuration commands">
+    <COMMAND name="ztp" help="Configure ZTP">
       <ACTION builtin="clish_nop"/>
     </COMMAND>
     <COMMAND name="ztp enable" help="Administratively enable ZTP">

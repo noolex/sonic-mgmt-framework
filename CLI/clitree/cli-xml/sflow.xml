@@ -80,7 +80,7 @@ limitations under the License.
     </COMMAND>
   </VIEW>
   <VIEW name="configure-view">
-    <COMMAND name="sflow" help="sFlow Configurations"/>
+    <COMMAND name="sflow" help="Configure sFlow"/>
     <COMMAND name="sflow collector" help="sFlow Collector" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_name={ip}_{port}_{vrf_name}">
        <PARAM name="ip" help="Collector IP address" ptype="IPV4_OR_IPV6_ADDR" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_ip"/>
        <PARAM name="port" help="Collector port number (default: 6343)" ptype="RANGE_0_65535" optional="true" default="6343" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_port"/>
@@ -141,7 +141,7 @@ limitations under the License.
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="no sflow" help="sFlow Configurations"/>
+    <COMMAND name="no sflow" help="Configure sFlow"/>
     <COMMAND name="no sflow enable" help="Disable sFlow">
         <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state down </ACTION>
       <DOCGEN>
