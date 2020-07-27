@@ -43,6 +43,7 @@ from show_config_ipsla import *
 from show_config_lldp import *
 from show_config_igmp_snooping import *
 from show_config_tam import *
+from show_config_bfd import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -81,7 +82,8 @@ config_view_hierarchy= \
        'configure-mclag',
        'configure-mirror',
        'configure-tam',
-       'configure-ipsla']
+       'configure-ipsla',
+       'configure-bfd']
 
 render_filelst  = {}
 
