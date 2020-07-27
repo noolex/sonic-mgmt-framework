@@ -29,78 +29,67 @@ limitations under the License.
 <PTYPE
      name="LDAP_SEARCH_TIME_LIMIT"
      method="integer"
-     pattern="1..65535"
-     help=""
+     pattern="0..65535"
      />
      
 <PTYPE
      name="LDAP_BIND_TIME_LIMIT"
      method="integer"
-     pattern="1..65535"
-     help=""
+     pattern="0..65535"
      />
 
 <PTYPE
      name="LDAP_IDLE_TIME_LIMIT"
      method="integer"
-     pattern="1..65535"
-     help=""
+     pattern="0..65535"
      />
 
 <PTYPE
      name="RETRY_ATTEMPTS"
      method="integer"
      pattern="0..10"
-     help=""
      />
 
 <PTYPE
      name="LDAP_PORT"
      method="integer"
      pattern="1..65535"
-     help=""
      />
 
 <PTYPE
      name="LDAP_SCOPE"
      method="select"
      pattern="sub(sub) one(one) base(base)"
-     help=""
      />
 
 <PTYPE
      name="LDAP_VERSION"
      method="integer"
      pattern="2..3"
-     help=""
      />
 
 <PTYPE
      name="LDAP_SSL"
      method="select"
      pattern="on(on) off(off) start_tls(start_tls)"
-     help=""
      />
 
 <PTYPE
      name="LDAP_USE_TYPE"
      method="select"
      pattern="all(all) nss(nss) sudo(sudo) pam(pam) nss_sudo(nss_sudo) nss_pam(nss_pam) sudo_pam(sudo_pam)"
-     help=""
      />
     
 <PTYPE
      name="LDAP_SERVER_PORT"
      method="integer"
      pattern="1..65535"
-     help=""
      />
 
 <PTYPE
      name="LDAP_SERVER_PRIORITY"
      method="integer"
      pattern="1..99"
-     help=""
      />
      
 <PTYPE
@@ -109,98 +98,236 @@ limitations under the License.
      help="Name of VRF (Max size 32, (mgmt, or prefixed by Vrf)"
 />
 
+<PTYPE
+     name="BASE_DN"
+     pattern=".*"
+     help="Base distinguished name"
+/>
+
+<PTYPE
+     name="BIND_DN"
+     pattern=".*"
+     help="Distinguished name to bind"
+/>
+
+<PTYPE
+     name="BIND_PW"
+     pattern=".*"
+     help="Credentials to bind"
+/>
+
+<PTYPE
+     name="PAM_FILTER"
+     pattern=".*"
+     help="PAM filter name"
+/>
+
+<PTYPE
+     name="PAM_LOGIN_ATTR"
+     pattern=".*"
+     help="PAM login attribute (Default: uid)"
+/>
+
+<PTYPE
+     name="PAM_GRP_DN"
+     pattern=".*"
+     help="PAM group distinguished name"
+/>
+
+<PTYPE
+     name="PAM_MEM_ATTR"
+     pattern=".*"
+     help="PAM member attribute value"
+/>
+
+<PTYPE
+     name="SUDOERS_BASE"
+     pattern=".*"
+     help="Sudo base distinguished name"
+/>
+
+<PTYPE
+     name="NSS_BASE_PWD"
+     pattern=".*"
+     help="NSS search base for password map"
+/>
+
+<PTYPE
+     name="NSS_BASE_GRP"
+     pattern=".*"
+     help="NSS search base group"
+/>
+
+<PTYPE
+     name="NSS_BASE_SHADOW"
+     pattern=".*"
+     help="NSS search base for shadow map"
+/>
+
+<PTYPE
+     name="NSS_BASE_NETGRP"
+     pattern=".*"
+     help="NSS search base for netgroup map"
+/>
+
+<PTYPE
+     name="NSS_BASE_SUDOERS"
+     pattern=".*"
+     help="NSS search base for sudoers map"
+/>
+
+<PTYPE
+     name="NSS_INITGRP"
+     pattern=".*"
+     help="Init groups ignore users value"
+/>
+
+<PTYPE
+     name="ATTR_FROM"
+     pattern=".*"
+     help="Attribute map key"
+/>
+
+<PTYPE
+     name="ATTR_TO"
+     pattern=".*"
+     help="Attribute map value"
+/>
+
+<PTYPE
+     name="OBJ_FROM"
+     pattern=".*"
+     help="Objectclass map key"
+/>
+
+<PTYPE
+     name="OBJ_TO"
+     pattern=".*"
+     help="Objectclass map value"
+/>
+
+<PTYPE
+     name="DEFAULT_FROM"
+     pattern=".*"
+     help="Default attribute map key"
+/>
+
+<PTYPE
+     name="DEFAULT_TO"
+     pattern=".*"
+     help="Default attribute map value"
+/>
+
+<PTYPE
+     name="OVERRIDE_FROM"
+     pattern=".*"
+     help="Override attribute value map key"
+/>
+
+<PTYPE
+     name="OVERRIDE_TO"
+     pattern=".*"
+     help="Override attribute value map value"
+/>
+
+<PTYPE
+    name="LDAP_HOSTNAME_OR_IPADDR"
+    pattern="(^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.?)+[a-zA-Z0-9]{2,6}$)|(^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))$)|(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$)"
+    help="Hostname or IP address"
+/>
+
 <!--=======================================================-->
 
 <!-- Config mode -->
 <VIEW name="configure-view">
-    <COMMAND name = "ldap-server" help="Configure LDAP server" command_keys="ldap_type=global" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server" help="Configures LDAP server" command_keys="ldap_type=global" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
     	<PARAM name="ldap-global-options" help="" ptype="SUBCOMMAND" mode="switch">
-				<PARAM name="timelimit" help="Configure global search time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
+				<PARAM name="timelimit" help="Configures global search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
 				</PARAM>
 
-				<PARAM name="bind-timelimit" help="Configure global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+				<PARAM name="bind-timelimit" help="Configures global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	    
-				<PARAM name="idle-timelimit" help="Configure global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/idle_timelimit"/>
+				<PARAM name="idle-timelimit" help="Configures global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/idle_timelimit"/>
 				</PARAM>
 	
-				<PARAM name="retry" help="Configure global retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
+				<PARAM name="retry" help="Configures global retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
 				</PARAM>
 	
-				<PARAM name="port" help="Configure global server port" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
+				<PARAM name="port" help="Configures global server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (1 to 65535); Default: 389" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
 				</PARAM>
 				
-				<PARAM name="scope" help="Configure global search scope" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (Default: sub)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
+				<PARAM name="scope" help="Configures global search scope" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (sub or one or base); Default: sub" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
 				</PARAM>
 
-				<PARAM name="version" help="Configure global version" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (Default: 3)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
+				<PARAM name="version" help="Configures global LDAP version" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (2 to 3); Default: 3" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
 				</PARAM>
 
-				<PARAM name="base" help="Configure global base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ldap_base_val" ptype="STRING" help="Base distinguished name" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
+				<PARAM name="base" help="Configures global base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_base_val" ptype="BASE_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
 				</PARAM>
 
-				<PARAM name="ssl" help="Configure global TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration (Default: off)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
+				<PARAM name="ssl" help="Configures global TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
 				</PARAM>
 
-				<PARAM name="binddn" help="Configure global distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="binddn_val" ptype="STRING" help="Distinguished name to bind" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
+				<PARAM name="binddn" help="Configures global distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="binddn_val" ptype="BIND_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
 				</PARAM>
 
-				<PARAM name="bindpw" help="Configure global credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="bindpw_val" ptype="STRING" help="Credentials to bind" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
+				<PARAM name="bindpw" help="Configures global credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="bindpw_val" ptype="BIND_PW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
 				</PARAM>
 
-				<PARAM name="pam-filter" help="Configure global PAM filter" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="pam_filter_val" ptype="STRING" help="PAM filter" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_filter"/>
+				<PARAM name="pam-filter" help="Configures global PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_filter_val" ptype="PAM_FILTER" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_filter"/>
 				</PARAM>
 
-				<PARAM name="pam-login-attribute" help="Configure global PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="pam_login_val" ptype="STRING" help="PAM Login attribute (Default: uid)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_login_attribute"/>
+				<PARAM name="pam-login-attribute" help="Configures global PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_login_val" ptype="PAM_LOGIN_ATTR" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_login_attribute"/>
 				</PARAM>
 
-				<PARAM name="pam-group-dn" help="Configure global PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="pam_group_val" ptype="STRING" help="PAM Group Distinguished name" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_group_dn"/>
+				<PARAM name="pam-group-dn" help="Configures global PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_group_val" ptype="PAM_GRP_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_group_dn"/>
 				</PARAM>
 
-				<PARAM name="pam-member-attribute" help="Configure global PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="pam_member_val" ptype="STRING" help="PAM Member attribute" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_member_attribute"/>
+				<PARAM name="pam-member-attribute" help="Configures global PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_member_val" ptype="PAM_MEM_ATTR" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_member_attribute"/>
 				</PARAM>
 
-				<PARAM name="sudoers-base" help="Configure global sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="sudoers_val" ptype="STRING" help="Sudo base distinguished name" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/sudoers_base"/>
+				<PARAM name="sudoers-base" help="Configures global sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="sudoers_val" ptype="SUDOERS_BASE" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/sudoers_base"/>
 				</PARAM>
 
-				<PARAM name="nss-base-passwd" help="Configure global NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_passwd_val" ptype="STRING" help="NSS search base for password map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
+				<PARAM name="nss-base-passwd" help="Configures global NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_passwd_val" ptype="NSS_BASE_PWD" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
 				</PARAM>
 
-				<PARAM name="nss-base-group" help="Configure global NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_group_val" ptype="STRING" help="NSS search base group" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_group"/>
+				<PARAM name="nss-base-group" help="Configures global NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_group_val" ptype="NSS_BASE_GRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_group"/>
 				</PARAM>
 
-				<PARAM name="nss-base-shadow" help="Configure global NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_shadow_val" ptype="STRING" help="NSS search base for shadow map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_shadow"/>
+				<PARAM name="nss-base-shadow" help="Configures global NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_shadow_val" ptype="NSS_BASE_SHADOW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_shadow"/>
 				</PARAM>
 
-				<PARAM name="nss-base-netgroup" help="Configure global NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_netgroup_val" ptype="STRING" help="NSS search base for netgroup map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_netgroup"/>
+				<PARAM name="nss-base-netgroup" help="Configures global NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_netgroup_val" ptype="NSS_BASE_NETGRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_netgroup"/>
 				</PARAM>
 
-				<PARAM name="nss-base-sudoers" help="Configure global NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_sudoers_val" ptype="STRING" help="NSS search base for sudoers map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_sudoers"/>
+				<PARAM name="nss-base-sudoers" help="Configures global NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_sudoers_val" ptype="NSS_BASE_SUDOERS" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_sudoers"/>
 				</PARAM>
 
-				<PARAM name="nss-initgroups-ignoreusers" help="Configure global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss-initgroups_val" ptype="STRING" help="Init groups ignore users" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_initgroups_ignoreusers"/>
+				<PARAM name="nss-initgroups-ignoreusers" help="Configures global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss-initgroups_val" ptype="NSS_INITGRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_initgroups_ignoreusers"/>
 				</PARAM>
 
 			</PARAM>				
@@ -253,73 +380,75 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server nss" help="Configure LDAP server for NSS" command_keys="ldap_type=nss" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server nss" help="Configures LDAP server for NSS" command_keys="ldap_type=nss" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
     	<PARAM name="ldap-nss-options" help="" ptype="SUBCOMMAND" mode="switch">
-				<PARAM name="timelimit" help="Configure search time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
+    	
+				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
 				</PARAM>
-				<PARAM name="bind-timelimit" help="Configure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/idle_timelimit"/>
+
+				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	    
-				<PARAM name="idle-timelimit" help="Configure NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/idle_timelimit"/>
+				<PARAM name="idle-timelimit" help="Configures idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/idle_timelimit"/>
 				</PARAM>
 	
-				<PARAM name="retry" help="Configure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
+				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
 				</PARAM>
 	
-				<PARAM name="port" help="Configure server port" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
+				<PARAM name="port" help="Configures server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (1 to 65535); Default: 389" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
 				</PARAM>
 				
-				<PARAM name="scope" help="Configure search scope" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (Default: sub)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
+				<PARAM name="scope" help="Configures search scope" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (sub or one or base); Default: sub" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
 				</PARAM>
 
-				<PARAM name="version" help="Configure version" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (Default: 3)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
+				<PARAM name="version" help="Configures LDAP version" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (2 to 3); Default: 3" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
 				</PARAM>
 
-				<PARAM name="base" help="Configure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ldap_base_val" ptype="STRING" help="Base distinguished name" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
+				<PARAM name="base" help="Configures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_base_val" ptype="BASE_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
 				</PARAM>
 
-				<PARAM name="ssl" help="Configure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration (Default: off)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
+				<PARAM name="ssl" help="Configures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
 				</PARAM>
 
-				<PARAM name="binddn" help="Configure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="binddn_val" ptype="STRING" help="Distinguished name to bind" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
+				<PARAM name="binddn" help="Configures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="binddn_val" ptype="BIND_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
 				</PARAM>
 
-				<PARAM name="bindpw" help="Configure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="bindpw_val" ptype="STRING" help="Credentials to bind" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
+				<PARAM name="bindpw" help="Configures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="bindpw_val" ptype="BIND_PW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
 				</PARAM>
 
-				<PARAM name="nss-base-passwd" help="Configure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_passwd_val" ptype="STRING" help="NSS search base for password map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
+				<PARAM name="nss-base-passwd" help="Configures NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_passwd_val" ptype="NSS_BASE_PWD" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
 				</PARAM>
 
-				<PARAM name="nss-base-group" help="Configure NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_group_val" ptype="STRING" help="NSS search base group" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_group"/>
+				<PARAM name="nss-base-group" help="Configures NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_group_val" ptype="NSS_BASE_GRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_group"/>
 				</PARAM>
 
-				<PARAM name="nss-base-shadow" help="Configure NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_shadow_val" ptype="STRING" help="NSS search base for shadow map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_shadow"/>
+				<PARAM name="nss-base-shadow" help="Configures NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_shadow_val" ptype="NSS_BASE_SHADOW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_shadow"/>
 				</PARAM>
 
-				<PARAM name="nss-base-netgroup" help="Configure NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_netgroup_val" ptype="STRING" help="NSS search base for netgroup map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_netgroup"/>
+				<PARAM name="nss-base-netgroup" help="Configures NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_netgroup_val" ptype="NSS_BASE_NETGRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_netgroup"/>
 				</PARAM>
 
-				<PARAM name="nss-base-sudoers" help="Configure NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_sudoers_val" ptype="STRING" help="NSS search base for sudoers map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_sudoers"/>
+				<PARAM name="nss-base-sudoers" help="Configures NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_sudoers_val" ptype="NSS_BASE_SUDOERS" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_sudoers"/>
 				</PARAM>
 
-				<PARAM name="nss-initgroups-ignoreusers" help="Configure NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss-initgroups_val" ptype="STRING" help="Init groups ignore users" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_initgroups_ignoreusers"/>
+				<PARAM name="nss-initgroups-ignoreusers" help="Configures NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss-initgroups_val" ptype="NSS_INITGRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_initgroups_ignoreusers"/>
 				</PARAM>
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_nss_config ${__params}</ACTION>
@@ -361,66 +490,66 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server pam" help="Configure LDAP server for PAM" command_keys="ldap_type=pam" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server pam" help="Configures LDAP server for PAM" command_keys="ldap_type=pam" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
     	<PARAM name="ldap-pam-options" help="" ptype="SUBCOMMAND" mode="switch">
-				<PARAM name="timelimit" help="Configure search time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
+				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
 				</PARAM>
 
-				<PARAM name="bind-timelimit" help="Configure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	
-				<PARAM name="retry" help="Configure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
+				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
 				</PARAM>
 	
-				<PARAM name="port" help="Configure server port" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
+				<PARAM name="port" help="Configures server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (1 to 65535); Default: 389" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
 				</PARAM>
 				
-				<PARAM name="scope" help="Configure search scope" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (Default: sub)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
+				<PARAM name="scope" help="Configures search scope" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (sub or one or base); Default: sub" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
 				</PARAM>
 
-				<PARAM name="version" help="Configure version" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (Default: 3)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
+				<PARAM name="version" help="Configures LDAP version" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (2 to 3); Default: 3" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
 				</PARAM>
 
-				<PARAM name="base" help="Configure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ldap_base_val" ptype="STRING" help="Base distinguished name" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
+				<PARAM name="base" help="Configures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_base_val" ptype="BASE_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
 				</PARAM>
 
-				<PARAM name="ssl" help="Configure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration (Default: off)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
+				<PARAM name="ssl" help="Configures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
 				</PARAM>
 
-				<PARAM name="binddn" help="Configure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="binddn_val" ptype="STRING" help="Distinguished name to bind" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
+				<PARAM name="binddn" help="Configures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="binddn_val" ptype="BIND_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
 				</PARAM>
 
-				<PARAM name="bindpw" help="Configure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="bindpw_val" ptype="STRING" help="Credentials to bind" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
+				<PARAM name="bindpw" help="Configures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="bindpw_val" ptype="BIND_PW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
 				</PARAM>
 
-				<PARAM name="pam-filter" help="Configure PAM filter" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="pam_filter_val" ptype="STRING" help="PAM filter" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_filter"/>
+				<PARAM name="pam-filter" help="Configures PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_filter_val" ptype="PAM_FILTER" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_filter"/>
 				</PARAM>
 
-				<PARAM name="pam-login-attribute" help="Configure PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="pam_login_val" ptype="STRING" help="PAM Login attribute (Default: uid)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_login_attribute"/>
+				<PARAM name="pam-login-attribute" help="Configures PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_login_val" ptype="PAM_LOGIN_ATTR" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_login_attribute"/>
 				</PARAM>
 
-				<PARAM name="pam-group-dn" help="Configure PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="pam_group_val" ptype="STRING" help="PAM Group Distinguished name" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_group_dn"/>
+				<PARAM name="pam-group-dn" help="Configures PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_group_val" ptype="PAM_GRP_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_group_dn"/>
 				</PARAM>
 
-				<PARAM name="pam-member-attribute" help="Configure PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="pam_member_val" ptype="STRING" help="PAM Member attribute" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_member_attribute"/>
+				<PARAM name="pam-member-attribute" help="Configures PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_member_val" ptype="PAM_MEM_ATTR" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_member_attribute"/>
 				</PARAM>
 
-				<PARAM name="nss-base-passwd" help="Configure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="nss_base_passwd_val" ptype="STRING" help="NSS search base for password map" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
+				<PARAM name="nss-base-passwd" help="Configures NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_passwd_val" ptype="NSS_BASE_PWD" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
 				</PARAM>
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_pam_config ${__params}</ACTION>
@@ -458,46 +587,46 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server sudo" help="Configure LDAP server for SUDO" command_keys="ldap_type=sudo" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server sudo" help="Configures LDAP server for SUDO" command_keys="ldap_type=sudo" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
     	<PARAM name="ldap-sudo-options" help="" ptype="SUBCOMMAND" mode="switch">
-				<PARAM name="timelimit" help="Configure search time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
+				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
 				</PARAM>
 
-				<PARAM name="bind-timelimit" help="Configure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	
-				<PARAM name="retry" help="Configure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
+				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
 				</PARAM>
 	
-				<PARAM name="port" help="Configure server port" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (Default: 389)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
+				<PARAM name="port" help="Configures server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (1 to 65535); Default: 389" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
 				</PARAM>
 
-				<PARAM name="version" help="Configure version" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (Default: 3)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
+				<PARAM name="version" help="Configures LDAP version" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (2 to 3); Default: 3" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
 				</PARAM>
 
-				<PARAM name="base" help="Configure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ldap_base_val" ptype="STRING" help="Base distinguished name" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
+				<PARAM name="base" help="Configures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_base_val" ptype="BASE_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
 				</PARAM>
 
-				<PARAM name="ssl" help="Configure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration (Default: off)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
+				<PARAM name="ssl" help="Configures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
 				</PARAM>
 				
-				<PARAM name="binddn" help="Configure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="binddn_val" ptype="STRING" help="Distinguished name to bind" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
+				<PARAM name="binddn" help="Configures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="binddn_val" ptype="BIND_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
 				</PARAM>
 
-				<PARAM name="bindpw" help="Configure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="bindpw_val" ptype="STRING" help="Credentials to bind" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
+				<PARAM name="bindpw" help="Configures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="bindpw_val" ptype="BIND_PW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
 				</PARAM>
 				
-				<PARAM name="sudoers-base" help="Configure sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
-				   <PARAM name="sudoers_val" ptype="STRING" help="Sudo base distinguished name" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/sudoers_base"/>
+				<PARAM name="sudoers-base" help="Configures sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="sudoers_val" ptype="SUDOERS_BASE" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/sudoers_base"/>
 				</PARAM>
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_sudo_config ${__params}</ACTION>
@@ -570,23 +699,23 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ldap-server host" help="Configure host name for a LDAP server" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name={addr}">    
-			<PARAM name="host_val" help="Hostname or IP address of LDAP server" ptype="STRING" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name"/>
-			<PARAM name="use-type" help="Configure server type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-				<PARAM name="use_type_val" ptype="LDAP_USE_TYPE" help="Server type (Default: all)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/use_type"/>
+    <COMMAND name="ldap-server host" help="Configures host name or IP address for a LDAP server" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name={addr}">    
+			<PARAM name="host_val" help="" ptype="LDAP_HOSTNAME_OR_IPADDR" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name"/>
+			<PARAM name="use-type" help="Configures server type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				<PARAM name="use_type_val" ptype="LDAP_USE_TYPE" help="Server type (all or nss or sudo or pam or nss_sudo or nss_pam or sudo_pam); Default: all" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/use_type"/>
 			</PARAM>
-			<PARAM name="port" help="Configure port number" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-				<PARAM name="server_port_val" ptype="LDAP_SERVER_PORT" help="Port number" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/port"/>
+			<PARAM name="port" help="Configures server port number" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				<PARAM name="server_port_val" ptype="LDAP_SERVER_PORT" help="Server Port number (1 to 65535)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/port"/>
 			</PARAM>
-			<PARAM name="priority" help="Configure priority" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-				<PARAM name="priority_val" ptype="LDAP_SERVER_PRIORITY" help="Priority (Default: 1)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/priority"/>
+			<PARAM name="priority" help="Configures priority" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				<PARAM name="priority_val" ptype="LDAP_SERVER_PRIORITY" help="Priority (1 to 99); Default: 1" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/priority"/>
 			</PARAM>
-			<PARAM name="ssl" help="Configure TLS" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-				<PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS (Default: off)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/ssl"/>
+			<PARAM name="ssl" help="Configures TLS" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/ssl"/>
 			</PARAM>					
-			<PARAM name="retry" help="Configure Retry" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-				<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (Default: 0 s)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/retry"/>
-			</PARAM>					
+			<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/retry"/>
+			</PARAM>
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_config ${__params}</ACTION>
 			<DOCGEN>
 				<DESCRIPTION>Configure host for LDAP server </DESCRIPTION>
@@ -594,33 +723,33 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ldap-server map" help="Configure LDAP server for map" command_keys="name=*;from=*" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST/name={name},from={from}" render_command_cb="ldap_map_config">
+    <COMMAND name="ldap-server map" help="Configures LDAP server for map" command_keys="name=*;from=*" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST/name={name},from={from}" render_command_cb="ldap_map_config">
     	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
-        <PARAM name="attribute" help="Configure attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        	<PARAM name="attribute_from_val" ptype="STRING" help="Attribute map key"/>
-        	<PARAM name="to" help="Configure attribute map value" ptype="SUBCOMMAND" mode="subcommand">
-        		<PARAM name="attribute_to_val" ptype="STRING" help="Attribute map value"/>
+        <PARAM name="attribute" help="Configures attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="attribute_from_val" ptype="ATTR_FROM" help=""/>
+        	<PARAM name="to" help="Configures attribute map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="attribute_to_val" ptype="ATTR_TO" help=""/>
         	</PARAM>
         </PARAM>
     	
-        <PARAM name="objectclass" help="Configure objectclass map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        	<PARAM name="objectclass_from_val" ptype="STRING" help="Objectclass map key"/>
-        	<PARAM name="to" help="Configure objectclass map value" ptype="SUBCOMMAND" mode="subcommand">
-        		<PARAM name="objectclass_to_val" ptype="STRING" help="Objectclass map value"/>
+        <PARAM name="objectclass" help="Configures objectclass map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="objectclass_from_val" ptype="OBJ_FROM" help=""/>
+        	<PARAM name="to" help="Configures objectclass map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="objectclass_to_val" ptype="OBJ_TO" help=""/>
         	</PARAM>
         </PARAM>
         
-        <PARAM name="default-attribute-value" help="Configure default-attribute-value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        	<PARAM name="default_from_val" ptype="STRING" help="Default-attribute-value map key"/>
-        	<PARAM name="to" help="Configure default-attribute-value map value" ptype="SUBCOMMAND" mode="subcommand">
-        		<PARAM name="default_to_val" ptype="STRING" help="Default-attribute-value map value"/>
+        <PARAM name="default-attribute-value" help="Configures default attribute value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="default_from_val" ptype="DEFAULT_FROM" help=""/>
+        	<PARAM name="to" help="Configures default attribute value map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="default_to_val" ptype="DEFAULT_TO" help=""/>
         	</PARAM>
         </PARAM>
         
-        <PARAM name="override-attribute-value" help="Configure override-attribute-value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        	<PARAM name="override_from_val" ptype="STRING" help="Override-attribute-value map key"/>
-        	<PARAM name="to" help="Configure override-attribute-value map value" ptype="SUBCOMMAND" mode="subcommand">
-        		<PARAM name="override_to_val" ptype="STRING" help="Override-attribute-value map value"/>
+        <PARAM name="override-attribute-value" help="Configures override attribute value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="override_from_val" ptype="OVERRIDE_FROM" help=""/>
+        	<PARAM name="to" help="Configures override attribute value map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="override_to_val" ptype="OVERRIDE_TO" help=""/>
         	</PARAM>
         </PARAM>
                 
@@ -634,72 +763,72 @@ limitations under the License.
 
 		<!--  Unconfigure commands -->
 		
-    <COMMAND name = "no ldap-server"  help="Unconfigure LDAP server">
+    <COMMAND name = "no ldap-server"  help="Unconfigures LDAP server">
     	<PARAM name="ldap-global-options" help="" ptype="SUBCOMMAND" mode="switch">
-				<PARAM name="timelimit" help="Unconfigure global search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="timelimit" help="Unconfigures global search time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-				<PARAM name="bind-timelimit" help="Unconfigure global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="bind-timelimit" help="Unconfigures global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	    
-				<PARAM name="idle-timelimit" help="Unconfigure global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="idle-timelimit" help="Unconfigures global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
-				<PARAM name="retry" help="Unconfigure global retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="retry" help="Unconfigures global retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
-				<PARAM name="port" help="Unconfigure global server port" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="port" help="Unconfigures global server port" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="scope" help="Unconfigure global search scope" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="scope" help="Unconfigures global search scope" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="version" help="Unconfigure global version" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="version" help="Unconfigures global version" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="base" help="Unconfigure global base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="base" help="Unconfigures global base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="ssl" help="Unconfigure global TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="ssl" help="Unconfigures global TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="binddn" help="Unconfigure global distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="binddn" help="Unconfigures global distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="bindpw" help="Unconfigure global credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="bindpw" help="Unconfigures global credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="pam-filter" help="Unconfigure global PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="pam-filter" help="Unconfigures global PAM filter" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="pam-login-attribute" help="Unconfigure global PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="pam-login-attribute" help="Unconfigures global PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="pam-group-dn" help="Unconfigure global PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="pam-group-dn" help="Unconfigures global PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="pam-member-attribute" help="Unconfigure global PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="pam-member-attribute" help="Unconfigures global PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="sudoers-base" help="Unconfigure global sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="sudoers-base" help="Unconfigures global sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-passwd" help="Unconfigure global NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-passwd" help="Unconfigures global NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-group" help="Unconfigure global NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-group" help="Unconfigures global NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-shadow" help="Unconfigure global NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-shadow" help="Unconfigures global NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-netgroup" help="Unconfigure global NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-netgroup" help="Unconfigures global NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-sudoers" help="Unconfigure global NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-sudoers" help="Unconfigures global NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-initgroups-ignoreusers" help="Unconfigure global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-initgroups-ignoreusers" help="Unconfigures global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_global_config ${__params}</ACTION>
@@ -751,57 +880,57 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "no ldap-server nss"  help="Unconfigure LDAP server for NSS">
+    <COMMAND name = "no ldap-server nss"  help="Unconfigures LDAP server for NSS">
     	<PARAM name="ldap-nss-options" help="" ptype="SUBCOMMAND" mode="switch">
-				<PARAM name="timelimit" help="Unconfigure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="timelimit" help="Unconfigures search time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-				<PARAM name="bind-timelimit" help="Unconfigure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="bind-timelimit" help="Unconfigures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	    
-				<PARAM name="idle-timelimit" help="Unconfigure NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="idle-timelimit" help="Unconfigures NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
-				<PARAM name="retry" help="Unconfigure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="retry" help="Unconfigures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
-				<PARAM name="port" help="Unconfigure server port" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="port" help="Unconfigures server port" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="scope" help="Unconfigure search scope" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="scope" help="Unconfigures search scope" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="version" help="Unconfigure version" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="version" help="Unconfigures version" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="base" help="Unconfigure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="base" help="Unconfigures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="ssl" help="Unconfigure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="ssl" help="Unconfigures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="binddn" help="Unconfigure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="binddn" help="Unconfigures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="bindpw" help="Unconfigure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="bindpw" help="Unconfigures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="nss-base-passwd" help="Unconfigure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-passwd" help="Unconfigures NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-group" help="Unconfigure NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-group" help="Unconfigures NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-shadow" help="Unconfigure NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-shadow" help="Unconfigures NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-netgroup" help="Unconfigure NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-netgroup" help="Unconfigures NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-base-sudoers" help="Unconfigure NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-sudoers" help="Unconfigures NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="nss-initgroups-ignoreusers" help="Unconfigure NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-initgroups-ignoreusers" help="Unconfigures NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
 			</PARAM>				
@@ -844,51 +973,51 @@ limitations under the License.
 			</DOCGEN>
 		</COMMAND>
 			
-		<COMMAND name = "no ldap-server pam"  help="Unconfigure LDAP server for PAM">
+		<COMMAND name = "no ldap-server pam"  help="Unconfigures LDAP server for PAM">
     	<PARAM name="ldap-pam-options" help="" ptype="SUBCOMMAND" mode="switch">
-				<PARAM name="timelimit" help="Unconfigure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="timelimit" help="Unconfigures search time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-				<PARAM name="bind-timelimit" help="Unconfigure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="bind-timelimit" help="Unconfigures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
-				<PARAM name="retry" help="Unconfigure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="retry" help="Unconfigures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
-				<PARAM name="port" help="Unconfigure server port" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="port" help="Unconfigures server port" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="scope" help="Unconfigure search scope" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="scope" help="Unconfigures search scope" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="version" help="Unconfigure version" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="version" help="Unconfigures version" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="base" help="Unconfigure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="base" help="Unconfigures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="ssl" help="Unconfigure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="ssl" help="Unconfigures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="binddn" help="Unconfigure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="binddn" help="Unconfigures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="bindpw" help="Unconfigure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="bindpw" help="Unconfigures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="pam-filter" help="Unconfigure PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="pam-filter" help="Unconfigures PAM filter" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="pam-login-attribute" help="Unconfigure PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="pam-login-attribute" help="Unconfigures PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="pam-group-dn" help="Unconfigure PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="pam-group-dn" help="Unconfigures PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="pam-member-attribute" help="Unconfigure PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="pam-member-attribute" help="Unconfigures PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="nss-base-passwd" help="Unconfigure NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="nss-base-passwd" help="Unconfigures NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>				
 			</PARAM>				
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_pam_config ${__params}</ACTION>
@@ -926,36 +1055,36 @@ limitations under the License.
 			</DOCGEN>
 		</COMMAND>
 		
-		<COMMAND name = "no ldap-server sudo"  help="Unconfigure LDAP server for SUDO">
+		<COMMAND name = "no ldap-server sudo"  help="Unconfigures LDAP server for SUDO">
     	<PARAM name="ldap-sudo-options" help="" ptype="SUBCOMMAND" mode="switch">
-				<PARAM name="timelimit" help="Unconfigure search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="timelimit" help="Unconfigures search time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-				<PARAM name="bind-timelimit" help="Unconfigure connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="bind-timelimit" help="Unconfigures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
-				<PARAM name="retry" help="Unconfigure retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="retry" help="Unconfigures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 	
-				<PARAM name="port" help="Unconfigure server port" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="port" help="Unconfigures server port" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="version" help="Unconfigure version" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="version" help="Unconfigures version" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="base" help="Unconfigure base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="base" help="Unconfigures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="ssl" help="Unconfigure TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="ssl" help="Unconfigures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="binddn" help="Unconfigure distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="binddn" help="Unconfigures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 
-        <PARAM name="bindpw" help="Unconfigure credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="bindpw" help="Unconfigures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
-        <PARAM name="sudoers-base" help="Unconfigure sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="sudoers-base" help="Unconfigures sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
 				</PARAM>
 				
 			</PARAM>				
@@ -986,18 +1115,18 @@ limitations under the License.
 			</DOCGEN>
 		</COMMAND>
 					
-    <COMMAND name="no ldap-server host" help="Unconfigure host name for a LDAP server">
-        <PARAM name="host_val" help="Hostname or IP address of LDAP server" ptype="STRING"/>
+    <COMMAND name="no ldap-server host" help="Unconfigures host name or IP address for a LDAP server">
+        <PARAM name="host_val" help="" ptype="LDAP_HOSTNAME_OR_IPADDR"/>
 	        <PARAM name="ldap-map-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-						<PARAM name="use-type" help="Unconfigure server type" ptype="SUBCOMMAND" mode="subcommand">
+						<PARAM name="use-type" help="Unconfigures server type" ptype="SUBCOMMAND" mode="subcommand">
 						</PARAM>
-						<PARAM name="port" help="Unconfigure port number" ptype="SUBCOMMAND" mode="subcommand">
+						<PARAM name="port" help="Unconfigures server port number" ptype="SUBCOMMAND" mode="subcommand">
 						</PARAM>
-						<PARAM name="priority" help="Unconfigure priority" ptype="SUBCOMMAND" mode="subcommand">
+						<PARAM name="priority" help="Unconfigures priority" ptype="SUBCOMMAND" mode="subcommand">
 						</PARAM>
-						<PARAM name="ssl" help="Unconfigure TLS" ptype="SUBCOMMAND" mode="subcommand">
+						<PARAM name="ssl" help="Unconfigures TLS" ptype="SUBCOMMAND" mode="subcommand">
 						</PARAM>
-						<PARAM name="retry" help="Unconfigure Retry" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+						<PARAM name="retry" help="Unconfigures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand" optional="true">
 						</PARAM>
 				</PARAM>					
 			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_server_config ${__params}</ACTION>
@@ -1007,22 +1136,22 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ldap-server map" help="Unconfigure LDAP server for map">
+    <COMMAND name="no ldap-server map" help="Unconfigures LDAP server for map">
     	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
-        <PARAM name="attribute" help="Unconfigure attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        	<PARAM name="attribute_from_val" ptype="STRING" help="Attribute map key"/>
+        <PARAM name="attribute" help="Unconfigures attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="attribute_from_val" ptype="ATTR_FROM" help=""/>
         </PARAM>
     	
-        <PARAM name="objectclass" help="Unconfigure objectclass map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        	<PARAM name="objectclass_from_val" ptype="STRING" help="Objectclass map key"/>
+        <PARAM name="objectclass" help="Unconfigures objectclass map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="objectclass_from_val" ptype="OBJ_FROM" help=""/>
         </PARAM>
         
-        <PARAM name="default-attribute-value" help="Unconfigure default-attribute-value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        	<PARAM name="default_from_val" ptype="STRING" help="Default-attribute-value map key"/>
+        <PARAM name="default-attribute-value" help="Unconfigures default attribute value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="default_from_val" ptype="DEFAULT_FROM" help=""/>
         </PARAM>
         
-        <PARAM name="override-attribute-value" help="Unconfigure override-attribute-value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        	<PARAM name="override_from_val" ptype="STRING" help="Override-attribute-value map key"/>
+        <PARAM name="override-attribute-value" help="Unconfigures override attribute value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="override_from_val" ptype="OVERRIDE_FROM" help=""/>
         </PARAM>
                 
 			</PARAM>
