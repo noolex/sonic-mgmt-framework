@@ -90,13 +90,13 @@ limitations under the License.
             help="Clear IP Multicast routes">
             <PARAM
                 name="vrf"
-                help="VRF instance information"
+                help="Clear IP multicast routes of the given VRF"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="vrf-name"
-                    help=""
+                    help="Name of VRF"
                     ptype="VRF_OR_DEFAULT">
                 </PARAM>
             </PARAM>

@@ -206,7 +206,7 @@ limitations under the License.
             help="Configure PIM">
             <PARAM
                 name="vrf"
-                help="VRF instance configuration"
+                help="VRF Instance"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
@@ -281,7 +281,7 @@ limitations under the License.
             help="Delete PIM configuration">
             <PARAM
                 name="vrf"
-                help="VRF instance configuration"
+                help="VRF Instance"
                 mode="subcommand"
                 ptype="SUBCOMMAND"
                 optional="true">
