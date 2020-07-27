@@ -64,7 +64,7 @@
                 >
         </PARAM>
         <ACTION builtin="clish_pyobj"> 
-            sonic_cli_wred patch_list_openconfig_qos_ext_qos_wred_profiles_wred_profile ${name} 
+            sonic_cli_wred patch_list_openconfig_qos_ext_qos_wred_profiles ${name} 
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
