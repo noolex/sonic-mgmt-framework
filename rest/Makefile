@@ -59,9 +59,9 @@ all: $(DEFAULT_TARGETS)
 # REST Server binary
 $(REST_BIN): $(REST_SRCS)
 ifeq ($(SONIC_COVERAGE_ON),y)
-	$(GO) test -mod=vendor -coverpkg="./..." -c -o $@ ../rest/main/main.go ../rest/main/main_test.go
+	$(GO) test -mod=vendor -tags glog_defaults -coverpkg="./..." -c -o $@ ../rest/main/main.go ../rest/main/main_test.go
 else
-	GOBIN=$(abspath $(@D)) $(GO) install -mod=vendor -gcflags="all=-N -l" -v ../rest/main/main.go
+	GOBIN=$(abspath $(@D)) $(GO) install -mod=vendor -tags glog_defaults -gcflags="all=-N -l" -v ../rest/main/main.go
 endif
 
 # Gotest binary for REST Server
