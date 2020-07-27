@@ -6,7 +6,8 @@ VRF Name: {{list_elem['vrfName']}}
     {% endif -%}
     {% if 'self_router_id' in list_elem   %}
     {{' '}}
-           OSPF Router with ID ({{list_elem['self_router_id']}})
+       OSPF Router with ID ({{list_elem['self_router_id']}})
+    {{' '}}
     {{' '}}
     {% endif -%}
     {% if 'interfacename' in list_elem %}
@@ -20,8 +21,7 @@ VRF Name: {{list_elem['vrfName']}}
                 {% if 'openconfig-ospfv2-ext:stub' in areainfo and 'state' in areainfo['openconfig-ospfv2-ext:stub'] and 'enable' in areainfo['openconfig-ospfv2-ext:stub']['state'] and areainfo['openconfig-ospfv2-ext:stub']['state']['enable'] == True %}
                 {% if vars.update({'area_id':vars.area_id + " [Stub]"}) %}{% endif %}
                 {% endif %}
-                {{' '}}
-                                Net Link States (Area {{vars.area_id}})
+                Net Link States (Area {{vars.area_id}})
                 {{' '}}
             {% endif %}
             {% if 'lsdb' in areainfo and 'lsa-types' in areainfo['lsdb'] and 'lsa-type' in areainfo['lsdb']['lsa-types']  %}
@@ -32,37 +32,38 @@ VRF Name: {{list_elem['vrfName']}}
                             {% set lsa_list = lsa_type['lsas']['lsa'] %}
                             {% for lsa in lsa_list %}
                                 {% if 'state' in lsa and 'age' in lsa['state'] %}
-        LS age: {{lsa['state']['age']}}
+  LS age: {{lsa['state']['age']}}
                                 {% endif %}
                                 {% if 'state' in lsa and 'openconfig-ospfv2-ext:option' in lsa['state'] and 'openconfig-ospfv2-ext:option-expanded' in  lsa['state'] %}
-        Options: 0x{{lsa['state']['openconfig-ospfv2-ext:option']}}  : {{lsa['state']['openconfig-ospfv2-ext:option-expanded']}}
+  Options: 0x{{lsa['state']['openconfig-ospfv2-ext:option']}}  : {{lsa['state']['openconfig-ospfv2-ext:option-expanded']}}
                                 {% endif %}
                                 {% if 'state' in lsa and 'openconfig-ospfv2-ext:flags' in lsa['state'] %}
-        LS Flags: 0x{{lsa['state']['openconfig-ospfv2-ext:flags']}}
+  LS Flags: 0x{{lsa['state']['openconfig-ospfv2-ext:flags']}}
                                 {% endif %}
-        LS Type: network-LSA
+  LS Type: network-LSA
                                 {% if 'link-state-id' in lsa %}
-        Link State ID: {{lsa['link-state-id']}} (address of Designated Router)
+  Link State ID: {{lsa['link-state-id']}} (address of Designated Router)
                                 {% endif %}
                                 {% if 'state' in lsa and 'advertising-router' in lsa['state'] %}
-        Advertising Router: {{lsa['state']['advertising-router']}}
+  Advertising Router: {{lsa['state']['advertising-router']}}
                                 {% endif %}
                                 {% if 'state' in lsa and 'openconfig-ospfv2-ext:display-sequence-number'  in lsa['state'] %}
-        LS Seq Number: {{ '%08x' | format(lsa['state']['openconfig-ospfv2-ext:display-sequence-number'] | int ) }}
+  LS Seq Number: {{lsa['state']['openconfig-ospfv2-ext:display-sequence-number']}}
                                 {% endif %}
                                 {% if 'state' in lsa and 'checksum'   in lsa['state'] %}
-        Checksum: 0x{{'%04x'|format(lsa['state']['checksum'])}}
+  Checksum: 0x{{'%04x'|format(lsa['state']['checksum'])}}
                                 {% endif %}
                                 {% if 'state' in lsa and 'openconfig-ospfv2-ext:length'   in lsa['state'] %}
-        Length: {{lsa['state']['openconfig-ospfv2-ext:length']}}
+  Length: {{lsa['state']['openconfig-ospfv2-ext:length']}}
                                 {% endif %}
   {{' '}}
                                 {% if 'network-lsa' in lsa and 'state' in lsa['network-lsa'] and 'network-mask' in lsa['network-lsa']['state']%}
-        Network Mask: /{{lsa['network-lsa']['state']['network-mask']}}
+  Network Mask: /{{lsa['network-lsa']['state']['network-mask']}}
                                 {% endif %}
                                 {% if 'network-lsa' in lsa and 'state' in lsa['network-lsa'] and 'attached-router' in lsa['network-lsa']['state']%}
                                     {% for router in lsa['network-lsa']['state']['attached-router'] %}
-                  Attached Router: {{router}}
+        Attached Router: {{router}}
+                  {{' '}}
                                     {% endfor %}
                                 {% endif %}
                             {{' '}}
