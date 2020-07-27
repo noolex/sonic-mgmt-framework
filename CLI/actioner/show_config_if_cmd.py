@@ -30,7 +30,7 @@ def show_render_if_cmd(table_rec, attr_name, cmd_prfx, cmd_str):
            cmd_str = cmd_prfx + intf
         elif intf.startswith('Vlan'):
            intf_split = intf.split('Vlan')
-           cmd_str = cmd_prfx + 'Vlan ' + intf_split[1]
+           cmd_str = cmd_prfx + 'Vlan' + intf_split[1]
         elif intf.startswith('PortChannel'):
            intf_split = intf.split('PortChannel')
            cmd_str = cmd_prfx +  'PortChannel ' + intf_split[1]
