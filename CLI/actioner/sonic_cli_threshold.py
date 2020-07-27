@@ -259,11 +259,8 @@ def rpc_sonic_buffer_pool_get_buffer_pool_wm_stats(args):
 			  if 'Poolname' not in api_response[i] and 'StatsValue' not in api_response[i]:
 				print("Required parameters are not found in buffer pool stats payload")
 				return
-		    else:
-			print("Buffer pool configuration missing on the system! Please configure buffer pools ")
-			return
 		else:
-			print("Failed to get buffer pool stats configured ")
+			print("Buffer pool configuration missing on the system! Please configure buffer pools ")
 	else:
 		print "%Error: REST API transaction failure for buffer pool stats"
 	show_cli_output(renderer_template, api_response)
