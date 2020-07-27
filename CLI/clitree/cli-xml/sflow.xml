@@ -141,7 +141,7 @@ limitations under the License.
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="no sflow" help="Configure sFlow"/>
+    <COMMAND name="no sflow" help="Remove sFlow configurations"/>
     <COMMAND name="no sflow enable" help="Disable sFlow">
         <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state down </ACTION>
       <DOCGEN>
