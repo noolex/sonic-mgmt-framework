@@ -80,6 +80,9 @@ limitations under the License.
 <!-- ip sla -->
    <COMMAND
          name="ip sla"
+         view_keys="ip_sla_id=*"
+         view_tables="sonic-ip-sla:sonic-ip-sla/IP_SLA/IP_SLA_LIST/ip_sla_id={sla-id}"        
+         render_command_cb="ip_sla_config"
          help="Configure IP SLA"
          view="configure-ipsla-view"
          viewid="sla-id=${sla-id}"
@@ -88,6 +91,7 @@ limitations under the License.
              name="sla-id"
              help="IP SLA ID (1 to 255)"
              ptype="RANGE_1_255"
+             dbpath="sonic-ip-sla:sonic-ip-sla/IP_SLA/IP_SLA_LIST/ip_sla_id"
              >
         </PARAM>
 

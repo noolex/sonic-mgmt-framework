@@ -40,8 +40,10 @@ from show_config_ip_helper import *
 from show_config_pim import *
 from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
 from show_config_vxlan import *
+from show_config_ipsla import *
 from show_config_lldp import *
 from show_config_igmp_snooping import *
+from show_config_tam import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -78,7 +80,9 @@ config_view_hierarchy= \
        'copp-action',
        'configure-policy',
        'configure-mclag',
-       'configure-mirror']
+       'configure-mirror',
+       'configure-tam',
+       'configure-ipsla']
 
 render_filelst  = {}
 
@@ -209,7 +213,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'lldp_tlv_select'         : show_lldp_tlv_select_config,
                   'ldap_map_config'         : show_ldap_map_config,
                   'igmp_snooping_config'    : show_igmp_snooping_intf_config,
-                  'if_lag_config'           : show_if_lag_config
+                  'if_lag_config'           : show_if_lag_config,
+		  'tam_config'              : show_tam_config,
+                  'ip_sla_config'           : show_ip_sla_config
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

@@ -26,7 +26,6 @@ import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 from natsort import natsorted
-from swsssdk import ConfigDBConnector
 
 debug = False
 
@@ -43,7 +42,7 @@ DEFAULT_ACTION = 'drop'
 
 PStats = collections.namedtuple('PStats', 'pfc0, pfc1, pfc2, pfc3, pfc4, pfc5, pfc6, pfc7')
 
-counter_bucket_rx_dict = {
+counterBucketRxDict = {
     'SAI_PORT_STAT_PFC_0_RX_PKTS': 0,
     'SAI_PORT_STAT_PFC_1_RX_PKTS': 1,
     'SAI_PORT_STAT_PFC_2_RX_PKTS': 2,
@@ -54,7 +53,7 @@ counter_bucket_rx_dict = {
     'SAI_PORT_STAT_PFC_7_RX_PKTS': 7
 }
 
-counter_bucket_tx_dict = {
+counterBucketTxDict = {
     'SAI_PORT_STAT_PFC_0_TX_PKTS': 0,
     'SAI_PORT_STAT_PFC_1_TX_PKTS': 1,
     'SAI_PORT_STAT_PFC_2_TX_PKTS': 2,
@@ -95,7 +94,7 @@ def getKeyFromDictData(diction, value):
                 return key
     return None
 
-def getPfcQueueCounters(counters_db, ifName, queue, counterId):
+def getPfcQueueCounters(ifName, queue):
     """
         Get the counters from specific table.
     """
@@ -116,7 +115,7 @@ def getPfcQueueCounters(counters_db, ifName, queue, counterId):
 
     return (err, counters)
 
-def getPauseCounters(counters_db, ifName, rx, counterId):
+def getPauseCounters(ifName, rx):
     """
         Get the counters from specific table.
     """
@@ -139,13 +138,10 @@ def getPauseCounters(counters_db, ifName, rx, counterId):
         err = response.error_message()
 
     return (err, pause)
-    ########### This will be the equivalent of get_counters.
 
 def invoke(func, args):
-    body = None   
-    field_val = None
-    bodyParam = None
-   
+    body = None
+
     if func == 'interval':
         if len(args) == 0:
             keypath = cc.Path(globalPfcWdUri + '/poll/config')
@@ -165,16 +161,16 @@ def invoke(func, args):
         action = Actions[args[1]]
         body = {"openconfig-qos-ext:action" : action}
         return aa.patch(keypath, body)
-   
+
     elif func == 'pfcwd_if_no_action':
         keypath = cc.Path(interfacePfcWdUri + '/config/action', intfName=args[0])
         return aa.delete(keypath)
-   
+
     elif func == 'pfcwd_if_detect':
         keypath = cc.Path(interfacePfcWdUri + '/config/detection-time', intfName=args[0])
         body = {"openconfig-qos-ext:detection-time" : int(args[1])}
         return aa.patch(keypath, body)
-   
+
     elif func == 'pfcwd_if_no_detect':
         keypath = cc.Path(interfacePfcWdUri + '/config/detection-time', intfName=args[0])
         return aa.delete(keypath)
@@ -183,13 +179,12 @@ def invoke(func, args):
         keypath = cc.Path(interfacePfcWdUri + '/config/restoration-time', intfName=args[0])
         body = {"openconfig-qos-ext:restoration-time" : int(args[1])}
         return aa.patch(keypath, body)
-   
+
     elif func == 'pfcwd_if_no_restore':
         keypath = cc.Path(interfacePfcWdUri + '/config/restoration-time', intfName=args[0])
         return aa.delete(keypath)
 
     if func == 'pfcwd_if_enable':
-      # (sonic-cli-qos-pfc) run =  pfcwd_if_enable 2 ['Ethernet16', 'off']
         if len(args) < 2:
             return None
         if args[1] == 'off':
@@ -235,7 +230,6 @@ def invoke(func, args):
         return response
 
     elif func == 'show_pfc_watchdog':
-        # show_pfc_watchdog 1 ['show_pfc_watchdog.j2']
         interval="Not Available"
         keypath = cc.Path(globalPfcWdUri + '/poll/config/poll-interval')
         response = aa.get(keypath, body)
@@ -252,7 +246,7 @@ def invoke(func, args):
                 for key, data in Ables.items():
                     if data == poll:
                         poll = key + 'd'
-       
+
         datam = {}
         datam['poll-interval'] = interval
         datam['counter-poll'] = poll
@@ -265,14 +259,14 @@ def invoke(func, args):
         response.status_code = RESPONSE_OK
         response.content = collections.OrderedDict(tuples)
         return response
-   
+
     elif func == 'show_port_pfc_watchdog':
         datam = {}
 
         datam['action'] =  "N/A"
         datam['detection-time'] =  "0"
         datam['restoration-time'] = "0"
-        
+
         keypath = cc.Path(interfacePfcWdUri + '/state', intfName=args[0])
         response = aa.get(keypath, body)
         if response.ok():
@@ -287,41 +281,29 @@ def invoke(func, args):
                     datam['detection-time'] =  state['detection-time']
                 if 'restoration-time' in state.keys():
                     datam['restoration-time'] = state['restoration-time']
-      
+
         order = []
         for key in SORTED_INTERFACE_ORDER:
             if datam.has_key(key):
                 order.append(key)
         tuples = [(key, datam[key]) for key in order]
-      
-        response=aa.cli_not_implemented("interface")      # Just to get the proper format to return data and status
+
+        response=aa.cli_not_implemented("")      # Just to get the proper format to return data and status
         response.status_code = RESPONSE_OK
         response.content = collections.OrderedDict(tuples)
         return response
 
     elif func == 'show_port_pfc_statistics':
         ifName=args[0]
-        counters_db = ConfigDBConnector()
-        counters_db.db_connect('COUNTERS_DB')
-        counter_port_name_map = counters_db.get_all(counters_db.COUNTERS_DB, COUNTERS_PORT_NAME_MAP)
         # Build a dictionary of the stats
-        # Time is only required when clearing the stats
         pauseRx = collections.OrderedDict()
-#        pauseRx['time'] = datetime.datetime.now()
         pauseTx = collections.OrderedDict()
-#        pauseTx['time'] = datetime.datetime.now()
-        if counter_port_name_map is not None:
-            for port in natsorted(counter_port_name_map):
-                if port == ifName:
-                    err, pauseRx[ifName] = getPauseCounters(counters_db, ifName, RX_COUNTERS, counter_port_name_map[port])
-                    if not err == None:
-                        break
-                    err, pauseTx[ifName] = getPauseCounters(counters_db, ifName, TX_COUNTERS, counter_port_name_map[port])
-                    if not err == None:
-                        break
+        err, pauseRx[ifName] = getPauseCounters(ifName, RX_COUNTERS)
+        if err == None:
+          err, pauseTx[ifName] = getPauseCounters(ifName, TX_COUNTERS)
 
         response=aa.cli_not_implemented("")      # Just to get the proper format to return data and status
-        if len(pauseRx[ifName]) == 0:
+        if (len(pauseRx[ifName]) == 0) or not (err == None):
             response.status_code = RESPONSE_NO_CONTENT
             response.set_error_message("No Content Found")
             response.content = None
@@ -333,7 +315,7 @@ def invoke(func, args):
             fcFrames[ifName] = ifFrames
             response.status_code = RESPONSE_OK
             response.content = collections.OrderedDict(fcFrames)
-        else: 
+        else:
             response.status_code = RESPONSE_SRV_ERROR
             response.set_error_message(err)
             response.content = None
@@ -341,15 +323,19 @@ def invoke(func, args):
 
     elif func == 'show_port_pfc_queue_statistics':
         ifName=args[0]
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/queues', interface_id=ifName)
+        response = aa.get(path)
+        ques = []
+        if response.ok() and 'openconfig-qos:queues' in response.content.keys():
+          queues = response.content['openconfig-qos:queues']['queue']
+          for queue in queues:
+            _, q = queue['state']['name'].split(':', 1)
+            ques.append((int(q)))
+        ques = sorted(ques)
         err = None
-        counters_db = ConfigDBConnector()
-        counters_db.db_connect('COUNTERS_DB')
-        queue_names_map       = counters_db.get_all(counters_db.COUNTERS_DB, COUNTERS_QUEUE_NAME_MAP)
         pfcQueueCounters = collections.OrderedDict()
-        for key in natsorted(queue_names_map.keys()):
-            if key.startswith(ifName):
-                _, queue = key.split(':', 1)
-                err, pfcQueueCounters[queue] = getPfcQueueCounters(counters_db, ifName, queue, queue_names_map[key])
+        for q in ques:
+            err, pfcQueueCounters[q] = getPfcQueueCounters(ifName, q)
 
         response=aa.cli_not_implemented("")      # Just to get the proper format to return data and status
         if len(pfcQueueCounters) == 0:
@@ -361,7 +347,7 @@ def invoke(func, args):
             data = {}
             data[ifName] = pfcQueueCounters
             response.content = collections.OrderedDict(data)
-        else: 
+        else:
             response.status_code = RESPONSE_SRV_ERROR
             response.set_error_message(err)
             response.content = None
@@ -375,18 +361,18 @@ def run(func, args):
     if debug == True:
         print "(sonic-cli-qos-pfc) run = ", func, len(args), args
     try:
-        api_response = invoke(func, args)
+        apiResponse = invoke(func, args)
         if debug == True:
-            print api_response.status_code
-        if api_response is None:
+            print apiResponse.status_code
+        if apiResponse is None:
             return
-        elif api_response.ok():
-            response = api_response.content
+        elif apiResponse.ok():
+            response = apiResponse.content
             if debug == True:
                 print response
             if func.startswith('show_'):
-                if api_response.status_code == RESPONSE_NO_CONTENT:
-                    message = api_response.error_message()
+                if apiResponse.status_code == RESPONSE_NO_CONTENT:
+                    message = apiResponse.error_message()
                     print message[7:]
                 elif func.startswith('show_port'):
                     show_cli_output(args[1], response)
@@ -398,12 +384,12 @@ def run(func, args):
                 print "%Error: Invalid command"
         else:
             #error response
-            print api_response.error_message()
-   
+            print apiResponse.error_message()
+
     except Exception as e:
-        # system/network error
+        log.syslog(log.LOG_ERR, str(e))
         print "%Error: Transaction Failure"
-   
+
 if __name__ == '__main__':
     pipestr().write(sys.argv)
     run(sys.argv[1], sys.argv[2:])

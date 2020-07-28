@@ -49,6 +49,7 @@ def show_ldap_map_config(render_tables):
                 mapName = 'default-attribute-value ' 
             elif ldap_map_inst['name'] == 'OVERRIDE_ATTRIBUTE_VALUE':
                 mapName = 'override-attribute-value '
-            cmd_str += cmd_prfx + mapName + ldap_map_inst['from'] + ' to ' + ldap_map_inst['to'] + ';'                
-            
+            if "to" in ldap_map_inst:
+                cmd_str += cmd_prfx + mapName + ldap_map_inst['from'] + ' to ' + ldap_map_inst['to'] + ';'
+                
     return 'CB_SUCCESS', cmd_str

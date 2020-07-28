@@ -26,10 +26,10 @@ limitations under the License.
 
 <VIEW name="enable-view">
    <COMMAND name="show lldp" help="Show lldp information">
-         <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_show.j2 ${__full_line}</ACTION>
+         <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_show.j2 </ACTION>
    </COMMAND>
    <COMMAND name="show lldp table" help="Show lldp table information">
-        <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_show.j2 ${__full_line} </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_show.j2 </ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Shows LLPD neigbhor information in brief
@@ -54,7 +54,7 @@ limitations under the License.
 	        optional="true"
            >
         </PARAM>
-    <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces ${ifname} lldp_neighbor_show.j2 ${__full_line} </ACTION>
+    <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_neighbor_show.j2 ${ifname}</ACTION>
     <DOCGEN>
         <DESCRIPTION>
             Shows LLPD neigbhor information in detail
