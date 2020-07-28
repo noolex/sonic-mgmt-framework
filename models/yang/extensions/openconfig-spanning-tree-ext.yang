@@ -18,6 +18,31 @@ module openconfig-spanning-tree-ext {
             "Per Vlan Spanning Tree Protocol";
     }
 
+    identity DISCARDING {
+        base oc-stp-types:STP_PORT_STATE;
+        description
+            "Equivalent of BLOCKING state in RSTP";
+    }
+    
+    identity BPDU_DIS {
+        base oc-stp-types:STP_PORT_STATE;
+        description
+            "Port state when port is shutdown due to BPDU guard action";
+    }
+
+    identity ROOT_INC {
+        base oc-stp-types:STP_PORT_STATE;
+        description
+            "Port state when port is in root inconsistent state due to guard root action";
+    }
+
+    identity LOOP_INC {
+        base oc-stp-types:STP_PORT_STATE;
+        description
+            "Port state when port is in loop inconsistent state due to guard loop action";
+    }
+
+
     typedef stp-bridge-priority-type-ext {
         type uint32 {
             range 0..61440;
@@ -328,12 +353,6 @@ module openconfig-spanning-tree-ext {
         deviate not-supported;
     }
     deviation /oc-stp:stp/oc-stp:global/oc-stp:config/oc-stp-ext:hold-count {
-        deviate not-supported;
-    }
-    deviation /oc-stp:stp/oc-stp:global/oc-stp:config/oc-stp:loop-guard {
-        deviate not-supported;
-    }
-    deviation /oc-stp:stp/oc-stp:global/oc-stp:state/oc-stp:loop-guard {
         deviate not-supported;
     }
     deviation /oc-stp:stp/oc-stp:global/oc-stp:config/oc-stp:bpdu-guard {

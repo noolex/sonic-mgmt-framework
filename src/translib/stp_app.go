@@ -53,6 +53,7 @@ const (
 	STP_DEFAULT_MAX_AGE            = "20"
 	STP_DEFAULT_BRIDGE_PRIORITY    = "32768"
 	STP_DEFAULT_BPDU_FILTER        = "false"
+	STP_DEFAULT_LOOP_GUARD         = "false"
 )
 
 type StpApp struct {
@@ -268,7 +269,7 @@ func (app *StpApp) translateCRUCommon(d *db.DB, opcode int) ([]db.WatchKeys, err
 	if err != nil {
 		return keys, err
 	}
-	app.convertOCStpInterfacesToInternal()
+	app.convertOCStpInterfacesToInternal(d)
 
 	return keys, err
 }
@@ -306,11 +307,11 @@ func (app *StpApp) processCommon(d *db.DB, opcode int) error {
 					if mode != app.convertOCStpModeToInternal(stp.Global.Config.EnabledProtocol[0]) {
 						return tlerr.InvalidArgs("STP mode is configured as %s", mode)
 					} else {
-						app.handleStpGlobalFieldsUpdation(d, opcode)
+						err = app.handleStpGlobalFieldsUpdation(d, opcode)
 					}
 				}
 			} else {
-				app.handleStpGlobalFieldsUpdation(d, opcode)
+				err = app.handleStpGlobalFieldsUpdation(d, opcode)
 			}
 		case DELETE:
 			if *app.ygotTarget == stp.Global || *app.ygotTarget == stp.Global.Config || targetUriPath == "/openconfig-spanning-tree:stp/global/config/enabled-protocol" {
@@ -781,6 +782,14 @@ func (app *StpApp) convertOCStpGlobalConfToInternal(opcode int) error {
 				}
 			}
 
+			if stp.Global.Config.LoopGuard != nil {
+				if *stp.Global.Config.LoopGuard == true {
+					(&app.globalInfo).Set("loop_guard", "true")
+				} else {
+					(&app.globalInfo).Set("loop_guard", "false")
+				}
+			}
+
 			log.Infof("convertOCStpGlobalConfToInternal -- Internal Stp global config: %v", app.globalInfo)
 		}
 	}
@@ -803,6 +812,7 @@ func (app *StpApp) convertInternalToOCStpGlobalConfig(stpGlobal *ocbinds.Opencon
 		var forDelay, helloTime, maxAge uint8
 		var rootGTimeout uint16
 		var bpduFilter bool
+		var loopGuard bool
 		ygot.BuildEmptyTree(stpGlobal)
 
 		if stpGlobal.Config != nil {
@@ -831,6 +841,9 @@ func (app *StpApp) convertInternalToOCStpGlobalConfig(stpGlobal *ocbinds.Opencon
 
 			bpduFilter, _ = strconv.ParseBool((&app.globalInfo).Get("bpdu_filter"))
 			stpGlobal.Config.BpduFilter = &bpduFilter
+
+			loopGuard, _ = strconv.ParseBool((&app.globalInfo).Get("loop_guard"))
+			stpGlobal.Config.LoopGuard = &loopGuard
 		}
 		if stpGlobal.State != nil {
 			stpGlobal.State.EnabledProtocol = app.convertInternalStpModeToOC((&app.globalInfo).Get(STP_MODE))
@@ -840,6 +853,7 @@ func (app *StpApp) convertInternalToOCStpGlobalConfig(stpGlobal *ocbinds.Opencon
 			stpGlobal.State.MaxAge = &maxAge
 			stpGlobal.State.RootguardTimeout = &rootGTimeout
 			stpGlobal.State.BpduFilter = &bpduFilter
+			stpGlobal.State.LoopGuard = &loopGuard
 		}
 	}
 }
@@ -1384,7 +1398,7 @@ func (app *StpApp) convertInternalToOCPvstVlanInterface(vlanName string, intfId 
 }
 
 ///////////  Interfaces   //////////
-func (app *StpApp) convertOCStpInterfacesToInternal() {
+func (app *StpApp) convertOCStpInterfacesToInternal(d *db.DB) {
 	stp := app.getAppRootObject()
 	if stp != nil && stp.Interfaces != nil && len(stp.Interfaces.Interface) > 0 {
 		for intfId, _ := range stp.Interfaces.Interface {
@@ -1455,11 +1469,28 @@ func (app *StpApp) convertOCStpInterfacesToInternal() {
 					//(&dbVal).Set("priority", "128")
 				}
 
-				if stpIntfConf.Config.Guard == ocbinds.OpenconfigSpanningTree_StpGuardType_ROOT {
-					(&dbVal).Set("root_guard", "true")
-				} else if stpIntfConf.Config.Guard == ocbinds.OpenconfigSpanningTree_StpGuardType_NONE {
-					(&dbVal).Set("root_guard", "false")
+				mode, _ := app.getStpModeFromConfigDB(d)
+				if mode == "rpvst" {
+				    if stpIntfConf.Config.Guard == ocbinds.OpenconfigSpanningTree_StpGuardType_ROOT {
+					    (&dbVal).Set("root_guard", "true")
+					    (&dbVal).Set("loop_guard", "false")
+				    } else if stpIntfConf.Config.Guard == ocbinds.OpenconfigSpanningTree_StpGuardType_LOOP {
+					    (&dbVal).Set("loop_guard", "true")
+					    (&dbVal).Set("root_guard", "false")
+				    } else if stpIntfConf.Config.Guard == ocbinds.OpenconfigSpanningTree_StpGuardType_NONE {
+					    (&dbVal).Set("root_guard", "false")
+					    (&dbVal).Set("loop_guard", "none")
+				    }
+				} else {
+				    if stpIntfConf.Config.Guard == ocbinds.OpenconfigSpanningTree_StpGuardType_ROOT {
+					    (&dbVal).Set("root_guard", "true")
+				    } else if stpIntfConf.Config.Guard == ocbinds.OpenconfigSpanningTree_StpGuardType_NONE {
+					    (&dbVal).Set("root_guard", "false")
+				    } else if stpIntfConf.Config.Guard == ocbinds.OpenconfigSpanningTree_StpGuardType_LOOP {
+					    (&dbVal).Set("loop_guard", "true")
+					}
 				}
+
 				////   For RPVST+   /////
 				if stpIntfConf.Config.EdgePort == ocbinds.OpenconfigSpanningTreeTypes_STP_EDGE_PORT_EDGE_ENABLE {
 					(&dbVal).Set("edge_port", "true")
@@ -1588,10 +1619,14 @@ func (app *StpApp) convertInternalToOCStpInterfaces(intfName string, interfaces 
 				intf.Config.Portfast = &portFast
 
 				rootGuardEnabled, _ := strconv.ParseBool((&stpIntfData).Get("root_guard"))
+				loopGuardEnabled := (&stpIntfData).Get("loop_guard")
 				if rootGuardEnabled {
 					intf.Config.Guard = ocbinds.OpenconfigSpanningTree_StpGuardType_ROOT
 					intf.State.Guard = ocbinds.OpenconfigSpanningTree_StpGuardType_ROOT
-				} else {
+				} else if loopGuardEnabled == "true" {
+					intf.Config.Guard = ocbinds.OpenconfigSpanningTree_StpGuardType_LOOP
+					intf.State.Guard = ocbinds.OpenconfigSpanningTree_StpGuardType_LOOP
+				} else if loopGuardEnabled == "none" {
 					intf.Config.Guard = ocbinds.OpenconfigSpanningTree_StpGuardType_NONE
 					intf.State.Guard = ocbinds.OpenconfigSpanningTree_StpGuardType_NONE
 				}
@@ -1824,14 +1859,20 @@ func (app *StpApp) convertOperInternalToOCVlanInterface(vlanName string, intfId 
 				switch portState {
 				case "DISABLED":
 					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_DISABLED
-				case "BLOCKING":
-					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_BLOCKING
+				case "DISCARDING":
+					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_DISCARDING
 				case "LISTENING":
 					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_LISTENING
 				case "LEARNING":
 					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_LEARNING
 				case "FORWARDING":
 					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_FORWARDING
+				case "BPDU-DIS":
+					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_BPDU_DIS
+				case "ROOT-INC":
+					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_ROOT_INC
+				case "LOOP-INC":
+					rpvstVlanIntf.State.PortState = ocbinds.OpenconfigSpanningTreeTypes_STP_PORT_STATE_LOOP_INC
 				}
 
 				switch portRole {
@@ -2001,6 +2042,7 @@ func (app *StpApp) enableStpForInterfaces(d *db.DB) error {
 	(&defaultDBValues).Set("uplink_fast", "false")
 	if "rpvst" == (&app.globalInfo).Get(STP_MODE) {
 		(&defaultDBValues).Set("link_type", "auto")
+		(&defaultDBValues).Set("loop_guard", "false")
 	}
 
 	intfList, err := app.getAllInterfacesFromVlanMemberTable(d)
@@ -2315,6 +2357,9 @@ func (app *StpApp) handleStpGlobalFieldsDeletion(d *db.DB) error {
 		case "bpdu-filter":
 			fldName = "bpdu_filter"
 			valStr = STP_DEFAULT_BPDU_FILTER
+		case "loop-guard":
+			fldName = "loop_guard"
+			valStr = STP_DEFAULT_LOOP_GUARD
 		}
 
 		// Make a copy of StpGlobalDBEntry to modify fields value.
@@ -2427,7 +2472,11 @@ func (app *StpApp) handleInterfacesFieldsDeletion(d *db.DB, intfId string) error
 	if nodeInfo.IsLeaf() {
 		switch nodeInfo.Name {
 		case "guard":
-			(&dbEntry).Remove("root_guard")
+			(&dbEntry).Set("root_guard", "false")
+			mode, _ := app.getStpModeFromConfigDB(d)
+			if mode == "rpvst" {
+				(&dbEntry).Set("loop_guard", "false")
+			}
 		case "bpdu-guard":
 			(&dbEntry).Remove("bpdu_guard")
 		case "bpdu-filter":
