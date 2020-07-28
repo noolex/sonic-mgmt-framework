@@ -7,6 +7,7 @@ from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 import cli_client as cc
 import re
+import requests
 import urllib3
 import string
 from collections import OrderedDict 
@@ -16,23 +17,39 @@ def invoke(func, args):
     body = None
     aa = cc.ApiClient()
 
-    if func == 'rpc_sonic_port_breakout_breakout_dependencies':
-        interface = args[1]
-
+    if func == 'dependencies':
+        interface = args[0]
         path = cc.Path('/restconf/operations/sonic-port-breakout:breakout_dependencies')
         body = {"sonic-port-breakout:input": {"ifname": interface}}
         return aa.post(path, body)
-    elif func == 'rpc_sonic_port_breakout_breakout_capabilities':
+    elif func == 'modes':
         path = cc.Path('/restconf/operations/sonic-port-breakout:breakout_capabilities')
         return aa.post(path, body)
-    elif func == 'get_openconfig_platform_port_components_component_port_breakout_mode_state':
-        if len(args)<2:
+    elif func == 'patch_openconfig_platform_port_components_component_port_breakout_mode_config':
+        interface = args[0]
+        speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "1x40G":"SPEED_40GB",
+                      "4x25G":"SPEED_25GB", "2x50G":"SPEED_50GB", "1x400G":"SPEED_400GB",
+                      "4x100G":"SPEED_100GB", "4x50G":"SPEED_50GB", "2x100G":"SPEED_100GB", "2x200G":"SPEED_200GB"}
+        path = cc.Path('/restconf/data/openconfig-platform:components/component={port}/port/openconfig-platform-port:breakout-mode/config',port=interface)
+        body = {"openconfig-platform-port:config": {"num-channels": int(args[1][0]),"channel-speed": speed_map.get(args[1])}}
+        return aa.patch(path,body)
+
+    elif func == 'delete_openconfig_platform_port_components_component_port_breakout_mode_config':
+        interface = args[0]
+        path = cc.Path('/restconf/data/openconfig-platform:components/component={port}/port/openconfig-platform-port:breakout-mode/config',port=interface)
+        return aa.delete(path)
+    else:
+        if len(args)<3:
             start = 1
             end = 74
+            temp = args[1]
         else:
-            start = int(args[1].split("/")[1])
+            start = int(args[0].split("/")[1])
             end = start
-        resp = OrderedDict()
+            temp = args[3]
+        resp = cc.Response(requests.Response())
+        resp.content = OrderedDict()
+
         for port in range(start, end+1):
             interface = "1/"+str(port)
             path = cc.Path('/restconf/data/openconfig-platform:components/component={port}/port/openconfig-platform-port:breakout-mode/config',port=interface)
@@ -49,25 +66,12 @@ def invoke(func, args):
                 state = state_resp.content.pop('openconfig-platform-port:state')
                 state_resp.content["openconfig-platform-port:config"]["openconfig-port-breakout-ext:status"]=state.pop('openconfig-port-breakout-ext:status')
                 state_resp.content["openconfig-platform-port:config"]["openconfig-port-breakout-ext:members"]=state.pop('openconfig-port-breakout-ext:members')
-                resp[interface] = state_resp.content.pop("openconfig-platform-port:config")
+                resp.content[interface] = state_resp.content.pop("openconfig-platform-port:config")
                 continue
             if config_resp.content:
-                resp[interface] = config_resp.content.pop("openconfig-platform-port:config")
-        show_cli_output(args[0], resp)
-        return config_resp
-
-    else:
-        interface = args[0]
-        speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "1x40G":"SPEED_40GB",
-                      "4x25G":"SPEED_25GB", "2x50G":"SPEED_50GB", "1x400G":"SPEED_400GB",
-                      "4x100G":"SPEED_100GB", "4x50G":"SPEED_50GB", "2x100G":"SPEED_100GB", "2x200G":"SPEED_200GB"}
-        path = cc.Path('/restconf/data/openconfig-platform:components/component={port}/port/openconfig-platform-port:breakout-mode/config',port=interface)
-
-        if 1 == len(args):
-            return aa.delete(path)
-        else:
-            body = {"openconfig-platform-port:config": {"num-channels": int(args[1][0]),"channel-speed": speed_map.get(args[1])}}
-            return aa.patch(path,body)
+                resp.content[interface] = config_resp.content.pop("openconfig-platform-port:config")
+        resp.status_code = config_resp.status_code
+        return resp
 
 
 def run(func, args):
@@ -75,7 +79,16 @@ def run(func, args):
         api_response = invoke(func, args)
         if api_response.ok():
             if api_response.content is not None:
-                show_cli_output(args[0], api_response.content)
+                if func == 'dependencies':
+                    temp = args[1]
+                elif func == 'modes':
+                    temp = args[1]
+                elif len(args) > 3:
+                   temp = args[3]
+                else:
+                   temp = args[1]
+
+                show_cli_output(temp, api_response.content)
         else:
             print api_response.error_message()
 

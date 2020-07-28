@@ -80,7 +80,7 @@
     </MACRODEF>
 
     <MACRODEF name="FBS-POLICY-BINDING-OPTIONS">
-        <COMMAND name="service-policy" help="Apply ingress or egress policy">
+        <COMMAND name="service-policy" help="Apply ingress or egress policy"  data_and_render_cb="fbs_service_policy_render"> 
             <MACRO name="FBS-POLICY-TYPES" arg="false" />
             <MACRO name="FBS-DIRECTION-TYPES"/>
             <PARAM name="fbs-policy-name" help="Name of the policy (Max size 63)" ptype="STRING_63"/>

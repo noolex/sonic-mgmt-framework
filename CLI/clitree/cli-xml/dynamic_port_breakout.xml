@@ -26,14 +26,8 @@
                 <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT"/>
             </PARAM>
         </PARAM>
-        <ACTION>
-            if test "${dpb-subcommands}" = "dependencies"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_dependencies show_breakout_deps.j2 ${slotport}&#xA;
-            elif test "${dpb-subcommands}" = "modes"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_breakout.py rpc_sonic_port_breakout_breakout_capabilities show_breakout_caps.j2&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_breakout.py get_openconfig_platform_port_components_component_port_breakout_mode_state show_interface_breakout.j2 ${slotport}&#xA;
-            fi&#xA;
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_breakout ${dpb-subcommands} ${slotport} show_breakout_deps.j2 show_breakout_caps.j2 show_interface_breakout.j2 ${__full_line__}
         </ACTION>
       <xi:include href="include/pipe.xml"/>
       <DOCGEN>

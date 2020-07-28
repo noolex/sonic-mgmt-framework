@@ -222,7 +222,6 @@ def ospfv2_filter_lsdb_by_ls_id(response, ls_id):
 def invoke_show_api(func, args=[]):
     vrf = args[0]
     i = 3
-
     if (len(args[i:]) == 1):
         return generate_show_ip_ospf(vrf)
     else:
@@ -279,7 +278,6 @@ def invoke_show_api(func, args=[]):
                 return generate_show_ip_ospf_route(vrf, "show_ip_ospf_route.j2")
             elif (arg == "border-routers"):
                 return generate_show_ip_ospf_route(vrf, "show_ip_ospf_border_routers.j2")
-
             elif (arg == "database"):
                 j = i
                 dbtype = ""
@@ -292,6 +290,12 @@ def invoke_show_api(func, args=[]):
                         dbtype = "router"
                     elif (dbarg == "network"):
                         dbtype = "network"
+                    elif (dbarg == "summary"):
+                        dbtype = "summary"
+                    elif (dbarg == "asbr-summary"):
+                        dbtype = "asbr_summary"
+                    elif (dbarg == "external"):
+                        dbtype = "external"
                     elif (dbarg == "lsid"):
                         lsid = dbarg[j + 1]
                     elif (dbarg == "adv-router"):
@@ -305,6 +309,12 @@ def invoke_show_api(func, args=[]):
                     return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database_router.j2", lsid, advrouter, selforg)
                 elif (dbtype == "network"):
                     return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database_network.j2", lsid, advrouter, selforg)
+                elif (dbtype == "summary"):
+                    return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database_summary.j2", lsid, advrouter, selforg)
+                elif (dbtype == "asbr_summary"):
+                    return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database_asbr_summary.j2", lsid, advrouter, selforg)
+                elif (dbtype == "external"):
+                    return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database_external.j2", lsid, advrouter, selforg)
             elif (arg == "vrf" or arg == "\|"):
                 if (arg == "vrf" and (len(args[(i + 1):]) > 1) and args[i + 2] != "\|"):
                     continue

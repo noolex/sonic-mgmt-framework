@@ -70,7 +70,7 @@ if [ -z $YANG_MODELS_PATH ]; then
     popd > /dev/null
 fi
 
-EXTRA_ARGS="-ui $SERVER_DIR/dist/ui -logtostderr -no-sock -internal"
+EXTRA_ARGS="-ui $SERVER_DIR/dist/ui -logtostdout -no-sock -internal"
 
 for V in $@; do
     case $V in
