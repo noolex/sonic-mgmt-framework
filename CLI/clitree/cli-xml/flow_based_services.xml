@@ -33,40 +33,40 @@ limitations under the License.
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
         <!-- show policy-map [NAME] | [type qos|monitoring|forwarding] -->
-        <COMMAND name="show policy-map" help="Show policy-map information">
+        <COMMAND name="show policy-map" help="Shows policy-map information">
             <PARAM name="show-fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-policy-name" help="Show policy-map information using name (Max size 63)" ptype="STRING_63"/>
-                <PARAM name="type" help="Show all policy-maps using the policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max size 63)" ptype="STRING_63"/>
+                <PARAM name="type" help="Shows all policy-maps using the policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-policy-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-policy-name}" = "type"'>
-                <PARAM name="qos" help="Show all QoS Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="monitoring" help="Show all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="forwarding" help="Show all forwarding Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Show all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="qos" help="Shows all QoS Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="monitoring" help="Shows all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="forwarding" help="Shows all forwarding Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Shows all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
         </COMMAND>
         <!-- show class-map [NAME] [type acl|fields] -->
-        <COMMAND name="show class-map" help="Show class-map information">
+        <COMMAND name="show class-map" help="Shows class-map information">
             <PARAM name="show-fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="show-fbs-class-name" help="Name of the class-map" ptype="STRING_63"/>
-                <PARAM name="match-type" help="Show all class-maps using the match type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="match-type" help="Shows all class-maps using the match type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-class-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-class-name}" = "match-type"'>
-                <PARAM name="acl" help="Show class-maps which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="fields" help="Show class-maps which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Show class-maps which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="acl" help="Shows class-maps which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="fields" help="Shows class-maps which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Shows class-maps which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${show-fbs-class-name} ${show-fbs-class-type}</ACTION>
         </COMMAND>
 
 
-        <COMMAND name="show service-policy" help="Show applied Flow based services policies" />
+        <COMMAND name="show service-policy" help="Shows applied Flow based services policies" />
 
         <!-- show service-policy summary [interface NAME] | [type qos|monitoring|forwarding] -->
-        <COMMAND name="show service-policy summary" help="Show summary of all applied polices">
-            <PARAM name="interface-type-options" help="Show policies applied for interface" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                <PARAM name="interface" help="Show policies applied for interface" mode="subcommand" ptype="SUBCOMMAND">
+        <COMMAND name="show service-policy summary" help="Shows summary of all applied polices">
+            <PARAM name="interface-type-options" help="Shows policies applied for interface" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
+                <PARAM name="interface" help="Shows policies applied for interface" mode="subcommand" ptype="SUBCOMMAND">
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
                 </PARAM>
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -76,10 +76,10 @@ limitations under the License.
         </COMMAND>
 
         <!-- show service-policy policy NAME [interface NAME] -->
-        <COMMAND name="show service-policy policy-map" help="Show details by policy-map name">
+        <COMMAND name="show service-policy policy-map" help="Shows details by policy-map name">
             <PARAM name="fbs-policy-name" help="Policy-map name (Max size 63)" ptype="STRING_63"/>
-            <PARAM name="interface-type-options" help="Show policy-maps applied to interface(s)" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                <PARAM name="interface" help="Show policy-maps applied to interface" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="interface-type-options" help="Shows policy-maps applied to interface(s)" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
+                <PARAM name="interface" help="Shows policy-maps applied to interface" mode="subcommand" ptype="SUBCOMMAND">
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
                 </PARAM>
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -88,7 +88,7 @@ limitations under the License.
         </COMMAND>
 
         <!-- show service-policy interface NAME [type qos|monitoring|forwarding] -->
-        <COMMAND name="show service-policy interface" help="Show policy-map binding details by interface name">
+        <COMMAND name="show service-policy interface" help="Shows policy-map binding details by interface name">
             <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface ${__params}</ACTION>
@@ -99,6 +99,24 @@ limitations under the License.
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface Switch ${__params}</ACTION>
         </COMMAND>
+
+        <!-- show running-config-configuration classifier -->
+        <COMMAND name="show running-configuration classifier" help="Shows current classifier configuration">
+            <PARAM name="fbs-class-name" help="Name of the classifier" ptype="STRING_63" optional="true"/>
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
+        </COMMAND>
+
+        <COMMAND name="show running-configuration class-map" help="Shows current class-map configuration">
+            <PARAM name="fbs-class-name" help="Name of the classifier" ptype="STRING_63" optional="true"/>
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
+        </COMMAND>
+
+        <!-- show running-config-configuration policy -->
+        <COMMAND name="show running-configuration policy" help="Shows current policy configuration">
+            <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max size 63)" ptype="STRING_63" optional="true" />
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${show-fbs-policy-name}" </ACTION>
+        </COMMAND>
+
 
         <COMMAND name="clear counters service-policy" help="Clear all policy-map binding counters" />
 
@@ -128,29 +146,29 @@ limitations under the License.
         </COMMAND>
 
         <!--
-        <COMMAND name="show policy" help="Show policy-map information">
+        <COMMAND name="show policy" help="Shows policy-map information">
             <PARAM name="show-fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-policy-name" help="Show policy-map information using policy-map name (Max size 63)" ptype="STRING_63"/>
-                <PARAM name="type" help="Show all policy-maps using policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="show-fbs-policy-name" help="Shows policy-map information using policy-map name (Max size 63)" ptype="STRING_63"/>
+                <PARAM name="type" help="Shows all policy-maps using policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-policy-type" help="policy type" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-policy-name}" = "type"'>
-                <PARAM name="qos" help="Show all QoS policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="monitoring" help="Show all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="forwarding" help="Show all forwarding Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Show all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="qos" help="Shows all QoS policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="monitoring" help="Shows all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="forwarding" help="Shows all forwarding Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Shows all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
         </COMMAND>
         -->
-        <COMMAND name="show classifier" help="Show flow based services policy information">
+        <COMMAND name="show classifier" help="Shows flow based services policy information">
             <PARAM name="show-fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="show-fbs-class-name" help="Name of the classifier" ptype="STRING_63"/>
-                <PARAM name="match-type" help="Show all classifiers using the match type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="match-type" help="Shows all classifiers using the match type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-class-name}" = "match-type"'>
-                <PARAM name="acl" help="Show classifier which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="fields" help="Show classifier which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Show classifier which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="acl" help="Shows classifier which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="fields" help="Shows classifier which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Shows classifier which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${show-fbs-class-name} ${show-fbs-class-type}</ACTION>
         </COMMAND>
@@ -160,7 +178,7 @@ limitations under the License.
     <!--                            Config Mode commands                                   -->
     <!--===================================================================================-->
     <VIEW name="configure-view">
-        <COMMAND name="policy-map" help="Configure policy-map" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}"
+        <COMMAND name="policy-map" help="Configures policy-map" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}"
             data_and_render_cb="fbs_policy_render">
             <PARAM name="fbs-policy-name" help="Name of the policy-map (Max size 63)" ptype="STRING_63"/>
             <MACRO name="FBS-POLICY-TYPES" arg="false" />
@@ -172,7 +190,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_policy ${fbs-policy-name}</ACTION>
         </COMMAND>
 
-        <COMMAND name="class-map" help="Configure class-map" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}">
+        <COMMAND name="class-map" help="Configures class-map" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}">
             <PARAM name="fbs-class-name" help="Name of the class-map (Max size 63)" ptype="STRING_63"/>
             <PARAM name="match-type" help="Class-map match type" ptype="SUBCOMMAND" mode="subcommand" optional="false">
                 <PARAM name="fbs-class-type" help="Class-map match type" ptype="SUBCOMMAND" mode="switch">
@@ -193,14 +211,7 @@ limitations under the License.
 
 
 
-
-
-
-
-
-
-
-        <COMMAND name="classifier" help="Configure flow based services classifier" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}"
+        <COMMAND name="classifier" help="Configures flow based services classifier" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}"
             data_and_render_cb="fbs_classifier_render">
             <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
             <PARAM name="match-type" help="Classifier match type" ptype="SUBCOMMAND" mode="subcommand" optional="false">
@@ -230,7 +241,7 @@ limitations under the License.
         <NAMESPACE ref="configure-view" help="false" completion="false" />
         <COMMAND name="no" help="Negate a command or set its defaults"/>
 
-        <COMMAND name="description" help="Configure policy-map description">
+        <COMMAND name="description" help="Configures policy-map description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policy_description ${fbs-policy-name} ${description-value}</ACTION>
         </COMMAND>
@@ -239,7 +250,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_policy_description ${fbs-policy-name}</ACTION>
         </COMMAND>
 
-        <COMMAND name="class" help="Configure flow match criteria and its actions" view="configure-${fbs-policy-type}-flow-view"
+        <COMMAND name="class" help="Configures flow match criteria and its actions" view="configure-${fbs-policy-type}-flow-view"
                  viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type};fbs-class-name=${fbs-class-name}">
             <PARAM name="fbs-class-name" help="Name of the class-map (Max size 63)" ptype="STRING_63"/>
             <PARAM name="priority" help="Flow priority in the policy-map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
@@ -477,7 +488,7 @@ limitations under the License.
         <COMMAND name="set" help="Set parameters" />
         <COMMAND name="no set" help="Remove/Disable QoS actions" />
 
-        <COMMAND name="description" help="Configure flow description">
+        <COMMAND name="description" help="Configures flow description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_flow_description ${fbs-policy-name} ${fbs-class-name} ${description-value}</ACTION>
         </COMMAND>
