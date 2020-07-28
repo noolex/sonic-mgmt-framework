@@ -370,7 +370,7 @@ limitations under the License.
 <!--====================mac add command======================-->
     <COMMAND
         name="mac-address"
-        help="Static MAC configuration" mode="subcommand" ptype="SUBCOMMAND" command_tables="sonic-fdb:sonic-fdb/FDB/FDB_LIST" render_command_cb="mac_source_if">
+        help="Configure static MAC" mode="subcommand" ptype="SUBCOMMAND" command_tables="sonic-fdb:sonic-fdb/FDB/FDB_LIST" render_command_cb="mac_source_if">
             <PARAM name="mac-address" help="MAC address" ptype="MAC_ADDR">
                 <PARAM name="vlan" help="VLAN ID" mode="subcommand" ptype="VLAN_INTERFACE">
                     <PARAM

@@ -35,7 +35,7 @@ limitations under the License.
     <!-- route-map <name> {permit|Deny} <seq_nu> -->
     <COMMAND
          name="route-map"
-         help="Specify routing policy"
+         help="Configure routing policies"
          view="configure-route-map-view"
          viewid="name=${route-map-name};seq_num=${seq-nu}"
          view_keys="route-map-name=*,seq-num=*"
@@ -78,7 +78,7 @@ limitations under the License.
     <!-- no route-map <name> <seq_nu> -->
     <COMMAND
          name="no route-map"
-         help="remove routing policy map"
+         help="Remove routing policy map"
          >
          <PARAM name="route-map-name"
             help="Name of route map (Max size 63)"

@@ -400,7 +400,7 @@ limitations under the License.
        >
      <COMMAND
         name="interface"
-        help="Select an interface"
+        help="Configure interfaces"
         db_flag="SEP_CLI"
         view_keys="name=*|name=*"
         view_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={name}|sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name={name}"

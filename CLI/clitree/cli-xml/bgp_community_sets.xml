@@ -109,7 +109,7 @@ limitations under the License.
        >
     <COMMAND
         name="bgp"
-        help="BGP command list"/>
+        help="Configure BGP instances"/>
 
     <COMMAND
         name="bgp community-list"
@@ -558,7 +558,7 @@ limitations under the License.
 
     <COMMAND
         name="no bgp"
-        help="BGP command list"/>
+        help="Remove BGP instances"/>
 
     <COMMAND
         name="no bgp community-list"
