@@ -748,7 +748,6 @@ def handle_clear(func, args):
 
 def handle_show_all(func, args):
     global inputDict
-    count = 0
     response = ""
     vrfList = get_vrf_list()
     if vrfList is None:
@@ -756,7 +755,6 @@ def handle_show_all(func, args):
 
     vrfList.sort(key=string.lower)
     for vrf in vrfList:
-        count = count + 1
         if vrf == "mgmt":
             continue
 
