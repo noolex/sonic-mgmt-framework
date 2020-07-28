@@ -318,9 +318,9 @@ def show_intf_info(response):
         outputList.append(intfEntry)
 
     if inputDict.get('vrf') is None:
-        print "\nPIM Interface information for VRF: default"
+        print "PIM Interface information for VRF: default"
     else:
-        print "\nPIM Interface information for VRF:", inputDict.get('vrf')
+        print "PIM Interface information for VRF:", inputDict.get('vrf')
 
     show_cli_output("show_pim.j2", outputList)
 
@@ -414,9 +414,9 @@ def show_topology_src_info(response):
 
         if len(outputList) > 0:
             if inputDict.get('vrf') is None:
-                print "\nPIM Multicast Routing Table for VRF: default"
+                print "PIM Multicast Routing Table for VRF: default"
             else:
-                print "\nPIM Multicast Routing Table for VRF:", inputDict.get('vrf')
+                print "PIM Multicast Routing Table for VRF:", inputDict.get('vrf')
             print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
             print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
             print "K - Ack-Pending state\n"
@@ -543,9 +543,9 @@ def show_topology_info(response):
 
         if len(outputList) > 0:
             if inputDict.get('vrf') is None:
-                print "\nPIM Multicast Routing Table for VRF: default"
+                print "PIM Multicast Routing Table for VRF: default"
             else:
-                print "\nPIM Multicast Routing Table for VRF:", inputDict.get('vrf')
+                print "PIM Multicast Routing Table for VRF:", inputDict.get('vrf')
             print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
             print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
             print "K - Ack-Pending state\n"
@@ -566,13 +566,15 @@ def show_ssm_info(response):
 
     ssmRanges = ssmState.get('ssm-ranges')
     if inputDict.get('vrf') is None:
-        print "\nPIM SSM information for VRF: default"
+        print "PIM SSM information for VRF: default"
     else:
-        print "\nPIM SSM information for VRF:", inputDict.get('vrf')
+        print "PIM SSM information for VRF:", inputDict.get('vrf')
     if ssmRanges is None or ssmRanges == "":
        print "SSM group range : 232.0.0.0/8"
     else:
        print "SSM group range : ", ssmRanges
+
+    print ""
 
 def show_rpf_info(response):
     outputList = []
@@ -600,11 +602,12 @@ def show_rpf_info(response):
             if rpfSubEntry is not None:
                 outputList.append(rpfSubEntry)
 
-    if inputDict.get('vrf') is None:
-        print "\nPIM RPF information for VRF: default"
-    else:
-        print "\nPIM RPF information for VRF:", inputDict.get('vrf')
-    show_cli_output("show_pim.j2", outputList)
+    if len(outputList) > 0:
+        if inputDict.get('vrf') is None:
+            print "PIM RPF information for VRF: default"
+        else:
+            print "PIM RPF information for VRF:", inputDict.get('vrf')
+        show_cli_output("show_pim.j2", outputList)
 
 def show_nbr_info(response):
     outputList = []
@@ -674,9 +677,9 @@ def show_nbr_info(response):
             outputList.append(nbrEntry)
 
     if inputDict.get('vrf') is None:
-        print "\nPIM Neighbor information for VRF: default"
+        print "PIM Neighbor information for VRF: default"
     else:
-        print "\nPIM Neighbor information for VRF:", inputDict.get('vrf')
+        print "PIM Neighbor information for VRF:", inputDict.get('vrf')
     show_cli_output("show_pim.j2", outputList)
 
 def get_vrf_list():
@@ -745,6 +748,7 @@ def handle_clear(func, args):
 
 def handle_show_all(func, args):
     global inputDict
+    count = 0
     response = ""
     vrfList = get_vrf_list()
     if vrfList is None:
@@ -752,6 +756,7 @@ def handle_show_all(func, args):
 
     vrfList.sort(key=string.lower)
     for vrf in vrfList:
+        count = count + 1
         if vrf == "mgmt":
             continue
 

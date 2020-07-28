@@ -22,12 +22,17 @@
 
 {% if 'oilList' in json_output[0] %}
 {% for entry in json_output %}
+{% set listLen = json_output|length %}
 ({{entry.get('srcAddr')}}, {{entry.get('grpAddr')}}), uptime {{entry.get('srcUpTime')}}, expires {{entry.get('srcExpiry')}}, flags {{entry.get('srcFlags')}}
   Incoming interface: {{entry.get('inIntf')}}, RPF neighbor {{entry.get('rpfNbr')}}
   Outgoing interface list:
 {% for oil in entry.get('oilList') %}
     {{(oil.get('outIntf')|string).ljust(15)}} uptime/expiry-time: {{oil.get('oilUpTime')}}/{{oil.get('oilExpiry')}}
 {% endfor %}
-{{(""|string).ljust(20)}}
+{% if loop.index != listLen %}
+{{" "}}
+{% endif %}
 {% endfor %}
 {% endif %}
+
+{{" "}}
