@@ -147,6 +147,15 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
                     value_str = str(value).lower()
                 else:    
                     value_str = str(value)
+
+                    #if value is zero length string skip and proceed to next cmd argument
+                    if value_str == '':
+                        return False
+
+                    #if value is multi word string, enclose it in quotes.
+                    if len(value_str.split()) > 1:
+                        value_str = "\"" + value_str + "\""
+
                 if len(xml_paramval) > 1:
                     if parammatch(value_str, xml_paramval[1]) == False:
                         log.debug("Param match failed db val {}, xml val {}" .format(value_str, xml_paramval[1]))
