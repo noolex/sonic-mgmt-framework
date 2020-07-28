@@ -44,6 +44,7 @@ from show_config_ipsla import *
 from show_config_lldp import *
 from show_config_igmp_snooping import *
 from show_config_tam import *
+from show_config_bfd import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -82,7 +83,8 @@ config_view_hierarchy= \
        'configure-mclag',
        'configure-mirror',
        'configure-tam',
-       'configure-ipsla']
+       'configure-ipsla',
+       'configure-bfd']
 
 render_filelst  = {}
 
@@ -142,8 +144,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
-                  'fbs_classifier_render'   : show_fbs_classifier,
-                  'fbs_policy_render'       : show_fbs_policy,
+                  'fbs_classifier_render'   : show_running_fbs_classifier,
+                  'fbs_policy_render'       : show_running_fbs_policy,
+                  'fbs_service_policy_render' : show_running_fbs_service_policy,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
                   'sflow_source_if'         : show_sflow_source_if,
