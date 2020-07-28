@@ -2,7 +2,7 @@ import socket
 from show_config_if_cmd import show_render_if_cmd
 
 #Gets all static routes CLI configured for a prefix in a VRF or default instance
-def static_route_nh_cli(cmd_str, intf_list , ip_list, bh_list , nh_vrf_list, dist_list):
+def static_route_nh_cli(cmd_str, intf_list , ip_list, bh_list , nh_vrf_list, dist_list, track_list):
    all_cmd=''
    no_of_nh = 0 
    if len(ip_list) != 0 :
@@ -22,6 +22,8 @@ def static_route_nh_cli(cmd_str, intf_list , ip_list, bh_list , nh_vrf_list, dis
    if (len_attr != 0  and len_attr != no_of_nh): return None
    len_attr = len(nh_vrf_list)
    if (len_attr != 0  and len_attr != no_of_nh): return None
+   len_attr = len(track_list)
+   if (len_attr != 0  and len_attr != no_of_nh): return None
    
    for iter in range (0, no_of_nh):
       this_cmd = cmd_str
@@ -35,6 +37,9 @@ def static_route_nh_cli(cmd_str, intf_list , ip_list, bh_list , nh_vrf_list, dis
       if ip_list and ip_list[iter]:
         if ip_list[iter] != '0.0.0.0' and ip_list[iter] != '0:0:0:0:0:0:0:0' and ip_list[iter] != '::':
            this_cmd = this_cmd + ' ' + ip_list[iter]
+      if track_list and track_list[iter]:
+        if track_list[iter] != '0':
+           this_cmd = this_cmd + ' track ' + track_list[iter]
       if intf_list and intf_list[iter]:
         table_rec = {"ifname" : intf_list[iter]}
         int_syntax = show_render_if_cmd(table_rec, 'ifname', '', '')
@@ -108,7 +113,7 @@ def static_route_ntwk_inst(ip_version, cmd_prfx, render_tables):
          else:
             cmd_str = cmd_prfx + cmd_for_vrf + ' ' + prefix
 
-         intf_list = bh_list = ip_list = nh_vrf_list = dist_list = [] 
+         intf_list = bh_list = ip_list = nh_vrf_list = dist_list = track_list = [] 
          for nh_attr in rt_inst:
             if 'ifname' in nh_attr:
                intf_list = rt_inst['ifname'].split(',')
@@ -120,10 +125,12 @@ def static_route_ntwk_inst(ip_version, cmd_prfx, render_tables):
                bh_list = rt_inst['blackhole'].split(',')
             elif 'distance' in nh_attr:
                dist_list = rt_inst['distance'].split(',')
+            elif 'track' in nh_attr:
+               track_list = rt_inst['track'].split(',')
             else:
                pass
 
-         nh_pram_cli = static_route_nh_cli(cmd_str, intf_list , ip_list, bh_list , nh_vrf_list, dist_list)
+         nh_pram_cli = static_route_nh_cli(cmd_str, intf_list , ip_list, bh_list , nh_vrf_list, dist_list, track_list)
          if (nh_pram_cli is not None):
             cmd_str_to_send = cmd_str_to_send + nh_pram_cli 
           
