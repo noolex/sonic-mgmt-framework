@@ -150,7 +150,7 @@ limitations under the License.
 </VIEW>
 
 <VIEW name="configure-view">
-  <COMMAND name="router" help="Router mode" >
+  <COMMAND name="router" help="Enter router mode" >
   </COMMAND>
 
   <COMMAND name="router bgp" help="Border Gateway protocol (BGP)" view="configure-router-bgp-view" viewid="instance=${as-num-dot};vrf-name=${vrf-name}"  view_keys="vrf_name=*, ip_prfx=*" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name={vrf-name}" render_command_cb='router_bgp'>
