@@ -26,7 +26,7 @@ limitations under the License.
 
 <VIEW name="enable-view">
     <COMMAND name="show route-map" help="Display route map information">
-        <PARAM name="rt-map-name" help="route map name" ptype="STRING_63" optional="true"> </PARAM>
+        <PARAM name="rt-map-name" help="Name of route-map" ptype="STRING_63" optional="true"> </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_routemap get_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition show_routemap.j2 ${rt-map-name}</ACTION>
     </COMMAND>
 </VIEW>
@@ -42,7 +42,7 @@ limitations under the License.
          view_tables="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/route_map_name={route-map-name},stmt_name={seq-num}"
          >
          <PARAM name="route-map-name"
-            help="Name of route map (Max size 63)"
+            help="Name of route-map (Max: 63 characters)"
             ptype="STRING_63"
             dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/route_map_name"
          />
@@ -81,7 +81,7 @@ limitations under the License.
          help="Remove routing policy map"
          >
          <PARAM name="route-map-name"
-            help="Name of route map (Max size 63)"
+            help="Name of route-map (Max: 63 characters)"
             ptype="STRING_63"
                         />
          <PARAM name="action-switch"

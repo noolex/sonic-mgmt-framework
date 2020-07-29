@@ -153,7 +153,7 @@ limitations under the License.
   <COMMAND name="router" help="Enter router mode" >
   </COMMAND>
 
-  <COMMAND name="router bgp" help="Border Gateway protocol (BGP)" view="configure-router-bgp-view" viewid="instance=${as-num-dot};vrf-name=${vrf-name}"  view_keys="vrf_name=*, ip_prfx=*" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name={vrf-name}" render_command_cb='router_bgp'>
+  <COMMAND name="router bgp" help="Configure Border Gateway Protocol (BGP)" view="configure-router-bgp-view" viewid="instance=${as-num-dot};vrf-name=${vrf-name}"  view_keys="vrf_name=*, ip_prfx=*" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/vrf_name={vrf-name}" render_command_cb='router_bgp'>
     <PARAM name="as-num-dot" help="Autonomous system number" ptype="RANGE_1_4294967295">
       <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
@@ -182,7 +182,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no router" help="Disable a routing process" >
   </COMMAND>
-  <COMMAND name="no router bgp" help="Border Gateway protocol (BGP)">
+  <COMMAND name="no router bgp" help="Disable Border Gateway Protocol (BGP)">
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
       <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
     </PARAM>

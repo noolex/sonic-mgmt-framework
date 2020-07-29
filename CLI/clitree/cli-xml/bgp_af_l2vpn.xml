@@ -446,7 +446,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-map" help="Name of the route map" render_command_cb="bgp_nbr_af_rmap">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -624,7 +624,7 @@ limitations under the License.
     </ACTION>
   </COMMAND>
   <COMMAND name="no route-map" help="Name of the route map">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
@@ -740,7 +740,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-map" help="Name of the route map" render_command_cb="bgp_pg_af_rmap">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -912,7 +912,7 @@ limitations under the License.
     </ACTION>
   </COMMAND>
   <COMMAND name="no route-map" help="Name of the route map">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
