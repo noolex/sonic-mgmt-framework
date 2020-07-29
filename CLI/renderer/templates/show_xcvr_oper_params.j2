@@ -1,6 +1,6 @@
 {% set if_name = json_output[1][0] %}
 {{if_name}}
-{{'Operational Properties                                  '}}
+{{'Operational Property                                    '}}
 {{'--------------------------------------------------------'}}
 {% for key, val in json_output[1][1].items() %}
 {% if 'los' in key %}
@@ -162,4 +162,24 @@
 {% if 'temperature' in key %}
 {{'Temperature'.ljust(40)}}{{val}}{{'C'}}
 {% endif %}
+
+{% if 'lb-host-side-input-enable' in key %}
+{% set loopback_name = 'Host Side Input Loopback' %}
+{% if val == 'True' %}
+{{loopback_name.ljust(40)}}{{'Enabled'}}
+{% else %}
+{{loopback_name.ljust(40)}}{{'Disabled'}}
+{% endif %}
+{% endif %}
+
+{% if 'lb-media-side-input-enable' in key %}
+{% set loopback_name = 'Media Side Input Loopback' %}
+{% if val == 'True' %}
+{{loopback_name.ljust(40)}}{{'Enabled'}}
+{% else %}
+{{loopback_name.ljust(40)}}{{'Disabled'}}
+{% endif %}
+{% endif %}
+
+
 {% endfor %}
