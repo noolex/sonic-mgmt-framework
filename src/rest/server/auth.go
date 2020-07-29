@@ -30,6 +30,7 @@ import (
 	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
 	"github.com/msteinert/pam"
+	"sync"
 )
 
 type UserCredential struct {
@@ -37,6 +38,7 @@ type UserCredential struct {
 	Password string
 }
 type UserAuth map[string]bool
+
 
 func (i UserAuth) String() string {
 	if i["none"] {
@@ -151,6 +153,8 @@ func GetUserRoles(usr *user.User) ([]string, error) {
 	return roles, nil
 }
 func PopulateAuthStruct(username string, auth *AuthInfo) error {
+	AuthLock.Lock()
+	defer AuthLock.Unlock()
 	usr, err := user.Lookup(username)
 	if err != nil {
 		return err
