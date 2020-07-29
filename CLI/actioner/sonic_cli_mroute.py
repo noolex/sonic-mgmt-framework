@@ -257,9 +257,9 @@ def show_mroute_info(response):
 
         if len(outputList) > 0:
             if inputDict.get('vrf') is None:
-                print "\nIP Multicast Routing Table for VRF: default"
+                print "IP Multicast Routing Table for VRF: default"
             else:
-                print "\nIP Multicast Routing Table for VRF:", inputDict.get('vrf')
+                print "IP Multicast Routing Table for VRF:", inputDict.get('vrf')
             print "  * -> indicates installed route"
 
             show_cli_output("show_mroute.j2", outputList)
@@ -293,11 +293,10 @@ def show_mroute_summary(response):
     summaryEntry = {'installed': installed, 'total': total}
 
     if inputDict.get('vrf') is None:
-        print "\nIP Multicast Routing Table Summary for VRF: default"
+        print "IP Multicast Routing Table Summary for VRF: default"
     else:
-        print "\nIP Multicast Routing Table Summary for VRF:", inputDict.get('vrf')
+        print "IP Multicast Routing Table Summary for VRF:", inputDict.get('vrf')
     show_cli_output("show_mroute.j2", summaryEntry)
-
 
 def handle_show_all(func, args):
     global inputDict
