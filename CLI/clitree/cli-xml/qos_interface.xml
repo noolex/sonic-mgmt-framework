@@ -98,8 +98,8 @@ limitations under the License.
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${iface} ${dscp_tc_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${iface} ${dscp_tc_map_name}
             </ACTION>
         </COMMAND>
 
@@ -122,8 +122,8 @@ limitations under the License.
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${iface} ${dot1p_tc_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${iface} ${dot1p_tc_map_name}
             </ACTION>
         </COMMAND>
 
@@ -192,8 +192,8 @@ limitations under the License.
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${iface} ${tc_dscp_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${iface} ${tc_dscp_map_name}
             </ACTION>
         </COMMAND>
 
@@ -216,8 +216,8 @@ limitations under the License.
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dot1p ${iface} ${tc_dot1p_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dot1p ${iface} ${tc_dot1p_map_name}
             </ACTION>
         </COMMAND>
 
@@ -416,15 +416,17 @@ limitations under the License.
 
         <COMMAND
             name="qos-map dscp-tc"
-            help="DSCP to TC map configuration">
+            help="DSCP to TC map configuration"
+            command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_map_dscp_tc">
            <PARAM
                name="dscp_tc_map_name"
                help="DSCP to TC map name"
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${po_name} ${dscp_tc_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${po_name} ${dscp_tc_map_name}
             </ACTION>
         </COMMAND>
 
@@ -437,15 +439,18 @@ limitations under the License.
 
         <COMMAND
             name="qos-map dot1p-tc"
-            help="DOT1P to TC map configuration">
+            help="DOT1P to TC map configuration"
+            command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_map_dot1p_tc"
+            >
            <PARAM
                name="dot1p_tc_map_name"
                help="DOT1P to TC map name"
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${po_name} ${dot1p_tc_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map ${po_name} ${dot1p_tc_map_name}
             </ACTION>
         </COMMAND>
 
@@ -458,15 +463,18 @@ limitations under the License.
 
         <COMMAND
             name="qos-map tc-dscp"
-            help="TC to DSCP map configuration">
+            help="TC to DSCP map configuration"
+            command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_map_tc_dscp"
+            >
            <PARAM
                name="tc_dscp_map_name"
                help="TC to DSCP map name"
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${po_name} ${tc_dscp_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${po_name} ${tc_dscp_map_name}
             </ACTION>
         </COMMAND>
 
@@ -479,15 +487,18 @@ limitations under the License.
 
         <COMMAND
             name="qos-map tc-dot1p"
-            help="TC to DOT1P map configuration">
+            help="TC to DOT1P map configuration"
+            command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_map_tc_dot1p"
+            >
            <PARAM
                name="tc_dot1p_map_name"
                help="TC to DOT1P map name"
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dot1p ${po_name} ${tc_dot1p_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dot1p ${po_name} ${tc_dot1p_map_name}
             </ACTION>
         </COMMAND>
 
@@ -514,15 +525,18 @@ limitations under the License.
 
         <COMMAND
             name="qos-map dscp-tc"
-            help="DSCP to TC map configuration">
+            help="DSCP to TC map configuration"
+            command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_map_dscp_tc"
+            >
            <PARAM
                name="dscp_tc_map_name"
                help="DSCP to TC map name"
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${vlan_name} ${dscp_tc_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${vlan_name} ${dscp_tc_map_name}
             </ACTION>
         </COMMAND>
 
@@ -535,15 +549,18 @@ limitations under the License.
 
         <COMMAND
             name="qos-map tc-dscp"
-            help="TC to DSCP map configuration">
+            help="TC to DSCP map configuration"
+            command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_map_tc_dscp"
+            >
            <PARAM
                name="tc_dscp_map_name"
                help="TC to DSCP map name"
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${vlan_name} ${tc_dscp_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${vlan_name} ${tc_dscp_map_name}
             </ACTION>
         </COMMAND>
 
