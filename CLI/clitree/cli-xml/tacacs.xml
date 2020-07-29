@@ -74,7 +74,7 @@ limitations under the License.
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <PARAM name="address" 
-             help="Hostname (Max: 253 characters) or IPv4/IPv6 address of TACACS+ server"
+             help="Hostname or IPv4/IPv6 address of TACACS+ server"
              ptype="HOSTNAME_OR_IPADDR"
              optional="true"> 
       </PARAM>
@@ -264,7 +264,7 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand">
       <PARAM name="address"
-             help="Hostname (Max: 253 characters) or IPv4/IPv6 address of TACACS+ server"
+             help="Hostname or IPv4/IPv6 address of TACACS+ server"
              ptype="HOSTNAME_OR_IPADDR">
       </PARAM>
       <ACTION
