@@ -1338,7 +1338,7 @@ limitations under the License.
     <PTYPE
         name="CRM_THRESHOLD"
         method="unsignedInteger"
-        pattern="0..9999"
+        pattern="0..4294967295"
         help=""
         />
     <!--=======================================================-->
