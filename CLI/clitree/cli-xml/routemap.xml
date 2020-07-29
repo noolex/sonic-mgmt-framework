@@ -81,7 +81,7 @@ limitations under the License.
          help="Remove routing policy map"
          >
          <PARAM name="route-map-name"
-            help="Name of route-map (Max: 63 characters)"
+            help="Name of route-map"
             ptype="STRING_63"
                         />
          <PARAM name="action-switch"
