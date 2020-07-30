@@ -67,7 +67,7 @@ def invoke(func, args):
         return aa.get(keypath)
     elif func == 'add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table',name='default')
-        body = {"openconfig-network-instance:mac-table": {"entries": {"entry": [{"mac-address": args[0], "vlan":int(args[1]),"config": {"mac-address": args[0], "vlan": int(args[1])}, "interface": {"interface-ref": { "config": { "interface": args[2], "subinterface": 0}}}}]}}}
+        body = {"openconfig-network-instance:mac-table": {"entries": {"entry": [{"mac-address": args[0], "vlan":int(args[1].strip("Vlan")),"config": {"mac-address": args[0], "vlan": int(args[1].strip("Vlan"))}, "interface": {"interface-ref": { "config": { "interface": args[2], "subinterface": 0}}}}]}}}
         return aa.patch(keypath, body)
     elif func == 'del_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', 
