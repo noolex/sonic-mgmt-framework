@@ -49,7 +49,7 @@ limitations under the License.
             optional="true"
             ptype="SUBCOMMAND">
             <PARAM
-              name="vrf-name"
+              name="vrfname"
               help="Show ARP entries of the given VRF"
               mode="switch"
               ptype="SUBCOMMAND">
@@ -375,12 +375,12 @@ limitations under the License.
             optional="true"
             ptype="SUBCOMMAND">
             <PARAM
-              name="vrf-name"
+              name="vrfname"
               help="Clear ARP entries of the given VRF"
               mode="switch"
               ptype="SUBCOMMAND">
               <PARAM
-                  name="vrf-name"
+                  name="vrfname"
                   help="Clear ARP entries of the given VRF"
                   ptype="VRF_NAME">
               </PARAM>
@@ -399,7 +399,7 @@ limitations under the License.
             </PARAM>
         </PARAM>
        <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 ip:${ip-addr} vrf:${vrf-name}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv4 ip:${ip-addr} vrf:${vrfname}&#xA;
        </ACTION>
        <DOCGEN>
             <DESCRIPTION>
