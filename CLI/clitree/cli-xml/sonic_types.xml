@@ -241,6 +241,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="MIN_NONE"
+        method="select"
+        pattern="min(min) none(none)"
+        help="min|none"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="LOOPBACK_NUM"
         method="integer"
         pattern="0..16383"
@@ -1351,7 +1358,7 @@ limitations under the License.
     <PTYPE
         name="CRM_THRESHOLD"
         method="unsignedInteger"
-        pattern="0..9999"
+        pattern="0..4294967295"
         help=""
         />
     <!--=======================================================-->
