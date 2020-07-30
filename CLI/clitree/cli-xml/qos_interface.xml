@@ -72,7 +72,7 @@ limitations under the License.
 
         <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/output/scheduler-policy/config/name
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/output/scheduler-policy/config/name?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
         <COMMAND
@@ -106,7 +106,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map dscp-tc" help="Unconfigure a DSCP to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -130,7 +130,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map dot1p-tc" help="Unconfigure a DOT1P to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -153,7 +153,7 @@ limitations under the License.
 
        <COMMAND name="no qos-map tc-queue" help="Unconfigure a TC to Queue map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-queue
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-queue?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -176,7 +176,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map tc-pg" help="Unconfigure a TC to Priority Group map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-priority-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-priority-group?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -200,7 +200,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map tc-dscp" help="Unconfigure a TC to DSCP map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -224,7 +224,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map tc-dot1p" help="Unconfigure a TC to DOT1P map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dot1p
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dot1p?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -248,7 +248,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map pfc-priority-queue" help="Unconfigure a PFC priority to Queue map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/pfc-priority-to-queue
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/pfc-priority-to-queue?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -266,7 +266,7 @@ limitations under the License.
               </PARAM>
            </PARAM>
            <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/queues/queue=${iface}:${qid}/wred/config/openconfig-qos-ext:wred-profile
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/queues/queue=${iface_uri}:${qid}/wred/config/openconfig-qos-ext:wred-profile?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -431,7 +431,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map dscp-tc" help="Unconfigure a DSCP to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -452,7 +452,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map dot1p-tc" help="Unconfigure a DOT1P to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/dot1p-to-forwarding-group?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -473,7 +473,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map tc-dscp" help="Unconfigure a TC to DSCP map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -494,7 +494,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map tc-dot1p" help="Unconfigure a TC to DOT1P map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dot1p
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${po_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dot1p?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
   </VIEW>
@@ -529,7 +529,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map dscp-tc" help="Unconfigure a DSCP to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${vlan_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${vlan_name}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -550,7 +550,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map tc-dscp" help="Unconfigure a TC to DSCP map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${vlan_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${vlan_name}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
   </VIEW>
