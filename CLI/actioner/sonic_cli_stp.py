@@ -48,8 +48,7 @@ def stp_mode_get(aa):
     return g_stp_resp,g_stp_mode
 
 def getId(item):
-    state_dict = item['state']
-    ifName = state_dict['name']
+    ifName = item['name']
     return ifutils.name_to_int_val(ifName)
 
 def generic_set_response_handler(response, args):
@@ -581,13 +580,12 @@ def get_stp_response():
     output = {}
     api_response = aa.get(uri, None)
     if api_response.ok():
-        value = api_response.content[str]['vlan']
-        for item in value:
-            if 'interfaces' in item:
-                tup = item['interfaces']
-                if 'interface' in tup:
-                   tup2 = tup['interface']
-                   tup['interface'] = sorted(tup2, key=getId)
+        if str in api_response.content and 'vlan' in api_response.content[str]:
+            value = api_response.content[str]['vlan']
+            for item in value:
+                if 'interfaces' in item and 'interface' in item['interfaces']:
+                    tup = item['interfaces']['interface']
+                    item['interfaces']['interface'] = sorted(tup, key=getId)
         output.update(g_stp_resp.content)
         output.update(api_response.content)
     return output
@@ -606,13 +604,12 @@ def get_stp_vlan_response(vlan):
     output = {}
     api_response = aa.get(uri, None)
     if api_response.ok():
-        value = api_response.content[str]
-        for item in value:
-            if 'interfaces' in item:
-                tup = item['interfaces']
-                if 'interface' in tup:
-                    tup2 = tup['interface']
-                    tup['interface'] = sorted(tup2, key=getId)
+        if str in api_response.content:
+            value = api_response.content[str]
+            for item in value:
+                if 'interfaces' in item and 'interface' in item['interfaces']:
+                    tup = item['interfaces']['interface']
+                    item['interfaces']['interface'] = sorted(tup, key=getId)
      
         output.update(g_stp_resp.content)
         output.update(api_response.content)
