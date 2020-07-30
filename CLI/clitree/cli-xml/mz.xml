@@ -15,6 +15,17 @@
     >
 
 <VIEW name="configure-view">
+<<<<<<< HEAD
+  <COMMAND name="router ospf" help="Start OSPF configuration" view="configure-router-ospf-view" viewid="vrf-name=${vrf-name}" view_keys="vrf_name=*" view_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER/OSPFV2_ROUTER_LIST/vrf_name={vrf-name}" render_command_cb='router_ospf'>
+    <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config ${vrf-name} &#xA;</ACTION>
+  </COMMAND>
+  <COMMAND name="no router ospf" help="Disable OSPF routing process">
+    <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
+=======
   <COMMAND name="router ospf" help="Configures OSPFv2 router" view="configure-router-ospf-view" viewid="vrf-name=${vrf-name}" view_keys="vrf_name=*" view_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER/OSPFV2_ROUTER_LIST/vrf_name={vrf-name}" render_command_cb='router_ospf'>
     <PARAM name="vrf" help="VRF name" ptype="SUBCOMMAND" mode="subcommand" optional="true">
       <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING_15" default="default"/>
@@ -24,6 +35,7 @@
   <COMMAND name="no router ospf" help="Unconfigures OSPFv2 router">
     <PARAM name="vrf" help="VRF name" ptype="SUBCOMMAND" mode="subcommand" optional="true">
       <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING_15" default="default"/>
+>>>>>>> origin/broadcom_sonic_3.x_share
     </PARAM>
     <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global ${vrf-name} &#xA;</ACTION>
   </COMMAND>
