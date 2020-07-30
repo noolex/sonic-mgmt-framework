@@ -98,9 +98,9 @@
 
 	<COMMAND name="clear buffer_pool"
                  help="Clear Buffer pool watermark counters">
-		<PARAM name="watermark_type" help="choose from watermark, persistant-watermark." mode="switch" ptype="SUBCOMMAND">
+		<PARAM name="watermark_type" help="choose from watermark, persistent-watermark." mode="switch" ptype="SUBCOMMAND">
 		<PARAM name="watermark" help="clear user watermark counters" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-		<PARAM name="persistant-watermark" help="clear persistant-watermark counters" ptype="SUBCOMMAND" mode="subcommand"/> </PARAM>
+		<PARAM name="persistent-watermark" help="clear persistent-watermark counters" ptype="SUBCOMMAND" mode="subcommand"/> </PARAM>
 		<ACTION builtin="clish_pyobj">sonic_cli_threshold rpc_sonic_buffer_pool_clear_buffer_pool_wm_stats ${__params} </ACTION>
                         <DOCGEN>
                         <DESCRIPTION>
@@ -112,7 +112,7 @@
                         <EXAMPLE
                                 summary="Clear buffer_pool user/persistant watermark counters">
                                         sonic-cli# clear buffer_pool watermark
-                                        sonic-cli# clear buffer_pool persistant-watermark
+                                        sonic-cli# clear buffer_pool persistent-watermark
                         </EXAMPLE>
                         </DOCGEN>
    </COMMAND>
@@ -122,7 +122,7 @@
         help="show buffer pool watermark commands"
 	>
 	<PARAM name="watermark_type"
-		help="choose from watermark, persistant-watermark."
+		help="choose from watermark, persistent-watermark."
 		mode="switch"
 		ptype="SUBCOMMAND">
 	<PARAM name="watermark"
@@ -130,8 +130,8 @@
 		ptype="SUBCOMMAND"
 		mode="subcommand">
 	</PARAM>
-	<PARAM name="persistant-watermark"
-		help="show persistant-watermark counters"
+	<PARAM name="persistent-watermark"
+		help="show persistent-watermark counters"
 		ptype="SUBCOMMAND"
 		mode="subcommand">
 	</PARAM>
@@ -155,7 +155,7 @@
            <EXAMPLE
                     summary="Show buffer_pool watermark">
 				show buffer_pool watermark {percentage}
-				show buffer_pool persistant-watermark (percentage)
+				show buffer_pool persistent-watermark (percentage)
            </EXAMPLE>
         </DOCGEN>
      </COMMAND>

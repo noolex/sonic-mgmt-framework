@@ -362,7 +362,7 @@ limitations under the License.
 
   <COMMAND name="no log-adjacency-changes" help="Log changes in adjacency state" >
     <PARAM name="detail" help="Log all state changes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
-    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes ${vrf-name} ${__full_line} </ACTION>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes ${vrf-name} ${__full_line} </ACTION>
   </COMMAND>
 
   <COMMAND name="max-metric" help="OSPF maximum / infinite-distance metric" >

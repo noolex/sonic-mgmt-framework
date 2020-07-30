@@ -1,0 +1,14 @@
+{% if json_output and 'openconfig-system-ext:swresource' in json_output -%}
+{% set flow_scale_info = json_output['openconfig-system-ext:swresource']['resource'] %}
+{{'Configured             :   '}}{{flow_scale_info[0]['config']['flows']|lower}}
+{% if flow_scale_info[0]['state']   -%}
+{{'In Use                 :   '}}{{flow_scale_info[0]['state']['flows']|lower}}
+{% else %}
+{{'In Use                 :   '}}{{'invalid'}}
+{% endif %}
+{% if flow_scale_info[0]['state'] and flow_scale_info[0]['config']['flows'] != flow_scale_info[0]['state']['flows'] -%}
+{{'Reboot needed          :   '}}{{'true'}}
+{% else %}
+{{'Reboot needed          :   '}}{{'false'}}
+{% endif %}
+{% endif %}
