@@ -100,33 +100,42 @@ def invoke_api(func, args=[]):
                 vrf=args[0], af_name=args[1])
         body = { "openconfig-bgp-evpn-ext:flooding": args[2] }
         return api.patch(keypath, body)
-    elif func == 'patch_bgp_evpn_dad_enable':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/enabled',
-                vrf=args[0], af_name=args[1])
-        body = { "openconfig-bgp-evpn-ext:enabled": True }
-        return api.patch(keypath, body)
-    elif func == 'patch_bgp_evpn_dad_params':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config',
-                vrf=args[0], af_name=args[1])
-        body = { 
-                    "openconfig-bgp-evpn-ext:config": {
-                        "enabled": True,
-                        "max-moves": int(args[2]),
-                        "time": int(args[3])
+    elif func == 'patch_bgp_evpn_dad_enable_params':
+        if len(args) < 3:
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
+                +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/enabled',
+                    vrf=args[0], af_name=args[1])
+            body = { "openconfig-bgp-evpn-ext:enabled": True }
+            return api.patch(keypath, body)
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
+                +'/openconfig-bgp-evpn-ext:dup-addr-detection/config',
+                    vrf=args[0], af_name=args[1])
+            body = { 
+                        "openconfig-bgp-evpn-ext:config": {
+                            "enabled": True,
+                            "max-moves": int(args[2]),
+                            "time": int(args[3])
+                        }
                     }
-                }
-        return api.patch(keypath, body)
+            return api.patch(keypath, body)
     elif func == 'patch_bgp_evpn_dad_freeze':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/freeze',
-                vrf=args[0], af_name=args[1])
-        body = { "openconfig-bgp-evpn-ext:freeze": args[2] }
-        return api.patch(keypath, body)
+        if args[2] == 'permanent':
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
+                +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/freeze',
+                    vrf=args[0], af_name=args[1])
+            body = { "openconfig-bgp-evpn-ext:freeze": "permanent" }
+            return api.patch(keypath, body)
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
+                +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/freeze',
+                    vrf=args[0], af_name=args[1])
+            body = { "openconfig-bgp-evpn-ext:freeze": args[3] }
+            return api.patch(keypath, body)
 
     #Patch EVPN VNI cases
     elif func == 'patch_bgp_evpn_vni':
@@ -236,23 +245,24 @@ def invoke_api(func, args=[]):
             +'/openconfig-bgp-evpn-ext:flooding',
                 vrf=args[0], af_name=args[1])
         return api.delete(keypath)
-    elif func == 'delete_bgp_evpn_dad_enable':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/enabled',
-                vrf=args[0], af_name=args[1])
-        return api.delete(keypath)
-    elif func == 'delete_bgp_evpn_dad_params':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/max-moves',
-                vrf=args[0], af_name=args[1])
-        api.delete(keypath)
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
-            +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
-            +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/time',
-                vrf=args[0], af_name=args[1])
-        return api.delete(keypath)
+    elif func == 'delete_bgp_evpn_dad_enable_params':
+        if len(args) < 3:
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
+                +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/enabled',
+                    vrf=args[0], af_name=args[1])
+            return api.delete(keypath)
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
+                +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/max-moves',
+                    vrf=args[0], af_name=args[1])
+            api.delete(keypath)
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
+                +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
+                +'/openconfig-bgp-evpn-ext:dup-addr-detection/config/time',
+                    vrf=args[0], af_name=args[1])
+            return api.delete(keypath)
     elif func == 'delete_bgp_evpn_dad_freeze':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
             +'/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={af_name}/l2vpn-evpn'
