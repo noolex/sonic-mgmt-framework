@@ -899,9 +899,17 @@ def set_classifier_match_protocol(args):
         return
     nd_list.append(args[1])
     outval = ','.join(nd_list)
-    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
-                      copp_name=args[0])
-    body = {"openconfig-copp-ext:trap-ids": outval}
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps')
+    body = {"openconfig-copp-ext:copp-traps": {
+        "copp-trap": [
+            {
+                "name": args[0],
+                "config": {
+                    "trap-ids": outval
+                }
+            }
+        ]
+    }}
 
     return fbs_client.patch(keypath, body)
 
@@ -930,9 +938,17 @@ def clear_classifier_match_protocol(args):
 
 
 def set_trap_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-action',
-                      copp_name=args[0])
-    body = {"openconfig-copp-ext:trap-action": args[1]}
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups')
+    body = {"openconfig-copp-ext:copp-groups": {
+        "copp-group": [
+            {
+                "name": args[0],
+                "config": {
+                    "trap-action": args[1]
+                }
+            }
+        ]
+    }}
 
     return fbs_client.patch(keypath, body)
 
@@ -945,9 +961,17 @@ def clear_trap_action(args):
 
 
 def set_queue_id_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/queue',
-                      copp_name=args[0])
-    body = {"openconfig-copp-ext:queue": int(args[1])}
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups')
+    body = {"openconfig-copp-ext:copp-groups": {
+        "copp-group": [
+            {
+                "name": args[0],
+                "config": {
+                    "queue": int(args[1])
+                }
+            }
+        ]
+    }}
 
     return fbs_client.patch(keypath, body)
 
@@ -960,9 +984,15 @@ def clear_queue_id_action(args):
 
 
 def set_copp_policer_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
-                      copp_name=args[0])
-    body = dict()
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups')
+    body = {"openconfig-copp-ext:copp-groups": {
+        "copp-group": [
+            {
+                "name": args[0],
+                "config": dict()
+            }
+        ]
+    }}
     data = {
         "name": args[0],
         "config": dict()
@@ -1044,7 +1074,7 @@ def set_copp_policer_action(args):
         data["config"][key] = value
         index += 2
 
-    body["openconfig-copp-ext:copp-group"] = [data]
+    body["openconfig-copp-ext:copp-groups"]["copp-group"] = [data]
     return fbs_client.patch(keypath, body)
 
 
@@ -1109,17 +1139,33 @@ def delete_copp_action(args):
 
 
 def set_copp_action_group(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-group',
-                      copp_name=args[1])
-    body = {"openconfig-copp-ext:trap-group": args[2]}
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps')
+    body = {"openconfig-copp-ext:copp-traps": {
+        "copp-trap": [
+            {
+                "name": args[1],
+                "config": {
+                    "trap-group": args[2]
+                }
+            }
+        ]
+    }}
 
     return fbs_client.patch(keypath, body)
 
 
 def set_copp_trap_priority_action(args):
-    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}/config/trap-priority',
-                      copp_name=args[0])
-    body = {"openconfig-copp-ext:trap-priority": int(args[1])}
+    keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups')
+    body = {"openconfig-copp-ext:copp-groups": {
+        "copp-group": [
+            {
+                "name": args[0],
+                "config": {
+                    "trap-priority": int(args[1])
+                }
+            }
+        ]
+    }}
 
     return fbs_client.patch(keypath, body)
 
