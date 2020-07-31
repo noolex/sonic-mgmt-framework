@@ -11,7 +11,7 @@
         name = "ERR_DISABLE_RECOVERY_CAUSE"
         method="select"
         pattern="udld bpduguard"
-        help="Cause for ERRDISABLE"
+        help="Cause for error disable"
     />
     <PTYPE
         name = "ERR_DISABLE_INTERVAL"
@@ -21,20 +21,20 @@
     />
     <VIEW name="enable-view">
         <COMMAND name = "show errdisable"
-            help = "Show ERRDISABLE recovery information">
+            help = "Show error disable recovery information">
         </COMMAND>
         <!-- show errdisable recovery -->
         <COMMAND name = "show errdisable recovery"
-            help = "Show ERRDISABLE recovery information">
+            help = "Show error disable recovery information">
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable show_errdisable_recovery show_errdisable.j2</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Shows ERRDISABLE recovery information
+                    Shows error disable recovery information
                 </DESCRIPTION>
                 <USAGE>
-                    Use this command to check status of ERRDISABLE recovery for all supported feature
+                    Use this command to check status of error disable recovery for all supported feature
                 </USAGE>
-                <EXAMPLE summary="Shows status of ERRDISABLE recovery for all supported feature">
+                <EXAMPLE summary="Shows status of error disable recovery for all supported feature">
                     show errdisable recovery
                     ErrDisable Reason    Timer Status
                     -----------------    --------------
@@ -49,24 +49,24 @@
 
 
     <VIEW name="configure-view">
-        <COMMAND name="errdisable" help="Enable ERRDISABLE recovery"/>
-        <COMMAND name="no errdisable" help="Disables ERRDISABLE recovery"/>
-        <COMMAND name="errdisable recovery" help="Enables ERRDISABLE recovery"/>
-        <COMMAND name="no errdisable recovery" help="Disables ERRDISABLE recovery"/>
-        <COMMAND name="errdisable recovery cause" help="Enables ERRDISABLE recovery for the given cause"
+        <COMMAND name="errdisable" help="Error disable configuration"/>
+        <COMMAND name="no errdisable" help="Error disable configuration"/>
+        <COMMAND name="errdisable recovery" help="Error disable recovery configuration"/>
+        <COMMAND name="no errdisable recovery" help="Error disable recovery configuration"/>
+        <COMMAND name="errdisable recovery cause" help="Error disable recovery cause configuration"
             command_tables="sonic-errdisable:sonic-errdisable/ERRDISABLE/id={id}"
             command_keys="id=RECOVERY"
             render_command_cb="errdisable_cause">
             <PARAM
                 name="mode-subcmds"
-                help="ERRDISABLE cause"
+                help="Error disable cause"
                 ptype="SUBCOMMAND"
                 mode="switch"
                 optional="false"
                 >
                 <PARAM
                     name="udld"
-                    help="Enables ERRDISABLE for UDLD"
+                    help="Enables error disable for UDLD"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -74,7 +74,7 @@
                 </PARAM>
                 <PARAM
                     name="bpduguard"
-                    help="Enables ERRDISABLE for STP bpduguard"
+                    help="Enables error disable for STP bpduguard"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -85,29 +85,29 @@
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_cause ${__params}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Enables ERRDISABLE recovery for the given cause.
+                    Enables error disable recovery for the given cause.
                 </DESCRIPTION>
                 <USAGE>
-                    Use this command to enable ERRDISABLE recovery for the given cause.
+                    Use this command to enable error disable recovery for the given cause.
                 </USAGE>
-                <EXAMPLE summary="Enable ERRDISABLE recovery for udld.">
+                <EXAMPLE summary="Enable error disable recovery for udld.">
                     sonic-cli(config)# errdisable recovery cause udld
                 </EXAMPLE>
                 <FEATURE> ERRDISABLE </FEATURE>
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="no errdisable recovery cause" help="ERRDISABLE recovery cause">
+        <COMMAND name="no errdisable recovery cause" help="Error disable recovery cause">
             <PARAM
                 name="mode-subcmds"
-                help="ERRDISABLE cause"
+                help="Error disable cause"
                 ptype="SUBCOMMAND"
                 mode="switch"
                 optional="false"
                 >
                 <PARAM
                     name="udld"
-                    help="Enables ERRDISABLE for UDLD"
+                    help="Disables error disable for UDLD"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -115,7 +115,7 @@
                 </PARAM>
                 <PARAM
                     name="bpduguard"
-                    help="Enables ERRDISABLE for STP bpduguard"
+                    help="Disables error disable for STP bpduguard"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -126,12 +126,12 @@
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_cause ${__params}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                Disables ERRDISABLE recovery for the given cause.
+                Disables error disable recovery for the given cause.
                 </DESCRIPTION>
                 <USAGE>
-                    Use this command to disable ERRDISABLE recovery for the given cause.
+                    Use this command to disable error disable recovery for the given cause.
                 </USAGE>
-                <EXAMPLE summary="Disable ERRDISABLE recovery for udld.">
+                <EXAMPLE summary="Disable error disable recovery for udld.">
                     sonic-cli(config)# no errdisable recovery cause udld
                 </EXAMPLE>
                 <FEATURE> ERRDISABLE </FEATURE>
@@ -139,11 +139,11 @@
         </COMMAND>
 
         <COMMAND name = "errdisable recovery interval"
-            help = "Configures ERRDISABLE recovery interval (30 to 65535)"
+            help = "Configures error disable recovery interval"
             command_tables="sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST/id">
             <PARAM
                 name="interval"
-                help="ERRDISABLE recovery interval (30 to 65535)"
+                help="Error disable recovery interval (sec)"
                 ptype="ERR_DISABLE_INTERVAL"
                 dbpath="sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST/interval"
                 >
@@ -151,12 +151,12 @@
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_interval ${interval}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Configures ERRDISABLE recovery interval. 
+                    Configures error disable recovery interval. 
                 </DESCRIPTION>
                 <USAGE>
                     Use this command to set errdisable recovery interval. Default value is 300.
                 </USAGE>
-                <EXAMPLE summary="Configure ERRDISABLE recovery interval.">
+                <EXAMPLE summary="Configure error disable recovery interval.">
                     sonic-cli(config)# errdisable recovery interval 200
                 </EXAMPLE>
                 <FEATURE> ERRDISABLE </FEATURE>
@@ -164,16 +164,16 @@
         </COMMAND>
 
         <COMMAND name = "no errdisable recovery interval"
-            help = "Resets ERRDISABLE recovery interval">
+            help = "Resets error disable recovery interval to default value">
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_interval 300</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Resets ERRDISABLE recovery interval. 
+                    Resets error disable recovery interval. 
                 </DESCRIPTION>
                 <USAGE>
-                    Use this command to reset ERRDISABLE recovery interval. Default value is 300.
+                    Use this command to reset error disable recovery interval. Default value is 300.
                 </USAGE>
-                <EXAMPLE summary="Reset ERRDISABLE recovery interval.">
+                <EXAMPLE summary="Reset error disable recovery interval.">
                     sonic-cli(config)# errdisable recovery interval 200 
                     sonic-cli(config)# no errdisable recovery interval 
                 </EXAMPLE>
