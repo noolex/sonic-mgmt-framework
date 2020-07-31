@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<ROOT>
+    <MACRODEF name="BIND-INTF-TO-PIM">
+        <COMMAND
+            name="ip pim"
+            help="Add PIM configurations on interface">
+        </COMMAND>
+        <COMMAND
+            name="no ip pim"
+            help="Remove PIM configurations from interface">
+        </COMMAND>
+
+        <COMMAND
+            name="ip pim sparse-mode"
+            command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
+            command_keys="vrf_name=*,address_family=ipv4"
+            dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/mode=sm"
+            help="Enable PIM sparse-mode">
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim patch_pim_interface_config_mode intf:arg1 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no ip pim sparse-mode"
+            help="Disable PIM sparse-mode">
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim del_pim_interface_config_mode intf:arg1 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="ip pim drpriority"
+            command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
+            command_keys="vrf_name=*,address_family=ipv4"
+            help="Set the Designated Router (DR) priority">
+            <PARAM
+                help="Designated Router (DR) Priority"
+                name="drprio"
+                dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/dr-priority"
+                ptype="RANGE_1_4294967295"></PARAM>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim patch_pim_interface_config_drprio intf:arg1 drprio:${drprio} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no ip pim drpriority"
+            help="Clear the Designated Router (DR) priority">
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim del_pim_interface_config_drprio intf:arg1 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="ip pim hello"
+            command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
+            command_keys="vrf_name=*,address_family=ipv4"
+            help="Set the Hello interval">
+            <PARAM
+                help="Hello interval in seconds"
+                name="hello"
+                dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/hello-interval"
+                ptype="RANGE_1_180"></PARAM>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim patch_pim_interface_config_hello intf:arg1 hello:${hello} 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no ip pim hello"
+            help="Clear the Hello interval">
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim del_pim_interface_config_hello intf:arg1 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="ip pim bfd"
+            command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
+            command_keys="vrf_name=*,address_family=ipv4"
+            dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/bfd-enabled=true"
+            help="Enable BFD">
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim patch_pim_interface_config_bfd intf:arg1 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no ip pim bfd"
+            help="Disable BFD">
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_pim del_pim_interface_config_bfd intf:arg1 2>/dev/stdout
+            </ACTION>
+        </COMMAND>
+    </MACRODEF>
+</ROOT>

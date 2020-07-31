@@ -28,9 +28,12 @@ import (
 	"github.com/Azure/sonic-mgmt-common/translib"
 	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
+	"sync"
 )
 
 type UserAuth map[string]bool
+
+var AuthLock sync.Mutex
 
 func (i UserAuth) String() string {
 	if i["none"] {
@@ -132,6 +135,8 @@ func GetUserRoles(usr *user.User) ([]string, error) {
 	return roles, nil
 }
 func PopulateAuthStruct(username string, auth *AuthInfo) error {
+	AuthLock.Lock()
+	defer AuthLock.Unlock()
 	usr, err := user.Lookup(username)
 	if err != nil {
 		return err

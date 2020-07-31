@@ -157,8 +157,8 @@ limitations under the License.
         help="Set routing policy match criteria to ipv6 prefix-list"
         >
         <PARAM name="prefix-list-name"
-                     help="Name of route map (Max size 63)"
-                     ptype="STRING"
+                     help="Name of prefix-list"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_prefix_set"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num} ${prefix-list-name}</ACTION>
@@ -230,7 +230,7 @@ limitations under the License.
         render_command_cb="routemap_match_tag"
         >
         <PARAM name="match-tag"
-                     help="tag value (1-4294967295)"
+                     help="tag value"
                      ptype="RANGE_1_4294967295"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_tag_set_config_tag_value ${name} ${seq_num} ${match-tag}</ACTION>
@@ -250,7 +250,7 @@ limitations under the License.
 
  
     <COMMAND name="match source-vrf" help="Source VRF">
-    <PARAM name="src-vrf" help="The VRF name" ptype="STRING_15" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_src_vrf"/>
+    <PARAM name="src-vrf" help="Name of VRF" ptype="STRING_15" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_src_vrf"/>
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_src_network_instance_config_name ${name} ${seq_num} ${src-vrf}</ACTION>
     </COMMAND>
 
@@ -271,8 +271,8 @@ limitations under the License.
         help="Jump to another Route-Map after match_set"
         >
         <PARAM name="match-call"
-                     help="Target route-map name"
-                     ptype="STRING"
+                     help="Name of route-map"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/call_route_map"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_call_policy ${name} ${seq_num} ${match-call}</ACTION>

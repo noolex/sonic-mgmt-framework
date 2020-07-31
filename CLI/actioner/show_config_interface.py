@@ -216,6 +216,7 @@ def show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx):
 def show_ip_dhcp_relay(render_tables, table_name, key_name, if_name, cmd_prfx):
 
    cmd_str = '' 
+   intf_list = None
    if_name_key = None
    if key_name in render_tables:
      if_name_key = render_tables[key_name]
@@ -226,7 +227,7 @@ def show_ip_dhcp_relay(render_tables, table_name, key_name, if_name, cmd_prfx):
      for intf in intf_list:
          cmd_str = show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx)
 
-   else:
+   elif intf_list:
          cmd_str = show_dhcp_relay(if_name, intf_list, if_name_key, cmd_str, cmd_prfx)
 
    return 'CB_SUCCESS', cmd_str 

@@ -19,7 +19,7 @@ limitations under the License.
       <PARAM name="unicast" help="BGP IPvarg1 unicast" ptype="SUBCOMMAND" mode="subcommand"/>
       <PARAM name="vrf" help="BGP VRF" ptype="SUBCOMMAND" mode="subcommand" order="true" optional="true">
         <PARAM name="vrforall" help="VRF Options" ptype="SUBCOMMAND" mode="switch">
-           <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+           <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
            <PARAM name="all" help="All VRFs" ptype="SUBCOMMAND" mode="subcommand"/>
         </PARAM>
       </PARAM>
@@ -47,7 +47,7 @@ limitations under the License.
           <PARAM name="exact-match" help="Exact match" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
         </PARAM>
         <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND">
-          <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+          <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63"/>
         </PARAM>
         <PARAM name="statistics" help="Stats" ptype="SUBCOMMAND" mode="subcommand"/>
         <MACRO name="IP_BGP_NBR_SUB_CMDS">
@@ -58,7 +58,7 @@ limitations under the License.
     <MACRODEF name="NEW_BGP_CLR_OPTIONS">
       <PARAM name="unicast" help="BGP IPvarg1 unicast" ptype="SUBCOMMAND" mode="subcommand"/>
       <PARAM name="vrf" help="BGP VRF" ptype="SUBCOMMAND" mode="subcommand" order="true" optional="true">
-        <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+        <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
       </PARAM>
       <PARAM name="cleartype" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch" order="true" optional="true">
         <PARAM name="*" help="Clear all peers" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -74,7 +74,7 @@ limitations under the License.
           </PARAM>
         </PARAM>
         <PARAM name="peer-group" help="Peer group to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
-          <PARAM name="peer-group-name" help="Peer-group name" ptype="STRING" optional="true"/>
+          <PARAM name="peer-group-name" help="Name of peer-group" ptype="STRING_63" optional="true"/>
         </PARAM>
       </PARAM>
       <PARAM name="inout_subcommands" help="Clear inout subcommands" ptype="SUBCOMMAND" mode="switch" order="true" optional="true">

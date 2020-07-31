@@ -472,7 +472,7 @@ limitations under the License.
     <PTYPE
         name="VRF_OR_DEFAULT"
         pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(default)$"
-        help="VRF name (prefixed by Vrf, Max: 15 characters) or default"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
@@ -534,7 +534,7 @@ limitations under the License.
     <PTYPE
         name="STRING_15"
         pattern="(^([a-zA-Z0-9_-]){1,15})$"
-        help="String(Max: 15 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
@@ -564,13 +564,19 @@ limitations under the License.
     <PTYPE
         name="STRING_63"
         pattern="(^([a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,62})))$"
-        help="String(Max: 63 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
         name="STRING_72"
         pattern="(^([a-zA-Z0-9]{1}([-a-zA-Z0-9_]{0,71})))$"
         help="String(Max: 72 characters)"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="STRING_240"
+        pattern="([^|]){1,240}"
+        help="STRING"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1087,6 +1093,20 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_60_600"
+        method="integer"
+        pattern="60..600"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="RANGE_31_60000"
+        method="integer"
+        pattern="31..60000"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_1_5000"
         method="integer"
         pattern="1..5000"
@@ -1424,6 +1444,13 @@ limitations under the License.
         name="RANGE_0_47"
         method="integer"
         pattern="0..47"
+        help=""
+        />
+    <!--=======================================================-->
+        <PTYPE
+        name="RANGE_1_180"
+        method="integer"
+        pattern="1..180"
         help=""
         />
     <!--=======================================================-->

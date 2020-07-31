@@ -21,6 +21,7 @@ from jinja2 import Template, Environment, FileSystemLoader
 import collections
 import os
 import sys
+import copy
 
 import cli_client as cc
 from scripts.render_cli import write
@@ -229,13 +230,21 @@ class cli_xml_view:
 
     #only config-view case.
     def process_view_commands_no_table(self, member_keys,indent):
-            
+
         log.debug('ENTER view {} ' .format(self.name))
         if not self.view_cmd_list:
             return CMD_SUCCESS
 
+        #In executing "show running-configuration", a view with no primary table fo e.g. configure-view,
+        #view_keys are not expected. Each command is mapped to a different table, and keys for the command table
+        #are specified by command_keys tag and read later in process_command.
+        #For "show configuration" of a view which is rendered using a callback, keys are specified as argument to
+        #the API. These keys are passed to this function as argument member_keys and
+        #applicable to the parent command which changes to a new view.
+
         for cmd in  self.view_cmd_list:
-            ret, is_view_rendered = process_command(self, None, self.table_list, member_keys, self.dbpathstr,\
+            view_keys = copy.deepcopy(member_keys)
+            ret, is_view_rendered = process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
                                                 False, cmd, indent)
         #Process child views.
 
