@@ -20,6 +20,8 @@ limitations under the License.
 <!ENTITY SLOT_PORT       "([1]/([1-9]|[1-9][0-9]|[1-2][0-9][0-9]))">
 <!ENTITY ETH_PHY_NUM     "([0-9]|[1-9]([0-9])*)">
 <!ENTITY ETH_ALL_INTF    "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM;$)))">
+<!ENTITY ETH_PHY_NUM_ALL  "(([aA]ll\s*)|[0-9]|[1-9]([0-9])*)">
+<!ENTITY ETH_ALL_INTF_ALL "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM_ALL;$)))">
 <!ENTITY SLOT            "([1])">
 <!ENTITY PORT            "([1-9]|[1-9][0-9]|[1-9][0-9][0-9])">
 <!ENTITY SUB_PORT        "([1-9]|[1-9][0-9])">
@@ -1210,6 +1212,15 @@ limitations under the License.
         alt_ext_pattern="Eth(slot/port[/subport])"
         pattern="&ETH_ALL_INTF;"
         alt_pattern="&ETH_ALL_INTF_ALIAS;"
+        help="EthernetNUM"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="PHY_INTERFACE_ALL"
+        method="regexp_select"
+        ext_pattern="Ethernet(all|port-id)"
+        pattern="&ETH_ALL_INTF_ALL;"
         help="EthernetNUM"
         preprocess="mode"
         />
