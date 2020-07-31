@@ -205,7 +205,7 @@ def show_running_fbs_policy(render_tables):
                                     vrf_str = "vrf " + str(nhop["VRF"])
                                 if "PRIORITY" in nhop:
                                     prio_str = "priority " + str(nhop["PRIORITY"])
-                                cmd_str += '  set ip next-hop {} {} {} ;'.format(nhop["IPV6_ADDRESS"], vrf_str, prio_str)
+                                cmd_str += '  set ipv6 next-hop {} {} {} ;'.format(nhop["IP_ADDRESS"], vrf_str, prio_str)
                     elif match_type == 'monitoring':
                         if 'SET_MIRROR_SESSION' in flow_data:
                             cmd_str += '  set mirror-session {} ;'.format(flow_data['SET_MIRROR_SESSION'])
