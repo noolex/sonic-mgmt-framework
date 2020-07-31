@@ -263,16 +263,17 @@ def stp_mode_get(aa):
     stp_mode = None
     stp_resp = None
     try:
-        stp_resp = getattr(aa,"get_openconfig_spanning_tree_stp_global_config_enabled_protocol")(*keypath)
+        #stp_resp = getattr(aa,"get_openconfig_spanning_tree_stp_global_config_enabled_protocol")(*keypath)
+        stp_resp = getattr(aa,"get_openconfig_spanning_tree_stp_global_config")(*keypath)
         if not stp_resp:
            print (" Failed to get STP mode")
            return stp_resp,stp_mode
 
         stp_resp = aa.api_client.sanitize_for_serialization(stp_resp)
 
-        if stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
+        if stp_resp['openconfig-spanning-tree:config']['enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
            stp_mode = "PVST"
-        elif stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
+        elif stp_resp['openconfig-spanning-tree:config']['enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
            stp_mode = "RAPID_PVST"
 
     except ApiException as e:
