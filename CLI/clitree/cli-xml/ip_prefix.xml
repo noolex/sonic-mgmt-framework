@@ -22,11 +22,11 @@ limitations under the License.
 
    <VIEW name="enable-view">
     <COMMAND name="show ip prefix-list" help="IPv4 prefix list">
-        <PARAM name="list-name" help="prefix list name" ptype="STRING" optional="true"> </PARAM>
+        <PARAM name="list-name" help="Name of prefix-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ip_prefix_show_specific show_ip_prefix.j2 ${list-name}</ACTION>
     </COMMAND>
     <COMMAND name="show ipv6 prefix-list" help="IPv6 prefix list">
-        <PARAM name="list-name" help="prefix list name" ptype="STRING" optional="true"> </PARAM>
+        <PARAM name="list-name" help="Name of prefix-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ipv6_prefix_show_specific show_ipv6_prefix.j2 ${list-name}</ACTION>
     </COMMAND>
    </VIEW>
@@ -44,8 +44,8 @@ limitations under the License.
         >
         <PARAM
             name="prefix-name"
-            help="Name of a prefix list"
-            ptype="STRING"
+            help="Name of prefix-list (Max: 63 characters)"
+            ptype="STRING_63"
             >
             <PARAM
                 name="ip-prefix-subcommands"
@@ -149,8 +149,8 @@ limitations under the License.
         >
         <PARAM
             name="prefix-name"
-            help="Name of a prefix list"
-            ptype="STRING"
+            help="Name of prefix-list (Max: 63 characters)"
+            ptype="STRING_63"
             >
             <PARAM
                 name="ipv6-prefix-subcommands"
@@ -250,8 +250,8 @@ limitations under the License.
         >
         <PARAM
             name="prefix-name"
-            help="Name of a prefix list"
-            ptype="STRING"
+            help="Name of prefix-list"
+            ptype="STRING_63"
             >
             <PARAM
                 name="ip-prefix-subcommands"
@@ -353,8 +353,8 @@ limitations under the License.
         >
         <PARAM
             name="prefix-name"
-            help="Name of a prefix list"
-            ptype="STRING"
+            help="Name of prefix-list"
+            ptype="STRING_63"
             >
             <PARAM
                 name="ipv6-prefix-subcommands"
