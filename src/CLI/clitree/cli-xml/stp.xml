@@ -1775,32 +1775,31 @@ limitations under the License.
     </DOCGEN>
     </COMMAND>
 
-    <COMMAND
-        name="spanning-tree guard"
-        help = "Configure spanning tree guard on port-channel"
-        >
-        <PARAM
-            name="root"
-            help="Enables root guard on port-channel"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-        </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "ROOT"
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Configure interface specific guard root parameters.
-        </DESCRIPTION>
-        <USAGE>
-            This commands allows enabling guard root on an interface
-        </USAGE>
-        <EXAMPLE>
+	<COMMAND
+		name="spanning-tree guard"
+		help = "Configure spanning tree guard on port-channel interface"
+	>
+		<PARAM
+			name="guard"
+			help="Configure spanning tree guard mode on port-channel interface"
+			ptype="STP_GUARD_TYPE"
+		>
+		</PARAM>
+	<ACTION>
+		python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} ${guard}
+	</ACTION>
+	<DOCGEN>
+		<DESCRIPTION>
+			Configure interface specific guard parameters.
+		</DESCRIPTION>
+		<USAGE>
+			This commands allows enabling guard on a port-channel interface
+		</USAGE>
+		<EXAMPLE>
             sonic(config)# interface PortChannel 1
-            sonic(conf-if-po1)# spanning-tree guard root 
-        </EXAMPLE>
-    </DOCGEN>
+			sonic(conf-if-po1)# spanning-tree guard root
+		</EXAMPLE>
+	</DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -2094,33 +2093,26 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND
-        name="no spanning-tree guard"
-        help = "Unconfigure spanning tree guard on port-channel"
-        >
-        <PARAM
-            name="root"
-            help="Disables root guard on port-channel"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-        </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "NONE"
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Unonfigure interface specific guard root parameters.
-        </DESCRIPTION>
-        <USAGE>
-            This command allows disabling guard root on an interface
-        </USAGE>
-        <EXAMPLE>
+	<COMMAND
+		name="no spanning-tree guard"
+		help = "Unconfigure spanning tree guard on port-channel interface"
+	>
+	<ACTION>
+		python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name}
+	</ACTION>
+	<DOCGEN>
+		<DESCRIPTION>
+			Unconfigure guard root/loop on a port-channel interface.
+		</DESCRIPTION>
+		<USAGE>
+			This commands allows disabling guard root/loop on a port-channel interface
+		</USAGE>
+		<EXAMPLE>
             sonic(config)# interface PortChannel 1
-            sonic(conf-if-po1)# no spanning-tree guard root 
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
+			sonic(conf-if-po1)# no spanning-tree guard
+		</EXAMPLE>
+	</DOCGEN>
+	</COMMAND>
 
     <COMMAND
         name="no spanning-tree vlan"

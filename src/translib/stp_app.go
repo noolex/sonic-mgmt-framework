@@ -257,7 +257,7 @@ func (app *StpApp) translateCRUCommon(d *db.DB, opcode int) ([]db.WatchKeys, err
 	var keys []db.WatchKeys
 	log.Info("translateCRUCommon:STP:path =", app.pathInfo.Template)
 
-	err = app.convertOCStpGlobalConfToInternal(opcode)
+	err = app.convertOCStpGlobalConfToInternal(opcode, d)
 	if err != nil {
 		return keys, err
 	}
@@ -730,7 +730,7 @@ func (app *StpApp) setStpGlobalConfigInDB(d *db.DB) error {
 	return err
 }
 
-func (app *StpApp) convertOCStpGlobalConfToInternal(opcode int) error {
+func (app *StpApp) convertOCStpGlobalConfToInternal(opcode int, d *db.DB) error {
 	var err error
 	stp := app.getAppRootObject()
 	setDefaultFlag := (opcode == CREATE || opcode == REPLACE)
@@ -775,8 +775,9 @@ func (app *StpApp) convertOCStpGlobalConfToInternal(opcode int) error {
 				(&app.globalInfo).Set("bpdu_filter", STP_DEFAULT_BPDU_FILTER)
 			}
 
+			var mode string
 			if len(stp.Global.Config.EnabledProtocol) > 0 {
-				mode := app.convertOCStpModeToInternal(stp.Global.Config.EnabledProtocol[0])
+				mode = app.convertOCStpModeToInternal(stp.Global.Config.EnabledProtocol[0])
 				if len(mode) > 0 {
 					(&app.globalInfo).Set(STP_MODE, mode)
 				}
@@ -787,6 +788,11 @@ func (app *StpApp) convertOCStpGlobalConfToInternal(opcode int) error {
 					(&app.globalInfo).Set("loop_guard", "true")
 				} else {
 					(&app.globalInfo).Set("loop_guard", "false")
+				}
+			} else if setDefaultFlag {
+				cfgmode, _ := app.getStpModeFromConfigDB(d)
+				if mode == "rpvst" || cfgmode == "rpvst" {
+					(&app.globalInfo).Set("loop_guard", STP_DEFAULT_LOOP_GUARD)
 				}
 			}
 
@@ -2322,7 +2328,7 @@ func (app *StpApp) handleStpGlobalFieldsUpdation(d *db.DB, opcode int) error {
 		}
 	}
 
-	err = d.ModEntry(app.globalTable, asKey("GLOBAL"), tmpDbEntry)
+	err = d.SetEntry(app.globalTable, asKey("GLOBAL"), tmpDbEntry)
 	if err != nil {
 		return err
 	}
