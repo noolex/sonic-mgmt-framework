@@ -1,0 +1,16 @@
+199a200,214
+> bool_t lub_argv__swap_arg (const lub_argv_t *this, unsigned int index1, unsigned int index2) {
+>         char *temp = NULL;
+>         bool_t result = BOOL_FALSE;
+>         if (!this)
+>                 return result;
+>         if ((this->argc > index1) && (this->argc > index2)) {
+>                 temp = this->argv[index1].arg;
+>                 this->argv[index1].arg = this->argv[index2].arg;
+>                 this->argv[index2].arg = temp;
+>                 result = BOOL_TRUE;
+>         }
+>         return result;
+> }
+> 
+> /*--------------------------------------------------------- */
