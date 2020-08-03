@@ -171,7 +171,10 @@ def get_sonic_logging_servers(args=[]):
 def get_sonic_logging(args):
     aa = cc.ApiClient()
     keypath = cc.Path('/restconf/operations/sonic-system-infra:show-sys-log')
-    body = None
+    if len(args) >= 2:
+        body = { "sonic-system-infra:input":{"num_lines": int(args[1])}}
+    else:
+        body = { "sonic-system-infra:input":{"num_lines": 0}}
     templ=args[0]
     api_response = aa.post(keypath, body)
 
@@ -179,7 +182,7 @@ def get_sonic_logging(args):
         if api_response.ok():
            response = api_response.content
            if response is not None and 'sonic-system-infra:output' in response:
-                show_cli_output(templ, response['sonic-system-infra:output']['result'])
+                show_cli_output(templ, response)
     except Exception as e:
         print "%Error: Traction Failure"
 
