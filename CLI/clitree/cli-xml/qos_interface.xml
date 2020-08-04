@@ -595,7 +595,7 @@ limitations under the License.
                 <PARAM
                     name="phy-intf-name"
                     help="Physical Interface"
-                    ptype="PHY_INTERFACE"
+                    ptype="PHY_INTERFACE_ALL"
                     >
                     <PARAM
                         name="queue"
@@ -640,12 +640,18 @@ limitations under the License.
                         python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_statistics  ${phy-intf-name}  show_qos_interface_pfc_statistics.j2&#xA;
                     fi&#xA;
                 elif test "${queue}" != ""; then&#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_queues_queue ${phy-intf-name}:${queue-id} &#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py get_openconfig_qos_qos_queues_queue ${phy-intf-name}:${queue-id} &#xA;
                 else&#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config ${phy-intf-name} &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${phy-intf-name} &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_pfc ${phy-intf-name} &#xA;
-                    python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_watchdog  ${phy-intf-name}  show_qos_interface_pfc_watchdog.j2&#xA;
+                    if test "${phy-intf-name}" = "EthernetAll"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_summary  ${phy-intf-name}  show_qos_interface_summary.j2&#xA;
+                    elif test "${phy-intf-name}" = "Ethernetall"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_summary  ${phy-intf-name}  show_qos_interface_summary.j2&#xA;
+                    else&#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config ${phy-intf-name} &#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${phy-intf-name} &#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_ext_qos_interfaces_interface_pfc ${phy-intf-name} &#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_watchdog  ${phy-intf-name}  show_qos_interface_pfc_watchdog.j2&#xA;
+                    fi&#xA;
                 fi&#xA;
             elif test "${qos-if-subcommands}" = "po-intf-name"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${po-intf-name} &#xA;
