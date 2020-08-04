@@ -27,15 +27,15 @@ def invoke_api(func, args):
            return api.get(path)
 
     elif func == 'patch_sonic_tam_int_ifa_ts_sonic_tam_int_ifa_ts_tam_int_ifa_ts_feature_table_tam_int_ifa_ts_feature_table_list_enable':
-       path = cc.Path('/restconf/data/sonic-tam-int-ifa-ts:sonic-tam-int-ifa-ts/TAM_INT_IFA_TS_FEATURE_TABLE/TAM_INT_IFA_TS_FEATURE_TABLE_LIST={name}/enable', name='feature')
+       path = cc.Path('/restconf/data/sonic-tam-int-ifa-ts:sonic-tam-int-ifa-ts/TAM_INT_IFA_TS_FEATURE_TABLE/TAM_INT_IFA_TS_FEATURE_TABLE_LIST')
        if args[0] == 'enable':
-           body = { "sonic-tam-int-ifa-ts:enable": True }
+           body = { "sonic-tam-int-ifa-ts:TAM_INT_IFA_TS_FEATURE_TABLE_LIST": [{"name": 'feature', "enable": True}] }
        else:
-           body = { "sonic-tam-int-ifa-ts:enable": False }
+           body = { "sonic-tam-int-ifa-ts:TAM_INT_IFA_TS_FEATURE_TABLE_LIST": [{"name": 'feature', "enable": False}] }
        return api.patch(path, body)
 
     elif func == 'patch_sonic_tam_int_ifa_ts_sonic_tam_int_ifa_ts_tam_int_ifa_ts_flow_table_tam_int_ifa_ts_flow_table_list':
-       path = cc.Path('/restconf/data/sonic-tam-int-ifa-ts:sonic-tam-int-ifa-ts/TAM_INT_IFA_TS_FLOW_TABLE/TAM_INT_IFA_TS_FLOW_TABLE_LIST={name}', name=args[0])
+       path = cc.Path('/restconf/data/sonic-tam-int-ifa-ts:sonic-tam-int-ifa-ts/TAM_INT_IFA_TS_FLOW_TABLE/TAM_INT_IFA_TS_FLOW_TABLE_LIST')
        bodydict = {"name": args[0], "acl-table-name": args[1], "acl-rule-name": args[2]}
        body = { "sonic-tam-int-ifa-ts:TAM_INT_IFA_TS_FLOW_TABLE_LIST": [ bodydict ] }
        return api.patch(path, body)
@@ -91,8 +91,6 @@ def get_tam_int_ifa_ts_supported(args):
             api_response['feature'] = response.content['sonic-switch:tam_int_ifa_ts_supported']
         else:
             api_response['feature'] = 'False'
-    else:
-        print "%Error: REST API transaction failure for SWITCH_TABLE"
 
     show_cli_output("show_tam_ifa_ts_feature_supported.j2", api_response)
 
@@ -167,24 +165,8 @@ def run(func, args):
             else:
                 return
     else:
-            api_response = response.content
-            if "ietf-restconf:errors" in api_response:
-                 err = api_response["ietf-restconf:errors"]
-                 if "error" in err:
-                     errList = err["error"]
-
-                     errDict = {}
-                     for dict in errList:
-                         for k, v in dict.iteritems():
-                              errDict[k] = v
-
-                     if "error-message" in errDict:
-                         print "%Error: " + errDict["error-message"]
-                         return
-                     print "%Error: Transaction Failure"
-                     return
+        if response.status_code != 404:
             print response.error_message()
-            print "%Error: Transaction Failure"
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
