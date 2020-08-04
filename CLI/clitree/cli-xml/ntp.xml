@@ -130,7 +130,7 @@ limitations under the License.
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="ip"
-               help="IPv4/IPv6 address NTP server"
+               help="IPv4/IPv6 address of NTP server"
                ptype="IPV4V6_ADDR"
                dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address">
         </PARAM>
