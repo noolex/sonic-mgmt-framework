@@ -120,9 +120,8 @@ def getPauseCounters(ifName, rx):
         Get the counters from specific table.
     """
     err = None
-    pause = [0,0,0,0,0,0,0,0]
-    uriStat = interfacePfcUri
     pause = []
+    uriStat = interfacePfcUri
     for cos in range(0,8):
         keypath = cc.Path(uriStat +  '/pfc-priorities/pfc-priority={dot1p}/state/statistics', intfName=ifName, dot1p=str(cos))
         response = aa.get(keypath)
@@ -131,13 +130,121 @@ def getPauseCounters(ifName, rx):
                 data = response.content['openconfig-qos-ext:statistics']
                 #key = 'pfc' + str(cos)
                 if rx:
-                    pause.append(data['pause-frames-rx'])
+                    pause.append(int(data['pause-frames-rx'], 10))
                 else:
-                    pause.append(data['pause-frames-tx'])
-    if not response.ok():
-        err = response.error_message()
+                    pause.append(int(data['pause-frames-tx'], 10))
+
+    if len(pause) < 8:
+        err = '{0}: unable to fetch pause counters'.format(ifName)
 
     return (err, pause)
+
+def getPortList():
+    path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT/PORT_LIST')
+    response = aa.get(path)
+    portList = []
+    intfList = {}
+    if response.ok() and ('sonic-port:PORT_LIST' in response.content):
+        intfList = response.content['sonic-port:PORT_LIST']
+        for intf in intfList:
+            intfName = intf.get('ifname')
+            if (intfName is None) or (not intfName.startswith('Ethernet')):
+                continue
+            portList.append(intfName)
+    return natsorted(portList)
+
+def getPfcStatistics(ifName):
+    err = None
+    response = aa.cli_not_implemented("")
+    response.status_code = RESPONSE_NO_CONTENT
+    response.set_error_message("No Content Found")
+    response.content = collections.OrderedDict()
+
+    # Build a dictionary of the stats
+    pauseRx = collections.OrderedDict()
+    pauseTx = collections.OrderedDict()
+    err, pauseRx[ifName] = getPauseCounters(ifName, RX_COUNTERS)
+    if err is not None:
+        response.set_error_message(err)
+        return response
+    err, pauseTx[ifName] = getPauseCounters(ifName, TX_COUNTERS)
+    if err is not None:
+        response.set_error_message(err)
+        return response
+
+    ifFrames = {}
+    fcFrames = {}
+    ifFrames['rx'] = pauseRx[ifName]
+    ifFrames['tx'] = pauseTx[ifName]
+    fcFrames[ifName] = ifFrames
+    response.status_code = RESPONSE_OK
+    response.content = collections.OrderedDict(fcFrames)
+    return response
+
+def getPfcQueueStatistics(ifName):
+    path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/queues', interface_id=ifName)
+    response = aa.get(path)
+    ques = []
+    if response.ok() and ('openconfig-qos:queues' in response.content):
+        queues = response.content['openconfig-qos:queues']['queue']
+        for queue in queues:
+            _, q = queue['state']['name'].split(':', 1)
+            ques.append((int(q)))
+        ques = sorted(ques)
+        err = None
+        pfcQueueCounters = collections.OrderedDict()
+        for q in ques:
+            err, pfcQueueCounters[q] = getPfcQueueCounters(ifName, q)
+
+        response = aa.cli_not_implemented("")      # Just to get the proper format to return data and status
+        if len(pfcQueueCounters) == 0:
+            response.status_code = RESPONSE_NO_CONTENT
+            response.set_error_message("No Content Found")
+            response.content = None
+        elif err == None:
+            response.status_code = RESPONSE_OK
+            data = {}
+            data[ifName] = pfcQueueCounters
+            response.content = collections.OrderedDict(data)
+        else:
+            response.status_code = RESPONSE_SRV_ERROR
+            response.set_error_message(err)
+            response.content = None
+    return response
+
+def getQosIntfSummary(ifName):
+    info = { ifName: {} }
+
+    path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/scheduler-policy/config', interface_id=ifName)
+    data = aa.get(path)
+    if (not data.ok()) or (not data.content):
+        data.content['openconfig-qos:config'] = {'name':''}
+    info[ifName].update({'policy': data.content['openconfig-qos:config']['name']})
+
+    path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=ifName)
+    data = aa.get(path)
+    if (not data.ok()) or (not data.content):
+        data.content['openconfig-qos-maps-ext:config'] = {
+            'dscp-to-forwarding-group':'',
+            'dot1p-to-forwarding-group':'',
+            'forwarding-group-to-queue':'',
+            'forwarding-group-to-priority-group':'',
+            'forwarding-group-to-dscp':'',
+            'forwarding-group-to-dot1p':'',
+            'pfc-priority-to-queue':''
+        }
+    info[ifName].update({'interface-maps': data.content['openconfig-qos-maps-ext:config']})
+
+    path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc', interface_id=ifName)
+    data = aa.get(path)
+    if (not data.ok()) or (not data.content):
+        data.content['openconfig-qos-ext:pfc'] = {}
+    info[ifName].update({'pfc': data.content['openconfig-qos-ext:pfc']})
+
+    response = data
+    response.status_code = RESPONSE_OK
+    response.content = info
+    return response
 
 def invoke(func, args):
     body = None
@@ -294,64 +401,64 @@ def invoke(func, args):
         return response
 
     elif func == 'show_port_pfc_statistics':
-        ifName=args[0]
-        # Build a dictionary of the stats
-        pauseRx = collections.OrderedDict()
-        pauseTx = collections.OrderedDict()
-        err, pauseRx[ifName] = getPauseCounters(ifName, RX_COUNTERS)
-        if err == None:
-          err, pauseTx[ifName] = getPauseCounters(ifName, TX_COUNTERS)
-
-        response=aa.cli_not_implemented("")      # Just to get the proper format to return data and status
-        if (len(pauseRx[ifName]) == 0) or not (err == None):
-            response.status_code = RESPONSE_NO_CONTENT
-            response.set_error_message("No Content Found")
-            response.content = None
-        elif err == None:
-            ifFrames = {}
-            fcFrames = {}
-            ifFrames['rx'] = pauseRx[ifName]
-            ifFrames['tx'] = pauseTx[ifName]
-            fcFrames[ifName] = ifFrames
+        response = None
+        if args[0] in [ 'EthernetAll', 'Ethernetall' ]:
+            response = aa.cli_not_implemented("")
             response.status_code = RESPONSE_OK
-            response.content = collections.OrderedDict(fcFrames)
+            response.content = collections.OrderedDict()
+            for port in getPortList():
+                data = getPfcStatistics(port)
+                if (data is None) or (not data.ok()):
+                    continue
+                response.content.update(data.content)
         else:
-            response.status_code = RESPONSE_SRV_ERROR
-            response.set_error_message(err)
-            response.content = None
+            response = getPfcStatistics(args[0])
         return response
 
     elif func == 'show_port_pfc_queue_statistics':
-        ifName=args[0]
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/queues', interface_id=ifName)
-        response = aa.get(path)
-        ques = []
-        if response.ok() and 'openconfig-qos:queues' in response.content.keys():
-          queues = response.content['openconfig-qos:queues']['queue']
-          for queue in queues:
-            _, q = queue['state']['name'].split(':', 1)
-            ques.append((int(q)))
-        ques = sorted(ques)
-        err = None
-        pfcQueueCounters = collections.OrderedDict()
-        for q in ques:
-            err, pfcQueueCounters[q] = getPfcQueueCounters(ifName, q)
-
-        response=aa.cli_not_implemented("")      # Just to get the proper format to return data and status
-        if len(pfcQueueCounters) == 0:
-            response.status_code = RESPONSE_NO_CONTENT
-            response.set_error_message("No Content Found")
-            response.content = None
-        elif err == None:
+        response = None
+        if args[0] in [ 'EthernetAll', 'Ethernetall' ]:
+            response = aa.cli_not_implemented("")
             response.status_code = RESPONSE_OK
-            data = {}
-            data[ifName] = pfcQueueCounters
-            response.content = collections.OrderedDict(data)
+            response.content = collections.OrderedDict()
+            for port in getPortList():
+                data = getPfcQueueStatistics(port)
+                if (data is None) or (not data.ok()):
+                    continue
+                response.content.update(data.content)
         else:
-            response.status_code = RESPONSE_SRV_ERROR
-            response.set_error_message(err)
-            response.content = None
+            response = getPfcQueueStatistics(args[0])
         return response
+
+    elif func == 'show_port_pfc_summary':
+        response = None
+        if args[0] in [ 'EthernetAll', 'Ethernetall' ]:
+            response = aa.cli_not_implemented("")
+            response.status_code = RESPONSE_OK
+            response.content = collections.OrderedDict()
+            for port in getPortList():
+                data = getQosIntfSummary(port)
+                if (data is None) or (not data.ok()):
+                    continue
+                response.content.update(data.content)
+        else:
+            response = getQosIntfSummary(args[0])
+        return response
+
+    elif func == 'get_openconfig_qos_qos_queues_queue':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/queues/queue={name}', name=args[0])
+        tmpl = 'show_qos_queue_config.j2'
+        if args[0].split(':')[0] in [ 'EthernetAll', 'Ethernetall' ]:
+            path = cc.Path('/restconf/data/openconfig-qos:qos/queues')
+            tmpl = 'show_qos_queue_config_all.j2'
+        data = aa.get(path)
+        if data.ok():
+            od = collections.OrderedDict()
+            for port in natsorted(data.content.keys()):
+                od[port] = data.content[port]
+            data.content = od
+            show_cli_output(tmpl, data)
+        return None
 
     else:
         print("%Error: not implemented")
