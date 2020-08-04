@@ -436,7 +436,7 @@ limitations under the License.
         />
         <PARAM
                 name="vlan-if-name"
-                help="Enter VLAN global configuration"
+                help="Enter VLAN configuration"
                 ptype="VLAN_INTERFACE"
                 view="configure-vlan-view"
                 dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name"

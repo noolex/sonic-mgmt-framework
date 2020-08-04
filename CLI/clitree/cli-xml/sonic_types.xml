@@ -485,7 +485,7 @@ limitations under the License.
     <PTYPE
         name="HOSTNAME_STR_64"
         pattern="(&HOSTNAME_PATTERN_64;)"
-        help="Hostname string(Max: 64 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE

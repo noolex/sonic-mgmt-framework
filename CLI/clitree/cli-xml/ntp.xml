@@ -113,7 +113,7 @@ limitations under the License.
 
     <!-- NTP configuration commands -->
     <COMMAND name="ntp"
-             help="NTP configuration">
+             help="Configure NTP servers">
     </COMMAND>
 
     <COMMAND name="no ntp"
@@ -126,16 +126,16 @@ limitations under the License.
              mode="subcommand"
              command_tables="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address={addr}">
       <PARAM name="svropt"
-             help="NTP server address"
+             help="Address of NTP server"
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="ip"
-               help="NTP server IPv4/IPv6 address"
+               help="IPv4/IPv6 address NTP server"
                ptype="IPV4V6_ADDR"
                dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address">
         </PARAM>
         <PARAM name="server-name"
-               help="NTP server name"
+               help="Hostname of NTP server (Max: 253 characters)"
                ptype="HOSTNAME_STR_64"
                dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address">
         </PARAM>
@@ -151,8 +151,8 @@ limitations under the License.
           <USAGE>
               sonic(config)# ntp server NTP-SERVER-IP
               sonic(config)# ntp server NTP-SERVER-HOST-NAME
-              NTP-SERVER-IP:        A.B.C.D/A::B                         NTP server IPv4/IPv6 address
-              NTP-SERVER-HOST-NAME: Hostname string(Max: 64 characters)  NTP server name
+              NTP-SERVER-IP:        A.B.C.D/A::B                         IPv4/IPv6 address of NTP server
+              NTP-SERVER-HOST-NAME: WORD (Max: 253 characters)           Hostname of NTP server
           </USAGE>
           <EXAMPLE summary="Configure a NTP server">
               sonic# configure
@@ -166,15 +166,15 @@ limitations under the License.
     <COMMAND name="no ntp server"
              help="Delete NTP server">
       <PARAM name="svropt"
-             help="NTP server address"
+             help="Address of NTP server"
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="ip"
-               help="NTP server IPv4/IPv6 address"
+               help="IPv4/IPv6 address of NTP server"
                ptype="IPV4V6_ADDR">
         </PARAM>
         <PARAM name="server-name"
-               help="NTP server name"
+               help="Hostname of NTP server"
                ptype="HOSTNAME_STR_64">
         </PARAM>
       </PARAM>
@@ -189,8 +189,8 @@ limitations under the License.
           <USAGE>
               sonic(config)# no ntp server NTP-SERVER-IP
               sonic(config)# no ntp server NTP-SERVER-HOST-NAME
-              NTP-SERVER-IP:        A.B.C.D/A::B                         NTP server IPv4/IPv6 address
-              NTP-SERVER-HOST-NAME: Hostname string(Max: 64 characters)  NTP server name
+              NTP-SERVER-IP:        A.B.C.D/A::B         IPv4/IPv6 address of NTP server
+              NTP-SERVER-HOST-NAME: WORD                 Hostname of NTP server
           </USAGE>
           <EXAMPLE summary="Delete a NTP server">
               sonic# configure
