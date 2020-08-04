@@ -456,9 +456,12 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/enabled', name=args[0], index="0")
         if args[1] == "True":
             body = {"openconfig-igmp-ext:enabled" : True}
-        else :
-            body = {"openconfig-igmp-ext:enabled" : False}
         return api.patch(path, body)
+
+    # Disable IGMP
+    elif func == 'patch_openconfig_if_ip_disable_igmp':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config', name=args[0], index="0")
+        return api.delete(path)
 
     # Configure IGMP Version
     elif func == 'patch_openconfig_igmp_version_config':
