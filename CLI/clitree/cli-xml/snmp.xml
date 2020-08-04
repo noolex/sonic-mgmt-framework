@@ -273,7 +273,9 @@ Before each command articulation, a comment is shown with the desired command sy
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="snmp-server agentaddress" help="Configure SNMP agent address">
+  <COMMAND name="snmp-server agentaddress" help="Configure SNMP agent address"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_AGENT_ADDRESS_CONFIG/"
+           render_command_cb="snmp_agentaddress">
     <PARAM name="host-addr" help="IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR">
       <PARAM name="port" help="UDP listening port" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="udp-port" help="UDP listening port" ptype="LISTEN_PORT" />
