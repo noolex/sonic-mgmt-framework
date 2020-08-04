@@ -90,7 +90,9 @@ def invoke_api(func, args=[]):
             if localaddr == "null":
 		return api._make_error_response('%Error: Local Address must be configured for multi-hop peer')
 
-            keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-mhop-sessions/multi-hop={address},{interfacename},{vrfname},{localaddress}/config/enabled', address=peeraddr, interfacename=intfname, vrfname=vrf, localaddress=localaddr)
+            keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-mhop-sessions/multi-hop')
+
+            body = {"openconfig-bfd-ext:multi-hop": [{"interface":intfname,"local-address":localaddr,"remote-address":peeraddr,"vrf":vrf,"config":{"interface":intfname, "local-address":localaddr,"remote-address":peeraddr,"vrf":vrf,"enabled": True}}]}
         else:
             if intfname == "null":
                 return api._make_error_response('%Error: Interface must be configured for single-hop peer')
@@ -98,9 +100,10 @@ def invoke_api(func, args=[]):
             if (("fe80:" in peeraddr) and (localaddr == "null")):
                 return api._make_error_response('%Error: Local address must be configured for IPv6 link-local peer')             
 
-            keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-shop-sessions/single-hop={address},{interfacename},{vrfname},{localaddress}/config/enabled', address=peeraddr, interfacename=intfname, vrfname=vrf, localaddress=localaddr)
+            keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-shop-sessions/single-hop')
 
-        body = {"openconfig-bfd-ext:enabled": True}
+            body = {"openconfig-bfd-ext:single-hop": [{"interface":intfname,"local-address":localaddr,"remote-address":peeraddr,"vrf":vrf,"config":{"interface":intfname, "local-address":localaddr,"remote-address":peeraddr,"vrf":vrf,"enabled": True}}]}
+
         return api.patch(keypath, body)
 
     elif func == 'patch_openconfig_bfd_ext_bfd_sessions_enable':
