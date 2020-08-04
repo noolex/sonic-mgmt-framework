@@ -217,7 +217,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV6 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; route-map:${route-map} rtemap:${rtemap}</ACTION>
   </COMMAND>
   <COMMAND name="filter-list" help="Establish BGP filters" render_command_cb="bgp_nbr_af_flist">
-    <PARAM name="fname" help="AS path access-list name" ptype="STRING">
+    <PARAM name="fname" help="Name of as-path-list" ptype="STRING_63">
       <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -230,7 +230,7 @@ limitations under the License.
      <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV6 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; force:${force}</ACTION>
   </COMMAND>
   <COMMAND name="prefix-list" help="Filter updates to/from this neighbor" render_command_cb="bgp_nbr_af_plist">
-    <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
+    <PARAM name="pname" help="Name of prefix-list" ptype="STRING_63">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -336,7 +336,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV6 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; rtemap:${rtemap}</ACTION>
   </COMMAND>
   <COMMAND name="no filter-list" help="Establish BGP filters">
-    <PARAM name="fname" help="AS path access-list name" ptype="STRING">
+    <PARAM name="fname" help="Name of as-path-list" ptype="STRING_63">
       <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -349,7 +349,7 @@ limitations under the License.
      <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV6 ${vrf-name} ${nbr-addr} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no prefix-list" help="Filter updates to/from this neighbor">
-    <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
+    <PARAM name="pname" help="Name of prefix-list" ptype="STRING_63">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -462,7 +462,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV6 ${vrf-name} ${template-name} ${__cmd} &#xA; route-map:${route-map} rtemap:${rtemap}</ACTION>
   </COMMAND>
   <COMMAND name="filter-list" help="Establish BGP filters" render_command_cb="bgp_pg_af_flist">
-    <PARAM name="fname" help="AS path access-list name" ptype="STRING">
+    <PARAM name="fname" help="Name of as-path-list" ptype="STRING_63">
       <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -475,7 +475,7 @@ limitations under the License.
      <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV6 ${vrf-name} ${template-name} ${__cmd} &#xA; force:${force}</ACTION>
   </COMMAND>
   <COMMAND name="prefix-list" help="Filter updates to/from this neighbor" render_command_cb="bgp_pg_af_plist">
-    <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
+    <PARAM name="pname" help="Name of prefix-list" ptype="STRING_63">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -589,8 +589,9 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV6 ${vrf-name} ${template-name} ${__cmd} &#xA; rtemap:${rtemap}</ACTION>
   </COMMAND>
   <COMMAND name="no filter-list" help="Establish BGP filters">
-    <PARAM name="fname" help="AS path access-list name" ptype="STRING">
-      <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND"> <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
+    <PARAM name="fname" help="Name of as-path-list" ptype="STRING_63">
+      <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
+        <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
       </PARAM>
     </PARAM>
@@ -601,7 +602,7 @@ limitations under the License.
      <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV6 ${vrf-name} ${template-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no prefix-list" help="Filter updates to/from this neighbor">
-    <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
+    <PARAM name="pname" help="Name of prefix-list" ptype="STRING_63">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>

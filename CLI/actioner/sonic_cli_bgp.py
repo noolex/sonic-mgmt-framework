@@ -311,6 +311,63 @@ def generate_show_bgp_routes(args):
 
    return d
 
+def generate_show_bgp_neighbors(args):
+   api = cc.ApiClient()
+   body = None
+   afisafi = "IPV4_UNICAST"
+   vrf = "default"
+   querytype = None
+   i = 0
+   for arg in args:
+        if "vrf" == arg:
+           vrf = args[i+1]
+        elif "ipv4" == arg:
+           afisafi = "IPV4_UNICAST"
+        elif "ipv6" == arg:
+           afisafi = "IPV6_UNICAST"
+        elif "summary" == arg:
+           querytype = 'SUMMARY'
+        i = i + 1
+   d = {}
+   # RPC to fetch the data
+   keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp')
+   inputs = {"vrf-name":vrf, "address-family":afisafi}
+   if querytype:
+      inputs['query-type'] = querytype
+
+   body = {"sonic-bgp-show:input": inputs}
+   response = api.post(keypath, body)
+   if not response:
+       # unknown error (bad input?)
+       return 1
+   if(response.ok()):
+      d = response.content['sonic-bgp-show:output']['response']
+      if len(d) != 0 and "warning" not in d and "Unknown command:" not in d:
+         try:
+            d = json.loads(d, object_pairs_hook=OrderedDict)
+         except:
+            # unknown or missing output
+            return 1
+
+         if querytype == "SUMMARY":
+            if (not len(d)):
+                print("% No BGP neighbors found")
+                return 1
+            if afisafi == "IPV4_UNICAST":
+                unicast_type = 'ipv4Unicast'
+            elif afisafi == "IPV6_UNICAST":
+                unicast_type = 'ipv6Unicast'
+            d['max_nbr_col_len'] = len(max(d[unicast_type]['peers'].keys(), key=len))
+            d['addr_family'] = afisafi
+            show_cli_output('show_ip_bgp_summary_rpc.j2', d)
+            return 0
+      else:
+          d = json.loads(d)
+          print(d['warning'])
+   else:
+      print response.error_message()
+      return 1
+
 def generate_show_bgp_vrf_all(args):
     api = cc.ApiClient()
     keypath = []
@@ -2819,6 +2876,112 @@ def parsePeergV6(vrf_name, template_name, cmd, args=[]):
         return 1
     return rc
 
+def parseNeighEvpn(vrf_name, nbr_addr, cmd, args=[]):
+    argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'allowas-in':
+        if argds.get('value'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'value'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'value'))
+        if argds.get('origin'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + [ 'True' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + [ 'False' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + [ 'True' ])
+    elif cmd == 'route-map':
+        if argds.get('direction') == 'in':
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'attribute-unchanged':
+        optstr = argds.get('as-path', '') + argds.get('med', '') + argds.get('next-hop', '')
+        if optstr == '' or optstr == 'as-pathmednext-hop':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + [ 'as-path', 'med', 'next-hop' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'as-path', 'med', 'next-hop'))
+    elif cmd == 'next-hop-self':
+        if not argds.get('force'):
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ]  + [ 'True' ] + mkArgds2list(argds, 'force'))
+    elif cmd == 'no allowas-in':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'value'))
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + [ 'False' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ])
+    elif cmd == 'no route-map':
+        if argds.get('direction') == 'in':
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+        elif argds.get('direction') == 'out':
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'no attribute-unchanged':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_as_path', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_med', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_next_hop', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ])
+    elif cmd == 'no next-hop-self':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_enabled', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, nbr_addr, 'L2VPN_EVPN' ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
+
+def parsePeergEvpn(vrf_name, template_name, cmd, args=[]):
+    argds = mkArgs2dict(args)
+
+    rc = 0
+    if cmd == 'allowas-in':
+        if argds.get('value'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'value'))
+        else:
+            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'value'))
+        if argds.get('origin'):
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'L2VPN_EVPN' ] + [ 'True' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'L2VPN_EVPN' ] + [ 'False' ])
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, template_name, 'L2VPN_EVPN' ] + [ 'True' ])
+    elif cmd == 'route-map':
+        if argds.get('direction') == 'in':
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+            rc += parseInvoke_api('PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'attribute-unchanged':
+        optstr = argds.get('as-path', '') + argds.get('med', '') + argds.get('next-hop', '')
+        if optstr == '' or optstr == 'as-pathmednext-hop':
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, template_name, 'L2VPN_EVPN' ] + [ 'as-path', 'med', 'next-hop' ])
+        else:
+            rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'as-path', 'med', 'next-hop'))
+    elif cmd == 'next-hop-self':
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config', [ vrf_name, template_name, 'L2VPN_EVPN' ]  + [ 'True' ] + mkArgds2list(argds, 'force'))
+        if not argds.get('force'):
+           rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, template_name, 'L2VPN_EVPN' ])
+    elif cmd == 'no allowas-in':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'value'))
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin', [ vrf_name, template_name, 'L2VPN_EVPN' ] + [ 'False' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled', [ vrf_name, template_name, 'L2VPN_EVPN' ] + [ 'False' ])
+    elif cmd == 'no route-map':
+        if argds.get('direction') == 'in':
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+        elif argds.get('direction') == 'out':
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+        else:
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+            rc += parseInvoke_api('DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy', [ vrf_name, template_name, 'L2VPN_EVPN' ] + mkArgds2list(argds, 'route-name-str'))
+    elif cmd == 'no attribute-unchanged':
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_as_path', [ vrf_name, template_name, 'L2VPN_EVPN' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_med', [ vrf_name, template_name, 'L2VPN_EVPN' ])
+        rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_next_hop', [ vrf_name, template_name, 'L2VPN_EVPN' ])
+    elif cmd == 'no next-hop-self':
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_enabled', [ vrf_name, template_name, 'L2VPN_EVPN' ])
+        rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_force', [ vrf_name, template_name, 'L2VPN_EVPN' ])
+    else:
+        print cc.ApiClient().cli_not_implemented(cmd).error_message()
+        return 1
+    return rc
+
 def parseGloblShow(vrf_name, cmd, args=[]):
     if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
         try:
@@ -2853,10 +3016,7 @@ def parseGloblShow(vrf_name, cmd, args=[]):
                 show_cli_output('show_ip_bgp_neighbors.j2', response)
             return 0
         elif args[0] == 'summary':
-            response = invoke_show_api('get_ip_bgp_summary', [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4' ])
-            show_cli_output('show_ip_bgp_summary.j2', response)
-            return 0
-
+            return generate_show_bgp_neighbors(args)
         else:
             return generate_show_bgp_routes(args)
 
@@ -2909,12 +3069,16 @@ def invoke_parse(pycmd, args=[]):
         return parseNeighV4(args[0], args[1], cmd, args[idx:])
     elif op == 'NbrV6':
         return parseNeighV6(args[0], args[1], cmd, args[idx:])
+    elif op == 'NbrEvpn':
+        return parseNeighEvpn(args[0], args[1], cmd, args[idx:])
     elif op == 'Pgp':
         return parsePeerg(args[0], args[1], cmd, args[idx:])
     elif op == 'PgpV4':
         return parsePeergV4(args[0], args[1], cmd, args[idx:])
     elif op == 'PgpV6':
-        return parsePeergV6(args[0], args[1], cmd, args[idx:])
+        return parsePeergV6(args[0], args[1], cmd, args[idx:])       
+    elif op == 'PgpEvpn':
+        return parsePeergEvpn(args[0], args[1], cmd, args[idx:]) 
     elif op == 'GblShow':
         return parseGloblShow(args[0], cmd, args[idx:])
 
