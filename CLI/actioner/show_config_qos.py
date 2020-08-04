@@ -169,7 +169,7 @@ def show_qos_intf_pfc(render_tables):
             if 'pfc_enable' in port_qos_map:
                priorities = port_qos_map['pfc_enable'].split(',')
                for prio in priorities:
-                   cmd_str += 'pfc priority ' + prio + ';'
+                   cmd_str += 'priority-flow-control priority ' + prio + ';'
     
     if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
         port_inst = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
@@ -177,7 +177,7 @@ def show_qos_intf_pfc(render_tables):
            if ifkey == port_inst['ifname']:
               if 'pfc_asym' in port_inst:
                  if port_inst['pfc_asym'] == 'on':
-                    cmd_str += 'pfc asymmetric' + ';'
+                    cmd_str += 'priority-flow-control asymmetric' + ';'
 
     return 'CB_SUCCESS', cmd_str
 
@@ -210,6 +210,71 @@ def show_qos_intf_scheduler_policy(render_tables):
                 cmd_str += 'scheduler-policy ' + sched.split('@')[0] + ';'
                 return 'CB_SUCCESS', cmd_str
     return 'CB_SUCCESS', cmd_str
+
+def show_qos_intf_pfc_wd(render_tables):
+    cmds = []
+    ifkey = ''
+
+    if 'name' in render_tables:
+        ifkey = render_tables['name']
+
+    pfc_wd_list = None
+    if 'sonic-qos-pfc:sonic-qos-pfc/PFC_WD' in render_tables:
+        pfc_wd_list = render_tables['sonic-qos-pfc:sonic-qos-pfc/PFC_WD'].get('PFC_WD_LIST')
+
+    if pfc_wd_list is None:
+        pfc_wd_list = []
+
+    for intf in pfc_wd_list:
+        if ifkey != intf.get('ifname'):
+            continue
+        val = intf.get('action')
+        if val is not None:
+            cmds.append("priority-flow-control watchdog action {0}".format(val))
+        val = intf.get('detection_time')
+        if val is not None:
+            cmds.append("priority-flow-control watchdog detect-time {0}".format(val))
+        val = intf.get('restoration_time')
+        if val is not None:
+            cmds.append("priority-flow-control watchdog restore-time {0}".format(val))
+        break
+
+    return 'CB_SUCCESS', "\n ".join(cmds)
+
+def show_qos_pfc_wd(render_tables):
+    cmds = []
+
+    pfc_wd_list = None
+    if 'sonic-qos-pfc:sonic-qos-pfc/PFC_WD' in render_tables:
+        pfc_wd_list = render_tables['sonic-qos-pfc:sonic-qos-pfc/PFC_WD'].get('PFC_WD_LIST')
+
+    if pfc_wd_list is None:
+        pfc_wd_list = []
+
+    for row in pfc_wd_list:
+        if 'GLOBAL' != row.get('ifname'):
+            continue
+        val = row.get('POLL_INTERVAL')
+        if val is not None:
+            cmds.append("priority-flow-control watchdog polling-interval {0}".format(val))
+        break
+
+    pfc_wd_list = None
+    if 'sonic-qos-pfc:sonic-qos-pfc/FLEX_COUNTER_TABLE' in render_tables:
+        pfc_wd_list = render_tables['sonic-qos-pfc:sonic-qos-pfc/FLEX_COUNTER_TABLE'].get('FLEX_COUNTER_TABLE_LIST')
+
+    if pfc_wd_list is None:
+        pfc_wd_list = []
+
+    for row in pfc_wd_list:
+        if 'PFCWD' != row.get('id'):
+            continue
+        val = row.get('FLEX_COUNTER_STATUS')
+        if val == 'disable':
+            cmds.append("no priority-flow-control watchdog counter-poll")
+        break
+
+    return 'CB_SUCCESS', "\n".join(cmds)
 
 def show_scheduler_policy(render_tables):
     #print ("main cb: render_tables: ", render_tables)
