@@ -41,7 +41,7 @@ limitations under the License.
     <COMMAND
         name="nat"
         view="configure-nat-view"
-        help="Enter NAT global configuration"
+        help="Enter NAT configuration"
         view_keys="name=Values"
         view_tables="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/name={name}"
         dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/name=Values"

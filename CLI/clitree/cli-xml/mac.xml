@@ -91,29 +91,22 @@ limitations under the License.
             >
             <PARAM
                 name="phy-if-name"
-                help="Ethernet IEEE 802.3"
+                help="Ethernet ID"
                 ptype="PHY_INTERFACE"
                 >
             </PARAM>
             <PARAM
                 name="PortChannel"
                 help="PortChannel ID"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
+                ptype="PO_INTERFACE"
                 >
-                <PARAM
-                    name="port-channel-id"
-                    help="PortChannel id"
-                    ptype="LAG_ID"
-                    >
-                </PARAM>
             </PARAM>
         </PARAM>
     <ACTION>
         if test "${if-subcommands}" = "phy-if-name"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 interface ${phy-if-name}&#xA; 
         elif test "${if-subcommands}" = "PortChannel"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 interface PortChannel${port-channel-id}&#xA; 
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 interface ${PortChannel}&#xA; 
         else&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 ${__full_line}&#xA;
         fi	
@@ -147,15 +140,9 @@ limitations under the License.
             <PARAM
                 name="Vlan"
                 help="VLAN ID"
-                ptype="SUBCOMMAND"
+                ptype="VLAN_INTERFACE"
                 mode="subcommand"
                 >
-                <PARAM
-                    name="vlan-id"
-                    help="Vlan id"
-                    ptype="VLAN_ID"
-                    >
-                </PARAM>
             </PARAM>
             <PARAM
                 name="interface"
@@ -171,22 +158,15 @@ limitations under the License.
                     >
                     <PARAM
                         name="phy-if-name"
-                        help="Ethernet IEEE 802.3"
+                        help="Ethernet ID"
                         ptype="PHY_INTERFACE"
                         >
                     </PARAM>
                     <PARAM
                         name="PortChannel"
-                        help="PortChannel id"
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
+                        help="PortChannel ID"
+                        ptype="PO_INTERFACE"
                         >
-                        <PARAM
-                            name="port-channel-id"
-                            help="PortChannel id"
-                            ptype="LAG_ID"
-                            >
-                        </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
@@ -195,10 +175,10 @@ limitations under the License.
         if test "${s-subcommands}" = "address"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static address ${mac-addr}&#xA; 
         elif test "${s-subcommands}" = "Vlan"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static vlan ${vlan-id}&#xA; 
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static vlan ${Vlan}&#xA; 
         elif test "${s-subcommands}" = "interface"; then&#xA;
             if test "${interface-subcommand}" = "PortChannel"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static interface PortChannel${port-channel-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static interface ${PortChannel}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 static interface ${phy-if-name}&#xA;
             fi&#xA;
@@ -235,15 +215,9 @@ limitations under the License.
             <PARAM
                 name="Vlan"
                 help="VLAN ID"
-                ptype="SUBCOMMAND"
+                ptype="VLAN_INTERFACE"
                 mode="subcommand"
                 >
-                <PARAM
-                    name="vlan-id"
-                    help="VLAN ID"
-                    ptype="VLAN_ID"
-                    >
-                </PARAM>
             </PARAM>
             <PARAM
                 name="interface"
@@ -259,22 +233,15 @@ limitations under the License.
                     >
                     <PARAM
                         name="phy-if-name"
-                        help="Ethernet IEEE 802.3"
+                        help="Ethernet ID"
                         ptype="PHY_INTERFACE"
                         >
                     </PARAM>
                     <PARAM
                         name="PortChannel"
                         help="Dynamic PortChannel"
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
+                        ptype="PO_INTERFACE"
                         >
-                        <PARAM
-                            name="port-channel-id"
-                            help="PortChannel id"
-                            ptype="LAG_ID"
-                            >
-                        </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
@@ -283,10 +250,10 @@ limitations under the License.
         if test "${d-subcommands}" = "address"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic address ${mac-addr}&#xA;
         elif test "${d-subcommands}" = "Vlan"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic vlan ${vlan-id}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic vlan ${Vlan}&#xA;
         elif test "${d-subcommands}" = "interface"; then&#xA;
             if test "${interface-subcommand}" = "PortChannel"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface PortChannel${port-channel-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface $(PortChannel}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface ${phy-if-name}&#xA;
             fi&#xA;
@@ -366,29 +333,17 @@ limitations under the License.
                     >
                     <PARAM
                         name="Ethernet"
-                        help="Ethernet IEEE 802.3"
-                        ptype="SUBCOMMAND"
+                        help="Ethernet ID"
+                        ptype="PHY_INTERFACE"
                         mode="subcommand"
                         >
-                        <PARAM
-                            name="phy-if-id"
-                            help="Physical interface"
-                            ptype="UINT"
-                            >
-                        </PARAM>
                     </PARAM>
                     <PARAM
                         name="PortChannel"
                         help="Dynamic PortChannel"
-                        ptype="SUBCOMMAND"
+                        ptype="PO_INTERFACE"
                         mode="subcommand"
                         >
-                        <PARAM
-                            name="port-channel-id"
-                            help="PortChannel id"
-                            ptype="LAG_ID"
-                            >
-                        </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
@@ -400,9 +355,9 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb VLAN Vlan${vlan-id}&#xA;
         elif test "${d-subcommands}" = "interface"; then&#xA;
             if test "${interface-subcommand}" = "PortChannel"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb PORT PortChannel${port-channel-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb PORT ${PortChannel}&#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb PORT Ethernet${phy-if-id}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_sonic_fdb_clear_fdb PORT ${Ethernet}&#xA;
             fi&#xA;
         else&#xA;
             builtin="clish_nop"&#xA;
@@ -415,67 +370,48 @@ limitations under the License.
 <!--====================mac add command======================-->
     <COMMAND
         name="mac-address"
-        help="Static MAC configuration"
-        >
-    </COMMAND>
-    <COMMAND
-        name="mac-address add"
-        help="Add static MAC" command_tables="sonic-fdb:sonic-fdb/FDB/FDB_LIST" render_command_cb="mac_source_if">
-        <PARAM name="address" help="Static MAC address" mode="subcommand" ptype="SUBCOMMAND">
+        help="Configure static MAC" mode="subcommand" ptype="SUBCOMMAND" command_tables="sonic-fdb:sonic-fdb/FDB/FDB_LIST" render_command_cb="mac_source_if">
             <PARAM name="mac-address" help="MAC address" ptype="MAC_ADDR">
-                <PARAM name="vlan" help="" mode="subcommand" ptype="SUBCOMMAND">
-                    <PARAM name="vlan-id" help="vlan id" ptype="VLAN_ID">
+                <PARAM name="vlan" help="VLAN ID" mode="subcommand" ptype="VLAN_INTERFACE">
+                    <PARAM
+                        name="if-subcommand"
+                        help="Interface subcommands"
+                        mode="switch"
+                        ptype="SUBCOMMAND"
+                        >
                         <PARAM
-                            name="if-subcommands"
-                            help="Interface subcommands"
-                            mode="switch"
-                            ptype="SUBCOMMAND"
+                            name="phy-if-name"
+                            help="Ethernet ID"
+                            ptype="PHY_INTERFACE"
                             >
-                            <PARAM
-                                name="phy-if-name"
-                                help="Ethernet IEEE 802.3"
-                                ptype="PHY_INTERFACE"
-                                >
-                            </PARAM>
-                            <PARAM
-                                name="PortChannel"
-                                help="Port-channel ID"
-                                ptype="SUBCOMMAND"
-                                mode="subcommand"
-                                >
-                                <PARAM
-                                    name="port-channel-id"
-                                    help="Port-channel id"
-                                    ptype="LAG_ID"
-                                    >
-                                </PARAM>
-                            </PARAM>
+                        </PARAM>
+                        <PARAM
+                            name="PortChannel"
+                            help="PortChannel ID"
+                            ptype="PO_INTERFACE"
+                            mode="subcommand"
+                            >
                         </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
-        </PARAM>
     <ACTION>
         if test "${if-subcommand}" = "PortChannel"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id} PortChannel${port-channel-id}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan} ${PortChannel}&#xA;
         else&#xA;
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id} ${phy-if-name}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan} ${phy-if-name}&#xA;
         fi&#xA;
     </ACTION>
     </COMMAND>
     <COMMAND
-        name="mac-address del"
-        help="Delete static MAC" >
-        <PARAM name="address" help="Static MAC address" mode="subcommand" ptype="SUBCOMMAND">
+        name="no mac-address"
+        help="Delete static MAC" mode="subcommand" ptype="SUBCOMMAND">
             <PARAM name="mac-address" help="MAC address" ptype="MAC_ADDR">
-                <PARAM name="vlan" help="" mode="subcommand" ptype="SUBCOMMAND">
-                    <PARAM name="vlan-id" help="vlan id" ptype="VLAN_ID">
-                    </PARAM>
+                <PARAM name="vlan" help="VLAN ID" mode="subcommand" ptype="VLAN_INTERFACE">
                 </PARAM>
             </PARAM>
-        </PARAM>
     <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-mac.py del_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan-id}&#xA;
+        python $SONIC_CLI_ROOT/sonic-cli-mac.py del_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan}&#xA;
     </ACTION>
     </COMMAND>
 </VIEW>

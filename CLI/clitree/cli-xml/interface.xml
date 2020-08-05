@@ -160,8 +160,18 @@ limitations under the License.
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
-                <PARAM name="phy-if-name" help="Physical Interface" ptype="PHY_INTERFACE" optional="true"/>
+                <PARAM
+                     name="if-cnt-subcommands"
+                     help="Interface rate and utilization counters subcommands"
+                     mode="switch"
+                     ptype="SUBCOMMAND"
+                     optional="true"
+                     >
+                     <PARAM name="rate" help="Rate and Utilization Counters of interfaces" ptype="SUBCOMMAND" mode="subcommand" />
+                     <PARAM name="phy-if-name" help="Physical Interface" ptype="PHY_INTERFACE" optional="true"/>
+                </PARAM>
              </PARAM>
+
              <!-- show interface Ethernet [<id>] -->
              <PARAM 
                  name="Eth" 
@@ -289,7 +299,11 @@ limitations under the License.
         if test "${if-subcommands}" = "status"; then&#xA;
             python $SONIC_CLI_ROOT/sonic_cli_if.py get_sonic_port_sonic_port_port_table show_sonic_interface_status.j2 ${__full_line}&#xA;
         elif test "${if-subcommands}" = "counters"; then&#xA;
-            python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters.j2 ${__full_line}&#xA;
+            if test "${if-cnt-subcommands}" = "rate"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters_rate.j2 if-name=${phy-if-name}&#xA;
+            else&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters.j2 if-name=${phy-if-name}&#xA;
+            fi&#xA;
         elif test "${if-subcommands}" = "PortChannel"; then&#xA;
             if test "${po-id}" = ""; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-interface-port-channel.py get_all_portchannels show_interface_portchannel.j2 ${__full_line}&#xA;
@@ -400,7 +414,7 @@ limitations under the License.
        >
      <COMMAND
         name="interface"
-        help="Select an interface"
+        help="Configure interfaces"
         db_flag="SEP_CLI"
         view_keys="name=*|name=*"
         view_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={name}|sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name={name}"
@@ -749,9 +763,9 @@ limitations under the License.
             help="Textual description">
             <PARAM
                 name="desc"
-                help="Textual description of the interface"
+                help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/description"
-                ptype="STRING" />
+                ptype="STRING_240" />
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
         </COMMAND>
         <COMMAND
