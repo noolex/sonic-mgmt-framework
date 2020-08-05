@@ -73,6 +73,7 @@ def invoke_api(func, args):
 
        config_body = {
              "timeout": int(indata['timeout']),
+             "openconfig-system:address": args[0],
              "openconfig-system-ext:auth-type": indata['authtype'],
              "openconfig-system-ext:priority": int(indata['priority'])
        }
@@ -81,15 +82,16 @@ def invoke_api(func, args):
            config_body["openconfig-system-ext:vrf"] = indata['vrf']
 
 
-       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/servers')
-       body = { "openconfig-system:servers": { "openconfig-system:server": [{ "openconfig-system:address": args[0],
-                                               "openconfig-system:config": config_body,
-                                               "openconfig-system:tacacs": tconfig_body}] }}
-
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups')
+       body = { "openconfig-system:server-groups": { "server-group": [{ "name" : "TACACS", "config" : { "name" : "TACACS" },
+                                                     "servers": { "server" : [{ "openconfig-system:address": args[0],
+                                                     "config": config_body,
+                                                     "tacacs": tconfig_body}] }}]}}
        return api.patch(path, body)
     elif func == 'patch_sonic_tacacs_global_src_intf':
-       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-interface')
-       body = { "openconfig-system-ext:source-interface": args[0] if args[0] != 'Management0' else 'eth0' }
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups')
+       body = { "openconfig-system:server-groups": { "server-group": [{ "name" : "TACACS", "config" : { "name" : "TACACS",
+           "openconfig-system-ext:source-interface": args[0] if args[0] != 'Management0' else 'eth0'}}]}}
        return api.patch(path, body)
     else:
        body = {}

@@ -118,7 +118,7 @@ limitations under the License.
              dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/timeout">
       </PARAM>
       <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:timeout body={"openconfig-system-ext:timeout": ${timeout}}
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups body={ "openconfig-system:server-groups": { "server-group": [{ "name" : "TACACS", "config" : { "name" : "TACACS", "openconfig-system-ext:timeout": ${timeout}}}]}}
       </ACTION>
     </COMMAND>
 
@@ -135,7 +135,7 @@ limitations under the License.
              dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/auth_type">
       </PARAM>
       <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:auth-type body={"openconfig-system-ext:auth-type": "${auth-type}"}
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups body={ "openconfig-system:server-groups": { "server-group": [{ "name" : "TACACS", "config" : { "name" : "TACACS", "openconfig-system-ext:auth-type": "${auth-type}"}}]}}
       </ACTION>
     </COMMAND>
 
@@ -152,7 +152,7 @@ limitations under the License.
              dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/passkey">
       </PARAM>
       <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:secret-key body={ "openconfig-system-ext:secret-key": "${secret-key}"}
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups body={ "openconfig-system:server-groups": { "server-group": [{ "name" : "TACACS", "config" : { "name" : "TACACS", "openconfig-system-ext:secret-key": "${secret-key}"}}]}}
       </ACTION>
     </COMMAND>
 
@@ -275,28 +275,28 @@ limitations under the License.
     <COMMAND name="no tacacs-server source-interface"
              help="Unconfigure global source interface for TACACS">
       <ACTION
-          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-interface
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:source-interface?deleteEmptyEntry=True
       </ACTION>
     </COMMAND>
 
     <COMMAND name="no tacacs-server timeout"
              help="Unconfigure global timeout for TACACS">
       <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:timeout body={"openconfig-system-ext:timeout": 5}
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:timeout
       </ACTION>
     </COMMAND>
 
     <COMMAND name="no tacacs-server auth-type"
              help="Unconfigure global auth-type for TACACS">
       <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:auth-type body={"openconfig-system-ext:auth-type": "pap"}
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:auth-type
       </ACTION>
     </COMMAND>
 
     <COMMAND name="no tacacs-server key"
              help="Unconfigure global shared secret for TACACS">
       <ACTION
-          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:secret-key
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=TACACS/config/openconfig-system-ext:secret-key?deleteEmptyEntry=True
       </ACTION>
     </COMMAND>
 
