@@ -67,12 +67,13 @@ def invoke(func, args):
     if func == 'post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config' :
 
         if args[2] == "ipv4":
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config', name=args[0], index="0", ip=addr4, vrid=args[1])
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp', name=args[0], index="0", ip=addr4)
         else:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config', name=args[0], index="0", ip=addr6, vrid=args[1])
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp', name=args[0], index="0", ip=addr6)
 
         body=collections.defaultdict(dict)
-        body = {"openconfig-if-ip:config": {"virtual-router-id": int(args[1])}}
+        body = {"openconfig-if-ip:vrrp": {"vrrp-group": [{"virtual-router-id": int(args[1]),"config": {"virtual-router-id": int(args[1])}}]}}
+
         return aa.patch(keypath, body)
 
     # VRRP delete vip
