@@ -83,7 +83,7 @@ def invoke_api(func, args=[]):
                     index_v = "DROP"
                 elif args[i] == 'track':
                     i+=1
-                    body["next-hop"][0]["config"]["track"] =int(args[i])
+                    body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["track"] =int(args[i])
                 i+=1
 
             keypath = cc.Path(uri,

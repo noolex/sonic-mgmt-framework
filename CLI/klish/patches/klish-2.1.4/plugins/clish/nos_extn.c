@@ -36,7 +36,7 @@ void *rest_token_refresh(void *vargp){
     int interval;
     while(1) {
         interval = 0.8 * expiry; 
-        syslog(LOG_DEBUG, "Sleeping for %d of %d", interval, expiry);
+        syslog(LOG_DEBUG, "Token update - sleeping for %d of %d", interval, expiry);
 
         /* Sleep for 80% of the interval */
         sleep(interval);

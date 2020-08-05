@@ -54,7 +54,7 @@ limitations under the License.
               mode="switch"
               ptype="SUBCOMMAND">
               <PARAM
-                  name="vrf-name"
+                  name="vrfname"
                   help="Show ARP entries of the given VRF"
                   ptype="VRF_NAME">
               </PARAM>
@@ -107,7 +107,7 @@ limitations under the License.
                 </PARAM>
         </PARAM>
         <ACTION>
-          	python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_sonic_neigh_sonic_neigh_neigh_table family:IPv4 ip:${ip-addr} mac:${mac-addr} vrf:${vrf-name} summary:${summary}&#xA;
+          	python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_sonic_neigh_sonic_neigh_neigh_table family:IPv4 ip:${ip-addr} mac:${mac-addr} vrf:${vrfname} summary:${summary}&#xA;
        </ACTION>
        <DOCGEN>
             <DESCRIPTION>

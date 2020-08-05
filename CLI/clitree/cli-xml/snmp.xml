@@ -195,7 +195,9 @@ Before each command articulation, a comment is shown with the desired command sy
 ========================================================================= -->
   <COMMAND name="snmp-server" help="SNMP Server Configuration"/>
 
-  <COMMAND name="snmp-server location" help="Configure SNMP Location">
+  <COMMAND name="snmp-server location" help="Configure SNMP Location"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER/"
+           render_command_cb="snmp_location">
     <PARAM name="location-name" help="SNMP location" ptype="STRING"/>
     <ACTION>python $SONIC_CLI_ROOT/sonic_cli_snmp.py  snmp_location  "${location-name}"&#xA; </ACTION>
     <DOCGEN>
@@ -212,7 +214,9 @@ Before each command articulation, a comment is shown with the desired command sy
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="snmp-server contact" help="Configure SNMP Contact">
+  <COMMAND name="snmp-server contact" help="Configure SNMP Contact"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER/"
+           render_command_cb="snmp_contact">
     <PARAM name="contact-name" help="SNMP contact" ptype="STRING"/>
     <ACTION>python $SONIC_CLI_ROOT/sonic_cli_snmp.py  snmp_contact  "${contact-name}"&#xA; </ACTION>
     <DOCGEN>
@@ -229,7 +233,9 @@ Before each command articulation, a comment is shown with the desired command sy
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="snmp-server enable" help="Configure SNMP Traps">
+  <COMMAND name="snmp-server enable" help="Configure SNMP Traps"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER/"
+           render_command_cb="snmp_traps">
     <PARAM name="trap" help="Enable traps" ptype="SUBCOMMAND"  mode="subcommand"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_trap enable</ACTION>
     <DOCGEN>
@@ -246,7 +252,9 @@ Before each command articulation, a comment is shown with the desired command sy
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="snmp-server engine" help="Configure SNMP Engine ID">
+  <COMMAND name="snmp-server engine" help="Configure SNMP Engine ID"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER_ENGINE/"
+           render_command_cb="snmp_engine">
     <PARAM name="engineID" help="SNMP Engine ID" ptype="ENGINE_ID_TYPE"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_engine  ${engineID}</ACTION>
     <DOCGEN>
@@ -302,7 +310,9 @@ Before each command articulation, a comment is shown with the desired command sy
 <!--=========================================================================
   snmp-server  community  "community name"  [groupname  "group name"]
 ========================================================================= -->
-  <COMMAND name="snmp-server community" help="Configure SNMP Community">
+  <COMMAND name="snmp-server community" help="Configure SNMP Community"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER_COMMUNITY/"
+           render_command_cb="snmp_community">
     <PARAM name="community-name" help="Unique SNMP Community Name" ptype="SNMP_IDENTIFIER">
       <PARAM name="group" help="Configure community group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="group-name" help="SNMP Community Group" ptype="SNMP_IDENTIFIER" />
@@ -332,7 +342,9 @@ Before each command articulation, a comment is shown with the desired command sy
     note: SNMPv1 support is disabled in SONiC
     note: Authentication/Privacy is only specified when security option is SNMPv3
 ========================================================================= -->
-  <COMMAND name="snmp-server group" help="Configure SNMP Group">
+  <COMMAND name="snmp-server group" help="Configure SNMP Group"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER_GROUP_ACCESS/"
+           render_command_cb="snmp_group">
     <PARAM name="group-name" help="Unique SNMP Group Name" ptype="SNMP_IDENTIFIER">
       <MACRO name="SNMP-SECURITY-MODELS" arg=""/>
       <MACRO name="SNMP-RWN-VIEWS-OPTIONS" arg=""/>
@@ -371,7 +383,9 @@ Before each command articulation, a comment is shown with the desired command sy
     if noauth is specified, neither "auth-password" no "priv" may be specified
     "encrypted" may be specified but only prior to "auth"
 ========================================================================= -->
-  <COMMAND name="snmp-server user" help="Configure SNMP User">
+  <COMMAND name="snmp-server user" help="Configure SNMP User"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER_USER/;sonic-snmp:sonic-snmp/SNMP_SERVER_GROUP_MEMBER/"
+           render_command_cb="snmp_user">
     <PARAM name="username" help="Unique SNMP User Name" ptype="SNMP_IDENTIFIER">
       <PARAM name="group" help="User's group" ptype="SUBCOMMAND"  mode="subcommand" optional="true">
         <PARAM name="group-name" help="Unique SNMP Group Name" ptype="SNMP_IDENTIFIER"/>
@@ -450,7 +464,9 @@ Before each command articulation, a comment is shown with the desired command sy
 <!--=========================================================================
         snmp-server view "view name" "oid-tree"  {included | excluded}
 ========================================================================= -->
-  <COMMAND name="snmp-server view" help="Configure SNMP View">
+  <COMMAND name="snmp-server view" help="Configure SNMP View"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER_VIEW/"
+           render_command_cb="snmp_view">
     <PARAM name="view-name" help="SNMP View Name" ptype="SNMP_IDENTIFIER">
       <PARAM name="oid-tree" help="OID Tree" ptype="OID_IDENTIFIER">
         <MACRO name="SNMP-INCLUSION-OPTIONS" arg=""/>
@@ -479,7 +495,9 @@ Before each command articulation, a comment is shown with the desired command sy
           snmp-server host  "host-addr" user           "username"            {[traps  {auth | noauth | priv}] | [informs {auth | noauth | priv} [timeout seconds] [retries retries]]}
     note: SNMPv1 support is disabled in SONiC
 ========================================================================= -->
-  <COMMAND name="snmp-server host" help="Configure SNMP Host for Traps or Notifications">
+  <COMMAND name="snmp-server host" help="Configure SNMP Host for Traps or Notifications"
+           command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER_TARGET/;sonic-snmp:sonic-snmp/SNMP_SERVER_PARAMS/"
+           render_command_cb="snmp_host">
     <PARAM name="host-addr" help="Host address, IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR">
       <PARAM name="selector" help="" ptype="SUBCOMMAND" mode="switch">
 <!--=========================================================================

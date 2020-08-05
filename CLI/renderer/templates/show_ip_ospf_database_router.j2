@@ -51,7 +51,7 @@ VRF Name: {{list_elem['vrfName']}}
   Advertising Router: {{lsa['state']['advertising-router']}}
                                 {% endif %}
                                 {% if 'state' in lsa and 'openconfig-ospfv2-ext:display-sequence-number'  in lsa['state'] %}
-  LS Seq Number: {{ '%08x' | format(lsa['state']['openconfig-ospfv2-ext:display-sequence-number'] | int ) }}
+  LS Seq Number: {{lsa['state']['openconfig-ospfv2-ext:display-sequence-number']}}
                                 {% endif %}
                                 {% if 'state' in lsa and 'checksum'   in lsa['state'] %}
   Checksum: 0x{{'%04x'|format(lsa['state']['checksum'])}}

@@ -26,13 +26,13 @@ limitations under the License.
 <VIEW name="configure-view">
   <COMMAND name="router ospf" help="Start OSPF configuration" view="configure-router-ospf-view" viewid="vrf-name=${vrf-name}" view_keys="vrf_name=*,protocol=*,direction=*" view_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER/OSPFV2_ROUTER_LIST/vrf_name={vrf-name};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_DISTRIBUTE_ROUTE/OSPFV2_ROUTER_DISTRIBUTE_ROUTE_LIST/vrf_name={vrf-name},protocol={protocol},direction={direction}" render_command_cb='router_ospf'>
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-      <PARAM name="vrf-name" help="Name of VRF (Max size 15, prefixed by Vrf)" ptype="STRING_15" default="default"/>
+      <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
     </PARAM>
     <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config ${vrf-name} &#xA;</ACTION>
   </COMMAND>
   <COMMAND name="no router ospf" help="Disable OSPF routing process">
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-      <PARAM name="vrf-name" help="VRF Name" ptype="STRING_15" default="default"/>
+      <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
     </PARAM>
     <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global ${vrf-name} &#xA;</ACTION>
   </COMMAND>

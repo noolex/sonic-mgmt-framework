@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<!--
+Copyright 2020 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+<!--=========================================================================-->
+  <VIEW name="enable-view">
+    <COMMAND name="show switch-resource" help="Show Switch Resource stats."/>
+    <COMMAND name="show switch-resource drop-monitor" help="Show Drop-Monitor Switch Resource stats ">
+      <ACTION builtin="clish_pyobj">
+	      sonic_cli_switch_resource get_openconfig_system_ext_system_swresource switch_resource.j2
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Show warm restart </DESCRIPTION>
+          <EXAMPLE summary="Shows the warm restart state information">
+
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+
+  <VIEW name="configure-view">
+    <COMMAND name="switch-resource" 
+             help="Switch Resource Configuration" 
+             mode="subcommand" 
+             ptype="SUBCOMMAND" 
+             view="configure-switch-resource-view"
+	     viewid="switch-resource"
+             view_keys="name=DROP_MONITOR"
+	     view_tables="sonic-switch-resource:sonic-switch-resource/SWITCH_RESOURCE_TABLE/SWITCH_RESOURCE_TABLE_LIST/name={name}"
+	     dbpath="sonic-switch-resource:sonic-switch-resource/SWITCH_RESOURCE_TABLE/SWITCH_RESOURCE_TABLE_LIST/name=DROP_MONITOR"/>
+  </VIEW>
+
+  <VIEW name="configure-switch-resource-view" 
+        prompt="${SYSTEM_NAME}(config-switch-resource)# " 
+	depth="2">
+	<NAMESPACE ref="configure-view" help="false" completion="false"/>
+
+    <COMMAND name="no drop-monitor" help="Remove Drop-Monitor Flow Scale configuration">
+      <PARAM name="flows" help="Drop-Monitor Flow Scale configuration " ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_switch_resource patch_openconfig_system_ext_system_swresource min</ACTION>
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   Remove Drop-Monitor Flow Scale configuration .
+	   </DESCRIPTION>
+	   <USAGE>
+                   Use this command to remove drop monitor flow scale configuration.
+	   </USAGE>
+	   <EXAMPLE summary="Remove Drop Monitor Flow Scale Configurations">
+		   sonic(config)# no drop-monitor flows 
+	   </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="drop-monitor" help="Drop-Monitor Resource" command_tables="sonic-switch-resource:sonic-switch-resource/SWITCH_RESOURCE_TABLE/SWITCH_RESOURCE_TABLE_LIST" render_command_cb="switch_resource_flow_scale_entry">
+      <PARAM name="flows" help="Configure Drop-Monitor Flow Scale " ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      <PARAM name="flows-name" help="flow scale that can be configured" ptype="MIN_NONE"> </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_switch_resource patch_openconfig_system_ext_system_swresource ${flows-name}</ACTION>
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   This CLI is used to create flow configuration for drop-monitor 
+	   </DESCRIPTION>
+	   <USAGE>
+		   This command is used to flow configurations for Drop-Monitor in the EM Entry Table 
+	   </USAGE>
+	   <EXAMPLE summary="Configure Drop Monitor Flow Scale configuration">
+		   sonic(config-switch-resource)# drop-monitor flows min  
+	   </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+  </VIEW>
+</CLISH_MODULE>

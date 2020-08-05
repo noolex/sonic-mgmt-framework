@@ -10,7 +10,7 @@ PARAM_PATCH_PREFIX='patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_conf
 PARAM_PATCH_PREFIX_LEN=len(PARAM_PATCH_PREFIX)
 PARAM_DELETE_PREFIX='delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_'
 PARAM_DELETE_PREFIX_LEN=len(PARAM_DELETE_PREFIX)
-kb_to_bytes = 1024
+kb_to_bytes = 1000
 def invoke(func, args=[]):
     api = cc.ApiClient()
 
