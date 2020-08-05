@@ -56,7 +56,7 @@ limitations under the License.
   <!--MODE : interface -->
   <VIEW name="configure-vlan-view">
     <!-- ip static-anycast-gateway -->
-    <COMMAND name="ip anycast-address" help="Configures IPv4 static anycast gateway">
+    <COMMAND name="ip anycast-address" help="Configures IPv4 static anycast gateway" command_keys="ifname=*,table_distinguisher=IPv4" command_tables="sonic-sag:sonic-sag/SAG/SAG_LIST/ifname={vlan_name},table_distinguisher={table_distinguisher}" render_command_cb="sag4_config">
       <PARAM name="anycast-addr" help="Anycast gateway address" ptype="IP_ADDR_MASK"> </PARAM>
 		<ACTION builtin="clish_pyobj"> sonic_cli_sag patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv4_sag_ipv4_config_static_anycast_gateway ${vlan_name} ${anycast-addr}</ACTION>
      <DOCGEN>
@@ -77,7 +77,7 @@ limitations under the License.
      </DOCGEN>
     </COMMAND>
     <!-- ipv6 anycast-address -->
-    <COMMAND name="ipv6 anycast-address" help="Configures IPv6 static anycast gateway">
+    <COMMAND name="ipv6 anycast-address" help="Configures IPv6 static anycast gateway" command_keys="ifname=*,table_distinguisher=IPv6" command_tables="sonic-sag:sonic-sag/SAG/SAG_LIST/ifname={vlan_name},table_distinguisher={table_distinguisher}" render_command_cb="sag6_config">
       <PARAM name="anycast-addr" help="Anycast gateway address" ptype="IPV6_ADDR_MASK"> </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_sag patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv6_sag_ipv6_config_static_anycast_gateway ${vlan_name} ${anycast-addr}</ACTION>
      <DOCGEN>
@@ -99,8 +99,8 @@ limitations under the License.
   </VIEW>
   <VIEW name="configure-view">
     <!-- ip anycast-mac-address -->
-    <COMMAND name="ip anycast-mac-address" help="Configures anycast gateway MAC address">
-      <PARAM name="anycast-mac" help="Anycast gateway MAC address" ptype="MAC_ADDR"> </PARAM>
+    <COMMAND name="ip anycast-mac-address" help="Configures anycast gateway MAC address" command_keys="table_distinguisher=IP" command_tables="sonic-sag:sonic-sag/SAG_GLOBAL/SAG_GLOBAL_LIST/table_distinguisher={table_distinguisher}" >
+      <PARAM name="anycast-mac" help="Anycast gateway MAC address" ptype="MAC_ADDR" dbpath="sonic-sag:sonic-sag/SAG_GLOBAL/SAG_GLOBAL_LIST/gwmac"> </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_sag patch_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_anycast_mac ${anycast-mac}</ACTION>
      <DOCGEN>
         <DESCRIPTION>
@@ -122,6 +122,7 @@ limitations under the License.
     <COMMAND
         name="ip anycast-address"
         help="Enables/Disables IPv4 anycast gatway"
+        command_keys="table_distinguisher=IP" command_tables="sonic-sag:sonic-sag/SAG_GLOBAL/SAG_GLOBAL_LIST/table_distinguisher={table_distinguisher}" render_command_cb="sag4_global"
         >
         <PARAM
             name="anycast_sub_cmds"
@@ -157,6 +158,7 @@ limitations under the License.
     <COMMAND
         name="ipv6 anycast-address"
         help="Enable/Disable IPv6 Anycast Gateway"
+        command_keys="table_distinguisher=IP" command_tables="sonic-sag:sonic-sag/SAG_GLOBAL/SAG_GLOBAL_LIST/table_distinguisher={table_distinguisher}" render_command_cb="sag6_global"
         >
         <PARAM
             name="anycast_sub_cmds"
