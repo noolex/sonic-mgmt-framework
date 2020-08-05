@@ -47,6 +47,7 @@ from show_config_igmp_snooping import *
 from show_config_tam import *
 from show_config_bfd import *
 from show_config_swresource import *
+from show_config_sag import *
 from show_config_vrrp import *
 
 view_dependency= \
@@ -243,6 +244,10 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'spanning_tree_global_priority'    : show_config_spanning_tree_global_priority,
                   'spanning_tree_global_fwd_delay'   : show_config_spanning_tree_global_fwd_delay,
                   'spanning_tree_global_root_guard_timeout' : show_config_spanning_tree_global_root_guard_time,
+                  'sag4_global'             : show_sag4_global,
+                  'sag6_global'             : show_sag6_global,
+                  'sag4_config'             : show_sag4_config,
+                  'sag6_config'             : show_sag6_config,
                   'vrrp_config'             : show_vrrp_config,
  }
 
