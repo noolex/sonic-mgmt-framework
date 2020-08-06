@@ -153,7 +153,7 @@ limitations under the License.
     <DOCGEN>
       <DESCRIPTION>
         This command clears/resets BGP information including neighbors,
-        peer-group etc.
+        peer-group,dampening etc.
       </DESCRIPTION>
       <USAGE>
         Use this command to clear BGP information. Following is a partial list of
@@ -163,6 +163,8 @@ limitations under the License.
           sub-address-family activated
         - clear bgp {ipv4 | ipv6} unicast peer_ip
           Clear peers with address of peer_ip and this address-family activated.
+        - clear bgp ipv4 unicast dampening { address | prefix | in | out | soft }
+          Clear dampened routes.
         - clear bgp {ipv6 | ipv4} unicast soft {in | out}
           'in" option will send route-refresh request unless using 'soft-reconfiguration inbound.
           'out' option will resend all outbound updates
