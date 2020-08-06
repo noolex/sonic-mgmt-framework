@@ -1,6 +1,6 @@
-{{'TH - Threshold'}}
-{{'Name'.ljust(25)}}{{'Temp (C)'.ljust(10)}}{{'High TH'.ljust(15)}}{{'Low TH'.ljust(15)}}{{'Crit High TH'.ljust(20)}}{{'Crit Low TH'.ljust(20)}}{{'Warning'.ljust(15)}}{{'Timestamp'.ljust(35)}}
-{{'--------------------------------------------------------------------------------------------------------------------------------------------------------'}}
+{{' '}}
+{{'Platform Temperature Sensor Details'}}
+{{'------------------------------------------------------------'}}
 {% for temp_name, temp_info in json_output.items() %}
 {% set temperature = "N/A" %}
 {% set ht = "N/A" %}
@@ -30,6 +30,14 @@
 {% if 'openconfig-platform-ext:timestamp' in temp_info %}
 {% set ts = temp_info['openconfig-platform-ext:timestamp'] | string %}
 {% endif %}
-{{(temp_name | truncate(24)).ljust(25)}}{{temperature.ljust(10)}}{{ht.ljust(15)}}{{lt.ljust(15)}}{{cht.ljust(20)}}{{clt.ljust(20)}}{{ws.ljust(15)}}{{ts.ljust(35)}}
+{{'Sensor name: '.ljust(25)}}{{temp_name}}
+{{'Temperature: '.ljust(25)}}{{temperature}}
+{{'High threshold: '.ljust(25)}}{{ht}}
+{{'Low threshold: '.ljust(25)}}{{lt}}
+{{'Critical High threshold: '.ljust(25)}}{{cht}}
+{{'Critical Low threshold: '.ljust(25)}}{{clt}}
+{{'Warning status: '.ljust(25)}}{{ws}}
+{{'Timestamp: '.ljust(25)}}{{ts}}
+{{' '}}
 {% endfor %}
-{{'--------------------------------------------------------------------------------------------------------------------------------------------------------'}}
+{{'----------------------------------------------------------'}}

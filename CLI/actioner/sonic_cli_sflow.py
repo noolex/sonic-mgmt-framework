@@ -21,6 +21,7 @@ import sys
 import json
 from rpipe_utils import pipestr
 from render_cli import show_cli_output
+from sonic_intf_utils import name_to_int_val
 import cli_client as cc
 import re
 import urllib3
@@ -42,28 +43,6 @@ def print_exception(e):
     else:
         print("% Error: Transaction failure.")
     return
-
-def _name_to_val(ifName):
-    tk = ifName.split('.')
-    plist = re.findall(r'\d+', tk[0])
-    val = 0
-    if len(plist) == 1:  #ex: Ethernet40
-       val = int(plist[0]) * 10000
-    elif len(plist) == 2:  #ex: Eth1/5
-       val= int(plist[0]+plist[1].zfill(3)+'000000')
-    elif len(plist) == 3:  #ex: Eth1/5/2
-       val= int(plist[0]+plist[1].zfill(3)+plist[2].zfill(2)+'0000')
-
-    if len(tk) == 2:   #ex: 2345 in Eth1/1.2345
-       val += int(tk[1])
-
-    #syslog.syslog(syslog.LOG_DEBUG, "{}: {}".format(ifName, val))
-    return val
-
-def getSonicId(item):
-    state_dict = item
-    ifName = state_dict['name']
-    return _name_to_val(ifName)
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
@@ -164,7 +143,7 @@ def run(func, args):
             sess_lst = [[]]
             if response.content:
                 sess_lst = response.content['openconfig-sampling:interfaces']['interface']
-                sess_lst = [sorted(sess_lst, key=getSonicId)]
+                sess_lst = [sorted(sess_lst, key=lambda x : name_to_int_val(x['name']))]
             show_cli_output(args[0], sess_lst)
 
         elif func == 'get_sonic_sflow_sonic_sflow':

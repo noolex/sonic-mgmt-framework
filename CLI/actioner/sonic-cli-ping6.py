@@ -38,6 +38,7 @@ def run_vrf(args):
         if len(args) == 0:
             print_and_log("The command is not completed.")
             return
+        cmd = "sudo cgexec -g l3mdev:" + vrfName + " ping6 " + args
         cmd = "ping -6 " + args + " -I " + vrfName
         cmd = re.sub('-I\s*Management', '-I eth', cmd)
         cmdList = cmd.split(' ')
