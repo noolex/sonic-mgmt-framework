@@ -81,7 +81,7 @@ def build_options(func, method, argv):
 
 def run_tpcm_install(func, method, argv):
     aa = cc.ApiClient()
-    keypath = cc.Path('/restconf/operations/sonic-tpcm:tpcm-install')
+    keypath = cc.Path('/restconf/operations/openconfig-system-ext:tpcm-install')
     templ = argv[0]
 
     docker_name="name " + argv[4]
@@ -103,7 +103,7 @@ def run_tpcm_install(func, method, argv):
 
 def run_tpcm_upgrade(func, method, argv):
     aa = cc.ApiClient()
-    keypath = cc.Path('/restconf/operations/sonic-tpcm:tpcm-upgrade')
+    keypath = cc.Path('/restconf/operations/openconfig-system-ext:tpcm-upgrade')
     templ = argv[0]
     docker_name="name " + argv[4]
     image_name= method + " " + argv[6]
@@ -122,7 +122,7 @@ def run_tpcm_upgrade(func, method, argv):
 
 def run_tpcm_uninstall(func, method, argv):
     aa = cc.ApiClient()
-    keypath = cc.Path('/restconf/operations/sonic-tpcm:tpcm-uninstall')
+    keypath = cc.Path('/restconf/operations/openconfig-system-ext:tpcm-uninstall')
     templ = argv[1]
 
     options_list = build_options(func,method, argv)
