@@ -299,6 +299,7 @@ def show_bgpcom_lists(render_tables):
       for com in com_list:
           if 'set_type' in com:
               com_type = com['set_type'].lower()
+              com_action = com['action'].lower()
               if 'name' in com:
                   name = com['name'] + " "
                   act_str = ''
@@ -330,14 +331,14 @@ def show_bgpcom_lists(render_tables):
                                         member_str +=" "
                                      member_str += member
                               else:
-                                  cmd_str += cmd_prfx + com_type +" " + name + member + act_str + ";"
+                                  cmd_str += cmd_prfx + com_type +" " + name + com_action +" " + member + act_str + ";"
 
                           if com_type == "standard":
-                             cmd_str += cmd_prfx + com_type +" " + name + member_str + act_str + ";"
+                             cmd_str += cmd_prfx + com_type +" " + name + com_action +" " + member_str + act_str + ";"
 
                              # show stored AA:NN as separate CLI
                              for member in asn:
-                                 cmd_str += cmd_prfx + com_type +" " + name + member + act_str + ";"
+                                 cmd_str += cmd_prfx + com_type +" " + name + com_action +" " + member + act_str + ";"
 
   return 'CB_SUCCESS', cmd_str
 
@@ -366,7 +367,7 @@ def show_bgpextcom_lists(render_tables):
                                  # Expanded type case
                                  member_str += member
 
-                              cmd_str += cmd_prfx + extcom['set_type'].lower() +" " + extcom['name'] + " " + member_str + act_str + ";"
+                              cmd_str += cmd_prfx + extcom['set_type'].lower() +" " + extcom['name'] + " " + extcom['action'].lower() +" " + member_str + act_str + ";"
 
   return 'CB_SUCCESS', cmd_str
 
@@ -378,9 +379,10 @@ def show_bgpaspath_lists(render_tables):
       cmd_prfx = 'bgp as-path-list '
       for aspath in aspath_list:
           if 'name' in aspath:
-              if 'as_path_set_member' in aspath:
-                  for member in aspath['as_path_set_member']:
-                      cmd_str += cmd_prfx + aspath['name']+ " " + member + ";"
+              if 'action' in aspath:
+                  if 'as_path_set_member' in aspath:
+                      for member in aspath['as_path_set_member']:
+                          cmd_str += cmd_prfx + aspath['name']+ " " + aspath['action'].lower()  + " " + member + ";"
 
   return 'CB_SUCCESS', cmd_str
 
