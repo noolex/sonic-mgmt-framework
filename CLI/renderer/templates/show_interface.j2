@@ -42,6 +42,8 @@
 {% for key_json in json_output %}
 {% set interface_list = json_output[key_json]["interface"] %}
 {% for interface in interface_list %}
+    {% set vars = {'ip_prim':""} %}
+    {% set ip_sec_list = [] %}
     {% for key in interface %}
       {% if "ethernet" in key %}
         {% if "state" in interface[key] %}
@@ -97,13 +99,18 @@
               {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
               {% set ip_all = [] %}
               {% for ip in ip_list %}
-                {% set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() %}
-                {{ ip_all.append(ipfx)|default("", True)}}
+                {%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
+                {%- if "openconfig-interfaces-ext:secondary" in ip["state"] -%}
+                    {%- if vars.update({'secondary':ip["state"]["openconfig-interfaces-ext:secondary"]}) %}{% endif -%}
+                    {%- if vars.secondary == true -%}
+                        {{ ip_sec_list.append(ipfx)|default("", True)}}
+                    {% else %}
+                        {% if vars.update({'ip_prim':ipfx}) %}{% endif %}
+                    {% endif %}
+                {% endif %}
                 {% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
               {% endfor %}
-              {% if vars.update({'ipv4_src_pfx':ip_all|join(',')}) %}{% endif %}
             {% else %}
-	      {% if vars.update({'ipv4_src_pfx':""}) %}{% endif %}
               {% if vars.update({'mode4':"not-set"}) %}{% endif %}
             {% endif %}
             {% if subif["openconfig-if-ip:ipv6"] %}
@@ -112,13 +119,12 @@
                 {% set ip_list = subif["openconfig-if-ip:ipv6"]["addresses"]["address"] %}
                 {% set ipv6_all = [] %}
                 {% for ip in ip_list %}
-                  {% set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() %}
+                  {%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
                   {{ ipv6_all.append(ipfx)|default("", True)}}
                   {% if vars.update({'mode6':"MANUAL"}) %}{% endif %}
                 {% endfor %}
                 {% if vars.update({'ipv6_src_pfx':ipv6_all|join(',')}) %}{% endif %}
               {% else %}
-	        {% if vars.update({'ipv6_src_pfx':""}) %}{% endif %}
                 {% if vars.update({'mode6':"not-set"}) %}{% endif %}
               {% endif %}
               {% if subif["openconfig-if-ip:ipv6"]["state"] %}
@@ -142,9 +148,12 @@ Hardware is Eth
 {% if vars.description %}
 Description: {{ vars.description }}
 {% endif %}
-{% if vars.ipv4_src_pfx %}
-{{ vars.ipv4 }} address is {{ vars.ipv4_src_pfx }}
+{% if vars.ip_prim %}
+{{ vars.ipv4 }} address is {{ vars.ip_prim }}
 {% endif %}
+{% for ip in ip_sec_list  %}
+{{ vars.ipv4 }} secondary address is {{ ip }}
+{% endfor %}
 Mode of {{ vars.ipv4 }} address assignment: {{ vars.mode4 }}
 {% if vars.ipv6_src_pfx %}
 {{ vars.ipv6 }} address is {{ vars.ipv6_src_pfx }}

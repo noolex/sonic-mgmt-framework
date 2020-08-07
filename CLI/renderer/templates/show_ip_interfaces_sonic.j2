@@ -23,6 +23,12 @@ Flags: U-Unnumbered interface
    {% if "sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in key %}
       {% set mgmtIntfTblList = json_output["sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST"] %}
       {% for ifKey in mgmtIntfTblList %}
+	 {% if "secondary" in ifKey %}
+            {% if vars.update({'secondary':ifKey["secondary"]}) %}{% endif %}
+            {% if vars.secondary == true %}
+                {% continue %}
+            {% endif %}
+         {% endif %}
          {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
          {% if vars.update({'ipv4_src_pfx':ifKey["ipPrefix"]}) %}{% endif %}
          {% if vars.update({'admin_state':"up"}) -%}{% endif -%}
@@ -33,6 +39,12 @@ Flags: U-Unnumbered interface
       {% endfor %}
    {% endif %}
    {% for ifKey in intfTblList %}
+	{% if "secondary" in ifKey %}
+            {% if vars.update({'secondary':ifKey["secondary"]}) %}{% endif %}
+            {% if vars.secondary == true %}
+                {% continue %}
+            {% endif %}
+        {% endif %}
         {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
         {% if vars.update({'ipv4_src_pfx':ifKey["ipPrefix"]}) %}{% endif %}
         {% if vars.update({'flags':""}) %}{% endif %}
