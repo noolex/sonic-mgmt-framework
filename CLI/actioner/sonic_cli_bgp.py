@@ -311,6 +311,63 @@ def generate_show_bgp_routes(args):
 
    return d
 
+def generate_show_bgp_neighbors(args):
+   api = cc.ApiClient()
+   body = None
+   afisafi = "IPV4_UNICAST"
+   vrf = "default"
+   querytype = None
+   i = 0
+   for arg in args:
+        if "vrf" == arg:
+           vrf = args[i+1]
+        elif "ipv4" == arg:
+           afisafi = "IPV4_UNICAST"
+        elif "ipv6" == arg:
+           afisafi = "IPV6_UNICAST"
+        elif "summary" == arg:
+           querytype = 'SUMMARY'
+        i = i + 1
+   d = {}
+   # RPC to fetch the data
+   keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp')
+   inputs = {"vrf-name":vrf, "address-family":afisafi}
+   if querytype:
+      inputs['query-type'] = querytype
+
+   body = {"sonic-bgp-show:input": inputs}
+   response = api.post(keypath, body)
+   if not response:
+       # unknown error (bad input?)
+       return 1
+   if(response.ok()):
+      d = response.content['sonic-bgp-show:output']['response']
+      if len(d) != 0 and "warning" not in d and "Unknown command:" not in d:
+         try:
+            d = json.loads(d, object_pairs_hook=OrderedDict)
+         except:
+            # unknown or missing output
+            return 1
+
+         if querytype == "SUMMARY":
+            if (not len(d)):
+                print("% No BGP neighbors found")
+                return 1
+            if afisafi == "IPV4_UNICAST":
+                unicast_type = 'ipv4Unicast'
+            elif afisafi == "IPV6_UNICAST":
+                unicast_type = 'ipv6Unicast'
+            d['max_nbr_col_len'] = len(max(d[unicast_type]['peers'].keys(), key=len))
+            d['addr_family'] = afisafi
+            show_cli_output('show_ip_bgp_summary_rpc.j2', d)
+            return 0
+      else:
+          d = json.loads(d)
+          print(d['warning'])
+   else:
+      print response.error_message()
+      return 1
+
 def generate_show_bgp_vrf_all(args):
     api = cc.ApiClient()
     keypath = []
@@ -2928,10 +2985,7 @@ def parseGloblShow(vrf_name, cmd, args=[]):
                 show_cli_output('show_ip_bgp_neighbors.j2', response)
             return 0
         elif args[0] == 'summary':
-            response = invoke_show_api('get_ip_bgp_summary', [ None, vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4' ])
-            show_cli_output('show_ip_bgp_summary.j2', response)
-            return 0
-
+            return generate_show_bgp_neighbors(args)
         else:
             return generate_show_bgp_routes(args)
 

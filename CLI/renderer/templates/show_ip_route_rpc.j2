@@ -84,6 +84,8 @@ Codes:  K - kernel route, C - connected, S - static, B - BGP, O - OSPF
          {% else %}
              {% if nexthop["recursive"] %}
                  {% if vars.update({'gateway': 'via ' + nexthop['ip'] + ' (recursive)'}) %}{% endif %}
+             {% elif nexthop['rparent'] %}
+                 {% if vars.update({'gateway': ' via ' + nexthop['ip']}) %}{% endif %}
              {% else %}
                  {% if vars.update({'gateway': 'via ' + nexthop['ip']}) %}{% endif %}
              {% endif %}

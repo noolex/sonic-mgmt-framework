@@ -292,14 +292,19 @@ def show_scheduler_policy(render_tables):
 
     cur_sp_name = ''
     for sch in sch_list:
-        s = sch['name'].split('@')
-    
+        if sch['name'].find('@') != -1:
+            spname = sch['name'].split('@')[0]
+            spseq = sch['name'].split('@')[1]
+        else:
+            spname = sch['name']
+            spseq = "0"
+
         if filter_name != '':
             filter_elem = filter_name.split('@')
 
             if len(filter_elem) == 1:
                 # partial key matching
-                if s[0] != filter_elem[0]:
+                if spname != filter_elem[0]:
                     continue
 
             if len(filter_elem) > 1:
@@ -308,20 +313,20 @@ def show_scheduler_policy(render_tables):
                     continue
 
 
-        if cur_sp_name != s[0] and filter_name == '':
-            cur_sp_name = s[0] 
-            cmd_str += '!;' + 'qos scheduler-policy ' + s[0] + ';'
+        if cur_sp_name != spname and filter_name == '':
+            cur_sp_name = spname
+            cmd_str += '!;' + 'qos scheduler-policy ' + spname + ';'
     
     
-        if (s[1] == '255'):
+        if (spseq == '255'):
             cmd_str += '  port;'
 
             cmd_str += show_scheduler_instance(sch)
 
         else:
-            cmd_str += '  queue ' + s[1] + ';'
+            cmd_str += '  queue ' + spseq + ';'
 
-            cmd_str += show_scheduler_instance(sch) 
+            cmd_str += show_scheduler_instance(sch)
 
 
     return 'CB_SUCCESS', cmd_str
