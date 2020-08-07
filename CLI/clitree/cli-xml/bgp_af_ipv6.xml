@@ -170,7 +170,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="allowas-in" help="Allow local AS number in as-path" render_command_cb="bgp_nbr_af_allowas">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV6 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value} origin:${origin}</ACTION>
@@ -200,7 +200,7 @@ limitations under the License.
     <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV6 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; as-path:${as-path} med:${med} next-hop:${next-hop}</ACTION>
   </COMMAND>
-  <COMMAND name="capability" help="_Advertise capability to the peer"/>
+  <COMMAND name="capability" help="Advertise capability to the peer"/>
   <COMMAND name="capability orf" help="Advertise ORF capability to the peer"/>
   <COMMAND name="capability orf prefix-list" help="Advertise prefixlist ORF capability to this neighbor">
     <PARAM name="capopt" help="Capabilities" mode="switch" ptype="SUBCOMMAND">
@@ -293,7 +293,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no allowas-in" help="Allow local AS number in as-path">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV6 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value}</ACTION>
@@ -391,7 +391,7 @@ limitations under the License.
         <PARAM name="threshold-val" help="Threshold value (%) at which to generate a warning msg" mode="subcommand" ptype="PERCENT_1"/>
         <PARAM name="warning-only" help="Only give warning message when limit is exceeded" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="restart" help="Restart bgp connection after limit is exceeded" mode="subcommand" ptype="SUBCOMMAND">
-           <PARAM name="val" help="tbd" ptype="RANGE_1_255"/>
+           <PARAM name="val" help="Restart interval in minutes" ptype="RANGE_1_65535"/>
         </PARAM>
       </PARAM>
     </PARAM>
@@ -411,7 +411,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="allowas-in" help="Allow local AS number in as-path" render_command_cb="bgp_pg_af_allowas">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV6 ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value} origin:${origin}</ACTION>
@@ -546,7 +546,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no allowas-in" help="Allow local AS number in as-path">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV6 ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value}</ACTION>
@@ -644,7 +644,7 @@ limitations under the License.
         <PARAM name="threshold-val" help="Threshold value (%) at which to generate a warning msg" mode="subcommand" ptype="PERCENT_1"/>
         <PARAM name="warning-only" help="Only give warning message when limit is exceeded" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="restart" help="Restart bgp connection after limit is exceeded" mode="subcommand" ptype="SUBCOMMAND">
-           <PARAM name="val" help="tbd" ptype="RANGE_1_255"/>
+           <PARAM name="val" help="Restart interval in minutes" ptype="RANGE_1_65535"/>
         </PARAM>
       </PARAM>
     </PARAM>
