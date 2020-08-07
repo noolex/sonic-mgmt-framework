@@ -70,7 +70,7 @@ limitations under the License.
 
   <COMMAND name="advertise" help="Advertise prefix routes"/>
   <COMMAND name="advertise ipv4" help="Address family IPv4"/>
-  <COMMAND name="advertise ipv4 unicast" help="SAFI unicast" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-ipv4-unicast=true">
+  <COMMAND name="advertise ipv4 unicast" help="Subsequent address family unicast" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-ipv4-unicast=true">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV4_UNICAST</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -89,7 +89,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="advertise ipv6" help="Address family IPv6"/>
-  <COMMAND name="advertise ipv6 unicast" help="SAFI unicast" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-ipv6-unicast=true">
+  <COMMAND name="advertise ipv6 unicast" help="Subsequent address family unicast" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-ipv6-unicast=true">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV6_UNICAST</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -292,12 +292,12 @@ limitations under the License.
 
   <COMMAND name="no advertise" help="Advertise prefix routes"/>
   <COMMAND name="no advertise ipv4" help="Address family IPv4"/>
-  <COMMAND name="no advertise ipv4 unicast" help="SAFI unicast">
+  <COMMAND name="no advertise ipv4 unicast" help="Subsequent address family unicast">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV4_UNICAST</ACTION>
   </COMMAND>
 
   <COMMAND name="no advertise ipv6" help="Address family IPv6"/>
-  <COMMAND name="no advertise ipv6 unicast" help="SAFI unicast">
+  <COMMAND name="no advertise ipv6 unicast" help="Subsequent address family unicast">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV6_UNICAST</ACTION>
   </COMMAND>
 
