@@ -190,7 +190,7 @@ def show_prefix_lists(render_tables, ip_mode):
                    else:
                       mask_range_str = " ge " + mask_range_val[0] + " le " + mask_range_val[1]
 
-                cmd_str = cmd_str + cmd_prfx + prefix['set_name'] + " " + prefix['action'] + " " + prefix['ip_prefix'] + mask_range_str + ";" ;
+                cmd_str = cmd_str + cmd_prfx + prefix['set_name'] + " " + prefix['action'].lower() + " " + prefix['ip_prefix'] + mask_range_str + ";" ;
 
     return 'CB_SUCCESS', cmd_str
 
