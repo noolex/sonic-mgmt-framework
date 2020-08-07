@@ -80,7 +80,7 @@ def run_vrf(args, ping, vrfName):
                 cmd = "ping -I " + vrfName + " " + args
         else:
             if vrfName.lower() == 'mgmt':
-                cmd = "sudo cgexec -g l3mdev:" + vrfName + " ping -6 " + args
+                cmd = "sudo cgexec -g l3mdev:" + vrfName + " ping " + args
             else:
                 cmd = "ping -I " + vrfName + " " + args
 

@@ -79,7 +79,7 @@ def run_vrf(args, traceroute, vrfName):
                 cmd = "traceroute -i " + vrfName + " " + args
         else:
             if vrfName.lower() == 'mgmt':
-                cmd = "sudo cgexec -g l3mdev:" + vrfName + " traceroute -6 " + args
+                cmd = "sudo cgexec -g l3mdev:" + vrfName + " traceroute " + args
             else:
                 cmd = "traceroute -i " + vrfName + " " + args
 
