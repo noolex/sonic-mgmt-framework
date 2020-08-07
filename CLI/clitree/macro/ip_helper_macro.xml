@@ -36,7 +36,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip helper-address vrf" help="Configure IP helper server address in non-default vrf"> 
+    <COMMAND name="ip helper-address vrf" help="Specify non-default vrf"> 
       <PARAM name="vrfname" help="VRF name" ptype="VRF_NAME"> 
         <PARAM name="addr" help="IP address" ptype="IP_ADDR"> 
         </PARAM>
@@ -71,9 +71,9 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip helper-address vrf" help="Unconfigure IP helper server address in non-default vrf">
-      <PARAM name="vrfname" help="Vrf name" ptype="VRF_NAME"> 
-        <PARAM name="addr" help="Ip Helper Server Address" ptype="IP_ADDR"> 
+    <COMMAND name="no ip helper-address vrf" help="Specify non-default vrf">
+      <PARAM name="vrfname" help="VRF name" ptype="VRF_NAME"> 
+        <PARAM name="addr" help="IP address" ptype="IP_ADDR"> 
         </PARAM>
       </PARAM>
       <ACTION builtin="clish_restcl">
