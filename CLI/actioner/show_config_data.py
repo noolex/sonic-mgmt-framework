@@ -50,6 +50,7 @@ from show_config_bfd import *
 from show_config_swresource import *
 from show_config_sag import *
 from show_config_vrrp import *
+from show_config_acl import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -72,6 +73,9 @@ config_view_hierarchy= \
        'configure-tc-dot1p-map',
        'configure-tc-dscp-map',
        'configure-link-state-track',
+       'configure-mac-acl',
+       'configure-ipv4-acl',
+       'configure-ipv6-acl',
        'config-if-CPU',
        'configure-vlan',
        'configure-lo',
@@ -255,6 +259,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'sag4_config'             : show_sag4_config,
                   'sag6_config'             : show_sag6_config,
                   'vrrp_config'             : show_vrrp_config,
+                  'mac_acl_table_cb'        : mac_acl_table_cb,
+                  'ipv4_acl_table_cb'       : ipv4_acl_table_cb,
+                  'ipv6_acl_table_cb'       : ipv6_acl_table_cb,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
