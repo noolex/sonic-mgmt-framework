@@ -470,7 +470,7 @@ def invoke_api(func, args=[]):
         return patch_ospf_router_config(api, args[0], body)
 
     elif func == 'delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global':
-        return delete_ospf_router_config(api, args[0])
+        return delete_ospf_router_config(api, args[0], "global")
 
     #Ospf router global config commands
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_router_id':
@@ -976,9 +976,6 @@ def invoke_api(func, args=[]):
         areaidval = area_to_dotted(args[1])
         vlinkid = ""
 
-        response = patch_ospf_router_area_config(api, vrf, areaidval)
-        if response.ok() == False : return response
-
         i = 0
         for arg in args:
 
@@ -1188,9 +1185,6 @@ def invoke_api(func, args=[]):
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_networks_network_config':
         vrf = args[0]
         areaidval = area_to_dotted(args[1])
-
-        response = patch_ospf_router_area_config(api, vrf, areaidval)
-        if response.ok() == False : return response
 
         body = { "config": { "address-prefix": args[2] }}
         return patch_ospf_router_network_config(api, vrf, areaidval, args[2], body)
