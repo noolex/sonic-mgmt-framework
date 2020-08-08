@@ -23,7 +23,7 @@ limitations under the License.
    <VIEW name = "enable-view">
     <COMMAND name="show bgp" help="Show BGP community, ext community, as list information"> </COMMAND>
     <COMMAND name="show bgp community-list" help="Community list">
-        <PARAM name="list-name" help="Community list name" ptype="STRING" optional="true"> </PARAM>
+        <PARAM name="list-name" help="Name of community-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_community_show_specific show_bgp_com.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -52,7 +52,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <COMMAND name="show bgp ext-community-list" help="Extended community list">
-        <PARAM name="list-name" help="Extended community list name" ptype="STRING" optional="true"> </PARAM>
+        <PARAM name="list-name" help="Name of extended community-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_ext_community_show_specific show_bgp_extcom.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -78,7 +78,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <COMMAND name="show bgp as-path-access-list" help="AS path access list">
-        <PARAM name="list-name" help="AS path list name" ptype="STRING" optional="true"> </PARAM>
+        <PARAM name="list-name" help="Name of as-path-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_aspath_show_specific show_bgp_aspath.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -131,8 +131,8 @@ limitations under the License.
                 >
                 <PARAM
                     name="community-list-name"
-                    help="Communty list name"
-                    ptype="STRING"
+                    help="Name of community-list (Max: 63 characters)"
+                    ptype="STRING_63"
                     >
                     <PARAM
                         name="community-members-subcommands"
@@ -457,8 +457,8 @@ limitations under the License.
                 >
                 <PARAM
                     name="community-list-name"
-                    help="Communty list name"
-                    ptype="STRING"
+                    help="Name of community-list (Max: 63 characters)"
+                    ptype="STRING_63"
                     >
                     <PARAM
                         name="line"
@@ -526,8 +526,8 @@ limitations under the License.
         >
         <PARAM
             name="as-path-list-name"
-            help="Name of as-path-list"
-            ptype="STRING"
+            help="Name of as-path-list (Max: 63 characters)"
+            ptype="STRING_63"
             >
             <PARAM
                 name="regx-id"
@@ -577,8 +577,8 @@ limitations under the License.
                 >
                 <PARAM
                     name="community-list-name"
-                    help="Communty list name"
-                    ptype="STRING"
+                    help="Name of community-list"
+                    ptype="STRING_63"
                     >
                     <PARAM
                         name="community-members-subcommands"
@@ -633,8 +633,8 @@ limitations under the License.
                 >
                 <PARAM
                     name="community-list-name"
-                    help="Communty list name"
-                    ptype="STRING"
+                    help="Name of community-list"
+                    ptype="STRING_63"
                     >
                     <PARAM
                         name="line"
@@ -658,7 +658,7 @@ limitations under the License.
         <PARAM
             name="as-path-list-name"
             help="Name of as-path-list"
-            ptype="STRING"
+            ptype="STRING_63"
             >
             <PARAM
                 name="regx-id"

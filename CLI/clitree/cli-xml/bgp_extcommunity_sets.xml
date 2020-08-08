@@ -44,8 +44,8 @@ limitations under the License.
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Community-list name"
-                    ptype="STRING"
+                    help="Name of extended community-list (Max: 63 characters)"
+                    ptype="STRING_63"
                     >
                     <PARAM
                         name="standard-subcommands"
@@ -152,14 +152,14 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="expanded"
-                help="Add a expanded extended community-list entry"
+                help="Add an expanded extended community-list entry"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Community-list name"
-                    ptype="STRING"
+                    help="Name of extended community-list (Max: 63 characters)"
+                    ptype="STRING_63"
                     >
                     <PARAM
                         name="line"
@@ -235,8 +235,8 @@ limitations under the License.
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Community-list name"
-                    ptype="STRING"
+                    help="Name of extended community-list"
+                    ptype="STRING_63"
                     >
                     <PARAM
                         name="standard-subcommands"
@@ -300,14 +300,14 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="expanded"
-                help="Delete a expanded community-list entry"
+                help="Delete an expanded extended community-list entry"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
                 <PARAM
                     name="extcommunity-list-name"
-                    help="Extended community-list name"
-                    ptype="STRING"
+                    help="Name of extended community-list"
+                    ptype="STRING_63"
                     >
                     <PARAM
                         name="line"
