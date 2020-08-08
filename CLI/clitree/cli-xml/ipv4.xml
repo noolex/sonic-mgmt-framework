@@ -652,7 +652,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
         </PARAM>
-           <ACTION builtin="clish_pyobj">sonic_cli_if patch_mgmt_if_ipv4 ${iface} ${addr} ${gw_addr} ${ip-subcommands}</ACTION>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_mgmt_if_ipv4 ${iface} ${addr} ${ip-subcommands} ${gw_addr}</ACTION>
     </COMMAND>
 
     <COMMAND
