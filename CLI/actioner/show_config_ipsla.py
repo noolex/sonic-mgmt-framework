@@ -27,8 +27,8 @@ def show_ip_sla_icmp_config(render_tables):
             cmd_str += ' source-address ' + str(table_inst['icmp_source_ip']) + ';'
         if 'icmp_source_interface' in table_inst:
             cmd_str += ' source-interface ' + str(table_inst['icmp_source_interface']) + ';'
-        if 'icmp_source_vrf' in table_inst:
-            cmd_str += ' source-vrf ' + str(table_inst['icmp_source_vrf']) + ';'
+        if 'icmp_vrf' in table_inst:
+            cmd_str += ' source-vrf ' + str(table_inst['icmp_vrf']) + ';'
         if 'icmp_size' in table_inst:
             cmd_str += ' request-data-size ' + str(table_inst['icmp_size']) + ';'
         if 'icmp_ttl' in table_inst:
@@ -54,8 +54,8 @@ def show_ip_sla_tcp_config(render_tables):
             cmd_str += ' source-address ' + str(table_inst['tcp_source_ip']) + ';'
         if 'tcp_source_interface' in table_inst:
             cmd_str += ' source-interface ' + str(table_inst['tcp_source_interface']) + ';'
-        if 'tcp_source_vrf' in table_inst:
-            cmd_str += ' source-vrf ' + str(table_inst['tcp_source_vrf']) + ';'
+        if 'tcp_vrf' in table_inst:
+            cmd_str += ' source-vrf ' + str(table_inst['tcp_vrf']) + ';'
         if 'tcp_source_port' in table_inst:
             cmd_str += ' source-port ' + str(table_inst['tcp_source_port']) + ';'
         if 'tcp_ttl' in table_inst:

@@ -86,18 +86,6 @@ def get_helper_adr_str(args):
 
     return ipAdrStr[:-1];
 
-def extract_if(func, args=[]):
-    match = False
-    for ar in args:
-        if match:
-            if ar != '|':
-                return ar
-            else:
-                return None
-        if ar == func:
-            match = True
-    return None
-
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
@@ -223,6 +211,37 @@ def invoke_api(func, args=[]):
             body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
         return api.patch(path, body)
         
+    elif func == 'patch_if_ipv4':
+        sp = args[1].split('/')
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], index="0", ip=sp[0])
+        if len(args) > 2 and args[2] == "secondary":
+            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }
+        else:
+            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+        return api.patch(path, body)
+
+    elif func == 'patch_vlan_if_ipv4':
+        sp = args[1].split('/')
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], ip=sp[0])
+
+        if len(args) > 2 and args[2] == "secondary":
+            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }
+        else:
+            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+        return api.patch(path, body)
+
+    elif func == 'patch_mgmt_if_ipv4':
+        sp = args[1].split('/')
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], index="0", ip=sp[0])
+        if len(args) > 2:
+            if args[2] == "secondary":
+                body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }
+            elif args[2] == "gw-addr":
+                body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:gw-addr": args[2]} }
+        else:
+            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+        return api.patch(path, body)
+
     elif func == 'patch_openconfig_if_ip_interfaces_interface_routed_vlan_ipv6_addresses_address_config':
         sp = args[1].split('/')
     
@@ -275,15 +294,19 @@ def invoke_api(func, args=[]):
     elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config_prefix_length':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/config/prefix-length', name=args[0], index="0", ip=args[1])
         return api.delete(path)
-       
+
     elif func == 'delete_phy_if_ip':
         if len(args) == 2:
             if args[1] == "True":
                 path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
             else:
                 path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+
         else:
-            body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
+            if len(args) == 4 and args[3] == "secondary":
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1],"secondary": True}}
+            else:
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
             path = cc.Path('/restconf/operations/sonic-interface:clear_ip')
             return api.post(path, body)
         return api.delete(path)
@@ -295,7 +318,10 @@ def invoke_api(func, args=[]):
             else:
                 path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses', name=args[0])
         else:
-            body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
+            if len(args) == 4 and args[3] == "secondary":
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1],"secondary": True}}
+            else:
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
             path = cc.Path('/restconf/operations/sonic-interface:clear_ip')
             return api.post(path, body)
         return api.delete(path)
@@ -307,7 +333,10 @@ def invoke_api(func, args=[]):
             else:
                 path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
         else:
-            body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
+            if len(args) == 4 and args[3] == "secondary":
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1],"secondary": True}}
+            else:
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
             path = cc.Path('/restconf/operations/sonic-interface:clear_ip')
             return api.post(path, body)
         return api.delete(path)
@@ -319,7 +348,10 @@ def invoke_api(func, args=[]):
             else:
                 path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
         else:
-            body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
+            if len(args) == 4 and args[3] == "secondary":
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1],"secondary": True}}
+            else:
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
             path = cc.Path('/restconf/operations/sonic-interface:clear_ip')
             return api.post(path, body)
         return api.delete(path)
@@ -331,7 +363,10 @@ def invoke_api(func, args=[]):
             else:
                 path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
         else:
-            body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
+            if len(args) == 4 and args[3] == "secondary":
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1],"secondary": True}}
+            else:
+                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
             path = cc.Path('/restconf/operations/sonic-interface:clear_ip')
             return api.post(path, body)
         return api.delete(path)
@@ -800,8 +835,8 @@ def invoke_api(func, args=[]):
             print("%Error: Failed to restore port " + args[0] + " to its default configuration")
         return resp
     elif func == 'rpc_interface_counters':
-        ifname = extract_if("counters", args)
-        if ifname is not None:
+        ifname = args[1].split("=")[1]
+        if ifname != "" :
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/counters', name=ifname)
             ifcounters = api.get(keypath)
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/state/counters', name=ifname)
@@ -904,11 +939,7 @@ def run(func, args):
                 elif func == 'get_openconfig_relay_agent_relay_agent_detail_dhcpv6':
                     show_cli_output(args[0], api_response)
                 elif func == 'rpc_interface_counters':
-                    ifname = extract_if("counters", args)
-                    if ifname is not None:
-                        show_cli_output(args[0], api_response)
-                    else:
-                        show_cli_output(args[0], api_response)
+                    show_cli_output(args[0], api_response)
 
         else:
             print response.error_message()

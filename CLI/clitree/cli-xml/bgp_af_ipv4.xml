@@ -37,7 +37,7 @@ limitations under the License.
       <PARAM name="ospf" help="Open Shortest Path First (OSPFv2)" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+      <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63"/>
     </PARAM>
     <PARAM name="metric" help="Metric for redistributed routes" mode="subcommand" ptype="SUBCOMMAND" optional="true">
       <PARAM name="metvalue" help="Default metric" ptype="RANGE_0_4294967295"/>
@@ -108,7 +108,7 @@ limitations under the License.
     <PARAM name="prefix" help="Network number" ptype="IP_ADDR_MASK" >
       <PARAM name="backdoor" help="Backdoor" ptype="SUBCOMMAND" mode="subcommand" default="x" optional="true" />
       <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="route-map-name" help="Route map name" ptype="STRING" />
+        <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63" />
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV4 ${vrf-name} ${__cmd} &#xA; backdoor:${backdoor} prefix:${prefix} route-map:${route-map} route-map-name:${route-map-name}</ACTION>
@@ -131,7 +131,7 @@ limitations under the License.
       </DOCGEN>
   </COMMAND>
   <COMMAND name="table-map" help="BGP table to RIB route download filter">
-    <PARAM name="rtmap" help="Router map name" ptype="STRING" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route_download_filter" />
+    <PARAM name="rtmap" help="Name of route-map" ptype="STRING_63" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route_download_filter" />
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_config_table_map_name ${vrf-name} IPV4_UNICAST ${rtmap}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -158,7 +158,7 @@ limitations under the License.
       <PARAM name="as-set" help="Generate AS set path information" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
       <PARAM name="summary-only" help="Filter more specific routes from updates" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
       <PARAM name="route-map" help="Apply route map to aggregate network" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="rtemap" help="Route-map name" ptype="STRING"/>
+        <PARAM name="rtemap" help="Name of route-map" ptype="STRING_63"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV4 ${vrf-name} ${__cmd} &#xA; rtemap:${rtemap} prefix:${prefix} as-set:${as-set} summary-only:${summary-only}</ACTION>
@@ -245,7 +245,7 @@ limitations under the License.
   <COMMAND name="import vrf" help="Import routes from another VRF">
     <PARAM name="import-vrf" help="Import VRF options" mode="switch" ptype="SUBCOMMAND">
        <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND">
-         <PARAM name="route-map-name" help="Route map name" ptype="STRING" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/import_vrf_route_map" />
+         <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/import_vrf_route_map" />
        </PARAM>
        <PARAM name="import-vrf-name" help="Name of VRF" ptype="STRING_15" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/import_vrf" />
     </PARAM>
@@ -276,7 +276,7 @@ limitations under the License.
       <PARAM name="ospf" help="Open Shortest Path First (OSPFv2)" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+      <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63"/>
     </PARAM>
     <PARAM name="metric" help="Metric for redistributed routes" mode="subcommand" ptype="SUBCOMMAND" optional="true">
       <PARAM name="metvalue" help="Default metric" ptype="RANGE_0_4294967295"/>
@@ -293,13 +293,13 @@ limitations under the License.
     <PARAM name="prefix" help="Network number" ptype="IP_ADDR_MASK">
       <PARAM name="backdoor" help="Backdoor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
       <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+        <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV4 ${vrf-name} ${__cmd} &#xA; backdoor:${backdoor} prefix:${prefix} route-map:${route-map}</ACTION>
   </COMMAND>
   <COMMAND name="no table-map" help="BGP table to RIB route download filter">
-    <PARAM name="rtmap" help="Number of paths" ptype="STRING" optional="true"/>
+    <PARAM name="rtmap" help="Name of route-map" ptype="STRING_63" optional="true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_config_table_map_name ${vrf-name} IPV4_UNICAST</ACTION>
   </COMMAND>
   <COMMAND name="no aggregate-address" help="Configure BGP aggregate entries">
@@ -307,7 +307,7 @@ limitations under the License.
       <PARAM name="as-set" help="Generate AS set path information" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
         <PARAM name="summary-only" help="Filter more specific routes from updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
       <PARAM name="route-map" help="Apply route map to aggregate network" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="rtemap" help="Route-map name" ptype="STRING"/>
+        <PARAM name="rtemap" help="Name of route-map" ptype="STRING_63"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address ${vrf-name} IPV4_UNICAST ${prefix}</ACTION>
@@ -323,7 +323,7 @@ limitations under the License.
   <COMMAND name="no import vrf" help="Import routes from another VRF">
     <PARAM name="import-vrf" help="Import routes from another VRF" mode="switch" ptype="SUBCOMMAND">
        <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND">
-         <PARAM name="route-map-name" help="Route map name" ptype="STRING"/>
+         <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63"/>
        </PARAM>
        <PARAM name="import-vrf-name" help="Name of VRF" ptype="STRING_15"/>
     </PARAM>
@@ -392,7 +392,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-map" help="Name of the route map" render_command_cb="bgp_nbr_af_rmap">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -542,7 +542,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="default-originate" help="Originate default route to this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/send_default_route=true">
     <PARAM name="route-map" help="Route-map to specify criteria to originate default" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="rtemap" help="Route-map name" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/default_rmap"/>
+      <PARAM name="rtemap" help="Name of route-map" ptype="STRING_63" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/default_rmap"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; route-map:${route-map} rtemap:${rtemap}</ACTION>
     <DOCGEN>
@@ -566,7 +566,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="filter-list" help="Establish BGP filters" render_command_cb="bgp_nbr_af_flist">
-    <PARAM name="fname" help="AS path access-list name" ptype="STRING">
+    <PARAM name="fname" help="Name of as-path-list" ptype="STRING_63">
       <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -616,7 +616,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="prefix-list" help="Filter updates to/from this neighbor" render_command_cb="bgp_nbr_af_plist">
-    <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
+    <PARAM name="pname" help="Name of prefix-list" ptype="STRING_63">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -764,7 +764,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="unsuppress-map" help="Route-map to selectively unsuppress suppressed routes">
-    <PARAM name="map" help="Name of route map" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/unsuppress_map_name">
+    <PARAM name="map" help="Name of route-map" ptype="STRING_63" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/unsuppress_map_name">
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_unsuppress_map_name ${vrf-name} ${nbr-addr} IPV4_UNICAST ${map}</ACTION>
     <DOCGEN>
@@ -859,7 +859,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value}</ACTION>
   </COMMAND>
   <COMMAND name="no route-map" help="Name of the route map">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
@@ -891,12 +891,12 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no default-originate" help="Originate default route to this neighbor">
     <PARAM name="route-map" help="Route-map to specify criteria to originate default" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="rtemap" help="Route-map name" ptype="STRING"/>
+      <PARAM name="rtemap" help="Name of route-map" ptype="STRING_63"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd} &#xA; rtemap:${rtemap}</ACTION>
   </COMMAND>
   <COMMAND name="no filter-list" help="Establish BGP filters">
-    <PARAM name="fname" help="AS path access-list name" ptype="STRING">
+    <PARAM name="fname" help="Name of as-path-list" ptype="STRING_63">
       <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -909,7 +909,7 @@ limitations under the License.
      <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrV4 ${vrf-name} ${nbr-addr} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no prefix-list" help="Filter updates to/from this neighbor">
-    <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
+    <PARAM name="pname" help="Name of prefix-list" ptype="STRING_63">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -937,7 +937,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${nbr-addr} IPV4_UNICAST</ACTION>
   </COMMAND>
   <COMMAND name="no unsuppress-map" help="Route-map to selectively unsuppress suppressed routes">
-    <PARAM name="map" help="Name of route map" ptype="STRING">
+    <PARAM name="map" help="Name of route-map" ptype="STRING_63">
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_unsuppress_map_name ${vrf-name} ${nbr-addr} IPV4_UNICAST</ACTION>
   </COMMAND>
@@ -1019,7 +1019,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-map" help="Name of the route map" render_command_cb="bgp_pg_af_rmap">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -1166,7 +1166,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="default-originate" help="Originate default route to this neighbor" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/send_default_route=true">
     <PARAM name="route-map" help="Route-map to specify criteria to originate default" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="rtemap" help="Route-map name" ptype="STRING" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/default_rmap"/>
+      <PARAM name="rtemap" help="Name of route-map" ptype="STRING_63" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/default_rmap"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; route-map:${route-map} rtemap:${rtemap}</ACTION>
     <DOCGEN>
@@ -1190,7 +1190,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="filter-list" help="Establish BGP filters" render_command_cb="bgp_pg_af_flist">
-    <PARAM name="fname" help="AS path access-list name" ptype="STRING">
+    <PARAM name="fname" help="Name of as-path-list" ptype="STRING_63">
       <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -1238,7 +1238,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="prefix-list" help="Filter updates to/from this neighbor" render_command_cb="bgp_pg_af_plist">
-    <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
+    <PARAM name="pname" help="Name of prefix-list" ptype="STRING_63">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -1388,7 +1388,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="unsuppress-map" help="Route-map to selectively unsuppress suppressed routes">
-    <PARAM name="map" help="Name of route map" ptype="STRING"
+    <PARAM name="map" help="Name of route-map" ptype="STRING_63"
          dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/unsuppress_map_name">
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_unsuppress_map_name ${vrf-name} ${template-name} IPV4_UNICAST ${map}</ACTION>
@@ -1482,7 +1482,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value}</ACTION>
   </COMMAND>
   <COMMAND name="no route-map" help="Name of the route map">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
@@ -1514,12 +1514,12 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no default-originate" help="Originate default route to this neighbor">
     <PARAM name="route-map" help="Route-map to specify criteria to originate default" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="rtemap" help="Route-map name" ptype="STRING"/>
+      <PARAM name="rtemap" help="Name of route-map" ptype="STRING_63"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd} &#xA; rtemap:${rtemap}</ACTION>
   </COMMAND>
   <COMMAND name="no filter-list" help="Establish BGP filters">
-    <PARAM name="fname" help="AS path access-list name" ptype="STRING">
+    <PARAM name="fname" help="Name of as-path-list" ptype="STRING_63">
       <PARAM name="filtopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -1532,7 +1532,7 @@ limitations under the License.
      <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpV4 ${vrf-name} ${template-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no prefix-list" help="Filter updates to/from this neighbor">
-    <PARAM name="pname" help="Name of a prefix list" ptype="STRING">
+    <PARAM name="pname" help="Name of prefix-list" ptype="STRING_63">
       <PARAM name="prfopt" help="Filter options" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routes" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routes" mode="subcommand" ptype="SUBCOMMAND"/>
@@ -1560,7 +1560,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${template-name} IPV4_UNICAST</ACTION>
   </COMMAND>
   <COMMAND name="no unsuppress-map" help="Route-map to selectively unsuppress suppressed routes">
-    <PARAM name="map" help="Name of route map" ptype="STRING">
+    <PARAM name="map" help="Name of route-map" ptype="STRING_63">
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_unsuppress_map_name ${vrf-name} ${template-name} IPV4_UNICAST</ACTION>
   </COMMAND>

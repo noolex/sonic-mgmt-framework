@@ -92,6 +92,10 @@
 < 			argv, &idx, completion, index + idx);
 ---
 > 			argv, &idx, completion, index + idx, NULL, NULL);
+110c164
+< 			const char *result;
+---
+> 			const char *result = NULL;
 116a171,172
 > 			if (BOOL_TRUE == clish_param__get_hidden(param))
 > 				continue;

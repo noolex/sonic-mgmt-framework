@@ -57,7 +57,7 @@ limitations under the License.
          name="STP_FORCE_VERSION"
          method="integer"
          pattern="( [0] | [2])"
-         help="range is 4 to 30 seconds"
+         help=""
          />
      <!--=======================================================-->
      <PTYPE
@@ -85,7 +85,7 @@ limitations under the License.
            name="STP_GUARD_ROOT_TIMEOUT"
            method="integer"
            pattern="5..600"
-           help="timeout in seconds"
+           help=""
            />
        <!--=======================================================-->
 
@@ -96,24 +96,24 @@ limitations under the License.
         >
         <PARAM
             name="vlan"
-            help="Spanning tree information for VLAN"
+            help="VLAN specific information"
             ptype="SUBCOMMAND"
             mode="subcommand"
             optional="true"
         >
         <PARAM
             name="vlan-id"
-            help=""
+            help="VLAN identifier"
             ptype="STP_VLAN_ID"
             >
             <PARAM
                 name="interface"
-                help="interface"
+                help="Interface specific information"
                 ptype="SUBCOMMAND" mode="subcommand" optional="true"
                 >
                 <PARAM
                     name="name"
-                    help="VLAN member interface name (max 15 characters)"
+                    help="VLAN member interface name"
                     ptype="STRING"
                 >
                 </PARAM>
@@ -157,18 +157,18 @@ limitations under the License.
 
     <COMMAND
         name="show spanning-tree counters"
-        help="Show spanning tree counters information"
+        help="Counters"
         >
         <PARAM
             name="vlan"
-            help="Spanning tree counters for a VLAN"
+            help="Counters for a specific VLAN"
             ptype="SUBCOMMAND"
             mode="subcommand"
             optional="true"
             >
             <PARAM
                 name="vlan-id"
-                help=""
+                help="VLAN identifier"
                 ptype="STP_VLAN_ID"
                 >
             </PARAM>
@@ -204,18 +204,18 @@ limitations under the License.
 
     <COMMAND
         name="show spanning-tree inconsistentports"
-        help="Show spanning tree ROOT guard information"
+        help="Root guard information for all VLANs"
         >
         <PARAM
             name="vlan"
-            help="Spanning ROOT guard information for VLAN"
+            help="Root guard information for a specific VLAN"
             ptype="SUBCOMMAND"
             mode="subcommand"
             optional="true"
             >
             <PARAM
                 name="vlan-id"
-                help=""
+                help="VLAN identifier"
                 ptype="STP_VLAN_ID"
                 >
             </PARAM>
@@ -245,7 +245,7 @@ limitations under the License.
 
     <COMMAND
         name="show spanning-tree bpdu-guard"
-        help="Show spanning tree BPDU guard information"
+        help="BPDU guard information"
         >
     <ACTION builtin="clish_pyobj">
      sonic_cli_stp get_openconfig_spanning_tree_stp_interfaces show_stp_bpdu_guard.j2
@@ -266,74 +266,84 @@ limitations under the License.
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
+	<COMMAND
+		name="show running-configuration spanning-tree"
+		help="Show spanning-tree configuration">
+		<ACTION builtin="clish_pyobj">sonic_cli_stp show_running_spanning_tree views=configure-view" </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Shows running-config for spanning-tree 
+        </DESCRIPTION>
+        <USAGE>
+            This command is useful in viewing a summary of running-config for spanning-tree 
+        </USAGE>
+        <EXAMPLE summary="show running-config spanning-tree">
+			sonic-cli# show running-configuration spanning-tree
+			spanning-tree mode pvst
+			spanning-tree edge-port bpdufilter default
+			spanning-tree forward-time 4
+			spanning-tree guard root timeout 5
+			spanning-tree hello-time 1
+			spanning-tree max-age 40
+			spanning-tree priority 61440
+			!
+			no spanning-tree vlan 101
+			!
+			spanning-tree vlan 100 forward-time 5
+			spanning-tree vlan 100 hello-time 3
+			!
+			spanning-tree vlan 101 forward-time 15
+			!
+			interface Ethernet0
+			 spanning-tree bpdufilter enable
+			 spanning-tree vlan 100 cost 1
+			!
+			interface PortChannel10
+			 no spanning-tree enable
+			 no spanning-tree portfast
+			 spanning-tree cost 2
+			 spanning-tree vlan 100 cost 1
+        </EXAMPLE>
+    </DOCGEN>
 
+	</COMMAND>
 </VIEW>
 
 <!-- Config mode -->
 <VIEW name="configure-view">
     <COMMAND
         name="spanning-tree"
-        help="Configure spanning tree"
+        help="Spanning tree configuration"
         >
-    </COMMAND>
-
-    <COMMAND
-        name="spanning-tree edge-port"
-        help="Configure spanning tree edge port"
-        >
-        <PARAM
-            name="bpdufilter"
-            help="BPDU Filter"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-            <PARAM
-                name="default"
-                help="Default enable"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-            >
-            </PARAM>
-        </PARAM>
-    <ACTION builtin="clish_pyobj">
-        sonic_cli_stp patch_openconfig_spanning_tree_stp_global_config_bpdu_filter True&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Configure spanning-tree global level BPDU filter
-        </DESCRIPTION>
-        <USAGE>
-            This command allows configuring global level BPDU filter
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)# spanning-tree edge-port bpdufilter default
-        </EXAMPLE>
-    </DOCGEN>
     </COMMAND>
 
     <COMMAND
         name="spanning-tree mode"
-        help="Configure spanning tree mode {pvst | rapid-pvst}"
+        help="Configures spanning tree mode"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
+        command_keys="keyleaf_val=GLOBAL"
         >
         <PARAM
             name="mode-subcmds"
-            help="spannig tree subcommands"
+            help="Spanning tree subcommands"
             ptype="SUBCOMMAND"
             mode="switch"
             optional="true"
             >
             <PARAM
                 name="pvst"
-                help="Enable PVST+ (based on IEEE 802.1D)"
+                help="Enables PVST+ (based on IEEE 802.1D)"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/mode=pvst"
                 mode="subcommand"
                 optional="true"
             >
             </PARAM>
             <PARAM
                 name="rapid-pvst"
-                help="Enable rapid PVST+ (based on IEEE 802.1w)"
+                help="Enables rapid PVST+ (based on IEEE 802.1w)"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/mode=rpvst"
                 mode="subcommand"
                 optional="true"
                 >
@@ -356,105 +366,54 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
-        name="spanning-tree vlan"
-        help="Configure spanning tree for VLAN"
+        name="spanning-tree edge-port"
+        help="Edge-port configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
+        command_keys="keyleaf_val=GLOBAL"
         >
         <PARAM
-            name="vlan-range"
-            help=""
-            ptype="STP_VLAN_ID"
-            >
-        </PARAM>
-        <PARAM
-            name="stp-vlan-subcmds"
-            help="spannig tree subcommands"
+            name="bpdufilter"
+            help="BPDU Filter options"
             ptype="SUBCOMMAND"
-            mode="switch"
-            optional="true"
+            mode="subcommand"
             >
             <PARAM
-                name="forward-time"
-                help="Set the forward delay time for the spanning tree"
+                name="default"
+                help="Enables bpdufilter on edge-ports"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/bpdu_filter=true"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
-                >
-                <PARAM
-                    name="seconds"
-                    help="Number of seconds for the forward time ((default = 15)"
-                    ptype="STP_FORWARD_DELAY"
-                    >
-                </PARAM>
-            </PARAM>
-            <PARAM
-                name="hello-time"
-                help="Set the hello time for the spanning tree"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-                <PARAM
-                    name="seconds"
-                    help="Number of seconds for the hello time (default = 2)"
-                    ptype="STP_HELLO_TIME"
-                    >
-                </PARAM>
-            </PARAM>
-
-            <PARAM
-                name="max-age"
-                help="Set the max age time for the spanning tree"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-                <PARAM
-                    name="seconds"
-                    help="Number of seconds for the max age time (default = 20)"
-                    ptype="STP_MAX_AGE"
-                    >
-                </PARAM>
-            </PARAM>
-            <PARAM
-                name="priority"
-                help="Set the bridge priority for the spanning tree"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-                <PARAM
-                    name="value"
-                    help="priority in the increments of 4096 (default = 32768)"
-                    ptype="STP_PRIORITY"
-                    >
-                </PARAM>
+            >
             </PARAM>
         </PARAM>
     <ACTION builtin="clish_pyobj">
-        sonic_cli_stp config_stp_vlan_subcmds ${stp-vlan-subcmds} ${vlan-range} ${seconds} ${value}&#xA;
+        sonic_cli_stp patch_openconfig_spanning_tree_stp_global_config_bpdu_filter True&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Configure spanning-tree parameters on per VLAN basis
+            Configure spanning-tree global level BPDU filter
         </DESCRIPTION>
         <USAGE>
-            These commands are similar to the global level commands but allow configuring the spanning-tree parameters on per VLAN basis.
+            This command allows configuring global level BPDU filter
         </USAGE>
         <EXAMPLE>
-            sonic(config)#spanning-tree vlan 100  
-            sonic(config)#spanning-tree vlan 100 forward-time 11
-            sonic(config)#spanning-tree vlan 100 hello-time 3
-            sonic(config)#spanning-tree vlan 100 max-age 22 
-            sonic(config)#spanning-tree vlan 100 priority 4096 
+            sonic(config)# spanning-tree edge-port bpdufilter default
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
 
     <COMMAND
         name="spanning-tree forward-time"
-        help="Set the forward delay time for the spanning tree"
+        help="Configures forward delay time"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
+        command_keys="keyleaf_val=GLOBAL"
+        render_command_cb="spanning_tree_global_fwd_delay"
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
         <PARAM
             name="seconds"
-            help="Number of seconds for the forward time ((default = 15)"
+            help="Forward time value (sec)"
             ptype="STP_FORWARD_DELAY"
             >
         </PARAM>
@@ -475,24 +434,28 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree guard"
-        help="Set the spanning tree guard"
+        help="Guard configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
+        command_keys="keyleaf_val=GLOBAL"
         ptype="SUBCOMMAND" mode="subcommand"
+        render_command_cb="spanning_tree_global_root_guard_timeout"
         >
         <PARAM
             name="root"
-            help="root guard"
+            help="Root guard options"
             ptype="SUBCOMMAND" mode="subcommand"
             >
             <PARAM
                 name="timeout"
-                help="root guard timeout"
+                help="Configures root guard timeout"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
                 <PARAM
                     name="value"
-                    help="root guard timeout value in seconds"
+                    help="Timeout value (sec)"
                     ptype="STP_GUARD_ROOT_TIMEOUT"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/rootguard_timeout"
                 >
                 </PARAM>
             </PARAM>
@@ -514,13 +477,16 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree hello-time"
-        help="Set the hello time for the spanning tree"
+        help="Configures hello time"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
+        command_keys="keyleaf_val=GLOBAL"
+        render_command_cb="spanning_tree_global_hello_time"
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
         <PARAM
             name="seconds"
-            help="Number of seconds for the hello time (default = 2)"
+            help="Hello time value (sec)"
             ptype="STP_HELLO_TIME"
             >
         </PARAM>
@@ -541,13 +507,16 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree max-age"
-        help="Set the max age time for the spanning tree"
+        help="Configures max-age time"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
+        command_keys="keyleaf_val=GLOBAL"
         ptype="SUBCOMMAND"
+        render_command_cb="spanning_tree_global_max_age"
         mode="subcommand"
         >
         <PARAM
             name="seconds"
-            help="Number of seconds for the max age time (default = 20)"
+            help="Max-age time value (sec)"
             ptype="STP_MAX_AGE"
             >
         </PARAM>
@@ -568,13 +537,16 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree priority"
-        help="Set the priority for the spanning tree"
+        help="Configures bridge priority"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
+        command_keys="keyleaf_val=GLOBAL"
         ptype="SUBCOMMAND"
+        render_command_cb="spanning_tree_global_priority"
         mode="subcommand"
         >
         <PARAM
             name="value"
-            help="priority in the increments of 4096 (default = 32768)"
+            help="Bridge priority value (multiples of 4096)"
             ptype="STP_PRIORITY"
             >
         </PARAM>
@@ -597,23 +569,23 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree"
-        help="Unconfigure spanning tree"
+        help="Spanning tree configuration"
         >
     </COMMAND>
 
     <COMMAND
         name="no spanning-tree edge-port"
-        help="Unconfigure spanning tree edge port"
+        help="Edge port configuration"
         >
         <PARAM
             name="bpdufilter"
-            help="BPDUF filter"
+            help="BPDU filter options"
             ptype="SUBCOMMAND"
             mode="subcommand"
             >
             <PARAM
                 name="default"
-                help="Default disable"
+                help="Disables bpdufilter on all edge ports"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
             >
@@ -625,7 +597,7 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree mode"
-        help="Unconfigure spanning tree"
+        help="Disables spanning tree"
         >
     <ACTION builtin="clish_pyobj">
         sonic_cli_stp delete_openconfig_spanning_tree_stp_global_config_enabled_protocol
@@ -644,32 +616,152 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
+        name="no spanning-tree forward-time"
+        help="Resets forward time to default value"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_forwarding_delay&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the spanning-tree forward delay time configuration
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the forward delay time to default value
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# no spanning-tree forward-time
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree guard"
+        help="Guard configuration"
+        ptype="SUBCOMMAND" mode="subcommand"
+        >
+        <PARAM
+            name="root"
+            help="Root guard options"
+            ptype="SUBCOMMAND" mode="subcommand"
+            >
+            <PARAM
+                name="timeout"
+                help="Resets root guard timeout to default value"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+            </PARAM>
+        </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the spanning-tree root guard timeout.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the root guard timeout value. 
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# no spanning-tree guard root timeout
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree hello-time"
+        help="Resets hello time to default value"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_hello_time&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the spanning-tree hello time configuration.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the hello interval configuration.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree hello-time
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree max-age"
+        help="Resets max-age to default value"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_max_age&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the spanning-tree max-age time value.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the max age configuration.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree max-age
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree priority"
+        help="Resets bridge priority to default value"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        >
+    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_bridge_priority&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Remove the global level spanning-tree bridge priority value.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows resetting the bridge priority to default value
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree priority
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
         name="no spanning-tree vlan"
-        help="Unconfigure spanning tree on VLAN"
+        help="Disables spanning-tree on a specific VLAN"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/name={vlan_name}"
+        command_keys="vlan_name=*"
+        render_command_cb="no_spanning_tree_vlan"
         >
         <PARAM
             name="vlan-range"
-            help=""
+            help="VLAN identifier"
             ptype="STP_VLAN_ID"
             >
         </PARAM>
             <PARAM
                 name="stp-vlan-subcmds"
-                help="spannig tree subcommands"
+                help="Spanning tree subcommands"
                 ptype="SUBCOMMAND"
                 mode="switch"
                 optional="true"
                 >
                 <PARAM
                     name="forward-time"
-                    help="Unset the forward time for the spanning tree"
+                    help="Resets forward delay time to default value"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
                 </PARAM>
                 <PARAM
                     name="hello-time"
-                    help="Unset the forward time for the spanning tree"
+                    help="Resets hello time to default value"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
@@ -677,7 +769,7 @@ limitations under the License.
 
                 <PARAM
                     name="max-age"
-                    help="Unset the max age time for the spanning tree"
+                    help="Resets max-age to default value"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
@@ -685,7 +777,7 @@ limitations under the License.
 
                 <PARAM
                     name="priority"
-                    help="Unset the priority for the spanning tree"
+                    help="Resets bridge priority to default value"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
@@ -711,122 +803,106 @@ limitations under the License.
     </DOCGEN>
     </COMMAND>
 
-    <COMMAND
-        name="no spanning-tree forward-time"
-        help="Unset the forward time for the spanning tree"
-        ptype="SUBCOMMAND"
-        mode="subcommand"
-        >
-    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_forwarding_delay&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Remove the spanning-tree forward delay time configuration
-        </DESCRIPTION>
-        <USAGE>
-            This command allows resetting the forward delay time to default value
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)# no spanning-tree forward-time
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
 
     <COMMAND
-        name="no spanning-tree guard"
-        help="Unset the spanning tree guard"
-        ptype="SUBCOMMAND" mode="subcommand"
+        name="spanning-tree vlan"
+        help="Enables spanning-tree on a specific VLAN"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/name={vlan_name};sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
+        command_keys="keyleaf_val=GLOBAL;vlan_name=*"
+        render_command_cb="spanning_tree_vlan"
         >
         <PARAM
-            name="root"
-            help="Unser root guard"
-            ptype="SUBCOMMAND" mode="subcommand"
+            name="vlan-range"
+            help="VLAN identifier"
+            ptype="STP_VLAN_ID"
+            dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/vlanid"
+            >
+        </PARAM>
+        <PARAM
+            name="stp-vlan-subcmds"
+            help="Spanning tree subcommands"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            optional="true"
             >
             <PARAM
-                name="timeout"
-                help="Unset root guard timeout"
+                name="forward-time"
+                help="Configures forward delay time"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
+                <PARAM
+                    name="seconds"
+                    help="Forward delay time (sec)"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/forward_delay"
+                    ptype="STP_FORWARD_DELAY"
+                    >
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="hello-time"
+                help="Configures hello time"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="seconds"
+                    help="Hello time (sec)"
+                    ptype="STP_HELLO_TIME"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/hello_time"
+                    >
+                </PARAM>
+            </PARAM>
+
+            <PARAM
+                name="max-age"
+                help="Configures max-age time"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="seconds"
+                    help="Max-age time value (sec)"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/max_age"
+                    ptype="STP_MAX_AGE"
+                    >
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="priority"
+                help="Configures bridge priority"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="value"
+                    help="Bridge priority value (multiples of 4096)"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/priority"
+                    ptype="STP_PRIORITY"
+                    >
+                </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout&#xA;
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_vlan_subcmds ${stp-vlan-subcmds} ${vlan-range} ${seconds} ${value}&#xA;
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Remove the spanning-tree root guard timeout.
+            Configure spanning-tree parameters on per VLAN basis
         </DESCRIPTION>
         <USAGE>
-            This command allows resetting the root guard timeout value. 
+            These commands are similar to the global level commands but allow configuring the spanning-tree parameters on per VLAN basis.
         </USAGE>
         <EXAMPLE>
-            sonic(config)# no spanning-tree guard root timeout
+            sonic(config)#spanning-tree vlan 100  
+            sonic(config)#spanning-tree vlan 100 forward-time 11
+            sonic(config)#spanning-tree vlan 100 hello-time 3
+            sonic(config)#spanning-tree vlan 100 max-age 22 
+            sonic(config)#spanning-tree vlan 100 priority 4096 
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
 
-    <COMMAND
-        name="no spanning-tree hello-time"
-        help="Unset the hello time for the spanning tree"
-        ptype="SUBCOMMAND"
-        mode="subcommand"
-        >
-    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_hello_time&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Remove the spanning-tree hello time configuration.
-        </DESCRIPTION>
-        <USAGE>
-            This command allows resetting the hello interval configuration.
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)#no spanning-tree hello-time
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="no spanning-tree max-age"
-        help="Set the max age time for the spanning tree"
-        ptype="SUBCOMMAND"
-        mode="subcommand"
-        >
-    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_max_age&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Remove the spanning-tree max-age time value.
-        </DESCRIPTION>
-        <USAGE>
-            This command allows resetting the max age configuration.
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)#no spanning-tree max-age
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="no spanning-tree priority"
-        help="Unset the priority for the spanning tree"
-        ptype="SUBCOMMAND"
-        mode="subcommand"
-        >
-    <ACTION builtin="clish_pyobj"> sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_global_config_bridge_priority&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Remove the global level spanning-tree bridge priority value.
-        </DESCRIPTION>
-        <USAGE>
-            This command allows resetting the bridge priority to default value
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)#no spanning-tree priority
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
 
 </VIEW>
 
@@ -834,371 +910,100 @@ limitations under the License.
 <!-- Config interface mode -->
 <VIEW name="configure-if-view">
     <COMMAND
-        name="spanning-tree"
-        help = "Configure spanning tree on interface"
-        >
-        <PARAM
-            name="stp-if-subcmds"
-            help="spannig tree interface subcommands"
-            ptype="SUBCOMMAND"
-            mode="switch"
-            >
-            <PARAM
-                name="bpduguard"
-                help="Enables bpdu guard on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-                <PARAM
-                    name="port-shutdown"
-                    help="Enable port shutdown on bpdu guard violation"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    optional="true"
-                    >
-                </PARAM>
-            </PARAM>
-            <PARAM
-                name="cost"
-                help="Set the port level cost"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-                <PARAM
-                    name="value"
-                    help="Port cost value"
-                    ptype="STP_COST"
-                    >
-                </PARAM>
-            </PARAM>
-            <PARAM
-                name="enable"
-                help="Enables spanning-tree on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
-            <PARAM
-                name="link-type"
-                help="Set link type of the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-                <PARAM
-                    name="link-sub-cmds"
-                    help = "link type sub commands."
-                    ptype="SUBCOMMAND"
-                    mode="switch"
-                    >
-                    <PARAM
-                        name="point-to-point"
-                        help = "Link type of given interface is point-to-point."
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        >
-                    </PARAM>
-                    <PARAM
-                        name="shared"
-                        help = "Link type of given interface is shared."
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        >
-                    </PARAM>
-                </PARAM>
-            </PARAM>
-            <PARAM
-                name="portfast"
-                help="Enables portfast on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
-
-            <PARAM
-                name="port-priority"
-                help="Set the port level priority"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-                <PARAM
-                    name="value"
-                    help="Port priority value"
-                    ptype="STP_PORT_PRIORITY"
-                    >
-                </PARAM>
-            </PARAM>
-
-            <PARAM
-                name="port"
-                help="Set Spanning tree port"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-                <PARAM
-                    name="type"
-                    help="Spanning Tree port type"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    >
-                    <PARAM
-                        name="edge"
-                        help="Edge port"
-                        ptype="SUBCOMMAND"
-                        mode="subcommand"
-                        >
-                    </PARAM>
-                </PARAM>
-            </PARAM>
-
-        <PARAM
-            name="uplinkfast"
-            help="Enables uplink fast on the interface"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-        </PARAM>
-    </PARAM>
-    <ACTION builtin="clish_pyobj">
-        sonic_cli_stp config_stp_if_subcmds ${stp-if-subcmds} ${iface} ${value} ${port-shutdown} ${link-sub-cmds} ${edge}
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Configure interface specific spanning-tree parameters.
-        </DESCRIPTION>
-        <USAGE>
-            These commands allow configuring interface specific spanning-tree parameters
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)# interface Ethernet 0
-            sonic(conf-if-Ethernet0)# spanning-tree bpduguard port-shutdown
-            sonic(conf-if-Ethernet0)# spanning-tree cost 1000
-            sonic(conf-if-Ethernet0)# spanning-tree enable
-            sonic(conf-if-Ethernet0)# spanning-tree portfast
-            sonic(conf-if-Ethernet0)# spanning-tree port-priority 16
-            sonic(conf-if-Ethernet0)# spanning-tree uplinkfast 
-            sonic(conf-if-Ethernet0)# spanning-tree link-type point-to-point
-            sonic(conf-if-Ethernet0)# spanning-tree port type edge
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="spanning-tree bpdufilter"
-        help="Spanning-tree BPDU filter on the interface"
-        >
-        <PARAM
-            name="bpdufilt_sub_cmds"
-            help="Spanning-tree BPDU filter subcommands"
-            ptype="SUBCOMMAND"
-            mode="switch"
-            >
-            <PARAM
-                name="enable"
-                help="Enables spanning-tree BPDU filter on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
-            <PARAM
-                name="disable"
-                help="Disable spanning-tree BPDU filter on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
-        </PARAM>
-    <ACTION builtin="clish_pyobj">
-        sonic_cli_stp config_stp_if_bpdu_filter ${bpdufilt_sub_cmds} ${iface}&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Configure interface specific bpdu-filter parameters.
-        </DESCRIPTION>
-        <USAGE>
-            These commands allow configuring interface specific bpdu-filter parameters
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)# interface Ethernet 0
-            sonic(conf-if-Ethernet0)# spanning-tree bpdufilter enable
-            sonic(conf-if-Ethernet0)# spanning-tree bpdufilter disable
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="spanning-tree guard"
-        help = "Configure spanning tree guard on interface"
-        >
-        <PARAM
-            name="root"
-            help="Enables root guard on interface"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-        </PARAM>
-    <ACTION builtin="clish_pyobj">
-        sonic_cli_stp patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface}
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Configure interface specific guard root parameters.
-        </DESCRIPTION>
-        <USAGE>
-            This commands allows enabling guard root on an interface
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)# interface Ethernet 0
-            sonic(conf-if-Ethernet0)# spanning-tree guard root 
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="spanning-tree vlan"
-        help = "Configure spanning tree on interface for VLAN"
-        >
-        <PARAM
-            name="vlan-range"
-            help=""
-            ptype="STP_VLAN_ID"
-            >
-        </PARAM>
-
-            <PARAM
-                name="stp-if-vlan-subcmds"
-                help="spanning tree interface VLAN subcommands"
-                ptype="SUBCOMMAND" mode="switch"
-                >
-                <PARAM
-                    name="cost"
-                    help="Set the port level cost value for VLAN"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    >
-                    <PARAM
-                        name="value"
-                        help="Cost value"
-                        ptype="STP_COST"
-                        >
-                    </PARAM>
-
-                </PARAM>
-
-                <PARAM
-                    name="port-priority"
-                    help="Set the port level priority value for a VLAN"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    >
-                    <PARAM
-                        name="value"
-                        help="Priority value"
-                        ptype="STP_PORT_PRIORITY"
-                        >
-                    </PARAM>
-                </PARAM>
-            </PARAM>
-    <ACTION builtin="clish_pyobj">
-        sonic_cli_stp config_stp_if_vlan_subcmds ${stp-if-vlan-subcmds} ${vlan-range} ${iface} ${value}&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Configure interface and vlan specific spanning-tree parameters.
-        </DESCRIPTION>
-        <USAGE>
-            This commands allows configuring interface and vlan specific spanning-tree parameters. 
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)# interface Ethernet 0
-            sonic(conf-if-Ethernet0)# spanning-tree vlan 100 cost 1000
-            sonic(conf-if-Ethernet0)# spanning-tree vlan 100 port-priority 16
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
         name="no spanning-tree"
-        help = "Unconfigure spanning tree on interface"
+        help = "Spanning tree configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+        dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/enabled=false"
         >
         <PARAM
             name="stp-if-subcmds"
-            help="spannig tree interface subcommands"
+            help="Spanning tree interface subcommands"
             ptype="SUBCOMMAND"
             mode="switch"
             >
             <PARAM
                 name="bpdufilter"
-                help="if spanning-tree BPDU filter on the interface is disabled, global bpdufilter will be applied"
+                help="Disables BPDU filter on this interface and apply global bpdufilter"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
                 mode="subcommand"
                 >
             </PARAM>
             <PARAM
                 name="bpduguard"
-                help="Disabled bpdu guard on the interface"
+                help="Disables bpduguard feature"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
                 mode="subcommand"
                 >
             </PARAM>
 
             <PARAM
                 name="cost"
-                help="Unset the port level cost value for a VLAN"
+                help="Reset cost value to default"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
                 mode="subcommand"
                 >
             </PARAM>
 
             <PARAM
                 name="enable"
-                help="Disables spanning-tree on the interface"
+                help="Disables spanning-tree"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/enabled=false"
                 mode="subcommand"
                 >
             </PARAM>
 
             <PARAM
                 name="link-type"
-                help="Unset link type of the interface"
+                help="Resets link type to default"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
                 mode="subcommand"
                 >
             </PARAM>
 
             <PARAM
                 name="portfast"
-                help="Disables portfast on the interface"
+                help="Disables portfast feature"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/portfast=false"
                 mode="subcommand"
                 >
             </PARAM>
 
             <PARAM
                 name="port-priority"
-                help="Reset the port level priority on the interface"
+                help="Resets the port priority"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
                 mode="subcommand"
                 >
             </PARAM>
 
             <PARAM
                 name="port"
-                help="Unset Spanning Tree port info"
+                help="Port configuration"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
                 mode="subcommand"
                 >
                 <PARAM
                     name="type"
-                    help="Unset port type of the interface"
+                    help="Resets port type to default"
                     ptype="SUBCOMMAND"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
                     mode="subcommand"
                     >
                 </PARAM>
             </PARAM>
             <PARAM
                 name="uplinkfast"
-                help="Disables uplink fast on the interface"
+                help="Disables uplinkfast feature"
                 ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
                 mode="subcommand"
                 >
             </PARAM>
@@ -1230,12 +1035,13 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree guard"
-        help = "Unconfigure spanning tree guard on interface"
+        help = "Guard configuration"
         >
         <PARAM
             name="root"
-            help="Disables root guard on interface"
+            help="Disables root guard feature"
             ptype="SUBCOMMAND"
+            dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
             mode="subcommand"
             >
         </PARAM>
@@ -1258,24 +1064,24 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree vlan"
-        help = "Unconfigure spanning tree on interface for given VLAN"
+        help = "VLAN specific configuration"
         >
         <PARAM
             name="vlan-range"
-            help=""
+            help="VLAN identifier"
             ptype="STP_VLAN_ID"
             >
         </PARAM>
 
         <PARAM
             name="stp-if-vlan-subcmds"
-            help="spannig tree interface subcommands"
+            help="Spanning tree interface subcommands"
             ptype="SUBCOMMAND"
             mode="switch"
             >
             <PARAM
                 name="cost"
-                help="Unset the port level cost value for VLAN"
+                help="Resets the pathcost to default"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -1283,7 +1089,7 @@ limitations under the License.
 
             <PARAM
                 name="port-priority"
-                help="Unset the port level priority value for a VLAN"
+                help="Resets the port priority to default"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -1307,24 +1113,625 @@ limitations under the License.
     </DOCGEN>
     </COMMAND>
 
+
+    <COMMAND
+        name="spanning-tree"
+        help = "Spanning tree configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+        >
+        <PARAM
+            name="stp-if-subcmds"
+            help="Spanning tree interface subcommands"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+            <PARAM
+                name="bpduguard"
+                help="Enables bpduguard feature"
+                ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/bpdu_guard=true"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="port-shutdown"
+                    help="Enables port shutdown on bpdu guard violation"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/bpdu_guard_do_disable=true"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="cost"
+                help="Configures pathcost"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="value"
+                    help="Pathcost value"
+                    ptype="STP_COST"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/path_cost"
+                    >
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="enable"
+                help="Enables spanning tree"
+                ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
+                mode="subcommand"
+                >
+            </PARAM>
+            <PARAM
+                name="link-type"
+                help="Configures link type of the interface"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="link-sub-cmds"
+                    help = "link type sub commands."
+                    ptype="SUBCOMMAND"
+                    mode="switch"
+                    >
+                    <PARAM
+                        name="point-to-point"
+                        help = "Link type of this interface is point-to-point"
+                        ptype="SUBCOMMAND"
+                        dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/link_type=point-to-point"
+                        mode="subcommand"
+                        >
+                    </PARAM>
+                    <PARAM
+                        name="shared"
+                        help = "Link type of this interface is shared"
+                        ptype="SUBCOMMAND"
+                        dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/link_type=shared"
+                        mode="subcommand"
+                        >
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="portfast"
+                help="Enables portfast feature"
+                ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/DO_NOT_RENDER"
+                mode="subcommand"
+                >
+            </PARAM>
+
+            <PARAM
+                name="port-priority"
+                help="Configures port priority"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="value"
+                    help="Port priority value"
+                    dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/priority"
+                    ptype="STP_PORT_PRIORITY"
+                    >
+                </PARAM>
+            </PARAM>
+
+            <PARAM
+                name="port"
+                help="Port configuration"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="type"
+                    help="Configures port type"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                    <PARAM
+                        name="edge"
+                        help="Edge port"
+                        ptype="SUBCOMMAND"
+                        dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/edge_port=true"
+                        mode="subcommand"
+                        >
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+
+        <PARAM
+            name="uplinkfast"
+            help="Enables uplinkfast feature"
+            ptype="SUBCOMMAND"
+            dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/uplink_fast=true"
+            mode="subcommand"
+            >
+        </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_if_subcmds ${stp-if-subcmds} ${iface} ${value} ${port-shutdown} ${link-sub-cmds} ${edge}
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            These commands allow configuring interface specific spanning-tree parameters
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# spanning-tree bpduguard port-shutdown
+            sonic(conf-if-Ethernet0)# spanning-tree cost 1000
+            sonic(conf-if-Ethernet0)# spanning-tree enable
+            sonic(conf-if-Ethernet0)# spanning-tree portfast
+            sonic(conf-if-Ethernet0)# spanning-tree port-priority 16
+            sonic(conf-if-Ethernet0)# spanning-tree uplinkfast 
+            sonic(conf-if-Ethernet0)# spanning-tree link-type point-to-point
+            sonic(conf-if-Ethernet0)# spanning-tree port type edge
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="spanning-tree bpdufilter"
+        help="BPDU filter configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+        >
+        <PARAM
+            name="bpdufilt_sub_cmds"
+            help="Spanning-tree BPDU filter subcommands"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+            <PARAM
+                name="enable"
+                help="Enables BPDU filter on this interface"
+                ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/bpdu_filter=enable"
+                mode="subcommand"
+                >
+            </PARAM>
+            <PARAM
+                name="disable"
+                help="Disables BPDU filter on this interface"
+                ptype="SUBCOMMAND"
+                dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/bpdu_filter=disable"
+                mode="subcommand"
+                >
+            </PARAM>
+        </PARAM>
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_if_bpdu_filter ${bpdufilt_sub_cmds} ${iface}&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface specific bpdu-filter parameters.
+        </DESCRIPTION>
+        <USAGE>
+            These commands allow configuring interface specific bpdu-filter parameters
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# spanning-tree bpdufilter enable
+            sonic(conf-if-Ethernet0)# spanning-tree bpdufilter disable
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="spanning-tree guard"
+        help = "Guard configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+        >
+        <PARAM
+            name="root"
+            help="Enables root guard feature"
+            ptype="SUBCOMMAND"
+            dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/root_guard=true"
+            mode="subcommand"
+            >
+        </PARAM>
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface}
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface specific guard root parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands allows enabling guard root on an interface
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# spanning-tree guard root 
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="spanning-tree vlan"
+        help = "VLAN specific configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN_PORT/STP_VLAN_PORT_LIST/vlan-name={vname_val},ifname={name};sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+        command_keys="vname_val=*"
+        render_command_cb="spanning_tree_intf_vlan"
+        >
+        <PARAM
+            name="vlan-range"
+            help="VLAN identifier"
+            ptype="STP_VLAN_ID"
+            >
+        </PARAM>
+
+            <PARAM
+                name="stp-if-vlan-subcmds"
+                help="Spanning tree interface VLAN subcommands"
+                ptype="SUBCOMMAND" mode="switch"
+                >
+                <PARAM
+                    name="cost"
+                    help="Configures pathcost"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                    <PARAM
+                        name="value"
+                        help="Cost value"
+                        ptype="STP_COST"
+                        >
+                    </PARAM>
+
+                </PARAM>
+
+                <PARAM
+                    name="port-priority"
+                    help="Configures priority"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                    <PARAM
+                        name="value"
+                        help="Priority value"
+                        ptype="STP_PORT_PRIORITY"
+                        >
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp config_stp_if_vlan_subcmds ${stp-if-vlan-subcmds} ${vlan-range} ${iface} ${value}&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure interface and vlan specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands allows configuring interface and vlan specific spanning-tree parameters. 
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface Ethernet 0
+            sonic(conf-if-Ethernet0)# spanning-tree vlan 100 cost 1000
+            sonic(conf-if-Ethernet0)# spanning-tree vlan 100 port-priority 16
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
 </VIEW>
 
 <!-- Config lag mode -->
 <VIEW name="configure-lag-view">
+
+    <COMMAND
+        name="no spanning-tree"
+        help = "Spanning tree configuration"
+        >
+    </COMMAND>
+    <COMMAND
+      name="no spanning-tree bpdufilter"
+      help="Disables BPDU filter on this interface and apply global bpdufilter"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name}&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure bpdufilter on a specific interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command removes the interface specific BPDU filter configuration and applies the global BPDU filter configuration.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree bpdufilter  
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree bpduguard"
+      help="Disables bpduguard feature"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_stp delete_stp_if_bpdu_guard_subcmds ${po_name}&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure bpduguard on a specific interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command removes the interface specific BPDU guard configuration.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree bpduguard 
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree cost"
+      help="Reset cost value to default"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name}&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree cost on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command resets the port level cost value
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree cost
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree enable"
+      help="Disables spanning-tree"
+      ptype="SUBCOMMAND"
+      command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+      dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/enabled=false"
+      mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${po_name} False&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables spanning-tree on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree enable
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree link-type"
+      help="Resets link type to default"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name}&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree link-type on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command resets the link-type configuration on an interface.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree link-type  
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree portfast"
+      help="Disables portfast feature"
+      ptype="SUBCOMMAND"
+      command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+      dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/portfast=false"
+      mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${po_name} False&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree portfast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables portfast on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree portfast 
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree port-priority"
+      help="Resets the port priority"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name}&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree port priority on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command resets the port priority value on an interface to default value
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree port-priority
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree uplinkfast"
+      help="Disables uplinkfast feature"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${po_name} False&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree uplink fast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables uplink fast feature on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree uplinkfast 
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree port"
+      help="Port configuration"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <PARAM
+        name="type"
+        help="Resets port type to default"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+        optional="true">
+      </PARAM>
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_stp_if_edge_port_subcmds ${po_name} ${type}&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unonfigure spanning-tree port type on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables edge-port type configuration an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface PortChannel 1
+              sonic(conf-if-po1)# no spanning-tree port type 
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree guard"
+        help = "Guard configuration"
+        >
+        <PARAM
+            name="root"
+            help="Disables root guard feature"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            >
+        </PARAM>
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "NONE"
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Unonfigure interface specific guard root parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows disabling guard root on an interface
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface PortChannel 1
+            sonic(conf-if-po1)# no spanning-tree guard root 
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree vlan"
+        help = "VLAN specific configuration"
+        >
+        <PARAM
+            name="vlan-range"
+            help="VLAN identifier"
+            ptype="STP_VLAN_ID"
+            >
+        </PARAM>
+
+        <PARAM
+            name="stp-if-vlan-subcmds"
+            help="Spanning tree port-channel subcommands"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+            <PARAM
+                name="cost"
+                help="Resets the pathcost to default"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+            </PARAM>
+
+            <PARAM
+                name="port-priority"
+                help="Resets the port priority to default"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+            </PARAM>
+        </PARAM>
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_stp_if_vlan_subcmds ${stp-if-vlan-subcmds} ${vlan-range} ${po_name}&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Unconfigure interface and vlan specific spanning-tree parameters.
+        </DESCRIPTION>
+        <USAGE>
+            This commands removes interface and vlan specific spanning-tree parameters and sets to default value 
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# interface PortChannel 1
+            sonic(conf-if-po1)# no spanning-tree vlan 100 cost 
+            sonic(conf-if-po1)# no spanning-tree vlan 100 port-priority 
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+
+
     <COMMAND
         name="spanning-tree"
-        help = "Configure spanning tree on port-channel"
+        help = "Spanning tree configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+        render_command_cb="spanning_tree_intf"
         >
     </COMMAND>
 
     <COMMAND 
         name="spanning-tree bpduguard" 
-        help="Enables bpdu guard on the port-channel" 
+        help="Enables bpduguard feature"
         ptype="SUBCOMMAND" 
         mode="subcommand">
       <PARAM 
         name="port-shutdown" 
-        help="Enable port shutdown on bpdu guard violation" 
+        help="Enables port shutdown on bpdu guard violation"
         ptype="SUBCOMMAND" 
         mode="subcommand" 
         optional="true"> 
@@ -1348,13 +1755,14 @@ limitations under the License.
 
     <COMMAND 
       name="spanning-tree cost" 
-      help="Set the port level cost" 
+      help="Configures pathcost"
       ptype="SUBCOMMAND" 
       mode="subcommand">
       <PARAM 
         name="value" 
-        help="Port cost value" 
-        ptype="STP_COST"> 
+        help="Pathcost value"
+        ptype="STP_COST"
+        >
       </PARAM>
       <ACTION builtin="clish_pyobj"> 
         sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name} ${value}&#xA;
@@ -1375,7 +1783,7 @@ limitations under the License.
 
     <COMMAND 
       name="spanning-tree enable" 
-      help="Enables spanning-tree on the port-channel" 
+      help="Enables spanning tree"
       ptype="SUBCOMMAND" 
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -1397,35 +1805,29 @@ limitations under the License.
 
     <COMMAND 
       name="spanning-tree link-type" 
-      help="Set link type of the port-channel" 
+      help="Configures link type of the interface"
       ptype="SUBCOMMAND" 
       mode="subcommand">
       <PARAM 
         name="link-sub-cmds" 
-        help="link type sub commands." 
+        help="Link type sub commands." 
         ptype="SUBCOMMAND" 
         mode="switch">
         <PARAM 
-          name="auto" 
-          help="link type is set based on the duplex setting of the port-channel." 
-          ptype="SUBCOMMAND" 
-          mode="subcommand"> 
-        </PARAM>
-        <PARAM 
           name="point-to-point" 
-          help="link type of given port-channel is point-to-point." 
+          help = "Link type of this interface is point-to-point"
           ptype="SUBCOMMAND" 
           mode="subcommand"> 
         </PARAM>
         <PARAM 
           name="shared" 
-          help="link type of given port-channel is shared." 
+          help = "Link type of this interface is shared"
           ptype="SUBCOMMAND" 
           mode="subcommand"> 
         </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">
-          sonic_cli_stp config_stp_if_link_type_subcmds ${link-sub-cmds} ${po_name}&#xA;
+          sonic_cli_stp config_stp_if_link_type_subcmds ${po_name} ${link-sub-cmds}&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -1443,7 +1845,7 @@ limitations under the License.
 
     <COMMAND 
       name="spanning-tree portfast" 
-      help="Enables portfast on the port-channel" 
+      help="Enables portfast feature"
       ptype="SUBCOMMAND" 
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -1465,13 +1867,13 @@ limitations under the License.
 
     <COMMAND 
       name="spanning-tree port-priority" 
-      help="Set the port level priority" 
+      help="Configures port priority"
       ptype="SUBCOMMAND" 
       mode="subcommand">
       <PARAM 
         name="value" 
-        help="Port priority value" 
-        ptype="STP_PORT_PRIORITY"> 
+        help="Port priority value"
+        ptype="STP_PORT_PRIORITY">
       </PARAM>
       <ACTION builtin="clish_pyobj">
           sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name} ${value}&#xA;
@@ -1492,12 +1894,12 @@ limitations under the License.
 
     <COMMAND 
       name="spanning-tree port" 
-      help="Set Spanning tree port" 
+      help="Port configuration"
       ptype="SUBCOMMAND" 
       mode="subcommand">
       <PARAM 
         name="type" 
-        help="Spanning Tree port type" 
+        help="Configures port type"
         ptype="SUBCOMMAND" 
         mode="subcommand">
         <PARAM 
@@ -1526,7 +1928,7 @@ limitations under the License.
 
     <COMMAND 
       name="spanning-tree uplinkfast" 
-      help="Enables uplink fast on the port-channel" 
+      help="Enables uplinkfast feature"
       ptype="SUBCOMMAND" 
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -1553,7 +1955,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree bpdufilter"
-        help="Spanning-tree BPDU filter on the port-channel"
+        help="BPDU filter configuration"
         >
         <PARAM
             name="bpdufilt_sub_cmds"
@@ -1563,14 +1965,14 @@ limitations under the License.
             >
             <PARAM
                 name="enable"
-                help="Enables spanning-tree BPDU filter on the port-channel"
+                help="Enables BPDU filter on this interface"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
             </PARAM>
             <PARAM
                 name="disable"
-                help="Disable spanning-tree BPDU filter on the port-channel"
+                help="Disables BPDU filter on this interface"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -1596,11 +1998,11 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree guard"
-        help = "Configure spanning tree guard on port-channel"
+        help = "Guard configuration"
         >
         <PARAM
             name="root"
-            help="Enables root guard on port-channel"
+            help="Enables root guard feature"
             ptype="SUBCOMMAND"
             mode="subcommand"
             >
@@ -1624,23 +2026,26 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree vlan"
-        help = "Configure spanning tree on port-channel for VLAN"
+        help = "VLAN specific configuration"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN_PORT/STP_VLAN_PORT_LIST/vlan-name={vname_val},ifname={name};sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
+        command_keys="vname_val=*"
+        render_command_cb="spanning_tree_intf_vlan"
         >
         <PARAM
             name="vlan-range"
-            help=""
+            help="VLAN identifier"
             ptype="STP_VLAN_ID"
             >
         </PARAM>
 
             <PARAM
                 name="stp-if-vlan-subcmds"
-                help="spanning tree port-channel VLAN subcommands"
+                help="Spanning tree port-channel VLAN subcommands"
                 ptype="SUBCOMMAND" mode="switch"
                 >
                 <PARAM
                     name="cost"
-                    help="Set the port level cost value for VLAN"
+                    help="Configures pathcost"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
@@ -1655,7 +2060,7 @@ limitations under the License.
 
                 <PARAM
                     name="port-priority"
-                    help="Set the port level priority value for a VLAN"
+                    help="Configures priority"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
@@ -1681,295 +2086,6 @@ limitations under the License.
             sonic(config)# interface PortChannel 1
             sonic(conf-if-po1)# spanning-tree vlan 100 cost 1000
             sonic(conf-if-po1)# spanning-tree vlan 100 port-priority 16
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="no spanning-tree"
-        help = "Unconfigure spanning tree on port-channel"
-        >
-    </COMMAND>
-    <COMMAND
-      name="no spanning-tree bpdufilter"
-      help="If spanning-tree BPDU filter on the PortChannel is disabled, global bpdufilter will be applied"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <ACTION builtin="clish_pyobj">
-          sonic_cli_stp delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${po_name}&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unconfigure bpdufilter on a specific interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command removes the interface specific BPDU filter configuration and applies the global BPDU filter configuration.
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree bpdufilter  
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-      name="no spanning-tree bpduguard"
-      help="Disabled bpdu guard on the port-channel"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <ACTION builtin="clish_pyobj">
-          sonic_cli_stp delete_stp_if_bpdu_guard_subcmds ${po_name}&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unconfigure bpduguard on a specific interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command removes the interface specific BPDU guard configuration.
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree bpduguard 
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-      name="no spanning-tree cost"
-      help="Unset the port level cost value for a VLAN"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <ACTION builtin="clish_pyobj">
-        sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost ${po_name}&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unconfigure spanning-tree cost on an interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command resets the port level cost value
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree cost
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-      name="no spanning-tree enable"
-      help="Disables spanning-tree on the port-channel"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <ACTION builtin="clish_pyobj">
-        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${po_name} False&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unconfigure spanning-tree on an interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command disables spanning-tree on an interface
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree enable
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-      name="no spanning-tree link-type"
-      help="Unset link type of the port-channel"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <ACTION builtin="clish_pyobj">
-        sonic_cli_stp delete_openconfig_spanning_tree_stp_interfaces_interface_config_link_type ${po_name}&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unconfigure spanning-tree link-type on an interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command resets the link-type configuration on an interface.
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree link-type  
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-      name="no spanning-tree portfast"
-      help="Disables portfast on the port-channel"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <ACTION builtin="clish_pyobj">
-        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${po_name} False&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unconfigure spanning-tree portfast on an interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command disables portfast on an interface
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree portfast 
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-      name="no spanning-tree port-priority"
-      help="Reset the port level priority on the port-channel"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <ACTION builtin="clish_pyobj">
-        sonic_cli_stp delete_openconfig_spanning_tree_ext_stp_interfaces_interface_config_port_priority ${po_name}&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unconfigure spanning-tree port priority on an interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command resets the port priority value on an interface to default value
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree port-priority
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-      name="no spanning-tree uplinkfast"
-      help="Disables uplink fast on the port-channel"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <ACTION builtin="clish_pyobj">
-        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${po_name} False&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unconfigure spanning-tree uplink fast on an interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command disables uplink fast feature on an interface
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree uplinkfast 
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-      name="no spanning-tree port"
-      help="Unset Spanning Tree port info"
-      ptype="SUBCOMMAND"
-      mode="subcommand">
-      <PARAM
-        name="type"
-        help="Unset port type of the port-channel"
-        ptype="SUBCOMMAND"
-        mode="subcommand"
-        optional="true">
-      </PARAM>
-      <ACTION builtin="clish_pyobj">
-        sonic_cli_stp delete_stp_if_edge_port_subcmds ${po_name} ${type}&#xA;
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Unonfigure spanning-tree port type on an interface.
-          </DESCRIPTION>
-          <USAGE>
-              This command disables edge-port type configuration an interface
-          </USAGE>
-          <EXAMPLE>
-              sonic(config)# interface PortChannel 1
-              sonic(conf-if-po1)# no spanning-tree port type 
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="no spanning-tree guard"
-        help = "Unconfigure spanning tree guard on port-channel"
-        >
-        <PARAM
-            name="root"
-            help="Disables root guard on port-channel"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-        </PARAM>
-    <ACTION builtin="clish_pyobj">
-        sonic_cli_stp patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "NONE"
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Unonfigure interface specific guard root parameters.
-        </DESCRIPTION>
-        <USAGE>
-            This command allows disabling guard root on an interface
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)# interface PortChannel 1
-            sonic(conf-if-po1)# no spanning-tree guard root 
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="no spanning-tree vlan"
-        help = "Unconfigure spanning tree on port-channel for given VLAN"
-        >
-        <PARAM
-            name="vlan-range"
-            help=""
-            ptype="STP_VLAN_ID"
-            >
-        </PARAM>
-
-        <PARAM
-            name="stp-if-vlan-subcmds"
-            help="spannig tree port-channel subcommands"
-            ptype="SUBCOMMAND"
-            mode="switch"
-            >
-            <PARAM
-                name="cost"
-                help="Unset the port level cost value for VLAN"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
-
-            <PARAM
-                name="port-priority"
-                help="Unset the port level priority value for a VLAN"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
-        </PARAM>
-    <ACTION builtin="clish_pyobj">
-        sonic_cli_stp delete_stp_if_vlan_subcmds ${stp-if-vlan-subcmds} ${vlan-range} ${po_name}&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Unconfigure interface and vlan specific spanning-tree parameters.
-        </DESCRIPTION>
-        <USAGE>
-            This commands removes interface and vlan specific spanning-tree parameters and sets to default value 
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)# interface PortChannel 1
-            sonic(conf-if-po1)# no spanning-tree vlan 100 cost 
-            sonic(conf-if-po1)# no spanning-tree vlan 100 port-priority 
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>

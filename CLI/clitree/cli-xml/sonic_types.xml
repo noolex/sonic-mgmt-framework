@@ -20,6 +20,8 @@ limitations under the License.
 <!ENTITY SLOT_PORT       "([1]/([1-9]|[1-9][0-9]|[1-2][0-9][0-9]))">
 <!ENTITY ETH_PHY_NUM     "([0-9]|[1-9]([0-9])*)">
 <!ENTITY ETH_ALL_INTF    "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM;$)))">
+<!ENTITY ETH_PHY_NUM_ALL  "(([aA]ll\s*)|[0-9]|[1-9]([0-9])*)">
+<!ENTITY ETH_ALL_INTF_ALL "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM_ALL;$)))">
 <!ENTITY SLOT            "([1])">
 <!ENTITY PORT            "([1-9]|[1-9][0-9]|[1-9][0-9][0-9])">
 <!ENTITY SUB_PORT        "([1-9]|[1-9][0-9])">
@@ -238,6 +240,13 @@ limitations under the License.
         method="select"
         pattern="enable(enable) disable(disable)"
         help="enable|disable"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="MIN_NONE"
+        method="select"
+        pattern="min(min) none(none)"
+        help="min|none"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1228,6 +1237,15 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="PHY_INTERFACE_ALL"
+        method="regexp_select"
+        ext_pattern="Ethernet(all|port-id)"
+        pattern="&ETH_ALL_INTF_ALL;"
+        help="EthernetNUM"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="ETH_PHY_SLOT_PORT_SUBPORT"
         method="regexp_select"
         ext_pattern="(slot/port[/subport])"
@@ -1351,7 +1369,7 @@ limitations under the License.
     <PTYPE
         name="CRM_THRESHOLD"
         method="unsignedInteger"
-        pattern="0..9999"
+        pattern="0..4294967295"
         help=""
         />
     <!--=======================================================-->

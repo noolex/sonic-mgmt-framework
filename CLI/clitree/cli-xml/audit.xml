@@ -45,7 +45,7 @@ limitations under the License.
             optional="true">
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-audit-log-rpc.py ${stype} rpc_sonic_auditlog_show_auditlog;
+            python $SONIC_CLI_ROOT/sonic-cli-audit-log-rpc.py ${stype} rpc_sonic_auditlog_get_auditlog;
         </ACTION>
     </COMMAND>
 

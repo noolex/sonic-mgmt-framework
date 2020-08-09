@@ -29,58 +29,58 @@ limitations under the License.
 
     <COMMAND name="no" help="Negate a  commands"/>
     <COMMAND name="no match" help="Negate a  commands"/>
-    <COMMAND name="no match interface" help="delete matched interface">
+    <COMMAND name="no match interface" help="Delete matched interface">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match tag" help="delete matched tag">
+    <COMMAND name="no match tag" help="Delete matched tag">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_tag_set_config_tag_value ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match as-path" help="delete matched as-path-name">
+    <COMMAND name="no match as-path" help="Delete matched as-path-name">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_as_path_set_config_as_path_set ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match community" help="delete matched community">
+    <COMMAND name="no match community" help="Delete matched community">
 
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_community_set ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match ext-community" help="delete matched external community">
+    <COMMAND name="no match ext-community" help="Delete matched extended community">
 
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_ext_community_set ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match origin" help="delete matched origin">
+    <COMMAND name="no match origin" help="Delete matched origin">
 
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_origin_eq ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match metric" help="delete matched metric">
+    <COMMAND name="no match metric" help="Delete matched metric">
 
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_med_eq ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match local-preference" help="delete matched local-preference">
+    <COMMAND name="no match local-preference" help="Delete matched local-preference">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_local_pref_eq ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match ip next-hop" help="delete matched ip next-hop">
+    <COMMAND name="no match ip next-hop" help="Delete matched ip next-hop">
     </COMMAND>
 
-    <COMMAND name="no match ip next-hop prefix-list" help="delete matched ip next-hop prefix-list">
+    <COMMAND name="no match ip next-hop prefix-list" help="Delete matched ip next-hop prefix-list">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_next_hop_set ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match peer" help="delete matched peer IP">
+    <COMMAND name="no match peer" help="Delete matched peer IP">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no call" help="delete matched call policy">
+    <COMMAND name="no call" help="Delete matched call policy">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_call_policy ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match source-protocol" help="delete matched source-protocol">
+    <COMMAND name="no match source-protocol" help="Delete matched source-protocol">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_install_protocol_eq ${name} ${seq_num}</ACTION>
     </COMMAND>
 
@@ -89,11 +89,11 @@ limitations under the License.
     <COMMAND name="no match ipv6" help="Negate a  commands"/>
     <COMMAND name="no match ipv6 address" help="Negate a  commands"/>
 
-    <COMMAND name="no match ip address prefix-list" help="delete matched ip address prefix">
+    <COMMAND name="no match ip address prefix-list" help="Delete matched ip address prefix">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num}</ACTION>
     </COMMAND>
     
-    <COMMAND name="no match ipv6 address prefix-list" help="delete matched ipv6 address prefix">
+    <COMMAND name="no match ipv6 address prefix-list" help="Delete matched ipv6 address prefix">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num}</ACTION>
     </COMMAND>
  
@@ -112,8 +112,8 @@ limitations under the License.
         help="Set routing policy match criteria as-path"
         >
         <PARAM name="as-path-name"
-                     help="Name of as-path-name (Max size 63)"
-                     ptype="STRING"
+                     help="Name of as-path-list"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_as_path"
         />
         <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_as_path_set_config_as_path_set ${name} ${seq_num} ${as-path-name}</ACTION>
@@ -145,8 +145,8 @@ limitations under the License.
         help="Set routing policy match criteria to ipv4 prefix-list"
         >
         <PARAM name="prefix-list-name"
-                     help="Name of prefix-list (Max size 63)"
-                     ptype="STRING"
+                     help="Name of prefix-list"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_prefix_set"
         />
         <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num} ${prefix-list-name}</ACTION>
@@ -157,8 +157,8 @@ limitations under the License.
         help="Set routing policy match criteria to ipv6 prefix-list"
         >
         <PARAM name="prefix-list-name"
-                     help="Name of route map (Max size 63)"
-                     ptype="STRING"
+                     help="Name of prefix-list"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_prefix_set"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num} ${prefix-list-name}</ACTION>
@@ -205,8 +205,8 @@ limitations under the License.
         help="Set routing policy match criteria to BGP community"
         >
         <PARAM name="community-name"
-                     help="Name of community (Max size 63)"
-                     ptype="STRING"
+                     help="Name of community-list"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_community"
         />
         <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_community_set ${name} ${seq_num} ${community-name}</ACTION>
@@ -214,11 +214,11 @@ limitations under the License.
 
     <COMMAND
         name="match ext-community"
-        help="Set routing policy match criteria to BGP external community"
+        help="Set routing policy match criteria to BGP extended community"
         >
         <PARAM name="community-name"
-                     help="Name of external community (Max size 63)"
-                     ptype="STRING"
+                     help="Name of extended community-list"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_ext_community"
         />
         <ACTION builtin="clish_pyobj">sonic_cli_route_match  patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_ext_community_set ${name} ${seq_num} ${community-name}</ACTION>
@@ -226,11 +226,11 @@ limitations under the License.
 
     <COMMAND
         name="match tag"
-        help="redistributes routes in the routing table that match the specified tags."
+        help="Redistributes routes in the routing table that match the specified tags."
         render_command_cb="routemap_match_tag"
         >
         <PARAM name="match-tag"
-                     help="tag value (1-4294967295)"
+                     help="tag value"
                      ptype="RANGE_1_4294967295"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_tag_set_config_tag_value ${name} ${seq_num} ${match-tag}</ACTION>
@@ -259,8 +259,8 @@ limitations under the License.
         help="Set routing policy match criteria to next-hop prefix-list"
         >
         <PARAM name="match-hop"
-                     help="next-hop prefix-list"
-                     ptype="STRING"
+                     help="Name of prefix-list"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_next_hop_set"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_bgp_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_next_hop_set ${name} ${seq_num} ${match-hop}</ACTION>
@@ -271,8 +271,8 @@ limitations under the License.
         help="Jump to another Route-Map after match_set"
         >
         <PARAM name="match-call"
-                     help="Target route-map name"
-                     ptype="STRING"
+                     help="Name of route-map"
+                     ptype="STRING_63"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/call_route_map"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_config_call_policy ${name} ${seq_num} ${match-call}</ACTION>
@@ -328,28 +328,28 @@ limitations under the License.
             >
 
             <PARAM name="bgp"
-                help="Border Gateway protocol"
+                help="Border Gateway Protocol"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_protocol=bgp"
                                 />
 
             <PARAM name="ospf"
-                help="open shortest path first"
+                help="Open Shortest Path First"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_protocol=ospf"
                                 />
 
            <PARAM name="ospf3"
-                help="ospf3"
+                help="OSPFv3"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_protocol=ospf3"
                                 />
 
            <PARAM name="static"
-                help="static"
+                help="Static"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_protocol=static"
@@ -372,7 +372,7 @@ limitations under the License.
         help="Set routing policy match criteria to metric"
         >
         <PARAM name="match-met"
-                     help="metric value (0-4294967295)"
+                     help="metric value"
                      ptype="RANGE_0_4294967295"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_med"
         />

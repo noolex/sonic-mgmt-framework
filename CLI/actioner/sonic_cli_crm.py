@@ -28,6 +28,10 @@ def run(func, args):
     # omit pipe arguments
     if '\\|' in args:
         args = args[:args.index('\\|')]
+    # a workaround for 'do' command
+    if func == "do":
+        func = args[0]
+        args = args[1:]
 
     last = len(args)
     if func == "patch":

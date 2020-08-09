@@ -136,7 +136,7 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=DELETE
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps/forwarding-group-dot1p-map=${map_name}/forwarding-group-dot1p-map-entries/forwarding-group-dot1p-map-entry="${tc}"
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps/forwarding-group-dot1p-map=${map_name}/forwarding-group-dot1p-map-entries/forwarding-group-dot1p-map-entry=${tc}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
