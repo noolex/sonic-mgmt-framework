@@ -306,6 +306,7 @@ def invoke(func, args):
 #show vxlan interface 
 def vxlan_show_vxlan_interface(args):
     print ""
+    sip_configured = False
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list", args)
     if api_response.ok():
         response = api_response.content
@@ -315,8 +316,14 @@ def vxlan_show_vxlan_interface(args):
         if len(response) != 0:
             tunnel_list = response['sonic-vxlan:VXLAN_TUNNEL_LIST']
             for item in tunnel_list:
+              if 'src_ip' in item:
                 source_vtep_ip = item['src_ip']
+                sip_configured = True
+            #if sip_configured is True:
             show_cli_output(args[0],response)
+
+    if sip_configured is False:
+       return
 
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list", args)                                                                      
     if api_response.ok():
