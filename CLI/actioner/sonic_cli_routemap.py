@@ -41,8 +41,13 @@ def invoke_api(func, args=[]):
     if op == 'patch':
         uri = restconf_map[attr]
         if attr == 'openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_config_policy_result':
-            keypath = cc.Path(uri, name=args[0], name1=args[1])
-            body = { "openconfig-routing-policy:policy-result": "ACCEPT_ROUTE" if args[2] == 'permit' else "REJECT_ROUTE" }
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions')
+            body = { "openconfig-routing-policy:policy-definitions":
+                     {"policy-definition":[{"name":args[0],"config":{"name":args[0]},
+                      "statements":{"statement": [{"name":args[1],"config":{"name":args[1]},
+                       "actions": { "config": {"policy-result": "ACCEPT_ROUTE" if args[2] == 'permit' else "REJECT_ROUTE"}}
+                       }] } }] }}
+
             return api.patch(keypath, body)
 
         elif attr == 'openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_metric_action_config_set_metric':

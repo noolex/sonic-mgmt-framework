@@ -77,7 +77,7 @@ def get_vrf_data(vrf_name, vrf_intf_info):
             for intf in intfs:
                 intf_name = intf.get('id')
                 vrf_intf_info.setdefault(vrf_name, []).append(intf_name)
-
+    
     return vrf_config
 
 def build_intf_vrf_binding (intf_vrf_binding):
@@ -190,6 +190,10 @@ def invoke_api(func, args=[]):
             vrf_data = get_vrf_data(args[1], intf_vrf_binding)
             if vrf_data.ok() and (len(vrf_data.content) != 0):
                 show_cli_output(args[0], intf_vrf_binding)
+
+            # for specific GET VRF and 'Resource not found', 
+            if vrf_data.status_code == 404:
+                vrf_data.status_code = 200
 
             return vrf_data
 
