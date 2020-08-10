@@ -428,7 +428,7 @@ limitations under the License.
         >
         <PARAM
                 name="phy-if-name"
-                help="Enter Physical interface global configuration"
+                help="Enter Physical interface configuration"
                 ptype="PHY_INTERFACE"
                 view="configure-if-view"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/ifname"
@@ -459,7 +459,7 @@ limitations under the License.
          >
          <PARAM
              name="mgmt-if-id"
-             help="Enter Management interface global configuration"
+             help="Enter Management interface configuration"
              ptype="MGMT_INTF_ID"
              >
          </PARAM>
@@ -479,7 +479,7 @@ limitations under the License.
         >
         <PARAM
                 name="lag-id"
-                help="Enter PortChannel interface global configuration"
+                help="Enter PortChannel interface configuration"
                 ptype="LAG_ID"
                 >
         </PARAM>
@@ -544,7 +544,7 @@ limitations under the License.
         >
         <PARAM
                 name="lo-id"
-                help="Enter Loopback interface global configuration"
+                help="Enter Loopback interface configuration"
                 ptype="LO_ID"
                 >
         </PARAM>
