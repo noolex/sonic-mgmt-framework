@@ -21,7 +21,7 @@ limitations under the License.
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
 
    <VIEW name = "enable-view">
-    <COMMAND name="show bgp" help="Show BGP community, ext community, as list information"> </COMMAND>
+    <COMMAND name="show bgp" help="Display BGP community, ext community, as list information"> </COMMAND>
     <COMMAND name="show bgp community-list" help="Community list">
         <PARAM name="list-name" help="Name of community-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_community_show_specific show_bgp_com.j2 ${list-name}</ACTION>

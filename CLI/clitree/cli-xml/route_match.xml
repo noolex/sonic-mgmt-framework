@@ -230,7 +230,7 @@ limitations under the License.
         render_command_cb="routemap_match_tag"
         >
         <PARAM name="match-tag"
-                     help="tag value"
+                     help="Tag value"
                      ptype="RANGE_1_4294967295"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_tag_set_config_tag_value ${name} ${seq_num} ${match-tag}</ACTION>
@@ -241,7 +241,7 @@ limitations under the License.
         help="Set routing policy match criteria to local-preference"
         >
         <PARAM name="match-loc"
-                     help="local-preference"
+                     help="Local-preference"
                      ptype="RANGE_0_4294967295"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_local_pref"
         />
@@ -372,7 +372,7 @@ limitations under the License.
         help="Set routing policy match criteria to metric"
         >
         <PARAM name="match-met"
-                     help="metric value"
+                     help="Metric value"
                      ptype="RANGE_0_4294967295"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_med"
         />
