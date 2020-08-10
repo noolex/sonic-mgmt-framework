@@ -48,6 +48,7 @@ from show_config_igmp_snooping import *
 from show_config_tam import *
 from show_config_bfd import *
 from show_config_swresource import *
+from show_config_vrrp import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -88,7 +89,8 @@ config_view_hierarchy= \
        'configure-tam',
        'configure-ipsla',
        'configure-bfd',
-       'configure-switch-resource']
+       'configure-switch-resource',
+       'configure-vrrp']
 
 render_filelst  = {}
 
@@ -243,6 +245,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'spanning_tree_global_priority'    : show_config_spanning_tree_global_priority,
                   'spanning_tree_global_fwd_delay'   : show_config_spanning_tree_global_fwd_delay,
                   'spanning_tree_global_root_guard_timeout' : show_config_spanning_tree_global_root_guard_time,
+                  'vrrp_config'             : show_vrrp_config,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

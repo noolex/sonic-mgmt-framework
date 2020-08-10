@@ -19,8 +19,8 @@ Copyright 2020 Broadcom, Inc.
 <!--=========================================================================-->
   <VIEW name="enable-view">
     <!-- show priority-flow-control watchdog -->
-    <COMMAND name="show priority-flow-control" help="Show PFC Watchdog Summary">
-      <PARAM name="watchdog" help="PFC Watchdog" ptype="SUBCOMMAND" mode="subcommand"/>
+    <COMMAND name="show priority-flow-control" help="Show PFC summary">
+      <PARAM name="watchdog" help="Show PFC watchdog" ptype="SUBCOMMAND" mode="subcommand"/>
       <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  show_pfc_watchdog  show_qos_pfc_watchdog.j2</ACTION>
       <xi:include href="include/pipe.xml"/>
       <xi:include href="include/pipe.xml"/>
@@ -33,7 +33,7 @@ Copyright 2020 Broadcom, Inc.
   <VIEW name="configure-view">
 
     <COMMAND name="priority-flow-control" help="PFC configuration"/>
-    <COMMAND name="priority-flow-control watchdog" help="PFC configuration"/>
+    <COMMAND name="priority-flow-control watchdog" help="PFC watchdog configuration"/>
 
     <COMMAND name="priority-flow-control watchdog polling-interval" help="Configure watchdog">
       <PARAM name="interval" help="Watchdog poll interval" ptype="POLL_INTERVAL" />
@@ -48,9 +48,9 @@ Copyright 2020 Broadcom, Inc.
   Config mode "no" commands
 ========================================================================= -->
     <COMMAND name="no priority-flow-control" help="PFC configuration"/>
-    <COMMAND name="no priority-flow-control watchdog" help="PFC configuration"/>
+    <COMMAND name="no priority-flow-control watchdog" help="PFC watchdog configuration"/>
 
-    <COMMAND name="no priority-flow-control watchdog polling-interval" help="Configure watchdog">
+    <COMMAND name="no priority-flow-control watchdog polling-interval" help="Disable watchdog">
       <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  interval</ACTION>
     </COMMAND>
 

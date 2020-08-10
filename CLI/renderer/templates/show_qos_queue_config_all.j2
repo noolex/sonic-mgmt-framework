@@ -1,0 +1,21 @@
+{% if json_output %}
+{{ ' ' }}
+Interface            Queue                      WRED profile
+------------  ------------  --------------------------------
+
+{% for q in json_output['openconfig-qos:queues'].get('queue') %}
+
+{% set name = q.get('name') %}
+{% if name %}
+
+{% set intf = name.split(':')[0] %}
+{% set qid  = name.split(':')[1] %}
+{% set wred = q['wred']['state']['openconfig-qos-ext:wred-profile'] %}
+
+{{'%-12s'|format(intf)}}{{'%14s'|format(qid)}}{{'%34s'|format(wred)}}
+
+{% endif %}
+{% endfor %}
+
+{{ ' ' }}
+{% endif %}

@@ -48,6 +48,27 @@ limitations under the License.
                     ptype="STRING_63"
                     >
                     <PARAM
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            > 
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                    </PARAM>
+                    <PARAM
                         name="standard-subcommands"
                         help="Standard extcommand"
                         ptype="SUBCOMMAND"
@@ -162,6 +183,27 @@ limitations under the License.
                     ptype="STRING_63"
                     >
                     <PARAM
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                    </PARAM>
+                    <PARAM
                         name="line"
                         help="An ordered list as a regular-expression"
                         ptype="LINE"
@@ -239,61 +281,27 @@ limitations under the License.
                     ptype="STRING_63"
                     >
                     <PARAM
-                        name="standard-subcommands"
-                        help="Standard extcommand"
+                        name="community-action"
+                        help="BGP community sub commands action"
                         ptype="SUBCOMMAND"
                         mode="switch"
                         optional="true"
                         >
                         <PARAM
-                            name="rt"
-                            help="Route-target"
-                            ptype="SUBCOMMAND"
+                            name="deny"
+                            help="Specify community to reject"
                             mode="subcommand"
+                            ptype="SUBCOMMAND"
                             >
-                            <PARAM name="rt-subcommands"
-                                help="RT extcommand"
-                                ptype="SUBCOMMAND"
-                                mode="switch"
-                                >
-                                <PARAM
-                                    name="aa"
-                                    help="Extended community number aa:nn format 0..65535:0..65535"
-                                    ptype="AA_NN"
-                                    >
-                                </PARAM>
-                                <PARAM
-                                    name="ipaddrnn"
-                                    help="Extended community number ip-addr"
-                                    ptype="IPADDR_NN"
-                                    >
-                                </PARAM>
-                            </PARAM>
+                              <MACRO name="BGP_EXTCOMMUNITY_STD_SUBCOMMANDS" arg=""></MACRO>  
                         </PARAM>
                         <PARAM
-                            name="soo"
-                            help="Route-origin"
-                            ptype="SUBCOMMAND"
+                            name="permit"
+                            help="Specify community to accept"
                             mode="subcommand"
+                            ptype="SUBCOMMAND"
                             >
-                            <PARAM name="soo-subcommands"
-                                help="Route origin subcommand"
-                                ptype="SUBCOMMAND"
-                                mode="switch"
-                                >
-                                <PARAM
-                                    name="aa"
-                                    help="Extended community number aa:nn format 0..65535:0..65535"
-                                    ptype="AA_NN"
-                                    >
-                                </PARAM>
-                                <PARAM
-                                    name="ipaddrnn"
-                                    help="Extended community number ip-addr"
-                                    ptype="IPADDR_NN"
-                                    >
-                                </PARAM>
-                            </PARAM>
+                              <MACRO name="BGP_EXTCOMMUNITY_STD_SUBCOMMANDS" arg=""></MACRO>  
                         </PARAM>
                     </PARAM>
                 </PARAM>
@@ -310,11 +318,38 @@ limitations under the License.
                     ptype="STRING_63"
                     >
                     <PARAM
-                        name="line"
-                        help="An ordered list as a regular-expression"
-                        ptype="LINE"
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
                         optional="true"
                         >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                            <PARAM
+                                name="line"
+                                help="An ordered list as a regular-expression"
+                                ptype="LINE"
+                                >
+                            </PARAM>
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                            <PARAM
+                                name="line"
+                                help="An ordered list as a regular-expression"
+                                ptype="LINE"
+                                >
+                            </PARAM>
+                        </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
