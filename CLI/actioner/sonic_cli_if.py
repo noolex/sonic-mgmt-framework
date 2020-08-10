@@ -233,13 +233,15 @@ def invoke_api(func, args=[]):
     elif func == 'patch_mgmt_if_ipv4':
         sp = args[1].split('/')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], index="0", ip=sp[0])
-        if len(args) > 2:
-            if args[2] == "secondary":
-                body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }
-            elif args[2] == "gw-addr":
-                body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:gw-addr": args[2]} }
-        else:
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+
+        body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+
+        if len(args) > 2 and args[2] == "secondary":
+            body["openconfig-if-ip:config"].update( {"openconfig-interfaces-ext:secondary": True} )
+
+        if len(args) > 3 and args[2] == "gwaddr":
+            body["openconfig-if-ip:config"].update({ "openconfig-interfaces-ext:gw-addr": args[3]} )
+
         return api.patch(path, body)
 
     elif func == 'patch_openconfig_if_ip_interfaces_interface_routed_vlan_ipv6_addresses_address_config':
