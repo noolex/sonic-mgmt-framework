@@ -32,7 +32,7 @@ limitations under the License.
     name="PORT_TYPE"
     method="select"
     pattern="tcp udp"
-    help="NAT Port type"/>
+    help="NAT port type"/>
 
    <VIEW
        name="configure-view"
@@ -86,7 +86,7 @@ limitations under the License.
          >
          <PARAM
              name="timeout-value"
-             help="NAT Timeout"
+             help="NAT timeout"
              ptype="NAT_TIMEOUT"
              dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_timeout"
              >
@@ -110,7 +110,7 @@ limitations under the License.
          >
          <PARAM
              name="tcp-timeout-value"
-             help="TCP NAT Timeout"
+             help="TCP NAT timeout"
              ptype="NAT_TCP_TIMEOUT"
              dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_tcp_timeout"
              >
@@ -120,7 +120,7 @@ limitations under the License.
 
      <COMMAND
          name="no tcp-timeout"
-         help="Set Default TCP NAT entry aging timeout in seconds"
+         help="Set default TCP NAT entry aging timeout in seconds"
          >
          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/tcp-timeout body={"openconfig-nat:tcp-timeout": 86400}</ACTION>
      </COMMAND>
@@ -133,7 +133,7 @@ limitations under the License.
          >
          <PARAM
              name="udp-timeout-value"
-             help="UDP NAT Timeout"
+             help="UDP NAT timeout"
              ptype="NAT_UDP_TIMEOUT"
             dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_udp_timeout"
              >
@@ -143,21 +143,21 @@ limitations under the License.
 
       <COMMAND
          name="no udp-timeout"
-         help="Set Default UDP NAT entry aging timeout in seconds"
+         help="Set default UDP NAT entry aging timeout in seconds"
          >
          <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/udp-timeout body={"openconfig-nat:udp-timeout": 300}</ACTION>
      </COMMAND>
 
       <COMMAND
          name="pool"
-         help="Create NAT Pool"
+         help="Create NAT pool"
          mode="subcommand"
          ptype="SUBCOMMAND"
          command_tables="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/pool_name={pool-name}"
          >
          <PARAM
              name="pool-name"
-             help="NAT Pool name"
+             help="NAT pool name"
              ptype="STRING"
              dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/pool_name"
              >
@@ -171,7 +171,7 @@ limitations under the License.
          </PARAM>
          <PARAM
              name="global-port-range"
-             help="Global Port Range"
+             help="Global port range"
              ptype="STRING"
              optional="true"
              dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/nat_port"
@@ -184,13 +184,13 @@ limitations under the License.
 
      <COMMAND
          name="no pool"
-         help="Remove NAT Pool"
+         help="Remove NAT pool"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
          <PARAM
              name="pool-name"
-             help="NAT Pool name"
+             help="NAT pool name"
              ptype="STRING"
              >
          </PARAM>
@@ -199,7 +199,7 @@ limitations under the License.
 
      <COMMAND
          name="no pools"
-         help="Remove all NAT Pools"
+         help="Remove all NAT pools"
      >
      <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-pool</ACTION>
      </COMMAND>
@@ -227,7 +227,7 @@ limitations under the License.
          </PARAM>
          <PARAM
              name="acl-name"
-             help="ACL Name"
+             help="ACL name"
              ptype="STRING"
              optional="true"
              dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/access_list"
@@ -243,14 +243,14 @@ limitations under the License.
          </PARAM>
          <PARAM
              name="twice-nat-id"
-             help="Twice NAT ID"
+             help="Twice NAT id"
              ptype="SUBCOMMAND"
              mode="subcommand"
              optional="true"
              >
              <PARAM
                  name="twice-nat-id-value"
-                 help="Twice NAT ID value"
+                 help="Twice NAT id value"
                  ptype="TWICE_NAT_ID"
                  dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/twice_nat_id"
                  >
@@ -284,7 +284,7 @@ limitations under the License.
 
      <COMMAND
          name="static"
-         help="Add static NAT entry"
+         help="Configure static NAT entry"
          mode="subcommand"
          ptype="SUBCOMMAND"
          command_tables="sonic-nat:sonic-nat/STATIC_NAPT/STATIC_NAPT_LIST/global_ip={global_ip},ip_pro tocol={ip_protocol}, global_l4_port=${global-port};sonic-nat:sonic-nat/STATIC_NAT/STATIC_NAT_LIST/global_ip={global_ip}"
@@ -328,14 +328,14 @@ limitations under the License.
 
              <PARAM
                  name="twice-nat-id"
-                 help="Twice NAT ID"
+                 help="Twice NAT id"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  optional="true"
                  >
                  <PARAM
                      name="twice-nat-id-value"
-                     help="Twice NAT ID value"
+                     help="Twice NAT id value"
                      ptype="TWICE_NAT_ID"
                      >
                  </PARAM>
@@ -357,7 +357,7 @@ limitations under the License.
 
              <PARAM
                  name="global-port"
-                 help="Global Port"
+                 help="Global port"
                  ptype="UINT"
                  >
              </PARAM>
@@ -371,7 +371,7 @@ limitations under the License.
 
              <PARAM
                  name="local-port"
-                 help="Local Port"
+                 help="Local port"
                  ptype="UINT"
                  >
              </PARAM>
@@ -386,14 +386,14 @@ limitations under the License.
 
              <PARAM
                  name="twice-nat-id"
-                 help="Twice NAT ID"
+                 help="Twice NAT id"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  optional="true"
                  >
                  <PARAM
                      name="twice-nat-id-value"
-                     help="Twice NAT ID value"
+                     help="Twice NAT id value"
                      ptype="TWICE_NAT_ID"
                      >
                  </PARAM>
@@ -452,7 +452,7 @@ limitations under the License.
 
                  <PARAM
                      name="global-port"
-                     help="Global Port"
+                     help="Global port"
                      ptype="UINT"
                      >
                  </PARAM>
@@ -530,7 +530,7 @@ limitations under the License.
              <!-- show nat statistics -->
              <PARAM
                  name="statistics"
-                 help="NAT Statistics"
+                 help="NAT statistics"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
@@ -539,20 +539,20 @@ limitations under the License.
               <!-- show nat config -->
              <PARAM
                  name="config"
-                 help="NAT Configurations"
+                 help="NAT configurations"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
                  <PARAM
                      name="config-subcommands"
-                     help="NAT Config subcommands"
+                     help="NAT config subcommands"
                      mode="switch"
                      ptype="SUBCOMMAND"
                      optional="true"
                      >
                      <PARAM
                          name="static"
-                         help="NAT Static config"
+                         help="NAT static config"
                          ptype="SUBCOMMAND"
                          mode="subcommand"
                          >

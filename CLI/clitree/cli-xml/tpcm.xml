@@ -110,22 +110,9 @@
                      ptype="STRING">
                    </PARAM>
               </PARAM>
-       <ACTION>
-           if test "${url_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install url ${container_name} ${url_path} tpcm.j2 ${_args}&#xA;
-           elif test "${image_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install image ${container_name} ${image_path} tpcm.j2 ${_args}&#xA;
-           elif test "${pull_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install pull ${container_name} ${pull_path} tpcm.j2 ${_args}&#xA;
-           elif test "${file_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install file ${container_name} ${file_path} tpcm.j2 ${_args}&#xA;
-           elif test "${scp_host}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install scp ${container_name} ${scp_filename} tpcm.j2 ${scp_username} ${scp_password} ${scp_host} ${_args}&#xA;
-           else&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install sftp ${container_name} ${sftp_filename} tpcm.j2 ${sftp_username} ${sftp_password} ${sftp_host} ${_args}&#xA;
-           fi&#xA;
+       <ACTION builtin="clish_pyobj">
+           sonic_cli_tpcm tpcm_install tpcm.j2 ${__full_line} 
        </ACTION>
-
     </COMMAND>
 
     <COMMAND name="tpcm upgrade"
@@ -200,22 +187,8 @@
                      ptype="STRING">
                    </PARAM>
               </PARAM>
-
-       <ACTION>
-           if test "${url_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade url ${container_name} ${url_path} tpcm.j2  ${skip} ${_args}&#xA;
-           elif test "${image_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade image ${container_name} ${image_path} tpcm.j2 ${skip} ${_args}&#xA;
-           elif test "${pull_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade pull ${container_name} ${pull_path} tpcm.j2 ${skip} ${_args}&#xA;
-           elif test "${file_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade file ${container_name} ${file_path} tpcm.j2 ${skip} ${_args}&#xA;
-           elif test "${scp_host}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade scp ${container_name} ${scp_filename} tpcm.j2  ${scp_username} ${scp_password} ${scp_host} ${skip} ${_args}&#xA;
-           else&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade sftp ${container_name} ${sftp_filename} tpcm.j2  ${sftp_username} ${sftp_password} ${sftp_host} ${skip} ${_args}&#xA;
-           fi&#xA;
-
+       <ACTION builtin="clish_pyobj">
+           sonic_cli_tpcm tpcm_upgrade tpcm.j2 ${__full_line} 
        </ACTION>
     </COMMAND>
     <COMMAND name="tpcm uninstall"
