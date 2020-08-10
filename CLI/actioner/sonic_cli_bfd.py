@@ -261,7 +261,8 @@ def run(func, args):
 					return
 				show_cli_output(args[0], api_response)
 		else:
-                        print(response.error_message())
+                        if response.status_code not in [404]:
+                                print(response.error_message())
                         return 1
 
 	else:
