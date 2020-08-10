@@ -5,6 +5,9 @@
 {% for key, klist in json_output.iteritems() %}
 {% for entry in klist["caps"] %}
 {{'%-6s'|format(entry["port"])}}{{'%-12s'|format(entry["name"])}}{{'%-42s'|format(entry["modes"])}}{{'%-5s'|format(entry["defmode"])}}
+{% if entry["modes_ovf"] %}
+{{'%-18s'|format(" ")}}{{'%-42s'|format(entry["modes_ovf"])}}
+{% endif %}
 {% endfor %}
 {% endfor %}
 
