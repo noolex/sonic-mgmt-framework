@@ -47,6 +47,59 @@ def show_routemap_setextcommunity(render_tables):
 
     return 'CB_SUCCESS', cmd_str
 
+def show_routemap_set_metric(render_tables):
+    cmd_str = ''
+    #print("show_routemap_set_metric render tables {}".format(render_tables))
+
+    if 'route-map-name' not in render_tables.keys() :
+        return 'CB_SUCCESS', cmd_str
+    if 'seq-num' not in render_tables.keys() :
+        return 'CB_SUCCESS', cmd_str
+
+    rmap_name = render_tables['route-map-name']
+    seq_num =  render_tables['seq-num']
+
+    if 'sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST' in render_tables:
+        tbl_rec_list = render_tables['sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST']
+
+        if not isinstance(tbl_rec_list, list) :
+            tbl_rec_list = [ tbl_rec_list ]
+
+        for rmap in tbl_rec_list :
+            if 'route_map_name' not in rmap.keys() :
+                continue
+            if 'stmt_name'  not in rmap.keys() :
+                continue
+            if rmap['route_map_name'] != rmap_name :
+                continue
+            if rmap['stmt_name'] != seq_num :
+                continue
+
+            curr_cmd = ''
+            if 'set_metric_action' in rmap.keys() :
+                metric_action = rmap['set_metric_action']
+                metric_value = ''
+                if 'set_metric' in rmap.keys() :
+                    metric_value = rmap['set_metric']
+                if metric_value != '' :
+                    if metric_action == 'METRIC_SET_VALUE' :
+                        curr_cmd = "set metric {} ;".format(metric_value)
+                    elif metric_action == 'METRIC_ADD_VALUE' :
+                        curr_cmd = "set metric +{} ;".format(metric_value)
+                    elif metric_action == 'METRIC_SUBTRACT_VALUE' :
+                        curr_cmd = "set metric -{} ;".format(metric_value)
+                if metric_action == 'METRIC_SET_RTT' :
+                    curr_cmd = "set metric rtt ;"
+                elif metric_action == 'METRIC_ADD_RTT' :
+                    curr_cmd = "set metric +rtt ;"
+                elif metric_action == 'METRIC_SUBTRACT_RTT' :
+                    curr_cmd = "set metric -rtt ;"
+            if curr_cmd == '' and 'set_med' in rmap.keys() :
+                curr_cmd = "set metric {} ;".format(rmap['set_med'])
+            cmd_str += curr_cmd
+
+    return 'CB_SUCCESS', cmd_str
+
 def show_routemap_matchintf(render_tables):
     cmd_prfx = 'match interface '
     return show_get_if_cmd(render_tables,
@@ -137,7 +190,7 @@ def show_prefix_lists(render_tables, ip_mode):
                    else:
                       mask_range_str = " ge " + mask_range_val[0] + " le " + mask_range_val[1]
 
-                cmd_str = cmd_str + cmd_prfx + prefix['set_name'] + " " + prefix['action'] + " " + prefix['ip_prefix'] + mask_range_str + ";" ;
+                cmd_str = cmd_str + cmd_prfx + prefix['set_name'] + " " + prefix['action'].lower() + " " + prefix['ip_prefix'] + mask_range_str + ";" ;
 
     return 'CB_SUCCESS', cmd_str
 

@@ -9,7 +9,7 @@
     {% endif %}
 {% for map in map_list %}
 
-{{'TC-DOT1P-MAP: '}}{{map['name']}}
+{{'Traffic-Class-Dot1P-MAP: '}}{{map['name']}}
 
 {{'----------------------------'}}
     {{'%-5s'|format("TC")}}{{'%-5s'|format("DOT1P")}}
@@ -17,8 +17,10 @@
   {% set map_info = map['forwarding-group-dot1p-map-entries'] %}
   {% if map_info %}
       {% set entries = map_info['forwarding-group-dot1p-map-entry'] %}
-      {% for entry in entries | sort(attribute='fwd-group')%}
+      {% for entry in entries %}
+        {% if entry['fwd-group'] != 'NULL' %}
     {{'%-5s'|format(entry['fwd-group'])}}{{'%-5s'|format(entry['config']['dot1p'])}}
+        {% endif %}
       {% endfor %}
   {% endif %}
 {{'----------------------------'}}

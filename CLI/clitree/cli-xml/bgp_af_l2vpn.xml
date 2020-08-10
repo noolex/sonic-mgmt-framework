@@ -34,7 +34,7 @@ limitations under the License.
   <COMMAND name="no" help="no commands"/>
   
   <COMMAND name="advertise-all-vni" help="Advertise all local VNIs" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-all-vni=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_advertise_all_vni ${vrf-name} L2VPN_EVPN True</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_advertise_all_vni ${vrf-name} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables BGP control plane for all locally-configured VNIs
@@ -51,7 +51,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-default-gw=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_advertise_default_gw ${vrf-name} L2VPN_EVPN True</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_advertise_default_gw ${vrf-name} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables gateways VTEPs to advertise their IP/MAC addresses
@@ -71,7 +71,7 @@ limitations under the License.
   <COMMAND name="advertise" help="Advertise prefix routes"/>
   <COMMAND name="advertise ipv4" help="Address family IPv4"/>
   <COMMAND name="advertise ipv4 unicast" help="SAFI unicast" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-ipv4-unicast=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV4_UNICAST</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV4_UNICAST</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables tenant VRFs to announce IPv4 prefixes as EVPN type-5 routes
@@ -90,7 +90,7 @@ limitations under the License.
 
   <COMMAND name="advertise ipv6" help="Address family IPv6"/>
   <COMMAND name="advertise ipv6 unicast" help="SAFI unicast" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-ipv6-unicast=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV6_UNICAST</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV6_UNICAST</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables tenant VRFs to announce IPv6 prefixes as EVPN type-5 routes
@@ -109,7 +109,7 @@ limitations under the License.
 
   <COMMAND name="default-originate" help="originate a default route"/>
   <COMMAND name="default-originate ipv4" help="Address family IPv4" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/default-originate-ipv4=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_default_originate ${vrf-name} L2VPN_EVPN ipv4</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_default_originate ${vrf-name} L2VPN_EVPN ipv4</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables border leaf to originate IPv4 default type-5 EVPN routes 
@@ -126,7 +126,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="default-originate ipv6" help="Address family IPv6" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/default-originate-ipv6=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_default_originate ${vrf-name} L2VPN_EVPN ipv6</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_default_originate ${vrf-name} L2VPN_EVPN ipv6</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables border leaf to originate IPv6 default type-5 EVPN routes 
@@ -146,7 +146,7 @@ limitations under the License.
   <COMMAND name="autort" help="Auto-derivation of RT">
     <PARAM name="rfc8365-compatible" mode="subcommand" ptype="SUBCOMMAND" help="Auto-derivation of RT using RFC8365" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/autort">
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_autort ${vrf-name} L2VPN_EVPN rfc8365-compatible</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_autort ${vrf-name} L2VPN_EVPN rfc8365-compatible</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables automatic derivation of route-distinguisher and route-targets  
@@ -165,7 +165,7 @@ limitations under the License.
 
   <COMMAND name="rd" help="Route distinguisher" >
     <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route-distinguisher"/>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_rd ${vrf-name} L2VPN_EVPN ${rdvalue}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_rd ${vrf-name} L2VPN_EVPN ${rdvalue}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command specifies the route-distinguisher to be attached to routes exported from current VRF into EVPN
@@ -186,7 +186,7 @@ limitations under the License.
     <PARAM name="rttype" help="advertise options" ptype="ADVERTISE_OPTIONS">
       <PARAM name="rt" help="Route target value" ptype="RT"/>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_rt ${vrf-name} L2VPN_EVPN ${rt} ${rttype}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_rt ${vrf-name} L2VPN_EVPN ${rt} ${rttype}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command specifies the route-target or a community to be attached while exporting routes from current vrf. 
@@ -218,13 +218,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
     </PARAM>
-    <ACTION> 
-      if test "${nummoves}" = "" -a "${timevalue}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_dad_enable ${vrf-name} L2VPN_EVPN&#xA;
-      else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_dad_params ${vrf-name} L2VPN_EVPN ${nummoves} ${timevalue}&#xA;
-      fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_dad_enable_params ${vrf-name} L2VPN_EVPN ${nummoves} ${timevalue}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command allows to set the threshold for address moves, including maximum moves allowed and maximum time interval
@@ -249,13 +243,7 @@ limitations under the License.
       <PARAM name="time" help="" ptype="DAD_FREEZE_TIME" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/dad-freeze">
       </PARAM>
     </PARAM>
-    <ACTION> 
-      if test "${freezetype}" = "permanent"; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_dad_freeze ${vrf-name} L2VPN_EVPN permanent&#xA;
-      else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_dad_freeze ${vrf-name} L2VPN_EVPN ${time}&#xA;
-      fi&#xA;
-    </ACTION> 
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_dad_freeze ${vrf-name} L2VPN_EVPN ${freezetype} ${time}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command allows to specify the action to be taken on duplicate address detection.
@@ -276,7 +264,7 @@ limitations under the License.
 
   <COMMAND name="vni" help="Enter VNI config mode" view="configure-router-bgp-l2vpn-vni-view" viewid="vrf-name=${vrf-name};family=l2vpn;vninum=${vninum}" view_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/vrf_name,afi-safi-name=L2VPN_EVPN,vni-number=*" view_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/vrf={vrf-name},afi-safi-name=L2VPN_EVPN,vni-number={vni-number}">
     <PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/vni-number"/>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py patch_bgp_evpn_vni ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_vni ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables user to configure per-VNI EVPN parameters
@@ -296,47 +284,47 @@ limitations under the License.
 
 
   <COMMAND name="no advertise-all-vni" help="Advertise all local VNIs">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_advertise_all_vni ${vrf-name} L2VPN_EVPN True</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise_all_vni ${vrf-name} L2VPN_EVPN True</ACTION>
   </COMMAND>
   <COMMAND name="no advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_advertise_default_gw ${vrf-name} L2VPN_EVPN True</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise_default_gw ${vrf-name} L2VPN_EVPN True</ACTION>
   </COMMAND>
 
   <COMMAND name="no advertise" help="Advertise prefix routes"/>
   <COMMAND name="no advertise ipv4" help="Address family IPv4"/>
   <COMMAND name="no advertise ipv4 unicast" help="SAFI unicast">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV4_UNICAST</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV4_UNICAST</ACTION>
   </COMMAND>
 
   <COMMAND name="no advertise ipv6" help="Address family IPv6"/>
   <COMMAND name="no advertise ipv6 unicast" help="SAFI unicast">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV6_UNICAST</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise ${vrf-name} L2VPN_EVPN IPV6_UNICAST</ACTION>
   </COMMAND>
 
   <COMMAND name="no default-originate" help="originate a default route"/>
   <COMMAND name="no default-originate ipv4" help="Address family IPv4">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_default_originate ${vrf-name} L2VPN_EVPN ipv4</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_default_originate ${vrf-name} L2VPN_EVPN ipv4</ACTION>
   </COMMAND>
   <COMMAND name="no default-originate ipv6" help="Address family IPv6">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_default_originate ${vrf-name} L2VPN_EVPN ipv6</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_default_originate ${vrf-name} L2VPN_EVPN ipv6</ACTION>
   </COMMAND>
 
   <COMMAND name="no autort" help="Auto-derivation of RT">
     <PARAM name="rfc8365-compatible" mode="subcommand" ptype="SUBCOMMAND" help="Auto-derivation of RT using RFC8365">
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_autort ${vrf-name} L2VPN_EVPN rfc8365-compatible</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_autort ${vrf-name} L2VPN_EVPN rfc8365-compatible</ACTION>
   </COMMAND>
 
   <COMMAND name="no rd" help="Route distinguisher" >
     <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD"/>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_rd ${vrf-name} L2VPN_EVPN ${rdvalue}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_rd ${vrf-name} L2VPN_EVPN ${rdvalue}</ACTION>
   </COMMAND>
 
   <COMMAND name="no route-target" help="Route target">
     <PARAM name="rttype" help="advertise options" ptype="ADVERTISE_OPTIONS">
       <PARAM name="rt" help="Route target value" ptype="RT"/>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_rt ${vrf-name} L2VPN_EVPN ${rt} ${rttype}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_rt ${vrf-name} L2VPN_EVPN ${rt} ${rttype}</ACTION>
   </COMMAND>
 
   <COMMAND name="no dup-addr-detection" help="Duplicate address detection" >
@@ -348,13 +336,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
     </PARAM>
-    <ACTION> 
-      if test "${nummoves}" = "" -a "${timevalue}" = ""; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_dad_enable ${vrf-name} L2VPN_EVPN&#xA;
-      else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_dad_params ${vrf-name} L2VPN_EVPN ${nummoves} ${timevalue}&#xA;
-      fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_dad_enable_params ${vrf-name} L2VPN_EVPN ${nummoves} ${timevalue}</ACTION>
   </COMMAND>
 
   <COMMAND name="no dup-addr-detection freeze" help="Duplicate address detection freeze">
@@ -364,12 +346,12 @@ limitations under the License.
       <PARAM name="time" help="" ptype="DAD_FREEZE_TIME">
       </PARAM>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_dad_freeze ${vrf-name} L2VPN_EVPN</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_dad_freeze ${vrf-name} L2VPN_EVPN</ACTION>
   </COMMAND>
 
   <COMMAND name="no vni" help="Enter VNI config mode" >
     <PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE"/>
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-bgp-evpn.py delete_bgp_evpn_vni ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_vni ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
   </COMMAND>
 
 </VIEW>
@@ -382,7 +364,7 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr-l2vpn view_keys="vrf-name=${vrf-name},nbr=${nbr-addr},afi-safi=l2vpn_evpn" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/admin_status=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
       <DOCGEN>
         <DESCRIPTION>
           This command enables/activates a particular address-family for a BGP
@@ -406,21 +388,10 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="allowas-in" help="Allow local AS number in as-path" render_command_cb="bgp_nbr_af_allowas">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
-    <ACTION> if test -n "${value}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count ${vrf-name} ${nbr-addr} L2VPN_EVPN ${value}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count ${vrf-name} ${nbr-addr} L2VPN_EVPN ${value}&#xA;
-             fi&#xA;
-             if test -n "${origin}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin ${vrf-name} ${nbr-addr} L2VPN_EVPN True&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin ${vrf-name} ${nbr-addr} L2VPN_EVPN False&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN True&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value} origin:${origin}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command allows BGP neighbor to accept as-path with it's own AS number
@@ -446,19 +417,13 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-map" help="Name of the route map" render_command_cb="bgp_nbr_af_rmap">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
       </PARAM>
     </PARAM>
-    <ACTION>
-          if test "${direction}" = "in" ; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy ${vrf-name} ${nbr-addr} L2VPN_EVPN ${route-name-str}&#xA;
-          else&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy ${vrf-name} ${nbr-addr} L2VPN_EVPN ${route-name-str}&#xA;
-          fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; direction:${direction} route-name-str:${route-name-str}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures policy for BGP neighbor using a route-map. The
@@ -486,12 +451,7 @@ limitations under the License.
     <PARAM name="as-path" help="As-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <PARAM name="med" help="Med attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <ACTION> if test -z "${as-path}${med}${next-hop}" -o "${as-path}${med}${next-hop}" = "as-pathmednext-hop"; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config ${vrf-name} ${nbr-addr} L2VPN_EVPN as-path med next-hop&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config ${vrf-name} ${nbr-addr} L2VPN_EVPN ${as-path} ${med} ${next-hop}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; as-path:${as-path} med:${med} next-hop:${next-hop}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command instructs BGP to propagate route attributes (as-path,
@@ -516,11 +476,7 @@ limitations under the License.
   
   <COMMAND name="next-hop-self" help="Disable the next hop calculation for this neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/nhself=true">
     <PARAM name="force" help="Set the next hop to self for reflected routes" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/nexthop_self_force=true"/>
-     <ACTION> if test -z "${force}" ; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config ${vrf-name} ${nbr-addr} L2VPN_EVPN True ${force}&#xA;
-     </ACTION>
+     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; force:${force}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command sets next-hop attribute as it's own address in the outbound
@@ -542,7 +498,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-reflector-client" help="Configure a neighbor as Route Reflector client" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/rrclient=true">
-   <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures a BGP neighbor as route reflector client.
@@ -564,7 +520,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-server-client" help="Configure a neighbor as Route Server client" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/route_server_client=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures a BGP neighbor a route server client.
@@ -586,7 +542,7 @@ limitations under the License.
   <COMMAND name="soft-reconfiguration" help="Per neighbor soft reconfiguration">
     <PARAM name="inbound" help="Allow inbound soft reconfiguration for this neighbor" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/soft_reconfiguration_in=true">
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables soft-reconfiguration for a BGP neighbor
@@ -611,60 +567,43 @@ limitations under the License.
 
   <COMMAND name="no" help="no commands"/>
   <COMMAND name="no activate" help="Disable the Address Family for this Neighbor">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN False</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN False</ACTION>
   </COMMAND>
   <COMMAND name="no allowas-in" help="Allow local AS number in as-path">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_as_count ${vrf-name} ${nbr-addr} L2VPN_EVPN ${value}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN False&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_allow_own_as_config_origin ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value}</ACTION>
   </COMMAND>
   <COMMAND name="no route-map" help="Name of the route map">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
       </PARAM>
     </PARAM>
-    <ACTION>
-          if test "${direction}" = "in" ; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy ${vrf-name} ${nbr-addr} L2VPN_EVPN ${route-name-str}&#xA;
-          elif test "${direction}" = "out" ; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy ${vrf-name} ${nbr-addr} L2VPN_EVPN ${route-name-str}&#xA;
-          else&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_import_policy ${vrf-name} ${nbr-addr} L2VPN_EVPN ${route-name-str}&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_apply_policy_config_export_policy ${vrf-name} ${nbr-addr} L2VPN_EVPN ${route-name-str}&#xA;
-          fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; direction:${direction} route-name-str:${route-name-str}</ACTION>
   </COMMAND>
   <COMMAND name="no attribute-unchanged" help="BGP attribute is propagated unchanged to this neighbor">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_as_path ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_med ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_attribute_unchanged_config_next_hop ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd}</ACTION>
   </COMMAND>
   
   <COMMAND name="no next-hop-self" help="Disable the next hop calculation for this neighbor">
     <PARAM name="force" help="Set the next hop to self for reflected routes" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-     <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
-              python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_next_hop_self_config_force ${vrf-name} ${nbr-addr} L2VPN_EVPN&#xA;
-     </ACTION>
+     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd}</ACTION>
   </COMMAND>
   
   <COMMAND name="no route-reflector-client" help="Configure a neighbor as Route Reflector client">
-   <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${nbr-addr} L2VPN_EVPN</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${nbr-addr} L2VPN_EVPN</ACTION>
   </COMMAND>
   <COMMAND name="no route-server-client" help="Configure a neighbor as Route Server client">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${nbr-addr} L2VPN_EVPN</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${nbr-addr} L2VPN_EVPN</ACTION>
   </COMMAND>
   <COMMAND name="no soft-reconfiguration" help="Per neighbor soft reconfiguration">
     <PARAM name="inbound" help="Allow inbound soft reconfiguration for this neighbor" mode="subcommand" ptype="SUBCOMMAND">
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${nbr-addr} L2VPN_EVPN</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${nbr-addr} L2VPN_EVPN</ACTION>
   </COMMAND>
   
 </VIEW>
@@ -677,7 +616,7 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template-l2vpn view_keys="vrf-name=${vrf-name},pg=${template-name},afi-safi=l2vpn_evpn" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/admin_status=true">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>
       <DOCGEN>
         <DESCRIPTION>
           This command enables/activates a particular address-family for a BGP
@@ -701,21 +640,10 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="allowas-in" help="Allow local AS number in as-path" render_command_cb="bgp_pg_af_allowas">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
-    <ACTION> if test -n "${value}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count ${vrf-name} ${template-name} L2VPN_EVPN ${value}&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count ${vrf-name} ${template-name} L2VPN_EVPN ${value}&#xA;
-             fi&#xA;
-             if test -n "${origin}" ; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin ${vrf-name} ${template-name} L2VPN_EVPN True&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin ${vrf-name} ${template-name} L2VPN_EVPN False&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN True&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value} origin:${origin}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command allows neighbors in a BGP peer-group to accept as-path 
@@ -740,19 +668,13 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-map" help="Name of the route map" render_command_cb="bgp_pg_af_rmap">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND"/>
       </PARAM>
     </PARAM>
-    <ACTION>
-          if test "${direction}" = "in" ; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy ${vrf-name} ${template-name} L2VPN_EVPN ${route-name-str}&#xA;
-          else&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py PATCH_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy ${vrf-name} ${template-name} L2VPN_EVPN ${route-name-str}&#xA;
-          fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; direction:${direction} route-name-str:${route-name-str}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures policy for BGP neighbors in peer-group using a route-map. The
@@ -779,12 +701,7 @@ limitations under the License.
     <PARAM name="as-path" help="As-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <PARAM name="med" help="Med attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <ACTION> if test -z "${as-path}${med}${next-hop}" -o "${as-path}${med}${next-hop}" = "as-pathmednext-hop"; then&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config ${vrf-name} ${template-name} L2VPN_EVPN as-path med next-hop&#xA;
-             else&#xA;
-                 python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config ${vrf-name} ${template-name} L2VPN_EVPN ${as-path} ${med} ${next-hop}&#xA;
-             fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; as-path:${as-path} med:${med} next-hop:${next-hop}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command instructs BGP to propagate route attributes (as-path,
@@ -808,11 +725,7 @@ limitations under the License.
 
   <COMMAND name="next-hop-self" help="Disable the next hop calculation for this neighbor" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/nhself=true">
     <PARAM name="force" help="Set the next hop to self for reflected routes" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/nexthop_self_force=true"/>
-     <ACTION> if test -z "${force}" ; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_force ${vrf-name} ${template-name} L2VPN_EVPN&#xA;
-             fi&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config ${vrf-name} ${template-name} L2VPN_EVPN True ${force}&#xA;
-     </ACTION>
+     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; force:${force}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command sets next-hop attribute as it's own address in the outbound
@@ -834,7 +747,7 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="route-reflector-client" help="Configure a neighbor as Route Reflector client" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/rrclient=true">
-   <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures BGP neighbors in a peer-group as route reflector client.
@@ -853,7 +766,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="route-server-client" help="Configure a neighbor as Route Server client" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/route_server_client=true">
-   <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command configures BGP neighbors in a peer-group route server client.
@@ -874,7 +787,7 @@ limitations under the License.
   <COMMAND name="soft-reconfiguration" help="Per neighbor soft reconfiguration">
     <PARAM name="inbound" help="Allow inbound soft reconfiguration for this neighbor" mode="subcommand" ptype="SUBCOMMAND" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/soft_reconfiguration_in=true">
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command enables soft-reconfiguration for BGP neighbors in a
@@ -899,58 +812,41 @@ limitations under the License.
 
   <COMMAND name="no" help="no commands"/>
   <COMMAND name="no activate" help="Disable the Address Family for this Neighbor">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN False</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN False</ACTION>
   </COMMAND>
   <COMMAND name="no allowas-in" help="Allow local AS number in as-path">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="as-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_as_count ${vrf-name} ${template-name} L2VPN_EVPN ${value}&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_origin ${vrf-name} ${template-name} L2VPN_EVPN False&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_allow_own_as_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN False&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value}</ACTION>
   </COMMAND>
   <COMMAND name="no route-map" help="Name of the route map">
-    <PARAM name="route-name-str" help="route map name" ptype="STRING">
+    <PARAM name="route-name-str" help="Name of route-map" ptype="STRING_63">
       <PARAM name="direction" help="direction" mode="switch" ptype="SUBCOMMAND" optional="true">
         <PARAM name="in" help="Filter incoming routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
         <PARAM name="out" help="Filter outgoing routing updates" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
       </PARAM>
     </PARAM>
-    <ACTION>
-          if test "${direction}" = "in" ; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy ${vrf-name} ${template-name} L2VPN_EVPN ${route-name-str}&#xA;
-          elif test "${direction}" = "out" ; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy ${vrf-name} ${template-name} L2VPN_EVPN ${route-name-str}&#xA;
-          else&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_import_policy ${vrf-name} ${template-name} L2VPN_EVPN ${route-name-str}&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_apply_policy_config_export_policy ${vrf-name} ${template-name} L2VPN_EVPN ${route-name-str}&#xA;
-          fi&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; direction:${direction} route-name-str:${route-name-str}</ACTION>
   </COMMAND>
   <COMMAND name="no attribute-unchanged" help="BGP attribute is propagated unchanged to this neighbor">
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_as_path ${vrf-name} ${template-name} L2VPN_EVPN&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_med ${vrf-name} ${template-name} L2VPN_EVPN&#xA;
-             python $SONIC_CLI_ROOT/sonic_cli_bgp.py DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_attribute_unchanged_config_next_hop ${vrf-name} ${template-name} L2VPN_EVPN&#xA;
-    </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no next-hop-self" help="Disable the next hop calculation for this neighbor">
     <PARAM name="force" help="Set the next hop to self for reflected routes" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-     <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN&#xA;
-              python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_next_hop_self_config_force ${vrf-name} ${template-name} L2VPN_EVPN&#xA;
-     </ACTION>
+     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd}</ACTION>
   </COMMAND>
   <COMMAND name="no route-reflector-client" help="Configure a neighbor as Route Reflector client">
-   <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${template-name} L2VPN_EVPN</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_reflector_client ${vrf-name} ${template-name} L2VPN_EVPN</ACTION>
   </COMMAND>
   <COMMAND name="no route-server-client" help="Configure a neighbor as Route Server client">
-   <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${template-name} L2VPN_EVPN</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_route_server_client ${vrf-name} ${template-name} L2VPN_EVPN</ACTION>
   </COMMAND>
   <COMMAND name="no soft-reconfiguration" help="Per neighbor soft reconfiguration">
     <PARAM name="inbound" help="Allow inbound soft reconfiguration for this neighbor" mode="subcommand" ptype="SUBCOMMAND">
     </PARAM>
-    <ACTION> python $SONIC_CLI_ROOT/sonic_cli_bgp.py delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${template-name} L2VPN_EVPN</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_soft_reconfiguration_in ${vrf-name} ${template-name} L2VPN_EVPN</ACTION>
   </COMMAND>
 
 </VIEW>
@@ -959,49 +855,8 @@ limitations under the License.
   <COMMAND name="show bgp l2vpn" help="Layer 2 Virtual Private Network"/>
   <COMMAND name="show bgp l2vpn evpn" help="Ethernet Virtual Private Network"/>
   <COMMAND name="show bgp l2vpn evpn route" help="EVPN Route information">
-    <PARAM name="evpnroutesubcommands" help="EVPN Route Subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
-      <PARAM name="rd" help="Route Distinguisher" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="rdvalue" help="Route Distinguisher" ptype="RD">
-          <PARAM name="evpnrouterdsubcommands" help="EVPN Route RD Subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
-            <PARAM name="mac" help="MAC" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-              <PARAM name="macvalue" help="MAC" ptype="MAC_ADDR">
-                <PARAM name="ip" help="IP" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="ipvalue" help="IP" ptype="IPV4V6_ADDR">
-                  </PARAM>
-                </PARAM>
-              </PARAM>
-            </PARAM>
-            <PARAM name="type" help="Specify Route Type" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-              <PARAM name="types" help="EVPN route type subcommands" ptype="SUBCOMMAND" mode="switch">
-                <MACRO name="BGP_EVPN_RT_TYPES" arg=""></MACRO>
-              </PARAM>
-            </PARAM>
-          </PARAM>
-        </PARAM>
-      </PARAM>
-    </PARAM>
-    <ACTION>
-        if test -n "${rd}"; then&#xA;
-          if test -n "${ead}"; then&#xA;
-             python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=rd,type ${rdvalue} 1 ${__full_line}&#xA;
-          elif test -n "${es}"; then&#xA;
-             python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=rd,type ${rdvalue} 4 ${__full_line}&#xA;
-          elif test -n "${macip}"; then&#xA;
-             python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=rd,type ${rdvalue} 2 ${__full_line}&#xA;
-          elif test -n "${multicast}"; then&#xA;
-             python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=rd,type ${rdvalue} 3 ${__full_line}&#xA;
-          elif test -n "${prefix}"; then&#xA;
-             python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=rd,type ${rdvalue} 5 ${__full_line}&#xA;
-          elif test -n "${macvalue}"; then&#xA;
-             python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=rd,macip ${rdvalue} ${macvalue} ${ipvalue} ${__full_line}&#xA;
-          else&#xA;
-             python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=rd ${rdvalue} ${__full_line}&#xA;
-          fi&#xA;  
-        else&#xA;
-          python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes show_evpn_routes.j2 default L2VPN_EVPN ${__full_line}&#xA;
-        fi&#xA;      
-  </ACTION>
-  <DOCGEN>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN</ACTION>
+    <DOCGEN>
     <DESCRIPTION>
       This command displays BGP EVPN routes in tabular format.
     </DESCRIPTION>
@@ -1059,11 +914,42 @@ limitations under the License.
       Displayed 10 prefixes (10 paths)
       sonic# 
 
-    </EXAMPLE>
-  </DOCGEN>
+      </EXAMPLE>
+    </DOCGEN>
+  </COMMAND>
+  <COMMAND name="show bgp l2vpn evpn route rd" help="EVPN Route information for specific RD">
+    <PARAM name="rdvalue" help="Route Distinguisher" ptype="RD">
+      <PARAM name="evpnrouterdsubcommands" help="EVPN Route RD Subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
+        <PARAM name="mac" help="MAC" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+          <PARAM name="macvalue" help="MAC" ptype="MAC_ADDR">
+            <PARAM name="ip" help="IP" mode="subcommand" ptype="SUBCOMMAND">
+              <PARAM name="ipvalue" help="IP" ptype="IPV4V6_ADDR">
+              </PARAM>
+            </PARAM>
+          </PARAM>
+        </PARAM>
+        <PARAM name="type" help="Specify Route Type" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+          <PARAM name="types" help="EVPN route type subcommands" ptype="SUBCOMMAND" mode="switch">
+            <MACRO name="BGP_EVPN_RT_TYPES" arg=""></MACRO>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN rd=${rdvalue} type=${types} mac=${macvalue} ip=${ipvalue}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command displays BGP EVPN routes for a specific RD in detailed format.
+      </DESCRIPTION>
+      <USAGE>
+        show bgp l2vpn evpn route rd {rdvalue} {filters}
+      </USAGE>
+      <EXAMPLE summary="User can filter route based on type">
+        Refer example from show bgp l2vpn evpn route detail
+      </EXAMPLE>
+    </DOCGEN>
   </COMMAND>
   <COMMAND name="show bgp l2vpn evpn route detail" help="Display Detailed Information">
-    <ACTION> python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes show_evpn_routes_detail.j2 default L2VPN_EVPN ${__full_line}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes show_evpn_routes_detail.j2 default L2VPN_EVPN</ACTION>
     <DOCGEN>
     <DESCRIPTION>
       This command displays BGP EVPN routes in detail format.
@@ -1109,7 +995,7 @@ limitations under the License.
   </DOCGEN>
   </COMMAND>
   <COMMAND name="show bgp l2vpn evpn summary" help="Summary of BGP neighbor status">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_bgp.py get_ip_bgp_summary show_ip_bgp_summary.j2 default evpn</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp get_ip_bgp_summary show_ip_bgp_summary.j2 default evpn</ACTION>
     <DOCGEN>
     <DESCRIPTION>
       This command displays BGP summarized information for BGP L2VPN EVPN address family including neghbors 
@@ -1136,21 +1022,7 @@ limitations under the License.
     <PARAM name="type" help="EVPN route type subcommands" ptype="SUBCOMMAND" mode="switch">
       <MACRO name="BGP_EVPN_RT_TYPES" arg=""></MACRO>
     </PARAM>
-    <ACTION>
-        if test -n "${ead}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN filter=type 1 ${__full_line}&#xA;
-        elif test -n "${es}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN filter=type 4 ${__full_line}&#xA;
-        elif test -n "${macip}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN filter=type 2 ${__full_line}&#xA;
-        elif test -n "${multicast}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN filter=type 3 ${__full_line}&#xA;
-        elif test -n "${prefix}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN filter=type 5 ${__full_line}&#xA;
-        else&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes show_evpn_routes.j2 default L2VPN_EVPN ${__full_line}&#xA;
-        fi&#xA;
-  </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN type=${type}</ACTION>
   <DOCGEN>
     <DESCRIPTION>
       This command displays BGP EVPN routes of a specified type
@@ -1167,21 +1039,7 @@ limitations under the License.
     <PARAM name="type" help="EVPN route type subcommands" ptype="SUBCOMMAND" mode="switch">
       <MACRO name="BGP_EVPN_RT_TYPES" arg=""></MACRO>
     </PARAM>
-    <ACTION>
-        if test -n "${ead}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=type 1 ${__full_line}&#xA;
-        elif test -n "${es}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=type 4 ${__full_line}&#xA;
-        elif test -n "${macip}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=type 2 ${__full_line}&#xA;
-        elif test -n "${multicast}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=type 3 ${__full_line}&#xA;
-        elif test -n "${prefix}"; then&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN filter=type 5 ${__full_line}&#xA;
-        else&#xA;
-           python $SONIC_CLI_ROOT/sonic-cli-show-bgp-evpn.py get_bgp_evpn_routes show_evpn_routes_detail.j2 default L2VPN_EVPN ${__full_line}&#xA;
-        fi&#xA;
-  </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN type=${type}</ACTION>
   <DOCGEN>
     <DESCRIPTION>
       This command displays BGP EVPN routes of a specified type in detailed format

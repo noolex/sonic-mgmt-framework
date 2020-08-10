@@ -100,21 +100,21 @@ def invoke(func, args):
     if func == 'patch_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_ipv4_enable' :
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/openconfig-network-instance-ext:global-sag/config/ipv4-enable',
                           name="default")
-        if args[0] == "True":
+        if args[0] == "enable":
              body = { "openconfig-network-instance-ext:ipv4-enable": True }
-        elif args[0] == "False":
-             body = { "openconfig-network-instance-ext:ipv4-enable": False }                          
-        return aa.patch(keypath, body)       
+        elif args[0] == "x":
+             body = { "openconfig-network-instance-ext:ipv4-enable": False }
+        return aa.patch(keypath, body)
 
     # SAG IPv6 enable/disable
     if func == 'patch_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_ipv6_enable' :
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/openconfig-network-instance-ext:global-sag/config/ipv6-enable',
                           name="default")
-        if args[0] == "True":
+        if args[0] == "enable":
              body = { "openconfig-network-instance-ext:ipv6-enable": True }
-        elif args[0] == "False":
-             body = { "openconfig-network-instance-ext:ipv6-enable": False }                          
-        return aa.patch(keypath, body) 
+        elif args[0] == "x":
+             body = { "openconfig-network-instance-ext:ipv6-enable": False }
+        return aa.patch(keypath, body)
 
 def run(func, args):
     try:

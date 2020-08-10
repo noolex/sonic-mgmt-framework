@@ -28,9 +28,12 @@ import (
 	"github.com/Azure/sonic-mgmt-common/translib"
 	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
+	"sync"
 )
 
 type UserAuth map[string]bool
+
+var AuthLock sync.Mutex
 
 func (i UserAuth) String() string {
 	if i["none"] {
@@ -132,6 +135,8 @@ func GetUserRoles(usr *user.User) ([]string, error) {
 	return roles, nil
 }
 func PopulateAuthStruct(username string, auth *AuthInfo) error {
+	AuthLock.Lock()
+	defer AuthLock.Unlock()
 	usr, err := user.Lookup(username)
 	if err != nil {
 		return err
@@ -163,11 +168,12 @@ func UserPwAuth(username string, passwd string) (bool, error) {
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
-	_, err := ssh.Dial("tcp", "127.0.0.1:22", config)
+	c, err := ssh.Dial("tcp", "127.0.0.1:22", config)
 	if err != nil {
 		glog.Infof("Authentication failed. user=%s, error:%s", username, err.Error())
 		return false, err
 	}
+	defer c.Conn.Close()
 
 	return true, nil
 }

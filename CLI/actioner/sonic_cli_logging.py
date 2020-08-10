@@ -171,6 +171,24 @@ def get_sonic_logging_servers(args=[]):
 def get_sonic_logging(args):
     aa = cc.ApiClient()
     keypath = cc.Path('/restconf/operations/sonic-system-infra:show-sys-log')
+    if len(args) >= 2:
+        body = { "sonic-system-infra:input":{"num_lines": int(args[1])}}
+    else:
+        body = { "sonic-system-infra:input":{"num_lines": 0}}
+    templ=args[0]
+    api_response = aa.post(keypath, body)
+
+    try:
+        if api_response.ok():
+           response = api_response.content
+           if response is not None and 'sonic-system-infra:output' in response:
+                show_cli_output(templ, response)
+    except Exception as e:
+        print "%Error: Traction Failure"
+
+def clear_sonic_logging(args):
+    aa = cc.ApiClient()
+    keypath = cc.Path('/restconf/operations/sonic-system-infra:clear-sys-log')
     body = None
     templ=args[0]
     api_response = aa.post(keypath, body)
@@ -193,6 +211,10 @@ def run(func, args):
         get_sonic_logging(args)
         return 0
 
+    if func == 'get_openconfig_clear_logging':
+        clear_sonic_logging(args)
+        return 0
+
     response = invoke_api(func, args)
 
     if response.ok():
@@ -212,6 +234,8 @@ if __name__ == '__main__':
         get_sonic_logging_servers(sys.argv[2:])
     elif func == 'get_openconfig_system_logging':
         get_sonic_logging(sys.argv[2:])
+    elif func == 'get_openconfig_clear_logging':
+        clear_sonic_logging(sys.argv[2:])
     else:
         run(func, sys.argv[2:])
 

@@ -1,0 +1,79 @@
+{% set vars = {'interface_name': "", 'area_id': ''} %}
+{% set ospf_global_list = json_output  %}
+{% for list_elem in ospf_global_list %}
+    {% if 'vrfName' in list_elem   %}
+VRF Name: {{list_elem['vrfName']}}
+    {% endif -%}
+    {% if 'self_router_id' in list_elem   %}
+    {{' '}}
+       OSPF Router with ID ({{list_elem['self_router_id']}})
+    {{' '}}
+    {% endif -%}
+    {% if 'interfacename' in list_elem %}
+        {% if vars.update({'interface_name':list_elem['interfacename']}) %}{% endif -%}
+    {% endif -%}
+    {% if 'openconfig-network-instance:areas' in  list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
+        {% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
+        {% for areainfo in area_list %}
+            {% if areainfo['identifier'] == "0.0.0.0" %}
+                AS External Link States
+                {{' '}}
+                {% if 'lsdb' in areainfo and 'lsa-types' in areainfo['lsdb'] and 'lsa-type' in areainfo['lsdb']['lsa-types']  %}
+                    {% set lsa_type_list = areainfo['lsdb']['lsa-types']['lsa-type'] %}
+                    {% for lsa_type in lsa_type_list %}
+                        {% if 'type' in lsa_type and lsa_type['type'] == 'openconfig-ospf-types:AS_EXTERNAL_LSA' %}
+                        {% if 'lsas' in lsa_type and 'openconfig-ospfv2-ext:lsa-ext' in lsa_type['lsas'] %}
+                            {% set lsa_list = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'] %}
+                                {% for lsa in lsa_list %}
+                                    {% if 'state' in lsa and 'age' in lsa['state'] %}
+  LS age: {{lsa['state']['age']}}
+                                    {% endif %}
+                                {% if 'state' in lsa and 'option' in lsa['state'] and 'option-expanded' in  lsa['state'] %}
+  Options: 0x{{lsa['state']['option']}}  : {{lsa['state']['option-expanded']}}
+                                    {% endif %}
+                                {% if 'state' in lsa and 'flags' in lsa['state'] %}
+  LS Flags: 0x{{lsa['state']['flags']}}
+                                    {% endif %}
+  LS Type: AS-external-LSA
+                                    {% if 'link-state-id' in lsa %}
+  Link State ID: {{lsa['link-state-id']}} (External Network Number)
+                                    {% endif %}
+                                {% if 'advertising-router' in lsa %}
+  Advertising Router: {{lsa['advertising-router']}}
+                                    {% endif %}
+                                {% if 'state' in lsa and 'display-sequence-number'  in lsa['state'] %}
+  LS Seq Number: {{lsa['state']['display-sequence-number']}}
+                                    {% endif %}
+                                    {% if 'state' in lsa and 'checksum'   in lsa['state'] %}
+  Checksum: 0x{{'%04x'|format(lsa['state']['checksum'])}}
+                                    {% endif %}
+                                {% if 'state' in lsa and 'length'   in lsa['state'] %}
+  Length: {{lsa['state']['length']}}
+                                    {% endif %}
+      {{' '}}
+                                    {% if 'as-external-lsa' in lsa and 'state' in lsa['as-external-lsa'] and 'mask' in lsa['as-external-lsa']['state']%}
+  Network Mask: /{{lsa['as-external-lsa']['state']['mask']}}
+                                    {% endif %}
+                                    {% if 'as-external-lsa' in lsa and 'state' in lsa['as-external-lsa'] and 'metric-type' in lsa['as-external-lsa']['state']%}
+                                        {% if lsa['as-external-lsa']['state']['metric-type'] == 'TYPE_2' %}
+        Metric Type: 2 (Larger than any link state path)                                
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if 'as-external-lsa' in lsa and 'types-of-service' in lsa['as-external-lsa'] and 'type-of-service' in lsa['as-external-lsa']['types-of-service']%}
+                                        {% for tos in lsa['as-external-lsa']['types-of-service']['type-of-service'] %}
+        TOS: {{tos['tos']}}  
+        Metric: {{tos['state']['metric']}}
+        Forward Address: {{tos['state']['forwarding-address']}}
+        External Route Tag: {{tos['state']['external-route-tag']}}
+                                        {% endfor %}
+                                    {% endif %}
+                                {{' '}}
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endfor %}

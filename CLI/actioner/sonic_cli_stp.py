@@ -48,8 +48,7 @@ def stp_mode_get(aa):
     return g_stp_resp,g_stp_mode
 
 def getId(item):
-    state_dict = item['state']
-    ifName = state_dict['name']
+    ifName = item['name']
     return ifutils.name_to_int_val(ifName)
 
 def generic_set_response_handler(response, args):
@@ -256,14 +255,7 @@ def config_stp_intf_subcmds(args):
         value   = args[2].strip()
         return patch_stp_intf_port_priority([ifname, value])
     elif sub_cmd == "link-type":
-        if args[2].strip() == 'auto':
-            return delete_stp_intf_link_type([ifname])
-        elif args[2].strip() == 'point-to-point':
-            return patch_stp_intf_link_type([ifname, 'P2P'])
-        elif args[2].strip() == 'shared':
-            return patch_stp_intf_link_type([ifname, 'SHARED'])
-        else:
-            return None
+        return patch_stp_intf_link_type([ifname, args[2]])
     elif sub_cmd == "port":
         if len(args) == 3:
             return patch_stp_intf_edge_port([ifname, True])
@@ -357,7 +349,11 @@ def patch_stp_intf_bpdu_guard(args):
 
 
 def patch_stp_intf_root_guard(args):
-    body = { "openconfig-spanning-tree:guard": 'ROOT' }
+    body = None
+    if len(args) == 2:
+        body = { "openconfig-spanning-tree:guard": 'NONE' }
+    else:
+        body = { "openconfig-spanning-tree:guard": 'ROOT' }
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces/interface={name}/config/guard', name=args[0])
     return aa.patch(uri, body)
 
@@ -395,7 +391,12 @@ def patch_stp_vlan_intf_priority(args):
 
 
 def patch_stp_intf_link_type(args):
-    body = { "openconfig-spanning-tree:link-type": args[1] }
+    link_type = ''
+    if args[1].strip() == 'point-to-point':
+        link_type = 'P2P'
+    elif args[1].strip() == 'shared':
+        link_type = 'SHARED'
+    body = { "openconfig-spanning-tree:link-type": link_type }
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces/interface={name}/config/link-type', name=args[0])
     return aa.patch(uri, body)
 
@@ -579,13 +580,12 @@ def get_stp_response():
     output = {}
     api_response = aa.get(uri, None)
     if api_response.ok():
-        value = api_response.content[str]['vlan']
-        for item in value:
-            if 'interfaces' in item:
-                tup = item['interfaces']
-                if 'interface' in tup:
-                   tup2 = tup['interface']
-                   tup['interface'] = sorted(tup2, key=getId)
+        if str in api_response.content and 'vlan' in api_response.content[str]:
+            value = api_response.content[str]['vlan']
+            for item in value:
+                if 'interfaces' in item and 'interface' in item['interfaces']:
+                    tup = item['interfaces']['interface']
+                    item['interfaces']['interface'] = sorted(tup, key=getId)
         output.update(g_stp_resp.content)
         output.update(api_response.content)
     return output
@@ -604,13 +604,12 @@ def get_stp_vlan_response(vlan):
     output = {}
     api_response = aa.get(uri, None)
     if api_response.ok():
-        value = api_response.content[str]
-        for item in value:
-            if 'interfaces' in item:
-                tup = item['interfaces']
-                if 'interface' in tup:
-                    tup2 = tup['interface']
-                    tup['interface'] = sorted(tup2, key=getId)
+        if str in api_response.content:
+            value = api_response.content[str]
+            for item in value:
+                if 'interfaces' in item and 'interface' in item['interfaces']:
+                    tup = item['interfaces']['interface']
+                    item['interfaces']['interface'] = sorted(tup, key=getId)
      
         output.update(g_stp_resp.content)
         output.update(api_response.content)
@@ -856,6 +855,9 @@ def run(op_str, args):
 
         op_str = op_str.strip()
 
+        if op_str == 'show_running_spanning_tree':
+            return show_running_spanning_tree()
+
         if op_str != 'post_openconfig_spanning_tree_stp_global_config_enabled_protocol':
             stp_mode_get(aa)
             if not g_stp_mode:
@@ -881,4 +883,207 @@ def run(op_str, args):
         sys.exit(-1)
 
     return 0
+
+
+g_max_age = 20
+g_br_prio = 32768
+g_fwd_delay = 15
+g_hello_time = 2
+
+def show_run_config_interface(intf_dict, vlan_list=[]):
+    cmd = ''
+    if 'openconfig-spanning-tree-ext:spanning-tree-enable' in intf_dict.keys() and \
+            intf_dict['openconfig-spanning-tree-ext:spanning-tree-enable'] == False:
+        cmd += '\n no spanning-tree enable'
+
+    if 'openconfig-spanning-tree-ext:portfast' in intf_dict.keys() and \
+            intf_dict['openconfig-spanning-tree-ext:portfast'] == False:
+        cmd += '\n no spanning-tree portfast'
+
+    cmd_prfx = '\n spanning-tree '
+    cfg = intf_dict
+
+    if 'bpdu-filter' in intf_dict.keys():
+        if intf_dict["bpdu-filter"] == True:
+            cmd += cmd_prfx + 'bpdufilter enable'
+        else:
+            cmd += cmd_prfx + 'bpdufilter disable'
+
+    if 'guard' in intf_dict.keys() and intf_dict['guard'] == "ROOT":
+        cmd += cmd_prfx + 'guard root'
+
+    if 'bpdu-guard' in intf_dict.keys() and intf_dict['bpdu-guard'] == True:
+        if 'openconfig-spanning-tree-ext:bpdu-guard-port-shutdown' in intf_dict.keys() and \
+                intf_dict['openconfig-spanning-tree-ext:bpdu-guard-port-shutdown'] == True:
+            cmd += cmd_prfx + 'bpduguard port-shutdown'
+        else:
+            cmd += cmd_prfx + 'bpduguard'
+
+    if 'openconfig-spanning-tree-ext:cost' in intf_dict.keys():
+        cmd += cmd_prfx + 'cost ' + str(intf_dict['openconfig-spanning-tree-ext:cost'])
+
+
+    if 'link-type' in intf_dict.keys():
+        if intf_dict["link-type"] == "SHARED":
+            cmd += cmd_prfx + 'link-type shared'
+        if intf_dict["link-type"] == "P2P":
+            cmd += cmd_prfx + 'link-type point-to-point'
+
+    if 'openconfig-spanning-tree-ext:port-priority' in intf_dict.keys():
+        cmd += cmd_prfx + 'port-priority ' + str(intf_dict['openconfig-spanning-tree-ext:port-priority'])
+
+    if 'edge-port' in intf_dict.keys():
+        if intf_dict['edge-port'] == "openconfig-spanning-tree-types:EDGE_ENABLE":
+            cmd += cmd_prfx + 'port type edge'
+
+    if 'openconfig-spanning-tree-ext:uplink-fast' in intf_dict.keys() and \
+            intf_dict['openconfig-spanning-tree-ext:uplink-fast'] == True:
+        cmd += cmd_prfx + 'uplinkfast'
+
+    if len(vlan_list) != 0:
+        for vlan_dict in vlan_list:
+            if 'interfaces' in vlan_dict.keys():
+                if 'interface' in vlan_dict['interfaces']:
+                    vport_list = vlan_dict['interfaces']['interface']
+                    for vport_dict in vport_list:
+                        if vport_dict['name'] == intf_dict['name']:
+                            if 'cost' in vport_dict['config'].keys():
+                                cmd += cmd_prfx + 'vlan ' + str(vlan_dict['vlan-id']) + ' cost ' + str(vport_dict['config']['cost'])
+                            if 'port-priority' in vport_dict['config'].keys():
+                                cmd += cmd_prfx + 'vlan ' + str(vlan_dict['vlan-id']) + ' port-priority ' + str(vport_dict['config']['port-priority'])
+
+    if len(cmd) != 0:
+        ifname = intf_dict['name'].strip()
+        if ifname.startswith('PortChannel'):
+            po_num = ifname[len('PortChannel'):]
+            print('!\ninterface PortChannel ' + po_num + cmd)
+        else:
+            print('!\ninterface ' + ifname + cmd)
+            
+    return
+
+
+def show_run_config_vlan(vlan_dict):
+    if 'vlan-id' not in vlan_dict.keys():
+        return
+
+    cmd = ''
+    prfx = '\nspanning-tree vlan '+ str(vlan_dict['vlan-id']) + ' '
+    if 'forwarding-delay' in vlan_dict.keys() and vlan_dict['forwarding-delay'] != g_fwd_delay:
+        cmd += prfx + 'forward-time ' + str(vlan_dict['forwarding-delay'])
+    if 'hello-time' in vlan_dict.keys() and vlan_dict['hello-time'] != g_hello_time:
+        cmd += prfx + 'hello-time ' + str(vlan_dict['hello-time'])
+    if 'max-age' in vlan_dict.keys() and vlan_dict['max-age'] != g_max_age:
+        cmd += prfx + 'max-age ' + str(vlan_dict['max-age'])
+    if 'bridge-priority' in vlan_dict.keys() and vlan_dict['bridge-priority'] != g_br_prio:
+        cmd += prfx + 'priority ' + str(vlan_dict['bridge-priority'])
+
+    if len(cmd) != 0:
+        print('!' + cmd)
+    return
+
+
+def show_run_disabled_vlans(vlan_list, stp_mode):
+    cmd = ''
+    for vlan_dict in vlan_list:
+        if 'config' not in vlan_dict.keys():
+            continue
+
+        if stp_mode == "openconfig-spanning-tree-ext:pvst":
+            if 'spanning-tree-enable' in vlan_dict['config'].keys() and \
+                    vlan_dict['config']['spanning-tree-enable'] == False:
+                cmd += '\nno spanning-tree vlan ' + str(vlan_dict['vlan-id'])
+        elif stp_mode == 'rapid-pvst':
+            if 'openconfig-spanning-tree-ext:spanning-tree-enable' in vlan_dict['config'].keys() and \
+                    vlan_dict['config']['openconfig-spanning-tree-ext:spanning-tree-enable'] == False:
+                cmd += '\nno spanning-tree vlan ' + str(vlan_dict['vlan-id'])
+
+    if len(cmd) != 0:
+        print('!' + cmd)
+    return 
+
+
+def show_run_config_global(data, stp_mode):
+    global g_max_age
+    global g_br_prio
+    global g_fwd_delay
+    global g_hello_time
+
+    if stp_mode == "openconfig-spanning-tree-ext:pvst":
+        print('spanning-tree mode pvst')
+    elif stp_mode == 'rapid-pvst':
+        print('spanning-tree mode rapid-pvst')
+    else:
+        return 
+
+    global_config = data['config']
+
+    if 'bpdu-filter' in global_config.keys() and global_config['bpdu-filter'] == True:
+        print('spanning-tree edge-port bpdufilter default')
+
+    if 'openconfig-spanning-tree-ext:forwarding-delay' in global_config.keys() and \
+            global_config['openconfig-spanning-tree-ext:forwarding-delay'] != 15:
+        g_fwd_delay = global_config['openconfig-spanning-tree-ext:forwarding-delay']
+        print('spanning-tree forward-time {}'.format(global_config['openconfig-spanning-tree-ext:forwarding-delay']))
+
+    if 'openconfig-spanning-tree-ext:rootguard-timeout' in global_config.keys() and \
+            global_config['openconfig-spanning-tree-ext:rootguard-timeout'] != 30:
+        print('spanning-tree guard root timeout {}'.format(global_config['openconfig-spanning-tree-ext:rootguard-timeout']))
+
+    if 'openconfig-spanning-tree-ext:hello-time' in global_config.keys() and \
+            global_config['openconfig-spanning-tree-ext:hello-time'] != 2:
+        g_hello_time = global_config['openconfig-spanning-tree-ext:hello-time']
+        print('spanning-tree hello-time {}'.format(global_config['openconfig-spanning-tree-ext:hello-time']))
+
+    if 'openconfig-spanning-tree-ext:max-age' in global_config.keys() and \
+            global_config['openconfig-spanning-tree-ext:max-age'] != 20:
+        g_max_age = global_config['openconfig-spanning-tree-ext:max-age']
+        print('spanning-tree max-age {}'.format(global_config['openconfig-spanning-tree-ext:max-age']))
+
+    if 'openconfig-spanning-tree-ext:bridge-priority' in global_config.keys() and \
+            global_config['openconfig-spanning-tree-ext:bridge-priority'] != 32768:
+        g_br_prio = global_config['openconfig-spanning-tree-ext:bridge-priority']
+        print('spanning-tree priority {}'.format(global_config['openconfig-spanning-tree-ext:bridge-priority']))
+    return
+
+
+def show_running_spanning_tree():
+    stp_mode = ''
+    aa = cc.ApiClient()
+
+    uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp')  
+    api_response = aa.get(uri, None)
+    if api_response.ok():
+        data = api_response.content['openconfig-spanning-tree:stp']
+        if 'global' in data.keys() and \
+                'config' in data['global'].keys() and \
+                'enabled-protocol' in data['global']['config'] and \
+                len(data['global']['config']['enabled-protocol']) != 0:
+            if "openconfig-spanning-tree-types:RAPID_PVST" in data['global']['config']['enabled-protocol'][0]:
+                stp_mode = 'rapid-pvst'
+            elif "openconfig-spanning-tree-ext:PVST" in data['global']['config']['enabled-protocol'][0]:
+                stp_mode = 'openconfig-spanning-tree-ext:pvst'
+            else:
+                return
+            show_run_config_global(data['global'], stp_mode)
+
+            if stp_mode in data.keys():
+                if 'vlan' in data[stp_mode].keys():
+                    show_run_disabled_vlans(data[stp_mode]['vlan'], stp_mode)
+
+                    for vlan_dict in data[stp_mode]['vlan']:
+                        show_run_config_vlan(vlan_dict['config'])
+
+            if 'interfaces' in data.keys():
+                if 'interface' in data['interfaces'].keys():
+                    for intf_dict in data['interfaces']['interface']:
+                        vlan_list = []
+                        if stp_mode in data.keys():
+                            if 'vlan' in data[stp_mode].keys():
+                                vlan_list = data[stp_mode]['vlan']
+
+                        show_run_config_interface(intf_dict['config'], vlan_list=vlan_list)
+
+    return 
+
 

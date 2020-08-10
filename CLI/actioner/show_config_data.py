@@ -22,17 +22,33 @@ from show_config_bgp import *
 from show_config_table_sort import *
 from show_config_ptp import *
 from show_config_errdisable import *
+from show_config_spanning_tree import *
 from show_config_routepolicy import *
 from show_config_copp import *
 from show_config_crm import *
+from show_config_snmp import *
 from show_config_mirror import *
 from show_config_static_routes import *
+from show_config_fbs import *
 from show_config_qos_map import *
 from show_config_qos import *
 from show_config_logging import *
 from show_config_ldap import *
+from show_config_radius import *
+from show_config_aaa import *
 from show_config_nat import *
+from show_config_ospfv2 import *
 from show_config_ip_helper import *
+from show_config_pim import *
+from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
+from show_config_vxlan import *
+from show_config_ipsla import *
+from show_config_lldp import *
+from show_config_igmp_snooping import *
+from show_config_tam import *
+from show_config_bfd import *
+from show_config_swresource import *
+from show_config_vrrp import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -54,6 +70,7 @@ config_view_hierarchy= \
        'configure-pfc-priority-queue-map',
        'configure-tc-dot1p-map',
        'configure-tc-dscp-map',
+       'configure-link-state-track',
        'config-if-CPU',
        'configure-vlan',
        'configure-lo',
@@ -62,10 +79,18 @@ config_view_hierarchy= \
        'configure-lag',
        'configure-route-map',
        'configure-router-bgp',
+       'configure-router-ospf',
        'configure-vxlan',
+       'configure-${fbs-class-type}-classifier',
        'copp-action',
+       'configure-policy',
        'configure-mclag',
-       'configure-mirror']
+       'configure-mirror',
+       'configure-tam',
+       'configure-ipsla',
+       'configure-bfd',
+       'configure-switch-resource',
+       'configure-vrrp']
 
 render_filelst  = {}
 
@@ -120,12 +145,25 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ipv6_lo_ip_address'      : show_ipv6_lo_ip_address,
                   'routemap_set_community'  : show_routemap_setcommunity,
                   'routemap_set_extcommunity' : show_routemap_setextcommunity,
+                  'routemap_set_metric'       : show_routemap_set_metric,
                   'routemap_match_interface'  : show_routemap_matchintf,
                   'routemap_match_peer'     : show_routemap_matchpeer,
                   'routemap_match_tag'      : show_routemap_matchtag,
                   'mac_source_if'           : show_mac_source_if,
+                  'fbs_classifier_render'   : show_running_fbs_classifier,
+                  'fbs_policy_render'       : show_running_fbs_policy,
+                  'fbs_service_policy_render' : show_running_fbs_service_policy,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
+                  'snmp_contact'            : show_snmp_contact,
+                  'snmp_community'          : show_snmp_community,
+                  'snmp_engine'             : show_snmp_engine,
+                  'snmp_group'              : show_snmp_group,
+                  'snmp_host'               : show_snmp_host,
+                  'snmp_location'           : show_snmp_location,
+                  'snmp_traps'              : show_snmp_traps,
+                  'snmp_user'               : show_snmp_user,
+                  'snmp_view'               : show_snmp_view,
                   'sflow_source_if'         : show_sflow_source_if,
                   'qos_map_dscp_tc_cb'      : qos_map_dscp_tc_cb,
                   'qos_map_dot1p_tc_cb'     : qos_map_dot1p_tc_cb,
@@ -165,16 +203,49 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
                   'qos_intf_sched_policy'   : show_qos_intf_scheduler_policy,
-                  'nat_napt_entry'          : show_nat_napt_entry,
+                  'show_running_lst_group'  : show_running_lst_group,
+                  'show_running_lst_interface': show_running_lst_interface,
+                  'vlanvrfvnimap'           : show_vlanvrfvnimap,
                   'logging_server_cmd'      : show_logging_server_cmd,
                   'ldap_server_src_intf'    : show_ldap_server_src_intf,
+                  'radius_statistics_config': show_radius_statistics_config,
+                  'radius_host_config'      : show_radius_host_config,
+                  'aaa_config'              : show_aaa_config,
                   'nat_napt_entry'          : show_nat_napt_entry,
                   'ip_helper_address'       : show_ip_helper_address,
                   'ip_helper_include_ports' : show_ip_helper_include_ports,
                   'ip_helper_exclude_ports' : show_ip_helper_exclude_ports,
+                  'pim_ipv4_gbl'            : show_pim_ipv4_gbl,
+                  'router_ospf'             : show_router_ospf_config,
+                  'router_ospf_area'        : show_router_ospf_area_config,
+                  'router_ospf_area_network' : show_router_ospf_area_network_config,
+                  'router_ospf_area_vlink'   : show_router_ospf_area_vlink_config,
+                  'router_ospf_area_addr_range' : show_router_ospf_area_addr_range_config,
+                  'router_ospf_distribute_route' : show_router_ospf_distribute_route_config,
+                  'router_ospf_passive_interface' : show_router_ospf_passive_interface_config,
+                  'interface_ip_ospf' : show_interface_ip_ospf_config,
                   'mirror_session'          : show_mirror_session,
                   'errdisable_cause'        : show_config_errdisable_cause,
-                  'ldap_map_config'         : show_ldap_map_config
+                  'lldp_mode'               : show_lldp_mode_config,
+                  'lldp_intf_mode'          : show_lldp_intf_mode_config,
+                  'lldp_tlv_select'         : show_lldp_tlv_select_config,
+                  'ldap_map_config'         : show_ldap_map_config,
+                  'igmp_snooping_config'    : show_igmp_snooping_intf_config,
+                  'if_lag_config'           : show_if_lag_config,
+		  'tam_config'              : show_tam_config,
+                  'ip_sla_config'           : show_ip_sla_config,
+		  'switch_resource_flow_scale_entry' : show_switch_resource_flow_scale_entry,
+                  'ldap_map_config'         : show_ldap_map_config,
+                  'spanning_tree_vlan'      : show_config_spanning_tree_vlan,
+                  'no_spanning_tree_vlan'   : show_config_no_spanning_tree_vlan,
+                  'spanning_tree_intf'      : show_config_spanning_tree_intf,
+                  'spanning_tree_intf_vlan' : show_config_spanning_tree_intf_vlan,
+                  'spanning_tree_global_hello_time'  : show_config_spanning_tree_global_hello_time,
+                  'spanning_tree_global_max_age'     : show_config_spanning_tree_global_max_age,
+                  'spanning_tree_global_priority'    : show_config_spanning_tree_global_priority,
+                  'spanning_tree_global_fwd_delay'   : show_config_spanning_tree_global_fwd_delay,
+                  'spanning_tree_global_root_guard_timeout' : show_config_spanning_tree_global_root_guard_time,
+                  'vrrp_config'             : show_vrrp_config,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

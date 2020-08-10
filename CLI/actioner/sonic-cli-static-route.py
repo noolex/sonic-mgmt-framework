@@ -28,8 +28,12 @@ import collections
 IDENTIFIER='STATIC'
 NAME1='static'
 
-
 restconf_map = {
+
+    'openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop' :
+        '/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/static-routes',
+}
+restconf_map_del = {
 
     'openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop' :
         '/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/static-routes/static={prefix}/next-hops/next-hop={index}',
@@ -43,49 +47,54 @@ def invoke_api(func, args=[]):
        
     if op == 'patch':
         if attr == 'openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop':
-            i=0
-            body = collections.defaultdict()
-            body["next-hop"] = [{
-                "index": "",
-                "config": {
-                   "index": ""
-                },
-            }]
+            body =  { "openconfig-network-instance:static-routes": { "static": [
+                      {
+                       "prefix": args[1],
+                       "next-hops": { "next-hop": [ {
+                          "index": "",
+                          "config": {
+                             "index": ""
+                          }}]
+                       }}
+                    ]}} 
             conf_ip = "false"
             index_v = ''
             if ((args[2] != 'interface') and (args[2] != 'blackhole')):
                 # its the ip address
-                body["next-hop"][0]["config"]["next-hop"] =args[2]
+                body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["next-hop"] =args[2]
                 index_v =  args[2]
                 conf_ip ="true"
 
             i = 2 
             while(i<len(args)): 
                 if args[i].isdigit():
-                    body["next-hop"][0]["config"]["metric"]=int(args[i])
+                    body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["metric"]=int(args[i])
                 elif args[i]=='interface':
                     i+=1
-                    body["next-hop"][0]["interface-ref"] = {"config": {"interface": args[i]}}
+                    body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["interface-ref"] = {"config": {"interface": args[i]}}
                     index_v =  args[i]
                     if  conf_ip == "true" : index_v = index_v +  '_' + args[2]
                 elif args[i] == 'nexthop-vrf':
                     i+=1
-                    body["next-hop"][0]["config"]["nexthop-network-instance"] =args[i]
+                    body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["nexthop-network-instance"] =args[i]
                     index_v = index_v +  '_' + args[i]
                 elif args[i] == 'blackhole':
-                    body["next-hop"][0]["config"]["blackhole"] =True
+                    body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["blackhole"] =True
                     index_v = "DROP"
-
+                elif args[i] == 'track':
+                    i+=1
+                    body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["track"] =int(args[i])
                 i+=1
 
             keypath = cc.Path(uri,
-                      name=args[0], identifier = IDENTIFIER, name1=NAME1, prefix = args[1], index=index_v)
-            body["next-hop"][0]["index"] = index_v
-            body["next-hop"][0]["config"]["index"] = index_v
+                      name=args[0], identifier = IDENTIFIER, name1=NAME1)
+            body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["index"] = index_v 
+            body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["index"] = index_v
             return api.patch(keypath, body)
         else:  
             return api.cli_not_implemented(func)     
     elif op == 'delete':
+        uri = restconf_map_del[attr]
         if attr == 'openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop':
             i = 2
             index_v = ''

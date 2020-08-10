@@ -30,7 +30,7 @@ def show_render_if_cmd(table_rec, attr_name, cmd_prfx, cmd_str):
            cmd_str = cmd_prfx + intf
         elif intf.startswith('Vlan'):
            intf_split = intf.split('Vlan')
-           cmd_str = cmd_prfx + 'Vlan ' + intf_split[1]
+           cmd_str = cmd_prfx + 'Vlan' + intf_split[1]
         elif intf.startswith('PortChannel'):
            intf_split = intf.split('PortChannel')
            cmd_str = cmd_prfx +  'PortChannel ' + intf_split[1]
@@ -107,7 +107,7 @@ def show_sflow_source_if(render_tables):
                            cmd_prfx)
 
 def show_mac_source_if(render_tables):
-    cmd_prfx = 'mac-address add address '
+    cmd_prfx = 'mac-address '
     table_name = 'sonic-fdb:sonic-fdb/FDB'
     cmd_str = ''
     if table_name in render_tables:

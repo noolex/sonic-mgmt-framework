@@ -21,9 +21,9 @@ limitations under the License.
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
 
    <VIEW name = "enable-view">
-    <COMMAND name="show bgp" help="Show BGP community, ext community, as list information"> </COMMAND>
+    <COMMAND name="show bgp" help="Display BGP community, ext community, as list information"> </COMMAND>
     <COMMAND name="show bgp community-list" help="Community list">
-        <PARAM name="list-name" help="Community list name" ptype="STRING" optional="true"> </PARAM>
+        <PARAM name="list-name" help="Name of community-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_community_show_specific show_bgp_com.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -52,7 +52,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <COMMAND name="show bgp ext-community-list" help="Extended community list">
-        <PARAM name="list-name" help="Extended community list name" ptype="STRING" optional="true"> </PARAM>
+        <PARAM name="list-name" help="Name of extended community-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_ext_community_show_specific show_bgp_extcom.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -78,7 +78,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <COMMAND name="show bgp as-path-access-list" help="AS path access list">
-        <PARAM name="list-name" help="AS path list name" ptype="STRING" optional="true"> </PARAM>
+        <PARAM name="list-name" help="Name of as-path-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_aspath_show_specific show_bgp_aspath.j2 ${list-name}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -109,7 +109,7 @@ limitations under the License.
        >
     <COMMAND
         name="bgp"
-        help="BGP command list"/>
+        help="Configure BGP instances"/>
 
     <COMMAND
         name="bgp community-list"
@@ -131,9 +131,30 @@ limitations under the License.
                 >
                 <PARAM
                     name="community-list-name"
-                    help="Communty list name"
-                    ptype="STRING"
+                    help="Name of community-list (Max: 63 characters)"
+                    ptype="STRING_63"
                     >
+                    <PARAM
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                    </PARAM>
                     <PARAM
                         name="community-members-subcommands"
                         help="BGP community members subcommands"
@@ -457,9 +478,30 @@ limitations under the License.
                 >
                 <PARAM
                     name="community-list-name"
-                    help="Communty list name"
-                    ptype="STRING"
+                    help="Name of community-list (Max: 63 characters)"
+                    ptype="STRING_63"
                     >
+                    <PARAM
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                    </PARAM>
                     <PARAM
                         name="line"
                         help="LINE An ordered list as a regular-expression"
@@ -526,17 +568,44 @@ limitations under the License.
         >
         <PARAM
             name="as-path-list-name"
-            help="Name of as-path-list"
-            ptype="STRING"
+            help="Name of as-path-list (Max: 63 characters)"
+            ptype="STRING_63"
             >
             <PARAM
-                name="regx-id"
-                help="Regular expression"
-                ptype="STRING"
+                name="as-path-action"
+                help="BGP autonomous system sub commands"
+                ptype="SUBCOMMAND"
+                mode="switch"
                 >
+                <PARAM
+                    name="deny"
+                    help="Specify packets to reject"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                    <PARAM
+                        name="regx-id"
+                        help="Regular expression"
+                        ptype="STRING"
+                        >
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    name="permit"
+                    help="Specify packets to forward"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                    <PARAM
+                        name="regx-id"
+                        help="Regular expression"
+                        ptype="STRING"
+                        >
+                    </PARAM>
+                </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_as_path_list ${as-path-list-name} ${regx-id}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_as_path_list ${as-path-list-name} ${as-path-action} ${regx-id}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command creates BGP AS Path list
@@ -550,15 +619,15 @@ limitations under the License.
       <EXAMPLE summary="The following command creates two entries for a as-path list named
         asp_private">
         sonic# configure terminal
-        sonic(config)# bgp as-path-list asp_private ^65000.*6510565109$
-        sonic(config)# bgp as-path-list asp_private 65107.*65200
+        sonic(config)# bgp as-path-list asp_private permit ^65000.*6510565109$
+        sonic(config)# bgp as-path-list asp_private deny 65107.*65200
       </EXAMPLE>
      </DOCGEN>
     </COMMAND>
 
     <COMMAND
         name="no bgp"
-        help="BGP command list"/>
+        help="Remove BGP instances"/>
 
     <COMMAND
         name="no bgp community-list"
@@ -577,49 +646,31 @@ limitations under the License.
                 >
                 <PARAM
                     name="community-list-name"
-                    help="Communty list name"
-                    ptype="STRING"
+                    help="Name of community-list"
+                    ptype="STRING_63"
                     >
                     <PARAM
-                        name="community-members-subcommands"
-                        help="BGP Community members subcommands"
-                        mode="switch"
+                        name="community-action"
+                        help="BGP community sub commands action"
                         ptype="SUBCOMMAND"
+                        mode="switch"
                         optional="true"
                         >
                         <PARAM
-                            name="aann"
-                            help="Community number aa:nn format 0..65535:0..65535"
-                            ptype="AA_NN"
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
                             >
+                            <MACRO name="BGP_COMMUNITY_MEMBERS_SUBCOMMANDS" arg=""></MACRO>
                         </PARAM>
                         <PARAM
-                            name="local-as"
-                            help="Do not send outside local AS (well-known community)"
-                            ptype="SUBCOMMAND"
+                            name="permit"
+                            help="Specify community to accept"
                             mode="subcommand"
-                            >
-                        </PARAM>
-                        <PARAM
-                            name="no-advertise"
-                            help="Do not advertise to any peer (well-known community)"
                             ptype="SUBCOMMAND"
-                            mode="subcommand"
                             >
-                        </PARAM>
-                        <PARAM
-                            name="no-export"
-                            help="Do not export to next AS (well-known community)"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            >
-                        </PARAM>
-                        <PARAM
-                            name="no-peer"
-                            help="Do not export to next AS (well-known community)"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            >
+                            <MACRO name="BGP_COMMUNITY_MEMBERS_SUBCOMMANDS" arg=""></MACRO>
                         </PARAM>
                     </PARAM>
                 </PARAM>
@@ -633,15 +684,42 @@ limitations under the License.
                 >
                 <PARAM
                     name="community-list-name"
-                    help="Communty list name"
-                    ptype="STRING"
+                    help="Name of community-list"
+                    ptype="STRING_63"
                     >
                     <PARAM
-                        name="line"
-                        help="LINE An ordered list as a regular-expression"
-                        ptype="LINE"
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
                         optional="true"
                         >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                            <PARAM
+                                name="line"
+                                help="LINE An ordered list as a regular-expression"
+                                ptype="LINE"
+                                >
+                            </PARAM>
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                            <PARAM
+                                name="line"
+                                help="LINE An ordered list as a regular-expression"
+                                ptype="LINE"
+                                >
+                            </PARAM>
+                        </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
@@ -658,17 +736,44 @@ limitations under the License.
         <PARAM
             name="as-path-list-name"
             help="Name of as-path-list"
-            ptype="STRING"
+            ptype="STRING_63"
             >
             <PARAM
-                name="regx-id"
-                help="Regular expression"
-                ptype="STRING"
+                name="as-path-action"
+                help="BGP autonomous system sub commands"
+                ptype="SUBCOMMAND"
                 optional="true"
+                mode="switch"
                 >
+                <PARAM
+                    name="deny"
+                    help="Specify packets to reject"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                    <PARAM
+                        name="regx-id"
+                        help="Regular expression"
+                        ptype="STRING"
+                        >
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    name="permit"
+                    help="Specify packets to forward"
+                    mode="subcommand"
+                    ptype="SUBCOMMAND"
+                    >
+                    <PARAM
+                        name="regx-id"
+                        help="Regular expression"
+                        ptype="STRING"
+                        >
+                    </PARAM>
+                </PARAM>
             </PARAM>
         </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_as_path_list_delete ${as-path-list-name} ${regx-id}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_as_path_list_delete ${as-path-list-name} ${as-path-action} ${regx-id}</ACTION>
     </COMMAND>
 </VIEW>
 </CLISH_MODULE>

@@ -43,12 +43,12 @@ limitations under the License.
             optional="true"
             ptype="SUBCOMMAND">
             <PARAM
-              name="vrf-name"
+              name="vrfname"
               help="Show NDP entries of the given VRF"
               mode="switch"
               ptype="SUBCOMMAND">
               <PARAM
-                  name="vrf-name"
+                  name="vrfname"
                   help="Show NDP entries of the given VRF"
                   ptype="VRF_NAME">
               </PARAM>
@@ -101,7 +101,7 @@ limitations under the License.
                 </PARAM>
         </PARAM>
         <ACTION>
-          	python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_sonic_neigh_sonic_neigh_neigh_table family:IPv6 ip:${ip-addr} mac:${mac-addr} vrf:${vrf-name} summary:${summary}&#xA;
+          	python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_sonic_neigh_sonic_neigh_neigh_table family:IPv6 ip:${ip-addr} mac:${mac-addr} vrf:${vrfname} summary:${summary}&#xA;
        </ACTION>
        <DOCGEN>
             <DESCRIPTION>
@@ -366,12 +366,12 @@ limitations under the License.
             optional="true"
             ptype="SUBCOMMAND">
             <PARAM
-              name="vrf-name"
+              name="vrfname"
               help="Clear NDP entries of the given VRF"
               mode="switch"
               ptype="SUBCOMMAND">
               <PARAM
-                  name="vrf-name"
+                  name="vrfname"
                   help="Clear NDP entries of the given VRF"
                   ptype="VRF_NAME">
               </PARAM>
@@ -391,7 +391,7 @@ limitations under the License.
         </PARAM>
 
        <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 ip:${ip-addr} vrf:${vrf-name}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 ip:${ip-addr} vrf:${vrfname}&#xA;
        </ACTION>
        <DOCGEN>
             <DESCRIPTION>

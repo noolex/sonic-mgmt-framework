@@ -95,6 +95,70 @@
 			</EXAMPLE>
 			</DOCGEN>
 	</COMMAND>
+
+	<COMMAND name="clear buffer_pool"
+                 help="Clear Buffer pool watermark counters">
+		<PARAM name="watermark_type" help="choose from watermark, persistent-watermark." mode="switch" ptype="SUBCOMMAND">
+		<PARAM name="watermark" help="clear user watermark counters" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+		<PARAM name="persistent-watermark" help="clear persistent-watermark counters" ptype="SUBCOMMAND" mode="subcommand"/> </PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_threshold rpc_sonic_buffer_pool_clear_buffer_pool_wm_stats ${__params} </ACTION>
+                        <DOCGEN>
+                        <DESCRIPTION>
+                                This command is used to clear user/persistant watermark counters recorded by the system.
+                        </DESCRIPTION>
+                        <USAGE>
+                                Use this command to clear user/persistant watermark counters recorded by the system.
+                        </USAGE>
+                        <EXAMPLE
+                                summary="Clear buffer_pool user/persistant watermark counters">
+                                        sonic-cli# clear buffer_pool watermark
+                                        sonic-cli# clear buffer_pool persistent-watermark
+                        </EXAMPLE>
+                        </DOCGEN>
+   </COMMAND>
+
+    <COMMAND
+        name="show buffer_pool"
+        help="show buffer pool watermark commands"
+	>
+	<PARAM name="watermark_type"
+		help="choose from watermark, persistent-watermark."
+		mode="switch"
+		ptype="SUBCOMMAND">
+	<PARAM name="watermark"
+		help="show user watermark counters"
+		ptype="SUBCOMMAND"
+		mode="subcommand">
+	</PARAM>
+	<PARAM name="persistent-watermark"
+		help="show persistent-watermark counters"
+		ptype="SUBCOMMAND"
+		mode="subcommand">
+	</PARAM>
+	</PARAM>
+	<PARAM
+		name="percentage"
+		help="show watermark couters in percentage"
+		ptype="SUBCOMMAND"
+		mode="subcommand"
+		optional="true"
+		>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_threshold rpc_sonic_buffer_pool_get_buffer_pool_wm_stats ${__params}</ACTION>
+        <DOCGEN>
+           <DESCRIPTION>
+                   This command is used to show user/persistant watermark counters recorded by the system.
+           </DESCRIPTION>
+           <USAGE>
+                   Use this command to display user/persistant watermark counters recorded by the system.
+           </USAGE>
+           <EXAMPLE
+                    summary="Show buffer_pool watermark">
+				show buffer_pool watermark {percentage}
+				show buffer_pool persistent-watermark (percentage)
+           </EXAMPLE>
+        </DOCGEN>
+     </COMMAND>
    </VIEW>
 
    <VIEW

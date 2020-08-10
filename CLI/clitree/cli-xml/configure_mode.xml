@@ -24,7 +24,7 @@ limitations under the License.
     >
     <!--=======================================================-->
     <VIEW depth="1" name="configure-view" prompt="${SYSTEM_NAME}(config)# " restore="depth">
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="no" help="Remove current configuration"/>
         <COMMAND name="mac" help="Configure Media Access Control (MAC)"/>
         <COMMAND name="ip" help="Configure Internet Protocol (IP)"/>
         <COMMAND name="ipv6" help="Configure Internet Protocol v6 (IPv6)"/>
@@ -32,8 +32,6 @@ limitations under the License.
         <COMMAND name="no mac" help="Configure Media Access Control (MAC)"/>
         <COMMAND name="no ip" help="Configure Internet Protocol (IP)"/>
         <COMMAND name="no ipv6" help="Configure Internet Protocol v6 (IPv6)"/>
-
-        <NAMESPACE ref="hidden-cmd-view" help="false" completion="false"/>
     </VIEW>
 </CLISH_MODULE>
 

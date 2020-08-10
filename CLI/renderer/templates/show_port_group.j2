@@ -1,0 +1,33 @@
+{% if json_output -%}
+-----------------------------------------------------------------------
+{{'%-12s'|format("Port-group")}}{{'%-27s'|format("Interface range")}}{{'%-18s'|format("Valid speeds")}}{{'%-6s'|format("Default Speed")}}
+-----------------------------------------------------------------------
+{% for key, klist in json_output.iteritems() %}
+{% set vars = {'id': ""} %}
+{% set vars = {'speed': ""} %}
+{% set vars = {'vspeeds': ""} %}
+{% set vars = {'ifstart': ""} %}
+{% set vars = {'ifend': ""} %}
+{% for field, value in klist.iteritems() %}
+{% if 'valid-speeds' in field %}
+{% if vars.update({'vspeeds':''}) %} {% endif %}
+{% for entry in value %}
+    {% if vars.update({'vspeeds':vars.vspeeds+entry|string|replace("openconfig-if-ethernet:SPEED_", "")|replace("GB", "G, ")}) %} {% endif %}
+{% endfor %}
+{% if vars.update({'vspeeds':vars.vspeeds[:-2]}) %} {% endif %}
+{% else %}
+{% if 'speed' in field %}
+    {% if vars.update({'speed':value|string|replace("openconfig-if-ethernet:SPEED_", "")|replace("GB", "G")}) %} {% endif %}
+    {% if vars.update({'speed':vars.speed|replace("B", "")}) %} {% endif %}
+{% endif %}
+{% endif %}
+{% if 'member-if-end' in field %}
+    {% if vars.update({'ifend':value|string}) %} {% endif %}
+{% endif %}
+{% if 'member-if-start' in field %}
+    {% if vars.update({'ifstart':value|string}) %} {% endif %}
+{% endif %}
+{% endfor %}
+{{'%-11s'|format(key)}} {{'%-27s'|format(vars.ifstart+" - "+vars.ifend)}}{{'%-18s'|format(vars.vspeeds)}}{{'%-6s'|format(vars.speed)}}
+{% endfor %}
+{% endif %}

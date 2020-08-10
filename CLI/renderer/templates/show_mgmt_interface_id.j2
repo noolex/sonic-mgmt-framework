@@ -20,6 +20,8 @@
 {% set vars = {'out_octets':""} %}
 {% set vars = {'out_errors':""} %}
 {% set vars = {'out_discards':""} %}
+{% set vars = {'ip_prim':""} %}
+{% set ip_sec_list = [] %}
 {% if json_output -%}
 {% for interfaces in json_output %}
 {% set interface_list = json_output[interfaces] %}
@@ -58,8 +60,15 @@
               {% set ip_all = [] %}
               {% for ip in ip_list %}
                 {% if "state" in ip %}
-                  {% set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() %}
-                  {{ ip_all.append(ipfx)|default("", True)}}
+		  {%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
+		  {%- if "openconfig-interfaces-ext:secondary" in ip["state"] -%}
+                      {%- if vars.update({'secondary':ip["state"]["openconfig-interfaces-ext:secondary"]}) %}{% endif -%}
+                      {%- if vars.secondary == true -%}
+                          {{ ip_sec_list.append(ipfx)|default("", True)}}
+                      {% else %}
+                          {% if vars.update({'ip_prim':ipfx}) %}{% endif %}
+                      {% endif %}
+                  {% endif %}
                 {% endif %}
                 {% if "config" in ip %}
                     {% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
@@ -67,7 +76,6 @@
                     {% if vars.update({'mode4':"DHCP"}) %}{% endif %}
                 {% endif %}
               {% endfor %}
-              {% if vars.update({'ipv4_src_pfx':ip_all|join(',')}) %}{% endif %}
             {% else %}
               {% if vars.update({'mode4':"not-set"}) %}{% endif %}
             {% endif %}
@@ -76,7 +84,7 @@
               {% set ipv6_all = [] %}
               {% for ip in ip_list %}
                 {% if "state" in ip %}
-                  {% set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() %}
+		          {%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
                   {{ ipv6_all.append(ipfx)|default("", True)}}
                 {% endif %}
                 {% if "config" in ip %}
@@ -100,9 +108,12 @@ Hardware is MGMT
 {% if vars.description %}
 Description: {{ vars.description }}
 {% endif %}
-{% if vars.ipv4_src_pfx %}
-{{ vars.ipv4 }} address is {{ vars.ipv4_src_pfx }}
+{% if vars.ip_prim %}
+{{ vars.ipv4 }} address is {{ vars.ip_prim }}
 {% endif %}
+{% for ip in ip_sec_list  %}
+{{ vars.ipv4 }} secondary address is {{ ip }}
+{% endfor %}
 Mode of {{ vars.ipv4 }} address assignment: {{ vars.mode4 }}
 {% if vars.ipv6_src_pfx %}
 {{ vars.ipv6 }} address is {{ vars.ipv6_src_pfx }}

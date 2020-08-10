@@ -68,77 +68,18 @@ limitations under the License.
     </COMMAND>
   </VIEW>
 
-
-  <VIEW name="hidden-cmd-view">
-    <COMMAND name="aaa authentication login-method"
-             help="AAA authentication login method preference"
-             mode="subcommand"
-             ptype="SUBCOMMAND">
-      <PARAM name="login"
-             help="login methods"
-             mode="switch"
-             ptype="SUBCOMMAND">
-          <PARAM name="local"
-                 help="local authentication"
-                 optional="true"
-                 mode="subcommand"
-                 ptype="SUBCOMMAND">
-              <PARAM name="tacacs+"
-                     test='"${radius}"!="radius"'
-                     help="tacacs+ authentication"
-                     optional="true"
-                     ptype="AAA_AUTH_TACPLUS">
-              </PARAM>
-              <PARAM name="radius"
-                     test='"${tacacs+}"!="tacacs+"'
-                     help="radius authentication"
-                     optional="true"
-                     ptype="AAA_AUTH_RADIUS">
-              </PARAM>
-          </PARAM>
-          <PARAM name="tacacs+"
-                 help="tacacs+ authentication"
-                 optional="true"
-                 mode="subcommand"
-                 ptype="SUBCOMMAND">
-              <PARAM name="local"
-                     help="local authentication"
-                     optional="true"
-                     ptype="AAA_AUTH_LOCAL">
-              </PARAM>
-          </PARAM>
-          <PARAM name="radius"
-                 help="radius authentication"
-                 optional="true"
-                 mode="subcommand"
-                 ptype="SUBCOMMAND">
-              <PARAM name="local"
-                     help="local authentication"
-                     optional="true"
-                     ptype="AAA_AUTH_LOCAL">
-              </PARAM>
-          </PARAM>
-      </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_authentication_method ${login} ${local} ${tacacs+} ${radius} </ACTION>
-    </COMMAND>
-
-    <COMMAND name="no aaa authentication login-method" help="Unconfigure aaa authentication login method">
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_authentication_method local</ACTION>
-    </COMMAND>
-
-  </VIEW>
-
   <VIEW name="configure-view">
     <!-- aaa -->
     <COMMAND name="aaa"
+             data_and_render_cb="aaa_config"
              help="AAA configuration"/>
 
     <!-- config sub view for aaa authentication -->
     <COMMAND name="aaa authentication"
-             help="AAA authentication configuration"/>
+             help="Configures AAA authentication"/>
 
     <COMMAND name="aaa authentication failthrough"
-             help="AAA authentication failthrough status"
+             help="Configures AAA authentication failthrough status"
              mode="subcommand"
              ptype="SUBCOMMAND">
       <PARAM name="enable"
@@ -151,12 +92,18 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_ext_system_aaa_authentication_config_failthrough False&#xA;
           fi&#xA;
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configures AAA authentication failthrough</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# aaa authentication failthrough enable
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
-<!--
     <COMMAND name="aaa authentication login-method"
              help="AAA authentication login method preference"
              mode="subcommand"
+             hidden="true"
              ptype="SUBCOMMAND">
       <PARAM name="login"
              help="login methods"
@@ -205,14 +152,15 @@ limitations under the License.
       </PARAM>
       <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_authentication_method ${login} ${local} ${tacacs+} ${radius} </ACTION>
     </COMMAND>
--->
-    <COMMAND name="no aaa" help="Unconfigure aaa authentication configuration"/>
-    <COMMAND name="no aaa authentication" help="Unconfigure aaa authentication configuration"/>
-<!--
-    <COMMAND name="no aaa authentication login-method" help="Unconfigure aaa authentication login method">
+    <COMMAND name="no aaa"
+             help="Unconfigures AAA"/>
+    <COMMAND name="no aaa authentication"
+             help="Unconfigures AAA authentication"/>
+    <COMMAND name="no aaa authentication login-method"
+             help="Unconfigure aaa authentication login method"
+             hidden="true">
       <ACTION>python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_authentication_method local</ACTION>
     </COMMAND>
--->
 
     <COMMAND name="aaa authentication login"
              help="Configures AAA login authentication"/>
@@ -315,7 +263,13 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_login ${__params} </ACTION>
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py put_openconfig_system_system_aaa_authentication_config_login ${__params} </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configures AAA login authentication default list to authentication first with tacacs+, and, if none respond, (or failthrough is configured) with local next</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# aaa authentication login default group tacacs+ local
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="aaa authorization"
@@ -356,6 +310,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/authorization/openconfig-aaa-ext:login/config/authorization-method body={"openconfig-aaa-ext:authorization-method": ["${local}${ldap}"] }
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configures AAA login authorization default list to use ldap</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# aaa authorization login default group ldap
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="aaa name-service"
@@ -400,6 +360,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/passwd-method body={"openconfig-aaa-ext:passwd-method": ["${local}${login}${ldap}"] }
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configures AAA passwd name-service to use ldap</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# aaa name-service passwd group ldap
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="aaa name-service shadow"
@@ -441,6 +407,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/shadow-method body={"openconfig-aaa-ext:shadow-method": ["${local}${login}${ldap}"] }
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configures AAA shadow name-service to use ldap</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# aaa name-service shadow group ldap
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="aaa name-service group"
@@ -482,6 +454,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/group-method body={"openconfig-aaa-ext:group-method": ["${local}${login}${ldap}"] }
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configures AAA group name-service to use ldap</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# aaa name-service group group ldap
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="aaa name-service netgroup"
@@ -515,6 +493,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/netgroup-method body={"openconfig-aaa-ext:netgroup-method": ["${local}${ldap}"] }
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configures AAA netgroup name-service to use ldap</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# aaa name-service netgroup group ldap
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="aaa name-service sudoers"
@@ -548,6 +532,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/sudoers-method body={"openconfig-aaa-ext:sudoers-method": ["${local}${ldap}"] }
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configures AAA sudoers name-service to use ldap</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# aaa name-service sudoers group ldap
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no aaa authentication login"
@@ -573,6 +563,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/authorization/openconfig-aaa-ext:login/config/authorization-method
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigures AAA login authorization default list</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# no aaa authorization login default
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no aaa name-service"
@@ -584,6 +580,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/passwd-method
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigures AAA passwd name-service</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# no aaa name-service passwd
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no aaa name-service shadow"
@@ -592,6 +594,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/shadow-method
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigures AAA shadow name-service</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# no aaa name-service shadow
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no aaa name-service group"
@@ -600,6 +608,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/group-method
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigures AAA group name-service</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# no aaa name-service group
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no aaa name-service netgroup"
@@ -608,6 +622,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/netgroup-method
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigures AAA netgroup name-service</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# no aaa name-service netgroup
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no aaa name-service sudoers"
@@ -616,6 +636,12 @@ limitations under the License.
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/sudoers-method
       </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigures AAA sudoers name-service</DESCRIPTION>
+        <EXAMPLE>
+          sonic(config)# no aaa name-service sudoers
+        </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
   </VIEW>

@@ -28,7 +28,7 @@ limitations under the License.
     <VIEW name="configure-view">
         <COMMAND name="link" help="Create link state tracking group" />
         <COMMAND name="link state" help="Create link state tracking group" />
-        <COMMAND name="link state track" help="Create link state tracking group" view="configure-link-state-track-view" viewid="group=${grp-name}">
+        <COMMAND name="link state track" help="Create link state tracking group" mode="subcommand" ptype="SUBCOMMAND" view="configure-link-state-track-view" viewid="group=${grp-name}" data_and_render_cb="show_running_lst_group">
             <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME"/>
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking create_link_state_tracking_group ${grp-name}</ACTION>
         </COMMAND>
@@ -95,6 +95,13 @@ limitations under the License.
         <COMMAND name="show link state tracking" help="Show link state tracking information">
             <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME" optional = "true"/>
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking show_link_state_tracking_group_info ${grp-name}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="show running-configuration link" help="Show current link state tracking configuration"/>
+        <COMMAND name="show running-configuration link state" help="Show current link state tracking configuration" />
+        <COMMAND name="show running-configuration link state tracking" help="Show current link state tracking configuration">
+            <PARAM name="show-runn-grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME" optional="true"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-link-state-track view_keys="group=${show-runn-grp-name}" </ACTION>
         </COMMAND>
     </VIEW>
 

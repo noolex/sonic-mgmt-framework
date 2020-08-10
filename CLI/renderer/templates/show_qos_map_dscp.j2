@@ -18,7 +18,9 @@
   {% if map_info %}
       {% set entries = map_info['dscp-map-entry'] %}
       {% for entry in entries %}
+        {% if entry['config']['fwd-group'] != 'NULL' %}
     {{'%-5s'|format(entry['dscp'])}}{{'%-5s'|format(entry['config']['fwd-group'])}}
+        {% endif %}
       {% endfor %}
   {% endif %}
 {{'----------------------------'}}

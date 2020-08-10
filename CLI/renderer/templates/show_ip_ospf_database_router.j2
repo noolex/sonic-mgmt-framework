@@ -28,43 +28,43 @@ VRF Name: {{list_elem['vrfName']}}
                 {% set lsa_type_list = areainfo['lsdb']['lsa-types']['lsa-type'] %}
                 {% for lsa_type in lsa_type_list %}
                     {% if 'type' in lsa_type and lsa_type['type'] == 'openconfig-ospf-types:ROUTER_LSA' %}
-                        {% if 'lsas' in lsa_type and 'lsa' in lsa_type['lsas'] %}
-                            {% set lsa_list = lsa_type['lsas']['lsa'] %}
+                        {% if 'lsas' in lsa_type and 'openconfig-ospfv2-ext:lsa-ext' in lsa_type['lsas'] %}
+                            {% set lsa_list = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'] %}
                             {% for lsa in lsa_list %}
                                 {% if 'state' in lsa and 'age' in lsa['state'] %}
   LS age: {{lsa['state']['age']}}
                                 {% endif %}
-                                {% if 'state' in lsa and 'openconfig-ospfv2-ext:option' in lsa['state'] and 'openconfig-ospfv2-ext:option-expanded' in  lsa['state'] %}
-  Options: 0x{{lsa['state']['openconfig-ospfv2-ext:option']}}  : {{lsa['state']['openconfig-ospfv2-ext:option-expanded']}}
+                                {% if 'state' in lsa and 'option' in lsa['state'] and 'option-expanded' in  lsa['state'] %}
+  Options: 0x{{lsa['state']['option']}}  : {{lsa['state']['option-expanded']}}
                                 {% endif %}
-                                {% if 'state' in lsa and 'openconfig-ospfv2-ext:flags' in lsa['state'] %}
-  LS Flags: 0x{{lsa['state']['openconfig-ospfv2-ext:flags']}}
+                                {% if 'state' in lsa and 'flags' in lsa['state'] %}
+  LS Flags: 0x{{lsa['state']['flags']}}
                                 {% endif %}
-                                {% if 'router-lsa' in lsa and 'state' in lsa['router-lsa'] and 'openconfig-ospfv2-ext:flags' in lsa['router-lsa']['state']%}
-  Flags: 0x{{lsa['router-lsa']['state']['openconfig-ospfv2-ext:flags']}} {{lsa['router-lsa']['state']['openconfig-ospfv2-ext:flags-description']}}
+                                {% if 'router-lsa' in lsa and 'state' in lsa['router-lsa'] and 'flags' in lsa['router-lsa']['state']%}
+  Flags: 0x{{lsa['router-lsa']['state']['flags']}} {{lsa['router-lsa']['state']['flags-description']}}
                                 {% endif %}
   LS Type: router-LSA
                                 {% if 'link-state-id' in lsa %}
   Link State ID: {{lsa['link-state-id']}}
                                 {% endif %}
-                                {% if 'state' in lsa and 'advertising-router' in lsa['state'] %}
-  Advertising Router: {{lsa['state']['advertising-router']}}
+                                {% if 'advertising-router' in lsa %}
+  Advertising Router: {{lsa['advertising-router']}}
                                 {% endif %}
-                                {% if 'state' in lsa and 'sequence-number'  in lsa['state'] %}
-  LS Seq Number: {{'%8x'|format(lsa['state']['sequence-number'])}}
+                                {% if 'state' in lsa and 'display-sequence-number'  in lsa['state'] %}
+  LS Seq Number: {{lsa['state']['display-sequence-number']}}
                                 {% endif %}
                                 {% if 'state' in lsa and 'checksum'   in lsa['state'] %}
   Checksum: 0x{{'%04x'|format(lsa['state']['checksum'])}}
                                 {% endif %}
-                                {% if 'state' in lsa and 'openconfig-ospfv2-ext:length'   in lsa['state'] %}
-  Length: {{lsa['state']['openconfig-ospfv2-ext:length']}}
+                                {% if 'state' in lsa and 'length'   in lsa['state'] %}
+  Length: {{lsa['state']['length']}}
                                 {% endif %}
   {{' '}}
                                 {% if 'router-lsa' in lsa and 'state' in lsa['router-lsa'] and 'number-links' in lsa['router-lsa']['state']%}
    Number of Links: {{lsa['router-lsa']['state']['number-links']}}
    {{' '}}
-                                    {% if 'openconfig-ospfv2-ext:link-information' in lsa['router-lsa']['state'] %}
-                                        {% for link in lsa['router-lsa']['state']['openconfig-ospfv2-ext:link-information'] %}
+                                    {% if 'link-information-list' in lsa['router-lsa']['state'] and 'link-information' in lsa['router-lsa']['state']['link-information-list'] %}
+                                        {% for link in lsa['router-lsa']['state']['link-information-list']['link-information'] %}
                                             {% if link['state']['type'] == 'openconfig-ospf-types:ROUTER_LSA_TRANSIT_NETWORK'%}
     Link connected to: a Transit Network
      (Link ID) Designated Router address: {{link['state']['link-id']}}

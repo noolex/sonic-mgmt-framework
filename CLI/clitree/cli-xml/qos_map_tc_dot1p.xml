@@ -42,8 +42,8 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps/forwarding-group-dot1p-map=${name}
-            body={"openconfig-qos-maps-ext:forwarding-group-dot1p-map": [{"name": "${name}"}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps
+            body={"openconfig-qos-maps-ext:forwarding-group-dot1p-maps": {"forwarding-group-dot1p-map": [{"name": "${name}", "config": {"name": "${name}"}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -109,8 +109,8 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps/forwarding-group-dot1p-map=${map_name}/forwarding-group-dot1p-map-entries/forwarding-group-dot1p-map-entry="${tc}"
-            body={"openconfig-qos-maps-ext:forwarding-group-dot1p-map-entry": [{"fwd-group":"${tc}", "config": {"dot1p": ${dot1p-val}}}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps/forwarding-group-dot1p-map=${map_name}/forwarding-group-dot1p-map-entries/
+            body={"openconfig-qos-maps-ext:forwarding-group-dot1p-map-entries": {"forwarding-group-dot1p-map-entry": [{"fwd-group":"${tc}", "config": {"dot1p": ${dot1p-val}}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -136,7 +136,7 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=DELETE
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps/forwarding-group-dot1p-map=${map_name}/forwarding-group-dot1p-map-entries/forwarding-group-dot1p-map-entry="${tc}"
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dot1p-maps/forwarding-group-dot1p-map=${map_name}/forwarding-group-dot1p-map-entries/forwarding-group-dot1p-map-entry=${tc}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>

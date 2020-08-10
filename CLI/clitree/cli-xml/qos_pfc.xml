@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2020 Broadcom, Inc.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+<!--=================================  PTYPES =================================-->
+  <PTYPE name="POLL_INTERVAL" method="integer" pattern="100..3000" help=""/>
+  <PTYPE name="DETECT_TIME" method="integer" pattern="100..5000" help=""/>
+  <PTYPE name="RESTORE_TIME" method="integer" pattern="100..60000" help=""/>
+
+<!--=========================================================================-->
+  <VIEW name="enable-view">
+    <!-- show priority-flow-control watchdog -->
+    <COMMAND name="show priority-flow-control" help="Show PFC summary">
+      <PARAM name="watchdog" help="Show PFC watchdog" ptype="SUBCOMMAND" mode="subcommand"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  show_pfc_watchdog  show_qos_pfc_watchdog.j2</ACTION>
+      <xi:include href="include/pipe.xml"/>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+  </VIEW>
+
+<!--=========================================================================
+  Config mode commands
+========================================================================= -->
+  <VIEW name="configure-view">
+
+    <COMMAND name="priority-flow-control" help="PFC configuration"/>
+    <COMMAND name="priority-flow-control watchdog" help="PFC watchdog configuration"/>
+
+    <COMMAND name="priority-flow-control watchdog polling-interval" help="Configure watchdog">
+      <PARAM name="interval" help="Watchdog poll interval" ptype="POLL_INTERVAL" />
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  interval  ${interval}</ACTION>
+    </COMMAND>
+
+    <COMMAND name="priority-flow-control watchdog counter-poll" help="Enable PFC watchdog FLEX counters">
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  counter-poll enable</ACTION>
+    </COMMAND>
+
+<!--=========================================================================
+  Config mode "no" commands
+========================================================================= -->
+    <COMMAND name="no priority-flow-control" help="PFC configuration"/>
+    <COMMAND name="no priority-flow-control watchdog" help="PFC watchdog configuration"/>
+
+    <COMMAND name="no priority-flow-control watchdog polling-interval" help="Disable watchdog">
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  interval</ACTION>
+    </COMMAND>
+
+    <COMMAND name="no priority-flow-control watchdog counter-poll" help="Disable PFC watchdog FLEX counters">
+      <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  counter-poll disable</ACTION>
+    </COMMAND>
+  </VIEW>
+
+</CLISH_MODULE>

@@ -23,10 +23,13 @@
 	   </EXAMPLE>
         </DOCGEN>
     </COMMAND>
-    <COMMAND name="sample" help="Sample Name">
-      <PARAM name="sample-name" help="Sample Name" ptype="STRING_72"> </PARAM>
+    <COMMAND name="sample" help="Sample Name"
+      command_tables="sonic-tam-drop-monitor:sonic-tam-drop-monitor/SAMPLE_RATE_TABLE/SAMPLE_RATE_TABLE_LIST/name">
+      <PARAM name="sample-name" help="Sample Name" ptype="STRING_72"
+	     dbpath="sonic-tam-drop-monitor:sonic-tam-drop-monitor/SAMPLE_RATE_TABLE/SAMPLE_RATE_TABLE_LIST/name"> </PARAM>
       <PARAM name="rate" help="Configure sample rate" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-      <PARAM name="rate-name" help="Configure Sampling rate" ptype="SAMPLE_RATE"> </PARAM>
+      <PARAM name="rate-name" help="Configure Sampling rate" ptype="SAMPLE_RATE"
+	     dbpath="sonic-tam-drop-monitor:sonic-tam-drop-monitor/SAMPLE_RATE_TABLE/SAMPLE_RATE_TABLE_LIST/sampling-rate"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_drop_monitor patch_sonic_tam_drop_monitor_sonic_tam_drop_monitor_sample_rate_table_sample_rate_table_list ${sample-name} ${rate-name}</ACTION>
   	<DOCGEN>
 	   <DESCRIPTION>

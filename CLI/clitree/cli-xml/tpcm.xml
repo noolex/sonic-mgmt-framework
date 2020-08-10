@@ -120,9 +120,9 @@
            elif test "${file_path}" != "null"; then&#xA;
                python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install file ${container_name} ${file_path} tpcm.j2 ${_args}&#xA;
            elif test "${scp_host}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install scp ${container_name} ${scp_filename} tpcm.j2 ${_args} ${scp_username} ${scp_password} ${scp_host}&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install scp ${container_name} ${scp_filename} tpcm.j2 ${scp_username} ${scp_password} ${scp_host} ${_args}&#xA;
            else&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install sftp ${container_name} ${sftp_filename} tpcm.j2 ${_args} ${sftp_username} ${sftp_password} ${sftp_host}&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_install sftp ${container_name} ${sftp_filename} tpcm.j2 ${sftp_username} ${sftp_password} ${sftp_host} ${_args}&#xA;
            fi&#xA;
        </ACTION>
 
@@ -186,9 +186,9 @@
                          </PARAM>
                    </PARAM>
               </PARAM>
-              <PARAM name="skip_data" help="Leaves the TPC data from deletion" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name="skip_data_migration" help="Skip the TPC data migration" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                    <PARAM name="skip"
-                       help="Leaves the TPC data from deletion"
+                       help="Skip the TPC data from migration"
                        default="null"
                        ptype="BOOL_SELECT">
                    </PARAM>
@@ -203,17 +203,17 @@
 
        <ACTION>
            if test "${url_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade url ${container_name} ${url_path} tpcm.j2 ${_args} ${skip}&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade url ${container_name} ${url_path} tpcm.j2  ${skip} ${_args}&#xA;
            elif test "${image_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade image ${container_name} ${image_path} tpcm.j2 ${_args} ${skip}&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade image ${container_name} ${image_path} tpcm.j2 ${skip} ${_args}&#xA;
            elif test "${pull_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade pull ${container_name} ${pull_path} tpcm.j2 ${_args} ${skip}&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade pull ${container_name} ${pull_path} tpcm.j2 ${skip} ${_args}&#xA;
            elif test "${file_path}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade file ${container_name} ${file_path} tpcm.j2 ${_args} ${skip}&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade file ${container_name} ${file_path} tpcm.j2 ${skip} ${_args}&#xA;
            elif test "${scp_host}" != "null"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade scp ${container_name} ${scp_filename} tpcm.j2 ${_args} ${scp_username} ${scp_password} ${scp_host} ${skip}&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade scp ${container_name} ${scp_filename} tpcm.j2  ${scp_username} ${scp_password} ${scp_host} ${skip} ${_args}&#xA;
            else&#xA;
-               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade sftp ${container_name} ${sftp_filename} tpcm.j2 ${_args} ${sftp_username} ${sftp_password} ${sftp_host} ${skip}&#xA;
+               python $SONIC_CLI_ROOT/sonic_cli_tpcm.py tpcm_upgrade sftp ${container_name} ${sftp_filename} tpcm.j2  ${sftp_username} ${sftp_password} ${sftp_host} ${skip} ${_args}&#xA;
            fi&#xA;
 
        </ACTION>
@@ -226,9 +226,9 @@
                    <PARAM name="container_name" help="String for container name" ptype="STRING">
                    </PARAM>
              </PARAM>
-              <PARAM name="skip_data" help="Leaves the TPC data from deletion" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name="clean_data" help="Delete the TPC data" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                    <PARAM name="skip"
-                       help="Leaves the TPC data from deletion"
+                       help="Delete the TPC data"
                        default="null"
                        ptype="BOOL_SELECT">
                    </PARAM>

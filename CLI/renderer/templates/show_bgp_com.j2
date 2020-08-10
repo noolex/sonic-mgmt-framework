@@ -13,8 +13,10 @@
 {% set mems = "" %}
 {% set temp = [ ] %}
 {% set match = "" %}
+{% set action =  "" %}
 {% if vars.update({'list_name':list ['community-set-name']}) %} {% endif %}
    {% set match =  list['config']['match-set-options'] %}
+   {% set action = list['config']['openconfig-bgp-policy-ext:action'] %}
    {% set mems =  list['config']['community-member'] %}
    {% for mem in mems %}
    {% if mem[:5]|string() == "REGEX" %}
@@ -42,11 +44,11 @@ Standard community list {{'%s'| format(vars.list_name)}}:  match: {{'%s'| format
        {% do temp.append(mem) %}
      {% endif %}
      {% if match == "ANY" %}
-     {{'%s'| format(mem)}}
+     {{'%s'| format(action)|lower}} {{'%s'| format(mem)}}
      {% endif %}
    {% endfor %}
-   {% if match == "ALL" %}
-     {{'%s'| format(temp|join(","))}}
+   {% if match == "ALL" and temp %}
+     {{'%s'| format(action)|lower}} {{'%s'| format(temp|join(","))}}
    {% endif %}
 {% endfor %}
 {% endif %}

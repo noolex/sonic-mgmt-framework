@@ -98,7 +98,7 @@ def invoke_api(func, args):
         return api.patch(path, body)
 
     elif func == 'delete_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold':
-	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST={buffer},{threshold_buffer_type},{interface_name},{buffer_index_per_port}/threshold', buffer = args[2], threshold_buffer_type = args[4], interface_name = args[5], buffer_index_per_port = args[3] )
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST={buffer},{threshold_buffer_type},{interface_name},{buffer_index_per_port}', buffer = args[2], threshold_buffer_type = args[4], interface_name = args[5], buffer_index_per_port = args[3] )
 	return api.delete(path)
 
     elif func == 'delete_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list':
@@ -134,6 +134,11 @@ def invoke_api(func, args):
 	body = { "sonic-threshold:input":  {"breach_event_id":args[3] }}
 	return api.post(path, body)
 
+    elif func == 'rpc_sonic_buffer_pool_clear_buffer_pool_wm_stats':
+	path = cc.Path('/restconf/operations/sonic-buffer-pool:clear-buffer-pool-wm-stats')
+        body = { "sonic-buffer-pool:input":  {"watermark-type":args[0] }}
+        return api.post(path, body)
+
     else:
        body = {}
     return api.cli_not_implemented(func)
@@ -147,6 +152,9 @@ def run(func, args):
 	return
     elif func == 'get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list':
         get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list(args)
+	return
+    elif func == 'rpc_sonic_buffer_pool_get_buffer_pool_wm_stats':
+	rpc_sonic_buffer_pool_get_buffer_pool_wm_stats(args)
 	return
     try:
          api_response = invoke_api(func, args)
@@ -225,6 +233,38 @@ def get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_lis
         get_print_cpu_port_config(args[2], args[3], renderer_template)
     else:
         get_print_all_port_config(args[2], args[3], renderer_template)
+
+
+def rpc_sonic_buffer_pool_get_buffer_pool_wm_stats(args):
+
+	watermark_stats_type = ''
+        if (len(args) == 2):
+            watermark_stats_type = args[1]
+            renderer_template = "show_buffer_pool_stats_percentage.j2"
+        else:
+            watermark_stats_type = 'bytes'
+            renderer_template = "show_buffer_pool_stats_bytes.j2"
+
+	api_response = {}
+	api = cc.ApiClient()
+	path = cc.Path('/restconf/operations/sonic-buffer-pool:get-buffer-pool-wm-stats')
+	body = { "sonic-buffer-pool:input":  {"watermark-stats-type":watermark_stats_type, "watermark-type":args[0]} }
+	response = api.post(path, body)
+
+	if response.ok():
+		if response.content:
+		    api_response = response.content['sonic-buffer-pool:output']['Buffer_pool_list']
+		    if api_response:
+			for i in range(len(api_response)):
+			  if 'Poolname' not in api_response[i] and 'StatsValue' not in api_response[i]:
+				print("Required parameters are not found in buffer pool stats payload")
+				return
+		else:
+			print("Buffer pool configuration missing on the system! Please configure buffer pools ")
+	else:
+		print "%Error: REST API transaction failure for buffer pool stats"
+	show_cli_output(renderer_template, api_response)
+
 
 if __name__ == '__main__':
      pipestr().write(sys.argv)

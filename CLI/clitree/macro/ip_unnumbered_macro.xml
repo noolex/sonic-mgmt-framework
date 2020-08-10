@@ -19,12 +19,14 @@ limitations under the License.
 	<MACRODEF name="IP-UNNUM-CONFIG-OPTIONS">
     <COMMAND
         name="ip unnumbered"
-        help="Configure IPv4 unnumbered interface" >
+        help="Configure IPv4 unnumbered interface" 
+        command_tables="arg2" >
         <PARAM
             name="donor-interface"
             help="Donor interface name"
-            ptype="LOOPBACK_INTERFACE" />
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=arg1/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
+            ptype="LOOPBACK_INTERFACE" 
+            dbpath="arg3/unnumbered" />
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}${vlan_name}${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface body={"openconfig-if-ip:interface": "${donor-interface}"}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
                 Configure IPv4 unnumbered interface by borrowing IPv4 address from the Donor interface.
@@ -36,6 +38,7 @@ limitations under the License.
                 sonic-cli(config)# interface Ethernet 0
                 sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
             </EXAMPLE>
+            <FEATURE> IPv4 Unnumbered Interface </FEATURE>
         </DOCGEN>
     </COMMAND>
 	</MACRODEF>
@@ -44,7 +47,7 @@ limitations under the License.
     <COMMAND
         name="no ip unnumbered"
         help="Unconfigure IPv4 unnumbered interface" >
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=arg1/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface</ACTION>
+        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}${vlan_name}${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface</ACTION>
 
         <DOCGEN>
             <DESCRIPTION>
@@ -58,6 +61,7 @@ limitations under the License.
                 sonic-cli(conf-if-Ethernet0)# ip unnumbered Loopback1
                 sonic-cli(conf-if-Ethernet0)# no ip unnumbered
             </EXAMPLE>
+            <FEATURE> IPv4 Unnumbered Interface </FEATURE>
         </DOCGEN>
     </COMMAND>
     </MACRODEF>

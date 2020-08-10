@@ -8,8 +8,8 @@
 <!--=========================================================================-->
 
     <VIEW name="configure-view">
-        <COMMAND name="portchannel" help="Portchannel configuration subcommands"/>
-        <COMMAND name="no portchannel" help="Portchannel configuration subcommands"/>
+        <COMMAND name="portchannel" help="Configure PortChannel parameters"/>
+        <COMMAND name="no portchannel" help="Configure PortChannel parameters"/>
         <COMMAND name = "portchannel graceful-shutdown"
             help = "Enable portchannel graceful shutdown"
             command_keys="key=GLOBAL"

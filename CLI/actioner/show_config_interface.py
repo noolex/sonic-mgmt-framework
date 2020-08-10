@@ -112,6 +112,23 @@ def show_interface_portchannel(render_tables):
 
     return 'CB_SUCCESS', cmd_str
 
+def show_if_lag_config(render_tables):
+    cmd_str = ''
+
+    if 'name' in render_tables:
+        ifname_key = render_tables['name']
+        if 'sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST' in render_tables:
+              portchannel = render_tables['sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST']
+              if 'name' in portchannel:
+                  if ifname_key == portchannel['name']:
+                      if 'graceful_shutdown_mode' in portchannel:
+                          if portchannel['graceful_shutdown_mode'] == 'enable':
+                              cmd_str += "graceful-shutdown"
+                          if portchannel['graceful_shutdown_mode'] == 'disable':
+                              cmd_str += "no graceful-shutdown"
+
+    return 'CB_SUCCESS', cmd_str
+
 def show_if_lag_mclag(render_tables):
    cmd_str = ''
 
@@ -199,6 +216,7 @@ def show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx):
 def show_ip_dhcp_relay(render_tables, table_name, key_name, if_name, cmd_prfx):
 
    cmd_str = '' 
+   intf_list = None
    if_name_key = None
    if key_name in render_tables:
      if_name_key = render_tables[key_name]
@@ -209,7 +227,7 @@ def show_ip_dhcp_relay(render_tables, table_name, key_name, if_name, cmd_prfx):
      for intf in intf_list:
          cmd_str = show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx)
 
-   else:
+   elif intf_list:
          cmd_str = show_dhcp_relay(if_name, intf_list, if_name_key, cmd_str, cmd_prfx)
 
    return 'CB_SUCCESS', cmd_str 
@@ -261,7 +279,7 @@ def show_ipv6_vlan_dhcp_relay(render_tables):
 
 def show_ip_address(render_tables, table_name, key_name, table_key_name, cmd_prfx):
 
-   cmd_str = '' 
+   cmd_str = ''
    if_name_key = None
    if key_name in render_tables:
      if_name_key = render_tables[key_name]
@@ -278,9 +296,13 @@ def show_ip_address(render_tables, table_name, key_name, table_key_name, cmd_prf
                       cmd = cmd_prfx + ' ' + ip_addr
                       if cmd_str:
                          cmd_str += ';'
-                      cmd_str += cmd   
-                  elif ip_interface(ip_addr).ip.version == 4 and cmd_prfx == 'ip address': 
+                      cmd_str += cmd
+                  elif ip_interface(ip_addr).ip.version == 4 and cmd_prfx == 'ip address':
                       cmd = cmd_prfx + ' ' + ip_addr
+                      if 'secondary' in ip_addr_rec:
+                          sec_val = ip_addr_rec['secondary']
+                          if sec_val == True:
+                              cmd += " secondary"
                       if cmd_str:
                          cmd_str += ';'
                       cmd_str += cmd
@@ -288,7 +310,7 @@ def show_ip_address(render_tables, table_name, key_name, table_key_name, cmd_prf
                       cmd = ' gwaddr ' + ip_addr_rec['gwaddr']
                       cmd_str += cmd
 
-   return 'CB_SUCCESS', cmd_str 
+   return 'CB_SUCCESS', cmd_str
 
 def show_ipv4_eth_ip_address(render_tables):
     return show_ip_address(render_tables,
@@ -363,4 +385,4 @@ def show_ipv6_lo_ip_address(render_tables):
                           'sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_IPADDR_LIST',
                           'name',
                           'loIfName',
-                          'ipv6 address')    
+                          'ipv6 address')

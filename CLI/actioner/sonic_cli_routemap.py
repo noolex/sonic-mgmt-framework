@@ -41,9 +41,58 @@ def invoke_api(func, args=[]):
     if op == 'patch':
         uri = restconf_map[attr]
         if attr == 'openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_config_policy_result':
-            keypath = cc.Path(uri, name=args[0], name1=args[1])
-            body = { "openconfig-routing-policy:policy-result": "ACCEPT_ROUTE" if args[2] == 'permit' else "REJECT_ROUTE" }
+            keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions')
+            body = { "openconfig-routing-policy:policy-definitions":
+                     {"policy-definition":[{"name":args[0],"config":{"name":args[0]},
+                      "statements":{"statement": [{"name":args[1],"config":{"name":args[1]},
+                       "actions": { "config": {"policy-result": "ACCEPT_ROUTE" if args[2] == 'permit' else "REJECT_ROUTE"}}
+                       }] } }] }}
+
             return api.patch(keypath, body)
+
+        elif attr == 'openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_metric_action_config_set_metric':
+            #print("Set metric arguments - args {}".format(args))
+            if len(args) < 3 :
+                return api.cli_not_implemented(func)
+
+            metric_action = ''
+            metric_value = ''
+            metric_type = args[2]
+            if metric_type == 'metric' :
+                metric_value_str = args[3]
+                metric_action = 'METRIC_SET_VALUE'
+                if metric_value_str.startswith('+') :
+                    metric_value = long(metric_value_str[1:])
+                    metric_action = 'METRIC_ADD_VALUE'
+                if metric_value_str.startswith('-') :
+                    metric_value = long(metric_value_str[1:])
+                    metric_action = 'METRIC_SUBTRACT_VALUE'
+                else :
+                    metric_value = long(metric_value_str)
+            elif metric_type == 'rtt' :
+                metric_action = 'METRIC_SET_RTT'
+            elif metric_type == '+rtt' :
+                metric_action = 'METRIC_ADD_RTT'
+            elif metric_type == '-rtt' :
+                metric_action = 'METRIC_SUBTRACT_RTT'
+            else :
+                return api.cli_not_implemented(func)
+
+            #print("Set metric type: {} vlaue {}".format(metric_action, metric_value))
+            #This block have to be removed once bgp med config is reorganized
+            if metric_action == 'METRIC_SET_VALUE'  and metric_value != '' :
+                med_uri = restconf_map['openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_med']
+                med_keypath = cc.Path(med_uri, name=args[0], name1=args[1])
+                med_body = { "openconfig-bgp-policy:set-med" : metric_value }
+                api.patch(med_keypath, med_body)
+
+            keypath = cc.Path(uri, name=args[0], name1=args[1])
+            if metric_value != '' :
+                body = {"openconfig-routing-policy-ext:config": { "action": metric_action, "metric": metric_value }}
+            else :
+                body = {"openconfig-routing-policy-ext:config": { "action": metric_action }}
+            return api.patch(keypath, body)
+
         elif attr == 'openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_next_hop':
             if args[2] == 'ipv6' and args[3] == 'prefer-global':
                 keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-prefer-global', name=args[0], name1=args[1])
@@ -120,6 +169,11 @@ def invoke_api(func, args=[]):
             keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}',
             name=args[0])
             return api.delete(keypath)
+        elif attr == 'openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_metric_action_config_set_metric':
+            med_uri = restconf_map['openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_med']
+            med_keypath = cc.Path(med_uri, name=args[0], name1=args[1])
+            api.delete(med_keypath)
+
         keypath = cc.Path(uri, name=args[0], name1=args[1])
         return api.delete(keypath)
 

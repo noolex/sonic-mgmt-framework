@@ -253,21 +253,23 @@ def invoke_api(func, args=[]):
     elif func == 'delete_access_vlan':
 	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
         return api.delete(path) 
-    
+
     #Remove trunk vlan
     elif func == 'delete_trunk_vlan':
-   	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=args[1])
+        vlanStr = args[1].replace('-', '..')
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
- 
+
     #Remove aggregate access vlan
     elif func == 'delete_aggregate_access_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
         return api.delete(path)
-    
+
       #Remove aggregate trunk vlan
     elif func == 'delete_aggregate_trunk_vlan':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=args[1])
-	return api.delete(path)
+        vlanStr = args[1].replace('-', '..')
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
+        return api.delete(path)
 
     # Remove IP addresses from interface
     elif func == 'delete_if_ip':
@@ -474,6 +476,31 @@ def run(func, args):
                 if check_response(response, func, intfargs):
                     print "%Error: Interface: "+intf
             return
+        elif func == 'default_port_config_range':
+            api = cc.ApiClient()
+            iflistStr = args[0].split("=")[1]
+            # Validate if any interface exist in range
+            if iflistStr == "":
+                print("%Error: No interface exists in the given range")
+                return 1
+            fail_list = []
+            iflist = iflistStr.rstrip().split(',')
+            for intf in iflist:
+                body = {"sonic-config-mgmt:input": { "ifname": intf }}
+                path = cc.Path('/restconf/operations/sonic-config-mgmt:default-port-config')
+                resp = api.post(path, body)
+                result = False
+                if resp.ok() and resp.content is not None and \
+                   resp.content.get("sonic-config-mgmt:output") is not None and \
+                   resp.content.get("sonic-config-mgmt:output").get("status") is not None and \
+                   resp.content["sonic-config-mgmt:output"]["status"] == 0:
+                    result = True
+                if not result:
+                    fail_list.append(intf)
+            if len(fail_list) != 0:
+                print("%Error: Failed to restore the following interfaces to their default configuration:\n" + "\n".join(fail_list))
+                return 1
+            return 0
         else:
             response = invoke_api(func, args)
             return check_response(response, func, args)

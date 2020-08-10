@@ -48,7 +48,6 @@ def invoke_api(func, args=[]):
            body = { "openconfig-nat:enable": False }
         return api.patch(path,body)
 
-
     # Config NAT/NAPT Static translation entry
     elif func == 'patch_nat_napt_mapping_table':
         nat_id = args[0]
@@ -61,19 +60,28 @@ def invoke_api(func, args=[]):
         twice_nat_id = args[7].split("=")[1]
 
         if port_type == "":
-            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/nat-mapping-table/nat-mapping-entry={externaladdress}/config', natid=nat_id, externaladdress=global_ip)
-        else:
-            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/napt-mapping-table/napt-mapping-entry={externaladdress},{protocol},{externalport}/config', natid=nat_id,externaladdress=global_ip,protocol=nat_protocol_map[port_type],externalport=global_port)
+            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/nat-mapping-table', natid=nat_id)
+            body = { "openconfig-nat:nat-mapping-table": { "nat-mapping-entry": [ { "external-address": global_ip, "config": { "external-address": global_ip, "internal-address": local_ip } } ] }}
 
-        body = { "openconfig-nat:config" : { "internal-address": local_ip} }
-        if local_port != "" :
-            body["openconfig-nat:config"].update( {"internal-port": int(local_port) } )
-        if nat_type != "" :
-            body["openconfig-nat:config"].update( {"type": nat_type_map[nat_type] } )
-        if twice_nat_id != "" :
-            body["openconfig-nat:config"].update( {"twice-nat-id": int(twice_nat_id) } )
+            if local_port != "" :
+                body["openconfig-nat:nat-mapping-table"]["nat-mapping-entry"][0]["config"].update( {"internal-port": int(local_port) } )
+            if nat_type != "" :
+                body["openconfig-nat:nat-mapping-table"]["nat-mapping-entry"][0]["config"].update( {"type": nat_type_map[nat_type] } )
+            if twice_nat_id != "" :
+                body["openconfig-nat:nat-mapping-table"]["nat-mapping-entry"][0]["config"].update( {"twice-nat-id": int(twice_nat_id) } )
+        else:
+            path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={natid}/napt-mapping-table', natid=nat_id)
+            body = { "openconfig-nat:napt-mapping-table": { "napt-mapping-entry": [ { "external-address": global_ip, "protocol": int(nat_protocol_map[port_type]), "external-port": int(global_port), "config": { "external-address": global_ip, "protocol": int(nat_protocol_map[port_type]), "external-port": int(global_port), "internal-address": local_ip } } ] }}
+
+            if local_port != "" :
+                body["openconfig-nat:napt-mapping-table"]["napt-mapping-entry"][0]["config"].update( {"internal-port": int(local_port) } )
+            if nat_type != "" :
+                body["openconfig-nat:napt-mapping-table"]["napt-mapping-entry"][0]["config"].update( {"type": nat_type_map[nat_type] } )
+            if twice_nat_id != "" :
+                body["openconfig-nat:napt-mapping-table"]["napt-mapping-entry"][0]["config"].update( {"twice-nat-id": int(twice_nat_id) } )
 
         return api.patch(path, body)
+
 
     # Remove NAT/NAPT Static translation entry
     elif func == 'delete_nat_napt_mapping_table':
@@ -101,33 +109,33 @@ def invoke_api(func, args=[]):
 
     # Config NAT Pool
     elif func == 'patch_openconfig_nat_nat_instances_instance_nat_pool_nat_pool_entry_config':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-pool/nat-pool-entry={poolname}/config', id=args[0],poolname=args[1])
-        body = { "openconfig-nat:config": {"nat-ip": args[2]} }
-
+        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-pool', id=args[0])
+        body = { "openconfig-nat:nat-pool": { "nat-pool-entry": [ { "pool-name": args[1], "config": { "pool-name": args[1], "nat-ip": args[2] } } ] }}
         if len(args) > 3:
-            body["openconfig-nat:config"].update( {"nat-port": args[3] } )
+            body["openconfig-nat:nat-pool"]["nat-pool-entry"][0]["config"].update( {"nat-port": args[3] } )
+
         return api.patch(path, body)
 
     # Config NAT Binding
     elif func == 'patch_openconfig_nat_nat_instances_instance_nat_acl_pool_binding_nat_acl_pool_binding_entry_config':
-        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-acl-pool-binding/nat-acl-pool-binding-entry={name}/config', id=args[0],name=args[1])
+        path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-acl-pool-binding', id=args[0])
 
-        body = { "openconfig-nat:config": {"nat-pool": args[2] }}
+        body = { "openconfig-nat:nat-acl-pool-binding": { "nat-acl-pool-binding-entry": [ { "name": args[1], "config": { "name": args[1], "nat-pool": args[2] } } ] }}
 
         # ACL Name
         acl_name = args[3].split("=")[1]
         if acl_name != "" :
-            body["openconfig-nat:config"].update( {"access-list": acl_name } )
+            body["openconfig-nat:nat-acl-pool-binding"]["nat-acl-pool-binding-entry"][0]["config"].update( {"access-list": acl_name } )
 
         # NAT Type
         nat_type = args[4].split("=")[1]
         if nat_type != "":
-            body["openconfig-nat:config"].update( {"type": nat_type_map[nat_type] } )
+            body["openconfig-nat:nat-acl-pool-binding"]["nat-acl-pool-binding-entry"][0]["config"].update( {"type": nat_type_map[nat_type] } )
 
         # Twice NAT ID
         twice_nat_id = args[5].split("=")[1]
         if twice_nat_id != "":
-            body["openconfig-nat:config"].update( {"twice-nat-id": int(twice_nat_id)} )
+            body["openconfig-nat:nat-acl-pool-binding"]["nat-acl-pool-binding-entry"][0]["config"].update( {"twice-nat-id": int(twice_nat_id) } )
 
         return api.patch(path, body)
 
@@ -546,6 +554,8 @@ def run(func, args):
     global config
 
     try:
+       config = True
+
        args.insert(0,"0")  # NAT instance 0
        api_response = {}
        file_template = ''

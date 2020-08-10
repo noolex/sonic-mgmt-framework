@@ -115,6 +115,9 @@ def clear_qos_api(args):
 
 def run(func, args):
 
+    # so clear counters may be run from config mode
+    if args[0] == "do":
+        args = args[1:]
     try:
        if func == 'clear_qos':
           response = clear_qos_api(args)

@@ -54,7 +54,7 @@ limitations under the License.
 	    mode="subcommand"
             ptype="SUBCOMMAND">
 	    <PARAM
-		help="VRF name"
+		help="Name of VRF"
 		name="vrfname"
 		ptype="STRING_15">
             </PARAM>
@@ -172,8 +172,26 @@ limitations under the License.
         <PARAM
             name="addr"
             help="IP address with mask"
-            ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${iface} ${addr}</ACTION>
+            ptype="IP_ADDR_MASK"
+            >
+            <PARAM
+                name="ip-subcommands"
+                help="IP address subcommands"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="true"
+                >
+                <PARAM
+                    name="secondary"
+                    help="Secondary IPv4 address"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_if_ipv4 ${iface} ${addr} ${ip-subcommands}</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -185,14 +203,31 @@ limitations under the License.
             help="IPv4 address"
             optional="true"
             ptype="IP_ADDR_MASK"
-            />
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True</ACTION>
+            >
+            <PARAM
+                name="ip-subcommands"
+                help="IP address subcommands"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="true"
+                >
+                <PARAM
+                    name="secondary"
+                    help="Secondary IPv4 address"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True ${ip-subcommands}</ACTION>
     </COMMAND>
 
     <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},ipv4_eth_dhcp_relay,sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST"> </MACRO>
     <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
 
-    <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${iface}"> </MACRO>
+    <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST"> </MACRO>
     <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${iface}"> </MACRO>
 
     <MACRO name="IP-HELPER-CONFIG-OPTIONS" arg="sonic-interface,INTERFACE,portname,iface"> </MACRO>
@@ -585,19 +620,39 @@ limitations under the License.
         <PARAM
             name="addr"
             help="IP address with mask"
-            ptype="IP_ADDR_MASK" />
-        <PARAM name="gwaddr"
-            help="Default Gateway address"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            optional="true" >
+            ptype="IP_ADDR_MASK"
+            >
             <PARAM
-                name="gw_addr"
-                help="Gateway IP address"
-                ptype="IP_ADDR"
-                />
+                name="ip-subcommands"
+                help="IP address subcommands"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="true"
+                >
+                <PARAM
+                    name="gwaddr"
+                    help="Default Gateway address"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                    <PARAM
+                        name="gw_addr"
+                        help="Gateway IP address"
+                        ptype="IP_ADDR"
+                        >
+                    </PARAM>
+                </PARAM>
+                <PARAM
+                    name="secondary"
+                    help="Secondary IPv4 address"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
         </PARAM>
-           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${iface} ${addr} ${gw_addr}</ACTION>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_mgmt_if_ipv4 ${iface} ${addr} ${ip-subcommands} ${gw_addr}</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -608,8 +663,26 @@ limitations under the License.
             name="addr"
             help="IPv4 address"
             optional="true"
-            ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_mgmt_if_ip ${iface} ${addr} True</ACTION>
+            ptype="IP_ADDR_MASK"
+            >
+            <PARAM
+                name="ip-subcommands"
+                help="IP address subcommands"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="true"
+                >
+                <PARAM
+                    name="secondary"
+                    help="Secondary IPv4 address"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_mgmt_if_ip ${iface} ${addr} True ${ip-subcommands}</ACTION>
     </COMMAND>
 </VIEW>
 
@@ -636,8 +709,26 @@ limitations under the License.
           <PARAM
               name="addr"
               help="IP address with mask"
-              ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_routed_vlan_ipv4_addresses_address_config ${vlan_name} ${addr}</ACTION>
+              ptype="IP_ADDR_MASK"
+              >
+              <PARAM
+                  name="ip-subcommands"
+                  help="IP address subcommands"
+                  ptype="SUBCOMMAND"
+                  mode="switch"
+                  optional="true"
+                  >
+                  <PARAM
+                      name="secondary"
+                      help="Secondary IPv4 address"
+                      ptype="SUBCOMMAND"
+                      mode="subcommand"
+                      optional="true"
+                      >
+                  </PARAM>
+              </PARAM>
+          </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_vlan_if_ipv4 ${vlan_name} ${addr} ${ip-subcommands}</ACTION>
       </COMMAND>
       <COMMAND
           name="no ip address"
@@ -647,14 +738,32 @@ limitations under the License.
              name="addr"
              help="IPv4 address"
              optional="true"
-             ptype="IP_ADDR_MASK" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_vlan_if_ip ${vlan_name} ${addr} True</ACTION>
+             ptype="IP_ADDR_MASK"
+             >
+             <PARAM
+                 name="ip-subcommands"
+                 help="IP address subcommands"
+                 ptype="SUBCOMMAND"
+                 mode="switch"
+                 optional="true"
+                 >
+                 <PARAM
+                     name="secondary"
+                     help="Secondary IPv4 address"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                 </PARAM>
+             </PARAM>
+         </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_vlan_if_ip ${vlan_name} ${addr} True ${ip-subcommands}</ACTION>
       </COMMAND>
 
       <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{vlan_name},sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name={name},ipv4_vlan_dhcp_relay,sonic-vlan:sonic-vlan/VLAN/VLAN_LIST"> </MACRO>
       <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{vlan_name} "> </MACRO>
 
-      <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${vlan_name} "> </MACRO>
+      <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${vlan_name},sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST/vlanName={name},sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST"> </MACRO>
       <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${vlan_name} "> </MACRO>
 
       <MACRO name="IP-HELPER-CONFIG-OPTIONS" arg="sonic-vlan-interface,VLAN_INTERFACE,vlanName,vlan_name"> </MACRO>
@@ -1029,14 +1138,32 @@ limitations under the License.
       </COMMAND>
       <COMMAND
           name="ip address"
-          help="IP address" 
+          help="IP address"
           command_tables="sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST/pch_name={name},ip_prefix={prfx}"
           render_command_cb="ipv4_lag_ip_address" >
           <PARAM
               name="addr"
               help="IP address with mask"
-              ptype="IP_ADDR_MASK"/>
-           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${po_name} ${addr}</ACTION>
+              ptype="IP_ADDR_MASK"
+              >
+              <PARAM
+                  name="ip-subcommands"
+                  help="IP address subcommands"
+                  ptype="SUBCOMMAND"
+                  mode="switch"
+                  optional="true"
+                  >
+                  <PARAM
+                      name="secondary"
+                      help="Secondary IPv4 address"
+                      ptype="SUBCOMMAND"
+                      mode="subcommand"
+                      optional="true"
+                      >
+                  </PARAM>
+              </PARAM>
+          </PARAM>
+          <ACTION builtin="clish_pyobj">sonic_cli_if patch_if_ipv4 ${po_name} ${addr} ${ip-subcommands}</ACTION>
       </COMMAND>
       <COMMAND
          name="no ip address"
@@ -1046,13 +1173,31 @@ limitations under the License.
              name="addr"
              help="IPv4 address"
              optional="true"
-             ptype="IP_ADDR_MASK" />
-         <ACTION builtin="clish_pyobj">sonic_cli_if delete_po_if_ip ${po_name} ${addr} True</ACTION>
+             ptype="IP_ADDR_MASK"
+             >
+             <PARAM
+                 name="ip-subcommands"
+                 help="IP address subcommands"
+                 ptype="SUBCOMMAND"
+                 mode="switch"
+                 optional="true"
+                 >
+                 <PARAM
+                     name="secondary"
+                     help="Secondary IPv4 address"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                 </PARAM>
+             </PARAM>
+         </PARAM>
+         <ACTION builtin="clish_pyobj">sonic_cli_if delete_po_if_ip ${po_name} ${addr} True ${ip-subcommands}</ACTION>
       </COMMAND>
       <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{po_name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/portname={name},ipv4_po_dhcp_relay,sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST"> </MACRO>
       <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{po_name} "> </MACRO>
 
-	<MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${po_name} "> </MACRO>
+	<MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${po_name},sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST/pch_name={name}, sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST "> </MACRO>
 	<MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${po_name} "> </MACRO>
 
       <MACRO name="IP-HELPER-CONFIG-OPTIONS" arg="sonic-portchannel-interface,PORTCHANNEL_INTERFACE,pch_name,po_name"> </MACRO>
@@ -1442,14 +1587,31 @@ limitations under the License.
           name="ip address"
           help="IP address"
           command_tables="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_IPADDR_LIST/loIfName={name},ip_prefix={prfx}"          
-          render_command_cb="ipv4_lo_ip_address" 
+          render_command_cb="ipv4_lo_ip_address"
            >
           <PARAM
               name="addr"
               help="IP address with mask (/32 is supported)"
-              ptype="IP_ADDR_MASK"                        
-               />
-           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config ${lo_name} ${addr}</ACTION>
+              ptype="IP_ADDR_MASK"
+              >
+              <PARAM
+                  name="ip-subcommands"
+                  help="IP address subcommands"
+                  ptype="SUBCOMMAND"
+                  mode="switch"
+                  optional="true"
+                  >
+                  <PARAM
+                      name="secondary"
+                      help="Secondary IPv4 address"
+                      ptype="SUBCOMMAND"
+                      mode="subcommand"
+                      optional="true"
+                      >
+                  </PARAM>
+              </PARAM>
+          </PARAM>
+          <ACTION builtin="clish_pyobj">sonic_cli_if patch_if_ipv4 ${lo_name} ${addr} ${ip-subcommands}</ACTION>
       </COMMAND>
       <COMMAND
          name="no ip address"
@@ -1459,8 +1621,26 @@ limitations under the License.
              name="addr"
              help="IPv4 address"
              optional="true"
-             ptype="IP_ADDR_MASK" />
-         <ACTION builtin="clish_pyobj">sonic_cli_if delete_lo_if_ip ${lo_name} ${addr} True</ACTION>
+             ptype="IP_ADDR_MASK"
+             >
+             <PARAM
+                 name="ip-subcommands"
+                 help="IP address subcommands"
+                 ptype="SUBCOMMAND"
+                 mode="switch"
+                 optional="true"
+                 >
+                 <PARAM
+                     name="secondary"
+                     help="Secondary IPv4 address"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                 </PARAM>
+             </PARAM>
+         </PARAM>
+         <ACTION builtin="clish_pyobj">sonic_cli_if delete_lo_if_ip ${lo_name} ${addr} True ${ip-subcommands}</ACTION>
       </COMMAND>
 </VIEW>
 

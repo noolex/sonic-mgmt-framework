@@ -222,7 +222,6 @@ int rest_token_fetch(int *interval) {
                     curl_easy_strerror(res));
         } else {
             if (ret.size) {
-                syslog(LOG_DEBUG, "Received:%s", ret.body.c_str());
                 cJSON *ret_json = cJSON_Parse(ret.body.c_str());
                 if (ret_json) {
                     cJSON *token = cJSON_GetObjectItemCaseSensitive(ret_json, "access_token");
@@ -235,13 +234,9 @@ int rest_token_fetch(int *interval) {
 
                         rest_set_curl_headers(true);
 
-                        syslog(LOG_DEBUG, "CURL rest_token:%s", rest_token.c_str());
-                        
                         cJSON  *expiry = cJSON_GetObjectItemCaseSensitive(ret_json, "expires_in");
                         if (expiry) {
                             *interval = expiry->valueint;
-
-                            syslog(LOG_DEBUG, "rest_token_fetch: token expires in %d seconds", *interval);
                         }
                     } else {
                         syslog(LOG_DEBUG, "rest_token_fetch: No access_token");

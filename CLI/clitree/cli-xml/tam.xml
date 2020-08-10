@@ -84,7 +84,10 @@ limitations under the License.
              help="TAM Device Configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND" 
-             view="configure-tam-view"/>
+             view="configure-tam-view"
+	     command_tables="sonic-tam:sonic-tam/TAM_DEVICE_TABLE/TAM_DEVICE_TABLE_LIST/name={name};sonic-tam:sonic-tam/TAM_COLLECTOR_TABLE/TAM_COLLECTOR_TABLE_LIST/name={name};sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_FEATURE_TABLE/TAM_DROP_MONITOR_FEATURE_TABLE_LIST/name={name};sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_AGING_INTERVAL_TABLE/TAM_DROP_MONITOR_AGING_INTERVAL_TABLE_LIST/name={name};sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_FLOW_TABLE/TAM_DROP_MONITOR_FLOW_TABLE_LIST/name={name};sonic-ifa:sonic-ifa/TAM_INT_IFA_FEATURE_TABLE/TAM_INT_IFA_FEATURE_TABLE_LIST/name={name};sonic-ifa:sonic-ifa/TAM_INT_IFA_FLOW_TABLE/TAM_INT_IFA_FLOW_TABLE_LIST/name={name};sonic-tam-int-ifa-ts:sonic-tam-int-ifa-ts/TAM_INT_IFA_TS_FEATURE_TABLE/TAM_INT_IFA_TS_FEATURE_TABLE_LIST/name={name};sonic-tam-int-ifa-ts:sonic-tam-int-ifa-ts/TAM_INT_IFA_TS_FLOW_TABLE/TAM_INT_IFA_TS_FLOW_TABLE_LIST/name={name}"
+	     render_command_cb="tam_config"
+	     />
   </VIEW>
 
   <VIEW name="configure-tam-view" 

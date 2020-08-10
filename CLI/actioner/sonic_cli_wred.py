@@ -10,7 +10,7 @@ PARAM_PATCH_PREFIX='patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_conf
 PARAM_PATCH_PREFIX_LEN=len(PARAM_PATCH_PREFIX)
 PARAM_DELETE_PREFIX='delete_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_'
 PARAM_DELETE_PREFIX_LEN=len(PARAM_DELETE_PREFIX)
-kb_to_bytes = 1024
+kb_to_bytes = 1000
 def invoke(func, args=[]):
     api = cc.ApiClient()
 
@@ -21,9 +21,9 @@ def invoke(func, args=[]):
     elif func == 'get_openconfig_qos_ext_qos_wred_profiles_wred_profile':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}', name=args[0])
         return api.get(path)
-    elif func == 'patch_list_openconfig_qos_ext_qos_wred_profiles_wred_profile':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}', name=args[0])
-        body = {"openconfig-qos-ext:wred-profile" : [{ "name": args[0], "config": { "name": args[0]}}]}
+    elif func == 'patch_list_openconfig_qos_ext_qos_wred_profiles':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/')
+        body = {"openconfig-qos-ext:wred-profiles" : {"wred-profile": [{ "name": args[0], "config": { "name": args[0]}}]}}
         return api.patch(path, body)
     elif func == 'patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green':
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:wred-profiles/wred-profile={name}/config', name=args[0])
