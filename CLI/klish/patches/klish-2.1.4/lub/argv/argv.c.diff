@@ -1,5 +1,5 @@
 diff --git a/lub/argv/argv.c b/lub/argv/argv.c
-index 14e81fc..866f2fb 100644
+index 14e81fc..0eb95a4 100644
 --- a/lub/argv/argv.c
 +++ b/lub/argv/argv.c
 @@ -88,6 +88,9 @@ static void lub_argv_fini(lub_argv_t * this)
@@ -22,3 +22,22 @@ index 14e81fc..866f2fb 100644
  	return this->argc;
  }
  
+@@ -197,3 +203,18 @@ bool_t lub_argv__get_quoted(const lub_argv_t * this, unsigned index)
+ }
+ 
+ /*--------------------------------------------------------- */
++bool_t lub_argv__swap_arg (const lub_argv_t *this, unsigned int index1, unsigned int index2) {
++	char *temp = NULL;
++	bool_t result = BOOL_FALSE;
++	if (!this)
++		return result;
++	if ((this->argc > index1) && (this->argc > index2)) {
++		temp = this->argv[index1].arg;
++		this->argv[index1].arg = this->argv[index2].arg;
++		this->argv[index2].arg = temp;
++		result = BOOL_TRUE;
++	}
++	return result;
++}
++
++/*--------------------------------------------------------- */
