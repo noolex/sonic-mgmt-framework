@@ -207,6 +207,33 @@ def invoke(func, args):
         body = {"openconfig-ip-sla:config": {"icmp-source-interface":args[1]}}
         return aa.patch(keypath, body)
 
+    # IP SLA icmp-echo source-if set
+    if func == 'patch_icmp_src_if_vlan' :
+
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+        ifname = "Vlan" + args[1]
+        body=collections.defaultdict(dict)
+        body = {"openconfig-ip-sla:config": {"icmp-source-interface":ifname}}
+        return aa.patch(keypath, body)
+
+    # IP SLA icmp-echo source-if set
+    if func == 'patch_icmp_src_if_po' :
+
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+        ifname = "PortChannel" + args[1]
+        body=collections.defaultdict(dict)
+        body = {"openconfig-ip-sla:config": {"icmp-source-interface":ifname}}
+        return aa.patch(keypath, body)
+
+    # IP SLA icmp-echo source-if set
+    if func == 'patch_icmp_src_if_eth' :
+
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+        ifname = "Ethernet" + args[1]
+        body=collections.defaultdict(dict)
+        body = {"openconfig-ip-sla:config": {"icmp-source-interface":ifname}}
+        return aa.patch(keypath, body)
+
     # IP SLA icmp-echo data-size delete
     if func == 'del_icmp_data_size' :
         keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config/icmp-size', slaid=args[0])
@@ -303,6 +330,33 @@ def invoke(func, args):
 
         body=collections.defaultdict(dict)
         body = {"openconfig-ip-sla:config": {"tcp-source-interface":args[1]}}
+        return aa.patch(keypath, body)
+
+    # IP SLA tcp-connect source-if set
+    if func == 'patch_tcp_src_if_vlan' :
+
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+        ifname = "Vlan" + args[1]
+        body=collections.defaultdict(dict)
+        body = {"openconfig-ip-sla:config": {"tcp-source-interface":ifname}}
+        return aa.patch(keypath, body)
+
+    # IP SLA tcp-connect source-if set
+    if func == 'patch_tcp_src_if_po' :
+
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+        ifname = "PortChannel" + args[1]
+        body=collections.defaultdict(dict)
+        body = {"openconfig-ip-sla:config": {"tcp-source-interface":ifname}}
+        return aa.patch(keypath, body)
+
+    # IP SLA tcp-connect source-if set
+    if func == 'patch_tcp_src_if_eth' :
+
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+        ifname = "Ethernet" + args[1]
+        body=collections.defaultdict(dict)
+        body = {"openconfig-ip-sla:config": {"tcp-source-interface":ifname}}
         return aa.patch(keypath, body)
 
     # IP SLA tcp-connect vrf delete
