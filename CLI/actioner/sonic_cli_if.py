@@ -212,21 +212,21 @@ def invoke_api(func, args=[]):
         
     elif func == 'patch_if_ipv4':
         sp = args[1].split('/')
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], index="0", ip=sp[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
         if len(args) > 2 and args[2] == "secondary":
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }
+            body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }]}}
         else:
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+            body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }]}}
         return api.patch(path, body)
 
     elif func == 'patch_vlan_if_ipv4':
         sp = args[1].split('/')
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], ip=sp[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/addresses', name=args[0])
 
         if len(args) > 2 and args[2] == "secondary":
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }
+            body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }]}}
         else:
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+            body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }]}}
         return api.patch(path, body)
 
     elif func == 'patch_mgmt_if_ipv4':
