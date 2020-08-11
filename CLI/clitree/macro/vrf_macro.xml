@@ -28,7 +28,7 @@ limitations under the License.
         <PARAM 
             name = "vrf-name"
             help="Name of VRF"
-            ptype = "VRF_NAME"
+            ptype = "STRING_15"
         />
     </PARAM>
 </MACRODEF>
