@@ -246,6 +246,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'spanning_tree_global_fwd_delay'   : show_config_spanning_tree_global_fwd_delay,
                   'spanning_tree_global_root_guard_timeout' : show_config_spanning_tree_global_root_guard_time,
                   'vrrp_config'             : show_vrrp_config,
+                  'if_vrf_binding' : show_if_vrf_binding,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
