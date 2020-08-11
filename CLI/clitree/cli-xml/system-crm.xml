@@ -17,7 +17,7 @@ limitations under the License.
 -->
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema     http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show crm" help="Show CRM Information">
+    <COMMAND name="show crm" help="Show CRM information">
       <PARAM name="crm-subcmd-1st" help="" mode="switch" ptype="SUBCOMMAND">
         <!-- show crm summary -->
         <PARAM name="summary" help="Show CRM general information" mode="subcommand" ptype="SUBCOMMAND">
@@ -26,63 +26,63 @@ limitations under the License.
         <PARAM name="resources" help="Show CRM resources information" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="crm-subcmd-2nd" help="" mode="switch" ptype="SUBCOMMAND">
             <!-- show crm resources acl -->
-            <PARAM name="acl" help="Show CRM information for acl resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="acl" help="Show CRM information for the ACL resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="group" help="Show CRM information for acl group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Show CRM information for the ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="table" help="Show CRM information for acl table resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="table" help="Show CRM information for the ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm resources all -->
-            <PARAM name="all" help="Show CRM information for all resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="all" help="Show CRM information for all resources" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm resources dnat -->
-            <PARAM name="dnat" help="Show CRM information for DNAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="dnat" help="Show CRM information for the DNAT resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm resources fdb -->
-            <PARAM name="fdb" help="Show CRM information for fdb resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="fdb" help="Show CRM information for the FDB resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm resources ipmc -->
-            <PARAM name="ipmc" help="Show CRM information for IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipmc" help="Show CRM information for the IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm resources ipv4 -->
-            <PARAM name="ipv4" help="CRM resource IPv4 address family" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv4" help="Show CRM information for the IPv4 address family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="neighbor" help="Show CRM information for neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Show CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="nexthop" help="Show CRM information for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="route" help="Show CRM information for route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Show CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm resources ipv6 -->
-            <PARAM name="ipv6" help="CRM resource IPv6 address family" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv6" help="Show CRM information for the IPv6 address family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="neighbor" help="Show CRM information for neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Show CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="nexthop" help="Show CRM information for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="route" help="Show CRM information for route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Show CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm resources nexthop group -->
-            <PARAM name="nexthop" help="Show CRM information for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="group" help="Show CRM information for nexthop group" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Show CRM information for the nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="member" help="Show CRM information for nexthop group member" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="member" help="Show CRM information for the nexthop group member resource" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="object" help="Show CRM information for nexthop group" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="object" help="Show CRM information for the nexthop group object resource" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm resources snat -->
-            <PARAM name="snat" help="Show CRM information for SNAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="snat" help="Show CRM information for the SNAT resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
           </PARAM>
         </PARAM>
@@ -90,63 +90,63 @@ limitations under the License.
         <PARAM name="thresholds" help="Show CRM thresholds information" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="crm-subcmd-2nd" help="" mode="switch" ptype="SUBCOMMAND">
             <!-- show crm thresholds acl -->
-            <PARAM name="acl" help="Show CRM information for acl resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="acl" help="Show CRM information for the ACL resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="group" help="Show CRM information for acl group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Show CRM information for the ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="table" help="Show CRM information for acl table resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="table" help="Show CRM information for the ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm thresholds all -->
-            <PARAM name="all" help="Show CRM information for all resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="all" help="Show CRM information for all resources" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm thresholds dnat -->
-            <PARAM name="dnat" help="Show CRM information for DNAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="dnat" help="Show CRM information for the DNAT resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm thresholds fdb -->
-            <PARAM name="fdb" help="Show CRM information for fdb resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="fdb" help="Show CRM information for the FDB resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm thresholds ipmc -->
-            <PARAM name="ipmc" help="Show CRM information for IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipmc" help="Show CRM information for the IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm thresholds ipv4 -->
-            <PARAM name="ipv4" help="CRM resource IPv4 address family" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv4" help="Show CRM information for the IPv4 address family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="neighbor" help="Show CRM information for neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Show CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="nexthop" help="Show CRM information for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="route" help="Show CRM information for route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Show CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm thresholds ipv6 -->
-            <PARAM name="ipv6" help="CRM resource IPv6 address family" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv6" help="Show CRM information for the IPv6 address family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="neighbor" help="Show CRM information for neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Show CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="nexthop" help="Show CRM information for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="route" help="Show CRM information for route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Show CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm thresholds nexthop group -->
-            <PARAM name="nexthop" help="Show CRM information for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="group" help="Show CRM information for nexthop group" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Show CRM information for the nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="member" help="Show CRM information for nexthop group member" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="member" help="Show CRM information for the nexthop group member resource" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="object" help="Show CRM information for nexthop group" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="object" help="Show CRM information for the nexthop group object resource" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm thresholds snat -->
-            <PARAM name="snat" help="Show CRM information for SNAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="snat" help="Show CRM information for the SNAT resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
           </PARAM>
         </PARAM>
@@ -156,85 +156,85 @@ limitations under the License.
   </VIEW>
   <VIEW name="configure-view">
     <COMMAND name="crm"
-             help="Configure Critical Resource Monitoring"
+             help="Configure critical resource monitoring"
              command_keys="type=Config"
              command_tables="sonic-system-crm:sonic-system-crm/CRM/CRM_LIST={type}"
              render_command_cb="crm_config"
              >
       <PARAM name="crm-subcmd-1st" help="" mode="switch" ptype="SUBCOMMAND">
         <!-- crm polling interval <seconds> -->
-        <PARAM name="polling" help="CRM Polling Configuration" mode="subcommand" ptype="SUBCOMMAND">
-          <PARAM name="interval" help="CRM Polling Interval" mode="subcommand" ptype="SUBCOMMAND">
-            <PARAM name="crm-subcmd-data" help="Seconds (1...9999)" ptype="CRM_POLLING_INTERVAL">
+        <PARAM name="polling" help="CRM polling configuration" mode="subcommand" ptype="SUBCOMMAND">
+          <PARAM name="interval" help="CRM polling interval" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="crm-subcmd-data" help="Seconds" ptype="CRM_POLLING_INTERVAL">
             </PARAM>
           </PARAM>
         </PARAM>
         <!-- crm thresholds <all/acl/...> -->
-        <PARAM name="thresholds" help="CRM Threshold Configuration" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="thresholds" help="CRM threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="crm-subcmd-2nd" help="" mode="switch" ptype="SUBCOMMAND">
             <!-- crm thresholds all -->
-            <PARAM name="all" help="CRM configuration for all resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="all" help="CRM configuration for all resources" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds acl -->
-            <PARAM name="acl" help="CRM configuration for ACL resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="acl" help="CRM configuration for the ACL resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
                 <!-- crm thresholds acl group -->
-                <PARAM name="group" help="CRM configuration for ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="CRM configuration for the ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                    <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="entry" help="CRM configuration for ACL entry resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="entry" help="CRM configuration for the ACL entry resource" mode="subcommand" ptype="SUBCOMMAND">
                       <PARAM name="crm-subcmd-5th" help="" mode="switch" ptype="SUBCOMMAND">
-                        <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                        <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                         </PARAM>
-                        <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                        <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                         </PARAM>
-                        <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                        <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                         </PARAM>
                       </PARAM>
                     </PARAM>
-                    <PARAM name="counter" help="CRM configuration for ACL counter resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="counter" help="CRM configuration for the ACL counter resource" mode="subcommand" ptype="SUBCOMMAND">
                       <PARAM name="crm-acl-group-conter-type" help="" mode="switch" ptype="SUBCOMMAND">
-                        <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                        <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                         </PARAM>
-                        <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                        <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                         </PARAM>
-                        <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                        <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                         </PARAM>
                       </PARAM>
@@ -242,18 +242,18 @@ limitations under the License.
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds acl table -->
-                <PARAM name="table" help="CRM configuration for ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="table" help="CRM configuration for the ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                    <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
                   </PARAM>
@@ -261,123 +261,123 @@ limitations under the License.
               </PARAM>
             </PARAM>
             <!-- crm thresholds dnat -->
-            <PARAM name="dnat" help="CRM configuration for Destination NAT" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="dnat" help="CRM configuration for the destination NAT resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds snat -->
-            <PARAM name="snat" help="CRM configuration for Source NAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="snat" help="CRM configuration for the source NAT resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds fdb -->
-            <PARAM name="fdb" help="CRM configuration for FDB resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="fdb" help="CRM configuration for the FDB resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds ipmc -->
-            <PARAM name="ipmc" help="CRM configuration for IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipmc" help="CRM configuration for the IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                  <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                  <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds ipv4 -->
-            <PARAM name="ipv4" help="CRM resource IPv4 address-family" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv4" help="CRM configuration for the IPv4 address-family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
                 <!-- crm thresholds ipv4 neighbor -->
-                <PARAM name="neighbor" help="CRM configuration for neigbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="CRM configuration for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                    <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds ipv4 nexthop -->
-                <PARAM name="nexthop" help="CRM configuration for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="CRM configuration for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                    <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds ipv4 route -->
-                <PARAM name="route" help="CRM configuration for route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="CRM configuration for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                    <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
                   </PARAM>
@@ -385,55 +385,55 @@ limitations under the License.
               </PARAM>
             </PARAM>
             <!-- crm thresholds ipv6 -->
-            <PARAM name="ipv6" help="CRM resource IPv6 address-family" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv6" help="CRM configuration for the IPv6 address-family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
                 <!-- crm thresholds ipv6 neighbor -->
-                <PARAM name="neighbor" help="CRM configuration for neigbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="CRM configuration for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                    <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds ipv6 nexthop -->
-                <PARAM name="nexthop" help="CRM configuration for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="CRM configuration for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                    <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds ipv6 route -->
-                <PARAM name="route" help="CRM configuration for route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="CRM configuration for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                    <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                      <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                    <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                      <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                       </PARAM>
                     </PARAM>
                   </PARAM>
@@ -441,41 +441,41 @@ limitations under the License.
               </PARAM>
             </PARAM>
             <!-- crm thresholds nexthop -->
-            <PARAM name="nexthop" help="CRM configuration for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="nexthop" help="CRM configuration for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name=" crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
                 <!-- crm thresholds nexthop group -->
-                <PARAM name="group" help="CRM configuration for nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="CRM configuration for the nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
                     <!-- crm thresholds nexthop group member -->
-                    <PARAM name="member" help="CRM configuration for nexthop group member" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="member" help="CRM configuration for the nexthop group member resource" mode="subcommand" ptype="SUBCOMMAND">
                       <PARAM name="crm-subcmd-5th" help="" mode="switch" ptype="SUBCOMMAND">
-                        <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                        <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                           </PARAM>
                         </PARAM>
-                        <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                        <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                           </PARAM>
                         </PARAM>
-                        <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                        <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                           </PARAM>
                         </PARAM>
                       </PARAM>
                     </PARAM>
                     <!-- crm thresholds nexthop group object -->
-                    <PARAM name="object" help="CRM configuration for nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="object" help="CRM configuration for the nexthop group object resource" mode="subcommand" ptype="SUBCOMMAND">
                       <PARAM name="crm-subcmd-5th" help="" mode="switch" ptype="SUBCOMMAND">
-                        <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Type" ptype="CRM_THRESHOLD_TYPE">
+                        <PARAM name="type" help="CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold type" ptype="CRM_THRESHOLD_TYPE">
                           </PARAM>
                         </PARAM>
-                        <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                        <PARAM name="high" help="CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                           </PARAM>
                         </PARAM>
-                        <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
-                          <PARAM name="crm-subcmd-data" help="Threshold Value" ptype="CRM_THRESHOLD">
+                        <PARAM name="low" help="CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
+                          <PARAM name="crm-subcmd-data" help="Threshold value" ptype="CRM_THRESHOLD">
                           </PARAM>
                         </PARAM>
                       </PARAM>
@@ -490,214 +490,214 @@ limitations under the License.
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_crm patch ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="no crm" help="Clear CRM Configuration">
+    <COMMAND name="no crm" help="Clear CRM configuration">
       <PARAM name="crm-subcmd-1st" help="" mode="switch" ptype="SUBCOMMAND">
         <!-- no crm all -->
-        <PARAM name="all" help="Clear all CRM Configuration" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="all" help="Clear all CRM configuration" mode="subcommand" ptype="SUBCOMMAND">
         </PARAM>
         <!-- no crm polling interval -->
-        <PARAM name="polling" help="Clear CRM Polling Configuration" mode="subcommand" ptype="SUBCOMMAND">
-          <PARAM name="interval" help="CRM Polling Interval" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="polling" help="Clear CRM polling configuration" mode="subcommand" ptype="SUBCOMMAND">
+          <PARAM name="interval" help="CRM polling interval" mode="subcommand" ptype="SUBCOMMAND">
           </PARAM>
         </PARAM>
         <!-- no crm thresholds <all/acl/...> -->
-        <PARAM name="thresholds" help="Clear CRM Threshold Configuration" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="thresholds" help="Clear CRM threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="crm-subcmd-2nd" help="" mode="switch" ptype="SUBCOMMAND">
             <!-- crm thresholds all -->
-            <PARAM name="all" help="CRM configuration for all resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="all" help="Clear CRM configuration for all resources" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- crm thresholds acl -->
-            <PARAM name="acl" help="CRM configuration for ACL resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="acl" help="Clear CRM configuration for the ACL resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
                 <!-- crm thresholds acl group -->
-                <PARAM name="group" help="CRM configuration for ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Clear CRM configuration for the ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="entry" help="CRM configuration for ACL entry resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="entry" help="Clear CRM configuration for the ACL entry resource" mode="subcommand" ptype="SUBCOMMAND">
                       <PARAM name="crm-subcmd-5th" help="" mode="switch" ptype="SUBCOMMAND">
-                        <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
-                        <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
-                        <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
                       </PARAM>
                     </PARAM>
-                    <PARAM name="counter" help="CRM configuration for ACL counter resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="counter" help="Clear CRM configuration for the ACL counter resource" mode="subcommand" ptype="SUBCOMMAND">
                       <PARAM name="crm-acl-group-conter-type" help="" mode="switch" ptype="SUBCOMMAND">
-                        <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
-                        <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
-                        <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
                       </PARAM>
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds acl table -->
-                <PARAM name="table" help="CRM configuration for ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="table" help="Clear CRM configuration for the ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds dnat -->
-            <PARAM name="dnat" help="CRM configuration for Destination NAT" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="dnat" help="Clear CRM configuration for the destination NAT resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds snat -->
-            <PARAM name="snat" help="CRM configuration for Source NAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="snat" help="Clear CRM configuration for the Source NAT resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds fdb -->
-            <PARAM name="fdb" help="CRM configuration for FDB resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="fdb" help="Clear CRM configuration for the FDB resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds ipmc -->
-            <PARAM name="ipmc" help="CRM configuration for IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipmc" help="Clear CRM configuration for the IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds ipv4 -->
-            <PARAM name="ipv4" help="CRM resource IPv4 address-family" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv4" help="Clear CRM configuration for the IPv4 address-family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
                 <!-- crm thresholds ipv4 neighbor -->
-                <PARAM name="neighbor" help="CRM configuration for neigbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Clear CRM configuration for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds ipv4 nexthop -->
-                <PARAM name="nexthop" help="CRM configuration for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Clear CRM configuration for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds ipv4 route -->
-                <PARAM name="route" help="CRM configuration for route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Clear CRM configuration for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds ipv6 -->
-            <PARAM name="ipv6" help="CRM resource IPv6 address-family" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv6" help="Clear CRM configuration for the IPv6 address-family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
                 <!-- crm thresholds ipv6 neighbor -->
-                <PARAM name="neighbor" help="CRM configuration for neigbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Clear CRM configuration for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds ipv6 nexthop -->
-                <PARAM name="nexthop" help="CRM configuration for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Clear CRM configuration for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
                 <!-- crm thresholds ipv6 route -->
-                <PARAM name="route" help="CRM configuration for route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Clear CRM configuration for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- crm thresholds nexthop -->
-            <PARAM name="nexthop" help="CRM configuration for nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="nexthop" help="Clear CRM configuration for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name=" crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
                 <!-- crm thresholds nexthop group -->
-                <PARAM name="group" help="CRM configuration for nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Clear CRM configuration for the nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
                     <!-- crm thresholds nexthop group member -->
-                    <PARAM name="member" help="CRM configuration for nexthop group member" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="member" help="Clear CRM configuration for the nexthop group member resource" mode="subcommand" ptype="SUBCOMMAND">
                       <PARAM name="crm-subcmd-5th" help="" mode="switch" ptype="SUBCOMMAND">
-                        <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
-                        <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
-                        <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
                       </PARAM>
                     </PARAM>
                     <!-- crm thresholds nexthop group object -->
-                    <PARAM name="object" help="CRM configuration for nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="object" help="Clear CRM configuration for the nexthop group object resource" mode="subcommand" ptype="SUBCOMMAND">
                       <PARAM name="crm-subcmd-5th" help="" mode="switch" ptype="SUBCOMMAND">
-                        <PARAM name="type" help="CRM threshod type configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="type" help="Clear CRM threshold type configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
-                        <PARAM name="high" help="CRM high threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="high" help="Clear CRM high threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
-                        <PARAM name="low" help="CRM low threshod configuration" mode="subcommand" ptype="SUBCOMMAND">
+                        <PARAM name="low" help="Clear CRM low threshold configuration" mode="subcommand" ptype="SUBCOMMAND">
                         </PARAM>
                       </PARAM>
                     </PARAM>

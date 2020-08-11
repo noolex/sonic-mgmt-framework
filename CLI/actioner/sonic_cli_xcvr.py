@@ -41,10 +41,10 @@ def run(func, args):
                                  'lb-media-side-input-support', 'lb-media-side-output-support',
                                  'lb-per-lane-host-side-support', 'lb-per-lane-media-side-support',
                                  'lb-simul-host-media-side-support']
-    dom_loopback_status_keys = ['lb-host-side-input', 'lb-host-side-output',
-                                'lb-media-side-input', 'lb-media-side-output',
-                                'lb-per-lane-host-side', 'lb-per-lane-media-side',
-                                'lb-simul-host-media-side']
+    dom_loopback_status_keys = ['lb-host-side-input-enable', 'lb-host-side-output-enable',
+                                'lb-media-side-input-enable', 'lb-media-side-output-enable',
+                                'lb-per-lane-host-side-enable', 'lb-per-lane-media-side-enable',
+                                'lb-simul-host-media-side-enable']
     dom_parameter_keys = ['lol-lane-1', 'lol-lane-2', 'lol-lane-3', 'lol-lane-4',
                           'lol-lane-5', 'lol-lane-6', 'lol-lane-7', 'lol-lane-8',
                           'los-lane-1', 'los-lane-2', 'los-lane-3', 'los-lane-4',
@@ -102,10 +102,10 @@ def run(func, args):
         # print "---->", template
     else:
         # if not a 'show' command, then this is a config command
-        if 'enable' in func:
-            on = 'True'
-        else:
+        if 'no-' in func:
             on = 'False'
+        else:
+            on = 'True'
 
         for nm in if_list:
             if '/' in nm:
@@ -114,19 +114,19 @@ def run(func, args):
             if 'media-side-input' in func:
                 keypath = cc.Path('/restconf/data/openconfig-platform:components/component={name}/openconfig-platform-transceiver:transceiver/config/openconfig-platform-ext:lb-media-side-input-enable', name=nm)
                 body = { "openconfig-platform-ext:lb-media-side-input-enable":  (on) }
-                print("keypath = {}".format(keypath))
-                print("body = {}".format(body))
+                # print("keypath = {}".format(keypath))
+                # print("body = {}".format(body))
                 return api.patch(keypath, body)
 
             if 'host-side-input' in func:
                 keypath = cc.Path('/restconf/data/openconfig-platform:components/component={name}/openconfig-platform-transceiver:transceiver/config/openconfig-platform-ext:lb-host-side-input-enable', name=nm)
                 body = { "openconfig-platform-ext:lb-host-side-input-enable":  (on) }
-                print("keypath = {}".format(keypath))
-                print("body = {}".format(body))
+                # print("keypath = {}".format(keypath))
+                # print("body = {}".format(body))
                 return api.patch(keypath, body)
 
-            print("Unsupported diagnostic loopback")
-            print " "
+            # print("Unsupported diagnostic loopback")
+            # print " "
         return
 
 
@@ -153,7 +153,7 @@ def run(func, args):
                 if ':' in k:
                     a = k.split(':')[1]
                     # print("key is {}".format(a))
-                    if a in dom_loopback_support_keys and func == "show-interface-transceiver-diagnostics-loopback-capability": 
+                    if a in dom_loopback_support_keys and func == "show-interface-transceiver-diagnostics-loopback-capability":
                         value = d[k]
                         # print "   k[1] = {}".format(type(k[1]))
                         # print "value of key {} = {}".format(a,value)
@@ -178,13 +178,14 @@ def run(func, args):
 
         cli_dict[val] = (val, dom_dict)
     try:
+        # print "---> printing cli_dict --->"
         # print cli_dict
         for k in cli_dict:
             show_cli_output(template, (True, cli_dict[k]))
     except Exception as e:
         pass
     return
-    
+
 if __name__ == '__main__':
     pipestr().write(sys.argv)
     # pdb.set_trace()

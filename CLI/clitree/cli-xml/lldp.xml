@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-Copyright 2019 Dell, Inc.  
+Copyright 2020 Dell, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
---> 
+-->
 
 <CLISH_MODULE
     xmlns="http://www.dellemc.com/sonic/XMLSchema"
@@ -25,9 +25,7 @@ limitations under the License.
     >
 
 <VIEW name="enable-view">
-   <COMMAND name="show lldp" help="Show lldp information">
-         <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_show.j2 </ACTION>
-   </COMMAND>
+   <COMMAND name="show lldp" help="Show lldp information"/>
    <COMMAND name="show lldp table" help="Show lldp table information">
         <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_show.j2 </ACTION>
         <DOCGEN>
@@ -42,7 +40,7 @@ limitations under the License.
                 ------------------------------------------------------------------------------------------------------
                 LocalPort           RemoteDevice        RemotePortID        Capability           RemotePortDescr
                 -------------------------------------------------------------------------------------------------------
-                Ethernet64          Leaf9               hundredGigE53       BR                  Ethernet64          
+                Ethernet64          Leaf9               hundredGigE53       BR                  Ethernet64
             </EXAMPLE>
         </DOCGEN>
    </COMMAND>
@@ -63,9 +61,9 @@ limitations under the License.
             This command is useful to view the LLDP neighbor information in detail
         </USAGE>
         <EXAMPLE summary="Shows LLDP neigbhor information in detail">
-        sonic-cli# show lldp neighbor 
+        sonic-cli# show lldp neighbor
         -----------------------------------------------------------
-        LLDP Neighbors      
+        LLDP Neighbors
         -----------------------------------------------------------
         Interface:   Ethernet64,via: LLDP
         Chassis:
@@ -197,7 +195,7 @@ limitations under the License.
 				Use this command to unconfigure LLDP mode.
 			</USAGE>
 			<EXAMPLE summary="Unconfigure LLDP mode">
-				sonic-cli(config)# no lldp receive 
+				sonic-cli(config)# no lldp receive
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -223,7 +221,7 @@ limitations under the License.
 				Use this command to set LLDP hello time. Default hello time is 30 seconds.
 			</USAGE>
 			<EXAMPLE summary="Configure LLDP hello time">
-				sonic-cli(config)# lldp timer 10 
+				sonic-cli(config)# lldp timer 10
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -260,7 +258,7 @@ limitations under the License.
 
 		<DOCGEN>
 			<DESCRIPTION>
-				Configure LLDP multiplier value that is used to determine the 
+				Configure LLDP multiplier value that is used to determine the
 				timeout interval (i.e. hello-time x multiplier value) after
 				which LLDP neighbor entry is deleted
 			</DESCRIPTION>
@@ -268,7 +266,7 @@ limitations under the License.
 				Use this command to set LLDP multiplier value. Default value is 4.
 			</USAGE>
 			<EXAMPLE summary="Configure LLDP multiplier">
-				sonic-cli(config)# lldp multiplier 6 
+				sonic-cli(config)# lldp multiplier 6
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -285,7 +283,7 @@ limitations under the License.
 				Use this command to set LLDP multiplier value to Default value.
 			</USAGE>
 			<EXAMPLE summary="Unconfigure LLDP multiplier value">
-				sonic-cli(config)# no lldp multiplier 
+				sonic-cli(config)# no lldp multiplier
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -328,7 +326,7 @@ limitations under the License.
 				Use this command to unconfigure LLDP system name.
 			</USAGE>
 			<EXAMPLE summary="Unconfigure LLDP system name">
-				sonic-cli(config)# no lldp system-name 
+				sonic-cli(config)# no lldp system-name
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -372,7 +370,7 @@ limitations under the License.
 				Use this command to unconfigure LLDP system description.
 			</USAGE>
 			<EXAMPLE summary="Unconfigure LLDP system description">
-				sonic-cli(config)# no lldp system-description 
+				sonic-cli(config)# no lldp system-description
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -389,14 +387,14 @@ limitations under the License.
 
 		<DOCGEN>
 			<DESCRIPTION>
-				Enable sending of TLVs in LLDP frames. 
+				Enable sending of TLVs in LLDP frames.
 			</DESCRIPTION>
 			<USAGE>
-				Use this command to configure LLDP TLVs to be advertised 
+				Use this command to configure LLDP TLVs to be advertised
 			</USAGE>
 			<EXAMPLE summary="Configure LLDP TLV">
-				sonic-cli(config)# lldp tlv-select system-capabilities 
-				sonic-cli(config)# lldp tlv-select management-address 
+				sonic-cli(config)# lldp tlv-select system-capabilities
+				sonic-cli(config)# lldp tlv-select management-address
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -415,13 +413,13 @@ limitations under the License.
 
 		<DOCGEN>
 			<DESCRIPTION>
-				Disable sending of TLVs in LLDP frames. 
+				Disable sending of TLVs in LLDP frames.
 			</DESCRIPTION>
 			<USAGE>
-				Use this command to unconfigure LLDP TLVs to be advertised 
+				Use this command to unconfigure LLDP TLVs to be advertised
 			</USAGE>
 			<EXAMPLE summary="Unconfigure LLDP TLV">
-				sonic-cli(config)# no lldp tlv-select system-capabilities 
+				sonic-cli(config)# no lldp tlv-select system-capabilities
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -449,7 +447,7 @@ limitations under the License.
 			</USAGE>
 			<EXAMPLE summary="Configure LLDP mode">
 				sonic-cli(config)# interface Ethernet 0
-				sonic-cli(conf-if-Ethernet0)# lldp receive 
+				sonic-cli(conf-if-Ethernet0)# lldp receive
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
@@ -472,12 +470,12 @@ limitations under the License.
 			</USAGE>
 			<EXAMPLE summary="Unconfigure LLDP mode">
 				sonic-cli(config)# interface Ethernet 0
-				sonic-cli(conf-if-Ethernet0)# no lldp receive 
+				sonic-cli(conf-if-Ethernet0)# no lldp receive
 			</EXAMPLE>
 			<FEATURE> LLDP </FEATURE>
 		</DOCGEN>
 	</COMMAND>
-		
+
 	<COMMAND name = "lldp enable"
 		help = "Enable LLDP at interface level">
 		<ACTION builtin="clish_pyobj">sonic_cli_lldp enable_lldp_intf ${iface}</ACTION>
@@ -502,7 +500,6 @@ limitations under the License.
 		command_tables="sonic-lldp:sonic-lldp/LLDP_PORT/LLDP_PORT_LIST/ifname={name}"
 		dbpath="sonic-lldp:sonic-lldp/LLDP_PORT/LLDP_PORT_LIST/enabled=false">
 		<ACTION builtin="clish_pyobj">sonic_cli_lldp disable_lldp_intf ${iface} false</ACTION>
-		
 		<DOCGEN>
 			<DESCRIPTION>
 				Disable LLDP at interface level.

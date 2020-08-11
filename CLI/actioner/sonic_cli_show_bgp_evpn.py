@@ -25,7 +25,22 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 
+rttype_dict = {
+    "ead":"1",
+    "es":"4",
+    "macip":"2",
+    "multicast":"3",
+    "prefix":"5"
+}
+
 vniDict = {}
+
+def evpn_args2dict(args):
+    dct = {}
+    for e in args:
+        k, v = e.split('=', 1)
+        if v: dct[k] = v
+    return dct
 
 def apply_type_filter(response, rt_type):
     new_list = []
@@ -34,9 +49,9 @@ def apply_type_filter(response, rt_type):
             for i in range(len(response['openconfig-bgp-evpn-ext:routes']['route'])):
                 route = response['openconfig-bgp-evpn-ext:routes']['route'][i]
                 t = route['prefix'].split(':')[0].rstrip(']').lstrip('[')
-                if rt_type == t:
+                if rttype_dict[rt_type] == t:
                     new_list.append(route)
-    response['openconfig-bgp-evpn-ext:routes']['route'] = new_list
+        response['openconfig-bgp-evpn-ext:routes']['route'] = new_list
     return response
 
 def apply_macip_filter(response, mac, ip):
@@ -48,7 +63,7 @@ def apply_macip_filter(response, mac, ip):
                 t = route['prefix'].split(':')[0].rstrip(']').lstrip('[')
                 if '2' == t and mac in route['prefix'] and ip in route['prefix']:
                     new_list.append(route)
-    response['openconfig-bgp-evpn-ext:routes']['route'] = new_list
+        response['openconfig-bgp-evpn-ext:routes']['route'] = new_list
     return response
 
 def apply_rd_filter(response, rd):
@@ -59,7 +74,7 @@ def apply_rd_filter(response, rd):
                 route = response['openconfig-bgp-evpn-ext:routes']['route'][i]
                 if rd == route['route-distinguisher']:
                     new_list.append(route)
-    response['openconfig-bgp-evpn-ext:routes']['route'] = new_list
+        response['openconfig-bgp-evpn-ext:routes']['route'] = new_list
     return response
 
 def invoke_api(func, args=[]):
@@ -95,19 +110,26 @@ def invoke_api(func, args=[]):
             +'/loc-rib/routes',
                 vrf=args[0], af_name=args[1])
         response = api.get(keypath)
-        filter_type = args[2].split('=')[1]
-        if filter_type == "type":
-            apply_type_filter(response.content, args[3])
-        elif filter_type == "rd":
-            apply_rd_filter(response.content, args[3])
-        elif filter_type == "rd,type":
-            apply_rd_filter(response.content, args[3])
-            apply_type_filter(response.content, args[4])
-        elif filter_type == "rd,macip":
-            apply_rd_filter(response.content, args[3])
-            apply_macip_filter(response.content, args[4], args[5])
-        else:
-            print("Unsupported filter ", filter_type)
+        if response.ok() and response.content is not None:
+            if len(args) < 3:
+                filterdict = {}
+            else:
+                filterdict = evpn_args2dict(args[2:])
+            if "rd" in filterdict:
+                if "type" in filterdict:
+                    #apply rd,type filter
+                    apply_rd_filter(response.content, filterdict["rd"])
+                    apply_type_filter(response.content, filterdict["type"])
+                elif "mac" in filterdict:
+                    #apply rd,macip filter
+                    apply_rd_filter(response.content, filterdict["rd"])
+                    apply_macip_filter(response.content, filterdict["mac"], filterdict["ip"])
+                else:
+                    #apply rd only filter
+                    apply_rd_filter(response.content, filterdict["rd"])
+            elif "type" in filterdict:
+                #apply type only filter
+                apply_type_filter(response.content, filterdict["type"])
         return response
 
     else:
@@ -115,13 +137,13 @@ def invoke_api(func, args=[]):
 
     return api.cli_not_implemented(func)
 
-def run(func, args, renderer):
-    response = invoke_api(func, args)
+def run(func, args):
+    response = invoke_api(func, args[1:])
 
     if response.ok():
         if response.content is not None:
             api_response = response.content
-            show_cli_output(renderer, api_response)
+            show_cli_output(args[0], api_response)
         else:
             print("Empty response")
     else:

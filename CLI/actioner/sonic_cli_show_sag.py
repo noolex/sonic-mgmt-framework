@@ -48,19 +48,19 @@ def invoke_api(func, args=[]):
     return output
     
 
-def run(func, args, renderer):
-    response = invoke_api(func, args)
+
+def run(func, args):
+    response = invoke_api(func, args[1:])
 
     api_response = response
     if "sonic-sag:SAG_LIST" in api_response["sag"]:
         api_response["miscmap"] = sh.get_if_master_and_oper(api_response["sag"]["sonic-sag:SAG_LIST"])
     #print(api_response)
-    show_cli_output(renderer, api_response)
+    show_cli_output(args[0], api_response)
 
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)
     func = sys.argv[1]
 
-    run(func, sys.argv[3:], sys.argv[2])
-
+    run(func, sys.argv[2:])

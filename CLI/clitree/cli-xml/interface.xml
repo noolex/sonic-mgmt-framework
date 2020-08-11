@@ -308,7 +308,7 @@ limitations under the License.
             if test "${po-id}" = ""; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-interface-port-channel.py get_all_portchannels show_interface_portchannel.j2 ${__full_line}&#xA;
             else&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-interface-port-channel.py get_specific_portchannel ${po-id-list} show_interface_portchannel.j2 ${__full_line}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-interface-port-channel.py get_specific_portchannel "${po-id-list}" show_interface_portchannel.j2 ${__full_line}&#xA;
             fi&#xA;
         elif test "${if-subcommands}" = "Management"; then&#xA;
             if test "${mgmt-if-id}" = ""; then&#xA;

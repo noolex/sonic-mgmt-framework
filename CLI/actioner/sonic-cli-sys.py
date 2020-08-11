@@ -1,7 +1,7 @@
 #!/usr/bin/python
 ###########################################################################
 #
-# Copyright 2019 Dell, Inc.
+# Copyright 2020 Dell, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ plugins = dict()
 def hashed_pw(pw):
     salt = base64.b64encode(os.urandom(6), './')
     return crypt(pw, '$6$' + salt)
-    
+
 def util_capitalize(value):
     for key,val in value.items():
         temp = key.split('-')
@@ -82,11 +82,11 @@ def invoke(func, args):
     elif func == 'get_openconfig_system_system_clock':
         path = cc.Path('/restconf/data/openconfig-system:system/clock')
 	return aa.get(path)
-        
+
     elif func == 'get_openconfig_system_system_memory':
         path = cc.Path('/restconf/data/openconfig-system:system/memory')
 	return aa.get(path)
-        
+
     elif func == 'get_openconfig_system_system_cpus':
         path = cc.Path('/restconf/data/openconfig-system:system/cpus')
 	return aa.get(path)
@@ -123,29 +123,37 @@ def run(func, args):
                 value = response['openconfig-system:state']
                 if value is None:
                     return
-                show_cli_output(sys.argv[2], system_state_key_change(value))
+                show_cli_output(args[0], system_state_key_change(value))
 
             elif 'openconfig-system:memory' in response.keys():
                 value = response['openconfig-system:memory']
                 if value is None:
                     return
-		show_cli_output(sys.argv[2], memory_key_change(value['state']))
+		show_cli_output(args[0], memory_key_change(value['state']))
             elif 'openconfig-system:cpus' in response.keys():
                 value = response['openconfig-system:cpus']
                 if value is None:
                     return
-                show_cli_output(sys.argv[2], value['cpu'])
+                show_cli_output(args[0], value['cpu'])
             elif 'openconfig-system:processes' in response.keys():
                 value = response['openconfig-system:processes']
-		if 'pid' not in sys.argv:
-                    if value is None:
-                    	return
-	    	    show_cli_output(sys.argv[2],value['process'])
-	        else:
+                if value is None or 'process' not in value:
+                    return
+		if 'default' == args[1]:
+                    value = sorted(value['process'], key = lambda x: int(x['pid']))
+		elif 'cpu' == args[1]:
+                    value = sorted(value['process'], key = lambda x: x['state']['cpu-utilization'], reverse=True)
+		elif 'mem-util' == args[1]:
+                    value = sorted(value['process'], key = lambda x: x['state']['memory-utilization'], reverse=True)
+		elif 'mem-usage' == args[1]:
+                    value = sorted(value['process'], key = lambda x: x['state']['memory-usage'], reverse=True)
+	        elif 'pid' == args[1]:
 		    for proc in value['process']:
-		        if proc['pid'] == sys.argv[3]:
-		            show_cli_output(sys.argv[2],util_capitalize(proc['state']))
-		            return
+		        if proc['pid'] == args[2]:
+		            value = util_capitalize(proc['state'])
+                else:
+                    return
+                show_cli_output(args[0], value)
     else:
         print(api_response.error_message())
 

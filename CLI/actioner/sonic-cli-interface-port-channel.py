@@ -187,7 +187,9 @@ def get_global_config_data():
         api_response = invoke_api(lacp_func, args)
         if api_response.ok():
             response = api_response.content
-            if response is not None:
+            if response == '':
+                value = "Disabled"
+            elif response is not None:
                 if 'sonic-portchannel:PORTCHANNEL_GLOBAL_LIST' in response.keys():
                     value = response['sonic-portchannel:PORTCHANNEL_GLOBAL_LIST']
 

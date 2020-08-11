@@ -35,7 +35,7 @@ def invoke(func, args=[]):
         return api.patch(path, body)
     if func == 'delete_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile':
         path = cc.Path('/restconf/data/openconfig-qos:qos/queues/queue={name}/wred/config/openconfig-qos-ext:wred-profile', name=args[0])
-        return api.delete(path)
+        return api.delete(path, deleteEmptyEntry=True)
     if func == 'get_openconfig_qos_qos_queues_queue':
         path = cc.Path('/restconf/data/openconfig-qos:qos/queues/queue={name}', name=args[0])
         return api.get(path)
@@ -45,7 +45,7 @@ def invoke(func, args=[]):
         return api.patch(path, body)
     if func == 'delete_openconfig_qos_qos_interfaces_interface_output_scheduler_policy_config_name':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/scheduler-policy/config/name', interface_id=args[0])
-        return api.delete(path)
+        return api.delete(path, deleteEmptyEntry=True)
     if func == 'get_openconfig_qos_qos_interface_scheduler_policy_config':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/scheduler-policy/config', interface_id=args[0])
         return api.get(path)
@@ -73,7 +73,7 @@ def invoke(func, args=[]):
 
     if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/pfc-priorities', intf_name=args[0])
-        return api.delete(path)
+        return api.delete(path, deleteEmptyEntry=True)
 
     if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
@@ -81,7 +81,7 @@ def invoke(func, args=[]):
         return api.patch(path, body)
     if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
-        return api.delete(path)
+        return api.delete(path,deleteEmptyEntry=True)
     if func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc', interface_id=args[0])
         return api.get(path)

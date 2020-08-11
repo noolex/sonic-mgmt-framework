@@ -25,6 +25,35 @@ limitations under the License.
     <!--=======================================================-->
 
 <VIEW name="enable-view">
+  <COMMAND name="show running-configuration bgp" help="show current BGP configurations">
+    <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="vrf-name" help="Name of VRF (Max size 15, 'default' or prefixed by Vrf)" ptype="STRING_15"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp view_keys="vrf-name=${vrf-name}"</ACTION>
+  </COMMAND>
+  <COMMAND name="show running-configuration bgp neighbor" help="show current BGP neighbor configurations">
+    <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="vrf-name" help="Name of VRF (Max size 15, 'default' or prefixed by Vrf)" ptype="STRING_15"/>
+         <PARAM name="nbopt" help="neighbor router" mode="switch" ptype="SUBCOMMAND" optional="true">
+           <PARAM name="ip" help="Neighbor router" ptype="IPV4V6_ADDR"/>
+           <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
+             <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+               <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+               <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+               <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+             </PARAM>
+           </PARAM>
+         </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr view_keys="vrf-name=${vrf-name},neighbor=${ip}${Ethernet}${PortChannel}${Vlan}${instance}"</ACTION>
+  </COMMAND>
+  <COMMAND name="show running-configuration bgp peer-group" help="show current BGP peer group configurations">
+    <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="vrf-name" help="Name of VRF (Max size 15, 'default' or prefixed by Vrf)" ptype="STRING_15"/>
+         <PARAM name="peer-group-name" help="peer group name" ptype="STRING" optional="true"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template view_keys="vrf-name=${vrf-name},pg=${peer-group-name}"</ACTION>
+  </COMMAND>
   <COMMAND name="show bgp ipv4" help="IPv4 information">
     <MACRO name="NEW_BGP_SHW_OPTIONS" arg="4,"></MACRO>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${neighbor_type} ${__full_line}</ACTION>
@@ -124,7 +153,7 @@ limitations under the License.
     <DOCGEN>
       <DESCRIPTION>
         This command clears/resets BGP information including neighbors,
-        peer-group etc.
+        peer-group,dampening etc.
       </DESCRIPTION>
       <USAGE>
         Use this command to clear BGP information. Following is a partial list of
@@ -134,6 +163,8 @@ limitations under the License.
           sub-address-family activated
         - clear bgp {ipv4 | ipv6} unicast peer_ip
           Clear peers with address of peer_ip and this address-family activated.
+        - clear bgp ipv4 unicast dampening { address | prefix | in | out | soft }
+          Clear dampened routes.
         - clear bgp {ipv6 | ipv4} unicast soft {in | out}
           'in" option will send route-refresh request unless using 'soft-reconfiguration inbound.
           'out' option will resend all outbound updates

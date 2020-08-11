@@ -192,11 +192,11 @@ def ospfv2_filter_lsdb_by_adv_router(response, advRouter):
             if 'lsdb' in areainfo and 'lsa-types' in areainfo['lsdb'] and 'lsa-type' in areainfo['lsdb']['lsa-types']:
                 for j in range(len(areainfo['lsdb']['lsa-types']['lsa-type'])):
                     lsa_type = areainfo['lsdb']['lsa-types']['lsa-type'][j]
-                    if 'lsas' in lsa_type and 'lsa' in lsa_type['lsas']:
+                    if 'lsas' in lsa_type and 'openconfig-ospfv2-ext:lsa-ext' in lsa_type['lsas']:
                         temp_lsa_list = []
-                        while lsa_type['lsas']['lsa']:
-                            lsainfo = lsa_type['lsas']['lsa'].pop()
-                            if 'state' in lsainfo and 'advertising-router' in lsainfo['state'] and lsainfo['state']['advertising-router'] == advRouter:
+                        while lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext']:
+                            lsainfo = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].pop()
+                            if 'advertising-router' in lsainfo and lsainfo['advertising-router'] == advRouter:
                                 temp_lsa_list.append(lsainfo)
                         while temp_lsa_list:
                             lsa_type['lsas']['lsa'].append(temp_lsa_list.pop())
@@ -209,10 +209,10 @@ def ospfv2_filter_lsdb_by_ls_id(response, ls_id):
             if 'lsdb' in areainfo and 'lsa-types' in areainfo['lsdb'] and 'lsa-type' in areainfo['lsdb']['lsa-types']:
                 for j in range(len(areainfo['lsdb']['lsa-types']['lsa-type'])):
                     lsa_type = areainfo['lsdb']['lsa-types']['lsa-type'][j]
-                    if 'lsas' in lsa_type and 'lsa' in lsa_type['lsas']:
+                    if 'lsas' in lsa_type and 'openconfig-ospfv2-ext:lsa-ext' in lsa_type['lsas']:
                         temp_lsa_list = []
-                        while lsa_type['lsas']['lsa']:
-                            lsainfo = lsa_type['lsas']['lsa'].pop()
+                        while lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext']:
+                            lsainfo = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].pop()
                             if 'link-state-id' in lsainfo and lsainfo['link-state-id'] == ls_id:
                                 temp_lsa_list.append(lsainfo)
                         while temp_lsa_list:
@@ -280,13 +280,16 @@ def invoke_show_api(func, args=[]):
                 return generate_show_ip_ospf_route(vrf, "show_ip_ospf_border_routers.j2")
             elif (arg == "database"):
                 j = i
-                dbtype = ""
+                dbtype = "database"
                 lsid = ""
                 advrouter = ""
                 selforg = False
+                skipNextArg = False
 
                 for dbarg in args[j:]:
-                    if (dbarg == "router"):
+                    if skipNextArg == True:
+                        skipNextArg = False
+                    elif (dbarg == "router"):
                         dbtype = "router"
                     elif (dbarg == "network"):
                         dbtype = "network"
@@ -296,15 +299,18 @@ def invoke_show_api(func, args=[]):
                         dbtype = "asbr_summary"
                     elif (dbarg == "external"):
                         dbtype = "external"
-                    elif (dbarg == "lsid"):
-                        lsid = dbarg[j + 1]
+                    elif (("." in dbarg) or (":" in dbarg)):
+                        lsid = args[j]
                     elif (dbarg == "adv-router"):
-                        advrouter = dbarg[j + 1]
+                        advrouter = args[j + 1]
+                        skipNextArg = True
                     elif (dbarg == "self-originate"):
                         selforg = True
 
                     j = j + 1
 
+                if (dbtype == "database"):
+                    return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database.j2", lsid, advrouter, selforg)
                 if (dbtype == "router"):
                     return generate_show_ip_ospf_database_router(vrf, "show_ip_ospf_database_router.j2", lsid, advrouter, selforg)
                 elif (dbtype == "network"):
