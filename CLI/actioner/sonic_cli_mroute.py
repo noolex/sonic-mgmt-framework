@@ -159,9 +159,9 @@ def show_mroute_src_info(response):
 
         if len(outputList) > 0:
             if inputDict.get('vrf') is None:
-                print "\nPIM Multicast Routing Table for VRF: default"
+                print "IP Multicast Routing Table for VRF: default"
             else:
-                print "\nPIM Multicast Routing Table for VRF:", inputDict.get('vrf')
+                print "IP Multicast Routing Table for VRF:", inputDict.get('vrf')
 
             print "  * -> indicates installed route"
             show_cli_output("show_mroute.j2", outputList)

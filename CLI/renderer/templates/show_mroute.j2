@@ -13,9 +13,7 @@
 {%- set _ = entry.update({'srcAddr': ''}) -%}
 {%- set _ = entry.update({'grpAddr': ''}) -%}
 {%- set _ = entry.update({'inIntf': ''}) -%}
-{% if loop.index != listLen %}
 {{" "}}
-{% endif %}
 {% endfor %}
 {% endfor %}
 {% endif %}
