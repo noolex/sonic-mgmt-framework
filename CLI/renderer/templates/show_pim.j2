@@ -1,28 +1,43 @@
-{% if 'rcvdNbr' in json_output[0] %}
+{% set cmd = json_output[0] %}
+{% set vrf = json_output[1] %}
+{% set output = json_output[2] %}
+
+{% if cmd == 'show_ssm' %}
+PIM SSM information for VRF: {{vrf}}
+SSM group rangei :  {{output}}
+{% endif %}
+
+{% if cmd == 'show_neighbor' %}
+PIM Neighbor information for VRF: {{vrf}}
 {{'Interface'.ljust(15)}}{{'Neighbor'.ljust(18)}}{{'Uptime'.ljust(15)}}{{'Expirytime'.ljust(15)}}{{'DR-Priority'.ljust(10)}}
-{% for entry in json_output %}
+{% for entry in output %}
 {{(entry['intfId'] | string).ljust(15)}}{{(entry['rcvdNbr'] | string).ljust(18)}}{{(entry['upTime'] | string).ljust(15)}}{{(entry['expiryTime'] | string).ljust(15)}}{{(entry['pimDrPrio'] | string).ljust(10)}}
 {% endfor %}
 {% endif %}
 
-{% if 'intfState' in json_output[0] %}
+{% if cmd == 'show_interface' %}
+PIM Interface information for VRF: {{vrf}}
 {{'Interface'.ljust(15)}}{{'State'.ljust(10)}}{{'Address'.ljust(18)}}{{'PIM Nbrs'.ljust(12)}}{{'PIM DR'.ljust(18)}}{{'Hello-interval'.ljust(18)}}{{'PIM DR-Priority'.ljust(15)}}
-{% for entry in json_output %}
+{% for entry in output %}
 {{(entry['intfId'] | string).ljust(15)}}{{(entry['intfState'] | string).ljust(10)}}{{(entry['localAddr'] | string).ljust(18)}}{{(entry['nbrCount'] | string).ljust(12)}}{{(entry['pimDrAddr'] | string).ljust(18)}}{{(entry['helloInterval'] | string).ljust(18)}}{{(entry['pimDrPrio'] | string).ljust(15)}}
     {% endfor %}
 {% endif %}
 
-{% if 'rpfInterface' in json_output[0] %}
+{% if cmd == 'show_rpf' %}
+PIM RPF information for VRF: {{vrf}}
 {{'Source'.ljust(18)}}{{'Group'.ljust(18)}}{{'RpfIface'.ljust(15)}}{{'RpfAddress'.ljust(18)}}{{'RpfNextHop'.ljust(18)}}{{'Metric'.ljust(10)}}{{'Pref'.ljust(10)}}
-{% for entry in json_output %}
+{% for entry in output %}
 {{(entry.get('source')|string).ljust(18)}}{{(entry['group'] | string).ljust(18)}}{{(entry['rpfInterface'] | string).ljust(15)}}{{(entry['rpfAddress'] | string).ljust(18)}}{{(entry['ribNexthop'] | string).ljust(18)}}{{(entry['routeMetric'] | string).ljust(10)}}{{(entry['routePreference'] | string).ljust(10)}}
 {% endfor %}
 {% endif %}
 
-
-{% if 'oilList' in json_output[0] %}
-{% for entry in json_output %}
-{% set listLen = json_output|length %}
+{% if cmd == 'show_topo' %}
+PIM Multicast Routing Table for VRF: {{vrf}}
+Flags: S - Sparse, C - Connected, L - Local, P - Pruned,
+R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,
+K - Ack-Pending state
+{% for entry in output %}
+{% set listLen = output|length %}
 ({{entry.get('srcAddr')}}, {{entry.get('grpAddr')}}), uptime {{entry.get('srcUpTime')}}, expires {{entry.get('srcExpiry')}}, flags {{entry.get('srcFlags')}}
   Incoming interface: {{entry.get('inIntf')}}, RPF neighbor {{entry.get('rpfNbr')}}
   Outgoing interface list:
