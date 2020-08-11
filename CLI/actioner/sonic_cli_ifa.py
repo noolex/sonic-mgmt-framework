@@ -44,16 +44,16 @@ def invoke_api(func, args):
         return api.get(path)
 
     elif func == 'patch_sonic_ifa_sonic_ifa_tam_int_ifa_feature_table_tam_int_ifa_feature_table_list_enable':
-       path = cc.Path('/restconf/data/sonic-ifa:sonic-ifa/TAM_INT_IFA_FEATURE_TABLE/TAM_INT_IFA_FEATURE_TABLE_LIST={name}/enable', name='feature')
+       path = cc.Path('/restconf/data/sonic-ifa:sonic-ifa/TAM_INT_IFA_FEATURE_TABLE/TAM_INT_IFA_FEATURE_TABLE_LIST')
 
        if args[0] == 'enable':
-           body = { "sonic-ifa:enable": True }
+           body = { "sonic-ifa:TAM_INT_IFA_FEATURE_TABLE_LIST": [{"name": 'feature', "enable": True}] }
        else:
-           body = { "sonic-ifa:enable": False }
+           body = { "sonic-ifa:TAM_INT_IFA_FEATURE_TABLE_LIST": [{"name": 'feature', "enable": False}] }
        return api.patch(path, body)
 
     elif func == 'patch_sonic_ifa_sonic_ifa_tam_int_ifa_flow_table_tam_int_ifa_flow_table_list':
-       path = cc.Path('/restconf/data/sonic-ifa:sonic-ifa/TAM_INT_IFA_FLOW_TABLE/TAM_INT_IFA_FLOW_TABLE_LIST={name}', name=args[0])
+       path = cc.Path('/restconf/data/sonic-ifa:sonic-ifa/TAM_INT_IFA_FLOW_TABLE/TAM_INT_IFA_FLOW_TABLE_LIST')
        bodydict = {"name": args[0], "acl-rule-name": args[1], "acl-table-name": args[2]}
        for i in range(len(args)):
            if args[i] == "sv":
@@ -112,7 +112,8 @@ def run(func, args):
             else:
                 return
     else:
-        print response.error_message()
+        if response.status_code != 404:
+            print response.error_message()
 
 def get_tam_ifa_status(args):
     api_response = {}

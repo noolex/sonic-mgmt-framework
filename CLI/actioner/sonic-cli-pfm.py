@@ -71,6 +71,7 @@ def run(func, args):
     aa = cc.ApiClient()
     template = sys.argv[3]
     response = None
+    hasValidComp = False
     try:
         if func == 'get_openconfig_platform_components_component':
             path = cc.Path('/restconf/data/openconfig-platform:components/component=%s'%args[0])
@@ -88,8 +89,11 @@ def run(func, args):
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=PSU %s'%i)
                 response = aa.get(path)
                 if not response.ok():
-                    print response.error_message()
-                    return
+                    if not hasValidComp:
+                        print response.error_message()
+                        return
+                    break
+                hasValidComp = True
                 if (len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
@@ -103,8 +107,10 @@ def run(func, args):
                     path = cc.Path('/restconf/data/openconfig-platform:components/component=PSU {} FAN {}'.format(i, j))
                     response = aa.get(path)
                     if not response.ok():
-                        print response.error_message()
-                        return
+                        if not hasValidComp:
+                            print response.error_message()
+                            return
+                        break
                     if (len(response.content) == 0 or
                         not ('openconfig-platform:component' in response.content) or
                         len(response.content['openconfig-platform:component']) == 0 or
@@ -121,8 +127,11 @@ def run(func, args):
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=FAN %s'%i)
                 response = aa.get(path)
                 if not response.ok():
-                    print response.error_message()
-                    return
+                    if not hasValidComp:
+                        print response.error_message()
+                        return
+                    break
+                hasValidComp = True
                 if (len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
@@ -206,8 +215,11 @@ def run(func, args):
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=TEMP %s'%i)
                 response = aa.get(path)
                 if not response.ok():
-                    print response.error_message()
-                    return
+                    if not hasValidComp:
+                        print response.error_message()
+                        return
+                    break
+                hasValidComp = True
                 if (len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or

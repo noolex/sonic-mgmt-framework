@@ -32,8 +32,7 @@ def invoke(func, args):
     aa = cc.ApiClient()
 
     if func == 'create_mirror_session':
-        keypath = cc.Path('/restconf/data/sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST={name}',
-                name=args.session)
+        keypath = cc.Path('/restconf/data/sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST')
         body=collections.defaultdict(dict)
         entry = {
                 "name": args.session,

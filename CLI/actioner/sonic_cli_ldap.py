@@ -36,6 +36,7 @@ def invoke(func, args):
     bodyParam = None
     
     modName = "openconfig-aaa-ldap-ext:"
+    baseServerGrpUri = "/restconf/data/openconfig-system:system/aaa/server-groups/server-group"
     baseLdapUri = "/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/"
 
     if commandType == 'ldap_global_config' :
@@ -125,33 +126,21 @@ def invoke(func, args):
         elif args[0] == "pam-member-attribute" :
             field_name = "pam-member-attribute"
             bodyParam = field_val            
-            
-        keypath = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group={ldapType}/'+modName+'ldap/config/{fieldName}',
-                ldapType=ldap_type, fieldName=field_name)
         
-        if isDel == False :            
-            body = { (modName+field_name) : bodyParam }
+        if isDel == False :
+            keypath = cc.Path(baseServerGrpUri)
+            body = {"openconfig-system:server-group":[{"name":ldap_type,"config":{"name":ldap_type}, modName+"ldap":{"config":{field_name:bodyParam}}}]}            
             return aa.patch(keypath, body)
         else:
+            keypath = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group={ldapType}/'+modName+'ldap/config/{fieldName}',
+            ldapType=ldap_type, fieldName=field_name)
             return aa.delete (keypath)
                
     elif commandType == 'ldap_server_config':
         if isDel == False :
-            keypath = cc.Path(baseLdapUri+'servers/server={address}', address=args[0])
-            body = {   "openconfig-system:server": [ {
-                       "address": args[0],
-                       "config": {
-                           "address": args[0],
-                       },
-                       modName+"ldap": {
-                           "config": {
-                           }
-                       }
-                  } ]
-               }
-            
-            configObj = body["openconfig-system:server"][0][modName+"ldap"]["config"]
-            
+            keypath = cc.Path(baseServerGrpUri)
+            body = {"openconfig-system:server-group":[{"name":"LDAP","config":{"name":"LDAP"}, "servers":{"server":[{"address":args[0],"config":{"address":args[0]},"openconfig-aaa-ldap-ext:ldap":{"config":{}}}]}}]}
+            configObj = body["openconfig-system:server-group"][0]["servers"]["server"][0][modName+"ldap"]["config"]
             for elem in args:
                 if elem == 'use-type':
                     configObj["use-type"] = args[args.index(elem)+1].upper()
@@ -163,7 +152,6 @@ def invoke(func, args):
                     configObj["ssl"] = args[args.index(elem)+1].upper()
                 elif elem == 'retry':
                     configObj["retransmit-attempts"] = int(args[args.index(elem)+1])
-                    
             return aa.patch(keypath, body)
         else:
             objName = None
@@ -194,8 +182,8 @@ def invoke(func, args):
             mapName = "OVERRIDE_ATTRIBUTE_VALUE"
         
         if isDel == False :
-            keypath = cc.Path(baseLdapUri+modName+'ldap/maps/map='+mapName+','+args[1]+'/config/to')
-            body = { modName+"to": args[3] } 
+            keypath = cc.Path(baseServerGrpUri)
+            body = {"openconfig-system:server-group":[{"name":"LDAP","config":{"name":"LDAP"},"openconfig-aaa-ldap-ext:ldap":{"maps":{"map":[{"config":{"to":args[3]},"from":args[1],"name":mapName}]}}}]}
             return aa.patch(keypath, body)
         else:
             keypath = cc.Path(baseLdapUri+modName+'ldap/maps/map='+mapName+','+args[1])
