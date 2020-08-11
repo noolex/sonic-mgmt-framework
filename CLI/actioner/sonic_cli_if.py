@@ -602,7 +602,7 @@ def invoke_api(func, args=[]):
                    body1["openconfig-relay-agent:helper-address"].insert(j,args[index])
                    j += 1
                    helperConfig = "True"
-                if ( i == "src-intf" ):
+                if ( i == "source-interface" ):
                    srcIntf = "True"
                    path2 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
                    body2 = {"openconfig-relay-agent-ext:src-intf":  args[index+1] }
@@ -660,7 +660,7 @@ def invoke_api(func, args=[]):
                    body1["openconfig-relay-agent:helper-address"].insert(j,args[index])
                    j += 1
                    helperConfig = "True"
-                if ( i == "src-intf" ):
+                if ( i == "source-interface" ):
                    srcIntf = "True"
                    path2 = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
                    body2 = {"openconfig-relay-agent-ext:src-intf":  args[index+1] }
@@ -722,7 +722,7 @@ def invoke_api(func, args=[]):
                  api.delete(path)
 
         for i in args:
-           if ( i == "src-intf" ):
+           if ( i == "source-interface" ):
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
              api.delete(path)
            elif ( i == "link-select" ):
@@ -775,7 +775,7 @@ def invoke_api(func, args=[]):
                  api.delete(path)
 
         for i in args:
-           if ( i == "src-intf" ):
+           if ( i == "source-interface" ):
              path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6/interfaces/interface={id}/config/openconfig-relay-agent-ext:src-intf', id=args[0])
              api.delete(path)
            elif ( i == "max-hop-count") :

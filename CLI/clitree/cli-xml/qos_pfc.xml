@@ -33,7 +33,9 @@ Copyright 2020 Broadcom, Inc.
   <VIEW name="configure-view">
 
     <COMMAND name="priority-flow-control" help="PFC configuration"/>
-    <COMMAND name="priority-flow-control watchdog" help="PFC watchdog configuration"/>
+    <COMMAND name="priority-flow-control watchdog" help="PFC watchdog configuration"
+             command_tables="sonic-qos-pfc:sonic-qos-pfc/PFC_WD/;sonic-qos-pfc:sonic-qos-pfc/FLEX_COUNTER_TABLE/"
+             render_command_cb="qos_pfc_wd"/>
 
     <COMMAND name="priority-flow-control watchdog polling-interval" help="Configure watchdog">
       <PARAM name="interval" help="Watchdog poll interval" ptype="POLL_INTERVAL" />

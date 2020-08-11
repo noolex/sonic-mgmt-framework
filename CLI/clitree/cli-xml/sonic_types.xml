@@ -1512,7 +1512,7 @@ limitations under the License.
         name="UDP_FORWARDING_PORT"
         method="select"
         pattern="tftp(69) dns(53) ntp(37) netbios-name-server(137) netbios-datagram-server(138) tacacs(49)"
-        help="Well known ports"
+        help="Well known UDP ports"
         />
     <!--=======================================================-->
     <PTYPE

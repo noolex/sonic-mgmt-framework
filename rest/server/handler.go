@@ -22,6 +22,7 @@ package server
 import (
 	"fmt"
 	"io/ioutil"
+	"log/syslog"
 	"net/http"
 	"net/url"
 	"sort"
@@ -30,14 +31,13 @@ import (
 
 	"github.com/Azure/sonic-mgmt-common/translib"
 	"github.com/golang/glog"
-	"log/syslog"
 )
 
-var Writer *syslog.Writer
+var auditWriter *syslog.Writer
 
 func init() {
 
-    Writer, _ = syslog.Dial("", "", (syslog.LOG_LOCAL4), "")
+	auditWriter, _ = syslog.Dial("", "", (syslog.LOG_LOCAL4), "")
 }
 
 // Process function is the common landing place for all REST requests.
@@ -58,9 +58,8 @@ func Process(w http.ResponseWriter, r *http.Request) {
 	var data []byte
 	var rtype string
 
-
+	glog.Infof("[%s] %s %s; content-len=%d", reqID, r.Method, r.URL.Path, r.ContentLength)
 	_, args.data, err = getRequestBody(r, rc)
-
 
 	if err == nil {
 		err = parseQueryParams(&args, r)
@@ -78,7 +77,7 @@ func Process(w http.ResponseWriter, r *http.Request) {
 
 	status, data, err = invokeTranslib(&args, r, rc)
 	if err != nil {
-		glog.Errorf("[%s] Translib error %T - %v", reqID, err, err)
+		glog.Warningf("[%s] Translib error %T - %v", reqID, err, err)
 		status, data, rtype = prepareErrorResponse(err, r)
 		goto write_resp
 	}
@@ -92,7 +91,7 @@ func Process(w http.ResponseWriter, r *http.Request) {
 
 	rtype, err = resolveResponseContentType(data, r, rc)
 	if err != nil {
-		glog.Errorf("[%s] Failed to resolve response content-type, err=%v", rc.ID, err)
+		glog.Warningf("[%s] Failed to resolve response content-type, err=%v", rc.ID, err)
 		status, data, rtype = prepareErrorResponse(err, r)
 		goto write_resp
 	}
@@ -103,8 +102,8 @@ write_resp:
 	// Since CLI connects via the unix socket, its RemoteAddr will be "@"
 	if r.RemoteAddr != "@" {
 		auditMsg := fmt.Sprintf("[%s] User \"%s@%s\" request \"%s %s\" status - %d",
-				reqID, rc.Auth.User, r.RemoteAddr, r.Method, r.URL.Path, status)
-		Writer.Info(auditMsg)
+			reqID, rc.Auth.User, r.RemoteAddr, r.Method, r.URL.Path, status)
+		auditWriter.Info(auditMsg)
 	}
 
 	// Write http response.. Following strict order should be
@@ -152,7 +151,7 @@ func getRequestBody(r *http.Request, rc *RequestContext) (*MediaType, []byte, er
 
 	ct, err := parseMediaType(ctype)
 	if err != nil {
-		glog.Errorf("[%s] Bad content-type '%s'; err=%v",
+		glog.Warningf("[%s] Bad content-type '%s'; err=%v",
 			rc.ID, r.Header.Get("Content-Type"), err)
 		return nil, nil, httpBadRequest("Bad content-type")
 	}
@@ -160,7 +159,7 @@ func getRequestBody(r *http.Request, rc *RequestContext) (*MediaType, []byte, er
 	// Check if content type is one of the acceptable types specified
 	// in "consumes" section in OpenAPI spec.
 	if !rc.Consumes.Contains(ct.Type) {
-		glog.Errorf("[%s] Content-type '%s' not supported. Valid types %v", rc.ID, ct.Type, rc.Consumes)
+		glog.Warningf("[%s] Content-type '%s' not supported. Valid types %v", rc.ID, ct.Type, rc.Consumes)
 		return nil, nil, httpError(http.StatusUnsupportedMediaType, "Unsupported content-type")
 	}
 
@@ -385,7 +384,7 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		_, err = translib.Delete(req)
 
 	default:
-		glog.Errorf("[%s] Unknown method '%v'", rc.ID, r.Method)
+		glog.Warningf("[%s] Unknown method '%v'", rc.ID, r.Method)
 		err = httpBadRequest("Invalid method")
 	}
 
