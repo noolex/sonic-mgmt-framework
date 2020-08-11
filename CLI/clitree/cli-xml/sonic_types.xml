@@ -1241,6 +1241,7 @@ limitations under the License.
         name="PHY_INTERFACE_ALL"
         method="regexp_select"
         ext_pattern="Ethernet(all|port-id)"
+        alt_ext_pattern=""
         pattern="&ETH_ALL_INTF_ALL;"
         help="EthernetNUM"
         preprocess="mode"

@@ -431,8 +431,8 @@
 > 				                while (param && (val = clish_ptype_method_select__get_name(clish_param__get_ptype(param), i++))) {
 > 				                        /* check for the name */
 > 							unsigned strmatch = lub_string_equal_part_nocase(val,arg,BOOL_TRUE);
-> 							if(strmatchLen && strmatch>*strmatchLen)
-> 								*strmatchLen = strmatch;
+> 							if(strmatchLen && strmatch>*strmatchLen) { *strmatchLen = strmatch; }
+> 							lub_string_free(val);
 >                 				}
 > 
 > 					} else if(arg && strmatchLen){
