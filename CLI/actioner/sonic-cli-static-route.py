@@ -78,6 +78,9 @@ def invoke_api(func, args=[]):
                     i+=1
                     body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["nexthop-network-instance"] =args[i]
                     index_v = index_v +  '_' + args[i]
+                elif args[i] == 'tag':
+                    i+=1
+                    body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["tag"] = int(args[i])
                 elif args[i] == 'blackhole':
                     body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["blackhole"] =True
                     index_v = "DROP"
