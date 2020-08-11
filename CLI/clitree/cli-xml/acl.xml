@@ -75,23 +75,41 @@ limitations under the License.
             <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Clear,IPv6" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L3V6 ${__params}</ACTION>
         </COMMAND>
+        <COMMAND name="show running-configuration mac" help="Current operating configuration">
+        </COMMAND>
+        <COMMAND name="show running-configuration mac access-list" help="Displays all MAC access-list configurations">
+            <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mac-acl view_keys="access-list-name=${access-list-name}"</ACTION>
+        </COMMAND>
+        <COMMAND name="show running-configuration ip" help="Current operating configuration">
+        </COMMAND>
+        <COMMAND name="show running-configuration ip access-list" help="Displays all IPV4 access-list configurations">
+            <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv4-acl view_keys="access-list-name=${access-list-name}"</ACTION>
+        </COMMAND>
+        <COMMAND name="show running-configuration ipv6" help="Current operating configuration">
+        </COMMAND>
+        <COMMAND name="show running-configuration ipv6 access-list" help="Displays all IPV6 access-list configurations">
+            <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv6-acl view_keys="access-list-name=${access-list-name}"</ACTION>
+        </COMMAND>
     </VIEW>
 
     <!--============================== INTERFACE ETHERNET MODE COMMANDS ======================-->
     <VIEW name="configure-if-view">
-        <COMMAND name="mac" help="Configure MAC parameters"/>
+        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE PORTCHANNEL MODE COMMANDS ======================-->
     <VIEW name="configure-lag-view">
-        <COMMAND name="mac" help="Configure MAC parameters"/>
+        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE VLAN MODE COMMANDS ======================-->
     <VIEW name="configure-vlan-view">
-        <COMMAND name="mac" help="Configure MAC parameters"/>
+        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
@@ -100,18 +118,36 @@ limitations under the License.
         <!-- Global binding options -->
 
         <!-- mac access-list -->
-        <COMMAND name="mac access-list" help="Configure MAC access-list" view="configure-mac-acl-view" viewid="name=${access-list-name}">
-            <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
+        <COMMAND 
+            name="mac access-list" 
+            help="Configure MAC access-list" 
+            view="configure-mac-acl-view" 
+            viewid="name=${access-list-name}"
+            view_tables="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST/aclname={access-list-name}"
+            data_and_render_cb="mac_acl_table_cb">
+            <PARAM name="access-list-name" help="Name of the MAC access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_L2</ACTION>
         </COMMAND>
         <!-- ip access-list -->
-        <COMMAND name="ip access-list" help="Configure IPv4 access-list" view="configure-acl-ipv4-view" viewid="name=${access-list-name}">
+        <COMMAND 
+            name="ip access-list" 
+            help="Configure IPv4 access-list" 
+            view="configure-ipv4-acl-view" 
+            viewid="name=${access-list-name}"
+            view_tables="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST/aclname={access-list-name}"
+            data_and_render_cb="ipv4_acl_table_cb">
             <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_IPV4</ACTION>
         </COMMAND>
         <!-- ipv6 access-list -->
-        <COMMAND name="ipv6 access-list" help="Configure IPv6 access-list" view="configure-ipv6-acl-view" viewid="name=${access-list-name}">
-            <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
+        <COMMAND 
+            name="ipv6 access-list" 
+            help="Configure IPv6 access-list" 
+            view="configure-ipv6-acl-view" 
+            viewid="name=${access-list-name}"
+            view_tables="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST/aclname={access-list-name}"
+            data_and_render_cb="ipv6_acl_table_cb">
+            <PARAM name="access-list-name" help="Name of the IPv6 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_IPV6</ACTION>
         </COMMAND>
 
@@ -140,8 +176,10 @@ limitations under the License.
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_L2"/>
-
-        <COMMAND name="seq" help="Sequence number">
+        <COMMAND 
+            name="seq" 
+            help="Sequence number"
+            data_and_render_cb="mac_acl_rule_cb">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <PARAM name="src-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
@@ -182,15 +220,24 @@ limitations under the License.
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_L2 ${__params}</ACTION>
         </COMMAND>
+        <!--
+        <COMMAND
+            name="show configuration"
+            help = "show mac access-list configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_L2 ${name}</ACTION>
+        </COMMAND>    
+        -->
     </VIEW>
-
-    <VIEW name="configure-acl-ipv4-view" prompt="${SYSTEM_NAME}(config-ipv4-acl)# " depth="2">
+    <VIEW name="configure-ipv4-acl-view" prompt="${SYSTEM_NAME}(config-ipv4-acl)# " depth="2">
         <!-- Inheritance -->
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV4"/>
 
-        <COMMAND name="seq" help="Sequence number">
+        <COMMAND 
+            name="seq" 
+            help="Sequence number"
+            view_tables="sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST/aclname={access-list-name}">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <MACRO name="IP-PROTOCOL-OPTIONS" arg="icmp,ICMP,ip,IPv4" />
@@ -205,6 +252,13 @@ limitations under the License.
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_IPV4 ${__params}</ACTION>
         </COMMAND>
+        <!--
+        <COMMAND
+            name="show configuration"
+            help = "show ipv4 access-list configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_IPV4 ${name}</ACTION>
+        </COMMAND>    
+        -->
     </VIEW>
 
     <VIEW name="configure-ipv6-acl-view" prompt="${SYSTEM_NAME}(config-ipv6-acl)# " depth="2">
@@ -213,7 +267,10 @@ limitations under the License.
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV6"/>
 
-        <COMMAND name="seq" help="Sequence number">
+        <COMMAND 
+            name="seq" 
+            help="Sequence number"
+            view_tables="sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST/aclname={access-list-name}">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <MACRO name="IP-PROTOCOL-OPTIONS" arg="icmpv6,ICMPv6,ipv6,IPv6" />
@@ -228,5 +285,12 @@ limitations under the License.
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_IPV6 ${__params}</ACTION>
         </COMMAND>
+        <!--
+        <COMMAND
+            name="show configuration"
+            help = "show ipv6 access-list configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_IPV6 ${name}</ACTION>
+        </COMMAND>    
+        -->
     </VIEW>
 </CLISH_MODULE>

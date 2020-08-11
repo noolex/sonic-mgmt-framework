@@ -29,7 +29,7 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <COMMAND
-        help="show IP helper global configuration"
+        help="Show IP helper global configuration"
         name="show ip forward-protocol"
         >
       <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper global_config show_ip_helper_global.j2</ACTION>
@@ -40,7 +40,7 @@ limitations under the License.
       </DOCGEN> 
     </COMMAND>
 
-    <COMMAND help="show IP helper server addresses" name="show ip helper-address">
+    <COMMAND help="Show IP helper server addresses on interfaces" name="show ip helper-address">
       <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
       <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper iface_config show_ip_helper_interface_config.j2 ${iface}</ACTION>
       <DOCGEN>
@@ -50,7 +50,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND help="show IP helper statistics" name="show ip helper-address statistics">
+    <COMMAND help="Show IP helper statistics on interfaces" name="show ip helper-address statistics">
       <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
       <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper iface_stats show_ip_helper_interface_statistics.j2 ${iface}</ACTION>
       <DOCGEN>
@@ -60,8 +60,8 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND help="clear IP helper" name="clear ip helper-address" />
-    <COMMAND help="clear IP helper counters" name="clear ip helper-address statistics">
+    <COMMAND help="Clear IP helper options" name="clear ip helper-address" />
+    <COMMAND help="Clear IP helper statistics on interfaces" name="clear ip helper-address statistics">
         <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
         <ACTION builtin="clish_restcl">
           oper=POST 
@@ -80,8 +80,8 @@ limitations under the License.
   <VIEW name="configure-view">
 
     <COMMAND name="ip forward-protocol" help="Configure IP helper global parameters"/>
-    <COMMAND name="ip forward-protocol udp" help="Configure IP helper global parameters"/>
-      <COMMAND name="ip forward-protocol udp enable" help="Enable IP helper globally"
+    <COMMAND name="ip forward-protocol udp" help="Configure IP helper global parameters for UDP"/>
+      <COMMAND name="ip forward-protocol udp enable" help="Enable IP helper feature globally"
         command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
         dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/admin_mode=enable">     
       <ACTION builtin="clish_restcl">
@@ -93,7 +93,7 @@ limitations under the License.
 
     <COMMAND name="no ip forward-protocol" help="Unconfigure IP helper global parameters"/>
     <COMMAND name="no ip forward-protocol udp" help="Unconfigure IP helper global parameters"/>
-    <COMMAND name="no ip forward-protocol udp enable" help="Disable IP helper globally">     
+    <COMMAND name="no ip forward-protocol udp enable" help="Disable IP helper feature globally">     
       <ACTION builtin="clish_restcl">
           oper=DELETE
           url=/restconf/data/openconfig-ip-helper:ip-helper/config/enable
@@ -103,10 +103,10 @@ limitations under the License.
     <COMMAND name="ip forward-protocol udp include" help="Include UDP ports to forward"
         command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
         render_command_cb="ip_helper_include_ports">  
-      <PARAM name="portoption" mode="switch" ptype="SUBCOMMAND" help="UDP Port input option">
-      <PARAM name="port" help="UDP Port" ptype="UDP_FORWARDING_PORT"
+      <PARAM name="portoption" mode="switch" ptype="SUBCOMMAND" help="UDP ports input options">
+      <PARAM name="port" help="UDP port" ptype="UDP_FORWARDING_PORT"
         dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/include_ports"/> 
-      <PARAM name="port" help="UDP Port" ptype="RANGE_0_65535"
+      <PARAM name="port" help="UDP port" ptype="RANGE_0_65535"
         dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/include_ports"/>
       </PARAM>   
       <ACTION builtin="clish_restcl">
@@ -119,10 +119,10 @@ limitations under the License.
     <COMMAND name="ip forward-protocol udp exclude" help="Exclude UDP ports to forward"
         command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
         render_command_cb="ip_helper_exclude_ports">
-      <PARAM name="portoption" mode="switch" ptype="SUBCOMMAND" help="UDP Port input option">
-      <PARAM name="port" help="UDP Port" ptype="UDP_FORWARDING_PORT" 
+      <PARAM name="portoption" mode="switch" ptype="SUBCOMMAND" help="UDP ports input options">
+      <PARAM name="port" help="UDP port" ptype="UDP_FORWARDING_PORT" 
         dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/exclude_ports"/> 
-      <PARAM name="port" help="UDP Port" ptype="RANGE_0_65535" 
+      <PARAM name="port" help="UDP port" ptype="RANGE_0_65535" 
         dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/exclude_ports"/>
       </PARAM>   
       <ACTION builtin="clish_restcl">
@@ -133,7 +133,7 @@ limitations under the License.
 
     <COMMAND name="ip forward-protocol udp rate-limit" help="Configure incoming rate limit"
         command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"> 
-      <PARAM name="rate" help="Incoming rate limit" ptype="IP_HELPER_RATE_LIMIT" 
+      <PARAM name="rate" help="Incoming rate limit (600 to 10,000 pps) default 600 pps" ptype="IP_HELPER_RATE_LIMIT" 
         dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/rate_limit_pps"/>     
       <ACTION builtin="clish_restcl">
           oper=PATCH

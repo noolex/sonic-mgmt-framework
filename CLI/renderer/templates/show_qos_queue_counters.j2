@@ -15,14 +15,14 @@
     {% set traffic_type = q_stats_info['openconfig-qos-ext:traffic-type'] %}
     {% set queue_name = traffic_type + qname[1] %}
     {% set packets = q_stats_info['transmit-pkts'] %}
-    {% if 'transmit-pkts-per-second' in q_stats_info %}
-       {% set pps = q_stats_info['transmit-pkts-per-second'] + '/s' %}
+    {% if 'openconfig-qos-ext:transmit-pkts-per-second' in q_stats_info %}
+       {% set pps = q_stats_info['openconfig-qos-ext:transmit-pkts-per-second'] + '/s' %}
     {% else %}
        {% set pps = '0' + '/s' %}
     {% endif %}
     {% set bytes = q_stats_info['transmit-octets'] %}
-    {% if 'transmit-octets-per-second' in q_stats_info %}
-       {% set bps = q_stats_info['transmit-octets-per-second'] + '/s' %}
+    {% if 'openconfig-qos-ext:transmit-octets-per-second' in q_stats_info %}
+       {% set bps = q_stats_info['openconfig-qos-ext:transmit-octets-per-second'] + '/s' %}
     {% else %}
        {% set bps = '0' + '/s' %}
     {% endif %}
