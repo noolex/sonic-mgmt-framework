@@ -629,6 +629,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="INTF_FEC"
+        method="select"
+        pattern="FC RS off"
+        help="FEC (forward error correction) mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="MGMT_INTF_SPEED"
         method="select"
         pattern="10(10MBPS) 100(100MBPS) 1000(1GIGE) auto(1GIGE)"
