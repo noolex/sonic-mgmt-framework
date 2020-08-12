@@ -142,7 +142,7 @@ def get_rest_table(table_path):
     keypath = cc.Path(sonic_table_yang_path)
     response = api.get(keypath)
     if(response.ok()):
-        if response.content is None:
+        if (response.content is None) or (not (isinstance(response.content, dict))):
             log.info("Get Table {} response failure, continue next table or next view " .format(sonic_table_yang_path) )
             return None
 
@@ -539,8 +539,8 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
 
             try:
                 cb_status, cmd_list_str, is_view_rendered = db_render_callback_func(member_keys)
-            except NameError as e:
-                log.error("Function {} not defined e {}" .format(db_render_callback_func, e))
+            except Exception as e:
+                log.error("Callback {} exception: {} " .format(db_render_callback_func, e))
                 return CMD_FAIL, True
             else:
                 if cb_status == CB_FAIL:
@@ -629,8 +629,8 @@ def process_render_callback(render_callback, render_tables, member_keys, is_view
 
         try:
             cb_status, cmd_list_str = render_callback_func(render_tables)
-        except NameError as e:
-            log.error("Function {} not defined e {}" .format(render_callback_func, e))
+        except Exception as e:
+            log.error("Callback {} exception: {}" .format(render_callback_func, e))
             return CMD_FAIL
 
         else:
