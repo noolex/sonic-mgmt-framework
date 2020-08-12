@@ -50,7 +50,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-default-gw=true">
+  <COMMAND name="advertise-default-gw" help="Advertise all default gw MAC-IP routes in EVPN" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-default-gw=true">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_advertise_default_gw ${vrf-name} L2VPN_EVPN True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -286,7 +286,7 @@ limitations under the License.
   <COMMAND name="no advertise-all-vni" help="Advertise all local VNIs">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise_all_vni ${vrf-name} L2VPN_EVPN True</ACTION>
   </COMMAND>
-  <COMMAND name="no advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN">
+  <COMMAND name="no advertise-default-gw" help="Advertise all default gw MAC-IP routes in EVPN">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise_default_gw ${vrf-name} L2VPN_EVPN True</ACTION>
   </COMMAND>
 
@@ -388,7 +388,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="allowas-in" help="Allow local AS number in as-path" render_command_cb="bgp_nbr_af_allowas">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="AS number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value} origin:${origin}</ACTION>
@@ -448,8 +448,8 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="attribute-unchanged" help="BGP attribute is propagated unchanged to this neighbor" render_command_cb="bgp_nbr_af_attr">
-    <PARAM name="as-path" help="As-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <PARAM name="med" help="Med attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
+    <PARAM name="as-path" help="AS-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
+    <PARAM name="med" help="MED attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; as-path:${as-path} med:${med} next-hop:${next-hop}</ACTION>
     <DOCGEN>
@@ -571,7 +571,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no allowas-in" help="Allow local AS number in as-path">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="AS number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:NbrEvpn ${vrf-name} ${nbr-addr} ${__cmd} &#xA; value:${value}</ACTION>
@@ -640,7 +640,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="allowas-in" help="Allow local AS number in as-path" render_command_cb="bgp_pg_af_allowas">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="AS number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value} origin:${origin}</ACTION>
@@ -698,8 +698,8 @@ limitations under the License.
   </COMMAND>
 
   <COMMAND name="attribute-unchanged" help="BGP attribute is propagated unchanged to this neighbor" render_command_cb="bgp_pg_af_attr">
-    <PARAM name="as-path" help="As-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
-    <PARAM name="med" help="Med attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
+    <PARAM name="as-path" help="AS-path attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
+    <PARAM name="med" help="MED attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <PARAM name="next-hop" help="Nexthop attribute" mode="subcommand" ptype="SUBCOMMAND" optional="true"/>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; as-path:${as-path} med:${med} next-hop:${next-hop}</ACTION>
     <DOCGEN>
@@ -816,7 +816,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no allowas-in" help="Allow local AS number in as-path">
     <PARAM name="allowopt" help="" mode="switch" ptype="SUBCOMMAND" optional="true">
-      <PARAM name="value" help="As-number" ptype="RANGE_1_10"/>
+      <PARAM name="value" help="AS number" ptype="RANGE_1_10"/>
       <PARAM name="origin" help="Only accept my AS in the as-path if the route was originated in my AS" mode="subcommand" ptype="SUBCOMMAND"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:PgpEvpn ${vrf-name} ${template-name} ${__cmd} &#xA; value:${value}</ACTION>
