@@ -555,7 +555,7 @@ limitations under the License.
     <PTYPE
         name="STRING_32"
         pattern="(^([a-zA-Z0-9_-]){0,32})$"
-        help="String(Max: 32 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
