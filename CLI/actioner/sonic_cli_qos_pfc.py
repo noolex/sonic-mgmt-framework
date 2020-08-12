@@ -148,7 +148,10 @@ def getPortList():
         intfList = response.content['sonic-port:PORT_LIST']
         for intf in intfList:
             intfName = intf.get('ifname')
-            if (intfName is None) or (not intfName.startswith('Ethernet')):
+            # ALIAS mode is not supported in the PFC WD transformers
+            # And the transformers ought to be revised later to have
+            # getPortList() totally removed/replaced
+            if (intfName is None) or (not intfName.startswith('Eth')):
                 continue
             portList.append(intfName)
     return natsorted(portList)
@@ -402,7 +405,7 @@ def invoke(func, args):
 
     elif func == 'show_port_pfc_statistics':
         response = None
-        if args[0] in [ 'EthernetAll', 'Ethernetall' ]:
+        if args[0].lower() in [ 'ethernetall', 'ethall' ]:
             response = aa.cli_not_implemented("")
             response.status_code = RESPONSE_OK
             response.content = collections.OrderedDict()
@@ -417,7 +420,7 @@ def invoke(func, args):
 
     elif func == 'show_port_pfc_queue_statistics':
         response = None
-        if args[0] in [ 'EthernetAll', 'Ethernetall' ]:
+        if args[0].lower() in [ 'ethernetall', 'ethall' ]:
             response = aa.cli_not_implemented("")
             response.status_code = RESPONSE_OK
             response.content = collections.OrderedDict()
@@ -432,7 +435,7 @@ def invoke(func, args):
 
     elif func == 'show_port_pfc_summary':
         response = None
-        if args[0] in [ 'EthernetAll', 'Ethernetall' ]:
+        if args[0].lower() in [ 'ethernetall', 'ethall' ]:
             response = aa.cli_not_implemented("")
             response.status_code = RESPONSE_OK
             response.content = collections.OrderedDict()
@@ -448,7 +451,7 @@ def invoke(func, args):
     elif func == 'get_openconfig_qos_qos_queues_queue':
         path = cc.Path('/restconf/data/openconfig-qos:qos/queues/queue={name}', name=args[0])
         tmpl = 'show_qos_queue_config.j2'
-        if args[0].split(':')[0] in [ 'EthernetAll', 'Ethernetall' ]:
+        if args[0].split(':')[0].lower() in [ 'ethernetall', 'ethall' ]:
             path = cc.Path('/restconf/data/openconfig-qos:qos/queues')
             tmpl = 'show_qos_queue_config_all.j2'
         data = aa.get(path)
