@@ -40,27 +40,30 @@ def show_if_vrf_binding(render_tables):
     vrf_name = ''
     if 'name' not in render_tables:
         return 'CB_SUCCESS', cmd_str
-    ifname_key = render_tables['name']
-    if 'sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST' in render_tables:
-        portchannel = render_tables['sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST']
-        if 'name' in portchannel and ifname_key == portchannel['name'] and 'vrf_name' in portchannel:
-            vrf_name = portchannel['vrf_name']
-    elif 'sonic-vlan:sonic-vlan/VLAN/VLAN_LIST' in render_tables:
-        vlan = render_tables['sonic-vlan:sonic-vlan/VLAN/VLAN_LIST']
-        if 'name' in vlan and ifname_key == vlan['name'] and 'vrf_name' in vlan:
-            vrf_name = vlan['vrf_name']
+    
+    if 'sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST' in render_tables:
+        intfdata = render_tables['sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST']
+        key = 'portname'
+    elif 'sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST' in render_tables:
+        intfdata = render_tables['sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST']
+        key = 'vlanName'
+    elif 'sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST' in render_tables:
+        intfdata = render_tables['sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST']
+        key = 'pch_name'
     elif 'sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST' in render_tables:
-        loopback = render_tables['sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST']
-        if 'loIfName' in loopback and ifname_key == loopback['loIfName'] and 'vrf_name' in loopback:
-            vrf_name = loopback['vrf_name']
-    elif 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
-        phy = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
-        if 'ifname' in phy and ifname_key == phy['ifname'] and 'vrf_name' in phy:
-            vrf_name = phy['vrf_name']
+        intfdata = render_tables['sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST']
+        key = 'loIfName'
+        if render_tables['name'] == intfdata[key] and intfdata['vrf_name']:
+            cmd_str = 'ip vrf forwarding ' + intfdata['vrf_name']
+        return 'CB_SUCCESS', cmd_str
+    else:
+        return 'CB_SUCCESS', cmd_str
 
-    if vrf_name != '':
-        cmd_str = 'ip vrf forwarding ' + vrf_name
-
+    for item in intfdata:
+        if render_tables['name'] == item[key] and item['vrf_name']:
+            cmd_str = 'ip vrf forwarding ' + item['vrf_name']
+            break  
+        
     return 'CB_SUCCESS', cmd_str
 
 def show_if_switchport_access(render_tables):
