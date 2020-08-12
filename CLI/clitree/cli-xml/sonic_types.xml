@@ -488,7 +488,7 @@ limitations under the License.
     <PTYPE
         name="HOSTNAME_STR_64"
         pattern="(&HOSTNAME_PATTERN_64;)"
-        help="Hostname string(Max: 64 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
@@ -555,7 +555,7 @@ limitations under the License.
     <PTYPE
         name="STRING_32"
         pattern="(^([a-zA-Z0-9_-]){0,32})$"
-        help="String(Max: 32 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
@@ -626,6 +626,13 @@ limitations under the License.
         method="select"
         pattern="10(10MBPS) 100(100MBPS) 1000(1GIGE) 10000(10GIGE) 25000(25GIGE) 40000(40GIGE) 100000(100GIGE) auto(AUTO)"
         help="Port speed"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="INTF_FEC"
+        method="select"
+        pattern="FC RS off"
+        help="FEC (forward error correction) mode"
         />
     <!--=======================================================-->
     <PTYPE

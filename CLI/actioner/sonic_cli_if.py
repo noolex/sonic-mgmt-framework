@@ -185,6 +185,18 @@ def invoke_api(func, args=[]):
             speed = speed_map.get(args[1])
             body = { "openconfig-if-ethernet:port-speed": speed }
         return api.patch(path, body)
+
+    elif func == 'patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/openconfig-if-ethernet-ext2:port-fec', name=args[0])
+        fec_map = {"RS": "FEC_RS", "FC": "FEC_FC", "off": "FEC_DISABLED", "default": "FEC_AUTO"}
+
+        fec = args[1]
+        if fec not in fec_map:
+            print("%Error: Invalid port FEC config")
+            return None
+
+        body = { "openconfig-if-ethernet:port-fec": fec_map[fec]}
+        return api.patch(path, body)
     
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config':
         sp = args[1].split('/')
@@ -212,36 +224,37 @@ def invoke_api(func, args=[]):
         
     elif func == 'patch_if_ipv4':
         sp = args[1].split('/')
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], index="0", ip=sp[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
         if len(args) > 2 and args[2] == "secondary":
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }
+            body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }]}}
         else:
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+            body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }]}}
         return api.patch(path, body)
 
     elif func == 'patch_vlan_if_ipv4':
         sp = args[1].split('/')
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], ip=sp[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/addresses', name=args[0])
 
         if len(args) > 2 and args[2] == "secondary":
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }
+            body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }]}}
         else:
-            body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+            body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }]}}
         return api.patch(path, body)
 
     elif func == 'patch_mgmt_if_ipv4':
         sp = args[1].split('/')
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/config', name=args[0], index="0", ip=sp[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
 
-        body = { "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }
+        body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1])} }]}}
 
         if len(args) > 2 and args[2] == "secondary":
-            body["openconfig-if-ip:config"].update( {"openconfig-interfaces-ext:secondary": True} )
+            body["openconfig-if-ip:addresses"]["address"][0]["openconfig-if-ip:config"].update( {"openconfig-interfaces-ext:secondary": True} )
 
         if len(args) > 3 and args[2] == "gwaddr":
-            body["openconfig-if-ip:config"].update({ "openconfig-interfaces-ext:gw-addr": args[3]} )
+            body["openconfig-if-ip:addresses"]["address"][0]["openconfig-if-ip:config"].update({ "openconfig-interfaces-ext:gw-addr": args[3]} )
 
         return api.patch(path, body)
+
 
     elif func == 'patch_openconfig_if_ip_interfaces_interface_routed_vlan_ipv6_addresses_address_config':
         sp = args[1].split('/')

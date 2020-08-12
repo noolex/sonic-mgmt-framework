@@ -438,7 +438,7 @@ limitations under the License.
         >
         <PARAM
                 name="phy-if-name"
-                help="Enter Physical interface global configuration"
+                help="Enter Physical interface configuration"
                 ptype="PHY_INTERFACE"
                 view="configure-if-view"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/ifname"
@@ -446,7 +446,7 @@ limitations under the License.
         />
         <PARAM
                 name="vlan-if-name"
-                help="Enter VLAN global configuration"
+                help="Enter VLAN interface configuration"
                 ptype="VLAN_INTERFACE"
                 view="configure-vlan-view"
                 dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name"
@@ -469,7 +469,7 @@ limitations under the License.
          >
          <PARAM
              name="mgmt-if-id"
-             help="Enter Management interface global configuration"
+             help="Enter Management interface configuration"
              ptype="MGMT_INTF_ID"
              >
          </PARAM>
@@ -489,7 +489,7 @@ limitations under the License.
         >
         <PARAM
                 name="lag-id"
-                help="Enter PortChannel interface global configuration"
+                help="Enter PortChannel interface configuration"
                 ptype="LAG_ID"
                 >
         </PARAM>
@@ -554,7 +554,7 @@ limitations under the License.
         >
         <PARAM
                 name="lo-id"
-                help="Enter Loopback interface global configuration"
+                help="Enter Loopback interface configuration"
                 ptype="LO_ID"
                 >
         </PARAM>
@@ -812,6 +812,21 @@ limitations under the License.
             name="no speed"
             help="Set default speed config">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/port-speed body={"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="fec"
+            help="Configure FEC (forward error correction)">
+            <PARAM
+                name="fec"
+                help="FEC configuration of the interface"
+                dbpath="sonic-port:sonic-port/PORT/PORT_LIST/fec"
+                ptype="INTF_FEC" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec ${iface} ${fec}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no fec"
+            help="Set default FEC (forward error correction) configuration">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec ${iface} default</ACTION>
         </COMMAND>
         <COMMAND
             name="channel-group"
