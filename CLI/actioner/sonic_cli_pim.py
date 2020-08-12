@@ -572,19 +572,24 @@ def show_topology_info(response):
         log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
 
-def show_ssm_info(response):
-    outputList = []
+def get_ssm_ranges(response):
     ssmContainer = response.get('openconfig-network-instance:ssm')
-    if ssmContainer is None:
-        return
+    if not ssmContainer:
+        return '232.0.0.0/8'
 
     ssmState = ssmContainer.get('state')
-    if ssmState is None:
-        return
+    if not ssmState:
+        return '232.0.0.0/8'
 
     ssmRanges = ssmState.get('ssm-ranges')
-    if ssmRanges is None or ssmRanges == "":
-       ssmRanges = '232.0.0.0/8'
+    if not ssmRanges:
+        return '232.0.0.0/8'
+    else:
+        return ssmRanges
+
+def show_ssm_info(response):
+    outputList = []
+    ssmRanges = get_ssm_ranges(response)
 
     vrfName = inputDict.get('vrf')
     if vrfName is None:
