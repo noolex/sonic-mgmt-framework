@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+    <!--=======================================================-->
+
+<VIEW name="enable-view">
+  <COMMAND name="show evpn" help="Displays EVPN information summary">
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+
+  <COMMAND name="show evpn vni detail" help="Detailed information on each VNI">
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+  <COMMAND name="show evpn vni" help="show VxLAN Network Identifier">
+  	<PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE"></PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+
+  <COMMAND name="show evpn arp-cache" help="ARP and ND cache"/>
+  <COMMAND name="show evpn arp-cache vni all" help="All VNIs">
+  	<PARAM name="showevpnarpsubcommands" help="false" ptype="SUBCOMMAND" mode="switch" optional="true">
+  		<PARAM name="detail" help="Neighbor details for all vnis in detail" mode="subcommand" ptype="SUBCOMMAND" />
+	  	<PARAM name="duplicate" help="Duplicate address list" mode="subcommand" ptype="SUBCOMMAND" />
+  	</PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+  <COMMAND name="show evpn arp-cache vni" help="VxLAN Network Identifier">
+  	<PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE">
+	  <PARAM name="showevpnarpsubcommands" help="false" ptype="SUBCOMMAND" mode="switch" optional="true">
+	  	<PARAM name="ip" help="Neighbor" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+  	      <PARAM name="ipvalue" help="Neighbor address (IPv4 or IPv6 address)" ptype="IPV4V6_ADDR"></PARAM>
+  	    </PARAM>
+	  	<PARAM name="duplicate" help="Duplicate address list" mode="subcommand" ptype="SUBCOMMAND" />
+	  	<PARAM name="vtep" help="Remote VTEP" mode="subcommand" ptype="SUBCOMMAND" >
+	  	  <PARAM name="vtepvalue" help="Remote VTEP IP address" ptype="IP_ADDR"></PARAM>
+	  	</PARAM>
+	  </PARAM>
+  	</PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+
+  <COMMAND name="show evpn mac" help="MAC addresses"/>
+  <COMMAND name="show evpn mac vni all" help="All VNIs">
+  	<PARAM name="showevpnmacsubcommands" help="false" ptype="SUBCOMMAND" mode="switch" optional="true">
+  		<PARAM name="detail" help="Detailed information on each VNI MAC" mode="subcommand" ptype="SUBCOMMAND" />
+	  	<PARAM name="duplicate" help="Duplicate address list" mode="subcommand" ptype="SUBCOMMAND" />
+	  	<PARAM name="vtep" help="Remote VTEP" mode="subcommand" ptype="SUBCOMMAND" >
+	  	  <PARAM name="vtepvalue" help="Remote VTEP IP address" ptype="IP_ADDR"></PARAM>
+	  	</PARAM>
+  	</PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+  <COMMAND name="show evpn mac vni" help="VxLAN Network Identifier">
+  	<PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE">
+	  <PARAM name="showevpnmacsubcommands" help="false" ptype="SUBCOMMAND" mode="switch" optional="true">
+	  	<PARAM name="mac" help="MAC" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+  	      <PARAM name="macvalue" help="MAC address" ptype="MAC_ADDR"></PARAM>
+  	    </PARAM>
+	  	<PARAM name="duplicate" help="Duplicate address list" mode="subcommand" ptype="SUBCOMMAND" />
+	  	<PARAM name="vtep" help="Remote VTEP" mode="subcommand" ptype="SUBCOMMAND" >
+	  	  <PARAM name="vtepvalue" help="Remote VTEP IP address" ptype="IP_ADDR"></PARAM>
+	  	</PARAM>
+	  </PARAM>
+  	</PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+
+  <COMMAND name="show evpn next-hops" help="Remote Vteps"/>
+  <COMMAND name="show evpn next-hops vni all" help="All VNIs">
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+  <COMMAND name="show evpn next-hops vni" help="VxLAN Network Identifier">
+  	<PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE">
+  	<PARAM name="ip" help="IP address" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+  	  <PARAM name="ipvalue" help="IP address" ptype="IPV4V6_ADDR"></PARAM>
+  	</PARAM>
+  	</PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+
+  <COMMAND name="show evpn rmac" help="RMAC"/>
+  <COMMAND name="show evpn rmac vni all" help="All VNIs">
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+  <COMMAND name="show evpn rmac vni" help="VxLAN Network Identifier">
+  	<PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE">
+  	<PARAM name="mac" help="MAC" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+  	  <PARAM name="macvalue" help="MAC address" ptype="MAC_ADDR"></PARAM>
+  	</PARAM>
+  	</PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+  </COMMAND>
+
+</VIEW>
+
+</CLISH_MODULE>
+
