@@ -40,6 +40,15 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}/config/priority', name=args[0], sequence=args[1])
         return api.delete(path)
 
+    if func == 'patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_meter_type':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}/config/openconfig-qos-ext:meter-type', name=args[0], sequence=args[1])
+        body = {"openconfig-qos-ext:meter-type": args[2]}
+        return api.patch(path, body)
+
+    if func == 'delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_meter_type':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}/config/openconfig-qos-ext:meter-type', name=args[0], sequence=args[1])
+        return api.delete(path)
+
     if func == 'patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_weight':
         path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}/config/openconfig-qos-ext:weight', name=args[0], sequence=args[1])
         body = {"openconfig-qos-ext:weight": int(args[2])}
@@ -56,8 +65,22 @@ def invoke(func, args=[]):
         body = {"openconfig-qos:cir": cir_str}
         return api.patch(path, body)
 
+    if func == 'patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir_cpu':
+        cir_val = int(args[2])
+        cir_str = str(cir_val)
+        path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}/two-rate-three-color/config/cir', name=args[0], sequence=args[1])
+        body = {"openconfig-qos:cir": cir_str}
+        return api.patch(path, body)
+
     if func == 'patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir':
         pir_val = int(args[2]) * 1000
+        pir_str = str(pir_val)
+        path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}/two-rate-three-color/config/pir', name=args[0], sequence=args[1])
+        body = {"openconfig-qos:pir": pir_str}
+        return api.patch(path, body)
+
+    if func == 'patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir_cpu':
+        pir_val = int(args[2])
         pir_str = str(pir_val)
         path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}/two-rate-three-color/config/pir', name=args[0], sequence=args[1])
         body = {"openconfig-qos:pir": pir_str}

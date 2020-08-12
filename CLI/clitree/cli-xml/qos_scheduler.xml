@@ -199,17 +199,41 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND
-            name="cir"
-            help="Committed Information Rate in kbps"
+            name="meter-type"
+            help="scheduer meter type (packets/bytes)"
         >
         <PARAM
-            name="cir"
-            help="0 - 400000000 Kilo bits per second"
-            ptype="CIR_PIR_KBPS"
+            name="meter_type"
+            help="Configure scheduler type"
+            ptype="SCHEDULER_METER_TYPE_OPTION"
             >
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_meter_type ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${meter_type}
+        </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="no meter-type"
+            help="Delete meter-type"
+        >
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_config_meter_type ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}
+        </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="cir"
+            help="Committed Information Rate"
+        >
+        <PARAM
+            name="cir"
+            help="0 - 100000"
+            ptype="CPU_CIR_PIR_CBS_PBS"
+            >
+        </PARAM>
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir_cpu ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
         </ACTION>
         </COMMAND>
 
@@ -221,12 +245,12 @@ limitations under the License.
 
         <COMMAND
             name="cbs"
-            help="Committed Burst Size in bytes"
+            help="Committed Burst Size"
         >
         <PARAM
             name="bc"
-            help="Committed Burst Size in bytes"
-            ptype="BURST"
+            help="Committed Burst Size"
+            ptype="CPU_CIR_PIR_CBS_PBS"
             >
         </PARAM>
         <ACTION>
@@ -242,16 +266,16 @@ limitations under the License.
 
         <COMMAND
             name="pir"
-            help="Peak Information Rate in Kbps"
+            help="Peak Information Rate"
         >
         <PARAM
             name="pir"
-            help="0 - 400000000 Kilo bits per second"
-            ptype="CIR_PIR_KBPS"
+            help="0 - 100000"
+            ptype="CPU_CIR_PIR_CBS_PBS"
             >
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir_cpu ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
         </ACTION>
         </COMMAND>
 
@@ -266,12 +290,12 @@ limitations under the License.
 
         <COMMAND
             name="pbs"
-            help="Peak Burst Size in bytes"
+            help="Peak Burst Size"
         >
         <PARAM
             name="be"
-            help="Peak Burst Size in bytes"
-            ptype="BURST"
+            help="Peak Burst Size"
+            ptype="CPU_CIR_PIR_CBS_PBS"
             >
         </PARAM>
         <ACTION>
