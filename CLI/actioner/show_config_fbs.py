@@ -241,8 +241,9 @@ def show_running_fbs_service_policy(render_tables):
                 render_data[binding['INTERFACE_NAME']] = if_data
         sorted_data = OrderedDict(natsorted(render_data.items(), key=__natsort_intf_prio))
         for  intf_name in sorted_data:
-            if_data = sorted_data[intf_name]
-            cmd_str += 'service-policy type {} {} {} ;'.format(if_data[0][0], if_data[0][1], if_data[0][2])
+            if_bind_list = sorted_data[intf_name]
+            for bind_entry in if_bind_list:
+                cmd_str += 'service-policy type {} {} {} ;'.format(bind_entry[0], bind_entry[1], bind_entry[2])
             
     return 'CB_SUCCESS', cmd_str, True
 
