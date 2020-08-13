@@ -202,8 +202,9 @@ def invoke(func, args):
     # Configure  MCLAG Unique IP Table - START
     #######################################
     if (func == 'patch_sonic_mclag_seperate_ip_list'):
-        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST={if_name}',
-                if_name=args[0])
+        #keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST={if_name}',
+        #        if_name=args[0])
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST' )
         body = {
             "sonic-mclag:MCLAG_UNIQUE_IP_LIST": [
             {
