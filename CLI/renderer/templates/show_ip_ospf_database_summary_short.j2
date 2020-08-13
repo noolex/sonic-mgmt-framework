@@ -1,0 +1,15 @@
+                            {% if 'lsas' in lsa_type and 'openconfig-ospfv2-ext:lsa-ext' in lsa_type['lsas'] %}
+                                {% set lsa_list = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'] %}
+                                {% for lsa in lsa_list %}
+                                    {% if vars.summary_hdr == "true" %}
+                                        {% if vars.update({'summary_hdr':"false"}) %}{% endif %}
+{{' '}}
+                Summary Link States (Area {{vars.area_id}})
+                    {{' '}}
+Link ID         ADV Router      Age  Seq#       CkSum  Route
+                                    {% endif %}
+                                    {% if 'advertising-router' in lsa and 'link-state-id' in lsa and 'state' in lsa and 'age' in lsa['state'] and 'display-sequence-number'  in lsa['state'] and 'checksum' in lsa['state'] and 'summary-lsa' in lsa and 'state' in lsa['summary-lsa'] and 'network-mask' in lsa['summary-lsa']['state'] %}
+{{'%-15s'|format(lsa['link-state-id'])}} {{'%-15s'|format(lsa['advertising-router'])}} {{'%4d'|format(lsa['state']['age'])}} 0x{{'%08s'|format(lsa['state']['display-sequence-number'])}} 0x{{'%04x'|format(lsa['state']['checksum'])}} {{lsa['link-state-id']}}/{{lsa['summary-lsa']['state']['network-mask']}}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
