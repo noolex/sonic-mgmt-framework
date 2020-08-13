@@ -15,6 +15,7 @@ urllib3.disable_warnings()
 
 def invoke(func, args):
     body = None
+    resp = None
     aa = cc.ApiClient()
 
     if func == 'get_openconfig_port_group_port_groups_openconfig_port_group_port_groups_state':
@@ -27,8 +28,8 @@ def invoke(func, args):
                 if 'state' in pg:
                      resp.content[pg['id']] = pg['state']
                 else:
-                     break
-        if (not resp.content) or (len(resp.content)<1):
+                    break
+        if (resp is not None) or (not resp.content) or (len(resp.content)<1):
             resp.set_error_message("Port-group is not supported")
         return resp
     else:
