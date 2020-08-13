@@ -1,0 +1,64 @@
+{# ------------------------------------------------------------------------------------ #}
+{#         This is the umbrella template for "show ip ospf database" command            #}
+{% if json_output is defined and json_output|length > 0 %}
+    {% set vars = {'area_id': '', 'router_hdr': "true", 'network_hdr': "true",'summary_hdr': "true", 'asbr_hdr': "true",'external_hdr': "true", last_area_id: "", ext_route_type: "", ext_route_tag: ""} %}
+    {% set ospf_global_list = json_output  %}
+    {% for list_elem in ospf_global_list %}
+        {% if list_elem.has_key('vrfName')  %}
+VRF Name: {{list_elem['vrfName']}}
+        {% endif %}
+        {% if list_elem.has_key('self_router_id')   %}
+        {{' '}}
+       OSPF Router with ID ({{list_elem['self_router_id']}})
+        {% endif %}
+        {% if 'openconfig-network-instance:areas' in  list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
+            {% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
+            {% for areainfo in area_list %}
+                {% if vars.update({'last_area_id':areainfo['identifier']}) %}{% endif %}
+            {% endfor %}
+            {% for areainfo in area_list %}
+                {% if vars.update({'router_hdr':"true"}) %}{% endif %}
+                {% if vars.update({'network_hdr':"true"}) %}{% endif %}
+                {% if vars.update({'asbr_hdr':"true"}) %}{% endif %}
+                {% if vars.update({'summary_hdr':"true"}) %}{% endif %}
+                {% if vars.update({'external_hdr':"true"}) %}{% endif %}
+                {% if 'lsdb' in areainfo and 'state' in areainfo['lsdb'] and 'identifier' in areainfo['lsdb']['state'] %}
+                    {% if vars.update({'area_id':areainfo['lsdb']['state']['identifier']}) %}{% endif %}
+                    {% if 'openconfig-ospfv2-ext:stub' in areainfo and 'state' in areainfo['openconfig-ospfv2-ext:stub'] and 'enable' in areainfo['openconfig-ospfv2-ext:stub']['state'] and areainfo['openconfig-ospfv2-ext:stub']['state']['enable'] == True %}
+                        {% if vars.update({'area_id':vars.area_id + " [Stub]"}) %}{% endif %}
+                    {% endif %}
+                {% endif %}
+                {% if 'lsdb' in areainfo and 'lsa-types' in areainfo['lsdb'] and 'lsa-type' in areainfo['lsdb']['lsa-types']  %}
+                    {% set lsa_type_list = areainfo['lsdb']['lsa-types']['lsa-type'] %}
+                    {% for lsa_type in lsa_type_list %}
+                        {% if 'type' in lsa_type and lsa_type['type'] == 'openconfig-ospf-types:ROUTER_LSA' %}
+                            {% include "show_ip_ospf_database_router_short.j2" %}
+                        {% endif %}
+                    {% endfor %}
+                    {% for lsa_type in lsa_type_list %}
+                        {% if 'type' in lsa_type and lsa_type['type'] == 'openconfig-ospf-types:NETWORK_LSA' %}
+                            {% include "show_ip_ospf_database_network_short.j2" %}
+                        {% endif %}
+                    {% endfor %}
+                    {% for lsa_type in lsa_type_list %}
+                        {% if 'type' in lsa_type and lsa_type['type'] == 'openconfig-ospf-types:SUMMARY_IP_NETWORK_LSA' %}
+                            {% include "show_ip_ospf_database_summary_short.j2" %}
+                        {% endif %}
+                    {% endfor %}
+                    {% for lsa_type in lsa_type_list %}
+                        {% if 'type' in lsa_type and lsa_type['type'] == 'openconfig-ospf-types:SUMMARY_ASBR_LSA' %}
+                            {% include "show_ip_ospf_database_asbr_summary_short.j2" %}
+                        {% endif %}
+                    {% endfor %}
+                    {% for lsa_type in lsa_type_list %}
+                        {% if areainfo['identifier'] == vars.last_area_id and 'type' in lsa_type and lsa_type['type'] == 'openconfig-ospf-types:AS_EXTERNAL_LSA' %}
+                            {% include "show_ip_ospf_database_external_short.j2" %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{{' '}}
+{{' '}}
