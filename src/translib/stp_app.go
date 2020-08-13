@@ -2323,12 +2323,12 @@ func (app *StpApp) handleStpGlobalFieldsUpdation(d *db.DB, opcode int) error {
 		valStr := app.globalInfo.Field[fld]
 		(&tmpDbEntry).Set(fld, valStr)
 
-		if fld != "rootguard_timeout" && fld != "bpdu_filter" {
+		if fld != "rootguard_timeout" && fld != "bpdu_filter" && fld != "loop_guard" {
 			fldValuePair[fld] = valStr
 		}
 	}
 
-	err = d.SetEntry(app.globalTable, asKey("GLOBAL"), tmpDbEntry)
+	err = d.ModEntry(app.globalTable, asKey("GLOBAL"), tmpDbEntry)
 	if err != nil {
 		return err
 	}
