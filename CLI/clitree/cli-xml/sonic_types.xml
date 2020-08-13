@@ -1450,6 +1450,13 @@ limitations under the License.
         />
     <!--=======================================================-->
        <PTYPE
+        name="CPU_CIR_PIR_CBS_PBS"
+        method="integer"
+        pattern="1..100000"
+        help=""
+        />
+    <!--=======================================================-->
+       <PTYPE
         name="PORT_SEQ"
         method="integer"
         pattern="255"
@@ -1482,6 +1489,12 @@ limitations under the License.
         method="select"
         pattern="dwrr(DWRR) wrr(WRR) strict(STRICT)"
         help="Scheduler type Options"
+        />
+    <PTYPE
+        name="SCHEDULER_METER_TYPE_OPTION"
+        method="select"
+        pattern="packets(PACKETS) bytes(BYTES)"
+        help="Scheduler meter-type Options"
         />
     <!--=======================================================-->
         <PTYPE

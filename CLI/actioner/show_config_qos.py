@@ -321,29 +321,35 @@ def show_scheduler_policy(render_tables):
         if (spseq == '255'):
             cmd_str += '  port;'
 
-            cmd_str += show_scheduler_instance(sch)
+            cmd_str += show_scheduler_instance('port', sch)
 
         else:
             cmd_str += '  queue ' + spseq + ';'
 
-            cmd_str += show_scheduler_instance(sch)
+            cmd_str += show_scheduler_instance('queue', sch)
 
 
     return 'CB_SUCCESS', cmd_str
 
-def show_scheduler_instance(scheduler_inst):
+def show_scheduler_instance(stype, scheduler_inst):
     
     cmd_str = ''
 
     for key in scheduler_inst:
         if 'pir' == key:
-            cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            if 'port' == stype:
+                cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            else:
+                cmd_str += '    pir ' + str(int(scheduler_inst[key])) + ';'
 
         if 'pbs' == key:
             cmd_str += '    pbs ' + str(scheduler_inst[key]) + ';'
 
         if 'cir' == key:
-            cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            if 'port' == stype:
+                cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            else:
+                cmd_str += '    cir ' + str(int(scheduler_inst[key])) + ';'
 
         if 'cbs' == key:
             cmd_str += '    cbs ' + str(scheduler_inst[key]) + ';'
@@ -353,6 +359,9 @@ def show_scheduler_instance(scheduler_inst):
             
         if 'weight' == key:
             cmd_str += '    weight ' + str(scheduler_inst[key]) + ';'
+
+        if 'meter-type' == key:
+            cmd_str += '    meter-type ' + str(scheduler_inst[key].lower()) + ';'
 
     return cmd_str
 
@@ -368,7 +377,7 @@ def show_scheduler_policy_q(render_tables):
 
     if 'sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST' in render_tables:
         scheduler_inst = render_tables['sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST']
-        cmd_str += show_scheduler_instance(scheduler_inst)
+        cmd_str += show_scheduler_instance('cpu', scheduler_inst)
 
     return 'CB_SUCCESS', cmd_str
 
@@ -386,6 +395,6 @@ def show_scheduler_policy_port(render_tables):
     if 'sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST' in render_tables:
         scheduler_inst = render_tables['sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST']
 
-        cmd_str += show_scheduler_instance(scheduler_inst)
+        cmd_str += show_scheduler_instance('port', scheduler_inst)
         
     return 'CB_SUCCESS', cmd_str
