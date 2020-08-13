@@ -26,8 +26,8 @@ limitations under the License.
         dbpath="arg1:arg1/arg2/arg2_LIST/helper_addresses"> </PARAM>
       <ACTION builtin="clish_restcl">
           oper=PATCH
-          url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}${vlan_name}${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-helper/servers/server=default,${addr}/config
-          body={"openconfig-interfaces-ext:config": { "vrf" : "default" , "ip" : "${addr}"} }
+          url=/restconf/data/openconfig-ip-helper:ip-helper/interfaces/interface=${iface_uri}${vlan_name}${po_name}/servers/server=default,${addr}/config
+          body={"openconfig-ip-helper:config": { "vrf" : "default" , "ip" : "${addr}"} }
       </ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -43,8 +43,8 @@ limitations under the License.
       </PARAM>
       <ACTION builtin="clish_restcl">
         oper=PATCH
-        url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}${vlan_name}${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-helper/servers/server=${vrfname},${addr}/config
-        body={"openconfig-interfaces-ext:config": { "vrf" : "${vrfname}" , "ip" : "${addr}"} }
+        url=/restconf/data/openconfig-ip-helper:ip-helper/interfaces/interface=${iface_uri}${vlan_name}${po_name}/servers/server=${vrfname},${addr}/config
+        body={"openconfig-ip-helper:config": { "vrf" : "${vrfname}" , "ip" : "${addr}"} }
       </ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -62,7 +62,7 @@ limitations under the License.
       </PARAM>
       <ACTION builtin="clish_restcl">
           oper=DELETE
-          url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}${vlan_name}${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-helper/servers/server=default,${addr}
+          url=/restconf/data/openconfig-ip-helper:ip-helper/interfaces/interface=${iface_uri}${vlan_name}${po_name}/servers/server=default,${addr}
       </ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -78,7 +78,7 @@ limitations under the License.
       </PARAM>
       <ACTION builtin="clish_restcl">
           oper=DELETE
-          url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}${vlan_name}${po_name}/subinterfaces/subinterface=0/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-helper/servers/server=${vrfname},${addr}
+          url=/restconf/data/openconfig-ip-helper:ip-helper/interfaces/interface=${iface_uri}${vlan_name}${po_name}/servers/server=${vrfname},${addr}
       </ACTION>
       <DOCGEN>
         <DESCRIPTION>
