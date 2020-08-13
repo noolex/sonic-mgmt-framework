@@ -141,7 +141,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <ACTION
-        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/servers/server=${ip}${server-name}/config body={"openconfig-system:config": {"address": "${ip}${server-name}"}}
+        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/servers body={"openconfig-system:servers":{"server":[ {"address": "${ip}${server-name}","config":{"address":"${ip}${server-name}"}}]}}
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>

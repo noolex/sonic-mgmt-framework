@@ -21,6 +21,7 @@ import sys
 import json
 from rpipe_utils import pipestr
 from render_cli import show_cli_output
+from sonic_intf_utils import name_to_int_val
 import cli_client as cc
 import re
 import urllib3
@@ -43,73 +44,57 @@ def print_exception(e):
         print("% Error: Transaction failure.")
     return
 
-def _name_to_val(ifName):
-    tk = ifName.split('.')
-    plist = re.findall(r'\d+', tk[0])
-    val = 0
-    if len(plist) == 1:  #ex: Ethernet40
-       val = int(plist[0]) * 10000
-    elif len(plist) == 2:  #ex: Eth1/5
-       val= int(plist[0]+plist[1].zfill(3)+'000000')
-    elif len(plist) == 3:  #ex: Eth1/5/2
-       val= int(plist[0]+plist[1].zfill(3)+plist[2].zfill(2)+'0000')
-
-    if len(tk) == 2:   #ex: 2345 in Eth1/1.2345
-       val += int(tk[1])
-
-    #syslog.syslog(syslog.LOG_DEBUG, "{}: {}".format(ifName, val))
-    return val
-
-def getSonicId(item):
-    state_dict = item
-    ifName = state_dict['name']
-    return _name_to_val(ifName)
-
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
     if func == 'put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
-        name = args[0] + ',' + args[1] + ',' + args[2]
-        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/collectors/collector=' + name)
-        body = {
-              "collector": [
-              {
-                  "address": args[0],
-                  "port": int(args[1]),
-                  "vrf": args[2],
-                  "config": {
-                      "address": args[0],
-                      "port": int(args[1]),
-                      "vrf": args[2]
-                  }
-              }]}
+        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/collectors')
+        body = {"openconfig-sampling:collectors": {
+                "collector": [
+                {
+                    "address": args[0],
+                    "port": int(args[1]),
+                    "vrf": args[2],
+                    "config": {
+                        "address": args[0],
+                        "port": int(args[1]),
+                        "vrf": args[2]
+                    }
+                }]}}
         return api.put(path, body)
     elif func == 'delete_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list':
         name = args[0] + ',' + args[1] + ',' + args[2]
         path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/collectors/collector=' + name)
         return api.delete(path)
+
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
-        path = cc.Path('restconf/data/openconfig-sampling:sampling/sflow/interfaces/interface={ifname}/config/sampling-rate',
-                       ifname=args[0])
-        body = {
-            "openconfig-sampling:sampling-rate": int(args[1])
-        }
+        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/interfaces')
+        body = {"openconfig-sampling:interfaces": {
+                "interface": [{
+                    "name": args[0],
+                    "config": {
+                        "name": args[0],
+                        "sampling-rate": int(args[1])
+               }}]}}
         return api.patch(path, body)
     elif func == 'delete_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate':
-        path = cc.Path('restconf/data/openconfig-sampling:sampling/sflow/interfaces/interface={ifname}/config/sampling-rate',
+        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/interfaces/interface={ifname}/config/sampling-rate',
                        ifname=args[0])
         return api.delete(path)
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_admin_state':
-        path = cc.Path('restconf/data/openconfig-sampling:sampling/sflow/interfaces/interface={ifname}/config/enabled',
-                       ifname=args[0])
-        body = {
-            "openconfig-sampling:enabled": (args[1] == "up")
-        }
+        path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/interfaces')
+        body = {"openconfig-sampling:interfaces": {
+                "interface": [{
+                    "name": args[0],
+                    "config": {
+                        "name": args[0],
+                        "enabled": (args[1] == "up"),
+               }}]}}
         return api.patch(path, body)
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state':
         path = cc.Path('/restconf/data/openconfig-sampling:sampling/sflow/config/enabled')
         body = {
-              "openconfig-sampling:enabled": args[0] == "up"
+              "openconfig-sampling:enabled": (args[0] == "up")
         }
         return api.patch(path, body)
     elif func == 'patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id':
@@ -144,7 +129,13 @@ def run(func, args):
     try:
         response = invoke_api(func, args)
 
-        if response.ok() is False:
+        '''
+        We ignore the response from DELETE operations on interface sFlow sample rate because
+        a user may run 'no sflow sample-rate ...` more than once and that may result in
+        error since resource check won't find a dB entry
+        '''
+        if (response.ok() is False and
+            func != 'delete_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate'):
             print response.error_message()
             return
 
@@ -152,7 +143,7 @@ def run(func, args):
             sess_lst = [[]]
             if response.content:
                 sess_lst = response.content['openconfig-sampling:interfaces']['interface']
-                sess_lst = [sorted(sess_lst, key=getSonicId)]
+                sess_lst = [sorted(sess_lst, key=lambda x : name_to_int_val(x['name']))]
             show_cli_output(args[0], sess_lst)
 
         elif func == 'get_sonic_sflow_sonic_sflow':

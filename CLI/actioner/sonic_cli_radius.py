@@ -87,11 +87,13 @@ def invoke_api(func, args):
         vrf = (args[7])[4:]
         source_interface = (args[8])[17:]
 
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'servers/server={address}', address=args[0])
-        body = {"openconfig-system:server": [{
+        keypath = cc.Path(RADIUS_SERVER_GROUP + 'servers')
+        body = \
+            { "openconfig-system:servers": {
 
-                       "address": args[0],
+                 "openconfig-system:server": [{
+
+                       "openconfig-system:address": args[0],
 
                        "openconfig-system:config": {
                            "name": args[0],
@@ -103,6 +105,7 @@ def invoke_api(func, args):
                        }
                   }]
                }
+            }
 
         getpath = cc.Path(RADIUS_SERVER_GROUP + 'servers')
         response = api.get(getpath)
@@ -119,33 +122,43 @@ def invoke_api(func, args):
         if (exists == 'False') and (len(auth_port) == 0):
             auth_port = "1812"
         if len(auth_port) != 0:
-            body["openconfig-system:server"][0]["openconfig-system:radius"]\
+            body["openconfig-system:servers"]\
+                ["openconfig-system:server"][0]["openconfig-system:radius"]\
                 ["openconfig-system:config"]["auth-port"] = int(auth_port)
         if len(retransmit) != 0:
-            body["openconfig-system:server"][0]["openconfig-system:radius"]\
+            body["openconfig-system:servers"]\
+                ["openconfig-system:server"][0]["openconfig-system:radius"]\
                 ["openconfig-system:config"]["retransmit-attempts"] \
                 = int(retransmit)
         if len(key) != 0:
-            body["openconfig-system:server"][0]["openconfig-system:radius"]\
+            body["openconfig-system:servers"]\
+                ["openconfig-system:server"][0]["openconfig-system:radius"]\
                 ["openconfig-system:config"]["secret-key"] = key
 
         if len(timeout) != 0:
-            body["openconfig-system:server"][0]["openconfig-system:config"]\
+            body["openconfig-system:servers"]\
+                ["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["timeout"] = int(timeout)
         if len(auth_type) != 0:
-            body["openconfig-system:server"][0]["openconfig-system:config"]\
+            body["openconfig-system:servers"]\
+                ["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["openconfig-system-ext:auth-type"] = auth_type
         if (exists == 'False') and (len(priority) == 0):
             priority = "1"
         if len(priority) != 0:
-            body["openconfig-system:server"][0]["openconfig-system:config"]\
+            body["openconfig-system:servers"]\
+                ["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["openconfig-system-ext:priority"] = int(priority)
         if len(vrf) != 0:
-            body["openconfig-system:server"][0]["openconfig-system:config"]\
+            body["openconfig-system:servers"]\
+                ["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["openconfig-system-ext:vrf"] = vrf
         if len(source_interface) != 0:
-            body["openconfig-system:server"][0]["openconfig-system:radius"]\
-                ["openconfig-system:config"]["openconfig-aaa-radius-ext:source-interface"] = args[9] if args[9] != 'Management0' else 'eth0'
+            body["openconfig-system:servers"]\
+                ["openconfig-system:server"][0]["openconfig-system:radius"]\
+                ["openconfig-system:config"]\
+                ["openconfig-aaa-radius-ext:source-interface"] = args[9] \
+                    if args[9] != 'Management0' else 'eth0'
 
         return api.patch(keypath, body)
     elif func == 'delete_openconfig_radius_global_config_source_address':
@@ -200,12 +213,12 @@ def invoke_api(func, args):
                     return invoke_api(
                         'patch_openconfig_radius_global_config_host',
                         [args[0], "auth_port=1812", "timeout=", "retransmit=",
-                        "key=", "auth_type=", "priority=", "vrf="])
+                        "key=", "auth_type=", "priority=", "vrf=", "source_interface="])
                 if args[1] == "priority":
                     return invoke_api(
                         'patch_openconfig_radius_global_config_host',
                         [args[0], "auth_port=", "timeout=", "retransmit=",
-                        "key=", "auth_type=", "priority=1", "vrf="])
+                        "key=", "auth_type=", "priority=1", "vrf=", "source_interface="])
 
             uri_suffix = {
                 "auth-port": "/radius/config/auth-port",
@@ -383,21 +396,23 @@ def run(func, args):
     """
     Main routine for RADIUS KLISH Actioner script
     """
-    if func == 'get_sonic_radius':
-        global_response = get_sonic_radius_global()
-        get_sonic_radius_servers(globals=global_response)
-        return
+    try:
+        if func == 'get_sonic_radius':
+            global_response = get_sonic_radius_global()
+            get_sonic_radius_servers(globals=global_response)
+            return
 
-    response = invoke_api(func, args)
+        response = invoke_api(func, args)
 
-    if response.ok():
-        if response.content is not None:
-            # Get Command Output
-            api_response = response.content
-            if api_response is None:
-                print("%Error: Transaction Failure")
-    else:
-        print(response.error_message())
+        if response.ok():
+            if response.content is not None:
+                print("%Error: Invalid command")
+        else:
+            print(response.error_message())
+    except Exception:
+        # system/network error
+        print("%Error: Transaction Failure")
+
 
 if __name__ == '__main__':
 

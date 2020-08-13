@@ -198,8 +198,8 @@ def ospfv2_filter_lsdb_by_adv_router(response, advRouter):
                             lsainfo = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].pop()
                             if 'advertising-router' in lsainfo and lsainfo['advertising-router'] == advRouter:
                                 temp_lsa_list.append(lsainfo)
-                        if temp_lsa_list:
-                            lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].append(temp_lsa_list.pop())
+                        while temp_lsa_list:
+                            lsa_type['lsas']['lsa'].append(temp_lsa_list.pop())
                                 
                             
 def ospfv2_filter_lsdb_by_ls_id(response, ls_id):
@@ -215,8 +215,8 @@ def ospfv2_filter_lsdb_by_ls_id(response, ls_id):
                             lsainfo = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].pop()
                             if 'link-state-id' in lsainfo and lsainfo['link-state-id'] == ls_id:
                                 temp_lsa_list.append(lsainfo)
-                        if temp_lsa_list:
-                            lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].append(temp_lsa_list.pop())
+                        while temp_lsa_list:
+                            lsa_type['lsas']['lsa'].append(temp_lsa_list.pop())
 
 
 def invoke_show_api(func, args=[]):

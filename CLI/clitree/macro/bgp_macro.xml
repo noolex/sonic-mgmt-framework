@@ -76,8 +76,22 @@ limitations under the License.
         <PARAM name="peer-group" help="Peer group to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name="peer-group-name" help="Name of peer-group" ptype="STRING_63" optional="true"/>
         </PARAM>
+        <PARAM name="dampening" help="Clear BGP dampening" ptype="SUBCOMMAND" mode="subcommand" test='4 = arg1'>
+          <PARAM name="damptype" help="dampening option" ptype="SUBCOMMAND" mode="switch" optional="true">
+             <PARAM name="ip-addr" help="IPvarg1 address route to clear" ptype="arg3"/>
+             <PARAM name="ip-prefix" help="IPvarg1 Prefix to clear" ptype="IParg2_ADDR_MASK"/>
+             <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
+             <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
+             <PARAM name="soft" help="Soft reconfig inbound and outbound updates" ptype="SUBCOMMAND" mode="subcommand">
+               <PARAM name="soft-opt" help="soft-reconfiguration options" ptype="SUBCOMMAND" mode="switch" optional="true">
+                 <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
+                 <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
+               </PARAM>
+             </PARAM>
+          </PARAM>
+        </PARAM>
       </PARAM>
-      <PARAM name="inout_subcommands" help="Clear inout subcommands" ptype="SUBCOMMAND" mode="switch" order="true" optional="true">
+      <PARAM name="inout_subcommands" help="Clear inout subcommands" ptype="SUBCOMMAND" mode="switch" order="true" optional="true" test='"${cleartype}" != "dampening"'>
          <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
          <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
          <PARAM name="soft" help="Soft reconfig inbound and outbound updates" ptype="SUBCOMMAND" mode="subcommand">

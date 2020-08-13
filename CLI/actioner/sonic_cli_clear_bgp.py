@@ -34,6 +34,8 @@ def clear_bgp_api(args):
    cinall = ""
    clearall = ""
    external = ""
+   dampening = ""
+   dampeningIndex = ""
    cin = ""
    cout = ""
    soft = ""
@@ -43,7 +45,12 @@ def clear_bgp_api(args):
    if args[3] == 'cleartype=ip-prefix':
        # clear bgp ipv4/v6 unicast <ipv4-prefix/v6-prefix>
        # replace keyword unicast with prefix
-       args[7] = 'prefix'
+       if args[6] == 'dampening':
+          dampening = True
+          args[6] = 'prefix'
+       else:
+          args[7] = 'prefix'
+          
    i = 6
    for arg in args[6:]:
         if "vrf" == arg:
@@ -67,6 +74,8 @@ def clear_bgp_api(args):
               clearall = True
         elif "external" == arg:
            external = True
+        elif "dampening" == arg:
+           dampeningIndex = i
         elif "in" == arg:
            cin = True
         elif "out" == arg:
@@ -76,6 +85,20 @@ def clear_bgp_api(args):
         else:
            pass
         i = i + 1
+
+   if dampeningIndex != "":
+      af = ""
+      vrfname = ""
+      pg = ""
+      external = ""
+      ifname = ""
+      dampening = True;
+      if len(args) > 8:
+         if args[4] == 'dampopt=ip-prefix':
+            prefixip = args [dampeningIndex + 1]
+         elif args[4] == 'dampopt=ip-addr':
+            address = args [dampeningIndex + 1]
+
    if nipv4ip != "":
       address = nipv4ip
    if nipv6ip != "":
@@ -86,7 +109,7 @@ def clear_bgp_api(args):
    elif asnval != "":
       body = {"sonic-bgp-clear:input": { "vrf-name": vrfname, "family": af, "all": cinall, "address": address, "interface": ifname, "asn": int(asnval), "prefix": prefixip, "peer-group": pg, "external": external, "in": cin, "out": cout, "soft": soft}}
    else:
-      body = {"sonic-bgp-clear:input": { "vrf-name": vrfname, "family": af, "all": cinall, "address": address, "interface": ifname, "prefix": prefixip, "peer-group": pg, "external": external, "in": cin, "out": cout, "soft": soft}}
+      body = {"sonic-bgp-clear:input": { "vrf-name": vrfname, "family": af, "all": cinall, "dampening": dampening, "address": address, "interface": ifname, "prefix": prefixip, "peer-group": pg, "external": external, "in": cin, "out": cout, "soft": soft}}
    return api.post(keypath, body)
 
 def run(func, args):
@@ -102,6 +125,7 @@ def run(func, args):
         else:
             print response.error_message()
             sys.exit(1)
+
     else:
        return
 
