@@ -21,129 +21,42 @@ ALLOW_SYSNAME=False
 """
 module: ietf-snmp
   +--rw snmp
-     +--rw usm
-     |  +--rw local
-     |  |  +--rw user* [name]
-     |  |     +--rw name     snmp:identifier
-     |  |     +--rw auth!
-     |  |     |  +--rw (protocol)
-     |  |     |     +--:(md5)
-     |  |     |     |  +--rw md5
-     |  |     |     |     +--rw key    yang:hex-string
-     |  |     |     +--:(sha)
-     |  |     |        +--rw sha
-     |  |     |           +--rw key    yang:hex-string
-     |  |     +--rw priv!
-     |  |        +--rw (protocol)
-     |  |           +--:(des)
-     |  |           |  +--rw des
-     |  |           |     +--rw key    yang:hex-string
-     |  |           +--:(aes)
-     |  |              +--rw aes
-     |  |                 +--rw key    yang:hex-string
-     |  +--rw remote* [engine-id]
-     |     +--rw engine-id    snmp:engine-id
-     |     +--rw user* [name]
-     |        +--rw name     snmp:identifier
-     |        +--rw auth!
-     |        |  +--rw (protocol)
-     |        |     +--:(md5)
-     |        |     |  +--rw md5
-     |        |     |     +--rw key    yang:hex-string
-     |        |     +--:(sha)
-     |        |        +--rw sha
-     |        |           +--rw key    yang:hex-string
-     |        +--rw priv!
-     |           +--rw (protocol)
-     |              +--:(des)
-     |              |  +--rw des
-     |              |     +--rw key    yang:hex-string
-     |              +--:(aes)
-     |                 +--rw aes
-     |                    +--rw key    yang:hex-string
      +--rw engine
-     |  +--rw enabled?               boolean
+     |  +--rw enabled?     boolean
      |  +--rw listen* [name]
-     |  |  +--rw name          snmp:identifier
+     |  |  +--rw name         snmp:identifier
      |  |  +--rw (transport)
      |  |     +--:(udp)
-     |  |     |  +--rw udp
-     |  |     |     +--rw ip      inet:ip-address
-     |  |     |     +--rw port?   inet:port-number
-     |  |     +--:(tls) {tlstm}?
-     |  |     |  +--rw tls
-     |  |     |     +--rw ip      inet:ip-address
-     |  |     |     +--rw port?   inet:port-number
-     |  |     +--:(dtls) {tlstm}?
-     |  |     |  +--rw dtls
-     |  |     |     +--rw ip      inet:ip-address
-     |  |     |     +--rw port?   inet:port-number
-     |  |     +--:(ssh) {sshtm}?
-     |  |        +--rw ssh
-     |  |           +--rw ip      inet:ip-address
-     |  |           +--rw port?   inet:port-number
+     |  |        +--rw udp
+     |  |           +--rw ip                    inet:ip-address
+     |  |           +--rw port?                 inet:port-number
+     |  |           +--rw snmp-ext:interface?   string
      |  +--rw version
-     |  |  +--rw v1?    empty
      |  |  +--rw v2c?   empty
      |  |  +--rw v3?    empty
-     |  +--rw engine-id?             snmp:engine-id
-     |  +--rw enable-authen-traps?   boolean
+     |  +--rw engine-id?   snmp:engine-id
      +--rw target* [name]
      |  +--rw name             snmp:identifier
      |  +--rw (transport)
      |  |  +--:(udp)
-     |  |  |  +--rw udp
-     |  |  |     +--rw ip               inet:ip-address
-     |  |  |     +--rw port?            inet:port-number
-     |  |  |     +--rw prefix-length?   uint8
-     |  |  +--:(tls) {tlstm}?
-     |  |  |  +--rw tls
-     |  |  |     +--rw ip                    inet:host
-     |  |  |     +--rw port?                 inet:port-number
-     |  |  |     +--rw client-fingerprint?   x509c2n:tls-fingerprint
-     |  |  |     +--rw server-fingerprint?   x509c2n:tls-fingerprint
-     |  |  |     +--rw server-identity?      snmp:admin-string
-     |  |  +--:(dtls) {tlstm}?
-     |  |  |  +--rw dtls
-     |  |  |     +--rw ip                    inet:host
-     |  |  |     +--rw port?                 inet:port-number
-     |  |  |     +--rw client-fingerprint?   x509c2n:tls-fingerprint
-     |  |  |     +--rw server-fingerprint?   x509c2n:tls-fingerprint
-     |  |  |     +--rw server-identity?      snmp:admin-string
-     |  |  +--:(ssh) {sshtm}?
-     |  |     +--rw ssh
-     |  |        +--rw ip          inet:host
-     |  |        +--rw port?       inet:port-number
-     |  |        +--rw username?   string
+     |  |     +--rw udp
+     |  |        +--rw ip                           inet:ip-address
+     |  |        +--rw port?                        inet:port-number
+     |  |        +--rw snmp-ext:source-interface?   string
      |  +--rw tag*             snmp:tag-value
      |  +--rw timeout?         uint32
      |  +--rw retries?         uint8
      |  +--rw target-params    snmp:identifier
-     |  +--rw mms?             union
      +--rw target-params* [name]
-     |  +--rw name                     snmp:identifier
+     |  +--rw name         snmp:identifier
      |  +--rw (params)?
-     |  |  +--:(tsm) {tsm}?
-     |  |  |  +--rw tsm
-     |  |  |     +--rw security-name     snmp:security-name
-     |  |  |     +--rw security-level    snmp:security-level
-     |  |  +--:(usm)
-     |  |  |  +--rw usm
-     |  |  |     +--rw user-name         snmp:security-name
-     |  |  |     +--rw security-level    snmp:security-level
-     |  |  +--:(v1)
-     |  |  |  +--rw v1
-     |  |  |     +--rw security-name    snmp:security-name
-     |  |  +--:(v2c)
-     |  |     +--rw v2c
-     |  |        +--rw security-name    snmp:security-name
-     |  +--rw notify-filter-profile?   -> /snmp/notify-filter-profile/name {snmp:notification-filter}?
-     +--rw tlstm {tlstm}?
-     |  +--rw cert-to-name* [id]
-     |     +--rw id             uint32
-     |     +--rw fingerprint    x509c2n:tls-fingerprint
-     |     +--rw map-type       identityref
-     |     +--rw name           string
+     |     +--:(v2c)
+     |     |  +--rw v2c
+     |     |     +--rw security-name    snmp:security-name
+     |     +--:(usm)
+     |        +--rw usm
+     |           +--rw user-name         snmp:security-name
+     |           +--rw security-level    snmp:security-level
      +--rw vacm
      |  +--rw group* [name]
      |  |  +--rw name      snmp:group-name
@@ -162,35 +75,37 @@ module: ietf-snmp
      |     +--rw name       view-name
      |     +--rw include*   snmp:wildcard-object-identifier
      |     +--rw exclude*   snmp:wildcard-object-identifier
-     +--rw proxy* [name] {snmp:proxy}?
-     |  +--rw name                   snmp:identifier
-     |  +--rw type                   enumeration
-     |  +--rw context-engine-id      snmp:engine-id
-     |  +--rw context-name?          snmp:context-name
-     |  +--rw target-params-in?      snmp:identifier
-     |  +--rw single-target-out?     snmp:identifier
-     |  +--rw multiple-target-out?   snmp:tag-value
-     +--rw tsm {tsm}?
-     |  +--rw use-prefix?   boolean
      +--rw notify* [name]
      |  +--rw name    snmp:identifier
      |  +--rw tag     snmp:tag-value
      |  +--rw type?   enumeration
-     +--rw notify-filter-profile* [name] {snmp:notification-filter}?
-     |  +--rw name       snmp:identifier
-     |  +--rw include*   snmp:wildcard-object-identifier
-     |  +--rw exclude*   snmp:wildcard-object-identifier
      +--rw community* [index]
-        +--rw index                snmp:identifier
-        +--rw (name)?
-        |  +--:(text-name)
-        |  |  +--rw text-name?     string
-        |  +--:(binary-name)
-        |     +--rw binary-name?   binary
-        +--rw security-name        snmp:security-name
-        +--rw engine-id?           snmp:engine-id {snmp:proxy}?
-        +--rw context?             snmp:context-name
-        +--rw target-tag?          snmp:tag-value
+     |  +--rw index            snmp:identifier
+     |  +--rw security-name    snmp:security-name
+     +--rw usm
+     |  +--rw local
+     |     +--rw user* [name]
+     |        +--rw name    snmp:identifier
+     |        +--rw auth!
+     |        |  +--rw (protocol)
+     |        |     +--:(md5)
+     |        |     |  +--rw md5
+     |        |     |     +--rw key    yang:hex-string
+     |        |     +--:(sha)
+     |        |        +--rw sha
+     |        |           +--rw key    yang:hex-string
+     |        +--rw priv!
+     |           +--rw (protocol)
+     |              +--:(des)
+     |              |  +--rw des
+     |              |     +--rw key    yang:hex-string
+     |              +--:(aes)
+     |                 +--rw aes
+     |                    +--rw key    yang:hex-string
+     +--rw snmp-ext:system
+        +--rw snmp-ext:contact?       string
+        +--rw snmp-ext:location?      string
+        +--rw snmp-ext:trap-enable?   boolean
 """
 DEVICE_METADATA = 'DEVICE_METADATA'
 AGENTADDRESS    = 'SNMP_AGENT_ADDRESS_CONFIG'
@@ -207,11 +122,6 @@ SecurityLevels = { 'noauth' : 'no-auth-no-priv', 'auth' : 'auth-no-priv', 'priv'
 ViewOpts       = { 'read' : 'readView', 'write' : 'writeView', 'notify' : 'notifyView'}
 SORTED_ORDER   = ['sysName', 'sysLocation','sysContact', 'engineID', 'traps']
 ipFamily       = {4: AF_INET, 6: AF_INET6}
-
-config_db = ConfigDBConnector()
-if config_db is None:
-  sys.exit()
-config_db.connect()
 
 aa = cc.ApiClient()
 
@@ -319,10 +229,13 @@ def getEngineID():
     # Whoops, not hex
     engineID = ''
 
-  # if the engineID is not configured, construct as per SnmpEngineID 
+  # if the engineID is not configured, construct as per SnmpEngineID
   # TEXTUAL-CONVENTION in RFC 3411 using the system MAC address.
   if len(engineID) == 0:
-    sysmac = config_db.get_entry('DEVICE_METADATA', "localhost").get('mac')
+    keypath = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/mac', name="localhost")
+    response = aa.get(keypath)
+    if response.ok():
+        sysmac = response.content['sonic-device-metadata:mac'].encode('ascii')
     if sysmac == None:
       # All else fails, something must be used. Fabricated MAC Address
       sysmac = '00:00:00:12:34:56'
@@ -331,7 +244,7 @@ def getEngineID():
     # 3) The length of the octet string varies.
     #   bit 0 == '1'
     #   The snmpEngineID has a length of 12 octets
-    #   The first four octets are set to the binary equivalent of the agent's 
+    #   The first four octets are set to the binary equivalent of the agent's
     #     SNMP management private enterprise number as assigned by IANA.
     #     Microsoft = 311 = 0000 0137
     #   The fifth octet indicates how the rest (6th andfollowing octets) are formatted.
@@ -340,23 +253,6 @@ def getEngineID():
     engineID = "8000013703"+sysmac
 
   return engineID
-
-def set_system(row, data):
-  """ Set a system entry using direct write to config_db  """
-  key = SYSTEM
-  entry = config_db.get_entry(SNMP_SERVER, key)
-  if entry:
-    if entry.has_key(row):
-      del entry[row]
-  config_db.delete_entry(SNMP_SERVER, key)
-  newentry = {}
-  if (len(data)>0):
-    newentry[row] = data
-  for row, data in entry.iteritems():
-    newentry[row] = data
-  if len(newentry):
-    config_db.mod_entry(SNMP_SERVER, key, newentry)
-  return None
 
 def getIPType(x):
   try: socket.inet_pton(AF_INET6, x)
@@ -371,73 +267,99 @@ def getAgentAddresses():
         config snmpagentaddress del [-p <udpPort>] [-v <vrfName>] <IpAddress>
       The key to this table is  ipaddr|udpPort|ifname
   """
-  tableData = config_db.get_table(AGENTADDRESS)
   agentAddresses = []
-  if len(tableData) > 0:
-    for data in tableData.iterkeys():          # the key is the data
-      ipAddr, udpPort, ifName = data
-      agentAddresses.append({ "ipAddr" : ipAddr, "udpPort" : udpPort, "ifName" : ifName })
+  datam = {}
+  keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
+  response = aa.get(keypath)
+  if response.ok() and 'ietf-snmp:listen' in response.content.keys():
+    listenList = response.content['ietf-snmp:listen']
+    if len(listenList) > 0:
+      for listen in listenList:
+        udp = listen['udp']
+        entry = {}
+        entry['udpPort'] = udp[u'port']
+        entry['ipAddr'] = udp[u'ip']
+        if u'ietf-snmp-ext:interface' in udp.keys():
+          entry['ifName']  = udp[u'ietf-snmp-ext:interface']
+        agentAddresses.append(entry)
+
   return agentAddresses
 
 def invoke(func, args):
   if func == 'snmp_get':
-   keys = config_db.get_keys(SNMP_SERVER)
-   datam = {}
-   for key in keys:
-     datam = config_db.get_entry(SNMP_SERVER, key)
-   datam['engineID'] = getEngineID()
-   if len(datam) > 0:
-     order = []
-     for key in SORTED_ORDER:
-       if datam.has_key(key):
-         order.append(key)
-     tuples = [(key, datam[key]) for key in order]
-     datam = OrderedDict(tuples) 
+    datam = {}
+    keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/contact')
+    response = aa.get(keypath)
+    if response.ok() and 'ietf-snmp-ext:contact' in response.content.keys():
+        datam['sysContact'] = response.content['ietf-snmp-ext:contact']
 
-   agentAddr = {}
-   agentAddresses = getAgentAddresses()
-   if len(agentAddresses) > 0:
-     agentAddr['agentAddr'] = agentAddresses
+    keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/location')
+    response = aa.get(keypath)
+    if response.ok() and 'ietf-snmp-ext:location' in response.content.keys():
+        datam['sysLocation'] = response.content['ietf-snmp-ext:location']
 
-   response=aa.cli_not_implemented("global")      # Just to get the proper format to return data and status
-   response.content = {}                          # This method is used extensively throughout
-   response.status_code = 204
-   response.content['system'] = datam
-   response.content['global'] = agentAddr
-   return response
+    keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/trap-enable')
+    response = aa.get(keypath)
+    if response.ok() and 'ietf-snmp-ext:trap-enable' in response.content.keys():
+      trapEnable = response.content['ietf-snmp-ext:trap-enable']
+      if trapEnable == True:
+        datam['traps'] = 'enable'
 
-  elif func == 'snmp_sysname':
-    if ALLOW_SYSNAME==False:
-      row = sysname
-      data = ''
-      if (len(args)>0):
-        data = args[0]
-        set_system(row, data)
-    return None
+    datam['engineID'] = getEngineID()
+    if len(datam) > 0:
+      order = []
+      for key in SORTED_ORDER:
+        if datam.has_key(key):
+          order.append(key)
+      tuples = [(key, datam[key]) for key in order]
+      datam = OrderedDict(tuples) 
+
+    agentAddr = {}
+    agentAddresses = getAgentAddresses()
+    if len(agentAddresses) > 0:
+      agentAddr['agentAddr'] = agentAddresses
+
+    response=aa.cli_not_implemented("global")      # Just to get the proper format to return data and status
+    response.content = {}                          # This method is used extensively throughout
+    response.status_code = 204
+    response.content['system'] = datam
+    response.content['global'] = agentAddr
+    return response
 
   elif func == 'snmp_location':
-    row = location
-    data = ''
-    if (len(args)>0):
-      data = args[0]
-    set_system(row, data)
-    return None
+    keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/location')
+    if len(args) > 0:
+      location = args[0]
+      for element in args[1:]:
+        location = location + ' ' + element
+      body = {"ietf-snmp-ext:location": location}
+      response = aa.patch(keypath, body)
+    else:
+      response = aa.delete(keypath)
+    return response
 
   elif func == 'snmp_contact':
-    row = contact
-    data = ''
-    if (len(args)>0):
-      data = args[0]
-    set_system(row, data)
-    return None
+    keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/contact')
+    if len(args) > 0:
+      contact = args[0]
+      for element in args[1:]:
+        contact = contact + ' ' + element
+      body = {"ietf-snmp-ext:contact": contact}
+      response = aa.patch(keypath, body)
+    else:
+      response = aa.delete(keypath)
+    return response
 
   elif func == 'snmp_trap':
-    row = traps
-    data = ''
+    keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/trap-enable')
     if (len(args)>0) and (args[0] == 'enable'):
-      data = args[0]
-    set_system(row, data)
-    return None
+      body = {"ietf-snmp-ext:trap-enable": True}
+      response = aa.patch(keypath, body)
+    else:
+      body = {"ietf-snmp-ext:trap-enable": False}
+      response = aa.patch(keypath, body)
+#      response = aa.delete(keypath)                  # delete operation deletes "system"
+    return response
 
   elif func == 'snmp_engine':
     data = ''
@@ -526,12 +448,22 @@ def invoke(func, args):
         response.set_error_message(message)
         return response
 
-    key = (ipAddress, port, interface)
-    entry = None                    # default is to delete the entry
-    if func == 'snmp_agentaddr':
       entry = {}                    # if configuring, this tells set_entry to create it
-    config_db.set_entry(AGENTADDRESS, key, entry)
-    return None
+      keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine')
+      udp = {}
+      udp['ip']   = ipAddress
+      udp['port'] = int(port, 10)
+      if len(interface) > 0:
+        udp['ietf-snmp-ext:interface'] = interface
+      listen = {'name' : str(ip),
+                'udp' : udp }
+      body = { 'ietf-snmp:engine' : { 'listen' : [ listen ] }}
+      response = aa.patch(keypath, body)
+    else:
+      keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen={index}', index=ipAddress)
+      response = aa.delete(keypath)
+
+    return response
 
   # Get the configured communities.
   elif func == 'snmp_community_get':
