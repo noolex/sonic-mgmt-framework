@@ -115,11 +115,11 @@ def invoke(func, args):
     # VRRP set track interfaces
     if func == 'patch_openconfig_interfaces_ext' :
         if args[4] == "ipv4":
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track/vrrp-track-interface={trackif}/config/priority-increment', name=args[0], index="0", ip=addr4, vrid=args[1], trackif=args[2])
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track', name=args[0], index="0", ip=addr4, vrid=args[1])
         else:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track/vrrp-track-interface={trackif}/config/priority-increment', name=args[0], index="0", ip=addr6, vrid=args[1], trackif=args[2])
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track', name=args[0], index="0", ip=addr6, vrid=args[1])
         body=collections.defaultdict(dict)
-        body = {"openconfig-interfaces-ext:priority-increment": int(args[3])}
+        body = {"openconfig-interfaces-ext:vrrp-track": {"vrrp-track-interface": [{"track-intf": args[2],"config": {"track-intf": args[2],"priority-increment": int(args[3])}}]}}
         return aa.patch(keypath, body)
 
 
