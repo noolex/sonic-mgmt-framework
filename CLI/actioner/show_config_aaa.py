@@ -86,3 +86,16 @@ def show_aaa_config(render_tables):
 
     return 'CB_SUCCESS', cmd, False
 
+
+def show_username_config(render_tables):
+    cmd_prfx = 'username '
+    table_name = 'sonic-system-aaa:sonic-system-aaa/USER/USER_LIST'
+    cmd_str = ''
+    if table_name in render_tables:
+        for inst in render_tables[table_name]:
+            temp_cmd_prfx = cmd_prfx + inst['username'] + ' password ' + inst['password'] + ' role '
+            role_str = ' '.join(map(str, (elem for elem in inst['role'])))
+            temp_cmd_prfx = temp_cmd_prfx + role_str
+            cmd_str = cmd_str+';'+temp_cmd_prfx
+    return 'CB_SUCCESS', cmd_str
+
