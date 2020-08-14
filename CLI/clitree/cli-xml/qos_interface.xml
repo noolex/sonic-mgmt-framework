@@ -32,8 +32,8 @@ limitations under the License.
             >
            <PARAM
                name="qid"
-               help="queue name"
-               ptype="STRING_32"
+               help="Queue id"
+               ptype="RANGE_0_7"
                >
               <PARAM 
                 name="wred-policy"
@@ -255,8 +255,8 @@ limitations under the License.
         <COMMAND name="no queue" help="Negate Queue configuration">
            <PARAM
                name="qid"
-               help="queue name"
-               ptype="STRING_32"
+               help="Queue id"
+               ptype="RANGE_0_7"
                >
               <PARAM 
                 name="wred-policy"
@@ -565,7 +565,7 @@ limitations under the License.
     <COMMAND name="show qos" help="Show QoS information">
         <PARAM 
             name="interface"
-            help="interface QoS info"
+            help="Display QoS information per interface"
             ptype="SUBCOMMAND"
             mode="subcommand"
             >
@@ -596,8 +596,8 @@ limitations under the License.
                         >
                         <PARAM
                             name="queue-id"
-                            help="Queue id: 0, 1, .. etc"
-                            ptype="STRING"
+                            help="Queue id"
+                            ptype="RANGE_0_7"
                             >
                         </PARAM>
                     </PARAM>
