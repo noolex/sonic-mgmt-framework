@@ -18,73 +18,30 @@ import sys
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
+import ping_tr_common_utils
 import urllib3
 urllib3.disable_warnings()
 import subprocess
 import re
 
-#Invalid chars
-blocked_chars = frozenset(['&', ';', '<', '>', '|', '`', '\''])
-api = cc.ApiClient()
-
-def is_std_mode():
-    path = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode', name="localhost")
-    response = api.get(path)
-    if response is None:
-        return False
-
-    if response.ok():
-        response = response.content
-        if response is None:
-            return False
-
-    response = response.get('sonic-device-metadata:intf_naming_mode')
-    if response is None:
-        return False
-
-    if "standard" in response.lower():
-        return True
-    else:
-        return False
-
-
-def get_alias(interface):
-    path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=interface)
-    response = api.get(path)
-
-    if response is None:
-        return None
-
-    if response.ok():
-        response = response.content
-        if response is None:
-            return None
-
-        interface = response.get('sonic-port:alias')
-        return interface
-
-def print_and_log(msg):
-    print "% Error: ", msg
-    log.syslog(log.LOG_ERR, msg)
-
-def run_vrf(args, ping, vrfName):
+def run_vrf(args, traceroute, vrfName):
     if len(args) == 0:
         print_and_log("The command is not complete.")
         return
     try:
         args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
-        if ping == "ping6":
+        if traceroute == "traceroute6":
             if vrfName.lower() == 'mgmt':
-                cmd = "sudo cgexec -g l3mdev:" + vrfName + " ping -6 " + args
+                cmd = "sudo cgexec -g l3mdev:" + vrfName + " traceroute -6 " + args
             else:
-                cmd = "ping -I " + vrfName + " " + args
+                cmd = "traceroute -i " + vrfName + " " + args
         else:
             if vrfName.lower() == 'mgmt':
-                cmd = "sudo cgexec -g l3mdev:" + vrfName + " ping " + args
+                cmd = "sudo cgexec -g l3mdev:" + vrfName + " traceroute " + args
             else:
-                cmd = "ping -I " + vrfName + " " + args
+                cmd = "traceroute -i " + vrfName + " " + args
 
-        cmd = re.sub('-I\s*Management', '-I eth', cmd)
+        cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
         subprocess.call(cmdList, shell=False)
 
@@ -96,18 +53,17 @@ def run_vrf(args, ping, vrfName):
         log.syslog(log.LOG_ERR, str(e))
         return
 
-def run(args, ping):
+def run(args, traceroute):
     if len(args) == 0:
         print_and_log("The command is not complete.")
         return
     try:
         args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
-        if ping == "ping6":
-            cmd = "ping -6 " + args
+        if traceroute == "traceroute6":
+            cmd = "traceroute -6 " + args
         else:
-            cmd = "ping " + args
-
-        cmd = re.sub('-I\s*Management', '-I eth', cmd)
+            cmd = "traceroute " + args
+        cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
         subprocess.call(cmdList, shell=False)
 
@@ -124,13 +80,13 @@ def validate_input(args):
         print_and_log("Invalid argument")
         return False, args
 
-    result = re.search('(-I\s*)(Eth\d+/\d+/*\d*)', args, re.IGNORECASE)
+    result = re.search('(-i\s*)(Eth\d+/\d+/*\d*)', args, re.IGNORECASE)
     if (result is not None) and (is_std_mode()):
         interface = result.group(2)
         alias = get_alias(interface)
         if alias is None:
             return False, args
-        args = re.sub('(-I\s*)(Eth\d+/\d+/*\d*)', '\g<1>' + alias, args, re.IGNORECASE)
+        args = re.sub('(-i\s*)(Eth\d+/\d+/*\d*)', '\g<1>' + alias, args, re.IGNORECASE)
 
     if ("fe80:" in args.lower()
         or "ff01:" in args.lower()
@@ -138,7 +94,7 @@ def validate_input(args):
         if "vrf" in args:
             print_and_log("VRF name is not allowed for IPv6 addresses with link-local scope")
             return False, args
-        if " -I" not in args:
+        if " -i" not in args:
             print_and_log("Interface name was missing")
             return False, args
     return True, args
