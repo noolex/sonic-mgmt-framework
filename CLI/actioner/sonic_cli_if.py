@@ -403,6 +403,9 @@ def invoke_api(func, args=[]):
         responseMgmtIntfTbl = api.get(path)
         if responseMgmtIntfTbl.ok():
             d.update(responseMgmtIntfTbl.content)
+            mVrf = {}
+            mVrf["isMgmtVrfEnabled"] = ifutils.isMgmtVrfEnabled(cc)
+            d.update(mVrf)
             if func == 'ip_interfaces_get':
                filter_address(d, True)
             else:
