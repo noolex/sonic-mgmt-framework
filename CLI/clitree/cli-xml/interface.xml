@@ -770,13 +770,14 @@ limitations under the License.
 
         <COMMAND
             name="description"
+            escape_chars=""
             help="Textual description">
             <PARAM
                 name="desc"
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
