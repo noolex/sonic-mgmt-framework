@@ -242,6 +242,8 @@ def manageGroupMasterKey(group):
 
 def entryNotFound(response):
   """ Helper routine to detect entries that are not found. """
+  if response.content == None:
+    return True
   error_data = response.content['ietf-restconf:errors']['error'][0]
   if 'error-message' in error_data:
     err_msg = error_data['error-message']
@@ -254,7 +256,7 @@ def findKeyForTargetEntry(ipAddr):
       Keys are of the form targetEntry1, targetEntry2, etc.
   """
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/target')
-  response=aa.get(keypath)
+  response=aa.get(keypath, None, False)
   if response.ok():
     if 'ietf-snmp:target' in response.content.keys():
       for key, table in response.content.items():
@@ -273,7 +275,7 @@ def findNextKeyForTargetEntry(ipAddr):
     key = "targetEntry{}".format(index)
     index += 1
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/target={name}', name=key)
-    response=aa.get(keypath)
+    response=aa.get(keypath, None, False)
     if response.ok():
       if len(response.content) == 0:
         break
@@ -293,11 +295,11 @@ def createYangHexStr(textString):
 def getEngineID():
   """ Construct SNMP engineID from the configured value or from scratch """
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/engine-id')
-  response=aa.get(keypath)
+  response=aa.get(keypath, None, False)
 
   # First, try to get engineID via rest
   engineID = ''
-  if response.ok():
+  if response.ok() and len(response.content) != 0:
     content = response.content
     if content.has_key('ietf-snmp:engine-id'):
       engineID = content['ietf-snmp:engine-id']
@@ -545,7 +547,7 @@ def invoke(func, args):
           groups[comm] = grp
 
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/community')
-    response=aa.get(keypath)
+    response=aa.get(keypath, None, False)
     data = []
     if response.ok() and len(response.content) != 0:
       if 'ietf-snmp:community' in response.content.keys():
@@ -598,7 +600,7 @@ def invoke(func, args):
   elif func == 'snmp_group_member_get':
     groups = []
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/vacm/group')
-    response = aa.get(keypath)
+    response = aa.get(keypath, None, False)
     if response.ok() and len(response.content) != 0:
       if 'ietf-snmp:group' in response.content.keys():
         groupDict = response.content['ietf-snmp:group']
@@ -619,8 +621,8 @@ def invoke(func, args):
           else:
             path = '/restconf/data/ietf-snmp:snmp/vacm/group={name}/member'
             keypath = cc.Path(path, name = group)
-            response = aa.get(keypath)
-            if response.ok():
+            response = aa.get(keypath, None, False)
+            if response.ok() and len(response.content) != 0:
               if 'ietf-snmp:member' in response.content.keys():
                 data = response.content['ietf-snmp:member']
                 while len(data) > 0:
@@ -671,7 +673,7 @@ def invoke(func, args):
   elif func == 'snmp_group_access_get':
     groups = []
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/vacm/group')
-    response = aa.get(keypath)
+    response = aa.get(keypath, None, False)
     if response.ok() and len(response.content) != 0:
       if 'ietf-snmp:group' in response.content.keys():
         groupDict = response.content['ietf-snmp:group']
@@ -763,7 +765,7 @@ def invoke(func, args):
   # Get the configured views.
   elif func == 'snmp_view_get':
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/vacm/view')
-    response=aa.get(keypath)
+    response=aa.get(keypath, None, False)
     views = []
     if response.ok():
       content = response.content
@@ -805,7 +807,7 @@ def invoke(func, args):
 
     path = '/restconf/data/ietf-snmp:snmp/vacm/view={name}'
     keypath = cc.Path(path, name=args[0])
-    response=aa.get(keypath)
+    response=aa.get(keypath, None, False)
     if response.ok():
       if 'ietf-snmp:view' in response.content.keys():
         for key, data in response.content.items():
@@ -823,7 +825,7 @@ def invoke(func, args):
   # Get the configured users.
   elif func == 'snmp_user_get':
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/usm/local/user')
-    response=aa.get(keypath)
+    response=aa.get(keypath, None, False)
 
     users = []
     if response.ok() and len(response.content) != 0:
@@ -987,7 +989,7 @@ def invoke(func, args):
   # Get the configured hosts.
   elif func == 'snmp_host_get':
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/target')
-    response=aa.get(keypath)
+    response=aa.get(keypath, None, False)
     hosts4_c = []
     hosts4_u = []
     hosts6_c = []
@@ -1007,7 +1009,7 @@ def invoke(func, args):
             for key, value in data.items():
               if key == 'target-params':
                 path = cc.Path('/restconf/data/ietf-snmp:snmp/target-params={name}', name=data[key])
-                params=aa.get(path)
+                params=aa.get(path, None, False)
                 if response.ok():
                   if 'ietf-snmp:target-params' in params.content.keys():
                     data = params.content['ietf-snmp:target-params']
