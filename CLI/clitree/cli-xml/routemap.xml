@@ -136,7 +136,7 @@ limitations under the License.
     <PARAM name="as-opt" mode="switch" ptype="SUBCOMMAND" help="Set as-path options">
       <PARAM name="prepend" mode="subcommand" ptype="SUBCOMMAND" help="Prepend to the as-path">
         <PARAM name="prepend-opt" mode="switch" ptype="SUBCOMMAND" help="Set as-path prepend options">
-          <PARAM name="as-number_list" help="(,) separated individual as-number list in range 1 to 4294967295; for example, 2000,3000" ptype="STR_ASN_LST" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/set_asn_list"/>
+          <PARAM name="as-number_list" help="(,) separated individual AS number list in range 1 to 4294967295; for example, 2000,3000" ptype="STR_ASN_LST" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/set_asn_list"/>
         </PARAM>
       </PARAM>
     </PARAM>
@@ -212,8 +212,8 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="set origin" help="BGP origin code">
     <PARAM name="origopt" mode="switch" ptype="SUBCOMMAND" help="Origin option">
-      <PARAM name="egp" mode="subcommand" ptype="SUBCOMMAND" help="Remote egp" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/set_origin=EGP" />
-      <PARAM name="igp" mode="subcommand" ptype="SUBCOMMAND" help="Local igp" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/set_origin=IGP"/>
+      <PARAM name="egp" mode="subcommand" ptype="SUBCOMMAND" help="Remote EGP" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/set_origin=EGP" />
+      <PARAM name="igp" mode="subcommand" ptype="SUBCOMMAND" help="Local IGP" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/set_origin=IGP"/>
       <PARAM name="incomplete" mode="subcommand" ptype="SUBCOMMAND" help="Unknown heritage" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/set_origin=INCOMPLETE" />
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_routemap patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_route_origin ${name} ${seq_num} ${origopt}</ACTION>
@@ -296,8 +296,8 @@ limitations under the License.
 
   <COMMAND name="no set origin" help="BGP origin code">
     <PARAM name="origopt" mode="switch" ptype="SUBCOMMAND" help="Origin option" optional="true">
-      <PARAM name="egp" mode="subcommand" ptype="SUBCOMMAND" help="Remote egp"/>
-      <PARAM name="igp" mode="subcommand" ptype="SUBCOMMAND" help="Local igp"/>
+      <PARAM name="egp" mode="subcommand" ptype="SUBCOMMAND" help="Remote EGP"/>
+      <PARAM name="igp" mode="subcommand" ptype="SUBCOMMAND" help="Local IGP"/>
       <PARAM name="incomplete" mode="subcommand" ptype="SUBCOMMAND" help="Unknown heritage"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_routemap delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_route_origin ${name} ${seq_num} ${origopt}</ACTION>

@@ -24,34 +24,12 @@ import ast
 from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+import sonic_intf_utils as ifutils
 import collections
 from natsort import natsorted, ns
 
 IDENTIFIER='VRF'
 NAME1='vrf'
-
-def isMgmtVrfEnabled():
-    api = cc.ApiClient()
-    try:
-        request = "/restconf/data/openconfig-network-instance:network-instances/network-instance=mgmt/state/enabled/"
-
-        response = api.get(request)
-        response = response.content
-
-        if not response:
-            return False
-
-        response = response.get('openconfig-network-instance:enabled')
-        if response is None:
-            return False
-        elif response is False:
-            return False
-        else:
-            return True
-
-    except Exception as e:
-        log.syslog(log.LOG_ERR, str(e))
-        print "%Error: Internal error"
 
 def get_vrf_data(vrf_name, vrf_intf_info):
     api = cc.ApiClient()
@@ -88,7 +66,7 @@ def build_intf_vrf_binding (intf_vrf_binding):
     api = cc.ApiClient()
 
     # get mgmt vrf first
-    if isMgmtVrfEnabled() == True:
+    if ifutils.isMgmtVrfEnabled(cc) == True:
         intf_vrf_binding.setdefault("mgmt", []).append("eth0")
 
     tIntf = ("/restconf/data/sonic-interface:sonic-interface/INTERFACE/",

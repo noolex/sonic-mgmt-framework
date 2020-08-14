@@ -334,7 +334,7 @@ limitations under the License.
     <COMMAND
         name="no ip igmp"
         help="Enable IGMP operation">
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${iface} False</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_disable_igmp ${iface}</ACTION>
     </COMMAND>
     <COMMAND
         name="no ip igmp join"
@@ -784,7 +784,7 @@ limitations under the License.
             help="MAC Address"
             ptype="MAC_ADDR"
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh" />
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${vlan_name} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_static_arp_config ${vlan_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -812,7 +812,7 @@ limitations under the License.
             help="MAC Address"
             ptype="MAC_ADDR" />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config ${vlan_name} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_static_arp_config ${vlan_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -1305,7 +1305,7 @@ limitations under the License.
     <COMMAND
         name="no ip igmp"
         help="Enable IGMP operation">
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${po_name} False</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_disable_igmp ${po_name}</ACTION>
     </COMMAND>
     <COMMAND
         name="no ip igmp join"

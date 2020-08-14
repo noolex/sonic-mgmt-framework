@@ -361,7 +361,7 @@
     <COMMAND
         name="no ip igmp"
         help="Disable IGMP operation">
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_enable_igmp ${vlan_name} False</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_disable_igmp ${vlan_name}</ACTION>
     </COMMAND>
     <COMMAND name = "no ip igmp snooping" 
              help="Disables IGMP snooping"

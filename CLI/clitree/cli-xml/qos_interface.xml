@@ -32,8 +32,8 @@ limitations under the License.
             >
            <PARAM
                name="qid"
-               help="queue name"
-               ptype="STRING_32"
+               help="Queue id"
+               ptype="RANGE_0_7"
                >
               <PARAM 
                 name="wred-policy"
@@ -146,8 +146,8 @@ limitations under the License.
                ptype="STRING_32"
                >
            </PARAM>
-           <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_queue_map ${iface} ${tc_queue_map_name}
+           <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_queue_map ${iface} ${tc_queue_map_name}
            </ACTION>
        </COMMAND>
 
@@ -169,8 +169,8 @@ limitations under the License.
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_pg_map ${iface} ${tc_pg_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_pg_map ${iface} ${tc_pg_map_name}
             </ACTION>
         </COMMAND>
 
@@ -240,8 +240,8 @@ limitations under the License.
                ptype="STRING_32"
                >
             </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_pfc_priority_queue_map ${iface} ${pfc_priority_queue_map_name}
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_pfc_priority_queue_map ${iface} ${pfc_priority_queue_map_name}
             </ACTION>
         </COMMAND>
 
@@ -255,8 +255,8 @@ limitations under the License.
         <COMMAND name="no queue" help="Negate Queue configuration">
            <PARAM
                name="qid"
-               help="queue name"
-               ptype="STRING_32"
+               help="Queue id"
+               ptype="RANGE_0_7"
                >
               <PARAM 
                 name="wred-policy"
@@ -303,12 +303,8 @@ limitations under the License.
                     >
                 </PARAM>
             </PARAM>
-            <ACTION>
-            if test "${pfc-subcmd}" = "priority"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable ${iface} ${dot1p} &#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py patch_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric ${iface} &#xA;
-            fi&#xA;
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_ext_qos_interfaces_interface_pfc ${iface} ${__full_line}
             </ACTION>
         </COMMAND>
 
@@ -374,16 +370,8 @@ limitations under the License.
                     >
                 </PARAM>
             </PARAM>
-            <ACTION>
-            if test "${pfc-subcmd}" = "priority"; then&#xA;
-               if test "${dot1p}" = ""; then&#xA;
-                  python $SONIC_CLI_ROOT/sonic_cli_qos.py delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities ${iface} &#xA;
-               else&#xA;
-                  python $SONIC_CLI_ROOT/sonic_cli_qos.py delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable ${iface} ${dot1p} &#xA;
-               fi&#xA;
-            else&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_qos.py delete_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric ${iface} &#xA;
-            fi&#xA;
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos delete_openconfig_qos_ext_qos_interfaces_interface_pfc ${iface} ${__full_line}
             </ACTION>
         </COMMAND>
 
@@ -577,7 +565,7 @@ limitations under the License.
     <COMMAND name="show qos" help="Show QoS information">
         <PARAM 
             name="interface"
-            help="interface QoS info"
+            help="Display QoS information per interface"
             ptype="SUBCOMMAND"
             mode="subcommand"
             >
@@ -608,8 +596,8 @@ limitations under the License.
                         >
                         <PARAM
                             name="queue-id"
-                            help="Queue id: 0, 1, .. etc"
-                            ptype="STRING"
+                            help="Queue id"
+                            ptype="RANGE_0_7"
                             >
                         </PARAM>
                     </PARAM>
