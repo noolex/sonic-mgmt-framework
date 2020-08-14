@@ -84,8 +84,8 @@ limitations under the License.
         >
         <PARAM
             name="sequence"
-            help="Queue id: 0-7 for interface queues, 0-31 for CPU queues."
-            ptype="RANGE_0_31">
+            help="Queue id: 0-7 for interface queues, 0-47 for CPU queues."
+            ptype="RANGE_0_47">
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}
         </ACTION>
@@ -114,8 +114,8 @@ limitations under the License.
           >
           <PARAM
               name="sequence"
-              help="Queue id: 0-7 for interface queues, 0-31 for CPU queues."
-              ptype="RANGE_0_31">
+              help="Queue id: 0-7 for interface queues, 0-47 for CPU queues."
+              ptype="RANGE_0_47">
           </PARAM>
           <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}
         </ACTION>
@@ -336,7 +336,7 @@ limitations under the License.
     <COMMAND name="show qos scheduler-policy" help="Show scheduler policy information">
         <PARAM 
             name="name"
-            help="name of scheduler policy"
+            help="Name of scheduler policy"
             ptype="STRING_32"
             optional="true"
             >
