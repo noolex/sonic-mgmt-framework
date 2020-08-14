@@ -35,8 +35,11 @@ urllib3.disable_warnings()
 plugins = dict()
 
 def hashed_pw(pw):
+    pwd = pw.replace("\\","")
+    if pwd[:3] == '$6$':
+        return pwd
     salt = base64.b64encode(os.urandom(6), './')
-    return crypt(pw, '$6$' + salt)
+    return crypt(pwd, '$6$' + salt)
 
 def util_capitalize(value):
     for key,val in value.items():
