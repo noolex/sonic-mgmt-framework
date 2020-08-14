@@ -35,18 +35,17 @@ def invoke(func, args):
         sag_key = collections.defaultdict(dict)
         sag_key = {
             "name": args[0],
-            "index": "0",
             "static-anycast-gateway": args[1]
                   }
-				  
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway={static-anycast-gateway}',
+
+        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway={static-anycast-gateway}',
                           **sag_key)
         return aa.delete(keypath)         
 
     # SAG configure ipv4 anycast gateway address
     if func == 'patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv4_sag_ipv4_config_static_anycast_gateway' :
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway',
-                          name=args[0], index="0")
+        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway',
+                          name=args[0])
         body = collections.defaultdict(dict)
         body = {
                      "openconfig-interfaces-ext:static-anycast-gateway": [args[1]]
@@ -59,18 +58,17 @@ def invoke(func, args):
         sag_key = collections.defaultdict(dict)
         sag_key = {
             "name": args[0],
-            "index": "0",
             "static-anycast-gateway": args[1]
                   }
-				  
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway={static-anycast-gateway}',
+
+        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway={static-anycast-gateway}',
                           **sag_key)
         return aa.delete(keypath)         
 
     # SAG configure ipv6 anycast gateway address
     if func == 'patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv6_sag_ipv6_config_static_anycast_gateway' :
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway',
-                          name=args[0], index="0")
+        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway',
+                          name=args[0])
         body = collections.defaultdict(dict)
         body = {
                     "openconfig-interfaces-ext:static-anycast-gateway": [args[1]]

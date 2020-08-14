@@ -89,12 +89,11 @@ def run(func, args):
         if_list.append(if_name)
 
 
-
     if func == "show-interface-transceiver-diagnostics-loopback-capability":
         # Get loopback capability
         template = "show_xcvr_loopback_capability.j2"
         # print "---->", template
-    elif func == "show-interface-transceiver-diagnostics-params":
+    elif func == "show-interface-transceiver-params":
         template = "show_xcvr_oper_params.j2"
         # print "---->", template
     elif func == "show-interface-transceiver-diagnostics-loopback-controls":
@@ -141,7 +140,7 @@ def run(func, args):
         except:
             xcvrInfo[nm] = {}
     # Clean up the data
-    cli_dict = OrderedDict()
+    # cli_dict = OrderedDict()
     for val in sorted(xcvrInfo.keys(), key=lambda x: ifutils.name_to_int_val(x)):
         d2 = OrderedDict()
         try:
@@ -158,7 +157,7 @@ def run(func, args):
                         # print "   k[1] = {}".format(type(k[1]))
                         # print "value of key {} = {}".format(a,value)
                         dom_dict[a]=value
-                    elif a in dom_parameter_keys and func == "show-interface-transceiver-diagnostics-params":
+                    elif a in dom_parameter_keys and func == "show-interface-transceiver-params":
                         value = d[k]
                         # print "   k[1] = {}".format(type(k[1]))
                         # print "value of key {} = {}".format(a,value)
@@ -176,14 +175,15 @@ def run(func, args):
         except:
             continue
 
+        cli_dict = OrderedDict()
         cli_dict[val] = (val, dom_dict)
-    try:
-        # print "---> printing cli_dict --->"
-        # print cli_dict
-        for k in cli_dict:
-            show_cli_output(template, (True, cli_dict[k]))
-    except Exception as e:
-        pass
+        try:
+            print " "
+            # print cli_dict
+            for k in cli_dict:
+                show_cli_output(template, (True, cli_dict[k]))
+        except Exception as e:
+            pass
     return
 
 if __name__ == '__main__':

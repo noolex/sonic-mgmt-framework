@@ -59,29 +59,29 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
         body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": args[0], "config": {"interface-id": args[0]}, "openconfig-qos-maps-ext:interface-maps": {"config": { "dot1p-to-forwarding-group": args[1]}}}]}}
         return api.patch(path, body)
-
-    if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities', interface_id=args[0])
-        prio = int(args[1])
-        body = {"openconfig-qos-ext:pfc-priorities":{"pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":True}}]}}
-        return api.patch(path, body)
-    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities', interface_id=args[0])
-        prio = int(args[1])
-        body = {"openconfig-qos-ext:pfc-priorities":{"pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":False}}]}}
+    if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc':
+        if "asymmetric" in args:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
+           body = {"openconfig-qos-ext:asymmetric" : True}
+        else:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities', interface_id=args[0])
+           prio = int(args[3])
+           body = {"openconfig-qos-ext:pfc-priorities":{"pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":True}}]}}
         return api.patch(path, body)
 
-    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/pfc-priorities', intf_name=args[0])
-        return api.delete(path, deleteEmptyEntry=True)
+    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc':
+        if "asymmetric" in args:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
+           return api.delete(path,deleteEmptyEntry=True)
+        elif "priority" in args and len(args) > 4:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities', interface_id=args[0])
+           prio = int(args[4])
+           body = {"openconfig-qos-ext:pfc-priorities":{"pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":False}}]}}
+           return api.patch(path, body)
+        elif "priority" in args:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/pfc-priorities', intf_name=args[0])
+           return api.delete(path, deleteEmptyEntry=True)
 
-    if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
-        body = {"openconfig-qos-ext:asymmetric" : True}
-        return api.patch(path, body)
-    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
-        return api.delete(path,deleteEmptyEntry=True)
     if func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc', interface_id=args[0])
         return api.get(path)

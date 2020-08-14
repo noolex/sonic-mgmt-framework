@@ -21,10 +21,47 @@ limitations under the License.
      <PARAM name="pref" help="Route preference" ptype="RANGE_1_255" optional="true"></PARAM>
 </MACRODEF>
 
-<MACRODEF name ="STATIC_ROUTE_TRACK_CFG">
+<MACRODEF name="STATIC_ROUTE_TAG_DIST_CFG">
+     <PARAM name="tag" help="Select an tag value" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="tag-val" help="tag value (1-4294967295)" ptype="RANGE_1_4294967295">
+              <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/> 
+          </PARAM> 
+     </PARAM>
+</MACRODEF>
+
+<MACRODEF name ="STATIC_ROUTE_TRACK_DIST_CFG">
      <PARAM name="track" help="track id for sla" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-           <PARAM name="trackid" help="trackid" ptype="RANGE_1_255" ></PARAM>
-           <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+           <PARAM name="trackid" help="trackid" ptype="RANGE_1_255">
+              <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+           </PARAM>
+     </PARAM>
+</MACRODEF>
+
+<MACRODEF name="STATIC_ROUTE_TAG_TRACK_DIST_CFG">
+     <PARAM name="tag" help="Select an tag value" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="tag-val" help="tag value (1-4294967295)" ptype="RANGE_1_4294967295">
+            <MACRO name="STATIC_ROUTE_TRACK_DIST_CFG" arg=""/>
+            <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+          </PARAM>
+     </PARAM>
+</MACRODEF>
+
+<MACRODEF name ="STATIC_ROUTE_IP_INTF_CFG">
+     <PARAM name="interface" help="Select an interface" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="ifname" help="Interface-type number" ptype="PHY_LB_PO_VL_INTERFACE">
+                <PARAM help="switch subcommand" name="type_v" mode="switch" ptype="SUBCOMMAND" optional="true">
+                      <PARAM help="Set next hop VRF" name="nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand">
+                            <PARAM name="next-hop-vrf" help="Name of next hop VRF" ptype="VRF_OR_DEFAULT">
+                               <MACRO name="STATIC_ROUTE_TAG_TRACK_DIST_CFG" arg=""/>
+                               <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+                               <MACRO name="STATIC_ROUTE_TRACK_DIST_CFG" arg=""/>
+                            </PARAM>
+                      </PARAM>
+                      <MACRO name="STATIC_ROUTE_TRACK_DIST_CFG" arg=""/>
+                      <MACRO name="STATIC_ROUTE_TAG_TRACK_DIST_CFG" arg=""/>
+                      <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
+                 </PARAM>
+          </PARAM>
      </PARAM>
 </MACRODEF>
 
@@ -34,13 +71,11 @@ limitations under the License.
                 <PARAM help="switch subcommand" name="type_v" mode="switch" ptype="SUBCOMMAND" optional="true">
                       <PARAM help="Set next hop VRF" name="nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand">
                             <PARAM name="next-hop-vrf" help="Name of next hop VRF" ptype="VRF_OR_DEFAULT">
+                               <MACRO name="STATIC_ROUTE_TAG_DIST_CFG" arg=""/>
                                <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
-                               <MACRO name="STATIC_ROUTE_TRACK_CFG" arg=""/>
                             </PARAM>
                       </PARAM>
-                      <PARAM name="track" help="track id for sla" ptype="SUBCOMMAND" mode="subcommand">
-                            <PARAM name="trackid" help="trackid" ptype="RANGE_1_255" ></PARAM>
-                      </PARAM>
+                      <MACRO name="STATIC_ROUTE_TAG_DIST_CFG" arg=""/>
                       <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
                  </PARAM>
           </PARAM>
@@ -79,19 +114,22 @@ limitations under the License.
 <MACRODEF name="STATIC-ROUTE-CFG">
          <PARAM name="prefix" help="Destination prefix" ptype="IParg1_ADDR_MASK">
             <PARAM name="route-target" help="Route target" ptype="SUBCOMMAND" mode="switch" >
-                <MACRO name="STATIC_ROUTE_INTF_CFG" arg=""/>
+                 <MACRO name="STATIC_ROUTE_INTF_CFG" arg=""/>
                  <PARAM name="blackhole" help="Silently discard pkts when matched" mode="subcommand"  ptype="SUBCOMMAND">
+                      <MACRO name="STATIC_ROUTE_TAG_DIST_CFG" arg=""/>
                       <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
                  </PARAM>
                  <PARAM name="next-hop-addr" help="Set next hop address" ptype="IParg1_ADDR">
                       <PARAM help="switch subcommand" name="type" mode="switch" ptype="SUBCOMMAND" optional="true">
-                           <MACRO name="STATIC_ROUTE_INTF_CFG" arg=""/>
+                           <MACRO name="STATIC_ROUTE_IP_INTF_CFG" arg=""/>
+                           <MACRO name="STATIC_ROUTE_TAG_TRACK_DIST_CFG" arg=""/>
                            <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
-                           <MACRO name="STATIC_ROUTE_TRACK_CFG" arg=""/>
+                           <MACRO name="STATIC_ROUTE_TRACK_DIST_CFG" arg=""/>
                            <PARAM name="nexthop-vrf" help="Select next hop VRF" ptype="SUBCOMMAND" mode="subcommand">
                                <PARAM name="next-hop-vrf" help="Name of next hop VRF" ptype="VRF_OR_DEFAULT">
+                                   <MACRO name="STATIC_ROUTE_TAG_TRACK_DIST_CFG" arg=""/>
                                    <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
-                                   <MACRO name="STATIC_ROUTE_TRACK_CFG" arg=""/>
+                                   <MACRO name="STATIC_ROUTE_TRACK_DIST_CFG" arg=""/>
                                </PARAM>
                            </PARAM>
                       </PARAM>

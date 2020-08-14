@@ -20,6 +20,7 @@
 
 #include "private.h"
 #include "nos_extn.h"
+#include "lub/string.h"
 
 #include <pthread.h>
 #include <unistd.h>
@@ -70,6 +71,8 @@ CLISH_PLUGIN_SYM(clish_restcl)
 
     pthread_mutex_unlock(&lock);
 
+    lub_string_free(cmd);
+
     return ret;
 }
 
@@ -94,9 +97,11 @@ CLISH_PLUGIN_SYM(clish_setenv)
     char *key, *value;
     key = strtok_r((char*)script, "=", &value);
 
-    pyobj_update_environ(key,value);
+    if (key) {
+	pyobj_update_environ(key,value);
 
-    setenv(key, value, 1);
+	setenv(key, value, 1);
+    }
 
     return 0;
 }

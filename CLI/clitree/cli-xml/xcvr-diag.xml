@@ -31,7 +31,6 @@ limitations under the License.
             <PARAM name="controls" help="Show transceiver diagnostics loopback controls" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
           </PARAM>
         </PARAM>
-        <PARAM name="params" help="Show transceiver operating parameters" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
       </PARAM>
       <PARAM name="phy-if-name" help="Interface" ptype="PHY_INTERFACE" optional="true"></PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_xcvr ${__full_line} </ACTION>
