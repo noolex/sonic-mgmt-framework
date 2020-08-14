@@ -42,39 +42,118 @@ def invoke_api(func, args):
     body = None
 
     if func == 'patch_openconfig_radius_global_config_source_address':
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'config/openconfig-system-ext:source-address')
-        body = {"openconfig-system-ext:source-address": args[0]}
+        keypath = cc.Path(SERVER_GROUPS)
+        body = \
+        { "openconfig-system:server-groups": {\
+            "openconfig-system:server-group": [{\
+              "openconfig-system:name": "RADIUS",\
+              "openconfig-system:config": {\
+                "openconfig-system:name": "RADIUS",\
+                "openconfig-system-ext:source-address": args[0]\
+              }\
+            }]\
+          }\
+        }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_nas_ip_address':
-        keypath = cc.Path(RADIUS_CONFIG + 'nas-ip-address')
-        body = {"openconfig-aaa-radius-ext:nas-ip-address": args[0]}
+        keypath = cc.Path(SERVER_GROUPS)
+        body = \
+        { "openconfig-system:server-groups": {\
+            "openconfig-system:server-group": [{\
+              "openconfig-system:name": "RADIUS",\
+              "openconfig-system:config": {\
+                "openconfig-system:name": "RADIUS"\
+              },\
+              "openconfig-aaa-radius-ext:radius": {\
+                "openconfig-aaa-radius-ext:config": {\
+                  "openconfig-aaa-radius-ext:nas-ip-address": args[0]\
+                }\
+              }\
+            }]\
+          }\
+        }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_statistics':
-        keypath = cc.Path(RADIUS_CONFIG + 'statistics')
         if args[0] == 'enable':
-            body = {"openconfig-aaa-radius-ext:statistics": True}
+            keypath = cc.Path(SERVER_GROUPS)
+            body = \
+            { "openconfig-system:server-groups": {\
+                "openconfig-system:server-group": [{\
+                  "openconfig-system:name": "RADIUS",\
+                  "openconfig-system:config": {\
+                    "openconfig-system:name": "RADIUS"\
+                  },\
+                  "openconfig-aaa-radius-ext:radius": {\
+                    "openconfig-aaa-radius-ext:config": {\
+                      "openconfig-aaa-radius-ext:statistics": True\
+                    }\
+                  }\
+                }]\
+              }\
+            }
             return api.patch(keypath, body)
         else:
+            keypath = cc.Path(RADIUS_CONFIG + 'statistics')
             return api.delete(keypath)
     elif func == 'patch_openconfig_radius_global_config_timeout':
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'config/openconfig-system-ext:timeout')
-        body = {"openconfig-system-ext:timeout": int(args[0])}
+        keypath = cc.Path(SERVER_GROUPS)
+        body = \
+        { "openconfig-system:server-groups": {\
+            "openconfig-system:server-group": [{\
+              "openconfig-system:name": "RADIUS",\
+              "openconfig-system:config": {\
+                "openconfig-system:name": "RADIUS",\
+                "openconfig-system-ext:timeout": int(args[0])\
+              }\
+            }]\
+          }\
+        }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_retransmit':
-        keypath = cc.Path(RADIUS_CONFIG + 'retransmit-attempts')
-        body = {"openconfig-aaa-radius-ext:retransmit-attempts": int(args[0])}
+        keypath = cc.Path(SERVER_GROUPS)
+        body = \
+        { "openconfig-system:server-groups": {\
+            "openconfig-system:server-group": [{\
+              "openconfig-system:name": "RADIUS",\
+              "openconfig-system:config": {\
+                  "openconfig-system:name": "RADIUS"\
+              },\
+              "openconfig-aaa-radius-ext:radius": {\
+                "openconfig-aaa-radius-ext:config": {\
+                  "openconfig-aaa-radius-ext:retransmit-attempts": int(args[0])\
+                }\
+              }\
+            }]\
+          }\
+        }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_key':
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'config/openconfig-system-ext:secret-key')
-        body = {"openconfig-system-ext:secret-key": args[0]}
+        keypath = cc.Path(SERVER_GROUPS)
+        body = \
+        { "openconfig-system:server-groups": {\
+            "openconfig-system:server-group": [{\
+              "openconfig-system:name": "RADIUS",\
+              "openconfig-system:config": {\
+                "openconfig-system:name": "RADIUS",\
+                "openconfig-system-ext:secret-key": args[0]\
+              }\
+            }]\
+          }\
+        }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_auth_type':
-        keypath = cc.Path(RADIUS_SERVER_GROUP +
-            'config/openconfig-system-ext:auth-type')
-        body = {"openconfig-system-ext:auth-type": args[0]}
+        keypath = cc.Path(SERVER_GROUPS)
+        body = \
+        { "openconfig-system:server-groups": {\
+            "openconfig-system:server-group": [{\
+              "openconfig-system:name": "RADIUS",\
+              "openconfig-system:config": {\
+                "openconfig-system:name": "RADIUS",\
+                "openconfig-system-ext:auth-type": args[0]\
+              }\
+            }]\
+          }\
+        }
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_radius_global_config_host':
 
@@ -87,16 +166,14 @@ def invoke_api(func, args):
         vrf = (args[7])[4:]
         source_interface = (args[8])[17:]
 
-        keypath = cc.Path(RADIUS_SERVER_GROUP + 'servers')
-        body = \
-            { "openconfig-system:servers": {
+        body = {
 
                  "openconfig-system:server": [{
 
                        "openconfig-system:address": args[0],
 
                        "openconfig-system:config": {
-                           "name": args[0],
+                           "address": args[0],
                        },
 
                        "openconfig-system:radius": {
@@ -105,62 +182,49 @@ def invoke_api(func, args):
                        }
                   }]
                }
-            }
 
-        getpath = cc.Path(RADIUS_SERVER_GROUP + 'servers')
-        response = api.get(getpath)
-
-        exists = 'False'
-        if response.ok()\
-              and ('openconfig-system:servers' in response.content)\
-              and ('server' in response.content['openconfig-system:servers']):
-            for server in \
-                    response.content['openconfig-system:servers']['server']:
-                if ('address' in server) and (server['address'] == args[0]):
-                    exists = 'True'
-
-        if (exists == 'False') and (len(auth_port) == 0):
-            auth_port = "1812"
         if len(auth_port) != 0:
-            body["openconfig-system:servers"]\
-                ["openconfig-system:server"][0]["openconfig-system:radius"]\
+            body["openconfig-system:server"][0]["openconfig-system:radius"]\
                 ["openconfig-system:config"]["auth-port"] = int(auth_port)
         if len(retransmit) != 0:
-            body["openconfig-system:servers"]\
-                ["openconfig-system:server"][0]["openconfig-system:radius"]\
+            body["openconfig-system:server"][0]["openconfig-system:radius"]\
                 ["openconfig-system:config"]["retransmit-attempts"] \
                 = int(retransmit)
         if len(key) != 0:
-            body["openconfig-system:servers"]\
-                ["openconfig-system:server"][0]["openconfig-system:radius"]\
+            body["openconfig-system:server"][0]["openconfig-system:radius"]\
                 ["openconfig-system:config"]["secret-key"] = key
 
         if len(timeout) != 0:
-            body["openconfig-system:servers"]\
-                ["openconfig-system:server"][0]["openconfig-system:config"]\
+            body["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["timeout"] = int(timeout)
         if len(auth_type) != 0:
-            body["openconfig-system:servers"]\
-                ["openconfig-system:server"][0]["openconfig-system:config"]\
+            body["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["openconfig-system-ext:auth-type"] = auth_type
-        if (exists == 'False') and (len(priority) == 0):
-            priority = "1"
         if len(priority) != 0:
-            body["openconfig-system:servers"]\
-                ["openconfig-system:server"][0]["openconfig-system:config"]\
+            body["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["openconfig-system-ext:priority"] = int(priority)
         if len(vrf) != 0:
-            body["openconfig-system:servers"]\
-                ["openconfig-system:server"][0]["openconfig-system:config"]\
+            body["openconfig-system:server"][0]["openconfig-system:config"]\
                 ["openconfig-system-ext:vrf"] = vrf
         if len(source_interface) != 0:
-            body["openconfig-system:servers"]\
-                ["openconfig-system:server"][0]["openconfig-system:radius"]\
+            body["openconfig-system:server"][0]["openconfig-system:radius"]\
                 ["openconfig-system:config"]\
                 ["openconfig-aaa-radius-ext:source-interface"] = args[9] \
                     if args[9] != 'Management0' else 'eth0'
 
-        return api.patch(keypath, body)
+        keypath = cc.Path(SERVER_GROUPS)
+        restconf_body = \
+        { "openconfig-system:server-groups": {\
+            "openconfig-system:server-group": [{\
+              "openconfig-system:name": "RADIUS",\
+              "openconfig-system:config": {\
+                "openconfig-system:name": "RADIUS"\
+              },\
+              "openconfig-system:servers": body\
+            }]\
+          }\
+        }
+        return api.patch(keypath, restconf_body)
     elif func == 'delete_openconfig_radius_global_config_source_address':
         keypath = cc.Path(RADIUS_SERVER_GROUP +
             'config/openconfig-system-ext:source-address')
@@ -186,39 +250,6 @@ def invoke_api(func, args):
     elif func == 'delete_openconfig_radius_global_config_host':
         path = RADIUS_SERVER_GROUP + 'servers/server={address}'
         if (len(args) >= 2) and (len(args[1]) != 0):
-
-            if (args[1] == "auth-port") or (args[1] == "priority"):
-                getpath = cc.Path(RADIUS_SERVER_GROUP + 'servers')
-                response = api.get(getpath)
-
-                if not response.ok():
-                    print("%Error: Get Failure")
-                    return response
-
-                if (not 'openconfig-system:servers' in response.content)\
-                  or (not 'server' \
-                   in response.content['openconfig-system:servers']):
-                    return response
-
-                exists = 'False'
-                for server in \
-                    response.content['openconfig-system:servers']['server']:
-                    if ('address' in server) and (server['address'] == args[0]):
-                        exists = 'True'
-
-                if exists == 'False':
-                    return response
-
-                if args[1] == "auth-port":
-                    return invoke_api(
-                        'patch_openconfig_radius_global_config_host',
-                        [args[0], "auth_port=1812", "timeout=", "retransmit=",
-                        "key=", "auth_type=", "priority=", "vrf=", "source_interface="])
-                if args[1] == "priority":
-                    return invoke_api(
-                        'patch_openconfig_radius_global_config_host',
-                        [args[0], "auth_port=", "timeout=", "retransmit=",
-                        "key=", "auth_type=", "priority=1", "vrf=", "source_interface="])
 
             uri_suffix = {
                 "auth-port": "/radius/config/auth-port",
@@ -275,22 +306,22 @@ def get_sonic_radius_servers(globals):
     api_response = {}
     api = cc.ApiClient()
 
-    path = cc.Path(RADIUS_SERVER_GROUP+'servers')
+    path = cc.Path(RADIUS_SERVER_GROUP + 'servers')
     response = api.get(path)
-
 
     if not response.ok():
         print("%Error: Get Failure")
         return
 
-    if (not 'openconfig-system:servers' in response.content) \
-        or (not 'server' in response.content['openconfig-system:servers']):
+    if    (not 'openconfig-system:servers' in response.content)\
+       or (not 'server' in response.content['openconfig-system:servers']):
         return
+    server_list =  response.content['openconfig-system:servers']['server']
 
     api_response['header'] = 'True'
     show_cli_output("show_radius_server.j2", api_response)
 
-    for server in response.content['openconfig-system:servers']['server']:
+    for server in server_list:
         api_response.clear()
         api_response['header'] = 'False'
         if 'address' in server:
@@ -341,8 +372,10 @@ def get_sonic_radius_servers(globals):
         api_response['src_intf'] = "-"
         if 'radius' in server \
                 and 'config' in server['radius'] \
-                and 'openconfig-aaa-radius-ext:source-interface' in server['radius']['config']:
-            api_response['src_intf'] = server['radius']['config']['openconfig-aaa-radius-ext:source-interface']
+                and 'openconfig-aaa-radius-ext:source-interface' \
+                    in server['radius']['config']:
+            api_response['src_intf'] = server['radius']['config']\
+                ['openconfig-aaa-radius-ext:source-interface']
 
         show_cli_output("show_radius_server.j2", api_response)
 
@@ -356,7 +389,7 @@ def get_sonic_radius_servers(globals):
     api_response['header'] = 'True'
     show_cli_output("show_radius_statistics.j2", api_response)
 
-    for server in response.content['openconfig-system:servers']['server']:
+    for server in server_list:
         api_response.clear()
         api_response['header'] = 'False'
         if 'address' in server:
@@ -409,7 +442,7 @@ def run(func, args):
                 print("%Error: Invalid command")
         else:
             print(response.error_message())
-    except Exception:
+    except Exception as e:
         # system/network error
         print("%Error: Transaction Failure")
 
