@@ -296,7 +296,7 @@ limitations under the License.
 
 <!-- clear ipv6 neighbors -->
     <COMMAND
-        help="clear IP commands"
+        help="Clear IPv6 commands"
         name="clear ipv6"
         >
     </COMMAND>
