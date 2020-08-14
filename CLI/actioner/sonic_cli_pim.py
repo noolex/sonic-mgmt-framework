@@ -811,7 +811,8 @@ def handle_show_all(func, args):
 
         if response.ok():
             response = response.content
-            show_response(response)
+            if response:
+                show_response(response)
         else:
             print(response.error_message())
             return -1
@@ -837,7 +838,8 @@ def handle_show(func, args):
 
     if response.ok():
         response = response.content
-        show_response(response)
+        if response:
+            show_response(response)
     else:
         print(response.error_message())
         return -1
