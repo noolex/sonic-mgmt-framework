@@ -48,23 +48,52 @@ clear counters [interface <interface>]
                                 mode="subcommand"
                                 >
                             </PARAM>
-                            <PARAM name="Ethernet"
-                                   help="Clear Ethernet interface counters"
-                                   ptype="PHY_INTERFACE"
-                                   mode="subcommand"
-                                   >
+                            <PARAM
+                                name="Eth"
+                                help="Clear Physical interface counters"
+                                test="${SONIC_CLI_IFACE_MODE} = standard"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                                <PARAM
+                                    name="ifId"
+                                    help="Physical Interface"
+                                    ptype="ETH_PHY_SLOT_PORT_SUBPORT"
+                                    optional="true"
+                                    >
+                                </PARAM>
                             </PARAM>
-                            <PARAM name="PortChannel"
-                                   help="Clear PortChannel interface counters"
-                                   ptype="PO_INTERFACE"
-                                   mode="subcommand"
-                                   >
+                            <PARAM
+                                name="Ethernet"
+                                help="Clear Physical interface counters"
+                                test="-z ${SONIC_CLI_IFACE_MODE}"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                                <PARAM
+                                    name="ifId"
+                                    help="Physical Interface"
+                                    ptype="UINT"
+                                    optional="true"
+                                    >
+                                </PARAM>
+                            </PARAM>
+                            <PARAM 
+                                name="PortChannel"
+                                help="Clear PortChannel interface counters"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                                <PARAM 
+                                    name="ifId"
+                                    help="PortChannel interface number"
+                                    optional="true"
+                                    ptype="LAG_ID">
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                  </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-counters.py rpc_sonic_interface_clear_counters ${all} ${Ethernet} ${PortChannel}&#xA;
-            </ACTION>
+            <ACTION builtin="clish_pyobj">sonic-cli-counters rpc_sonic_interface_clear_counters ${interface-switch}${ifId}</ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>
