@@ -1,4 +1,4 @@
-{% set mode, minlinks, fallback, gracefulshutdown, fallbackoper = "LACP", "1", "Disabled", "Disabled", "Nonoperational" %}
+{% set mode, minlinks, description,fallback, gracefulshutdown, fallbackoper = "LACP", "1", "", "Disabled", "Disabled", "Nonoperational" %}
 
 {% set global = json_output['global'][0] %}
 {% if global %}
@@ -21,6 +21,10 @@
 {% set mode = "Static" %}
 {% endif %}
 
+{% if po_conf_intf['description'] %}
+{% set description = po_conf_intf['description'] %}
+{% endif %}
+
 {% if po_conf_intf['name'] == po_intf['lagname'] and 'min_links' in po_conf_intf %}
 {% set minlinks = po_conf_intf['min_links'] %}
 {% endif %}
@@ -31,6 +35,9 @@
 {% endif %}
 
 {{po_intf['lagname']}} is {{po_intf['admin_status']}}, line protocol is {{po_intf['oper_status']}}, mode {{mode}}
+{% if description %}
+Description: {{description}}
+{% endif %}
 Minimum number of links to bring PortChannel up is {{minlinks}}
 
 {% if po_conf_intf['name'] == po_intf['lagname'] and 'graceful_shutdown_mode' in po_conf_intf and po_conf_intf['graceful_shutdown_mode'] == 'disable' %}
