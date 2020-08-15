@@ -654,6 +654,32 @@ limitations under the License.
     </DOCGEN>
     </COMMAND>
 
+    <COMMAND
+        name="spanning-tree portfast"
+        help="Enable spanning tree portfast"
+        ptype="SUBCOMMAND" mode="subcommand"
+        >
+        <PARAM
+            name="default"
+            help="Enable portfast by default on all access ports"
+        	ptype="SUBCOMMAND" mode="subcommand"
+            >
+        </PARAM>
+        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_portfast True&#xA;
+		</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the spanning-tree portfast.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows to enable portfast globally on all access ports. When portfast is enabled, port transitions from blocking to forwarding state immediately, bypassing the usual 802.1D STP transition states.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree portfast default
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
     <!-- no spanning tree -->
 
     <COMMAND
@@ -921,6 +947,32 @@ limitations under the License.
         </USAGE>
         <EXAMPLE>
             sonic(config)# no spanning-tree loopguard default 
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree portfast"
+        help="Disable spanning tree portfast"
+        ptype="SUBCOMMAND" mode="subcommand"
+        >
+        <PARAM
+            name="default"
+            help="Disable portfast by default on all access ports"
+        	ptype="SUBCOMMAND" mode="subcommand"
+            >
+        </PARAM>
+        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_portfast False&#xA;
+		</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Disable spanning-tree portfast configuration globally.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows to disable portfast globally.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# no spanning-tree portfast default 
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>

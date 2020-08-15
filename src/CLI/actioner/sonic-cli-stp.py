@@ -252,6 +252,11 @@ def generate_body(func, args):
             body = { "openconfig-spanning-tree:loop-guard": True }
        elif args[1] == "False":
             body = { "openconfig-spanning-tree:loop-guard": False }
+    elif func.__name__ == 'patch_openconfig_spanning_tree_ext_stp_global_config_portfast':
+       if args[1] == "True":
+            body = { "openconfig-spanning-tree-ext:portfast": True }
+       elif args[1] == "False":
+            body = { "openconfig-spanning-tree-ext:portfast": False }
 
     return keypath,body
 

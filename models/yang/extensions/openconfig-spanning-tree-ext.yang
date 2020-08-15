@@ -75,6 +75,13 @@ module openconfig-spanning-tree-ext {
                 for a period until root guard timeout before moving the port to
                 forwarding state";
         }
+
+        leaf portfast {
+            type boolean;
+            description
+                "Enables PortFast globally on all access ports";
+        }
+
         uses oc-stp:stp-timer-config;
         uses oc-stp:bridge-priority-config;
     }

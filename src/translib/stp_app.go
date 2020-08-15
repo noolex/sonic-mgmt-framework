@@ -54,6 +54,7 @@ const (
 	STP_DEFAULT_BRIDGE_PRIORITY    = "32768"
 	STP_DEFAULT_BPDU_FILTER        = "false"
 	STP_DEFAULT_LOOP_GUARD         = "false"
+	STP_DEFAULT_PORTFAST           = "false"
 )
 
 type StpApp struct {
@@ -796,6 +797,19 @@ func (app *StpApp) convertOCStpGlobalConfToInternal(opcode int, d *db.DB) error 
 				}
 			}
 
+			if stp.Global.Config.Portfast != nil {
+				if *stp.Global.Config.Portfast == true {
+					(&app.globalInfo).Set("portfast", "true")
+				} else {
+					(&app.globalInfo).Set("portfast", "false")
+				}
+			} else if setDefaultFlag {
+				cfgmode, _ := app.getStpModeFromConfigDB(d)
+				if mode == "pvst" || cfgmode == "pvst" {
+					(&app.globalInfo).Set("portfast", STP_DEFAULT_PORTFAST)
+				}
+			}
+
 			log.Infof("convertOCStpGlobalConfToInternal -- Internal Stp global config: %v", app.globalInfo)
 		}
 	}
@@ -819,6 +833,7 @@ func (app *StpApp) convertInternalToOCStpGlobalConfig(stpGlobal *ocbinds.Opencon
 		var rootGTimeout uint16
 		var bpduFilter bool
 		var loopGuard bool
+		var portFast bool
 		ygot.BuildEmptyTree(stpGlobal)
 
 		if stpGlobal.Config != nil {
@@ -850,6 +865,9 @@ func (app *StpApp) convertInternalToOCStpGlobalConfig(stpGlobal *ocbinds.Opencon
 
 			loopGuard, _ = strconv.ParseBool((&app.globalInfo).Get("loop_guard"))
 			stpGlobal.Config.LoopGuard = &loopGuard
+
+			portFast, _ = strconv.ParseBool((&app.globalInfo).Get("portfast"))
+			stpGlobal.Config.LoopGuard = &portFast
 		}
 		if stpGlobal.State != nil {
 			stpGlobal.State.EnabledProtocol = app.convertInternalStpModeToOC((&app.globalInfo).Get(STP_MODE))
@@ -2323,7 +2341,7 @@ func (app *StpApp) handleStpGlobalFieldsUpdation(d *db.DB, opcode int) error {
 		valStr := app.globalInfo.Field[fld]
 		(&tmpDbEntry).Set(fld, valStr)
 
-		if fld != "rootguard_timeout" && fld != "bpdu_filter" && fld != "loop_guard" {
+		if fld != "rootguard_timeout" && fld != "bpdu_filter" && fld != "loop_guard" && fld != "portfast" {
 			fldValuePair[fld] = valStr
 		}
 	}
@@ -2376,6 +2394,9 @@ func (app *StpApp) handleStpGlobalFieldsDeletion(d *db.DB) error {
 		case "loop-guard":
 			fldName = "loop_guard"
 			valStr = STP_DEFAULT_LOOP_GUARD
+		case "portfast":
+			fldName = "portfast"
+			valStr = STP_DEFAULT_PORTFAST
 		}
 
 		// Make a copy of StpGlobalDBEntry to modify fields value.
