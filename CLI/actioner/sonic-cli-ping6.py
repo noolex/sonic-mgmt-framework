@@ -38,8 +38,12 @@ def run_vrf(args):
         if len(args) == 0:
             print_and_log("The command is not completed.")
             return
-        cmd = "sudo cgexec -g l3mdev:" + vrfName + " ping6 " + args
-        cmd = "ping -6 " + args + " -I " + vrfName
+
+        if vrfName.lower() == 'mgmt':
+            cmd = "sudo cgexec -g l3mdev:" + vrfName + " ping -6 " + args
+        else:
+            cmd = "ping -6 " + args + " -I " + vrfName
+
         cmd = re.sub('-I\s*Management', '-I eth', cmd)
         cmdList = cmd.split(' ')
         subprocess.call(cmdList, shell=False)
@@ -77,15 +81,6 @@ def validate_input(args):
         print_and_log("Invalid argument")
         return False
 
-    if ("fe80:" in args.lower()
-        or "ff01:" in args.lower()
-        or "ff02:" in args.lower()):
-        if "vrf" in args:
-            print_and_log("VRF name is not allowed for IPv6 addresses with link-local scope")
-            return False
-        if " -I" not in args:
-            print_and_log("Interface name was missing")
-            return False
     return True
 
 if __name__ == '__main__':
