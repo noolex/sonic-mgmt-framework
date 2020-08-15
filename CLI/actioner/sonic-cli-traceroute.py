@@ -44,7 +44,12 @@ def run_vrf(args):
         if len(args) == 0:
             print_and_log("The command is not completed.")
             return
-        cmd = "traceroute " + args + " -i " + vrfName
+
+        if vrfName.lower() == 'mgmt':
+            cmd = "sudo cgexec -g l3mdev:" + vrfName + " traceroute " + args
+        else:
+            cmd = "traceroute " + args + " -i " + vrfName
+
         cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
         subprocess.call(cmdList, shell=False)
@@ -81,23 +86,6 @@ def validate_input(args):
     if(set(args) & blocked_chars):
         print_and_log("Invalid argument")
         return False
-    #check if valid interface is provided or not
-    if " -i" in args:
-        if "vrf" in args:
-            print_and_log("VRF name is not allowed with -i option")
-            return False
-        if contains_valid_intf(args) is False:
-            print_and_log("Invalid interface, valid options are Ethernet<id>|Management<id>|Vlan<id>|PortChannel<id>|Loopback<id>")
-            return False
-    if ("fe80:" in args.lower()
-        or "ff01:" in args.lower()
-        or "ff02:" in args.lower()):
-        if "vrf" in args:
-            print_and_log("VRF name is not allowed for IPv6 addresses with link-local scope")
-            return False
-        if " -i" not in args:
-            print_and_log("Interface name was missing")
-            return False
     return True
 
 if __name__ == '__main__':
