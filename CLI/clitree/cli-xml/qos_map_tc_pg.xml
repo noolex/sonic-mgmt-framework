@@ -42,8 +42,8 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-priority-group-maps/forwarding-group-priority-group-map=${name}
-            body={"openconfig-qos-maps-ext:forwarding-group-priority-group-map": [{"name": "${name}"}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-priority-group-maps
+            body={"openconfig-qos-maps-ext:forwarding-group-priority-group-maps": {"forwarding-group-priority-group-map": [{"name": "${name}", "config": {"name": "${name}"}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -108,8 +108,8 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-priority-group-maps/forwarding-group-priority-group-map=${map_name}/forwarding-group-priority-group-map-entries/forwarding-group-priority-group-map-entry=${tc}
-            body={"openconfig-qos-maps-ext:forwarding-group-priority-group-map-entry": [{"fwd-group":"${tc}", "config": {"priority-group-index": ${pg}}}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-priority-group-maps/forwarding-group-priority-group-map=${map_name}/forwarding-group-priority-group-map-entries/
+            body={"openconfig-qos-maps-ext:forwarding-group-priority-group-map-entries": {"forwarding-group-priority-group-map-entry": [{"fwd-group":"${tc}", "config": {"priority-group-index": ${pg}}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>

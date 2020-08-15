@@ -21,6 +21,7 @@ import sys
 import cli_client as cc
 from rpipe_utils import pipestr
 from render_cli import show_cli_output
+from sonic_intf_utils import name_to_int_val
 
 def str2bool(s):
     return s.lower() in ("true", "t")
@@ -50,7 +51,7 @@ def invoke_api(fn, args):
            return api.get(path)
     elif fn == 'disable_lldp_global':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/config/enabled')
-        body = { "openconfig-lldp:enabled": str2bool(args[0]) } 
+        body = { "openconfig-lldp:enabled": str2bool(args[0]) }
         return api.patch(keypath, body)
     elif fn == 'enable_lldp_global':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/config/enabled')
@@ -98,15 +99,15 @@ def invoke_api(fn, args):
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/config/suppress-tlv-advertisement={name}', name=convertTlv(args[0]))
         return api.delete(keypath, body)
     elif fn == 'disable_lldp_intf':
-        keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/enabled', name=args[0])
-        body = { "openconfig-lldp:enabled": str2bool(args[1]) } 
+        keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/')
+        body = {"openconfig-lldp:interfaces": {"interface": [{"name": args[0], "config":{"enabled": str2bool(args[1]) }} ]}}
         return api.patch(keypath, body)
     elif fn == 'enable_lldp_intf':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/enabled', name=args[0])
         return api.delete(keypath, body)
     elif fn == 'set_lldp_intf_mode':
-        keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/openconfig-lldp-ext:mode', name=args[0])
-        body = { "openconfig-lldp-ext:mode": convertMode(args[1])} 
+        keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/')
+        body = {"openconfig-lldp:interfaces": {"interface": [{"name": args[0], "config":{"openconfig-lldp-ext:mode": convertMode(args[1]) }} ]}}
         return api.patch(keypath, body)
     elif fn == 'del_lldp_intf_mode':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/openconfig-lldp-ext:mode', name=args[0])
@@ -127,9 +128,11 @@ def run(fn, args):
             if api_response:
                 response = api_response
                 if 'openconfig-lldp:interfaces' in response.keys():
-                    if not response['openconfig-lldp:interfaces']:
+                    if (not response['openconfig-lldp:interfaces'] or
+                        not 'interface' in response['openconfig-lldp:interfaces']):
                         return 0
-                    neigh_list = response['openconfig-lldp:interfaces']['interface']
+                    neigh_list = sorted(response['openconfig-lldp:interfaces']['interface'],
+                                            key = lambda x: name_to_int_val(x['name']))
                     if neigh_list is None:
                         return 0
                     show_cli_output(args[0], neigh_list)
@@ -139,8 +142,8 @@ def run(fn, args):
                         return 0
                     show_cli_output(args[0],neigh)
                 else:
-                    print("Failed")
-                    return -1 
+                    print("% Error: Internal error")
+                    return -1
     else:
         print(response.error_message())
         return -1

@@ -1,0 +1,43 @@
+{{' '}}
+{{'Platform Temperature Sensor Details'}}
+{{'------------------------------------------------------------'}}
+{% for temp_name, temp_info in json_output.items() %}
+{% set temperature = "N/A" %}
+{% set ht = "N/A" %}
+{% set lt = "N/A" %}
+{% set cht = "N/A" %}
+{% set clt = "N/A" %}
+{% set ws = "N/A" %}
+{% set ts = "N/A" %}
+{% if 'openconfig-platform-ext:current' in temp_info %}
+{% set temperature = temp_info['openconfig-platform-ext:current'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:high-threshold' in temp_info %}
+{% set ht = temp_info['openconfig-platform-ext:high-threshold'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:low-threshold' in temp_info %}
+{% set lt = temp_info['openconfig-platform-ext:low-threshold']  | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:critical-high-threshold' in temp_info %}
+{% set cht =  temp_info['openconfig-platform-ext:critical-high-threshold'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:critical-low-threshold' in temp_info %}
+{% set clt = temp_info['openconfig-platform-ext:critical-low-threshold'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:warning-status' in temp_info %}
+{% set ws = temp_info['openconfig-platform-ext:warning-status'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:timestamp' in temp_info %}
+{% set ts = temp_info['openconfig-platform-ext:timestamp'] | string %}
+{% endif %}
+{{'Sensor name: '.ljust(25)}}{{temp_name}}
+{{'Temperature: '.ljust(25)}}{{temperature}}
+{{'High threshold: '.ljust(25)}}{{ht}}
+{{'Low threshold: '.ljust(25)}}{{lt}}
+{{'Critical High threshold: '.ljust(25)}}{{cht}}
+{{'Critical Low threshold: '.ljust(25)}}{{clt}}
+{{'Warning status: '.ljust(25)}}{{ws}}
+{{'Timestamp: '.ljust(25)}}{{ts}}
+{{' '}}
+{% endfor %}
+{{'----------------------------------------------------------'}}

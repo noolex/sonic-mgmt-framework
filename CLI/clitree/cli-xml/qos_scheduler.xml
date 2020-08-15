@@ -42,7 +42,7 @@ limitations under the License.
            >
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy ${name}
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies ${name}
         </ACTION>
     </COMMAND>
 

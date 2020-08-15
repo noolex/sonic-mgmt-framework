@@ -43,8 +43,8 @@ def invoke_api(func, args):
            return api.get(path)
 
     elif func == 'patch_sonic_tam_sonic_tam_tam_device_table_tam_device_table_list_deviceid':
-       path = cc.Path('/restconf/data/sonic-tam:sonic-tam/TAM_DEVICE_TABLE/TAM_DEVICE_TABLE_LIST={name}/deviceid', name=args[0])
-       body = { "sonic-tam:deviceid": int(args[1]) }
+       path = cc.Path('/restconf/data/sonic-tam:sonic-tam/TAM_DEVICE_TABLE/TAM_DEVICE_TABLE_LIST')
+       body = { "sonic-tam:TAM_DEVICE_TABLE_LIST": [ {"name": args[0], "deviceid": int(args[1])} ] }
        return api.patch(path, body)
     elif func == 'delete_sonic_tam_sonic_tam_tam_device_table_tam_device_table_list_deviceid':
        path = cc.Path('/restconf/data/sonic-tam:sonic-tam/TAM_DEVICE_TABLE')
@@ -84,7 +84,8 @@ def run(func, args):
             else:
                 return
     else:
-        print "invoke_api failed"
+	if response.status_code != 404:
+            print response.error_message()
 
 if __name__ == '__main__':
 

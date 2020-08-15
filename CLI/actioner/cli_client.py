@@ -100,9 +100,13 @@ class ApiClient(object):
     def post(self, path, data={}):
         return self.request("POST", path, data)
 
-    def get(self, path, depth=None):
+    def get(self, path, depth=None, ignore404=True):
         q = self.prepare_query(depth=depth)
-        return self.request("GET", path, query=q)
+        resp = self.request("GET", path, query=q)
+        if ignore404 and resp.status_code == 404:
+            resp.status_code = 200
+            resp.content = {}
+        return resp
 
     def head(self, path, depth=None):
         q = self.prepare_query(depth=depth)

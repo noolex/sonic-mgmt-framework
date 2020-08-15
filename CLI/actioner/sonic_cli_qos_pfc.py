@@ -22,6 +22,7 @@ import collections
 import re
 import datetime
 import cli_client as cc
+import syslog as log
 
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
@@ -267,9 +268,10 @@ def invoke(func, args):
         return aa.patch(keypath, body)
 
     elif func == 'pfcwd_if_action':
-        keypath = cc.Path(interfacePfcWdUri + '/config/action', intfName=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        interface = args[0]
         action = Actions[args[1]]
-        body = {"openconfig-qos-ext:action" : action}
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": interface, "config": {"interface-id": interface}, "openconfig-qos-ext:pfc": {"watchdog": {"config": {"action": action}}, }}]}}
         return aa.patch(keypath, body)
 
     elif func == 'pfcwd_if_no_action':
@@ -277,8 +279,9 @@ def invoke(func, args):
         return aa.delete(keypath)
 
     elif func == 'pfcwd_if_detect':
-        keypath = cc.Path(interfacePfcWdUri + '/config/detection-time', intfName=args[0])
-        body = {"openconfig-qos-ext:detection-time" : int(args[1])}
+        keypath = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        interface = args[0]
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": interface, "config": {"interface-id": interface}, "openconfig-qos-ext:pfc": {"watchdog": {"config": {"detection-time": int(args[1])}}, }}]}}
         return aa.patch(keypath, body)
 
     elif func == 'pfcwd_if_no_detect':
@@ -286,8 +289,9 @@ def invoke(func, args):
         return aa.delete(keypath)
 
     elif func == 'pfcwd_if_restore':
-        keypath = cc.Path(interfacePfcWdUri + '/config/restoration-time', intfName=args[0])
-        body = {"openconfig-qos-ext:restoration-time" : int(args[1])}
+        keypath = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        interface = args[0]
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": interface, "config": {"interface-id": interface}, "openconfig-qos-ext:pfc": {"watchdog": {"config": {"restoration-time": int(args[1])}}, }}]}}
         return aa.patch(keypath, body)
 
     elif func == 'pfcwd_if_no_restore':
@@ -309,33 +313,29 @@ def invoke(func, args):
                 if 'openconfig-qos-ext:state' in response.content.keys():
                     cfg = response.content['openconfig-qos-ext:state']
 
-            defaults = {}
             if 'action' in cfg.keys():
                 action = cfg['action']
             else:
                 action = Actions[DEFAULT_ACTION]
-            defaults['action'] = action
 
             if 'detection-time' in cfg.keys():
                 detectTime = cfg['detection-time']
             else:
                 detectTime = DEFAULT_DETECTION_TIME
-            defaults['detection-time'] = detectTime
 
             if 'restoration-time' in cfg.keys():
                 restoreTime = cfg['restoration-time']
             else:
                 restoreTime = 2 * detectTime
-            defaults['restoration-time'] = restoreTime
 
             if restoreTime < (2 * detectTime):
                 print "Warning: restoration time (" + str(restoreTime) + ") is less than twice detection time(" + str(detectTime) + ")."
 
-            body = collections.defaultdict(dict)
-            body['config'] = defaults
+            interface = args[0]
 
-            keypath = cc.Path(interfacePfcWdUri + '/config', intfName=args[0])
-
+            keypath = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+            body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": interface, "config": {"interface-id": interface},
+                    "openconfig-qos-ext:pfc": {"watchdog": {"config": {"action": action, "detection-time": detectTime, "restoration-time": restoreTime}},}}]}}
             response = aa.patch(keypath, body)
         return response
 

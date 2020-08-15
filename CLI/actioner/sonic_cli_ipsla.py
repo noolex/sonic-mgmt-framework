@@ -69,11 +69,13 @@ def invoke(func, args):
     # IP SLA set
     if func == 'post_ipsla' :
 
-        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={slaid}/config', slaid=args[0])
+        keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas', slaid=args[0])
 
         body=collections.defaultdict(dict)
-        def_enable_value = True 
-        body = {"openconfig-ip-sla:config": {"ip-sla-id": int(args[0]), "enabled": def_enable_value}}
+        def_enable_value = True
+        #body = {"openconfig-ip-sla:config": {"ip-sla-id": int(args[0]), "enabled": def_enable_value}}
+
+        body = {"openconfig-ip-sla:ip-slas": {"ip-sla": [{"ip-sla-id": int(args[0]), "config": {"ip-sla-id": int(args[0]), "enabled": def_enable_value}}]}}
         return aa.patch(keypath, body)
 
     # IP SLA frequency delete

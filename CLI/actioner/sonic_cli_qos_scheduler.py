@@ -16,17 +16,21 @@ def invoke(func, args=[]):
     if func == 'get_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers':
         path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers', name=args[0])
         return api.get(path)
-    if func == 'patch_openconfig_qos_qos_scheduler_policies_scheduler_policy':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/config', name=args[0] )
-        body = {"openconfig-qos:config" : {"name": args[0]}}
+
+    if func == 'patch_openconfig_qos_qos_scheduler_policies':
+        path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/')
+        body = {"openconfig-qos:scheduler-policies": {"scheduler-policy": [{"name": args[0], "config" : {"name": args[0]}}]}}
         return api.patch(path, body)
+
     if func =="delete_openconfig_qos_qos_scheduler_policies_scheduler_policy":
         path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}', name=args[0] )
         return api.delete(path)
+
     if func == 'patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}', name=args[0], sequence=args[1])
-        body = {}
+        path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/')
+        body = {"openconfig-qos:scheduler-policies": {"scheduler-policy": [{"name": args[0], "config" : {"name": args[0]}, "schedulers": {"scheduler": [{"sequence": int(args[1])}]}}]}}
         return api.patch(path, body)
+
     if func =="delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler":
         path = cc.Path('/restconf/data/openconfig-qos:qos/scheduler-policies/scheduler-policy={name}/schedulers/scheduler={sequence}', name=args[0], sequence=args[1])
         return api.delete(path)
