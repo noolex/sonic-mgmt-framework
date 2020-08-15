@@ -53,9 +53,6 @@ def show_if_vrf_binding(render_tables):
     elif 'sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST' in render_tables:
         intfdata = render_tables['sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST']
         key = 'loIfName'
-        if render_tables['name'] == intfdata[key] and intfdata['vrf_name']:
-            cmd_str = 'ip vrf forwarding ' + intfdata['vrf_name']
-        return 'CB_SUCCESS', cmd_str
     else:
         return 'CB_SUCCESS', cmd_str
 
