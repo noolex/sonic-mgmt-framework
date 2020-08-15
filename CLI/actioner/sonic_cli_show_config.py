@@ -242,7 +242,14 @@ class cli_xml_view:
         #the API. These keys are passed to this function as argument member_keys and
         #applicable to the parent command which changes to a new view.
 
-        for cmd in  self.view_cmd_list:
+        #Process the first command in the view with argument is_first_command=True.
+        view_keys = copy.deepcopy(member_keys)
+        process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
+                                                True, self.view_cmd_list[0], indent)
+        #For the top view "configure", leave indent as zero.
+        if self.name != "configure":
+            indent +=1 
+        for cmd in  self.view_cmd_list[1:]:
             view_keys = copy.deepcopy(member_keys)
             ret, is_view_rendered = process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
                                                 False, cmd, indent)
@@ -406,7 +413,7 @@ class cli_xml_view:
             log.info("table list {}" .format(self.table_list))
             cmd_status= self.process_view_commands(table_keys, depth)            
         else:
-            log.warn("table list empty for {}, next view, maybe command views" .format(self.name))            
+            log.info("table list empty for {}, next view, maybe command views" .format(self.name))
             cmd_status= self.process_view_commands_no_table(table_keys, depth)     
    
         log.debug(os.linesep)
@@ -505,7 +512,7 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
                     cmd_table = response
                     log.info("set primary table for this cmd as {}" .format(cmd_table))
             else:
-                log.warn('Response none for table  {}' .format(cmd_table_path))
+                log.debug('Response none for table  {}' .format(cmd_table_path))
 
             log.debug('Final view_tables list members {}' .format(view_tables.keys()))
 
@@ -524,7 +531,7 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
             value = cmd_key_lst[1].rstrip()
 
             if value is None or value == '*' or len(value.split('/')) >1:
-                log.warning("command key invalid {} for view {}, skip key " .format(cmd_key, view))
+                log.debug("command key invalid {} for view {}, skip key " .format(cmd_key, view))
                 continue
             member_keys.update({key:value})
 

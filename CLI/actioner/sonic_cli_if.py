@@ -403,6 +403,9 @@ def invoke_api(func, args=[]):
         responseMgmtIntfTbl = api.get(path)
         if responseMgmtIntfTbl.ok():
             d.update(responseMgmtIntfTbl.content)
+            mVrf = {}
+            mVrf["isMgmtVrfEnabled"] = ifutils.isMgmtVrfEnabled(cc)
+            d.update(mVrf)
             if func == 'ip_interfaces_get':
                filter_address(d, True)
             else:
@@ -505,9 +508,12 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/enabled', name=args[0], index="0")
         if args[1] == "True":
             body = {"openconfig-igmp-ext:enabled" : True}
-        else :
-            body = {"openconfig-igmp-ext:enabled" : False}
         return api.patch(path, body)
+
+    # Disable IGMP
+    elif func == 'patch_openconfig_if_ip_disable_igmp':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config', name=args[0], index="0")
+        return api.delete(path)
 
     # Configure IGMP Version
     elif func == 'patch_openconfig_igmp_version_config':
@@ -594,6 +600,28 @@ def invoke_api(func, args=[]):
     # Delete static ND
     elif func == 'delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors/neighbor={sip}', name=args[0], index="0",sip=args[1])
+        return api.delete(path)
+
+    # Configure static ARP - Routed Vlan interface
+    elif func == 'patch_static_arp_config':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/neighbors', name=args[0], index="0")
+        body = {"openconfig-if-ip:neighbors":{"neighbor":[{"ip":args[1],"config":{"ip":args[1],"link-layer-address":args[2]}}]}}
+        return api.patch(path, body)
+
+    # Delete static ARP - Routed Vlan interface
+    elif func == 'delete_static_arp_config':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/neighbors/neighbor={sip}', name=args[0], index="0",sip=args[1])
+        return api.delete(path)
+
+    # Configure static ND - Routed vlan interface
+    elif func == 'patch_static_nd_config':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/neighbors', name=args[0], index="0")
+        body = {"openconfig-if-ip:neighbors":{"neighbor":[{"ip":args[1],"config":{"ip":args[1],"link-layer-address":args[2]}}]}}
+        return api.patch(path, body)
+
+    # Delete static ND - Routed vlan interface
+    elif func == 'delete_static_nd_config':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/neighbors/neighbor={sip}', name=args[0], index="0",sip=args[1])
         return api.delete(path)
 
     elif func == 'patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config':

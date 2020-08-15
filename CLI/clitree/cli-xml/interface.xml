@@ -549,7 +549,7 @@ limitations under the License.
         view="configure-lo-view"
         viewid="lo_id=lo${lo-id};lo_name=Loopback${lo-id};"
         view_keys="name=*"
-        view_tables="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST/loIfName={name}"
+        view_tables="sonic-loopback:sonic-loopback/LOOPBACK/LOOPBACK_LIST/name={name}"
         render_command_cb="interface_loopback"
         >
         <PARAM
@@ -770,13 +770,14 @@ limitations under the License.
 
         <COMMAND
             name="description"
+            escape_chars=""
             help="Textual description">
             <PARAM
                 name="desc"
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1017,6 +1018,22 @@ limitations under the License.
             help="Remove Nat Zone on the interface" >
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
         </COMMAND>
+        <COMMAND
+            name="description"
+            escape_chars=""
+            help="Textual description">
+            <PARAM
+                name="desc"
+                help="Textual description of the interface (Max: 240 characters)"
+                dbpath="sonic-loopback:sonic-loopback/LOOPBACK/LOOPBACK_LIST/description"
+                ptype="STRING_240" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${lo_name} ${#desc}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no description"
+            help="Remove description" >
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
+        </COMMAND>
 </VIEW>
 
 <VIEW
@@ -1055,6 +1072,23 @@ limitations under the License.
             name="no nat-zone"
             help="Remove NAT Zone on a VLAN" >
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="description"
+            escape_chars=""
+            help="Textual description">
+            <PARAM
+                name="desc"
+                help="Textual description of the interface (Max: 240 characters)"
+                dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/description"
+                ptype="STRING_240" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${vlan_name} ${#desc}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no description"
+            help="Remove description" >
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
         </COMMAND>
 
       <COMMAND
@@ -1169,6 +1203,22 @@ limitations under the License.
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
         </COMMAND>
 
+        <COMMAND
+            name="description"
+            escape_chars=""
+            help="Textual description">
+            <PARAM
+                name="desc"
+                help="Textual description of the interface (Max: 240 characters)"
+                dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/description"
+                ptype="STRING_240" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${po_name} ${#desc}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no description"
+            help="Remove description" >
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
+        </COMMAND>
         <COMMAND
             name="switchport"
             help="Configure switchport parameters"
@@ -1373,13 +1423,14 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="description"
+            escape_chars=""
             help="Textual description">
             <PARAM
                 name="desc"
                 help="Textual description of the interface"
                 ptype="STRING"
                 dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/MGMT_PORT_LIST/description" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
