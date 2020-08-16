@@ -48,6 +48,7 @@ def run(func, args):
     uri_conf = '/restconf/data/openconfig-system:system/openconfig-system-crm:crm'
     uri_stat = '/restconf/data/openconfig-system:system/openconfig-system-crm:crm/statistics'
     uri_stat_acl = '/restconf/data/openconfig-system:system/openconfig-system-crm:crm/acl-statistics'
+    uri_stat_acl_tbl = '/restconf/data/openconfig-system:system/openconfig-system-crm:crm/acl-table-statistics'
 
     tmpl = None
     path = None
@@ -617,7 +618,7 @@ def run(func, args):
         path = cc.Path(uri_stat_acl)
     elif func == "show-crm-resources-acl-table":
         tmpl = "show_crm_resources_acl_table.j2"
-        path = cc.Path(uri_stat_acl)
+        path = cc.Path(uri_stat_acl_tbl)
 
     # SHOW STATS
     elif func == "show-crm-resources-dnat":

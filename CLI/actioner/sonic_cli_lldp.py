@@ -99,15 +99,15 @@ def invoke_api(fn, args):
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/config/suppress-tlv-advertisement={name}', name=convertTlv(args[0]))
         return api.delete(keypath, body)
     elif fn == 'disable_lldp_intf':
-        keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/enabled', name=args[0])
-        body = { "openconfig-lldp:enabled": str2bool(args[1]) }
+        keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/')
+        body = {"openconfig-lldp:interfaces": {"interface": [{"name": args[0], "config":{"enabled": str2bool(args[1]) }} ]}}
         return api.patch(keypath, body)
     elif fn == 'enable_lldp_intf':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/enabled', name=args[0])
         return api.delete(keypath, body)
     elif fn == 'set_lldp_intf_mode':
-        keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/openconfig-lldp-ext:mode', name=args[0])
-        body = { "openconfig-lldp-ext:mode": convertMode(args[1])}
+        keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/')
+        body = {"openconfig-lldp:interfaces": {"interface": [{"name": args[0], "config":{"openconfig-lldp-ext:mode": convertMode(args[1]) }} ]}}
         return api.patch(keypath, body)
     elif fn == 'del_lldp_intf_mode':
         keypath = cc.Path('/restconf/data/openconfig-lldp:lldp/interfaces/interface={name}/config/openconfig-lldp-ext:mode', name=args[0])

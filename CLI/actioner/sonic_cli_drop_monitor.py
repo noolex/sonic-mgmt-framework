@@ -44,8 +44,8 @@ def invoke_api(func, args):
 
     elif func == 'patch_sonic_tam_drop_monitor_sonic_tam_drop_monitor_tam_drop_monitor_feature_table_tam_drop_monitor_feature_table_list_enable':
        if args[0] == 'enable':
-           path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_FEATURE_TABLE/TAM_DROP_MONITOR_FEATURE_TABLE_LIST={name}/enable', name='feature')
-           body = { "sonic-tam-drop-monitor:enable": True }
+           path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_FEATURE_TABLE/TAM_DROP_MONITOR_FEATURE_TABLE_LIST')
+           body = { "sonic-tam-drop-monitor:TAM_DROP_MONITOR_FEATURE_TABLE_LIST": [{"name": 'feature', "enable": True}] }
            return api.patch(path, body)
        else:
            path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_FEATURE_TABLE')
@@ -53,18 +53,18 @@ def invoke_api(func, args):
 
 
     elif func == 'patch_sonic_tam_drop_monitor_sonic_tam_drop_monitor_tam_drop_monitor_aging_interval_table_tam_drop_monitor_aging_interval_table_list_aging_interval':
-       path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_AGING_INTERVAL_TABLE/TAM_DROP_MONITOR_AGING_INTERVAL_TABLE_LIST={name}/aging-interval', name= args[0])
-       body = { "sonic-tam-drop-monitor:aging-interval":  int(args[1]) }
+       path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_AGING_INTERVAL_TABLE/TAM_DROP_MONITOR_AGING_INTERVAL_TABLE_LIST')
+       body = { "sonic-tam-drop-monitor:TAM_DROP_MONITOR_AGING_INTERVAL_TABLE_LIST": [{"name": args[0], "aging-interval": int(args[1])}] }
        return api.patch(path, body)
 
     elif func == 'patch_sonic_tam_drop_monitor_sonic_tam_drop_monitor_sample_rate_table_sample_rate_table_list':
-       path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/SAMPLE_RATE_TABLE/SAMPLE_RATE_TABLE_LIST={name}', name=args[0])
+       path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/SAMPLE_RATE_TABLE/SAMPLE_RATE_TABLE_LIST')
        bodydict = {"name": args[0], "sampling-rate": int(args[1])}
        body = { "sonic-tam-drop-monitor:SAMPLE_RATE_TABLE_LIST": [ bodydict ] }
        return api.patch(path, body)
 
     elif func == 'patch_sonic_tam_drop_monitor_sonic_tam_drop_monitor_tam_drop_monitor_flow_table_tam_drop_monitor_flow_table_list':
-       path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_FLOW_TABLE/TAM_DROP_MONITOR_FLOW_TABLE_LIST={name}', name=args[0])
+       path = cc.Path('/restconf/data/sonic-tam-drop-monitor:sonic-tam-drop-monitor/TAM_DROP_MONITOR_FLOW_TABLE/TAM_DROP_MONITOR_FLOW_TABLE_LIST')
        bodydict = {"name": args[0], "acl-table-name": args[1], "acl-rule-name": args[2] , "collector-name": args[3], "sample": args[4], "flowgroup-id": int(args[5])}
        body = { "sonic-tam-drop-monitor:TAM_DROP_MONITOR_FLOW_TABLE_LIST": [ bodydict ] }
        return api.patch(path, body)
@@ -114,7 +114,8 @@ def get_tam_drop_monitor_supported(args):
         else:
 	    api_response['feature'] = 'False'
     else:
-        print "%Error: REST API transaction failure for SWITCH_TABLE"
+        if response.status_code != 404:
+            print response.error_message()
 
     show_cli_output("show_tam_drop_monitor_feature_supported.j2", api_response)
 
@@ -185,24 +186,8 @@ def run(func, args):
                 return
 
     else:
-            api_response = response.content
-            if "ietf-restconf:errors" in api_response:
-                 err = api_response["ietf-restconf:errors"]
-                 if "error" in err:
-                     errList = err["error"]
-
-                     errDict = {}
-                     for dict in errList:
-                         for k, v in dict.iteritems():
-                              errDict[k] = v
-
-                     if "error-message" in errDict:
-                         print "%Error: " + errDict["error-message"]
-                         return
-                     print "%Error: Transaction Failure"
-                     return
-            print response.error_message()
-            print "%Error: Transaction Failure"
+	    if response.status_code != 404:
+                print response.error_message()
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

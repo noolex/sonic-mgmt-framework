@@ -65,7 +65,7 @@ limitations under the License.
         />
         <COMMAND
             name="enable"
-            help="Enable NAT feature"
+            help="Enables NAT feature"
             dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/admin_mode=enabled"
         >
         <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_config_enable True</ACTION>
@@ -73,14 +73,14 @@ limitations under the License.
 
         <COMMAND
             name="no enable"
-            help="Disable NAT feature"
+            help="Disables NAT feature"
             >
         <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_config_enable False</ACTION>
        </COMMAND>
 
        <COMMAND
          name="timeout"
-         help="Configure NAT entry aging timeout in seconds"
+         help="Configures NAT entry aging timeout in seconds"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -104,7 +104,7 @@ limitations under the License.
 
      <COMMAND
          name="tcp-timeout"
-         help="Configure TCP NAT entry aging timeout in seconds"
+         help="Configures TCP NAT entry aging timeout in seconds"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -127,7 +127,7 @@ limitations under the License.
 
       <COMMAND
          name="udp-timeout"
-         help="Configure UDP NAT entry aging timeout in seconds"
+         help="Configures UDP NAT entry aging timeout in seconds"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -184,7 +184,7 @@ limitations under the License.
 
      <COMMAND
          name="no pool"
-         help="Remove NAT pool"
+         help="Removes NAT pool"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -199,7 +199,7 @@ limitations under the License.
 
      <COMMAND
          name="no pools"
-         help="Remove all NAT pools"
+         help="Removes all NAT pools"
      >
      <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-pool</ACTION>
      </COMMAND>
@@ -262,7 +262,7 @@ limitations under the License.
 
       <COMMAND
          name="no binding"
-         help="Remove NAT binding"
+         help="Removes NAT binding"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -277,14 +277,14 @@ limitations under the License.
 
      <COMMAND
          name="no bindings"
-         help="Remove all NAT bindings"
+         help="Removes all NAT bindings"
      >
      <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-acl-pool-binding</ACTION>
      </COMMAND>
 
      <COMMAND
          name="static"
-         help="Configure static NAT entry"
+         help="Configures static NAT entry"
          mode="subcommand"
          ptype="SUBCOMMAND"
          command_tables="sonic-nat:sonic-nat/STATIC_NAPT/STATIC_NAPT_LIST/global_ip={global_ip},ip_pro tocol={ip_protocol}, global_l4_port=${global-port};sonic-nat:sonic-nat/STATIC_NAT/STATIC_NAT_LIST/global_ip={global_ip}"
@@ -405,19 +405,19 @@ limitations under the License.
 
      <COMMAND
          name="no static"
-         help="Remove static NAT entry"
+         help="Removes static NAT entry"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
          <PARAM
              name="no-static-subcommands"
-             help="Remove static NAT subcommands"
+             help="Removes static NAT subcommands"
              mode="switch"
              ptype="SUBCOMMAND"
              >
              <PARAM
                  name="all"
-                 help="Remove all static configurations"
+                 help="Removes all static configurations"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
