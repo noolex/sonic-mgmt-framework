@@ -337,27 +337,19 @@ def show_scheduler_instance(stype, scheduler_inst):
 
     for key in scheduler_inst:
         if 'pir' == key:
-<<<<<<< HEAD
-            cmd_str += '  pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
-=======
             if 'port' == stype:
                 cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
             else:
                 cmd_str += '    pir ' + str(int(scheduler_inst[key])) + ';'
->>>>>>> origin/broadcom_sonic_3.x_share
 
         if 'pbs' == key:
             cmd_str += '  pbs ' + str(scheduler_inst[key]) + ';'
 
         if 'cir' == key:
-<<<<<<< HEAD
-            cmd_str += '  cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
-=======
             if 'port' == stype:
                 cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
             else:
                 cmd_str += '    cir ' + str(int(scheduler_inst[key])) + ';'
->>>>>>> origin/broadcom_sonic_3.x_share
 
         if 'cbs' == key:
             cmd_str += '  cbs ' + str(scheduler_inst[key]) + ';'
