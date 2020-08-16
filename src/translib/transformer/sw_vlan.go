@@ -178,7 +178,7 @@ func enableStpOnInterfaceVlanMembership(d *db.DB, vlanName *string, intfList []s
     (&defaultDBValues).Set("bpdu_guard", "false")
     (&defaultDBValues).Set("bpdu_filter", "global")
     (&defaultDBValues).Set("bpdu_guard_do_disable", "false")
-    (&defaultDBValues).Set("portfast", "true")
+    (&defaultDBValues).Set("portfast", "false")
     (&defaultDBValues).Set("uplink_fast", "false")
     if "rpvst" == (&stpGlobalDBEntry).Get("mode") {
         (&defaultDBValues).Set("link_type", "auto")

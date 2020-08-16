@@ -867,7 +867,7 @@ func (app *StpApp) convertInternalToOCStpGlobalConfig(stpGlobal *ocbinds.Opencon
 			stpGlobal.Config.LoopGuard = &loopGuard
 
 			portFast, _ = strconv.ParseBool((&app.globalInfo).Get("portfast"))
-			stpGlobal.Config.LoopGuard = &portFast
+			stpGlobal.Config.Portfast = &portFast
 		}
 		if stpGlobal.State != nil {
 			stpGlobal.State.EnabledProtocol = app.convertInternalStpModeToOC((&app.globalInfo).Get(STP_MODE))
@@ -878,6 +878,7 @@ func (app *StpApp) convertInternalToOCStpGlobalConfig(stpGlobal *ocbinds.Opencon
 			stpGlobal.State.RootguardTimeout = &rootGTimeout
 			stpGlobal.State.BpduFilter = &bpduFilter
 			stpGlobal.State.LoopGuard = &loopGuard
+			stpGlobal.State.Portfast = &portFast
 		}
 	}
 }
@@ -2072,7 +2073,7 @@ func (app *StpApp) enableStpForInterfaces(d *db.DB) error {
 	(&defaultDBValues).Set("bpdu_guard", "false")
 	(&defaultDBValues).Set("bpdu_filter", "global")
 	(&defaultDBValues).Set("bpdu_guard_do_disable", "false")
-	(&defaultDBValues).Set("portfast", "true")
+	(&defaultDBValues).Set("portfast", "false")
 	(&defaultDBValues).Set("uplink_fast", "false")
 	if "rpvst" == (&app.globalInfo).Get(STP_MODE) {
 		(&defaultDBValues).Set("link_type", "auto")
@@ -2224,7 +2225,7 @@ func enableStpOnInterfaceVlanMembership(d *db.DB, intfList []string) {
 	(&defaultDBValues).Set("bpdu_guard", "false")
 	(&defaultDBValues).Set("bpdu_filter", "global")
 	(&defaultDBValues).Set("bpdu_guard_do_disable", "false")
-	(&defaultDBValues).Set("portfast", "true")
+	(&defaultDBValues).Set("portfast", "false")
 	(&defaultDBValues).Set("uplink_fast", "false")
 	if "rpvst" == (&stpGlobalDBEntry).Get(STP_MODE) {
 		(&defaultDBValues).Set("link_type", "auto")
