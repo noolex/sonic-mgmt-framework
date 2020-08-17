@@ -101,6 +101,22 @@ def run_get_sonic_infra_config(func, argv):
         print "%Error: Traction Failure"
 
 
+def run_set_openconfig_logger(func, argv):
+    templ = argv[0]
+    messages = (" ".join(argv[2:])).strip('"')
+    data={"Messages":" %s" %messages}
+    aa = cc.ApiClient()
+    keypath = cc.Path('/restconf/operations/openconfig-system-ext:logger')
+    body = { "openconfig-system-ext:input":data}
+    api_response = aa.post(keypath, body)
+    try:
+        if api_response.ok():
+           response = api_response.content
+           show_cli_output(templ, response['openconfig-system-ext:output']['result'])
+    except Exception as e:
+        print "%Error: Traction Failure"
+
+
 
 def invoke(func, argv):
     if func == "get_sonic_infra_reboot":
@@ -109,6 +125,8 @@ def invoke(func, argv):
          run_get_openconfig_infra_state(func, argv) 
     elif func == "get_openconfig_infra_config":
          run_get_sonic_infra_config(func, argv)
+    elif func == "set_openconfig_logger":
+         run_set_openconfig_logger(func, argv)
     else:
          print "%Error: invalid command"
 
