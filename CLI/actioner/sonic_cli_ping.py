@@ -93,10 +93,10 @@ def validate_input(args):
         or "ff01:" in args.lower()
         or "ff02:" in args.lower()):
         if "vrf" in args:
-            print_and_log("VRF name is not allowed for IPv6 addresses with link-local scope")
+            print_and_log("VRF name does not work with link-local IPv6 addresses")
             return False, args
         if " -I" not in args:
-            print_and_log("Interface name was missing")
+            print_and_log("Interface name is required for link-local IPv6 addresses")
             return False, args
     return True, args
 
