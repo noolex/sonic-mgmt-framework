@@ -1054,13 +1054,6 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
             </PARAM>
-            <PARAM
-                name="portfast"
-                help="Enables portfast on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
 
             <PARAM
                 name="port-priority"
@@ -1113,8 +1106,6 @@ limitations under the License.
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_guard ${iface} True&#xA;
             fi&#xA;
-        elif test "${stp-if-subcmds}" = "portfast";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} True&#xA;
         elif test "${stp-if-subcmds}" = "uplinkfast";then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${iface} True&#xA;
         elif test "${stp-if-subcmds}" = "enable";then&#xA;
@@ -1150,13 +1141,34 @@ limitations under the License.
             sonic(conf-if-Ethernet0)# spanning-tree bpduguard port-shutdown
             sonic(conf-if-Ethernet0)# spanning-tree cost 1000
             sonic(conf-if-Ethernet0)# spanning-tree enable
-            sonic(conf-if-Ethernet0)# spanning-tree portfast
             sonic(conf-if-Ethernet0)# spanning-tree port-priority 16
             sonic(conf-if-Ethernet0)# spanning-tree uplinkfast 
             sonic(conf-if-Ethernet0)# spanning-tree link-type point-to-point
             sonic(conf-if-Ethernet0)# spanning-tree port type edge
         </EXAMPLE>
     </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="spanning-tree portfast"
+      help="Enables portfast on the interface"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} True&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree portfast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command allows enabling portfast on an interface, portfast allows edge ports to move to forwarding state quickly when the connected device is not participating in spanning-tree.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface Ethernet 0
+              sonic(conf-if-Ethernet0)# spanning-tree portfast
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1359,14 +1371,6 @@ limitations under the License.
             </PARAM>
 
             <PARAM
-                name="portfast"
-                help="Disables portfast on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
-
-            <PARAM
                 name="port-priority"
                 help="Reset the port level priority on the interface"
                 ptype="SUBCOMMAND"
@@ -1407,8 +1411,6 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${iface} False&#xA;
         elif test "${stp-if-subcmds}" = "bpdufilter";then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${iface}&#xA;
-        elif test "${stp-if-subcmds}" = "portfast";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} False&#xA;
         elif test "${stp-if-subcmds}" = "enable";then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${iface} False&#xA;
         elif test "${stp-if-subcmds}" = "cost";then&#xA;
@@ -1437,13 +1439,34 @@ limitations under the License.
             sonic(conf-if-Ethernet0)# no spanning-tree bpduguard port-shutdown
             sonic(conf-if-Ethernet0)# no spanning-tree cost
             sonic(conf-if-Ethernet0)# no spanning-tree enable
-            sonic(conf-if-Ethernet0)# no spanning-tree portfast
             sonic(conf-if-Ethernet0)# no spanning-tree port-priority
             sonic(conf-if-Ethernet0)# no spanning-tree uplinkfast 
             sonic(conf-if-Ethernet0)# no spanning-tree link-type
             sonic(conf-if-Ethernet0)# no spanning-tree port type
         </EXAMPLE>
     </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="no spanning-tree portfast"
+      help="Disables portfast on the interface"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} False&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree portfast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables portfast on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface Ethernet 0
+              sonic(conf-if-Ethernet0)# no spanning-tree portfast
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
