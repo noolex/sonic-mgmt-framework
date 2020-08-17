@@ -945,7 +945,7 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
             if 'interfaces' in vlan_dict.keys():
                 if 'interface' in vlan_dict['interfaces']:
                     vport_list = vlan_dict['interfaces']['interface']
-                    for vport_dict in vport_list:
+                    for vport_dict in vport_list and 'config' in vport_dict.keys():
                         if vport_dict['name'] == intf_dict['name']:
                             if 'cost' in vport_dict['config'].keys():
                                 cmd += cmd_prfx + 'vlan ' + str(vlan_dict['vlan-id']) + ' cost ' + str(vport_dict['config']['cost'])
