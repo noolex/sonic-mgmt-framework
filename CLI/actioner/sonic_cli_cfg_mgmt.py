@@ -173,6 +173,8 @@ def process_copy(func, args):
 
 def run(func, args):
     if func == "rpc_sonic_config_mgmt_erase":
+        if len(args) !=0 and args[0] == 'do':
+            args.pop(0)
         run_erase(args)
     else:
         process_copy(func, args)

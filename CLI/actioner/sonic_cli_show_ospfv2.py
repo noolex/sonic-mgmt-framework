@@ -43,10 +43,10 @@ def generate_show_ip_ospf(vrf):
         if response.content is not None:
             # Get Command Output
             api_response = response.content
-            if api_response is None:
-                print("Failed")
+            if api_response is None or len(api_response) == 0:
+                print("% OSPF instance not found")
                 return
-            if api_response['openconfig-network-instance:state'] is not None:
+            if 'openconfig-network-instance:state' in api_response and api_response['openconfig-network-instance:state'] is not None:
                 api_response['openconfig-network-instance:global_state'] = api_response.pop('openconfig-network-instance:state')
                 dlist.append(api_response)
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/timers/spf/state', name=vrfName)
@@ -55,10 +55,12 @@ def generate_show_ip_ospf(vrf):
         if response.content is not None:
             # Get Command Output
             api_response = response.content
+            # Let the below code return an empty dictionary
+            # An error code is returned from the ospfv2/global level.
             if api_response is None:
                 print("Failed")
                 return
-            if api_response['openconfig-network-instance:state'] is not None:
+            if 'openconfig-network-instance:state' in api_response and api_response['openconfig-network-instance:state'] is not None:
                 api_response['openconfig-network-instance:spf_state'] = api_response.pop('openconfig-network-instance:state')
                 dlist.append(api_response)
     
@@ -71,7 +73,7 @@ def generate_show_ip_ospf(vrf):
             if api_response is None:
                 print("Failed")
                 return
-            if api_response['openconfig-network-instance:state'] is not None:
+            if 'openconfig-network-instance:state' in api_response and api_response['openconfig-network-instance:state'] is not None:
                 api_response['openconfig-network-instance:lsa_gen_state'] = api_response.pop('openconfig-network-instance:state')
                 dlist.append(api_response)
 
@@ -110,8 +112,8 @@ def generate_show_ip_ospf_areas(vrf, template, intfname):
         if response.content is not None:
             # Get Command Output
             api_response = response.content
-            if api_response is None:
-                print("Failed")
+            if api_response is None or len(api_response) == 0:
+                print("% OSPF instance not found")
                 return
             dlist.append(api_response)
     show_cli_output(template, dlist)
@@ -133,8 +135,8 @@ def generate_show_ip_ospf_route(vrf, template):
         if response.content is not None:
             # Get Command Output
             api_response = response.content
-            if api_response is None:
-                print("Failed")
+            if api_response is None or len(api_response) == 0:
+                print("% OSPF instance not found")
                 return
             dlist.append(api_response)
     show_cli_output(template, dlist)
@@ -158,10 +160,10 @@ def generate_show_ip_ospf_database_router(vrf, template, ls_id, adv_router, self
         if response.content is not None:
             # Get Command Output
             api_response = response.content
-            if api_response is None:
-                print("Failed")
+            if api_response is None or len(api_response) == 0:
+                print("% OSPF instance not found")
                 return
-            if api_response['openconfig-network-instance:state'] is not None:
+            if 'openconfig-network-instance:state' in api_response and api_response['openconfig-network-instance:state'] is not None:
                 d = {}
                 self_router_id = api_response['openconfig-network-instance:state']['router-id']
                 d = { 'self_router_id': self_router_id }
@@ -198,7 +200,7 @@ def ospfv2_filter_lsdb_by_adv_router(response, advRouter):
                             lsainfo = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].pop()
                             if 'advertising-router' in lsainfo and lsainfo['advertising-router'] == advRouter:
                                 temp_lsa_list.append(lsainfo)
-                        if temp_lsa_list:
+                        while temp_lsa_list:
                             lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].append(temp_lsa_list.pop())
                                 
                             
@@ -215,7 +217,7 @@ def ospfv2_filter_lsdb_by_ls_id(response, ls_id):
                             lsainfo = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].pop()
                             if 'link-state-id' in lsainfo and lsainfo['link-state-id'] == ls_id:
                                 temp_lsa_list.append(lsainfo)
-                        if temp_lsa_list:
+                        while temp_lsa_list:
                             lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].append(temp_lsa_list.pop())
 
 

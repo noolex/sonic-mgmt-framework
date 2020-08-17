@@ -40,7 +40,8 @@ def invoke(func, args):
 
     # Create MCLAG Domain
     if (func == 'patch_list_sonic_mclag_sonic_mclag_mclag_domain_mclag_domain_list'):
-        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}', domain_id=args[0])
+        #keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}', domain_id=args[0])
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST')
         body =  {
             "sonic-mclag:MCLAG_DOMAIN_LIST": [
             { 
@@ -176,8 +177,9 @@ def invoke(func, args):
     # Configure  MCLAG Interface Table - START
     #######################################
     if (func == 'patch_sonic_mclag_sonic_mclag_mclag_interface_mclag_interface_list'):
-        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_INTERFACE/MCLAG_INTERFACE_LIST={domain_id},{if_name}',
-                domain_id=args[0], if_name=args[1])
+        #keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_INTERFACE/MCLAG_INTERFACE_LIST={domain_id},{if_name}',
+        #        domain_id=args[0], if_name=args[1])
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_INTERFACE/MCLAG_INTERFACE_LIST' )
         body = {
             "sonic-mclag:MCLAG_INTERFACE_LIST": [
             {
@@ -202,8 +204,9 @@ def invoke(func, args):
     # Configure  MCLAG Unique IP Table - START
     #######################################
     if (func == 'patch_sonic_mclag_seperate_ip_list'):
-        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST={if_name}',
-                if_name=args[0])
+        #keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST={if_name}',
+        #        if_name=args[0])
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST' )
         body = {
             "sonic-mclag:MCLAG_UNIQUE_IP_LIST": [
             {

@@ -93,8 +93,8 @@ def invoke_api(func, args):
 
     # Set/Get the rules of all THRESHOLD_TABLE entries.
     if func == 'patch_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold':
-	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST={buffer},{threshold_buffer_type},{interface_name},{buffer_index_per_port}/threshold', buffer = args[1], threshold_buffer_type = args[3], interface_name = args[5], buffer_index_per_port = args[2] )
-        body = { "sonic-threshold:threshold":  int(args[4]) }
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST')
+        body = { "sonic-threshold:THRESHOLD_TABLE_LIST": [{ "buffer": args[1], "threshold_buffer_type": args[3], "interface_name": args[5], "buffer_index_per_port": int(args[2]), "threshold":  int(args[4]) }] }
         return api.patch(path, body)
 
     elif func == 'delete_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list_threshold':
@@ -125,8 +125,8 @@ def invoke_api(func, args):
             print "Invalid pool {}, please configure a valid pool name from {}".format(pool_name, pool_list)
             return False
 
-	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST={pool_name}/threshold', pool_name = args[0] )
-        body = { "sonic-threshold:threshold":  int(args[1]) }
+	path = cc.Path('/restconf/data/sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST')
+        body = { "sonic-threshold:THRESHOLD_BUFFERPOOL_TABLE_LIST": [{ "pool_name": args[0], "threshold":  int(args[1]) }] }
         return api.patch(path, body)
 
     elif func == 'rpc_sonic_threshold_clear_threshold_breach':

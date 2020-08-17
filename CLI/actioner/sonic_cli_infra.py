@@ -38,8 +38,8 @@ def run_get_sonic_infra_reboot(func, argv):
     data={"Param":"sudo %s" %cmd}
 
     aa = cc.ApiClient()
-    keypath = cc.Path('/restconf/operations/sonic-system-infra:reboot-ops')
-    body = { "sonic-system-infra:input":data}
+    keypath = cc.Path('/restconf/operations/openconfig-system-ext:reboot-ops')
+    body = { "openconfig-system-ext:input":data}
 
     if cmd == "warm-reboot" and stp_mode_get() == -1:
         print("Error: warm-reboot not allowed as spanning-tree is enabled")
@@ -53,8 +53,8 @@ def run_get_sonic_infra_reboot(func, argv):
     try:
         if api_response.ok():
            response = api_response.content
-           if response is not None and 'sonic-system-infra:output' in response:
-              show_cli_output(templ, response['sonic-system-infra:output']['result'])
+           if response is not None and 'openconfig-system-ext:output' in response:
+              show_cli_output(templ, response['openconfig-system-ext:output']['result'])
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
         print "%Error: Traction Failure"

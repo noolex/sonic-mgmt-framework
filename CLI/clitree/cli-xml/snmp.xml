@@ -199,7 +199,7 @@ Before each command articulation, a comment is shown with the desired command sy
            command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER/"
            render_command_cb="snmp_location">
     <PARAM name="location-name" help="SNMP location" ptype="STRING"/>
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_snmp.py  snmp_location  "${location-name}"&#xA; </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_location ${location-name}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         Configure the physical location of the switch.
@@ -218,7 +218,7 @@ Before each command articulation, a comment is shown with the desired command sy
            command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER/"
            render_command_cb="snmp_contact">
     <PARAM name="contact-name" help="SNMP contact" ptype="STRING"/>
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_snmp.py  snmp_contact  "${contact-name}"&#xA; </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_contact ${contact-name}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         Configure the contact information about the organization responsible for the network.
