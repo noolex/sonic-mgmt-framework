@@ -1,7 +1,8 @@
 {% set if_name = json_output[1][0] %}
 {{if_name}}
-{{'Operational Property                                    '}}
-{{'--------------------------------------------------------'}}
+{{'---------------------------------------------------------------------'}}
+{{'Attribute'.ljust(25)}}:  {{'Value/State'}}
+{{'---------------------------------------------------------------------'}}
 {% for key, val in json_output[1][1].items() %}
 {% if 'los' in key %}
 {% set param_description = 'Unknown lane' %}
@@ -30,9 +31,12 @@
 {% set param_description = 'LOS8' %}
 {% endif %}
 {% if val == 'True' %}
-{{param_description.ljust(40)}}{{'Asserted'}}
+{{param_description.ljust(25)}}:  {{'Asserted'}}
+{% endif %}
+{% if val == 'False' %}
+{{param_description.ljust(25)}}:  {{'Deasserted'}}
 {% else %}
-{{param_description.ljust(40)}}{{'Deasserted'}}
+{{param_description.ljust(25)}}:  {{'N/A'}}
 {% endif %}
 {% endif %}
 {% if 'lol-' in key %}
@@ -62,11 +66,15 @@
 {% set param_description = 'LOL8' %}
 {% endif %}
 {% if val == 'True' %}
-{{param_description.ljust(40)}}{{'Asserted'}}
+{{param_description.ljust(25)}}:  {{'Asserted'}}
+{% endif %}
+{% if val == 'False' %}
+{{param_description.ljust(25)}}:  {{'Deasserted'}}
 {% else %}
-{{param_description.ljust(40)}}{{'Deasserted'}}
+{{param_description.ljust(25)}}:  {{'N/A'}}
 {% endif %}
 {% endif %}
+
 {% if 'bias' in key %}
 {% if 'lane-1' in key %}
 {% set param_description = 'TX1Bias' %}
@@ -92,8 +100,13 @@
 {% if 'lane-8' in key %}
 {% set param_description = 'TX8Bias' %}
 {% endif %}
-{{param_description.ljust(40)}}{{val}}{{'mA'}}
+{% if val == 'N/A' %}
+{{param_description.ljust(25)}}:  {{'N/A'}}
+{% else %}
+{{param_description.ljust(25)}}:  {{val}}{{'mA'}}
 {% endif %}
+{% endif %}
+
 {% if 'rx-power' in key %}
 {% if 'lane-1' in key %}
 {% set param_description = 'RX1Power' %}
@@ -120,9 +133,9 @@
 {% set param_description = 'RX8Power' %}
 {% endif %}
 {% if ('-40' in val) or ('-20' in val) %}
-{{param_description.ljust(40)}}{{'-infdBm'}}
+{{param_description.ljust(25)}}:  {{'No Power'}}
 {% else %}
-{{param_description.ljust(40)}}{{val}}{{'dBm'}}
+{{param_description.ljust(25)}}:  {{val}}{{'dBm'}}
 {% endif %}
 {% endif %}
 {% if 'tx-power' in key %}
@@ -151,33 +164,33 @@
 {% set param_description = 'TX8Power' %}
 {% endif %}
 {% if ('-40' in val) or ('-20' in val) %}
-{{param_description.ljust(40)}}{{'-infdBm'}}
+{{param_description.ljust(25)}}:  {{'No Power'}}
 {% else %}
-{{param_description.ljust(40)}}{{val}}{{'dBm'}}
+{{param_description.ljust(25)}}:  {{val}}{{'dBm'}}
 {% endif %}
 {% endif %}
 {% if 'voltage' in key %}
-{{'Voltage'.ljust(40)}}{{val}}{{'Volts'}}
+{{'Voltage'.ljust(25)}}:  {{val}}{{'Volts'}}
 {% endif %}
 {% if 'temperature' in key %}
-{{'Temperature'.ljust(40)}}{{val}}{{'C'}}
+{{'Temperature'.ljust(25)}}:  {{val}}{{'C'}}
 {% endif %}
 
 {% if 'lb-host-side-input-enable' in key %}
 {% set loopback_name = 'Host Side Input Loopback' %}
 {% if val == 'True' %}
-{{loopback_name.ljust(40)}}{{'Enabled'}}
+{{loopback_name.ljust(25)}}:  {{'Enabled'}}
 {% else %}
-{{loopback_name.ljust(40)}}{{'Disabled'}}
+{{loopback_name.ljust(25)}}:  {{'Disabled'}}
 {% endif %}
 {% endif %}
 
 {% if 'lb-media-side-input-enable' in key %}
 {% set loopback_name = 'Media Side Input Loopback' %}
 {% if val == 'True' %}
-{{loopback_name.ljust(40)}}{{'Enabled'}}
+{{loopback_name.ljust(25)}}:  {{'Enabled'}}
 {% else %}
-{{loopback_name.ljust(40)}}{{'Disabled'}}
+{{loopback_name.ljust(25)}}:  {{'Disabled'}}
 {% endif %}
 {% endif %}
 

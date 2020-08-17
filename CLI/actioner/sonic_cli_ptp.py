@@ -194,9 +194,14 @@ def invoke(func, args):
         rc = aa.patch(keypath, body)
     elif func == 'post_ietf_ptp_ptp_instance_list_port_ds_list_port_state':
         port_num = get_port_num(aa, args[1])
-        keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}/port-ds-list={port_number}/underlying-interface',
-                          instance_number=args[0], port_number=port_num)
-        body = {"ietf-ptp:underlying-interface": args[1]}
+        keypath = cc.Path('/restconf/data/ietf-ptp:ptp/instance-list={instance_number}', instance_number=args[0])
+        body = {"ietf-ptp:instance-list": [
+            {"instance-number": int(args[0]),
+             "port-ds-list": [
+                {"port-number": int(port_num), "underlying-interface": args[1]}
+             ]
+            }
+        ]}
         rc = aa.patch(keypath, body)
     elif func == 'delete_ietf_ptp_ptp_instance_list_port_ds_list':
         port_num = get_port_num(aa, args[1])

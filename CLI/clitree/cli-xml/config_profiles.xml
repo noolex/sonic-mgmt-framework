@@ -11,14 +11,9 @@
 
   <VIEW name="enable-view">
     <COMMAND
-         name="show config"
+         name="show switch-profiles"
          help="Show details about configuration profiles available"
          >
-        <PARAM name="profiles"
-               help="Show details about configuration profiles available"
-               mode="subcommand"
-               ptype="SUBCOMMAND">
-        </PARAM>
         <ACTION
             builtin="clish_pyobj">sonic_cli_cfg_profiles get_sonic_profiles_sonic_profiles show_config_profiles.j2
         </ACTION>
@@ -37,7 +32,7 @@
                show factory default profiles
             </USAGE>
             <EXAMPLE>
-               sonic# show config profiles
+               sonic# show switch-profiles
                Factory Default: l3
 
                Profile Name     Description

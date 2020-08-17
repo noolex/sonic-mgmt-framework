@@ -65,10 +65,10 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_local_pref_eq ${name} ${seq_num}</ACTION>
     </COMMAND>
 
-    <COMMAND name="no match ip next-hop" help="Delete matched ip next-hop">
+    <COMMAND name="no match ip next-hop" help="Delete matched IP next-hop">
     </COMMAND>
 
-    <COMMAND name="no match ip next-hop prefix-list" help="Delete matched ip next-hop prefix-list">
+    <COMMAND name="no match ip next-hop prefix-list" help="Delete matched IP next-hop prefix-list">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_config_next_hop_set ${name} ${seq_num}</ACTION>
     </COMMAND>
 
@@ -89,11 +89,11 @@ limitations under the License.
     <COMMAND name="no match ipv6" help="Negate a  commands"/>
     <COMMAND name="no match ipv6 address" help="Negate a  commands"/>
 
-    <COMMAND name="no match ip address prefix-list" help="Delete matched ip address prefix">
+    <COMMAND name="no match ip address prefix-list" help="Delete matched IP address prefix">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num}</ACTION>
     </COMMAND>
     
-    <COMMAND name="no match ipv6 address prefix-list" help="Delete matched ipv6 address prefix">
+    <COMMAND name="no match ipv6 address prefix-list" help="Delete matched IPv6 address prefix">
       <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num}</ACTION>
     </COMMAND>
  
@@ -142,7 +142,7 @@ limitations under the License.
     />
     <COMMAND 
         name="match ip address prefix-list" 
-        help="Set routing policy match criteria to ipv4 prefix-list"
+        help="Set routing policy match criteria to IPv4 prefix-list"
         >
         <PARAM name="prefix-list-name"
                      help="Name of prefix-list"
@@ -154,7 +154,7 @@ limitations under the License.
 
     <COMMAND 
         name="match ipv6 address prefix-list"
-        help="Set routing policy match criteria to ipv6 prefix-list"
+        help="Set routing policy match criteria to IPv6 prefix-list"
         >
         <PARAM name="prefix-list-name"
                      help="Name of prefix-list"
@@ -230,7 +230,7 @@ limitations under the License.
         render_command_cb="routemap_match_tag"
         >
         <PARAM name="match-tag"
-                     help="tag value"
+                     help="Tag value"
                      ptype="RANGE_1_4294967295"
         />
        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_tag_set_config_tag_value ${name} ${seq_num} ${match-tag}</ACTION>
@@ -241,7 +241,7 @@ limitations under the License.
         help="Set routing policy match criteria to local-preference"
         >
         <PARAM name="match-loc"
-                     help="local-preference"
+                     help="Local-preference"
                      ptype="RANGE_0_4294967295"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_local_pref"
         />
@@ -268,7 +268,7 @@ limitations under the License.
 
     <COMMAND
         name="call"
-        help="Jump to another Route-Map after match_set"
+        help="Jump to another route-map after match_set"
         >
         <PARAM name="match-call"
                      help="Name of route-map"
@@ -280,7 +280,7 @@ limitations under the License.
 
      <COMMAND
         name="match peer"
-        help="Set routing policy match criteria to peer ip"
+        help="Set routing policy match criteria to peer IP"
         render_command_cb="routemap_match_peer"
         >
         <PARAM name="peer-type" 
@@ -372,7 +372,7 @@ limitations under the License.
         help="Set routing policy match criteria to metric"
         >
         <PARAM name="match-met"
-                     help="metric value"
+                     help="Metric value"
                      ptype="RANGE_0_4294967295"
                      dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_med"
         />

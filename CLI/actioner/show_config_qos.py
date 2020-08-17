@@ -36,20 +36,20 @@ def show_wred_policy (render_tables, color):
                    if wred['wred_green_enable'] == True:
                       g_min = int(wred['green_min_threshold'])/1024
                       g_max = int(wred['green_max_threshold'])/1024
-                      cmd_str += ' green minimum-threshold ' + str(g_min) + ' maximum-threshold ' + str(g_max) +  ' drop-probability ' + wred['green_drop_probability'] + ';'
+                      cmd_str += 'green minimum-threshold ' + str(g_min) + ' maximum-threshold ' + str(g_max) +  ' drop-probability ' + wred['green_drop_probability'] + ';'
                if color == 'yellow' and 'wred_yellow_enable' in wred and 'yellow_min_threshold' in wred and 'yellow_max_threshold' in wred and 'yellow_drop_probability' in wred:
                    if wred['wred_yellow_enable'] == True:
                       y_min = int(wred['yellow_min_threshold'])/1024
                       y_max = int(wred['yellow_max_threshold'])/1024
-                      cmd_str += ' yellow minimum-threshold ' + str(y_min) + ' maximum-threshold ' + str(y_max) +  ' drop-probability ' + wred['yellow_drop_probability'] + ';'
+                      cmd_str += 'yellow minimum-threshold ' + str(y_min) + ' maximum-threshold ' + str(y_max) +  ' drop-probability ' + wred['yellow_drop_probability'] + ';'
                if color == 'red' and 'wred_red_enable' in wred and 'red_min_threshold' in wred and 'red_max_threshold' in wred and 'red_drop_probability' in wred:
                    if wred['wred_red_enable'] == True:
                       r_min = int(wred['red_min_threshold'])/1024
                       r_max = int(wred['red_max_threshold'])/1024
-                      cmd_str += ' red minimum-threshold ' + str(r_min) + ' maximum-threshold ' + str(r_max) +  ' drop-probability ' + wred['red_drop_probability'] + ';'
+                      cmd_str += 'red minimum-threshold ' + str(r_min) + ' maximum-threshold ' + str(r_max) +  ' drop-probability ' + wred['red_drop_probability'] + ';'
 
                if 'ecn' in wred:
-                   cmd_str += ' ecn ' +  wred['ecn'].lstrip('ecn_') + ';'
+                   cmd_str += 'ecn ' +  wred['ecn'].lstrip('ecn_') + ';'
 
     return 'CB_SUCCESS', cmd_str
 
@@ -169,7 +169,7 @@ def show_qos_intf_pfc(render_tables):
             if 'pfc_enable' in port_qos_map:
                priorities = port_qos_map['pfc_enable'].split(',')
                for prio in priorities:
-                   cmd_str += 'pfc priority ' + prio + ';'
+                   cmd_str += 'priority-flow-control priority ' + prio + ';'
     
     if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
         port_inst = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
@@ -177,7 +177,7 @@ def show_qos_intf_pfc(render_tables):
            if ifkey == port_inst['ifname']:
               if 'pfc_asym' in port_inst:
                  if port_inst['pfc_asym'] == 'on':
-                    cmd_str += 'pfc asymmetric' + ';'
+                    cmd_str += 'priority-flow-control asymmetric' + ';'
 
     return 'CB_SUCCESS', cmd_str
 
@@ -210,6 +210,71 @@ def show_qos_intf_scheduler_policy(render_tables):
                 cmd_str += 'scheduler-policy ' + sched.split('@')[0] + ';'
                 return 'CB_SUCCESS', cmd_str
     return 'CB_SUCCESS', cmd_str
+
+def show_qos_intf_pfc_wd(render_tables):
+    cmds = []
+    ifkey = ''
+
+    if 'name' in render_tables:
+        ifkey = render_tables['name']
+
+    pfc_wd_list = None
+    if 'sonic-qos-pfc:sonic-qos-pfc/PFC_WD' in render_tables:
+        pfc_wd_list = render_tables['sonic-qos-pfc:sonic-qos-pfc/PFC_WD'].get('PFC_WD_LIST')
+
+    if pfc_wd_list is None:
+        pfc_wd_list = []
+
+    for intf in pfc_wd_list:
+        if ifkey != intf.get('ifname'):
+            continue
+        val = intf.get('action')
+        if val is not None:
+            cmds.append("priority-flow-control watchdog action {0}".format(val))
+        val = intf.get('detection_time')
+        if val is not None:
+            cmds.append("priority-flow-control watchdog detect-time {0}".format(val))
+        val = intf.get('restoration_time')
+        if val is not None:
+            cmds.append("priority-flow-control watchdog restore-time {0}".format(val))
+        break
+
+    return 'CB_SUCCESS', "\n ".join(cmds)
+
+def show_qos_pfc_wd(render_tables):
+    cmds = []
+
+    pfc_wd_list = None
+    if 'sonic-qos-pfc:sonic-qos-pfc/PFC_WD' in render_tables:
+        pfc_wd_list = render_tables['sonic-qos-pfc:sonic-qos-pfc/PFC_WD'].get('PFC_WD_LIST')
+
+    if pfc_wd_list is None:
+        pfc_wd_list = []
+
+    for row in pfc_wd_list:
+        if 'GLOBAL' != row.get('ifname'):
+            continue
+        val = row.get('POLL_INTERVAL')
+        if val is not None:
+            cmds.append("priority-flow-control watchdog polling-interval {0}".format(val))
+        break
+
+    pfc_wd_list = None
+    if 'sonic-qos-pfc:sonic-qos-pfc/FLEX_COUNTER_TABLE' in render_tables:
+        pfc_wd_list = render_tables['sonic-qos-pfc:sonic-qos-pfc/FLEX_COUNTER_TABLE'].get('FLEX_COUNTER_TABLE_LIST')
+
+    if pfc_wd_list is None:
+        pfc_wd_list = []
+
+    for row in pfc_wd_list:
+        if 'PFCWD' != row.get('id'):
+            continue
+        val = row.get('FLEX_COUNTER_STATUS')
+        if val == 'disable':
+            cmds.append("no priority-flow-control watchdog counter-poll")
+        break
+
+    return 'CB_SUCCESS', "\n".join(cmds)
 
 def show_scheduler_policy(render_tables):
     #print ("main cb: render_tables: ", render_tables)
@@ -254,40 +319,49 @@ def show_scheduler_policy(render_tables):
     
     
         if (spseq == '255'):
-            cmd_str += '  port;'
+            cmd_str += ' port;'
 
-            cmd_str += show_scheduler_instance(sch)
+            cmd_str += show_scheduler_instance('port', sch)
 
         else:
-            cmd_str += '  queue ' + spseq + ';'
+            cmd_str += ' queue ' + spseq + ';'
 
-            cmd_str += show_scheduler_instance(sch)
+            cmd_str += show_scheduler_instance('queue', sch)
 
 
     return 'CB_SUCCESS', cmd_str
 
-def show_scheduler_instance(scheduler_inst):
+def show_scheduler_instance(stype, scheduler_inst):
     
     cmd_str = ''
 
     for key in scheduler_inst:
         if 'pir' == key:
-            cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            if 'port' == stype:
+                cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            else:
+                cmd_str += '    pir ' + str(int(scheduler_inst[key])) + ';'
 
         if 'pbs' == key:
-            cmd_str += '    pbs ' + str(scheduler_inst[key]) + ';'
+            cmd_str += '  pbs ' + str(scheduler_inst[key]) + ';'
 
         if 'cir' == key:
-            cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            if 'port' == stype:
+                cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            else:
+                cmd_str += '    cir ' + str(int(scheduler_inst[key])) + ';'
 
         if 'cbs' == key:
-            cmd_str += '    cbs ' + str(scheduler_inst[key]) + ';'
+            cmd_str += '  cbs ' + str(scheduler_inst[key]) + ';'
 
         if 'type' == key:
-            cmd_str += '    type ' + scheduler_inst[key].lower() + ';'
+            cmd_str += '  type ' + scheduler_inst[key].lower() + ';'
             
         if 'weight' == key:
-            cmd_str += '    weight ' + str(scheduler_inst[key]) + ';'
+            cmd_str += '  weight ' + str(scheduler_inst[key]) + ';'
+
+        if 'meter-type' == key:
+            cmd_str += '    meter-type ' + str(scheduler_inst[key].lower()) + ';'
 
     return cmd_str
 
@@ -303,7 +377,7 @@ def show_scheduler_policy_q(render_tables):
 
     if 'sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST' in render_tables:
         scheduler_inst = render_tables['sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST']
-        cmd_str += show_scheduler_instance(scheduler_inst)
+        cmd_str += show_scheduler_instance('cpu', scheduler_inst)
 
     return 'CB_SUCCESS', cmd_str
 
@@ -321,6 +395,6 @@ def show_scheduler_policy_port(render_tables):
     if 'sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST' in render_tables:
         scheduler_inst = render_tables['sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST']
 
-        cmd_str += show_scheduler_instance(scheduler_inst)
+        cmd_str += show_scheduler_instance('port', scheduler_inst)
         
     return 'CB_SUCCESS', cmd_str

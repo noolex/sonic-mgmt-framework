@@ -65,29 +65,15 @@ def invoke_api(func, args):
 
     # Set/Get aaa configuration
     failthrough='False'
-    body = { "openconfig-system-ext:failthrough": failthrough, "openconfig-system:authentication-method": ['local'] }
     authmethod=[]
 
-    # authentication-method is a leaf-list. So patch is not supported. A put opeartion
-    # would clear existing other parameters as well. So reading existing contents and
-    # trying to change only the user input parameter with a put
-
-    path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config')
-    get_response = api.get(path)
-    if get_response.ok():
-        if get_response.content:
-            api_response = get_response.content
-            if 'failthrough' in api_response['openconfig-system:config']:
-                body["openconfig-system-ext:failthrough"] = api_response['openconfig-system:config']['failthrough']
-            if 'authentication-method' in api_response['openconfig-system:config']:
-                body["openconfig-system:authentication-method"] = api_response['openconfig-system:config']['authentication-method']
-    if func == 'put_openconfig_system_ext_system_aaa_authentication_config_failthrough':
+    if func == 'patch_openconfig_system_ext_system_aaa_authentication_config_failthrough':
        path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config/openconfig-system-ext:failthrough')
        if args[0] == 'True':
            failthrough = 'True'
-       body["openconfig-system-ext:failthrough"] = failthrough
+       body = { "openconfig-system-ext:failthrough": failthrough}
        return api.put(path, body)
-    elif func == 'put_openconfig_system_system_aaa_authentication_config_authentication_method':
+    elif func == 'patch_openconfig_system_system_aaa_authentication_config_authentication_method':
        path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config/authentication-method')
        # tricky logic: xml sends frist selection and values of both local and tacacs+ params
        # when user selects "local tacacs+", actioner receives "local local tacacs+"
@@ -101,9 +87,9 @@ def invoke_api(func, args):
                authmethod.append(args[1])
        else:
            pass
-       body["openconfig-system:authentication-method"] = authmethod
-       return api.put(path, body)
-    elif func == 'put_openconfig_system_system_aaa_authentication_config_login':
+       body = { "openconfig-system:authentication-method": authmethod}
+       return api.patch(path, body)
+    elif func == 'patch_openconfig_system_system_aaa_authentication_config_login':
        # Industry Standard CLI
        path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config/authentication-method')
        if args[0] == "group":
@@ -114,12 +100,15 @@ def invoke_api(func, args):
        if len(args) == 3:
            authmethod.append(args[2])
 
-       body["openconfig-system:authentication-method"] = authmethod
-       return api.put(path, body)
+       body = { "openconfig-system:authentication-method": authmethod}
+       return api.patch(path, body)
     elif func == 'get_openconfig_system_system_aaa_authentication_config':
-       return get_response
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config')
+       return api.get(path)
        # The above is the earlier style of "show aaa"
     elif func == 'get_openconfig_system_system_aaa':
+       path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config')
+       get_response = api.get(path)
        if get_response.ok() and ( get_response.content is not None ) :
             show_cli_output(args[0], get_response.content)
        path = cc.Path('/restconf/data/openconfig-system:system/aaa')

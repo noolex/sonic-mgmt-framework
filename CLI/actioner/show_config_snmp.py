@@ -282,3 +282,26 @@ def show_snmp_host(render_tables):
             resp.append(mesg)
 
     return 'CB_SUCCESS', "\n".join(resp)
+
+def show_snmp_agentaddress(render_tables):
+    resp = []
+
+    tbl = 'sonic-snmp:sonic-snmp/SNMP_AGENT_ADDRESS_CONFIG'
+    lst = 'SNMP_AGENT_ADDRESS_CONFIG_LIST'
+    if (tbl in render_tables) and (lst in render_tables[tbl]):
+        for ent in render_tables[tbl][lst]:
+            addr = ent.get('addr')
+            if (addr is None) or (addr in ['None', 'NONE', 'none']):
+                continue
+
+            mesg = "snmp-server agentaddress {0}".format(addr)
+            port = ent.get('port')
+            if port is not None:
+                mesg += " port {0}".format(port)
+            intf = ent.get('interface')
+            if intf is not None:
+                mesg += " interface {0}".format(intf)
+            resp.append(mesg)
+
+    return 'CB_SUCCESS', "\n".join(resp)
+

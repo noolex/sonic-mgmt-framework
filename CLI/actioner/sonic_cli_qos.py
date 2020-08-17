@@ -30,8 +30,8 @@ def invoke(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:threshold-breaches/breach')
         return api.get(path)
     if func == 'patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/queues/queue={name}/wred/config/openconfig-qos-ext:wred-profile', name=args[0])
-        body = {"openconfig-qos-ext:wred-profile" : args[1]}
+        path = cc.Path('/restconf/data/openconfig-qos:qos/queues/')
+        body = {"openconfig-qos:queues": {"queue": [{"name": args[0], "wred": {"config": {"openconfig-qos-ext:wred-profile" : args[1]}}}]}}
         return api.patch(path, body)
     if func == 'delete_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile':
         path = cc.Path('/restconf/data/openconfig-qos:qos/queues/queue={name}/wred/config/openconfig-qos-ext:wred-profile', name=args[0])
@@ -49,61 +49,70 @@ def invoke(func, args=[]):
     if func == 'get_openconfig_qos_qos_interface_scheduler_policy_config':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/scheduler-policy/config', interface_id=args[0])
         return api.get(path)
+
     if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
-        body = {"openconfig-qos-maps-ext:config": { "dscp-to-forwarding-group": args[1]} }
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": args[0], "config": {"interface-id": args[0]}, "openconfig-qos-maps-ext:interface-maps": {"config": { "dscp-to-forwarding-group": args[1]}}}]}}
         return api.patch(path, body)
+
     if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dot1p_tc_map':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
-        body = {"openconfig-qos-maps-ext:config": { "dot1p-to-forwarding-group": args[1]} }
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": args[0], "config": {"interface-id": args[0]}, "openconfig-qos-maps-ext:interface-maps": {"config": { "dot1p-to-forwarding-group": args[1]}}}]}}
         return api.patch(path, body)
-    if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities/pfc-priority', interface_id=args[0])
-        prio = int(args[1])
-        body = {"openconfig-qos-ext:pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":True}}]}
-        return api.patch(path, body)
-    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities_pfc_priority_config_enable':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities/pfc-priority', interface_id=args[0])
-        prio = int(args[1])
-        body = {"openconfig-qos-ext:pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":False}}]}
+    if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc':
+        if "asymmetric" in args:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
+           body = {"openconfig-qos-ext:asymmetric" : True}
+        else:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities', interface_id=args[0])
+           prio = int(args[3])
+           body = {"openconfig-qos-ext:pfc-priorities":{"pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":True}}]}}
         return api.patch(path, body)
 
-    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_pfc_priorities':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/pfc-priorities', intf_name=args[0])
-        return api.delete(path, deleteEmptyEntry=True)
+    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc':
+        if "asymmetric" in args:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
+           return api.delete(path,deleteEmptyEntry=True)
+        elif "priority" in args and len(args) > 4:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc/pfc-priorities', interface_id=args[0])
+           prio = int(args[4])
+           body = {"openconfig-qos-ext:pfc-priorities":{"pfc-priority":[{"dot1p":prio,"config":{"dot1p":prio,"enable":False}}]}}
+           return api.patch(path, body)
+        elif "priority" in args:
+           path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/pfc-priorities', intf_name=args[0])
+           return api.delete(path, deleteEmptyEntry=True)
 
-    if func == 'patch_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
-        body = {"openconfig-qos-ext:asymmetric" : True}
-        return api.patch(path, body)
-    if func == 'delete_openconfig_qos_ext_qos_interfaces_interface_pfc_config_asymmetric':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={intf_name}/openconfig-qos-ext:pfc/config/asymmetric', intf_name=args[0])
-        return api.delete(path,deleteEmptyEntry=True)
     if func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc', interface_id=args[0])
         return api.get(path)
+
     if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_queue_map':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
-        body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-queue": args[1]} }
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": args[0], "config": {"interface-id": args[0]}, "openconfig-qos-maps-ext:interface-maps": {"config": { "forwarding-group-to-queue": args[1]}}}]}}
         return api.patch(path, body)
+
     if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_tc_pg_map':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
-        body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-priority-group": args[1]} }
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": args[0], "config": {"interface-id": args[0]}, "openconfig-qos-maps-ext:interface-maps": {"config": { "forwarding-group-to-priority-group": args[1]}}}]}}
         return api.patch(path, body)
+
     if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_pfc_priority_queue_map':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
-        body = {"openconfig-qos-maps-ext:config": { "pfc-priority-to-queue": args[1]} }
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": args[0], "config": {"interface-id": args[0]}, "openconfig-qos-maps-ext:interface-maps": {"config": { "pfc-priority-to-queue": args[1]}}}]}}
         return api.patch(path, body)
+
     if func == 'get_openconfig_qos_ext_qos_interfaces_interface_pfc_summary':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces')
         return api.get(path)
+
     if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
-        body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-dscp": args[1]} }
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": args[0], "config": {"interface-id": args[0]}, "openconfig-qos-maps-ext:interface-maps": {"config": { "forwarding-group-to-dscp": args[1]}}}]}}
         return api.patch(path, body)
+
     if func == 'patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dot1p':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
-        body = {"openconfig-qos-maps-ext:config": { "forwarding-group-to-dot1p": args[1]} }
+        path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/')
+        body = {"openconfig-qos:interfaces": {"interface": [{"interface-id": args[0], "config": {"interface-id": args[0]}, "openconfig-qos-maps-ext:interface-maps": {"config": { "forwarding-group-to-dot1p": args[1]}}}]}}
         return api.patch(path, body)
 
     return api.cli_not_implemented(func)
@@ -180,7 +189,8 @@ def run(func, args):
                         value['interface'] = sorted(tup, key=getIfId)
                 show_cli_output('show_qos_interface_pfc_summary.j2', response['openconfig-qos:interfaces'])
        else:
-          print response.error_message()
+          if response.status_code != 404:
+              print response.error_message()
 
     except Exception as e:
         syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())

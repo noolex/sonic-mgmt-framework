@@ -18,18 +18,16 @@ def invoke(func, args):
     aa = cc.ApiClient()
 
     if func == 'get_openconfig_port_group_port_groups_openconfig_port_group_port_groups_state':
-        if len(args) > 1 :
-            path = cc.Path('/restconf/data/openconfig-port-group:port-groups/port-group={group}/state',group=args[1])
-        else:
-            resp = cc.Response(requests.Response())
-            resp.content = {}
-            for pg in range(1, 32):
-                path = cc.Path('/restconf/data/openconfig-port-group:port-groups/port-group={group}/state', group=str(pg))
-                rsp = aa.get(path)
-                if rsp.content:
-                    resp.content[pg] = rsp.content.pop('openconfig-port-group:state')
+        resp = cc.Response(requests.Response())
+        resp.content = {}
+        path = cc.Path('/restconf/data/openconfig-port-group:port-groups/port-group')
+        rsp = aa.get(path)
+        if rsp.content and 'openconfig-port-group:port-group' in rsp.content:
+            for pg in rsp.content['openconfig-port-group:port-group']:
+                if 'state' in pg:
+                     resp.content[pg['id']] = pg['state']
                 else:
-                    break
+                     break
         if (not resp.content) or (len(resp.content)<1):
             resp.set_error_message("Port-group is not supported")
         return resp
@@ -45,8 +43,10 @@ def invoke(func, args):
         elif args[1] not in speed_map:
             return aa._make_error_response('%Error: Unsupported speed')
         else:
-            path = cc.Path('/restconf/data/openconfig-port-group:port-groups/port-group={group}/config/speed',group=args[0])
-            body = {"openconfig-port-group:speed":  speed_map.get(args[1])}
+            path = cc.Path('/restconf/data/openconfig-port-group:port-groups/port-group')
+            body = {"openconfig-port-group:port-group": [{
+                       "id": args[0],
+                       "config": {"openconfig-port-group:speed":  speed_map.get(args[1])}}]}
             return aa.patch(path,body)
     return None
 

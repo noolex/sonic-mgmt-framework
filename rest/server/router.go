@@ -26,6 +26,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"runtime"
 
 	"github.com/Azure/sonic-mgmt-common/translib"
 
@@ -59,9 +60,24 @@ type RouterConfig struct {
 	Internal bool
 }
 
+// doRecover recovers from panics, logs Error messages
+// Runtime error is a special keyword used by rsyslogD rules to display message on console
+func doRecover(w http.ResponseWriter, r *http.Request) {
+	if err := recover(); err != nil && err != http.ErrAbortHandler {
+		const size = 64 << 10
+		buf := make([]byte, size)
+		buf = buf[:runtime.Stack(buf, false)]
+		glog.Errorf("Runtime error: REST request panicked, URL: %s, Method: %s, RemoteAddr: %s", r.URL.Path, r.Method, r.RemoteAddr)
+		glog.Errorf("Panic info for URL %s: %v\n%s", r.URL.Path, err, buf)
+		retErr := httpError(http.StatusInternalServerError, "unexpected panic in server")
+		writeErrorResponse(w, r, retErr)
+	}
+}
+
 // ServeHTTP resolves and invokes the handler for http request r.
 // RESTCONF paths are served from the routeTree; rest from mux router.
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	defer doRecover(w,r)
 	path := cleanPath(r.URL.EscapedPath())
 	r = setContextValue(r, routerConfigContextKey, router)
 

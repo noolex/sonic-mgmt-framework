@@ -36,14 +36,14 @@ limitations under the License.
         >
         <PARAM
            name="name"
-           help="Name of the map"
+           help="Name of the map (Max: 32 characters)"
            ptype="STRING_32"
            >
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${name}
-            body={"openconfig-qos-maps-ext:forwarding-group-dscp-map": [{"name": "${name}"}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps
+            body={"openconfig-qos-maps-ext:forwarding-group-dscp-maps": {"forwarding-group-dscp-map": [{"name": "${name}", "config": {"name": "${name}"}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -109,8 +109,8 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${map_name}/forwarding-group-dscp-map-entries/forwarding-group-dscp-map-entry="${tc}"
-            body={"openconfig-qos-maps-ext:forwarding-group-dscp-map-entry": [{"fwd-group":"${tc}", "config": {"dscp": ${dscp-val}}}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${map_name}/forwarding-group-dscp-map-entries/
+            body={"openconfig-qos-maps-ext:forwarding-group-dscp-map-entries": {"forwarding-group-dscp-map-entry": [{"fwd-group":"${tc}", "config": {"dscp": ${dscp-val}}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>

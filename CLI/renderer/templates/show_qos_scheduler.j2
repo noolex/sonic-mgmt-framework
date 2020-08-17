@@ -5,20 +5,23 @@
 {% set scheduler_list = schedulers['scheduler'] %}
 {% for scheduler in scheduler_list %}
 {% if scheduler['sequence'] != 255 %}
-  {{' Queue: '}}{{scheduler['sequence']}}
+  {{- '   Queue: '}}{{scheduler['sequence']}}
 {% endif %}
 {% if scheduler['sequence'] == 255 %}
-  {{' Port: '}}{{'port'}}
+  {{- '   Port: '}}{{'port'}}
 {% endif %}
 
   {% set config = scheduler['config'] %}
   {% if config %}
     {% if config['priority'] %}
-            {{'  type: '}}{{config['priority']|lower}}
+        {{- '              type: '}}{{config['priority']|lower}}
     {% endif %}
 
     {% if config['openconfig-qos-ext:weight'] %}
-            {{'  weight: '}}{{config['openconfig-qos-ext:weight']}}
+        {{- '              weight: '}}{{config['openconfig-qos-ext:weight']}}
+    {% endif %}
+    {% if config['openconfig-qos-ext:meter-type'] %}
+        {{- '              meter-type: '}}{{config['openconfig-qos-ext:meter-type']|lower}}
     {% endif %}
   {% endif %}
 
@@ -27,18 +30,34 @@
     {% set rate_config = rate['config'] %}
     {% if rate_config %}
         {% if rate_config['cir'] %}
-            {% set temp = rate_config['cir']|int//bps_to_kbps %}
-            {{'  cir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
+            {% if scheduler['sequence'] == 255 %}
+                {% set temp = rate_config['cir']|int//bps_to_kbps %}
+                {{- '              cir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
+            {% else %}
+                {{- '              cir: '}}{{'%-12s'|format(rate_config['cir'])}}{{ 'Pps' }}
+            {% endif %}
         {% endif %}
         {% if rate_config['bc'] %}
-            {{'  cbs: '}}{{'%-12s'|format(rate_config['bc'])}}{{ 'Bytes' }}
+            {% if scheduler['sequence'] == 255 %}
+				{{- '              cbs: '}}{{'%-12s'|format(rate_config['bc'])}}{{ 'Bytes' }}
+            {% else %}
+				{{- '              cbs: '}}{{'%-12s'|format(rate_config['bc'])}}{{ 'Packets' }}
+            {% endif %}
         {% endif %}
         {% if rate_config['pir'] %}
-            {% set temp = rate_config['pir']|int//bps_to_kbps %}
-            {{'  pir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
+            {% if scheduler['sequence'] == 255 %}
+                {% set temp = rate_config['pir']|int//bps_to_kbps %}
+                {{- '              pir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
+            {% else %}
+                {{- '              pir: '}}{{'%-12s'|format(rate_config['pir'])}}{{ 'Pps' }}
+            {% endif %}
         {% endif %}
         {% if rate_config['be'] %}
-            {{'  pbs: '}}{{'%-12s'|format(rate_config['be'])}}{{ 'Bytes' }}
+            {% if scheduler['sequence'] == 255 %}
+                {{- '              pbs: '}}{{'%-12s'|format(rate_config['be'])}}{{ 'Bytes' }}
+            {% else %}
+                {{- '              pbs: '}}{{'%-12s'|format(rate_config['be'])}}{{ 'Packets' }}
+            {% endif %}
         {% endif %}
     {% endif %}
   {% endif %}

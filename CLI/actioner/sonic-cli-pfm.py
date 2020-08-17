@@ -45,9 +45,33 @@ def decodePsuStats(psu):
             convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:output-voltage'])
 
 def run(func, args):
+
+    # set of operational, non-static, keys to omit from output of a transceiver
+    dom_op_params_keys = ['lb-host-side-input-support', 'lb-host-side-output-support',
+                          'lb-media-side-input-support', 'lb-media-side-output-support',
+                          'lb-per-lane-host-side-support', 'lb-per-lane-media-side-support',
+                          'lb-simul-host-media-side-support',
+                          'lb-host-side-input-enable', 'lb-host-side-output-enable',
+                          'lb-media-side-input-enable', 'lb-media-side-output-enable',
+                          'lb-per-lane-host-side-enable', 'lb-per-lane-media-side-enable',
+                          'lb-simul-host-media-side-enable',
+                          'lol-lane-1', 'lol-lane-2', 'lol-lane-3', 'lol-lane-4',
+                          'lol-lane-5', 'lol-lane-6', 'lol-lane-7', 'lol-lane-8',
+                          'los-lane-1', 'los-lane-2', 'los-lane-3', 'los-lane-4',
+                          'los-lane-5', 'los-lane-6', 'los-lane-7', 'los-lane-8',
+                          'tx-bias-lane-1', 'tx-bias-lane-2', 'tx-bias-lane-3', 'tx-bias-lane-4',
+                          'tx-bias-lane-5', 'tx-bias-lane-6', 'tx-bias-lane-7', 'tx-bias-lane-8',
+                          'rx-power-lane-1', 'rx-power-lane-2', 'rx-power-lane-3', 'rx-power-lane-4',
+                          'rx-power-lane-5', 'rx-power-lane-6', 'rx-power-lane-7', 'rx-power-lane-8',
+                          'tx-power-lane-1', 'tx-power-lane-2', 'tx-power-lane-3', 'tx-power-lane-4',
+                          'tx-power-lane-5', 'tx-power-lane-6', 'tx-power-lane-7', 'tx-power-lane-8',
+                          'voltage', 'temperature']
+
+
     aa = cc.ApiClient()
     template = sys.argv[3]
     response = None
+    hasValidComp = False
     try:
         if func == 'get_openconfig_platform_components_component':
             path = cc.Path('/restconf/data/openconfig-platform:components/component=%s'%args[0])
@@ -65,8 +89,11 @@ def run(func, args):
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=PSU %s'%i)
                 response = aa.get(path)
                 if not response.ok():
-                    print response.error_message()
-                    return
+                    if not hasValidComp:
+                        print response.error_message()
+                        return
+                    break
+                hasValidComp = True
                 if (len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
@@ -80,8 +107,10 @@ def run(func, args):
                     path = cc.Path('/restconf/data/openconfig-platform:components/component=PSU {} FAN {}'.format(i, j))
                     response = aa.get(path)
                     if not response.ok():
-                        print response.error_message()
-                        return
+                        if not hasValidComp:
+                            print response.error_message()
+                            return
+                        break
                     if (len(response.content) == 0 or
                         not ('openconfig-platform:component' in response.content) or
                         len(response.content['openconfig-platform:component']) == 0 or
@@ -98,8 +127,11 @@ def run(func, args):
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=FAN %s'%i)
                 response = aa.get(path)
                 if not response.ok():
-                    print response.error_message()
-                    return
+                    if not hasValidComp:
+                        print response.error_message()
+                        return
+                    break
+                hasValidComp = True
                 if (len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
@@ -161,6 +193,8 @@ def run(func, args):
                             b = b.replace('_CONNECTOR', '')
                             b = b.replace('_PLUS', '+')
                             b = b.replace('_', '-')
+                        if a in dom_op_params_keys:
+                            continue
 
                         d2[a] = b
                 except:
@@ -181,8 +215,11 @@ def run(func, args):
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=TEMP %s'%i)
                 response = aa.get(path)
                 if not response.ok():
-                    print response.error_message()
-                    return
+                    if not hasValidComp:
+                        print response.error_message()
+                        return
+                    break
+                hasValidComp = True
                 if (len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or

@@ -36,14 +36,14 @@ limitations under the License.
         >
         <PARAM
            name="name"
-           help="Name of the map"
+           help="Name of the map (Max: 32 characters)"
            ptype="STRING_32"
            >
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${name}
-            body={"openconfig-qos-maps-ext:pfc-priority-queue-map": [{"name": "${name}"}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps
+            body={"openconfig-qos-maps-ext:pfc-priority-queue-maps": {"pfc-priority-queue-map": [{"name": "${name}", "config": {"name": "${name}"}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -108,8 +108,8 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${map_name}/pfc-priority-queue-map-entries/pfc-priority-queue-map-entry=${dot1p}
-            body={"openconfig-qos-maps-ext:pfc-priority-queue-map-entry": [{"dot1p":${dot1p}, "config": {"output-queue-index": ${qid}}}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${map_name}/pfc-priority-queue-map-entries/
+            body={"openconfig-qos-maps-ext:pfc-priority-queue-map-entries": {"pfc-priority-queue-map-entry": [{"dot1p":${dot1p}, "config": {"output-queue-index": ${qid}}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>

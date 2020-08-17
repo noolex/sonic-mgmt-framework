@@ -36,14 +36,14 @@ limitations under the License.
         >
         <PARAM
            name="name"
-           help="Name of the map"
+           help="Name of the map (Max: 32 characters)"
            ptype="STRING_32"
            >
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map=${name}
-            body={"openconfig-qos-maps-ext:dot1p-map": [{"name": "${name}"}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps
+            body={"openconfig-qos-maps-ext:dot1p-maps": {"dot1p-map": [{"name": "${name}", "config": {"name": "${name}"}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -108,8 +108,8 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_restcl">
             oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map=${map_name}/dot1p-map-entries/dot1p-map-entry=${dot1p}
-            body={"openconfig-qos-maps-ext:dot1p-map-entry": [{"dot1p":${dot1p}, "config": {"fwd-group": "${tc}"}}]}
+            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:dot1p-maps/dot1p-map=${map_name}/dot1p-map-entries/
+            body={"openconfig-qos-maps-ext:dot1p-map-entries": {"dot1p-map-entry": [{"dot1p":${dot1p}, "config": {"fwd-group": "${tc}"}}]}}
         </ACTION>
         <DOCGEN>
           <DESCRIPTION>

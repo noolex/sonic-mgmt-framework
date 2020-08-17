@@ -48,7 +48,9 @@ from show_config_igmp_snooping import *
 from show_config_tam import *
 from show_config_bfd import *
 from show_config_swresource import *
+from show_config_sag import *
 from show_config_vrrp import *
+from show_config_acl import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -71,6 +73,9 @@ config_view_hierarchy= \
        'configure-tc-dot1p-map',
        'configure-tc-dscp-map',
        'configure-link-state-track',
+       'configure-mac-acl',
+       'configure-ipv4-acl',
+       'configure-ipv6-acl',
        'config-if-CPU',
        'configure-vlan',
        'configure-lo',
@@ -155,6 +160,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'fbs_service_policy_render' : show_running_fbs_service_policy,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
+                  'snmp_agentaddress'       : show_snmp_agentaddress,
                   'snmp_contact'            : show_snmp_contact,
                   'snmp_community'          : show_snmp_community,
                   'snmp_engine'             : show_snmp_engine,
@@ -203,6 +209,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'qos_intf_map_pfc_queue'  : show_qos_intf_map_pfc_queue,
                   'qos_intf_pfc'            : show_qos_intf_pfc,
                   'qos_intf_sched_policy'   : show_qos_intf_scheduler_policy,
+                  'qos_intf_pfc_wd'         : show_qos_intf_pfc_wd,
+                  'qos_pfc_wd'              : show_qos_pfc_wd,
                   'show_running_lst_group'  : show_running_lst_group,
                   'show_running_lst_interface': show_running_lst_interface,
                   'vlanvrfvnimap'           : show_vlanvrfvnimap,
@@ -234,6 +242,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'if_lag_config'           : show_if_lag_config,
 		  'tam_config'              : show_tam_config,
                   'ip_sla_config'           : show_ip_sla_config,
+                  'bfd_config'              : show_bfd_config,
 		  'switch_resource_flow_scale_entry' : show_switch_resource_flow_scale_entry,
                   'ldap_map_config'         : show_ldap_map_config,
                   'spanning_tree_vlan'      : show_config_spanning_tree_vlan,
@@ -245,7 +254,15 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'spanning_tree_global_priority'    : show_config_spanning_tree_global_priority,
                   'spanning_tree_global_fwd_delay'   : show_config_spanning_tree_global_fwd_delay,
                   'spanning_tree_global_root_guard_timeout' : show_config_spanning_tree_global_root_guard_time,
+                  'sag4_global'             : show_sag4_global,
+                  'sag6_global'             : show_sag6_global,
+                  'sag4_config'             : show_sag4_config,
+                  'sag6_config'             : show_sag6_config,
                   'vrrp_config'             : show_vrrp_config,
+                  'mac_acl_table_cb'        : mac_acl_table_cb,
+                  'ipv4_acl_table_cb'       : ipv4_acl_table_cb,
+                  'ipv6_acl_table_cb'       : ipv6_acl_table_cb,
+                  'username_config'         : show_username_config,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

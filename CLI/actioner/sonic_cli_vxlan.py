@@ -22,7 +22,6 @@ import sys
 import json
 import collections
 import re
-import pdb
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
@@ -100,11 +99,19 @@ def invoke(func, args):
     #[un]configure VTEP 
     if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list' or
         func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list'):
-        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0])
 
         if (func.startswith("patch") is True):
-            return aa.patch(keypath)
+            keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST')
+            body =  {
+            "sonic-vxlan:VXLAN_TUNNEL_LIST": [
+                { 
+                        "name": args[0]
+                }
+                ]
+            }
+            return aa.patch(keypath, body)
         else:
+            keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0])
             keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
             api_response = aa.get(keypath_nvo)
             response = api_response.content
@@ -125,11 +132,11 @@ def invoke(func, args):
 
         if (func.startswith("patch") is True):
             body = {
-              "sonic-vxlan:src_ip": args[1]
-            }
+                    "sonic-vxlan:src_ip": args[1]
+                  }
             response = aa.patch(keypath, body)
             if response.ok():
-                keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
+                keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST')
                 body = {
                 "sonic-vxlan:EVPN_NVO_LIST": [
                     {
@@ -283,7 +290,7 @@ def invoke(func, args):
     #[un]configure Neighbour Suppression
     if (func == 'patch_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list' or
         func == 'delete_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list'):
-        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/SUPPRESS_VLAN_NEIGH_LIST={name}', name=args[0])
+        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/SUPPRESS_VLAN_NEIGH_LIST')
 
         if (func.startswith("patch") is True):
             body = {
@@ -306,6 +313,7 @@ def invoke(func, args):
 #show vxlan interface 
 def vxlan_show_vxlan_interface(args):
     print ""
+    sip_configured = False
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list", args)
     if api_response.ok():
         response = api_response.content
@@ -315,8 +323,14 @@ def vxlan_show_vxlan_interface(args):
         if len(response) != 0:
             tunnel_list = response['sonic-vxlan:VXLAN_TUNNEL_LIST']
             for item in tunnel_list:
+              if 'src_ip' in item:
                 source_vtep_ip = item['src_ip']
+                sip_configured = True
+            #if sip_configured is True:
             show_cli_output(args[0],response)
+
+    if sip_configured is False:
+       return
 
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list", args)                                                                      
     if api_response.ok():
