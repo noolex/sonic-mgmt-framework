@@ -150,6 +150,10 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
     while (*p) {
 	if (!saved_ptr) saved_ptr = p;
 	if (*p == ' ' && quoted == false) {
+	   while (*(p+1) && isspace(*(p+1))) {
+	      memmove(p, p+1, strlen(p)-1);
+	      *(p+strlen(p)-1) = '\0';
+	   }
 	   *p = '\0';
            token[idx++] = saved_ptr;
 	   saved_ptr = '\0';
