@@ -69,8 +69,8 @@ limitations under the License.
 <!--=======================================================-->
 <PTYPE
      name="RADIUS_VRF"
-     pattern="(Vrf_(([0-9A-Za-z]){1,28}))|(mgmt)"
-     help="Name of VRF (Max size 32, (mgmt, or prefixed by Vrf_)"
+     pattern="Vrf(([0-9A-Za-z]){1,12})"
+     help="VrfName"
 />
 <!--=======================================================-->
 
@@ -277,31 +277,16 @@ limitations under the License.
         </PARAM>
 
         <PARAM
-            name="timeout"
-            help="RADIUS server's timeout"
+            name="auth-type"
+            help="RADIUS server's authentication type"
             mode="subcommand"
             ptype="SUBCOMMAND"
             optional="true"
             >
             <PARAM
-                name="vtimeout"
+                name="vauth_type"
                 help="(default: global setting)"
-                ptype="RADIUS_TIMEOUT"
-            >
-            </PARAM>
-        </PARAM>
-
-        <PARAM
-            name="retransmit"
-            help="RADIUS server's retransmit attempts"
-            mode="subcommand"
-            ptype="SUBCOMMAND"
-            optional="true"
-            >
-            <PARAM
-                name="vretransmit"
-                help="(default: global setting)"
-                ptype="RADIUS_RETRANSMIT"
+                ptype="RADIUS_AUTH_TYPE"
             >
             </PARAM>
         </PARAM>
@@ -322,21 +307,6 @@ limitations under the License.
         </PARAM>
 
         <PARAM
-            name="auth-type"
-            help="RADIUS server's authentication type"
-            mode="subcommand"
-            ptype="SUBCOMMAND"
-            optional="true"
-            >
-            <PARAM
-                name="vauth_type"
-                help="(default: global setting)"
-                ptype="RADIUS_AUTH_TYPE"
-            >
-            </PARAM>
-        </PARAM>
-
-        <PARAM
             name="priority"
             help="RADIUS server's priority"
             mode="subcommand"
@@ -352,16 +322,16 @@ limitations under the License.
         </PARAM>
 
         <PARAM
-            name="vrf"
-            help="RADIUS server's vrf"
+            name="retransmit"
+            help="RADIUS server's retransmit attempts"
             mode="subcommand"
             ptype="SUBCOMMAND"
             optional="true"
             >
             <PARAM
-                name="vvrf"
-                help=""
-                ptype="RADIUS_VRF"
+                name="vretransmit"
+                help="(default: global setting)"
+                ptype="RADIUS_RETRANSMIT"
             >
             </PARAM>
         </PARAM>
@@ -382,7 +352,44 @@ limitations under the License.
             </PARAM>
         </PARAM>
 
-        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${vvrf} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
+        <PARAM
+            name="timeout"
+            help="RADIUS server's timeout"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM
+                name="vtimeout"
+                help="(default: global setting)"
+                ptype="RADIUS_TIMEOUT"
+            >
+            </PARAM>
+        </PARAM>
+
+        <PARAM
+            name="vrf"
+            help="RADIUS server's vrf"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM name="vrf-switch" help="" ptype="SUBCOMMAND" mode="switch">
+              <PARAM
+                name="mgmt"
+                help="Management VRF"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                />
+              <PARAM
+                name="vrf-name"
+                help="VRF name"
+                ptype="RADIUS_VRF"
+                />
+            </PARAM>
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${mgmt}${vrf-name} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
         <DOCGEN>
           <DESCRIPTION>Configures a server for RADIUS.</DESCRIPTION>
           <EXAMPLE>
@@ -392,32 +399,9 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
-        name="no radius-server source-ip"
-        help="Unconfigures global source ip for RADIUS"
-        hidden="true"
+        name="no radius-server"
+        help="Unconfigures RADIUS"
         >
-    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_source_address</ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no radius-server nas-ip"
-        help="Unconfigures global NAS-IP|IPV6-Address for RADIUS"
-        >
-    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_nas_ip_address</ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no radius-server timeout"
-        help="Unconfigures global timeout for RADIUS"
-        >
-    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_timeout</ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no radius-server retransmit"
-        help="Unconfigures global retransmit attempts for RADIUS"
-        >
-    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_retransmit</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -425,19 +409,6 @@ limitations under the License.
         help="Unconfigures global authentication type for RADIUS"
         >
     <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_auth_type</ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no radius-server key"
-        help="Unconfigures global shared secret for RADIUS"
-        >
-    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_key</ACTION>
-    </COMMAND>
-
-    <COMMAND
-        name="no radius-server"
-        help="Unconfigures RADIUS"
-        >
     </COMMAND>
 
     <COMMAND
@@ -469,16 +440,8 @@ limitations under the License.
         </PARAM>
 
         <PARAM
-            name="timeout"
-            help="Unconfigures RADIUS server's timeout"
-            mode="subcommand"
-            ptype="SUBCOMMAND"
-            >
-        </PARAM>
-
-        <PARAM
-            name="retransmit"
-            help="Unconfigures RADIUS server's retransmit attempts"
+            name="auth-type"
+            help="Unconfigures RADIUS server's authentication type"
             mode="subcommand"
             ptype="SUBCOMMAND"
             >
@@ -493,14 +456,6 @@ limitations under the License.
         </PARAM>
 
         <PARAM
-            name="auth-type"
-            help="Unconfigures RADIUS server's authentication type"
-            mode="subcommand"
-            ptype="SUBCOMMAND"
-            >
-        </PARAM>
-
-        <PARAM
             name="priority"
             help="Unconfigures RADIUS server's priority"
             mode="subcommand"
@@ -509,8 +464,8 @@ limitations under the License.
         </PARAM>
 
         <PARAM
-            name="vrf"
-            help="Unconfigures RADIUS server's vrf"
+            name="retransmit"
+            help="Unconfigures RADIUS server's retransmit attempts"
             mode="subcommand"
             ptype="SUBCOMMAND"
             >
@@ -519,6 +474,22 @@ limitations under the License.
         <PARAM
             name="source-interface"
             help="Unconfigures RADIUS server's source-interface"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="timeout"
+            help="Unconfigures RADIUS server's timeout"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="vrf"
+            help="Unconfigures RADIUS server's vrf"
             mode="subcommand"
             ptype="SUBCOMMAND"
             >
@@ -533,6 +504,42 @@ limitations under the License.
             sonic(config)# no radius-server host 10.59.100.2
           </EXAMPLE>
         </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server key"
+        help="Unconfigures global shared secret for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_key</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server nas-ip"
+        help="Unconfigures global NAS-IP|IPV6-Address for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_nas_ip_address</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server retransmit"
+        help="Unconfigures global retransmit attempts for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_retransmit</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server source-ip"
+        help="Unconfigures global source ip for RADIUS"
+        hidden="true"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_source_address</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server timeout"
+        help="Unconfigures global timeout for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_timeout</ACTION>
     </COMMAND>
 
 </VIEW>
