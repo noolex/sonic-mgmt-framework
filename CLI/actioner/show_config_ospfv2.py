@@ -242,6 +242,7 @@ def show_router_ospf_area_config(render_tables):
         if area_p == False:
             continue
 
+        cmd_str_len = len(cmd_str)
         cmd_area_prefix = 'area {}'.format(area_v)
 
         match_value = { 'TEXT' : '', 'MD5HMAC' : 'message-digest' }
@@ -272,6 +273,8 @@ def show_router_ospf_area_config(render_tables):
         match_value = { 'ENABLE' : 'enable', 'DISABLE' : 'disable', 'DEFAULT' : 'default'}
         cmd_str += ospf_generate_command(tbl_rec, 'shortcut', cmd_prefix, match_value=match_value)
 
+        if cmd_str_len == len(cmd_str) :
+            cmd_str += cmd_area_prefix + cmd_end
 
     status, sub_cmd_str = show_router_ospf_area_vlink_config(render_tables)
     if status == 'CB_SUCCESS' :
