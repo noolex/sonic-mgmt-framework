@@ -321,23 +321,23 @@ def show_scheduler_policy(render_tables):
         if (spseq == '255'):
             cmd_str += '  port;'
 
-            cmd_str += show_scheduler_instance('port', sch)
+            cmd_str += show_scheduler_instance('port', spname, sch)
 
         else:
             cmd_str += '  queue ' + spseq + ';'
 
-            cmd_str += show_scheduler_instance('queue', sch)
+            cmd_str += show_scheduler_instance('queue', spname, sch)
 
 
     return 'CB_SUCCESS', cmd_str
 
-def show_scheduler_instance(stype, scheduler_inst):
+def show_scheduler_instance(stype, spname, scheduler_inst):
     
     cmd_str = ''
 
     for key in scheduler_inst:
         if 'pir' == key:
-            if 'port' == stype:
+            if 'copp-scheduler-policy' != spname:
                 cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
             else:
                 cmd_str += '    pir ' + str(int(scheduler_inst[key])) + ';'
@@ -346,7 +346,7 @@ def show_scheduler_instance(stype, scheduler_inst):
             cmd_str += '    pbs ' + str(scheduler_inst[key]) + ';'
 
         if 'cir' == key:
-            if 'port' == stype:
+            if 'copp-scheduler-policy' != spname:
                 cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
             else:
                 cmd_str += '    cir ' + str(int(scheduler_inst[key])) + ';'
@@ -377,7 +377,14 @@ def show_scheduler_policy_q(render_tables):
 
     if 'sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST' in render_tables:
         scheduler_inst = render_tables['sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST']
-        cmd_str += show_scheduler_instance('cpu', scheduler_inst)
+
+        for sch in scheduler_inst:
+            if sch['name'].find('@') != -1:
+                spname = sch['name'].split('@')[0]
+            else:
+                spname = sch['name']
+
+        cmd_str += show_scheduler_instance('cpu', spname, scheduler_inst)
 
     return 'CB_SUCCESS', cmd_str
 
@@ -395,6 +402,12 @@ def show_scheduler_policy_port(render_tables):
     if 'sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST' in render_tables:
         scheduler_inst = render_tables['sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST']
 
-        cmd_str += show_scheduler_instance('port', scheduler_inst)
+        for sch in scheduler_inst:
+            if sch['name'].find('@') != -1:
+                spname = sch['name'].split('@')[0]
+            else:
+                spname = sch['name']
+
+        cmd_str += show_scheduler_instance('port', spname, scheduler_inst)
         
     return 'CB_SUCCESS', cmd_str

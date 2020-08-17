@@ -1450,9 +1450,16 @@ limitations under the License.
         />
     <!--=======================================================-->
        <PTYPE
-        name="CPU_CIR_PIR_CBS_PBS"
+        name="QUEUE_CIR_PIR"
         method="integer"
-        pattern="1..100000"
+        pattern="0..400000000"
+        help=""
+        />
+    <!--=======================================================-->
+       <PTYPE
+        name="QUEUE_BURST"
+        method="integer"
+        pattern="0..128000000"
         help=""
         />
     <!--=======================================================-->

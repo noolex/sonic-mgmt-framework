@@ -228,12 +228,12 @@ limitations under the License.
         >
         <PARAM
             name="cir"
-            help="0 - 100000"
-            ptype="CPU_CIR_PIR_CBS_PBS"
+            help="0 - 400000000"
+            ptype="QUEUE_CIR_PIR"
             >
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir_cpu ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
         </ACTION>
         </COMMAND>
 
@@ -250,7 +250,7 @@ limitations under the License.
         <PARAM
             name="bc"
             help="Committed Burst Size"
-            ptype="CPU_CIR_PIR_CBS_PBS"
+            ptype="QUEUE_BURST"
             >
         </PARAM>
         <ACTION>
@@ -270,12 +270,12 @@ limitations under the License.
         >
         <PARAM
             name="pir"
-            help="0 - 100000"
-            ptype="CPU_CIR_PIR_CBS_PBS"
+            help="0 - 400000000"
+            ptype="QUEUE_CIR_PIR"
             >
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir_cpu ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
+            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
         </ACTION>
         </COMMAND>
 
@@ -295,7 +295,7 @@ limitations under the License.
         <PARAM
             name="be"
             help="Peak Burst Size"
-            ptype="CPU_CIR_PIR_CBS_PBS"
+            ptype="QUEUE_BURST"
             >
         </PARAM>
         <ACTION>
