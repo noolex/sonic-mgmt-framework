@@ -154,6 +154,26 @@ module sonic-spanning-tree {
                         "Enable edge port BPDU filter";
                 }
 
+                leaf loop_guard {
+                    must "../../../STP/STP_LIST[keyleaf='GLOBAL']/mode='rpvst'" {
+                        error-message "Configuration allowed in Rapid PVST mode";
+                        error-app-tag stp-invalid;
+                    }
+                    type boolean;
+                    description
+                        "Enable loop guard default setting for the bridge";
+                }
+
+                leaf portfast {
+                    must "../../../STP/STP_LIST[keyleaf='GLOBAL']/mode='pvst'" {
+                        error-message "Configuration allowed in PVST mode";
+                        error-app-tag stp-invalid;
+                    }
+                    type boolean;
+                    description
+                        "Enables PortFast globally on all non-trunking interfaces";
+                }
+
                 uses vlanModeAttr;
             }
         }
@@ -277,6 +297,20 @@ module sonic-spanning-tree {
                     type boolean;
                     description
                         "Enable/Disable portfast on port";
+                }
+
+                leaf loop_guard {
+                    must "../../../STP/STP_LIST[keyleaf='GLOBAL']/mode='rpvst'" {
+                        error-message "Configuration allowed in Rapid PVST mode";
+                        error-app-tag stp-invalid;
+                    }
+                    type enumeration {
+                        enum false;
+                        enum true;
+                        enum none;
+                    }
+                    description
+                        "Enable/Disable loop guard on port";
                 }
 
                 uses interfaceAttr;

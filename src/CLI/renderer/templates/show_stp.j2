@@ -24,10 +24,12 @@
 {% set vars = {'max_age':""}%}
 {% set vars = {'hello':""}%}
 {% set vars = {'fDly':""}%}
+{% set vars = {'intf_guard': "" } %}
 {% if json_output -%}
 {% if json_output is iterable %}
-{% if "openconfig-spanning-tree:enabled-protocol" is in json_output %}
-{% set stp_protocol = json_output['openconfig-spanning-tree:enabled-protocol'][0]%}
+{% if "openconfig-spanning-tree:config" is in json_output %}
+{% set stp_protocol = json_output['openconfig-spanning-tree:config']['enabled-protocol'][0]%}
+{% set loopgrd_def = json_output['openconfig-spanning-tree:config']['loop-guard'] %}
 {%endif%}
 {% set stp_intfs = {} %}
 {% set vlan_list = {} %}
@@ -81,8 +83,8 @@ STP Bridge Parameters:
 {{'%-18s'|format(vars.root_br)}}{{'%-10s'|format(vars.root_path)}}{{'%-18s'|format(vars.desig_br)}}{{'%-12s'|format(vars.root_port_name)}}{{'%-5s'|format(vars.max_age)}}{{'%-5s'|format(vars.hello)}}{{'%-5s'|format(vars.fDly)}}
 {{' ' }}
 STP Port Parameters:
-{{'%-16s'|format("Port")}}{{'%-5s'|format("Prio")}}{{'%-10s'|format("Path")}}{{'%-5s'|format("Port")}}{{'%-7s'|format("Uplink")}}{{'%-7s'|format("BPDU")}}{{'%-11s'|format("State")}}{{'%-11s'|format("Designated")}}{{'%-17s'|format("Designated")}}{{'%-17s'|format("Designated")}}
-{{'%-16s'|format("Num")}}{{'%-5s'|format("rity")}}{{'%-10s'|format("Cost")}}{{'%-5s'|format("Fast")}}{{'%-7s'|format("Fast")}}{{'%-7s'|format("Filter")}}{{'%-11s'|format("")}}{{'%-11s'|format("Cost")}}{{'%-17s'|format("Root")}}{{'%-17s'|format("bridge")}}
+{{'%-16s'|format("Port")}}{{'%-5s'|format("Prio")}}{{'%-10s'|format("Path")}}{{'%-5s'|format("Port")}}{{'%-7s'|format("Uplink")}}{{'%-7s'|format("BPDU")}}{{'%-6s'|format("Guard")}}{{'%-11s'|format("State")}}{{'%-11s'|format("Designated")}}{{'%-17s'|format("Designated")}}{{'%-17s'|format("Designated")}}
+{{'%-16s'|format("Num")}}{{'%-5s'|format("rity")}}{{'%-10s'|format("Cost")}}{{'%-5s'|format("Fast")}}{{'%-7s'|format("Fast")}}{{'%-7s'|format("Filter")}}{{'%-6s'|format("Type")}}{{'%-11s'|format("")}}{{'%-11s'|format("Cost")}}{{'%-17s'|format("Root")}}{{'%-17s'|format("bridge")}}
 {% set interface_list  = {} %}
 {% if "interfaces" in vlan and "interface" in vlan['interfaces'] %}
     {% set interface_list = vlan['interfaces']['interface'] %}
@@ -112,13 +114,20 @@ STP Port Parameters:
             {%else %}
                 {% if vars.update({'intf_fast': "N"}) %}{% endif %}
             {%endif %}
+            {% if "guard" in stp_intf['state'] %}
+                {% if vars.update({'intf_guard': stp_intf['state']['guard']}) %}{% endif %}
+            {% elif loopgrd_def == True %}
+                {% if vars.update({'intf_guard': "LOOP"}) %}{% endif %}
+            {% else %}
+                {% if vars.update({'intf_guard': "-"}) %}{% endif %}
+            {%endif %}
         {%endif %}
         {% if stp_intf['config']['openconfig-spanning-tree-ext:uplink-fast'] == true %}
             {% if vars.update({'intf_ufast': "Y"}) %}{% endif %}
         {%else %}
             {% if vars.update({'intf_ufast': "N"}) %}{% endif %}
         {%endif %}
-{{'%-16s'|format(vars.intf_name)}}{{'%-5s'|format(vars.intf_pri)}}{{'%-10s'|format(vars.intf_path_cost)}}{{'%-5s'|format(vars.intf_fast)}}{{'%-7s'|format(vars.intf_ufast)}}{{'%-7s'|format(vars.intf_bpdu_filter)}}{{'%-11s'|format(vars.intf_state)}}{{'%-11s'|format(vars.intf_desig_cost)}}{{'%-17s'|format(vars.intf_desig_root)}}{{'%-17s'|format(vars.intf_desig_bridge)}}
+{{'%-16s'|format(vars.intf_name)}}{{'%-5s'|format(vars.intf_pri)}}{{'%-10s'|format(vars.intf_path_cost)}}{{'%-5s'|format(vars.intf_fast)}}{{'%-7s'|format(vars.intf_ufast)}}{{'%-7s'|format(vars.intf_bpdu_filter)}}{{'%-6s'|format(vars.intf_guard)}}{{'%-11s'|format(vars.intf_state)}}{{'%-11s'|format(vars.intf_desig_cost)}}{{'%-17s'|format(vars.intf_desig_root)}}{{'%-17s'|format(vars.intf_desig_bridge)}}
         {%endif %}
         {%endfor %}
     {% endfor %}
@@ -169,8 +178,8 @@ RSTP (IEEE 802.1w) Bridge Parameters:
 {{'%-18s'|format(vars.root_br)}}{{'%-10s'|format(vars.root_path)}}{{'%-18s'|format(vars.desig_br)}}{{'%-12s'|format(vars.root_port_name)}}{{'%-5s'|format(vars.max_age)}}{{'%-5s'|format(vars.hello)}}{{'%-5s'|format(vars.fDly)}}
 {{' ' }}
 RSTP (IEEE 802.1w) Port Parameters:
-{{'%-16s'|format("Port")}}{{'%-5s'|format("Prio")}}{{'%-10s'|format("Path")}}{{'%-4s'|format("P2P")}}{{'%-5s'|format("Edge")}}{{'%-7s'|format("BPDU")}}{{'%-12s'|format("Role")}}{{'%-11s'|format("State")}}{{'%-11s'|format("Designa-")}}{{'%-17s'|format("Designated")}}
-{{'%-16s'|format("Num")}}{{'%-5s'|format("rity")}}{{'%-10s'|format("Cost")}}{{'%-4s'|format("Mac")}}{{'%-5s'|format("Port")}}{{'%-7s'|format("Filter")}}{{'%-12s'|format("")}}{{'%-11s'|format("")}}{{'%-11s'|format("ted cost")}}{{'%-17s'|format("bridge")}}
+{{'%-16s'|format("Port")}}{{'%-5s'|format("Prio")}}{{'%-10s'|format("Path")}}{{'%-4s'|format("P2P")}}{{'%-5s'|format("Edge")}}{{'%-7s'|format("BPDU")}}{{'%-6s'|format("Guard")}}{{'%-12s'|format("Role")}}{{'%-11s'|format("State")}}{{'%-11s'|format("Designa-")}}{{'%-17s'|format("Designated")}}
+{{'%-16s'|format("Num")}}{{'%-5s'|format("rity")}}{{'%-10s'|format("Cost")}}{{'%-4s'|format("Mac")}}{{'%-5s'|format("Port")}}{{'%-7s'|format("Filter")}}{{'%-6s'|format("Type")}}{{'%-12s'|format("")}}{{'%-11s'|format("")}}{{'%-11s'|format("ted cost")}}{{'%-17s'|format("bridge")}}
 
 {% set interface_list  = {} %}
 {% if "interfaces" in vlan and "interface" in vlan['interfaces'] %}
@@ -186,7 +195,7 @@ RSTP (IEEE 802.1w) Port Parameters:
             {% if vars.update({'intf_pri':intf['state']['port-priority']}) %}{% endif %}
             {% if vars.update({'intf_path_cost':intf['state']['cost']}) %}{% endif %}
             {% if vars.update({'intf_role':intf['state']['role']| replace('openconfig-spanning-tree-types:',"")}) %}{% endif %}
-            {% if vars.update({'intf_state':intf['state']['port-state']| replace('openconfig-spanning-tree-types:',"")| replace('openconfig-spanning-tree-ext:BPDU_DIS',"BPDU-DIS")| replace('openconfig-spanning-tree-ext:ROOT_INC',"ROOT-INC")| replace('openconfig-spanning-tree-ext:',"")}) %}{% endif %}
+            {% if vars.update({'intf_state':intf['state']['port-state']| replace('openconfig-spanning-tree-types:',"")| replace('openconfig-spanning-tree-ext:BPDU_DIS',"BPDU-DIS")| replace('openconfig-spanning-tree-ext:ROOT_INC',"ROOT-INC")| replace('openconfig-spanning-tree-ext:LOOP_INC',"LOOP-INC")| replace('openconfig-spanning-tree-ext:',"")}) %}{% endif %}
             {% if vars.update({'intf_desig_cost':intf['state']['designated-cost']}) %}{% endif %}
             {% if vars.update({'intf_desig_bridge':intf['state']['designated-bridge-address']}) %}{% endif %}
         {%endif%}
@@ -206,8 +215,15 @@ RSTP (IEEE 802.1w) Port Parameters:
                  {%else %}
                    {% if vars.update({'intf_edge': "N"}) %}{% endif %}
                  {%endif %}
+                 {% if "guard" in stp_intf['state'] %}
+                   {% if vars.update({'intf_guard': stp_intf['state']['guard']}) %}{% endif %}
+                 {% elif loopgrd_def == True %}
+                   {% if vars.update({'intf_guard': "LOOP"}) %}{% endif %}
+				 {% else %}
+				   {% if vars.update({'intf_guard': "-"}) %}{% endif %}
+                 {%endif %}
                {%endif %}
-{{'%-16s'|format(vars.intf_name)}}{{'%-5s'|format(vars.intf_pri)}}{{'%-10s'|format(vars.intf_path_cost)}}{{'%-4s'|format(vars.intf_p2pmac)}}{{'%-5s'|format(vars.intf_edge)}}{{'%-7s'|format(vars.intf_bpdu_filter)}}{{'%-12s'|format(vars.intf_role)}}{{'%-11s'|format(vars.intf_state)}}{{'%-11s'|format(vars.intf_desig_cost)}}{{'%-17s'|format(vars.intf_desig_bridge)}}
+{{'%-16s'|format(vars.intf_name)}}{{'%-5s'|format(vars.intf_pri)}}{{'%-10s'|format(vars.intf_path_cost)}}{{'%-4s'|format(vars.intf_p2pmac)}}{{'%-5s'|format(vars.intf_edge)}}{{'%-7s'|format(vars.intf_bpdu_filter)}}{{'%-6s'|format(vars.intf_guard)}}{{'%-12s'|format(vars.intf_role)}}{{'%-11s'|format(vars.intf_state)}}{{'%-11s'|format(vars.intf_desig_cost)}}{{'%-17s'|format(vars.intf_desig_bridge)}}
         {%endif %}
         {%endfor %}
     {% endfor %}

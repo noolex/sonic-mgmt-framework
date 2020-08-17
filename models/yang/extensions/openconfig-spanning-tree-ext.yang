@@ -36,6 +36,13 @@ module openconfig-spanning-tree-ext {
             "Port state when port is in root inconsistent state due to guard root action";
     }
 
+    identity LOOP_INC {
+        base oc-stp-types:STP_PORT_STATE;
+        description
+            "Port state when port is in loop inconsistent state due to guard loop action";
+    }
+
+
     typedef stp-bridge-priority-type-ext {
         type uint32 {
             range 0..61440;
@@ -68,6 +75,13 @@ module openconfig-spanning-tree-ext {
                 for a period until root guard timeout before moving the port to
                 forwarding state";
         }
+
+        leaf portfast {
+            type boolean;
+            description
+                "Enables PortFast globally on all access ports";
+        }
+
         uses oc-stp:stp-timer-config;
         uses oc-stp:bridge-priority-config;
     }
@@ -346,12 +360,6 @@ module openconfig-spanning-tree-ext {
         deviate not-supported;
     }
     deviation /oc-stp:stp/oc-stp:global/oc-stp:config/oc-stp-ext:hold-count {
-        deviate not-supported;
-    }
-    deviation /oc-stp:stp/oc-stp:global/oc-stp:config/oc-stp:loop-guard {
-        deviate not-supported;
-    }
-    deviation /oc-stp:stp/oc-stp:global/oc-stp:state/oc-stp:loop-guard {
         deviate not-supported;
     }
     deviation /oc-stp:stp/oc-stp:global/oc-stp:config/oc-stp:bpdu-guard {

@@ -198,7 +198,14 @@ def generate_body(func, args):
           body = { "openconfig-spanning-tree-ext:bpdu-guard-port-shutdown": False }
     elif func.__name__ == 'patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard':
        keypath = [args[1]]
-       body = { "openconfig-spanning-tree:guard": args[2] }
+       if args[2] == "root":
+           body = { "openconfig-spanning-tree:guard": "ROOT"}
+       elif args[2] == "loop":
+           body = { "openconfig-spanning-tree:guard": "LOOP"}
+       else:
+           body = { "openconfig-spanning-tree:guard": "NONE"}
+    elif func.__name__ == 'delete_openconfig_spanning_tree_stp_interfaces_interface_config_guard':
+       keypath = [args[1]]
     elif func.__name__ == 'patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_cost':
        keypath = [args[1]]
        body = { "openconfig-spanning-tree-ext:cost": int(args[2]) }
@@ -240,6 +247,16 @@ def generate_body(func, args):
        body = {"openconfig-spanning-tree-ext:bridge-priority": int(args[1])}
     elif func.__name__ == 'patch_openconfig_spanning_tree_ext_stp_global_config_rootguard_timeout':
        body = {"openconfig-spanning-tree-ext:rootguard-timeout": int(args[1])}
+    elif func.__name__ == 'patch_openconfig_spanning_tree_stp_global_config_loop_guard':
+       if args[1] == "True":
+            body = { "openconfig-spanning-tree:loop-guard": True }
+       elif args[1] == "False":
+            body = { "openconfig-spanning-tree:loop-guard": False }
+    elif func.__name__ == 'patch_openconfig_spanning_tree_ext_stp_global_config_portfast':
+       if args[1] == "True":
+            body = { "openconfig-spanning-tree-ext:portfast": True }
+       elif args[1] == "False":
+            body = { "openconfig-spanning-tree-ext:portfast": False }
 
     return keypath,body
 
@@ -251,16 +268,17 @@ def stp_mode_get(aa):
     stp_mode = None
     stp_resp = None
     try:
-        stp_resp = getattr(aa,"get_openconfig_spanning_tree_stp_global_config_enabled_protocol")(*keypath)
+        #stp_resp = getattr(aa,"get_openconfig_spanning_tree_stp_global_config_enabled_protocol")(*keypath)
+        stp_resp = getattr(aa,"get_openconfig_spanning_tree_stp_global_config")(*keypath)
         if not stp_resp:
            print (" Failed to get STP mode")
            return stp_resp,stp_mode
 
         stp_resp = aa.api_client.sanitize_for_serialization(stp_resp)
 
-        if stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
+        if stp_resp['openconfig-spanning-tree:config']['enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
            stp_mode = "PVST"
-        elif stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
+        elif stp_resp['openconfig-spanning-tree:config']['enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
            stp_mode = "RAPID_PVST"
 
     except ApiException as e:

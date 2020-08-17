@@ -556,9 +556,9 @@ def run(func, args):
            print("%Error: Invalid Interface")
            return 1
         if (args[2] == "ip"):
-            prog_name = "isc-dhcp-relay:isc-dhcp-relay-" + args[0]
+            prog_name = "isc-dhcp-relay-" + args[0]
         elif (args[2] == "ipv6"):
-            prog_name = "isc-dhcp-relay:isc-dhcp-relay-v6-" + args[0]
+            prog_name = "isc-dhcp-relay-v6-" + args[0]
 
 	docker_stat_cmd = "docker inspect -f '{{.State.Running}}' dhcp_relay"
 	stat = subprocess.Popen(docker_stat_cmd, shell=True, stdout=subprocess.PIPE)

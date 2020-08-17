@@ -88,6 +88,13 @@ limitations under the License.
            help="timeout in seconds"
            />
        <!--=======================================================-->
+<PTYPE
+    name="STP_GUARD_TYPE"
+    method="select"
+    pattern="root loop none"
+    help="Guard type"
+/>
+<!--=======================================================-->
 
 <VIEW name="enable-view">
     <COMMAND
@@ -621,6 +628,58 @@ limitations under the License.
     </DOCGEN>
     </COMMAND>
 
+    <COMMAND
+        name="spanning-tree loopguard"
+        help="Enable spanning tree loopguard"
+        ptype="SUBCOMMAND" mode="subcommand"
+        >
+        <PARAM
+            name="default"
+            help="Enable loopguard by default on all ports"
+        	ptype="SUBCOMMAND" mode="subcommand"
+            >
+        </PARAM>
+        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_global_config_loop_guard True&#xA;
+		</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the spanning-tree loop guard.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows to enable loop guard globally on all ports. When loop guard is enabled and if BPDUs are not received on a non-designated port, that port is moved into the STP loop-inconsistent blocking state, instead of the listening / learning / forwarding state.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree loopguard default
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="spanning-tree portfast"
+        help="Enable spanning tree portfast"
+        ptype="SUBCOMMAND" mode="subcommand"
+        >
+        <PARAM
+            name="default"
+            help="Enable portfast by default on all access ports"
+        	ptype="SUBCOMMAND" mode="subcommand"
+            >
+        </PARAM>
+        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_portfast True&#xA;
+		</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure the spanning-tree portfast.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows to enable portfast globally on all access ports. When portfast is enabled, port transitions from blocking to forwarding state immediately, bypassing the usual 802.1D STP transition states.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# spanning-tree portfast default
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
     <!-- no spanning tree -->
 
     <COMMAND
@@ -866,6 +925,57 @@ limitations under the License.
     </DOCGEN>
     </COMMAND>
 
+    <COMMAND
+        name="no spanning-tree loopguard"
+        help="Disable spanning tree loopguard"
+        ptype="SUBCOMMAND" mode="subcommand"
+        >
+        <PARAM
+            name="default"
+            help="Disable loopguard by default on all ports"
+        	ptype="SUBCOMMAND" mode="subcommand"
+            >
+        </PARAM>
+        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_global_config_loop_guard False&#xA;
+		</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Disable spanning-tree loop guard configuration globally.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows to disable loop guard globally.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# no spanning-tree loopguard default 
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree portfast"
+        help="Disable spanning tree portfast"
+        ptype="SUBCOMMAND" mode="subcommand"
+        >
+        <PARAM
+            name="default"
+            help="Disable portfast by default on all access ports"
+        	ptype="SUBCOMMAND" mode="subcommand"
+            >
+        </PARAM>
+        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_portfast False&#xA;
+		</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Disable spanning-tree portfast configuration globally.
+        </DESCRIPTION>
+        <USAGE>
+            This command allows to disable portfast globally.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)# no spanning-tree portfast default 
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
 </VIEW>
 
 
@@ -944,13 +1054,6 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
             </PARAM>
-            <PARAM
-                name="portfast"
-                help="Enables portfast on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
 
             <PARAM
                 name="port-priority"
@@ -1003,8 +1106,6 @@ limitations under the License.
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_guard ${iface} True&#xA;
             fi&#xA;
-        elif test "${stp-if-subcmds}" = "portfast";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} True&#xA;
         elif test "${stp-if-subcmds}" = "uplinkfast";then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${iface} True&#xA;
         elif test "${stp-if-subcmds}" = "enable";then&#xA;
@@ -1040,13 +1141,34 @@ limitations under the License.
             sonic(conf-if-Ethernet0)# spanning-tree bpduguard port-shutdown
             sonic(conf-if-Ethernet0)# spanning-tree cost 1000
             sonic(conf-if-Ethernet0)# spanning-tree enable
-            sonic(conf-if-Ethernet0)# spanning-tree portfast
             sonic(conf-if-Ethernet0)# spanning-tree port-priority 16
             sonic(conf-if-Ethernet0)# spanning-tree uplinkfast 
             sonic(conf-if-Ethernet0)# spanning-tree link-type point-to-point
             sonic(conf-if-Ethernet0)# spanning-tree port type edge
         </EXAMPLE>
     </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+      name="spanning-tree portfast"
+      help="Enables portfast on the interface"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} True&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure spanning-tree portfast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command allows enabling portfast on an interface, portfast allows edge ports to move to forwarding state quickly when the connected device is not participating in spanning-tree.
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface Ethernet 0
+              sonic(conf-if-Ethernet0)# spanning-tree portfast
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1101,21 +1223,20 @@ limitations under the License.
         help = "Configure spanning tree guard on interface"
         >
         <PARAM
-            name="root"
-            help="Enables root guard on interface"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
+            name="guard"
+            help="Configure spanning tree guard mode on an interface"
+            ptype="STP_GUARD_TYPE"
             >
         </PARAM>
     <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface} "ROOT"
+        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface} ${guard}
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Configure interface specific guard root parameters.
+            Configure interface specific guard parameters.
         </DESCRIPTION>
         <USAGE>
-            This commands allows enabling guard root on an interface
+            This commands allows enabling guard on an interface
         </USAGE>
         <EXAMPLE>
             sonic(config)# interface Ethernet 0
@@ -1250,14 +1371,6 @@ limitations under the License.
             </PARAM>
 
             <PARAM
-                name="portfast"
-                help="Disables portfast on the interface"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                >
-            </PARAM>
-
-            <PARAM
                 name="port-priority"
                 help="Reset the port level priority on the interface"
                 ptype="SUBCOMMAND"
@@ -1298,8 +1411,6 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_uplink_fast ${iface} False&#xA;
         elif test "${stp-if-subcmds}" = "bpdufilter";then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter ${iface}&#xA;
-        elif test "${stp-if-subcmds}" = "portfast";then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} False&#xA;
         elif test "${stp-if-subcmds}" = "enable";then&#xA;
         python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_spanning_tree_enable ${iface} False&#xA;
         elif test "${stp-if-subcmds}" = "cost";then&#xA;
@@ -1328,7 +1439,6 @@ limitations under the License.
             sonic(conf-if-Ethernet0)# no spanning-tree bpduguard port-shutdown
             sonic(conf-if-Ethernet0)# no spanning-tree cost
             sonic(conf-if-Ethernet0)# no spanning-tree enable
-            sonic(conf-if-Ethernet0)# no spanning-tree portfast
             sonic(conf-if-Ethernet0)# no spanning-tree port-priority
             sonic(conf-if-Ethernet0)# no spanning-tree uplinkfast 
             sonic(conf-if-Ethernet0)# no spanning-tree link-type
@@ -1338,29 +1448,44 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
+      name="no spanning-tree portfast"
+      help="Disables portfast on the interface"
+      ptype="SUBCOMMAND"
+      mode="subcommand">
+      <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} False&#xA;
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Unconfigure spanning-tree portfast on an interface.
+          </DESCRIPTION>
+          <USAGE>
+              This command disables portfast on an interface
+          </USAGE>
+          <EXAMPLE>
+              sonic(config)# interface Ethernet 0
+              sonic(conf-if-Ethernet0)# no spanning-tree portfast
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
         name="no spanning-tree guard"
         help = "Unconfigure spanning tree guard on interface"
         >
-        <PARAM
-            name="root"
-            help="Disables root guard on interface"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-        </PARAM>
     <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface} "NONE"
+        python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${iface}
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Unconfigure guard root on an interface.
+            Unconfigure guard root/loop on an interface.
         </DESCRIPTION>
         <USAGE>
-            This commands allows disabling guard root on an interface
+            This commands allows disabling guard root/loop on an interface
         </USAGE>
         <EXAMPLE>
             sonic(config)# interface Ethernet 0
-            sonic(conf-if-Ethernet0)# no spanning-tree guard root 
+            sonic(conf-if-Ethernet0)# no spanning-tree guard
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
@@ -1725,32 +1850,31 @@ limitations under the License.
     </DOCGEN>
     </COMMAND>
 
-    <COMMAND
-        name="spanning-tree guard"
-        help = "Configure spanning tree guard on port-channel"
-        >
-        <PARAM
-            name="root"
-            help="Enables root guard on port-channel"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-        </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "ROOT"
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Configure interface specific guard root parameters.
-        </DESCRIPTION>
-        <USAGE>
-            This commands allows enabling guard root on an interface
-        </USAGE>
-        <EXAMPLE>
+	<COMMAND
+		name="spanning-tree guard"
+		help = "Configure spanning tree guard on port-channel interface"
+	>
+		<PARAM
+			name="guard"
+			help="Configure spanning tree guard mode on port-channel interface"
+			ptype="STP_GUARD_TYPE"
+		>
+		</PARAM>
+	<ACTION>
+		python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} ${guard}
+	</ACTION>
+	<DOCGEN>
+		<DESCRIPTION>
+			Configure interface specific guard parameters.
+		</DESCRIPTION>
+		<USAGE>
+			This commands allows enabling guard on a port-channel interface
+		</USAGE>
+		<EXAMPLE>
             sonic(config)# interface PortChannel 1
-            sonic(conf-if-po1)# spanning-tree guard root 
-        </EXAMPLE>
-    </DOCGEN>
+			sonic(conf-if-po1)# spanning-tree guard root
+		</EXAMPLE>
+	</DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -2044,33 +2168,26 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND
-        name="no spanning-tree guard"
-        help = "Unconfigure spanning tree guard on port-channel"
-        >
-        <PARAM
-            name="root"
-            help="Disables root guard on port-channel"
-            ptype="SUBCOMMAND"
-            mode="subcommand"
-            >
-        </PARAM>
-    <ACTION>
-        python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name} "NONE"
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Unonfigure interface specific guard root parameters.
-        </DESCRIPTION>
-        <USAGE>
-            This command allows disabling guard root on an interface
-        </USAGE>
-        <EXAMPLE>
+	<COMMAND
+		name="no spanning-tree guard"
+		help = "Unconfigure spanning tree guard on port-channel interface"
+	>
+	<ACTION>
+		python $SONIC_CLI_ROOT/sonic-cli-stp.py delete_openconfig_spanning_tree_stp_interfaces_interface_config_guard ${po_name}
+	</ACTION>
+	<DOCGEN>
+		<DESCRIPTION>
+			Unconfigure guard root/loop on a port-channel interface.
+		</DESCRIPTION>
+		<USAGE>
+			This commands allows disabling guard root/loop on a port-channel interface
+		</USAGE>
+		<EXAMPLE>
             sonic(config)# interface PortChannel 1
-            sonic(conf-if-po1)# no spanning-tree guard root 
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
+			sonic(conf-if-po1)# no spanning-tree guard
+		</EXAMPLE>
+	</DOCGEN>
+	</COMMAND>
 
     <COMMAND
         name="no spanning-tree vlan"
