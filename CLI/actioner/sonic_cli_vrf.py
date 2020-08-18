@@ -37,8 +37,9 @@ def get_vrf_data(vrf_name, vrf_intf_info):
     vrf_data = {}
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/config', name=vrf_name)
     vrf_config = api.get(keypath)
+
     if vrf_config.ok():
-        if len(vrf_config.content) == 0:
+        if vrf_config.content == None:
             return vrf_config
 
         vrf_intf_info.setdefault(vrf_name, [])
@@ -52,6 +53,10 @@ def get_vrf_data(vrf_name, vrf_intf_info):
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/interfaces/interface', name=vrf_name)
             vrf_intfs = api.get(keypath)
             vrf_data['openconfig-network-instance:interface'] = []
+
+            if vrf_intfs.ok() and vrf_intfs.content==None:
+                return vrf_config
+
             if vrf_intfs.ok() and 'openconfig-network-instance:interface' in vrf_intfs.content:
                 vrf_data['openconfig-network-instance:interface'] = vrf_intfs.content['openconfig-network-instance:interface']
 
@@ -59,7 +64,7 @@ def get_vrf_data(vrf_name, vrf_intf_info):
             for intf in intfs:
                 intf_name = intf.get('id')
                 vrf_intf_info.setdefault(vrf_name, []).append(intf_name)
-    
+
     return vrf_config
 
 def build_intf_vrf_binding (intf_vrf_binding):
@@ -170,6 +175,10 @@ def invoke_api(func, args=[]):
 
         else:
             vrf_data = get_vrf_data(args[1], intf_vrf_binding)
+
+            if vrf_data.content == None:
+                return vrf_data
+
             if vrf_data.ok() and (len(vrf_data.content) != 0):
                 show_cli_output(args[0], intf_vrf_binding)
 
