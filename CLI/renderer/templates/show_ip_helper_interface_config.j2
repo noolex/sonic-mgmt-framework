@@ -2,8 +2,8 @@
 Interface    Vrf    Relay Address
 -----------  -----  ---------------
 {% for key in json_output %}
-{% if 'openconfig-if-ip:servers' in json_output[key] %}
-{% set servers = json_output[key]['openconfig-if-ip:servers'] %}
+{% if 'openconfig-ip-helper:servers' in json_output[key] %}
+{% set servers = json_output[key]['openconfig-ip-helper:servers'] %}
 
 {% set global = namespace(first_iter=True) %}
 {% for server in servers['server'] %}
