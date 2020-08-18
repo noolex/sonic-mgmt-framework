@@ -279,7 +279,7 @@
 			</DOCGEN>
 		</COMMAND>
 		<COMMAND name="ptp announce-timeout" help="Configures PTP announce timeout" command_keys="instance=GLOBAL" command_tables="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/instance-number={instance}">
-			<PARAM name="ptp_announce_timeout" help="PTP announce timeout value" ptype="PTP_RANGE_2_255" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/vannounce-receipt-timeout" />
+			<PARAM name="ptp_announce_timeout" help="PTP announce timeout value" ptype="PTP_RANGE_2_255" dbpath="sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST/announce-receipt-timeout" />
 			<ACTION builtin="clish_pyobj">
 				sonic_cli_ptp patch_ietf_ptp_ptp_instance_list_port_ds_list_announce_receipt_timeout 0 ${ptp_announce_timeout}
 			</ACTION>

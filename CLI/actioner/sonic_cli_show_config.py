@@ -242,7 +242,14 @@ class cli_xml_view:
         #the API. These keys are passed to this function as argument member_keys and
         #applicable to the parent command which changes to a new view.
 
-        for cmd in  self.view_cmd_list:
+        #Process the first command in the view with argument is_first_command=True.
+        view_keys = copy.deepcopy(member_keys)
+        process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
+                                                True, self.view_cmd_list[0], indent)
+        #For the top view "configure", leave indent as zero.
+        if self.name != "configure":
+            indent +=1 
+        for cmd in  self.view_cmd_list[1:]:
             view_keys = copy.deepcopy(member_keys)
             ret, is_view_rendered = process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
                                                 False, cmd, indent)
