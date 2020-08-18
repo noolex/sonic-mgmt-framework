@@ -42,6 +42,14 @@
             </ACTION>
         </COMMAND>
         <COMMAND
+            name="logger"
+            help="Enter messages into the system log">
+            <PARAM name = "message" help = "messages into the system log" ptype = "STRING"> </PARAM>
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra set_openconfig_logger infra_reboot.j2 ${__full_line}
+            </ACTION>
+        </COMMAND>
+        <COMMAND
             name="show clock"
             help="Show system date and time">
             <ACTION
