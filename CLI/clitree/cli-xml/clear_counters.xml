@@ -50,30 +50,20 @@ clear counters [interface <interface>]
                             </PARAM>
                             <PARAM name="Ethernet"
                                    help="Clear Ethernet interface counters"
-                                   ptype="SUBCOMMAND"
+                                   ptype="PHY_INTERFACE"
                                    mode="subcommand"
                                    >
-                                   <PARAM name="ifId"
-                                          help="Ethernet interface number"
-                                          optional="true"
-                                          ptype="STRING">
-                                   </PARAM>
                             </PARAM>
                             <PARAM name="PortChannel"
                                    help="Clear PortChannel interface counters"
-                                   ptype="SUBCOMMAND"
+                                   ptype="PO_INTERFACE"
                                    mode="subcommand"
                                    >
-                                   <PARAM name="ifId"
-                                          help="Port-channel interface number"
-                                          optional="true"
-                                          ptype="LAG_ID">
-                                    </PARAM>
                             </PARAM>
                         </PARAM>
                  </PARAM>
             <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-counters.py rpc_sonic_interface_clear_counters ${interface-switch}${ifId}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-counters.py rpc_sonic_interface_clear_counters ${all} ${Ethernet} ${PortChannel}&#xA;
             </ACTION>
         </COMMAND>
     </VIEW>

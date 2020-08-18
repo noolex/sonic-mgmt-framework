@@ -22,12 +22,14 @@ UDP rate limit  : {{rate}} pps
 
 UDP forwarding enabled on the ports:{{' '}} 
 {%- for port in include_ports -%}
+{%- if port not in exclude_ports -%}
 {%- if port in comm_list -%}
 {{ comm_list[port]}}
 {%- else -%}
 {{ port}}
 {%- endif -%}
 {%- if not loop.last %}, {% endif %}
+{%- endif -%}
 {%- endfor %}{{''}}
 
 UDP forwarding disabled on the ports:{{' '}}

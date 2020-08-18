@@ -24,7 +24,35 @@ def invoke(func, args):
         return aa.post(path, body)
     elif func == 'modes':
         path = cc.Path('/restconf/operations/sonic-port-breakout:breakout_capabilities')
-        return aa.post(path, body)
+        resp = aa.post(path, body)
+        if 'sonic-port-breakout:output' in resp.content:
+           if 'caps' in resp.content['sonic-port-breakout:output']:
+              for cap in resp.content['sonic-port-breakout:output']['caps']:
+                 splitted_modes = re.findall("\dx|\d\dG|\d\d\dG", cap['modes'])
+                 sup_modes =""
+                 chan =""
+                 count = 0
+                 overflow = ""
+                 for pat in splitted_modes:
+                     if 'x' in pat:
+                        chan = pat
+                        continue
+                     if len(overflow):
+                         overflow+=", "
+                     elif len(sup_modes):
+                        sup_modes+=", "
+                     count+=1
+                     if count < 6:
+                         sup_modes+=chan+pat
+                     else:
+                         overflow+=chan+pat
+
+                 cap['modes'] = sup_modes
+                 if count > 5:
+                    cap['modes_ovf'] = overflow
+                 if '[' in cap['defmode']:
+                     cap['defmode'] = cap['defmode'][:cap['defmode'].index('[')]
+        return resp
     elif func == 'patch_openconfig_platform_port_components_component_port_breakout_mode_config':
         interface = args[0]
         speed_map = {"4x10G":"SPEED_10GB", "1x100G":"SPEED_100GB", "1x40G":"SPEED_40GB",

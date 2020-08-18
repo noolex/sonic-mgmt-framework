@@ -349,7 +349,7 @@ limitations under the License.
 
     <COMMAND
         name="no ipv6 prefix-list"
-        help="Delete ipv6 prefix list"
+        help="Delete IPv6 prefix list"
         >
         <PARAM
             name="prefix-name"

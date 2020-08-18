@@ -500,7 +500,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on ebgp sessions" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/disable_ebgp_connected_rt_check=true">
+  <COMMAND name="disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on EBGP sessions" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/disable_ebgp_connected_rt_check=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_disable_ebgp_connected_route_check ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1158,7 +1158,7 @@ limitations under the License.
   <COMMAND name="no deterministic-med" help="Pick the best-MED path among paths advertised from the neighboring AS">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_deterministic_med ${vrf-name}</ACTION>
   </COMMAND>
-  <COMMAND name="no disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on ebgp sessions">
+  <COMMAND name="no disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on EBGP sessions">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_disable_ebgp_connected_route_check ${vrf-name}</ACTION>
   </COMMAND>
   <COMMAND name="no graceful-shutdown" help="Graceful shutdown parameters">
@@ -1658,8 +1658,8 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="local-as" help="Specify a local-as number">
     <PARAM name="asnum" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_asn">
-      <PARAM name="no-prepend" help="Do not prepend local-as to updates from ebgp peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_no_prepend=true">
-        <PARAM name="replace-as" help="Do not prepend local-as to updates from ibgp peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_replace_as=true"/>
+      <PARAM name="no-prepend" help="Do not prepend local-as to updates from EBGP peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_no_prepend=true">
+        <PARAM name="replace-as" help="Do not prepend local-as to updates from IBGP peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_replace_as=true"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; no-prepend:${no-prepend} replace-as:${replace-as} asnum:${asnum}</ACTION>
@@ -2371,8 +2371,8 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="local-as" help="Specify a local-as number">
     <PARAM name="asnum" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_asn">
-      <PARAM name="no-prepend" help="Do not prepend local-as to updates from ebgp peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_as_no_prepend=true">
-        <PARAM name="replace-as" help="Do not prepend local-as to updates from ibgp peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_as_replace_as=true"/>
+      <PARAM name="no-prepend" help="Do not prepend local-as to updates from EBGP peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_as_no_prepend=true">
+        <PARAM name="replace-as" help="Do not prepend local-as to updates from IBGP peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_as_replace_as=true"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; no-prepend:${no-prepend} replace-as:${replace-as} asnum:${asnum}</ACTION>

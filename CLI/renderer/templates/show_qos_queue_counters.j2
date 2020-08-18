@@ -5,7 +5,9 @@
 {% set intf_info_list = json_output['interface'] %}
 {% for intf_info in intf_info_list %}
   {% set intfName = intf_info['interface-id'] %}
+  {% if 'output' in intf_info %}
   {% set output = intf_info['output'] %}
+  {% if 'queues' in output %}
   {% set queues = output['queues'] %}
   {% set queue_info_list = queues['queue'] %}
   {% for queue_info in queue_info_list %}
@@ -15,14 +17,14 @@
     {% set traffic_type = q_stats_info['openconfig-qos-ext:traffic-type'] %}
     {% set queue_name = traffic_type + qname[1] %}
     {% set packets = q_stats_info['transmit-pkts'] %}
-    {% if 'transmit-pkts-per-second' in q_stats_info %}
-       {% set pps = q_stats_info['transmit-pkts-per-second'] + '/s' %}
+    {% if 'openconfig-qos-ext:transmit-pkts-per-second' in q_stats_info %}
+       {% set pps = q_stats_info['openconfig-qos-ext:transmit-pkts-per-second'] + '/s' %}
     {% else %}
        {% set pps = '0' + '/s' %}
     {% endif %}
     {% set bytes = q_stats_info['transmit-octets'] %}
-    {% if 'transmit-octets-per-second' in q_stats_info %}
-       {% set bps = q_stats_info['transmit-octets-per-second'] + '/s' %}
+    {% if 'openconfig-qos-ext:transmit-octets-per-second' in q_stats_info %}
+       {% set bps = q_stats_info['openconfig-qos-ext:transmit-octets-per-second'] + '/s' %}
     {% else %}
        {% set bps = '0' + '/s' %}
     {% endif %}
@@ -30,5 +32,7 @@
     {% set droppedBytes = q_stats_info['openconfig-qos-ext:dropped-octets'] %}
 {{'%-12s'|format(intfName)}}{{'%-5s'|format(queue_name)}}{{'%-22s'|format(packets)}}{{'%-22s'|format(bytes)}}{{'%-22s'|format(pps)}}{{'%-22s'|format(bps)}}{{'%-22s'|format(droppedPackets)}}{{'%-22s'|format(droppedBytes)}}
   {% endfor %}
+  {% endif %}
+  {% endif %}
 {% endfor %}
 {% endif %}

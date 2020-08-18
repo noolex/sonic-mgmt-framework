@@ -80,7 +80,7 @@
                     {% if 'afi-safis' in neighbor %}
                         {% set afi_safis = neighbor['afi-safis']['afi-safi'] %}
                         {% for afi_safi in afi_safis %}
-                           {% if 'state' in afi_safi and 'prefixes' in afi_safi['state'] %}
+                           {% if 'state' in afi_safi and 'prefixes' in afi_safi['state'] and afi_safi['state']['afi-safi-name'] == json_output['afisafiname']%}
                                {% set ns.rcvd_prfx = ns.rcvd_prfx + afi_safi['state']['prefixes']['received'] %}
                            {% endif %}
                         {% endfor %}

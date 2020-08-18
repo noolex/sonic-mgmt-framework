@@ -488,7 +488,7 @@ limitations under the License.
     <PTYPE
         name="HOSTNAME_STR_64"
         pattern="(&HOSTNAME_PATTERN_64;)"
-        help="Hostname string(Max: 64 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
@@ -555,7 +555,7 @@ limitations under the License.
     <PTYPE
         name="STRING_32"
         pattern="(^([a-zA-Z0-9_-]){0,32})$"
-        help="String(Max: 32 characters)"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
@@ -626,6 +626,13 @@ limitations under the License.
         method="select"
         pattern="10(10MBPS) 100(100MBPS) 1000(1GIGE) 10000(10GIGE) 25000(25GIGE) 40000(40GIGE) 100000(100GIGE) auto(AUTO)"
         help="Port speed"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="INTF_FEC"
+        method="select"
+        pattern="FC RS off"
+        help="FEC (forward error correction) mode"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1241,6 +1248,7 @@ limitations under the License.
         name="PHY_INTERFACE_ALL"
         method="regexp_select"
         ext_pattern="Ethernet(all|port-id)"
+        alt_ext_pattern=""
         pattern="&ETH_ALL_INTF_ALL;"
         help="EthernetNUM"
         preprocess="mode"
@@ -1425,9 +1433,9 @@ limitations under the License.
         />
     <!--=======================================================-->
        <PTYPE
-        name="RANGE_0_31"
+        name="RANGE_0_47"
         method="integer"
-        pattern="0..31"
+        pattern="0..47"
         help=""
         />
     <!--=======================================================-->
@@ -1511,7 +1519,7 @@ limitations under the License.
         name="UDP_FORWARDING_PORT"
         method="select"
         pattern="tftp(69) dns(53) ntp(37) netbios-name-server(137) netbios-datagram-server(138) tacacs(49)"
-        help="Well known ports"
+        help="Well known UDP ports"
         />
     <!--=======================================================-->
     <PTYPE
