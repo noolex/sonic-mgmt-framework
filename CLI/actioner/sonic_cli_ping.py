@@ -24,7 +24,7 @@ urllib3.disable_warnings()
 import subprocess
 import re
 
-def run_vrf(args, ping_type, vrfName):
+def do_ping_vrf(args, ping_type, vrfName):
     if len(args) == 0:
         ptc.print_and_log("The command is not complete.")
         return
@@ -53,7 +53,7 @@ def run_vrf(args, ping_type, vrfName):
         log.syslog(log.LOG_ERR, str(e))
         return
 
-def run(args, ping_type):
+def do_ping(args, ping_type):
     if len(args) == 0:
         ptc.print_and_log("The command is not complete.")
         return
@@ -97,25 +97,30 @@ def validate_input(args, isVrf):
             return False, args
         result = re.search('(\s*-I\s*)', args)
         if not result:
-            ptc.print_and_log("Interface name is required for link-local IPv6 addresses")
+			ptc.print_and_log("Interface name is required for link-local IPv6 addresses")
             return False, args
     return True, args
 
-if __name__ == '__main__':
-    pipestr().write(sys.argv)
+def run(func, argv):
     isVrf = False
 
-    if len(sys.argv) > 2 and sys.argv[2] == "vrf":
-        args = " ".join(sys.argv[4:])
+    if argv[0] == "vrf":
+        args = " ".join(argv[2:])
         isVrf = True
     else:
-        args = " ".join(sys.argv[2:])
+        args = " ".join(argv[0:])
 
     status, args = validate_input(args, isVrf)
     if status is False:
-        sys.exit(1)
+        return -1
 
     if isVrf:
-        run_vrf(args, sys.argv[1], sys.argv[3])
+        do_ping_vrf(args, func, argv[1])
     else:
-        run(args, sys.argv[1])
+        do_ping(args, func)
+
+if __name__ == '__main__':
+    pipestr().write(sys.argv)
+    status = run(sys.argv[1], sys.argv[2:])
+    if status != 0:
+        sys.exit(0)

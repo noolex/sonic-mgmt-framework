@@ -12,14 +12,14 @@
                  help="Print the route packets take to the host"
                  args="traceroute-option"
                  args_help="Traceroute options(--help for help)">
-                 <ACTION>python $SONIC_CLI_ROOT/sonic_cli_traceroute.py traceroute ${traceroute-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_traceroute traceroute ${traceroute-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute vrf mgmt"
                  help="Traceroute using management VRF"
                  args="traceroute-option"
                  args_help="Traceroute options(--help for help)">
-                <ACTION>python $SONIC_CLI_ROOT/sonic_cli_traceroute.py traceroute vrf mgmt ${traceroute-option} 2>/dev/stdout</ACTION>
+                <ACTION builtin="clish_pyobj">sonic_cli_traceroute traceroute vrf mgmt ${traceroute-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute vrf"
@@ -29,21 +29,21 @@
                  <PARAM name="vrf-name"
                         help="Traceroute using given VRF name"
                         ptype="VRF_NAME" />
-                 <ACTION>python $SONIC_CLI_ROOT/sonic_cli_traceroute.py traceroute vrf ${vrf-name} ${traceroute-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_traceroute traceroute vrf ${vrf-name} ${traceroute-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute6"
                  help="Print the route packets take to the IPv6 host"
                  args="traceroute6-option"
                  args_help="Traceroute6 options(--help for help)">
-                 <ACTION>python $SONIC_CLI_ROOT/sonic_cli_traceroute.py traceroute6 ${traceroute6-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_traceroute traceroute6 ${traceroute6-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute6 vrf mgmt"
                  help="Traceroute6 using management VRF"
                  args="traceroute6-option"
                  args_help="Traceroute6 options(--help for help)">
-                <ACTION>python $SONIC_CLI_ROOT/sonic_cli_traceroute.py traceroute6 vrf mgmt ${traceroute6-option} 2>/dev/stdout</ACTION>
+                <ACTION builtin="clish_pyobj">sonic_cli_traceroute traceroute6 vrf mgmt ${traceroute6-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="traceroute6 vrf"
@@ -53,7 +53,7 @@
                  <PARAM name="vrf-name"
                         help="Traceroute6 using given VRF name"
                         ptype="VRF_NAME" />
-                 <ACTION>python $SONIC_CLI_ROOT/sonic_cli_traceroute.py traceroute6 vrf ${vrf-name} ${traceroute6-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_traceroute traceroute6 vrf ${vrf-name} ${traceroute6-option} </ACTION>
         </COMMAND>
 
     </VIEW>
