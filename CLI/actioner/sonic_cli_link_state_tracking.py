@@ -329,7 +329,7 @@ def show_running_lst_group(render_tables):
 
     aa = cc.ApiClient()
     if 'group' in render_tables:
-        response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={group}', group=render_tables['group']))
+        response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={group}', group=render_tables['group']), None, False)
         if response.ok():
             status = 'CB_SUCCESS'
             if bool(response.content):
@@ -337,7 +337,7 @@ def show_running_lst_group(render_tables):
                 __show_running_config_group(output, group)
 
     else:
-        response = lst_client.get('/restconf/data/openconfig-lst-ext:lst/lst-groups')
+        response = lst_client.get('/restconf/data/openconfig-lst-ext:lst/lst-groups', None, False)
         if response.ok():
             status = 'CB_SUCCESS'
             if bool(response.content):
@@ -366,7 +366,7 @@ def show_running_lst_interface(render_tables):
     status = 'CB_FAIL'
     output = []
     aa = cc.ApiClient()
-    response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}', id=render_tables['name']))
+    response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}', id=render_tables['name']), None, False)
     if response.ok():
         status = 'CB_SUCCESS'
         data = response.content['openconfig-lst-ext:interface'][0]
