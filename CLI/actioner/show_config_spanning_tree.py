@@ -134,7 +134,8 @@ def show_config_spanning_tree_vlan(render_tables):
     if 'sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST' in render_tables:
         for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST']:
             if 'vlanid' not in db_entry.keys():
-                return ret_err(g_err_transaction_fail, 'key:vlanid not found in STP_VLAN_DB')
+                #vlanid  field is created only when any field of table is modified.
+                continue;
 
             missing_fields = [field for field in ['forward_delay', 'hello_time', 'max_age', 'priority'] if field not in db_entry.keys()]
             if len(missing_fields) != 0:
@@ -159,7 +160,8 @@ def show_config_no_spanning_tree_vlan(render_tables):
     if 'sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST' in render_tables:
         for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST']:
             if 'vlanid' not in db_entry.keys():
-                return ret_err(g_err_transaction_fail, 'key:vlanid not found in STP_VLAN_DB')
+                #vlanid  field is created only when any field of table is modified.
+                continue;
 
             if 'enabled' in db_entry.keys() and db_entry["enabled"] == False:
                 cmd_list.append("no spanning-tree vlan " + str(db_entry['vlanid']))
