@@ -37,7 +37,6 @@ def get_vrf_data(vrf_name, vrf_intf_info):
     vrf_data = {}
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/config', name=vrf_name)
     vrf_config = api.get(keypath)
-
     if vrf_config.ok():
         if vrf_config.content == None:
             return vrf_config
