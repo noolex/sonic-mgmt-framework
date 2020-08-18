@@ -18,19 +18,19 @@ import sys
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-import ping_tr_common_utils
+import ping_tr_common as ptc
 import urllib3
 urllib3.disable_warnings()
 import subprocess
 import re
 
-def run_vrf(args, traceroute, vrfName):
+def run_vrf(args, tr_type, vrfName):
     if len(args) == 0:
-        print_and_log("The command is not complete.")
+        ptc.print_and_log("The command is not complete.")
         return
     try:
         args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
-        if traceroute == "traceroute6":
+        if tr_type == "traceroute6":
             if vrfName.lower() == 'mgmt':
                 cmd = "sudo cgexec -g l3mdev:" + vrfName + " traceroute -6 " + args
             else:
@@ -49,17 +49,17 @@ def run_vrf(args, traceroute, vrfName):
         # May be triggered when Ctrl + C is used to stop script execution
         return
     except Exception as e:
-        print_and_log("Internal error")
+        ptc.print_and_log("Internal error")
         log.syslog(log.LOG_ERR, str(e))
         return
 
-def run(args, traceroute):
+def run(args, tr_type):
     if len(args) == 0:
-        print_and_log("The command is not complete.")
+        ptc.print_and_log("The command is not complete.")
         return
     try:
         args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
-        if traceroute == "traceroute6":
+        if tr_type == "traceroute6":
             cmd = "traceroute -6 " + args
         else:
             cmd = "traceroute " + args
@@ -71,19 +71,19 @@ def run(args, traceroute):
         # May be triggered when Ctrl + C is used to stop script execution
         return
     except Exception as e:
-        print_and_log("Internal error")
+        ptc.print_and_log("Internal error")
         log.syslog(log.LOG_ERR, str(e))
         return
 
-def validate_input(args):
-    if(set(args) & blocked_chars):
-        print_and_log("Invalid argument")
+def validate_input(args, isVrf):
+    if(set(args) & ptc.blocked_chars):
+        ptc.print_and_log("Invalid argument")
         return False, args
 
     result = re.search('(-i\s*)(Eth\d+/\d+/*\d*)', args, re.IGNORECASE)
-    if (result is not None) and (is_std_mode()):
+    if (result is not None) and (ptc.is_std_mode()):
         interface = result.group(2)
-        alias = get_alias(interface)
+        alias = ptc.get_alias(interface)
         if alias is None:
             return False, args
         args = re.sub('(-i\s*)(Eth\d+/\d+/*\d*)', '\g<1>' + alias, args, re.IGNORECASE)
@@ -91,11 +91,12 @@ def validate_input(args):
     if ("fe80:" in args.lower()
         or "ff01:" in args.lower()
         or "ff02:" in args.lower()):
-        if "vrf" in args:
-            print_and_log("VRF name does not work with link-local IPv6 addresses")
+        if isVrf:
+            ptc.print_and_log("VRF name does not work with link-local IPv6 addresses")
             return False, args
-        if " -i" not in args:
-			print_and_log("Interface name is required for link-local IPv6 addresses")
+        result = re.search('(\s*-i\s*)', args)
+        if not result:
+			ptc.print_and_log("Interface name is required for link-local IPv6 addresses")
             return False, args
     return True, args
 
@@ -109,7 +110,7 @@ if __name__ == '__main__':
     else:
         args = " ".join(sys.argv[2:])
 
-    status, args = validate_input(args)
+    status, args = validate_input(args, isVrf)
     if status is False:
         sys.exit(1)
 

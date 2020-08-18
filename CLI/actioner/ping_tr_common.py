@@ -58,5 +58,5 @@ def get_alias(interface):
         return interface
 
 def print_and_log(msg):
-    print "% Error: ", msg
+    print "% Error:", msg
     log.syslog(log.LOG_ERR, msg)
