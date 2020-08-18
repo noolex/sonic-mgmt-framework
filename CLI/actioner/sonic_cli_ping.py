@@ -99,7 +99,7 @@ def validate_input(args, isVrf):
         result = re.search('(\s*-I\s*)', args)
         if not result:
 			ptc.print_and_log("Interface name is required for link-local IPv6 addresses")
-            return False, args
+			return False, args
     return True, args
 
 def run(func, argv):
