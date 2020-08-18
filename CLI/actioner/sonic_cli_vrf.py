@@ -155,6 +155,9 @@ def invoke_api(func, args=[]):
             keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
             sonic_vrfs = api.get(keypath)
             if sonic_vrfs.ok():
+                if sonic_vrfs.content == None:
+                    return sonic_vrfs
+
                 if 'sonic-vrf:VRF_LIST' in sonic_vrfs.content:
                     vrf_list = sonic_vrfs.content['sonic-vrf:VRF_LIST']
                     for vrf in vrf_list:
