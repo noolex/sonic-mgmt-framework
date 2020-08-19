@@ -75,7 +75,7 @@ limitations under the License.
                 help="Hello interval in seconds"
                 name="hello"
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/hello-interval"
-                ptype="RANGE_1_180"></PARAM>
+                ptype="RANGE_1_255"></PARAM>
             <ACTION builtin="clish_pyobj">
                 sonic_cli_pim patch_pim_interface_config_hello intf:arg1 hello:${hello} 2>/dev/stdout
             </ACTION>

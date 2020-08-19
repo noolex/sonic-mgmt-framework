@@ -70,7 +70,6 @@ def get_keypath(func,args):
     keypath = cc.Path(path)
     return keypath, body
 
-
 def process_args(args):
     global inputDict
     count = 0
@@ -96,6 +95,7 @@ def show_response(response):
 
 def show_mroute_src_info(response):
     outputList = []
+    outputList2 = []
     oilList2 = None
     srcList2 = None
     ipList = None
@@ -158,13 +158,14 @@ def show_mroute_src_info(response):
         outputList.append(srcEntry)
 
         if len(outputList) > 0:
-            if inputDict.get('vrf') is None:
-                print "IP Multicast Routing Table for VRF: default"
-            else:
-                print "IP Multicast Routing Table for VRF:", inputDict.get('vrf')
+            vrfName = inputDict.get('vrf')
+            if vrfName is None:
+                vrfName = 'default'
 
-            print "  * -> indicates installed route"
-            show_cli_output("show_mroute.j2", outputList)
+            outputList2.append('show_mroute')
+            outputList2.append(vrfName)
+            outputList2.append(outputList)
+            show_cli_output("show_mroute.j2", outputList2)
 
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
@@ -172,6 +173,7 @@ def show_mroute_src_info(response):
 
 def show_mroute_info(response):
     outputList = []
+    outputList2 = []
     oilList2 = None
     srcList2 = None
     ipList = None
@@ -256,19 +258,21 @@ def show_mroute_info(response):
                 outputList.append(srcEntry)
 
         if len(outputList) > 0:
-            if inputDict.get('vrf') is None:
-                print "IP Multicast Routing Table for VRF: default"
-            else:
-                print "IP Multicast Routing Table for VRF:", inputDict.get('vrf')
-            print "  * -> indicates installed route"
+            vrfName = inputDict.get('vrf')
+            if vrfName is None:
+                vrfName = 'default'
 
-            show_cli_output("show_mroute.j2", outputList)
+            outputList2.append('show_mroute')
+            outputList2.append(vrfName)
+            outputList2.append(outputList)
+            show_cli_output("show_mroute.j2", outputList2)
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
 
-
 def show_mroute_summary(response):
+    outputList = []
+
     outputContainer = response.get('sonic-ipmroute-show:output')
     if outputContainer is None:
         return
@@ -292,11 +296,14 @@ def show_mroute_summary(response):
 
     summaryEntry = {'installed': installed, 'total': total}
 
-    if inputDict.get('vrf') is None:
-        print "IP Multicast Routing Table Summary for VRF: default"
-    else:
-        print "IP Multicast Routing Table Summary for VRF:", inputDict.get('vrf')
-    show_cli_output("show_mroute.j2", summaryEntry)
+    vrfName = inputDict.get('vrf')
+    if vrfName is None:
+        vrfName = 'default'
+
+    outputList.append('mroute_summary')
+    outputList.append(vrfName)
+    outputList.append(summaryEntry)
+    show_cli_output("show_mroute.j2", outputList)
 
 def handle_show_all(func, args):
     global inputDict

@@ -1,12 +1,19 @@
-{% if 'total' in json_output %}
+{% set cmd = json_output[0] %}
+{% set vrf = json_output[1] %}
+{% set output = json_output[2] %}
+
+{% if cmd == 'mroute_summary' %}
+IP Multicast Routing Table Summary for VRF: {{vrf}}
 {{'Mroute Type'.ljust(13)}}{{'Installed/Total'}}
-{{'(S,G)'.ljust(13)}}{{(json_output.get('installed')|string)}}{{("/"|string)}}{{(json_output.get('total')|string)}}
+{{'(S,G)'.ljust(13)}}{{(output.get('installed')|string)}}{{("/"|string)}}{{(output.get('total')|string)}}
 {% endif %}
 
-{% if 'oilList' in json_output[0] %}
+{% if cmd == 'show_mroute' %}
+IP Multicast Routing Table for VRF: {{vrf}}
+  * -> indicates installed route
 {{(""|string).ljust(3)}}{{'Source'.ljust(18)}}{{'Group'.ljust(18)}}{{'Input'.ljust(18)}}{{'Output'.ljust(18)}}{{'Uptime'.ljust(12)}}
-{% set listLen = json_output|length %}
-{% for entry in json_output %}
+{% set listLen = output|length %}
+{% for entry in output %}
 {% for oil in entry.get('oilList') %}
 {{(entry.get('installed')|string).ljust(3)}}{{(entry.get('srcAddr')|string).ljust(18)}}{{(entry.get('grpAddr')|string).ljust(18)}}{{(entry.get('inIntf')|string).ljust(18)}}{{(oil.get('outIntf')|string).ljust(18)}}{{(oil.get('oilUpTime')|string).ljust(12)}}
 {%- set _ = entry.update({'installed': ''}) -%}
