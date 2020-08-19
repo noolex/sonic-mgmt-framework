@@ -83,7 +83,7 @@
         <COMMAND name="service-policy" help="Apply ingress or egress policy"  data_and_render_cb="fbs_service_policy_render"> 
             <MACRO name="FBS-POLICY-TYPES" arg="false" />
             <MACRO name="FBS-DIRECTION-TYPES"/>
-            <PARAM name="fbs-policy-name" help="Name of the policy (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-policy-name" help="Name of the policy (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs bind_policy ${fbs-policy-name} ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name}</ACTION>
         </COMMAND>
 
