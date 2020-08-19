@@ -267,8 +267,8 @@ def show_intf_info(response):
     intfsContainer = None
     intfList = None
 
-	if not response:
-		return
+    if not response:
+        return
 
     if inputDict.get('port') is not None:
         intfList = response.get('openconfig-network-instance:interface')
@@ -347,8 +347,8 @@ def show_topology_src_info(response):
     srcList2 = None
     ipList = None
 
-	if not response:
-		return
+    if not response:
+        return
 
     grpAddr = inputDict.get('grpAddr')
     try:
@@ -454,8 +454,8 @@ def show_topology_info(response):
     srcList2 = None
     ipList = None
 
-	if not response:
-		return
+    if not response:
+        return
 
     try:
         if inputDict.get('grpAddr') is not None:
@@ -582,7 +582,7 @@ def show_topology_info(response):
         print "% Error: Internal error"
 
 def get_ssm_ranges(response):
-	if not response:
+    if not response:
         return '232.0.0.0/8'
 
     ssmContainer = response.get('openconfig-network-instance:ssm')
@@ -618,8 +618,8 @@ def show_rpf_info(response):
     outputList2 = []
     rpfList = None
 
-	if not response:
-		return
+    if not response:
+        return
 
     outputContainer = response.get('sonic-pim-show:output')
     if outputContainer is None:
@@ -662,8 +662,8 @@ def show_nbr_info(response):
 
     givenNbr = inputDict.get('nbrAddr')
 
-	if not response:
-		return
+    if not response:
+        return
 
     intfsContainer = response.get('openconfig-network-instance:interfaces')
     if intfsContainer is None:
@@ -742,16 +742,16 @@ def get_vrf_list():
     keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
     response = apiClient.get(keypath)
 
-	if not response:
-		return None
+    if not response:
+        return None
 
     if response.ok():
         response = response.content
     else:
         return None
 
-	if not response:
-		return None
+    if not response:
+        return None
 
     if 'sonic-vrf:VRF_LIST' in response:
         vrf_list = response['sonic-vrf:VRF_LIST']
