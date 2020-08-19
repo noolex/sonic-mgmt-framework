@@ -49,7 +49,7 @@ def validate_delete_response(response):
         return response
     elif response.ok() :
         return response
-    elif response.status_code in [ 401, 500 ] :
+    elif response.status_code in [ 401, 500, 1017] :
         ospf_cli_log("validate_delete_response: Error code {}".format(response.status_code))
         ospf_cli_log("validate_delete_response: Ignoring error {}".format( response.error_message()))
         response.status_code = 204
@@ -62,7 +62,7 @@ def validate_delete_response(response):
 def patch_ospf_router_config(api, vrf_name, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_config: {} {}".format(vrf_name, cfg_body))
     ospf_rtr_uri = get_ospf_router_nw_instance_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_uri)
+
     ospf_rtr_uri_body = {
         "openconfig-network-instance:network-instance": [{
             "name": vrf_name,
@@ -71,7 +71,9 @@ def patch_ospf_router_config(api, vrf_name, cfg_body={}) :
                     "identifier":"OSPF", "name":"ospfv2",
                     "ospfv2": cfg_body
                      }] } }] }
+
     ospf_cli_log("patch_ospf_router_config: {} body {}".format(ospf_rtr_uri, ospf_rtr_uri_body))
+    keypath = cc.Path(ospf_rtr_uri)
     response = api.patch(keypath, ospf_rtr_uri_body)
     return response
 
@@ -89,7 +91,6 @@ def delete_ospf_router_config(api, vrf_name, cfg_field='') :
 def patch_ospf_router_global_config(api, vrf_name, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_global_config: {} {}".format(vrf_name, cfg_body))
     ospf_rtr_gbl_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_gbl_uri)
 
     key_data = {"openconfig-ospfv2-ext:enable": True}
     add_key_to_config_data(cfg_body, key_data)
@@ -103,6 +104,7 @@ def patch_ospf_router_global_config(api, vrf_name, cfg_body={}) :
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_global_config: {} body {}".format(ospf_rtr_gbl_uri, ospf_rtr_gbl_uri_body))
+    keypath = cc.Path(ospf_rtr_gbl_uri)
     response = api.patch(keypath, ospf_rtr_gbl_uri_body)
     return response
 
@@ -121,7 +123,6 @@ def delete_ospf_router_global_config(api, vrf_name, cfg_field='') :
 def patch_ospf_router_area_config(api, vrf_name, area_id, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_area_config: {} {} {}".format(vrf_name, area_id, cfg_body))
     ospf_rtr_area_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_area_uri)
 
     key_data = {"identifier": area_id }
     add_key_to_config_data(cfg_body, key_data)
@@ -137,6 +138,7 @@ def patch_ospf_router_area_config(api, vrf_name, area_id, cfg_body={}) :
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_area_config: {} body {}".format(ospf_rtr_area_uri, ospf_rtr_area_uri_body))
+    keypath = cc.Path(ospf_rtr_area_uri)
     response = api.patch(keypath, ospf_rtr_area_uri_body)
     return response
 
@@ -156,7 +158,6 @@ def delete_ospf_router_area_config(api, vrf_name, area_id, cfg_field='') :
 def patch_ospf_router_network_config(api, vrf_name, area_id, network, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_network_config: {} {} {} {}".format(vrf_name, area_id, network, cfg_body))
     ospf_rtr_area_nw_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_area_nw_uri)
 
     key_data = {"openconfig-ospfv2-ext:address-prefix": network }
     add_key_to_config_data(cfg_body, key_data)
@@ -176,6 +177,7 @@ def patch_ospf_router_network_config(api, vrf_name, area_id, network, cfg_body={
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_network_config: {} body {}".format(ospf_rtr_area_nw_uri, ospf_rtr_area_nw_uri_body))
+    keypath = cc.Path(ospf_rtr_area_nw_uri)
     response = api.patch(keypath, ospf_rtr_area_nw_uri_body)
     return response
 
@@ -196,7 +198,6 @@ def delete_ospf_router_network_config(api, vrf_name, area_id, network, cfg_field
 def patch_ospf_router_vlink_config(api, vrf_name, area_id, link_id, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_vlink_config: {} {} {} {}".format(vrf_name, area_id, link_id, cfg_body))
     ospf_rtr_vlink_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_vlink_uri)
 
     key_data = {"remote-router-id": link_id, "openconfig-ospfv2-ext:enable": True}
     add_key_to_config_data(cfg_body, key_data)
@@ -215,6 +216,7 @@ def patch_ospf_router_vlink_config(api, vrf_name, area_id, link_id, cfg_body={})
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_vlink_config: {} body {}".format(ospf_rtr_vlink_uri, ospf_rtr_vlink_uri_body))
+    keypath = cc.Path(ospf_rtr_vlink_uri)
     response = api.patch(keypath, ospf_rtr_vlink_uri_body)
     return response
 
@@ -234,7 +236,6 @@ def delete_ospf_router_vlink_config(api, vrf_name, area_id, link_id, cfg_field='
 def patch_ospf_router_addr_range_config(api, vrf_name, area_id, addr_range, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_addr_range_config: {} {} {} {}".format(vrf_name, area_id, addr_range, cfg_body))
     ospf_rtr_range_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_range_uri)
 
     key_data = {"openconfig-ospfv2-ext:address-prefix": addr_range }
     add_key_to_config_data(cfg_body, key_data)
@@ -256,6 +257,7 @@ def patch_ospf_router_addr_range_config(api, vrf_name, area_id, addr_range, cfg_
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_addr_range_config: {} body {}".format(ospf_rtr_range_uri, ospf_rtr_range_uri_body))
+    keypath = cc.Path(ospf_rtr_range_uri)
     response = api.patch(keypath, ospf_rtr_range_uri_body)
     return response
 
@@ -276,7 +278,6 @@ def delete_ospf_router_addr_range_config(api, vrf_name, area_id, addr_range, cfg
 def patch_ospf_router_area_policy_config(api, vrf_name, area_id, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_area_policy_config: {} {} {}".format(vrf_name, area_id, cfg_body))
     ospf_rtr_apolicy_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_apolicy_uri)
 
     key_data = { "src-area": area_id}
     add_key_to_config_data(cfg_body, key_data)
@@ -294,6 +295,7 @@ def patch_ospf_router_area_policy_config(api, vrf_name, area_id, cfg_body={}) :
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_area_policy_config: {} body {}".format(ospf_rtr_apolicy_uri, ospf_rtr_apolicy_uri_body))
+    keypath = cc.Path(ospf_rtr_apolicy_uri)
     response = api.patch(keypath, ospf_rtr_apolicy_uri_body)
     return response
 
@@ -313,7 +315,6 @@ def delete_ospf_router_area_policy_config(api, vrf_name, area_id, cfg_field='') 
 def patch_ospf_router_resdistribute_config(api, vrf_name, protocol, direction, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_resdistribute_config: {} {} {} {}".format(vrf_name, protocol, direction, cfg_body))
     ospf_rtr_redist_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_redist_uri)
 
     key_data = {"protocol": protocol, "direction": direction }
     add_key_to_config_data(cfg_body, key_data)
@@ -332,6 +333,7 @@ def patch_ospf_router_resdistribute_config(api, vrf_name, protocol, direction, c
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_resdistribute_config: {} body {}".format(ospf_rtr_redist_uri, ospf_rtr_redist_uri_body))
+    keypath = cc.Path(ospf_rtr_redist_uri)
     response = api.patch(keypath, ospf_rtr_redist_uri_body)
     return response
 
@@ -351,7 +353,6 @@ def delete_ospf_router_resdistribute_config(api, vrf_name, protocol, direction, 
 def patch_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_addr, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_body))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_pif_uri)
 
     key_data = {"name": intf_name, "address": if_addr }
     add_key_to_config_data(cfg_body, key_data)
@@ -370,6 +371,7 @@ def patch_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_addr
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_passive_interface_config: {} body {}".format(ospf_rtr_pif_uri, ospf_rtr_pif_uri_body))
+    keypath = cc.Path(ospf_rtr_pif_uri)
     response = api.patch(keypath, ospf_rtr_pif_uri_body)
     return response
 
@@ -388,38 +390,59 @@ def delete_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_add
 ############## OSPF interface config
 def get_ospf_intf_uri(intf_name, sub_intf=0):
     ospf_intf_patch_uri = '/restconf/data/openconfig-interfaces:interfaces/interface={}'.format(intf_name)
-    ospf_intf_patch_uri += '/subinterfaces/subinterface={}'.format(sub_intf)
+    #ospf_intf_patch_uri += '/subinterfaces/subinterface={}'.format(sub_intf)
     return ospf_intf_patch_uri
 
 def patch_ospf_interface_config(api, intf_name, intf_addr, cfg_body={}) :
     ospf_cli_log("patch_ospf_interface_config: {} {} {}".format(intf_name, intf_addr, cfg_body))
-    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
-    keypath = cc.Path(ospf_intf_uri)
+    sub_intf = 0
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     key_data = {"address": intf_addr }
     add_key_to_config_data(cfg_body, key_data)
 
-    ospf_intf_uri_body = {
-        "openconfig-interfaces:subinterface": [{
-            "index": 0,
-            "openconfig-if-ip:ipv4": {
-                 "openconfig-ospfv2-ext:ospfv2": {
-                     "if-addresses": [{
-                         "address": intf_addr
-                      }] } }  }] }
+    if intf_name.startswith("Vlan") :
+        ospf_intf_uri += '/openconfig-vlan:routed-vlan'
+        ospf_intf_uri_body = {
+            "openconfig-vlan:routed-vlan": {
+                "openconfig-if-ip:ipv4": {
+                     "openconfig-ospfv2-ext:ospfv2": {
+                         "if-addresses": [{
+                             "address": intf_addr
+                          }] } }  } }
 
-    temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][0]
+        temp_entry = ospf_intf_uri_body["openconfig-vlan:routed-vlan"]
+    else :
+        ospf_intf_uri += '/subinterfaces/subinterface={}'.format(sub_intf)
+        ospf_intf_uri_body = {
+            "openconfig-interfaces:subinterface": [{
+                "index": sub_intf,
+                "openconfig-if-ip:ipv4": {
+                     "openconfig-ospfv2-ext:ospfv2": {
+                         "if-addresses": [{
+                             "address": intf_addr
+                          }] } }  }] }
+
+        temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][sub_intf]
+
     temp_entry = temp_entry["openconfig-if-ip:ipv4"]["openconfig-ospfv2-ext:ospfv2"]
     uri_cfg_body = temp_entry["if-addresses"][0]
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_interface_config: {} body {}".format(ospf_intf_uri, ospf_intf_uri_body))
+    keypath = cc.Path(ospf_intf_uri)
     response = api.patch(keypath, ospf_intf_uri_body)
     return response
 
 def delete_ospf_interface_config(api, intf_name, intf_addr, cfg_field) :
     ospf_cli_log("delete_ospf_interface_config: {} {} {}".format(intf_name, intf_addr, cfg_field))
     ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    if intf_name.startswith("Vlan") :
+        ospf_intf_uri += '/openconfig-vlan:routed-vlan'
+    else :
+        ospf_intf_uri += '/subinterfaces/subinterface={}'.format("0")
+
     ospf_intf_uri += '/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2'
     if intf_addr != '' :
         ospf_intf_uri += '/if-addresses={}'.format(intf_addr)
@@ -976,6 +999,10 @@ def invoke_api(func, args=[]):
         areaidval = area_to_dotted(args[1])
         vlinkid = ""
 
+        if (len(args) == 4):
+            if args[2] == "area" and args[3] == args[1] :
+                return patch_ospf_router_area_config(api, vrf, areaidval)
+
         i = 0
         for arg in args:
 
@@ -1100,6 +1127,10 @@ def invoke_api(func, args=[]):
         areaidval = area_to_dotted(args[1])
         vlinkid = ""
         response = None
+
+        if (len(args) == 5) and areaidval != "" :
+            if args[3] == "area" and args[4] == args[1] :
+                return delete_ospf_router_area_config(api, vrf, areaidval)
 
         i = 0
         for arg in args:

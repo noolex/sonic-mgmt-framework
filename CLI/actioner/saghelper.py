@@ -24,20 +24,26 @@ import os
 #import ast
 import subprocess
 
-def get_netdev_all_sag_ifa(afi):
+def get_netdev_all_sag_ifa(afi, isVarp=False):
+        if isVarp:
+            netdevPfx = 'varp'
     output = subprocess.check_output("ip addr show type macvlan", shell=True)
+        else:
+            netdevPfx = 'Vlan'
+            output = subprocess.check_output("ip addr show type vlan", shell=True)
     result = {}
+        iface = ""
     for row in output.split('\n'):
         row = row.lstrip()
         if len(row.split(" ")) < 2:
             continue
-        if row.split(" ")[1].startswith("sag"):
+        if row.split(" ")[1].startswith(netdevPfx):
             iface = row.split(" ")[1].split("@")[0]
         if row.split(" ")[0] == "inet6":
             if len(row.split(" ")) < 4:
                 continue
             address = row.split(" ")[1]
-            if iface.startswith('sag'):
+            if iface.startswith(netdevPfx):
                 if iface not in result:
                     result[iface] = []
                     result[iface].append(address)
@@ -52,7 +58,7 @@ def get_netdev_all_sag_ifa(afi):
 	    else:
                 continue
 
-            if iface.startswith('sag'):
+            if iface.startswith(netdevPfx):
                 if iface not in result:
                     result[iface] = []
                     result[iface].append(address)
@@ -105,10 +111,15 @@ def get_if_oper_state(iface):
     else:
         return "down"
 
+def get_varp_netdev(intf):
+    vlan_id = intf.lstrip('Vlan')
+    iface = 'varp'+vlan_id+'.256'
+    return iface
+
 def get_sag_netdev(intf):
     vlan_id = intf.lstrip('Vlan')
     iface = 'sag'+vlan_id+'.256'
-    return iface
+    return intf
 
 def get_if_master_and_oper(in_data):
     data = in_data
@@ -119,7 +130,9 @@ def get_if_master_and_oper(in_data):
     adminupgwipv6 = 0
     operupgwipv6 = 0
     output = {}
-    sag_ifa4 = get_netdev_all_sag_ifa('IPv4')
+
+    sag_ifa4 = get_netdev_all_sag_ifa('IPv4', isVarp=False)
+    varp_ifa4 = get_netdev_all_sag_ifa('IPv4', isVarp=True)
     for item in data:
         if "ifname" in item:
             if item["ifname"] not in output:
@@ -130,6 +143,8 @@ def get_if_master_and_oper(in_data):
                 output[item["ifname"]][ip] = {}
                 output[item["ifname"]][ip]["oper_state"] = oper_state
                 if get_sag_netdev(item["ifname"]) in  sag_ifa4 and ip in sag_ifa4[get_sag_netdev(item["ifname"])]:
+                    output[item["ifname"]][ip]["admin_state"] = "up"
+                elif get_varp_netdev(item["ifname"]) in varp_ifa4 and ip in varp_ifa4[get_varp_netdev(item["ifname"])]:
                     output[item["ifname"]][ip]["admin_state"] = "up"
                 else:
                     output[item["ifname"]][ip]["admin_state"] = "down"

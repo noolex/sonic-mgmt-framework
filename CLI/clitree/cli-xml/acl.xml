@@ -14,6 +14,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+<!--
+Copyright 2019 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
 
 <!DOCTYPE CLISH_MODULE [
         <!ENTITY ACL_MAC_ADDR "^([0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{4}(\.[0-9a-fA-F]{4}){2})$">
@@ -70,7 +86,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L3 ${__params}</ACTION>
         </COMMAND>
 
-        <COMMAND name="clear ipv6 counters" help="Clear IPv6 ACL Counters" />
+        <COMMAND name="clear ipv6 access-list" help="Clear IPv6 ACL Counters" />
         <COMMAND name="clear ipv6 access-list counters" help="Clear IPv6 ACL counters">
             <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Clear,IPv6" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L3V6 ${__params}</ACTION>
@@ -97,19 +113,37 @@ limitations under the License.
 
     <!--============================== INTERFACE ETHERNET MODE COMMANDS ======================-->
     <VIEW name="configure-if-view">
-        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
+        <COMMAND 
+            name="mac" 
+            help="Configure MAC parameters" 
+            view_tables="sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST={iface}"
+            view_keys="iface=*"
+            data_and_render_cb="acl_bind_cb"
+            />
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE PORTCHANNEL MODE COMMANDS ======================-->
     <VIEW name="configure-lag-view">
-        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
+        <COMMAND 
+            name="mac" 
+            help="Configure MAC parameters" 
+            view_tables="sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST={iface}"
+            view_keys="iface=*"
+            data_and_render_cb="acl_bind_cb"
+            />
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE VLAN MODE COMMANDS ======================-->
     <VIEW name="configure-vlan-view">
-        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
+        <COMMAND 
+            name="mac" 
+            help="Configure MAC parameters" 
+            view_tables="sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST={iface}"
+            view_keys="iface=*"
+            data_and_render_cb="acl_bind_cb"
+            />
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
@@ -167,8 +201,67 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_IPV6</ACTION>
         </COMMAND>
 
-        <!-- Gloabl ACL Binding -->
-        <MACRO name="ACL-BINDING-OPTIONS" arg="Switch" />
+        <!-- Global ACL Binding -->
+        <COMMAND name="mac access-group" help="Specify MAC access control for packets"
+            view_tables="sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST={iface}"
+            view_keys="iface=*"
+            data_and_render_cb="acl_global_bind_cb"
+            >
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_L2 Switch ${direction-switch}</ACTION>
+        </COMMAND>
+        <COMMAND name="ip access-group" help="Specify IP access control for packets"
+            view_tables="sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST={iface}"
+            view_keys="iface=*"
+            >
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV4 Switch ${direction-switch}</ACTION>
+        </COMMAND>
+        <COMMAND name="ipv6 access-group" help="Specify IPv6 access control for packets"
+            view_tables="sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST={iface}"
+            view_keys="iface=*"
+            >
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV6 Switch ${direction-switch}</ACTION>
+        </COMMAND>
+
+        <!-- no mac|ip|ipv6 access-group NAME in|out -->
+        <COMMAND name="no mac access-group" help="Specify MAC access control for packets">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_L2 Switch ${direction-switch}</ACTION>
+        </COMMAND>
+        <COMMAND name="no ip access-group" help="Specify IP access control for packets">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV4 Switch ${direction-switch}</ACTION>
+        </COMMAND>
+        <COMMAND name="no ipv6 access-group" help="Specify IPv6 access control for packets">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV6 Switch ${direction-switch}</ACTION>
+        </COMMAND>
     </VIEW>
 
     <VIEW name="configure-mac-acl-view" prompt="${SYSTEM_NAME}(config-mac-acl)# " depth="2">
@@ -176,10 +269,7 @@ limitations under the License.
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_L2"/>
-        <COMMAND 
-            name="seq" 
-            help="Sequence number"
-            data_and_render_cb="mac_acl_rule_cb">
+        <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <PARAM name="src-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
@@ -234,10 +324,7 @@ limitations under the License.
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV4"/>
 
-        <COMMAND 
-            name="seq" 
-            help="Sequence number"
-            view_tables="sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST/aclname={access-list-name}">
+        <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <MACRO name="IP-PROTOCOL-OPTIONS" arg="icmp,ICMP,ip,IPv4" />
@@ -267,10 +354,7 @@ limitations under the License.
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV6"/>
 
-        <COMMAND 
-            name="seq" 
-            help="Sequence number"
-            view_tables="sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST/aclname={access-list-name}">
+        <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <MACRO name="IP-PROTOCOL-OPTIONS" arg="icmpv6,ICMPv6,ipv6,IPv6" />

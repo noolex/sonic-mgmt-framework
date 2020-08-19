@@ -1385,6 +1385,18 @@ limitations under the License.
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST=${po_name}/graceful_shutdown_mode body={"sonic-portchannel:graceful_shutdown_mode": "disable"}</ACTION>
     </COMMAND>
 
+    <COMMAND
+        name="description"
+        help="Textual description of the interface (Max: 240 characters)">
+        <PARAM name="desc" help="description of the portchannel" ptype="STRING_240" />
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST=${po_name}/description body={"sonic-portchannel:description": "${desc}"}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no description"
+        help="Remove description">
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST=${po_name}/description body={"sonic-portchannel:description": ""}</ACTION>
+    </COMMAND>
+
     </VIEW> <!-- End of Configure View for PortChannel-->
 
     <VIEW

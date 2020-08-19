@@ -26,7 +26,7 @@ limitations under the License.
 <!ENTITY SLOT            "([1])">
 <!ENTITY PORT            "([1-9]|[1-9][0-9]|[1-9][0-9][0-9])">
 <!ENTITY SUB_PORT        "([1-9]|[1-9][0-9])">
-<!ENTITY PORT_GROUP      "([1-9]|[1][0-2])">
+<!ENTITY PORT_GROUP      "([1-9]|[1-9][0-9])">
 <!ENTITY ETH_PHY_NUM_ALIAS     "(&SLOT;/&PORT;|&SLOT;/&PORT;/&SUB_PORT;)">
 <!ENTITY ETH_ALL_INTF_ALIAS "(^[eE]([t]|(th))?\s*(&ETH_PHY_NUM_ALIAS;$))">
 <!ENTITY ETH_PHY_NUM_ALIAS_ALL "(&ALL;|&SLOT;/&PORT;|&SLOT;/&PORT;/&SUB_PORT;)">
@@ -1458,9 +1458,16 @@ limitations under the License.
         />
     <!--=======================================================-->
        <PTYPE
-        name="CPU_CIR_PIR_CBS_PBS"
+        name="QUEUE_CIR_PIR"
         method="integer"
-        pattern="1..100000"
+        pattern="0..400000000"
+        help=""
+        />
+    <!--=======================================================-->
+       <PTYPE
+        name="QUEUE_BURST"
+        method="integer"
+        pattern="0..128000000"
         help=""
         />
     <!--=======================================================-->
