@@ -44,25 +44,24 @@ limitations under the License.
       <ACTION> if test "${lo-id}" != ""; then echo -n "Loopback${lo-id}"; fi</ACTION>
     </VAR>
     <VAR name="ethiflist" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${iface_range_num}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${iface_range_num}</ACTION>
     </VAR>
     <VAR name="ethiflist_nativeNum" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${phy-if-ethernet-name}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${phy-if-ethernet-name}</ACTION>
     </VAR>
     <VAR name="ethiflist_aliasNum" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${phy-if-eth-name}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${phy-if-eth-name}</ACTION>
     </VAR>
-
     <VAR name="vlaniflist" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${vlan_range_num}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${vlan_range_num}</ACTION>
     </VAR>
     <VAR name="poiflist" dynamic="true">
-    <!-- po_range_num is of format PortChannel<range> -->
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${po_range_num}</ACTION>
+      <!-- po_range_num is of format PortChannel<range> -->
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${po_range_num}</ACTION>
     </VAR>
     <VAR name="po-id-list" dynamic="true">
-    <!-- po-name is po-id prefixed with PortChannel -->
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${po-name}</ACTION>
+      <!-- po-name is po-id prefixed with PortChannel -->
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${po-name}</ACTION>
     </VAR>
     <VAR name="iflist_from_range" dynamic="true">
     <!-- Expanding given vlan/portchannel range into list of individual interfaces -->
