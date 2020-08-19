@@ -88,7 +88,7 @@ def validate_input(args, isVrf):
         if alias is None:
             return False, args
         args = re.sub('(-I\s*)(Eth\d+/\d+/*\d*)', '\g<1>' + alias, args, re.IGNORECASE)
-        print "Using the native name:", alias, "for interface:", interface
+        print "Using the native name:", alias, "for the interface:", interface
 
     if ("fe80:" in args.lower()
         or "ff01:" in args.lower()
