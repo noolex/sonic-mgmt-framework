@@ -263,6 +263,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ipv4_acl_table_cb'       : ipv4_acl_table_cb,
                   'ipv6_acl_table_cb'       : ipv6_acl_table_cb,
                   'username_config'         : show_username_config,
+                  'if_vrf_binding' : show_if_vrf_binding,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

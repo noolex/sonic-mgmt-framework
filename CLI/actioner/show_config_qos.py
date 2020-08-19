@@ -36,20 +36,20 @@ def show_wred_policy (render_tables, color):
                    if wred['wred_green_enable'] == True:
                       g_min = int(wred['green_min_threshold'])/1024
                       g_max = int(wred['green_max_threshold'])/1024
-                      cmd_str += ' green minimum-threshold ' + str(g_min) + ' maximum-threshold ' + str(g_max) +  ' drop-probability ' + wred['green_drop_probability'] + ';'
+                      cmd_str += 'green minimum-threshold ' + str(g_min) + ' maximum-threshold ' + str(g_max) +  ' drop-probability ' + wred['green_drop_probability'] + ';'
                if color == 'yellow' and 'wred_yellow_enable' in wred and 'yellow_min_threshold' in wred and 'yellow_max_threshold' in wred and 'yellow_drop_probability' in wred:
                    if wred['wred_yellow_enable'] == True:
                       y_min = int(wred['yellow_min_threshold'])/1024
                       y_max = int(wred['yellow_max_threshold'])/1024
-                      cmd_str += ' yellow minimum-threshold ' + str(y_min) + ' maximum-threshold ' + str(y_max) +  ' drop-probability ' + wred['yellow_drop_probability'] + ';'
+                      cmd_str += 'yellow minimum-threshold ' + str(y_min) + ' maximum-threshold ' + str(y_max) +  ' drop-probability ' + wred['yellow_drop_probability'] + ';'
                if color == 'red' and 'wred_red_enable' in wred and 'red_min_threshold' in wred and 'red_max_threshold' in wred and 'red_drop_probability' in wred:
                    if wred['wred_red_enable'] == True:
                       r_min = int(wred['red_min_threshold'])/1024
                       r_max = int(wred['red_max_threshold'])/1024
-                      cmd_str += ' red minimum-threshold ' + str(r_min) + ' maximum-threshold ' + str(r_max) +  ' drop-probability ' + wred['red_drop_probability'] + ';'
+                      cmd_str += 'red minimum-threshold ' + str(r_min) + ' maximum-threshold ' + str(r_max) +  ' drop-probability ' + wred['red_drop_probability'] + ';'
 
                if 'ecn' in wred:
-                   cmd_str += ' ecn ' +  wred['ecn'].lstrip('ecn_') + ';'
+                   cmd_str += 'ecn ' +  wred['ecn'].lstrip('ecn_') + ';'
 
     return 'CB_SUCCESS', cmd_str
 
@@ -319,40 +319,49 @@ def show_scheduler_policy(render_tables):
     
     
         if (spseq == '255'):
-            cmd_str += '  port;'
+            cmd_str += ' port;'
 
-            cmd_str += show_scheduler_instance(sch)
+            cmd_str += show_scheduler_instance('port', sch)
 
         else:
-            cmd_str += '  queue ' + spseq + ';'
+            cmd_str += ' queue ' + spseq + ';'
 
-            cmd_str += show_scheduler_instance(sch)
+            cmd_str += show_scheduler_instance('queue', sch)
 
 
     return 'CB_SUCCESS', cmd_str
 
-def show_scheduler_instance(scheduler_inst):
+def show_scheduler_instance(stype, scheduler_inst):
     
     cmd_str = ''
 
     for key in scheduler_inst:
         if 'pir' == key:
-            cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            if 'port' == stype:
+                cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            else:
+                cmd_str += '    pir ' + str(int(scheduler_inst[key])) + ';'
 
         if 'pbs' == key:
-            cmd_str += '    pbs ' + str(scheduler_inst[key]) + ';'
+            cmd_str += '  pbs ' + str(scheduler_inst[key]) + ';'
 
         if 'cir' == key:
-            cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            if 'port' == stype:
+                cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+            else:
+                cmd_str += '    cir ' + str(int(scheduler_inst[key])) + ';'
 
         if 'cbs' == key:
-            cmd_str += '    cbs ' + str(scheduler_inst[key]) + ';'
+            cmd_str += '  cbs ' + str(scheduler_inst[key]) + ';'
 
         if 'type' == key:
-            cmd_str += '    type ' + scheduler_inst[key].lower() + ';'
+            cmd_str += '  type ' + scheduler_inst[key].lower() + ';'
             
         if 'weight' == key:
-            cmd_str += '    weight ' + str(scheduler_inst[key]) + ';'
+            cmd_str += '  weight ' + str(scheduler_inst[key]) + ';'
+
+        if 'meter-type' == key:
+            cmd_str += '    meter-type ' + str(scheduler_inst[key].lower()) + ';'
 
     return cmd_str
 
@@ -368,7 +377,7 @@ def show_scheduler_policy_q(render_tables):
 
     if 'sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST' in render_tables:
         scheduler_inst = render_tables['sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST']
-        cmd_str += show_scheduler_instance(scheduler_inst)
+        cmd_str += show_scheduler_instance('cpu', scheduler_inst)
 
     return 'CB_SUCCESS', cmd_str
 
@@ -386,6 +395,6 @@ def show_scheduler_policy_port(render_tables):
     if 'sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST' in render_tables:
         scheduler_inst = render_tables['sonic-scheduler:sonic-scheduler/SCHEDULER/SCHEDULER_LIST']
 
-        cmd_str += show_scheduler_instance(scheduler_inst)
+        cmd_str += show_scheduler_instance('port', scheduler_inst)
         
     return 'CB_SUCCESS', cmd_str

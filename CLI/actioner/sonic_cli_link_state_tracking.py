@@ -197,7 +197,7 @@ def show_link_state_tracking_group_info(args):
         uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST={grp_name}', grp_name=args[0])
     else:
         uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST')
-    return aa.get(uri)
+    return aa.get(uri, None, False)
 
 
 def generic_set_response_handler(response, args):

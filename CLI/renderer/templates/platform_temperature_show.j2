@@ -1,14 +1,16 @@
 {{'TH - Threshold'}}
-{{'Name'.ljust(25)}}{{'Temp (C)'.ljust(10)}}{{'High TH'.ljust(15)}}{{'Low TH'.ljust(15)}}{{'Crit High TH'.ljust(20)}}{{'Crit Low TH'.ljust(20)}}{{'Warning'.ljust(15)}}{{'Timestamp'.ljust(35)}}
-{{'--------------------------------------------------------------------------------------------------------------------------------------------------------'}}
+{{'-------------------------------------------------------------------------------------------------------------------------------------------------------------'}}
+{{'Name'.ljust(25)}}{{'Temperature'.ljust(15)}}{{'High TH'.ljust(15)}}{{'Low TH'.ljust(15)}}{{'Critical High TH'.ljust(25)}}{{'Critical Low TH'.ljust(25)}}{{'Warning'.ljust(20)}}{{'Timestamp'}}
+{{'-------------------------------------------------------------------------------------------------------------------------------------------------------------'}}
 {% for temp_name, temp_info in json_output.items() %}
 {% set temperature = "N/A" %}
 {% set ht = "N/A" %}
 {% set lt = "N/A" %}
 {% set cht = "N/A" %}
 {% set clt = "N/A" %}
-{% set ws = "N/A" %}
-{% set ts = "N/A" %}
+{% set timestamp = "" %}
+{% set warning = "false" %}
+
 {% if 'openconfig-platform-ext:current' in temp_info %}
 {% set temperature = temp_info['openconfig-platform-ext:current'] | string %}
 {% endif %}
@@ -24,12 +26,12 @@
 {% if 'openconfig-platform-ext:critical-low-threshold' in temp_info %}
 {% set clt = temp_info['openconfig-platform-ext:critical-low-threshold'] | string %}
 {% endif %}
-{% if 'openconfig-platform-ext:warning-status' in temp_info %}
-{% set ws = temp_info['openconfig-platform-ext:warning-status'] | string %}
-{% endif %}
 {% if 'openconfig-platform-ext:timestamp' in temp_info %}
-{% set ts = temp_info['openconfig-platform-ext:timestamp'] | string %}
+{% set time = temp_info['openconfig-platform-ext:timestamp'] %}
+{% set timestamp = time[:4] + time[5:7] + time[8:10] + " " + time[11:-1]  %}
 {% endif %}
-{{(temp_name | truncate(24)).ljust(25)}}{{temperature.ljust(10)}}{{ht.ljust(15)}}{{lt.ljust(15)}}{{cht.ljust(20)}}{{clt.ljust(20)}}{{ws.ljust(15)}}{{ts.ljust(35)}}
+{% if 'openconfig-platform-ext:warning-status' in temp_info and temp_info['openconfig-platform-ext:warning-status'] %}
+{% set warning = "true" %}
+{% endif %}
+{{(temp_name | truncate(24)).ljust(25)}}{{temperature.ljust(15)}}{{ht.ljust(15)}}{{lt.ljust(15)}}{{cht.ljust(25)}}{{clt.ljust(25)}}{{warning.ljust(20)}}{{timestamp}}
 {% endfor %}
-{{'--------------------------------------------------------------------------------------------------------------------------------------------------------'}}

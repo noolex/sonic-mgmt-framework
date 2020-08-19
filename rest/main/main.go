@@ -48,6 +48,7 @@ var (
 	cliCAFile  string // CLI client CA certificate file path
 	noSocket   bool   // Do not start unix domain socket lister
 	internal   bool   // Enable internal features on https listener
+	profDir    string // CPU profiler reports directory
 	clientAuth = server.NewUserAuth()
 )
 
@@ -61,6 +62,7 @@ func init() {
 	flag.Var(clientAuth, "client_auth", "Client auth mode(s) - <none,cert,jwt,password|user(deprecated)> default: password,jwt")
 	flag.BoolVar(&noSocket, "no-sock", false, "Do not start unix domain socket listener")
 	flag.BoolVar(&internal, "internal", false, "Enable internal, non-standard features on https listener")
+	flag.StringVar(&profDir, "prof_dir", "", "CPU profiler reports directory")
 	flag.Parse()
 
 	//Below is for setting the default client_auth to password,jwt.
@@ -77,7 +79,8 @@ func init() {
 
 }
 
-var profRunning bool = true
+// theProfiler points to the currently active cpu profiler instance
+var theProfiler interface{ Stop() }
 
 // Start REST server
 func main() {
@@ -90,21 +93,15 @@ func main() {
 	 * go tool pprof --pdf ./rest_server ./cpu.pprof > report.pdf
 	 * Note: install graphviz to generate the graph on a pdf format
 	 */
-	prof := profile.Start()
-	defer prof.Stop()
+	startProfiler()
+	defer stopProfiler()
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGUSR1)
 	go func() {
 		for {
 			<-sigs
-			if profRunning {
-				prof.Stop()
-				profRunning = false
-			} else {
-				prof = profile.Start()
-				//defer prof.Stop()
-				profRunning = true
-			}
+			stopProfiler()
+			startProfiler()
 		}
 	}()
 
@@ -293,5 +290,59 @@ func getPreferredCipherSuites() []uint16 {
 		tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
 		tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
 		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+	}
+}
+
+// startProfiler starts a cpu profiler.
+func startProfiler() {
+	// Backup previous profiler reports in profDir. Creates a new
+	// temporary reports directory if profDir not specified.
+	if profDir != "" {
+		rotateFile(profDir+"/cpu.pprof", 5)
+	} else {
+		profDir = createTempProfileDir()
+	}
+
+	var opts []func(*profile.Profile)
+	opts = append(opts, func(p *profile.Profile) { profile.Quiet(p) })
+	opts = append(opts, profile.ProfilePath(profDir))
+
+	glog.Infof("Starting profiler.. reports dir %s", profDir)
+	theProfiler = profile.Start(opts...)
+}
+
+// stopProfiler stops the cpu profiler.
+func stopProfiler() {
+	if theProfiler != nil {
+		theProfiler.Stop()
+		glog.Infof("Profiler stopped")
+		theProfiler = nil
+	}
+}
+
+func createTempProfileDir() string {
+	path, err := ioutil.TempDir(os.TempDir(), "profile")
+	if err != nil {
+		glog.Warning("Failed to create temp dir!", err)
+		path = os.TempDir()
+	}
+
+	return path
+}
+
+func rotateFile(file string, count int) {
+	info, err := os.Stat(file)
+	if err != nil {
+		return // file does not exists.. nothing to do
+	}
+	if info.Size() == 0 {
+		os.Remove(file) // remove empty file
+		return
+	}
+	for ; count > 1; count-- {
+		os.Rename(fmt.Sprintf("%s.%d", file, count-1), fmt.Sprintf("%s.%d", file, count))
+	}
+	if count == 1 {
+		os.Rename(file, file+".1")
 	}
 }

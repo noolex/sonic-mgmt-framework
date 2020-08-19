@@ -10,13 +10,13 @@ def invoke_api(func, args):
     # Set/Get/Delete WATERMARK_TABLE/SNAPSHOT_TABLE table entries.
 
     if func == 'patch_sonic_watermark_sonic_watermark_watermark_table_watermark_table_list_interval':
-       path = cc.Path('/restconf/data/sonic-watermark:sonic-watermark/WATERMARK_TABLE/WATERMARK_TABLE_LIST={telemetryIntarvalPrefix}/interval', telemetryIntarvalPrefix = 'TELEMETRY_INTERVAL')
-       body = { "sonic-watermark:interval": int(args[3]) }
+       path = cc.Path('/restconf/data/sonic-watermark:sonic-watermark/WATERMARK_TABLE/WATERMARK_TABLE_LIST')
+       body = { "sonic-watermark:WATERMARK_TABLE_LIST": [ {"telemetryIntarvalPrefix": 'TELEMETRY_INTERVAL', "interval": int(args[3])} ] }
        return api.patch(path, body)
 
     elif func == 'patch_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list_interval':
-       path = cc.Path('/restconf/data/sonic-watermark:sonic-watermark/SNAPSHOT_TABLE/SNAPSHOT_TABLE_LIST={snapshotIntarvalPrefix}/interval', snapshotIntarvalPrefix = 'SNAPSHOT_INTERVAL')
-       body = { "sonic-watermark:interval": int(args[2]) }
+       path = cc.Path('/restconf/data/sonic-watermark:sonic-watermark/SNAPSHOT_TABLE/SNAPSHOT_TABLE_LIST')
+       body = { "sonic-watermark:SNAPSHOT_TABLE_LIST": [ {"snapshotIntarvalPrefix": "SNAPSHOT_INTERVAL", "interval": int(args[2])} ] }
        return api.patch(path, body)
 
     elif func == 'delete_list_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list':

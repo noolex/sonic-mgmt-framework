@@ -66,7 +66,7 @@ def qos_map_dscp_tc_cb(render_tables):
         entries = map['dscp-map-entries']['dscp-map-entry']
         for entry in entries:
             if entry['config']['fwd-group'] != 'NULL':
-                cmd_str += '  dscp ' + str(entry['dscp']) + ' traffic-class ' + str(entry['config']['fwd-group']) + ';'
+                cmd_str += ' dscp ' + str(entry['dscp']) + ' traffic-class ' + str(entry['config']['fwd-group']) + ';'
 
 
     #print ("cmd_str: ", cmd_str)
@@ -119,7 +119,7 @@ def qos_map_dot1p_tc_cb(render_tables):
         entries = map['dot1p-map-entries']['dot1p-map-entry']
         for entry in entries:
             if entry['config']['fwd-group'] != 'NULL':
-                cmd_str += '  dot1p ' + str(entry['dot1p']) + ' traffic-class ' + str(entry['config']['fwd-group']) + ';'
+                cmd_str += ' dot1p ' + str(entry['dot1p']) + ' traffic-class ' + str(entry['config']['fwd-group']) + ';'
 
 
     #print ("cmd_str: ", cmd_str)
@@ -167,7 +167,7 @@ def qos_map_tc_queue_cb(render_tables):
     
         entries = map['forwarding-group-queue-map-entries']['forwarding-group-queue-map-entry']
         for entry in entries:
-            cmd_str += '  traffic-class ' + str(entry['fwd-group']) + ' queue ' + str(entry['config']['output-queue-index']) + ';'
+            cmd_str += ' traffic-class ' + str(entry['fwd-group']) + ' queue ' + str(entry['config']['output-queue-index']) + ';'
 
 
     return 'CB_SUCCESS', cmd_str, True
@@ -213,7 +213,7 @@ def qos_map_tc_pg_cb(render_tables):
     
         entries = map['forwarding-group-priority-group-map-entries']['forwarding-group-priority-group-map-entry']
         for entry in entries:
-            cmd_str += '  traffic-class ' + str(entry['fwd-group']) + ' priority-group ' + str(entry['config']['priority-group-index']) + ';'
+            cmd_str += ' traffic-class ' + str(entry['fwd-group']) + ' priority-group ' + str(entry['config']['priority-group-index']) + ';'
 
 
     return 'CB_SUCCESS', cmd_str, True
@@ -259,7 +259,7 @@ def qos_map_pfc_queue_cb(render_tables):
     
         entries = map['pfc-priority-queue-map-entries']['pfc-priority-queue-map-entry']
         for entry in entries:
-            cmd_str += '  pfc-priority ' + str(entry['dot1p']) + ' queue ' + str(entry['config']['output-queue-index']) + ';'
+            cmd_str += ' pfc-priority ' + str(entry['dot1p']) + ' queue ' + str(entry['config']['output-queue-index']) + ';'
 
 
     return 'CB_SUCCESS', cmd_str, True
@@ -306,7 +306,7 @@ def qos_map_tc_dscp_cb(render_tables):
         entries = map['forwarding-group-dscp-map-entries']['forwarding-group-dscp-map-entry']
         for entry in entries:
             if entry['fwd-group'] != 'NULL':
-                cmd_str += '  traffic-class ' + str(entry['fwd-group']) + ' dscp ' + str(entry['config']['dscp']) + ';'
+                cmd_str += ' traffic-class ' + str(entry['fwd-group']) + ' dscp ' + str(entry['config']['dscp']) + ';'
 
 
     return 'CB_SUCCESS', cmd_str, True
@@ -353,7 +353,7 @@ def qos_map_tc_dot1p_cb(render_tables):
         entries = map['forwarding-group-dot1p-map-entries']['forwarding-group-dot1p-map-entry']
         for entry in entries:
             if entry['fwd-group'] != 'NULL':
-                cmd_str += '  traffic-class ' + str(entry['fwd-group']) + ' dot1p ' + str(entry['config']['dot1p']) + ';'
+                cmd_str += ' traffic-class ' + str(entry['fwd-group']) + ' dot1p ' + str(entry['config']['dot1p']) + ';'
 
 
     return 'CB_SUCCESS', cmd_str, True

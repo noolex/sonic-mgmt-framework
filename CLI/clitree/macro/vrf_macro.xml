@@ -17,6 +17,22 @@ limitations under the License.
 
 <ROOT>
 
+<MACRODEF name="DATA_AND_MGMT_VRF_NAME">
+    <PARAM name="vrf-switch" help="" ptype="SUBCOMMAND" mode="switch">
+        <PARAM 
+            name = "mgmt"
+            help="Management VRF"
+            ptype = "SUBCOMMAND"
+            mode = "subcommand"
+        />
+        <PARAM 
+            name = "vrf-name"
+            help="Name of VRF"
+            ptype = "STRING_15"
+        />
+    </PARAM>
+</MACRODEF>
+
 <MACRODEF name="BIND-INTF-TO-VRF">
 
     <COMMAND name="ip vrf" help="Bind interface to specified VRF domain"/>
@@ -25,26 +41,21 @@ limitations under the License.
         help="Configure forwarding table"
         mode="subcommand"
         ptype="SUBCOMMAND"
+        render_command_cb="if_vrf_binding"
         command_tables="arg3"
         >
-        <PARAM
-          name="vrf-name"
-          help="Name of VRF"
-          ptype="STRING_15"
-          dbpath="arg4"
-          >
-        </PARAM>
+        <MACRO name="DATA_AND_MGMT_VRF_NAME" arg=""/>
         <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/interfaces/interface=arg1 body={ "openconfig-network-instance:interface": [ { "id": "arg2", "config" : { "id": "arg2" } } ] }
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${mgmt}${vrf-name}/interfaces/interface=arg1 body={ "openconfig-network-instance:interface": [ { "id": "arg2", "config" : { "id": "arg2" } } ] }
         </ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Assign an interface to a VRF. VRF is data VRF and interface can be
-                ethernet, loop back, port channel or vlan interface.
+                Assign an interface to a VRF. VRF is data/mgmt VRF and interface can be
+                ethernet, loopback, portchannel or vlan interface.
             </DESCRIPTION>
             <USAGE>
                 sonic(conf-if-INTF)# ip vrf forwarding VRF
-                VRF:  Name of VRF(Max: 15 characters)
+                VRF:  Name of VRF
                 INTF: View identifier of Ethernet, Loopback, PortChannel or Vlan interface
             </USAGE>
             <EXAMPLE summary="Assign interface to VRF">
@@ -56,6 +67,8 @@ limitations under the License.
                 sonic(conf-if-po8)# ip vrf forwarding Vrf_red
                 sonic(config)# interface Vlan 8
                 sonic(conf-if-Vlan8)# ip vrf forwarding Vrf_red
+                sonic(config)# interface Vlan 100
+                sonic(conf-if-Vlan8)# ip vrf forwarding mgmt
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
@@ -67,14 +80,9 @@ limitations under the License.
         mode="subcommand"
         ptype="SUBCOMMAND"
         >
-        <PARAM
-          name="vrf-name"
-          help="Name of VRF"
-          ptype="STRING_15"
-          >
-        </PARAM>
+        <MACRO name="DATA_AND_MGMT_VRF_NAME" arg=""/>
         <ACTION
-          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${vrf-name}/interfaces/interface=arg1
+          builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-network-instance:network-instances/network-instance=${mgmt}${vrf-name}/interfaces/interface=arg1
         </ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -82,7 +90,7 @@ limitations under the License.
             </DESCRIPTION>
             <USAGE>
                 sonic(conf-if-INTF)# no ip vrf forwarding VRF
-                VRF:  Name of VRF(Max: 15 characters)
+                VRF:  Name of VRF
                 INTF: View identifier of Ethernet, Loopback, PortChannel or Vlan interface
             </USAGE>
             <EXAMPLE summary="Remove interface assignment to VRF">
@@ -109,13 +117,8 @@ limitations under the License.
         mode="subcommand"
         ptype="SUBCOMMAND"
         >
-        <PARAM
-          name="vrf-name"
-          help="Name of VRF"
-          ptype="STRING_15"
-          >
-        </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_vrf config_if_range iflist=arg1 patch_network_instance_interface ${vrf-name}</ACTION>
+        <MACRO name="DATA_AND_MGMT_VRF_NAME" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_vrf config_if_range iflist=arg1 patch_network_instance_interface ${mgmt}${vrf-name}</ACTION>
     </COMMAND>
 
     <COMMAND name="no ip vrf" help="Unbind interface from specified VRF domain"/>
@@ -125,13 +128,8 @@ limitations under the License.
         mode="subcommand"
         ptype="SUBCOMMAND"
         >
-        <PARAM
-          name="vrf-name"
-          help="Name of VRF"
-          ptype="STRING_15"
-          >
-        </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_vrf delete_if_range iflist=arg1 delete_network_instance_interface ${vrf-name}</ACTION>
+        <MACRO name="DATA_AND_MGMT_VRF_NAME" arg=""/>
+        <ACTION builtin="clish_pyobj">sonic_cli_vrf delete_if_range iflist=arg1 delete_network_instance_interface ${mgmt}${vrf-name}</ACTION>
     </COMMAND>
 
 </MACRODEF>

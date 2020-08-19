@@ -145,14 +145,15 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand"
              command_keys="type=global"
-             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}">
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}"
+             escape_chars="">
       <PARAM name="secret-key"
              help=""
              ptype="TACACS_KEY"
              dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/passkey">
       </PARAM>
       <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups body={ "openconfig-system:server-groups": { "server-group": [{ "name" : "TACACS", "config" : { "name" : "TACACS", "openconfig-system-ext:secret-key": "${secret-key}"}}]}}
+          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups body={ "openconfig-system:server-groups": { "server-group": [{ "name" : "TACACS", "config" : { "name" : "TACACS", "openconfig-system-ext:secret-key": "${#secret-key}"}}]}}
       </ACTION>
     </COMMAND>
 
@@ -161,7 +162,8 @@ limitations under the License.
              help="Configure a server for TACACS"
              ptype="SUBCOMMAND"
              mode="subcommand"
-             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/ipaddress={addr}">
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/ipaddress={addr}"
+             escape_chars="">
       <PARAM name="host"
              help="Hostname (Max: 253 characters) or IPv4/IPv6 address of TACACS+ server"
              ptype="HOSTNAME_OR_IPADDR"
@@ -253,7 +255,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${mgmt}${default}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${#key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${mgmt}${default}</ACTION>
     </COMMAND>
 
     <!-- no tacacs server -->

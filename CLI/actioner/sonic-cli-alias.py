@@ -53,7 +53,10 @@ def run(func, args):
                 api_response = response.content
                 if not api_response:
                     api_response = {'sonic-device-metadata:intf_naming_mode': "native"}
-                show_cli_output(args[0], api_response)
+            else:
+                api_response = {'sonic-device-metadata:intf_naming_mode': "native"}
+
+            show_cli_output(args[0], api_response)
  
     except Exception as e:
         print("Failure: %s\n" %(e))

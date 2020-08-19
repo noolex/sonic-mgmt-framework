@@ -1,0 +1,27 @@
+                            {% if 'lsas' in lsa_type and 'openconfig-ospfv2-ext:lsa-ext' in lsa_type['lsas'] %}
+                                {% set lsa_list = lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'] %}
+                                {% for lsa in lsa_list %}
+                                    {% if vars.external_hdr == "true" %}
+                                        {% if vars.update({'external_hdr':"false"}) %}{% endif %}
+{{' '}}
+                AS External Link States
+                    {{' '}}
+Link ID         ADV Router      Age  Seq#       CkSum  Route
+                                    {% endif %}
+                                    {% if 'as-external-lsa' in lsa and 'state' in lsa['as-external-lsa'] and 'metric-type' in lsa['as-external-lsa']['state']%}
+                                        {% if lsa['as-external-lsa']['state']['metric-type'] == 'TYPE_2' %}
+                                            {% if vars.update({'ext_route_type':"E2"}) %}{% endif %}
+                                        {% else %}
+                                            {% if vars.update({'ext_route_type':"E1"}) %}{% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if 'as-external-lsa' in lsa and 'types-of-service' in lsa['as-external-lsa'] and 'type-of-service' in lsa['as-external-lsa']['types-of-service']%}
+                                        {% for tos in lsa['as-external-lsa']['types-of-service']['type-of-service'] %}
+                                            {% if vars.update({'ext_route_tag':tos['state']['external-route-tag']}) %}{% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% if 'advertising-router' in lsa and 'link-state-id' in lsa and 'state' in lsa and 'age' in lsa['state'] and 'display-sequence-number'  in lsa['state'] and 'checksum' in lsa['state'] and 'as-external-lsa' in lsa and 'state' in lsa['as-external-lsa'] and 'mask' in lsa['as-external-lsa']['state']%}
+{{'%-15s'|format(lsa['link-state-id'])}} {{'%-15s'|format(lsa['advertising-router'])}} {{'%4d'|format(lsa['state']['age'])}} 0x{{'%08s'|format(lsa['state']['display-sequence-number'])}} 0x{{'%04x'|format(lsa['state']['checksum'])}} {{vars.ext_route_type}} {{lsa['link-state-id']}}/{{lsa['as-external-lsa']['state']['mask']}} {{'[0x%x]'|format(vars.ext_route_tag)}} 
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
