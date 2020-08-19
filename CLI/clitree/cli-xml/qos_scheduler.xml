@@ -223,12 +223,7 @@ limitations under the License.
             ptype="QUEUE_CIR_PIR"
             >
         </PARAM>
-<<<<<<< HEAD
          <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
-=======
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
->>>>>>> origin/broadcom_sonic_3.x_share
         </ACTION>
         </COMMAND>
 
@@ -266,12 +261,7 @@ limitations under the License.
             ptype="QUEUE_CIR_PIR"
             >
         </PARAM>
-<<<<<<< HEAD
         <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
-=======
-        <ACTION>
-            python $SONIC_CLI_ROOT/sonic_cli_qos_scheduler.py patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
->>>>>>> origin/broadcom_sonic_3.x_share
         </ACTION>
         </COMMAND>
 
