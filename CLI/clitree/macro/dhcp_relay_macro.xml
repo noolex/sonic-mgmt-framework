@@ -19,11 +19,11 @@ limitations under the License.
    <MACRODEF name="DHCP-RELAY-CONFIG-OPTIONS">
        <COMMAND
            name="ip dhcp-relay"
-           help="Configure DHCP relay on an interface"
+           help="Configures DHCP relay on an interface"
            command_tables="arg2"
            render_command_cb="arg3" >
            <PARAM help="IP address" name="ipaddr1" optional="false" ptype="IP_ADDR">
-               <PARAM help="Configure the VRF in which the server resides" name="vrf-name" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+               <PARAM help="Configures the VRF in which the server resides" name="vrf-name" optional="true" mode="subcommand" ptype="SUBCOMMAND">
                    <PARAM help="Vrf name" name="vrfName" optional="false" ptype="STRING_32"/>
                </PARAM>
                <PARAM help="IP address" name="ipaddr2" optional="true" ptype="IP_ADDR">
@@ -36,7 +36,7 @@ limitations under the License.
            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${vrfName} ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
-                   Configure DHCPv4 relay on an interface.
+                   Configures DHCPv4 relay on an interface.
                </DESCRIPTION>
                <USAGE>
                    Use this command to configure a DHCPv4 relay on an interface.
@@ -49,13 +49,13 @@ limitations under the License.
        </COMMAND>
        <COMMAND
            name="ip dhcp-relay source-interface"
-           help="Configure DHCP relay source interface"
+           help="Configures DHCP relay source interface"
            command_tables="arg2" >
            <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32" dbpath="arg4/dhcp_relay_src_intf">  </PARAM>
            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
-                   Configure the source IP address to be used for relaying the DHCP packets.
+                   Configures the source IP address to be used for relaying the DHCP packets.
                </DESCRIPTION>
                <USAGE>
                    Use this command to configure the source-interface.
@@ -68,7 +68,7 @@ limitations under the License.
        </COMMAND>
        <COMMAND
            name="ip dhcp-relay link-select"
-           help="Enable link selection suboption" 
+           help="Enables link selection suboption" 
            command_tables="arg2"
            dbpath="arg4/dhcp_relay_link_select=enable" >
            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
@@ -93,7 +93,7 @@ limitations under the License.
               <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${hop-count} ${__full_line}</ACTION>
               <DOCGEN>
                <DESCRIPTION>
-                   Configure the maximum hop count for the DHCP packet.
+                   Configures the maximum hop count for the DHCP packet.
                </DESCRIPTION>
                <USAGE>
                    Use this command to configure the maximum hop count for the DHCP packet.
@@ -106,7 +106,7 @@ limitations under the License.
           </COMMAND>
           <COMMAND
               name="ip dhcp-relay vrf-select"
-              help="Enable VRF selection suboption"
+              help="Enables VRF selection suboption"
               command_tables="arg2"
               dbpath="arg4/dhcp_relay_vrf_select=enable" >
              <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
@@ -125,7 +125,7 @@ limitations under the License.
            </COMMAND>
            <COMMAND
                name="ip dhcp-relay policy-action"
-               help="Configure the policy for handling of DHCPv4 relay options"
+               help="Configures the policy for handling of DHCPv4 relay options"
                command_tables="arg2" >
                 <PARAM help="Policy action [discard|append|replace]" name="policyAction" optional="false" ptype="STRING_8" dbpath="arg4/dhcp_relay_policy_action">  </PARAM>
                 <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${policy-action} ${__full_line}</ACTION>
@@ -147,7 +147,7 @@ limitations under the License.
    <MACRODEF name="DHCPV6-RELAY-CONFIG-OPTIONS">
        <COMMAND
            name="ipv6 dhcp-relay"
-           help="Configure DHCP relay on an interface"
+           help="Configures DHCP relay on an interface"
            command_tables="arg2"
            render_command_cb="arg3" >
            <PARAM help="IP address" name="ipaddr1" optional="false" ptype="IPV6_ADDR">
@@ -176,7 +176,7 @@ limitations under the License.
        </COMMAND>
        <COMMAND
            name="ipv6 dhcp-relay source-interface"
-           help="Configure DHCPv6 relay source interface"
+           help="Configures DHCPv6 relay source interface"
            command_tables="arg2" >
            
            <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32" dbpath="arg4/dhcpv6_relay_src_intf">  </PARAM>
@@ -215,7 +215,7 @@ limitations under the License.
        </COMMAND>
        <COMMAND
            name="ipv6 dhcp-relay vrf-select"
-           help="Enable VRF selection suboption"
+           help="Enables VRF selection suboption"
            command_tables="arg2"
            dbpath="arg4/dhcpv6_relay_vrf_select=enable" >
            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
@@ -237,7 +237,7 @@ limitations under the License.
    <MACRODEF name="DHCP-RELAY-NO-CONFIG-OPTIONS">
        <COMMAND
            name="no ip dhcp-relay"
-           help="Unconfigure DHCP relay on an interface" >
+           help="Unconfigures DHCP relay on an interface" >
            <PARAM  help="IP address"  name="ipaddr1" optional = "true" ptype="IP_ADDR" >
                 <PARAM  help="IP address"  name="ipaddr2"  optional = "true"  ptype="IP_ADDR" >
                 <PARAM  help="IP address"  name="ipaddr3"  optional = "true"  ptype="IP_ADDR" >
@@ -263,7 +263,7 @@ limitations under the License.
 
       <COMMAND
            name="no ip dhcp-relay source-interface"
-           help="Unconfigure DHCP relay source interface" >
+           help="Unconfigures DHCP relay source interface" >
            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -280,7 +280,7 @@ limitations under the License.
        </COMMAND>
        <COMMAND
            name="no ip dhcp-relay link-select"
-           help="Disable  link selection suboption" >
+           help="Disables link selection suboption" >
            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -314,7 +314,7 @@ limitations under the License.
        </COMMAND>
        <COMMAND
            name="no ip dhcp-relay vrf-select"
-           help="Disable VRF selection suboption" >
+           help="Disables VRF selection suboption" >
            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -351,7 +351,7 @@ limitations under the License.
     <MACRODEF name="DHCPV6-RELAY-NO-CONFIG-OPTIONS">
        <COMMAND
            name="no ipv6 dhcp-relay"
-           help="Unconfigure DHCPv6 relay on an interface" >
+           help="Unconfigures DHCPv6 relay on an interface" >
            <PARAM  help="IP address"  name="ipaddr1" optional = "true" ptype="IPV6_ADDR" >
            <PARAM  help="IP address"  name="ipaddr2"  optional = "true"  ptype="IPV6_ADDR" >
            <PARAM  help="IP address"  name="ipaddr3"  optional = "true"  ptype="IPV6_ADDR" >
@@ -376,7 +376,7 @@ limitations under the License.
        </COMMAND>
        <COMMAND
           name="no ipv6 dhcp-relay source-interface"
-          help="Unconfigure DHCPv6 relay source interface" >
+          help="Unconfigures DHCPv6 relay source interface" >
            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -410,7 +410,7 @@ limitations under the License.
          </COMMAND>
          <COMMAND
              name="no ipv6 dhcp-relay vrf-select"
-             help="Disable VRF selection suboption" >
+             help="Disables VRF selection suboption" >
             <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -429,8 +429,8 @@ limitations under the License.
 
     <MACRODEF name="DHCP-RELAY-SHOW-OPTIONS">
        <PARAM   help="Show IP DHCP relay information" name="relay-cmd"  mode="switch"  ptype="SUBCOMMAND"  optional="false">
-           <PARAM help="Show IP DHCP relay information" name="brief" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
-           <PARAM help="Show IP DHCP relay information" name="detailed" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+           <PARAM help="Show IP DHCP relay information in brief" name="brief" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
+           <PARAM help="Show IP DHCP relay information in detail" name="detailed" optional="true" mode="subcommand" ptype="SUBCOMMAND">
                <PARAM help="Interface Name" optional="true" name="ifName1"  ptype="STRING_32"/>
            </PARAM>
            <PARAM help="Show IP DHCP relay statistics" name="statistics" optional="true" mode="subcommand" ptype="SUBCOMMAND">

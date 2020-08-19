@@ -359,6 +359,54 @@ limitations under the License.
      </COMMAND>
 
      <COMMAND
+         name="source-interface Vlan"
+         help="Set source interface"
+         >
+
+         <PARAM
+            name="vlan-id"
+            help="Vlan Interface"
+            ptype="VLAN_ID"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_if_vlan ${sla-id} ${vlan-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="source-interface PortChannel"
+         help="Set source interface"
+         >
+
+         <PARAM
+           name="po-id"
+           help="PortChannel Interface"
+           ptype="LAG_ID"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_if_po ${sla-id} ${po-id}
+         </ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="source-interface Ethernet"
+         help="Set source interface"
+         >
+
+         <PARAM
+            name="iface_num"
+            help="Physical Interface"
+            ptype="UINT"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_if_eth ${sla-id} ${iface_num}
+         </ACTION>
+     </COMMAND>     
+
+     <COMMAND
          name="no request-data-size"
          help="ICMP probe data size"
          >
@@ -554,6 +602,54 @@ limitations under the License.
 
           <ACTION builtin="clish_pyobj">
               sonic_cli_ipsla patch_tcp_src_if ${sla-id} ${intf}
+          </ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="source-interface Vlan"
+          help="Set source interface"
+          >
+
+          <PARAM
+             name="vlan-id"
+             help="Vlan Interface"
+             ptype="VLAN_ID"
+              />
+
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla patch_tcp_src_if_vlan ${sla-id} ${vlan-id}
+          </ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="source-interface PortChannel"
+          help="Set source interface"
+          >
+
+          <PARAM
+            name="po-id"
+            help="PortChannel Interface"
+            ptype="LAG_ID"
+              />
+
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla patch_tcp_src_if_po ${sla-id} ${po-id}
+          </ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="source-interface Ethernet"
+          help="Set source interface"
+          >
+
+          <PARAM
+             name="iface_num"
+             help="Physical Interface"
+             ptype="UINT"
+              />
+
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla patch_tcp_src_if_eth ${sla-id} ${iface_num}
           </ACTION>
       </COMMAND>
 

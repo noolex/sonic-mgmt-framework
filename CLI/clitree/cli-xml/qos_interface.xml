@@ -636,6 +636,10 @@ limitations under the License.
                         python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_summary  ${phy-intf-name}  show_qos_interface_summary.j2&#xA;
                     elif test "${phy-intf-name}" = "Ethernetall"; then&#xA;
                         python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_summary  ${phy-intf-name}  show_qos_interface_summary.j2&#xA;
+                    elif test "${phy-intf-name}" = "EthAll"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_summary  ${phy-intf-name}  show_qos_interface_summary.j2&#xA;
+                    elif test "${phy-intf-name}" = "Ethall"; then&#xA;
+                        python $SONIC_CLI_ROOT/sonic_cli_qos_pfc.py  show_port_pfc_summary  ${phy-intf-name}  show_qos_interface_summary.j2&#xA;
                     else&#xA;
                         python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config ${phy-intf-name} &#xA;
                         python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${phy-intf-name} &#xA;

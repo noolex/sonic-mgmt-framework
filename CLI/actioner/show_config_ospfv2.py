@@ -89,6 +89,9 @@ def show_router_ospf_config(render_tables):
 
         cmd_str += ospf_generate_command(tbl_rec, 'router-id', ' ospf router-id')
 
+        match_value = { 'CISCO' : 'cisco', 'IBM' : 'ibm', 'SHORTCUT': 'shortcut', 'STANDARD' : 'standard' }
+        cmd_str += ospf_generate_command(tbl_rec, 'abr-type', ' ospf abr-type', match_value=match_value)
+
         cmd_str += ospf_generate_command(tbl_rec, 'auto-cost-reference-bandwidth', ' auto-cost reference-bandwidth')
 
         match_value = { True : '' }
@@ -139,7 +142,11 @@ def show_router_ospf_config(render_tables):
         cmd_str += ospf_generate_command(tbl_rec, 'lsa-min-arrival-timer', ' timers lsa min-arrival')
 
         cmd_str += ospf_generate_command(tbl_rec, 'write-multiplier', ' write-multiplier')
-    
+
+    status, sub_cmd_str = show_router_ospf_distribute_route_config(render_tables)
+    if status == 'CB_SUCCESS' :
+        cmd_str += sub_cmd_str
+
     ospf_debug_print("show_router_ospf_config: cmd_str {}".format(cmd_str))
     return 'CB_SUCCESS', cmd_str
 
@@ -169,7 +176,7 @@ def show_router_ospf_passive_interface_config(render_tables):
 
     if not isinstance(tbl_rec_list, list) :
         tbl_rec_list = [ tbl_rec_list ]
-    
+
     for tbl_rec in tbl_rec_list :
         vrf_p, _, vrf_v = ospf_get_key_value(tbl_rec, 'vrf_name')
         if vrf_p == False :
@@ -179,15 +186,15 @@ def show_router_ospf_passive_interface_config(render_tables):
         if vrf_v != vrf_name :
             ospf_debug_print("show_router_ospf_passive_interface_config: vrf names {} != {}".format(vrf_v, vrf_name))
             continue
-  
+
         intf_p, _, intf_v = ospf_get_key_value(tbl_rec, 'name')
         addr_p, _, addr_v = ospf_get_key_value(tbl_rec, 'address')
-   
+
         if intf_p :
            cmd_str += 'passive-interface {}'.format(intf_v)
            if addr_p and addr_v != '' and addr_v != '0.0.0.0' :
-               cmd_str += ' {}'.format(addr_v)  
-           cmd_str += cmd_end 
+               cmd_str += ' {}'.format(addr_v)
+           cmd_str += cmd_end
 
 
     ospf_debug_print("show_router_ospf_passive_interface_config: cmd_str {}".format(cmd_str))
@@ -251,19 +258,19 @@ def show_router_ospf_area_config(render_tables):
             cmd_str += ospf_generate_command(tbl_rec, 'stub', cmd_area_prefix, match_value=match_value)
 
         cmd_prefix = cmd_area_prefix + ' default-cost'
-        cmd_str += ospf_generate_command(tbl_rec, 'stub-default-cost', cmd_prefix)   
+        cmd_str += ospf_generate_command(tbl_rec, 'stub-default-cost', cmd_prefix)
 
         cmd_prefix = cmd_area_prefix + ' filter-list prefix'
         cmd_suffix = 'in' + cmd_end
-        cmd_str += ospf_generate_command(tbl_rec, 'filter-list-in', cmd_prefix, cmd_suffix=cmd_suffix)  
+        cmd_str += ospf_generate_command(tbl_rec, 'filter-list-in', cmd_prefix, cmd_suffix=cmd_suffix)
 
         cmd_prefix = cmd_area_prefix + ' filter-list prefix'
         cmd_suffix = 'out' + cmd_end
-        cmd_str += ospf_generate_command(tbl_rec, 'filter-list-out', cmd_prefix, cmd_suffix=cmd_suffix)           
-        
+        cmd_str += ospf_generate_command(tbl_rec, 'filter-list-out', cmd_prefix, cmd_suffix=cmd_suffix)
+
         cmd_prefix = cmd_area_prefix + ' shortcut'
         match_value = { 'ENABLE' : 'enable', 'DISABLE' : 'disable', 'DEFAULT' : 'default'}
-        cmd_str += ospf_generate_command(tbl_rec, 'shortcut', cmd_prefix, match_value=match_value) 
+        cmd_str += ospf_generate_command(tbl_rec, 'shortcut', cmd_prefix, match_value=match_value)
 
 
     status, sub_cmd_str = show_router_ospf_area_vlink_config(render_tables)
@@ -271,10 +278,6 @@ def show_router_ospf_area_config(render_tables):
         cmd_str += sub_cmd_str
 
     status, sub_cmd_str = show_router_ospf_area_addr_range_config(render_tables)
-    if status == 'CB_SUCCESS' :
-        cmd_str += sub_cmd_str
-
-    status, sub_cmd_str = show_router_ospf_distribute_route_config(render_tables)
     if status == 'CB_SUCCESS' :
         cmd_str += sub_cmd_str
 
@@ -324,9 +327,9 @@ def show_router_ospf_area_network_config(render_tables):
 
         prefix_p, _, prefix_v = ospf_get_key_value(tbl_rec, 'prefix')
         if prefix_p :
-            cmd_str += 'network {} area {}'.format(prefix_v, area_v) 
+            cmd_str += 'network {} area {}'.format(prefix_v, area_v)
             cmd_str += cmd_end
- 
+
     ospf_debug_print("show_router_ospf_area_network_config: cmd_str {}".format(cmd_str))
     return 'CB_SUCCESS', cmd_str
 
@@ -375,25 +378,27 @@ def show_router_ospf_area_vlink_config(render_tables):
         rmtid_p, _, rmtid_v = ospf_get_key_value(tbl_rec, 'remote-router-id')
         if rmtid_p == False :
             continue
-       
+
         sub_cmd_p = False
         cmd_vlink_str = 'area {} virtual-link {}'.format(area_v, rmtid_v)
-        temp_cmd = '' 
+        temp_cmd = ''
 
-        auth_p, _, auth_v = ospf_get_key_value(tbl_rec, 'authentication-type') 
+        ospf_debug_print("show_router_ospf_area_vlink_config: {}".format(cmd_vlink_str))
+
+        auth_p, _, auth_v = ospf_get_key_value(tbl_rec, 'authentication-type')
         if auth_p :
-            if auth_v == 'TEXT' :
+            if auth_v == 'TEXT' or auth_v == '' :
                 akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-key')
                 if akey_p :
-                    temp_cmd = cmd_vlink_str + ' authentication-key'
+                    temp_cmd = cmd_vlink_str + ' authentication-key {}'.format(akey_v)
                     temp_cmd += ' {}'.format(akey_v)
-            elif auth_v == 'MD5HMAC' :  
+            elif auth_v == 'MD5HMAC' :
                 akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-md5-key')
                 akeyid_p, _, akeyid_v = ospf_get_key_value(tbl_rec, 'authentication-key-id')
                 if akey_p and akeyid_p :
                     temp_cmd = cmd_vlink_str + ' authentication message-digest'
                     temp_cmd += ' message-digest-key {} md5 {}'.format(akeyid_v, akey_v)
-            elif auth_v == 'NONE' :                 
+            elif auth_v == 'NONE' :
                 temp_cmd = cmd_vlink_str + ' authentication null'
 
             if temp_cmd != '' :
@@ -402,29 +407,29 @@ def show_router_ospf_area_vlink_config(render_tables):
         else :
             akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-key')
             if akey_p :
-                temp_cmd = cmd_vlink_str + ' authentication-key'
-                temp_cmd += ' {}'.format(akey_v) + cmd_end
+                temp_cmd = cmd_vlink_str + ' authentication-key {}'.format(akey_v)
+                cmd_str += temp_cmd + cmd_end
                 sub_cmd_p = True
 
-        tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'dead-interval') 
+        tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'dead-interval')
         if tmr_p :
             cmd_str += cmd_vlink_str + ' dead-interval {}'.format(tmr_v) + cmd_end
-            sub_cmd_p = True       
-        
-        tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'hello-interval') 
+            sub_cmd_p = True
+
+        tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'hello-interval')
         if tmr_p :
             cmd_str += cmd_vlink_str + ' hello-interval {}'.format(tmr_v) + cmd_end
-            sub_cmd_p = True 
+            sub_cmd_p = True
 
-        tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'retransmission-interval') 
+        tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'retransmission-interval')
         if tmr_p :
             cmd_str += cmd_vlink_str + ' retransmit-interval {}'.format(tmr_v) + cmd_end
-            sub_cmd_p = True 
+            sub_cmd_p = True
 
-        tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'transmit-delay') 
+        tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'transmit-delay')
         if tmr_p :
             cmd_str += cmd_vlink_str + ' transmit-delay {}'.format(tmr_v) + cmd_end
-            sub_cmd_p = True 
+            sub_cmd_p = True
 
         if sub_cmd_p == False :
             cmd_str += cmd_vlink_str + cmd_end
@@ -490,24 +495,24 @@ def show_router_ospf_area_addr_range_config(render_tables):
             subt_p, _, subt_v = ospf_get_key_value(tbl_rec, 'substitue-prefix')
 
             if advt_p and advt_v == True:
-                temp_cmd = cmd_range_str + ' advertise' 
+                temp_cmd = cmd_range_str + ' advertise'
                 if cost_p :
-                    temp_cmd += ' cost {}'.format(cost_v) 
+                    temp_cmd += ' cost {}'.format(cost_v)
                 cmd_str += temp_cmd + cmd_end
                 sub_cmd_p = True
-           
+
             if cost_p and sub_cmd_p == False :
-                temp_cmd = cmd_range_str + ' cost {}'.format(cost_v) 
+                temp_cmd = cmd_range_str + ' cost {}'.format(cost_v)
                 cmd_str += temp_cmd + cmd_end
                 sub_cmd_p = True
-       
+
             if subt_p :
-                temp_cmd = cmd_range_str + ' substitute {}'.format(subt_v) 
+                temp_cmd = cmd_range_str + ' substitute {}'.format(subt_v)
                 cmd_str += temp_cmd + cmd_end
                 sub_cmd_p = True
 
         if sub_cmd_p == False :
-             cmd_str += cmd_range_str + cmd_end        
+             cmd_str += cmd_range_str + cmd_end
 
     ospf_debug_print("show_router_ospf_area_addr_range_config: cmd_str {}".format(cmd_str))
     return 'CB_SUCCESS', cmd_str
@@ -536,9 +541,9 @@ def show_router_ospf_distribute_route_config(render_tables):
 
     ospf_debug_print("show_router_ospf_distribute_route_config: DISTRIBUTE_ROUTE {}".format(tbl_rec_list))
 
-    protocol_map = { 'BGP' : ['redistribute', 'bgp'], 
-                     'KERNEL': ['redistribute', 'kernel'], 
-                     'STATIC' : ['redistribute', 'static'], 
+    protocol_map = { 'BGP' : ['redistribute', 'bgp'],
+                     'KERNEL': ['redistribute', 'kernel'],
+                     'STATIC' : ['redistribute', 'static'],
                      'DIRECTLY_CONNECTED' : ['redistribute', 'connected'] ,
                      'DEFAULT_ROUTE' : ['default-information originate', ''] }
 
@@ -567,7 +572,7 @@ def show_router_ospf_distribute_route_config(render_tables):
         direction_p, _, direction_v = ospf_get_key_value(tbl_rec, 'direction')
         if direction_p == False :
             continue
-     
+
         if direction_v == 'IMPORT' :
             temp_cmd = '{}'.format(protocol_map[protocol_v][0])
             if protocol_map[protocol_v][1] != '' :
@@ -582,7 +587,7 @@ def show_router_ospf_distribute_route_config(render_tables):
             if metric_p :
                 temp_cmd += ' metric {}'.format(metric_v)
 
-            mtype_p, _, mtype_v = ospf_get_key_value(tbl_rec, 'metric-type')       
+            mtype_p, _, mtype_v = ospf_get_key_value(tbl_rec, 'metric-type')
             if mtype_p and mtype_v in metric_type_map.keys() :
                 temp_cmd += ' metric-type {}'.format(metric_type_map[mtype_v])
 
@@ -590,7 +595,7 @@ def show_router_ospf_distribute_route_config(render_tables):
             if rmap_p :
                 temp_cmd += ' route-map {}'.format(rmap_v)
 
-            cmd_str += temp_cmd + cmd_end        
+            cmd_str += ' ' + temp_cmd + cmd_end
 
     ospf_debug_print("show_router_ospf_distribute_route_config: cmd_str {}".format(cmd_str))
     return 'CB_SUCCESS', cmd_str
@@ -651,7 +656,7 @@ def show_interface_ip_ospf_config(render_tables):
         cmd_str += ospf_generate_command(tbl_rec, 'authentication-type', cmd_prefix, match_value=match_value, cmd_suffix=cmd_suffix)
 
         cmd_prefix = 'ip ospf authentication-key'
-        cmd_str += ospf_generate_command(tbl_rec, 'authentication-key', cmd_prefix, cmd_suffix=cmd_suffix)    
+        cmd_str += ospf_generate_command(tbl_rec, 'authentication-key', cmd_prefix, cmd_suffix=cmd_suffix)
 
         if addr_v == '0.0.0.0' :
             cmd_prefix = 'ip ospf'

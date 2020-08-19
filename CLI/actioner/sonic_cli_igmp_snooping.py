@@ -49,108 +49,138 @@ def invoke(func, args):
                         return aa.get(keypath)                    
 
     elif func == 'patch_igmp_snooping_interfaces_interface_config' : 
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}',
+        #keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}',
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping',
                 vlanid=args[0])
         
         body=collections.defaultdict(dict)
         
         if len(args) == 1 :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "enabled": True
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                       "interfaces": {
+                           "interface": [
+                            {
+                              "name": args[0],
+                              "config" : {
+                              "enabled": True
+                              }
+                            } 
+                            ]
                         }
-                      }
-                    ]
-                   }
+                   }}
             
         elif args[1] == 'querier' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "querier": True,
-                        "enabled": True
+            body = { "openconfig-network-instance-deviation:igmp-snooping": { 
+                       "interfaces": {
+                         "interface": [
+                         {
+                            "name": args[0],
+                            "config" : {
+                            "querier": True,
+                            "enabled": True
+                            }
                         }
-                      }
-                    ]
-                   }
+                        ]
+                   }}}
             
         elif args[1] == 'fast-leave' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "fast-leave": True,
-                        "enabled": True
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                            {
+                                "name": args[0],
+                                "config" : {
+                                "fast-leave": True,
+                                "enabled": True
+                                }
+                            }
+                            ]
+                            }
                         }
-                      }
-                    ]
                    }
             
         elif args[1] == 'version' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "version": int(args[2]),
-                        "enabled": True
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                            {
+                                "name": args[0],
+                                "config" : {
+                                    "version": int(args[2]),
+                                    "enabled": True
+                                    }
+                                }
+                            ]
+                            }
                         }
-                      }
-                    ]
                    }
             
         elif args[1] == 'query-interval' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "query-interval": int(args[2]),
-                        "enabled": True
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                                {
+                                    "name": args[0],
+                                    "config" : {
+                                        "query-interval": int(args[2]),
+                                        "enabled": True
+                                        }
+                                    }
+                                ]
+                            }
                         }
-                      }
-                    ]
                    }
             
         elif args[1] == 'last-member-query-interval' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "last-member-query-interval": int(args[2]),
-                        "enabled": True
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                                {
+                                    "name": args[0],
+                                    "config" : {
+                                        "last-member-query-interval": int(args[2]),
+                                        "enabled": True
+                                        }
+                                    }
+                                ]
+                            }
                         }
-                      }
-                    ]
                    }
             
         elif args[1] == 'query-max-response-time' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "query-max-response-time": int(args[2]),
-                        "enabled": True
+            body = { "openconfig-network-instance-deviation:igmp-snooping": { 
+                        "interfaces": {
+                            "interface": [
+                                {
+                                    "name": args[0],
+                                    "config" : {
+                                        "query-max-response-time": int(args[2]),
+                                        "enabled": True
+                                        }
+                                    }
+                                ]
+                            }
                         }
-                      }
-                    ]
                    }
             
         elif args[1] == 'mrouter' :
-            body = { "interface": [                    
-                      { 
-                        "name": args[0],   
-                        "config" : {
-                        "mrouter-interface": [(args[3])],
-                        "enabled": True
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                                {
+                                    "name": args[0],
+                                    "config" : {
+                                        "mrouter-interface": [(args[3])],
+                                        "enabled": True
+                                        }
+                                    }
+                                ]
+                            }
                         }
-                      }
-                    ]
                    }
-                        
+
         elif args[1] == 'static-group' :
-            body = {"interface":[{"config":{"enabled":True,"name":args[0]},"name":args[0],"staticgrps":{"static-multicast-group":[{"config":{"outgoing-interface":[args[4]]},"group":args[2],"source-addr":"0.0.0.0"}]}}]}
+            body = {"openconfig-network-instance-deviation:igmp-snooping":{"interfaces":{"interface":[{"config":{"enabled":True,"name":args[0]},"name":args[0],"staticgrps":{"static-multicast-group":[{"config":{"outgoing-interface":[args[4]]},"group":args[2],"source-addr":"0.0.0.0"}]}}]}}}
         else:    
             print("%Error: Invalid command")
             exit(1)

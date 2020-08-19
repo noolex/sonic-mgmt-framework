@@ -105,7 +105,7 @@ class ApiClient(object):
         resp = self.request("GET", path, query=q)
         if ignore404 and resp.status_code == 404:
             resp.status_code = 200
-            resp.content = {}
+            resp.content = None
         return resp
 
     def head(self, path, depth=None):
