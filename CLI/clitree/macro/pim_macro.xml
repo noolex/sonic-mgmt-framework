@@ -18,10 +18,12 @@ limitations under the License.
 <ROOT>
     <MACRODEF name="BIND-INTF-TO-PIM">
         <COMMAND
+			hidden="true"
             name="ip pim"
             help="Add PIM configurations on interface">
         </COMMAND>
         <COMMAND
+			hidden="true"
             name="no ip pim"
             help="Remove PIM configurations from interface">
         </COMMAND>

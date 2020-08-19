@@ -24,8 +24,9 @@ limitations under the License.
     <VIEW name="enable-view">
         <!-- show ip pim -->
         <COMMAND
-            help="Show PIM commands"
-            name="show ip pim">
+			hidden="true"
+            name="show ip pim"
+            help="Show PIM commands">
             <PARAM
                 name="vrf"
                 help="Show PIM information of the given VRF"
@@ -154,6 +155,7 @@ limitations under the License.
   <!-- Clear commands -->
   <!-- ============== -->
         <COMMAND
+			hidden="true"
             name="clear ip pim"
             help="Clear PIM protocol information">
             <PARAM
@@ -199,6 +201,7 @@ limitations under the License.
     <!-- ============= -->
     <VIEW name="configure-view">
         <COMMAND
+			hidden="true"
             name="ip pim"
             command_tables="sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST/vrf-name={vrf_name},address-family={address-family}"
             command_keys="address-family=ipv4"
@@ -277,6 +280,7 @@ limitations under the License.
 
         <!-- no ip pim -->
         <COMMAND
+			hidden="true"
             name="no ip pim"
             help="Delete PIM configuration">
             <PARAM

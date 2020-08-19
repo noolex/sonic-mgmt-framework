@@ -24,6 +24,7 @@ limitations under the License.
     <VIEW name="enable-view">
         <!-- show ip mroute -->
         <COMMAND
+			hidden="true"
             name="show ip mroute"
             help="Show IP multicast routes"
             ptype="SUBCOMMAND"
@@ -86,6 +87,7 @@ limitations under the License.
         <!-- Clear commands -->
         <!-- ============== -->
         <COMMAND
+			hidden="true"
             name="clear ip mroute"
             help="Clear IP Multicast routes">
             <PARAM
