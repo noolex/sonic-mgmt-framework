@@ -12,7 +12,7 @@
                  help="Send ICMP ECHO_REQUEST to network hosts"
                  args="ping-option"
                  args_help="Ping options(-h  for help)">
-				 <ACTION builtin="clish_pyobj">sonic_cli_ping ping ${ping-option}</ACTION>
+                <ACTION builtin="clish_pyobj">sonic_cli_ping ping ${ping-option}</ACTION>
         </COMMAND>
 
         <COMMAND name="ping vrf mgmt"
