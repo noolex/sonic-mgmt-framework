@@ -96,7 +96,7 @@ def show(args):
     response = aa.get(keypath)
     gbl_oper_dict = {}
     session_list = 0
-    if response.ok() and 'sonic-mirror-session:sonic-mirror-session' in response.content.keys():
+    if response.ok() and response.content is not None and 'sonic-mirror-session:sonic-mirror-session' in response.content.keys():
         value = response['sonic-mirror-session:sonic-mirror-session']
         if 'MIRROR_SESSION' in value.keys():
             list = value['MIRROR_SESSION']
@@ -108,7 +108,7 @@ def show(args):
         else:
             print("No sessions configured")
             return
-    elif response.ok() and 'sonic-mirror-session:MIRROR_SESSION_LIST' in response.content.keys():
+    elif response.ok() and response.content is not None and 'sonic-mirror-session:MIRROR_SESSION_LIST' in response.content.keys():
         session_list = response['sonic-mirror-session:MIRROR_SESSION_LIST']
     else:
         print("No sessions configured")
@@ -118,14 +118,14 @@ def show(args):
     keypath = cc.Path('/restconf/data/sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION_TABLE')
     response = aa.get(keypath)
     session_status = 0
-    if response.ok() and 'sonic-mirror-session:MIRROR_SESSION_TABLE' in response.content.keys():
+    if response.ok() and response.content is not None and 'sonic-mirror-session:MIRROR_SESSION_TABLE' in response.content.keys():
         value = response['sonic-mirror-session:MIRROR_SESSION_TABLE']
         if 'MIRROR_SESSION_TABLE_LIST' in value.keys():
             session_status = value['MIRROR_SESSION_TABLE_LIST']
         else:
             print("Session state info not found")
             return
-    elif response.ok() and 'sonic-mirror-session:MIRROR_SESSION_TABLE_LIST' in response.content.keys():
+    elif response.ok() and response.content is not None and 'sonic-mirror-session:MIRROR_SESSION_TABLE_LIST' in response.content.keys():
         session_status = response['sonic-mirror-session:MIRROR_SESSION_TABLE_LIST']
     else:
         print("Session state info not found")
