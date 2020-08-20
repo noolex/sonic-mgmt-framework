@@ -27,6 +27,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"runtime/debug"
 	"translib"
 
 	"github.com/golang/glog"
@@ -109,6 +110,7 @@ write_resp:
 		// No data, status only
 		w.WriteHeader(status)
 	}
+	debug.FreeOSMemory()
 }
 
 // getRequestBody returns the validated request body

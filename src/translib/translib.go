@@ -35,6 +35,7 @@ package translib
 
 import (
 	"sync"
+	"runtime/debug"
 	"translib/db"
 	"translib/tlerr"
 	"github.com/Workiva/go-datastructures/queue"
@@ -563,7 +564,7 @@ func Get(req GetRequest) (GetResponse, error) {
 	}
 
 	resp, err = (*app).processGet(dbs)
-
+	debug.FreeOSMemory()
 	return resp, err
 }
 
