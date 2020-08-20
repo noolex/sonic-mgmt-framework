@@ -644,8 +644,6 @@ func hdl_get_bgp_l2vpn_evpn_local_rib (bgpRib_obj *ocbinds.OpenconfigNetworkInst
     }
     bgpRibOutputJson["output"] = output
 
-    log.Info(bgpRibOutputJson)
-
     var ribAfiSafis_obj *ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis
     if ribAfiSafis_obj = bgpRib_obj.AfiSafis ; ribAfiSafis_obj == nil {
         var _ribAfiSafis ocbinds.OpenconfigNetworkInstance_NetworkInstances_NetworkInstance_Protocols_Protocol_Bgp_Rib_AfiSafis
