@@ -77,6 +77,8 @@ def run(func, args):
             path = cc.Path('/restconf/data/openconfig-platform:components/component=%s'%args[0])
             response = aa.get(path)
             if response.ok():
+                if response.content is None:
+                    response.content = OrderedDict()
                 show_cli_output(template, response.content)
             else:
                 print response.error_message()
@@ -92,6 +94,8 @@ def run(func, args):
                     if not hasValidComp:
                         print response.error_message()
                         return
+                    break
+                if response.content == None:
                     break
                 hasValidComp = True
                 if (len(response.content) == 0 or
@@ -110,6 +114,8 @@ def run(func, args):
                         if not hasValidComp:
                             print response.error_message()
                             return
+                        break
+                    if response.content is None:
                         break
                     if (len(response.content) == 0 or
                         not ('openconfig-platform:component' in response.content) or
@@ -130,6 +136,8 @@ def run(func, args):
                     if not hasValidComp:
                         print response.error_message()
                         return
+                    break
+                if response.content is None:
                     break
                 hasValidComp = True
                 if (len(response.content) == 0 or
@@ -154,13 +162,14 @@ def run(func, args):
                 path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT/PORT_LIST')
                 response = aa.get(path)
                 if not response.ok():
-                    print(response.content)
+                    print response.error_message()
                     return
-                try:
-                    for d in response.content['sonic-port:PORT_LIST']:
-                        if_list.append(d['ifname'])
-                except:
-                    return
+                if not response.content is None:
+                    try:
+                        for d in response.content['sonic-port:PORT_LIST']:
+                            if_list.append(d['ifname'])
+                    except:
+                        return
             else:
                 # Singleton
                 if_list.append(if_name)
@@ -171,6 +180,12 @@ def run(func, args):
                     n = nm.replace('/', '%2F')
                 path = cc.Path('/restconf/data/openconfig-platform:components/component=' + n)
                 response = aa.get(path)
+                if not response.ok():
+                    print response.error_message()
+                    return
+                if response.content is None:
+                    xcvrInfo[nm] = {}
+                    continue
                 try:
                     xcvrInfo[nm] = response.content['openconfig-platform:component'][0]
                 except:
@@ -218,6 +233,8 @@ def run(func, args):
                     if not hasValidComp:
                         print response.error_message()
                         return
+                    break
+                if response.content is None:
                     break
                 hasValidComp = True
                 if (len(response.content) == 0 or
