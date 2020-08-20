@@ -25,11 +25,7 @@ import subprocess
 import re
 
 def do_tr_vrf(args, tr_type, vrfName):
-    if len(args) == 0:
-        ptc.print_and_log("The command is not complete.")
-        return
     try:
-        args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
         if tr_type == "traceroute6":
             if vrfName.lower() == 'mgmt':
                 cmd = "sudo cgexec -g l3mdev:" + vrfName + " traceroute -6 " + args
@@ -54,11 +50,7 @@ def do_tr_vrf(args, tr_type, vrfName):
         return
 
 def do_tr(args, tr_type):
-    if len(args) == 0:
-        ptc.print_and_log("The command is not complete.")
-        return
     try:
-        args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
         if tr_type == "traceroute6":
             cmd = "traceroute -6 " + args
         else:
@@ -76,31 +68,42 @@ def do_tr(args, tr_type):
         log.syslog(log.LOG_ERR, str(e))
         return
 
-def validate_input(args, isVrf):
-    if(set(args) & ptc.blocked_chars):
-        ptc.print_and_log("Invalid argument")
-        return False, args
-
+def transform_input(args):
     result = re.search('(-i\s*)(Eth\d+/\d+/*\d*)', args, re.IGNORECASE)
     if (result is not None) and (ptc.is_std_mode()):
         interface = result.group(2)
         alias = ptc.get_alias(interface)
         if alias is None:
-            return False, args
+            return None
+
         args = re.sub('(-i\s*)(Eth\d+/\d+/*\d*)', '\g<1>' + alias, args, re.IGNORECASE)
         print "Using the native name:", alias, "for the interface:", interface
+
+    #remove space betetween Interface Type and Interface ID.
+    args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
+    return args
+
+def validate_input(args, isVrf):
+    if len(args) == 0:
+        ptc.print_and_log("The command is not completed.")
+        return False
+
+    if(set(args) & ptc.blocked_chars):
+        ptc.print_and_log("Invalid argument")
+        return False
 
     if ("fe80:" in args.lower()
         or "ff01:" in args.lower()
         or "ff02:" in args.lower()):
         if isVrf:
             ptc.print_and_log("VRF name does not work with link-local IPv6 addresses")
-            return False, args
+            return False
         result = re.search('(\s*-i\s*)', args)
         if not result:
-			ptc.print_and_log("Interface name is required for link-local IPv6 addresses")
-			return False, args
-    return True, args
+            ptc.print_and_log("Interface name is required for link-local IPv6 addresses")
+            return False
+
+    return True
 
 def run(func, argv):
     isVrf = False
@@ -111,8 +114,12 @@ def run(func, argv):
     else:
         args = " ".join(argv[0:])
 
-    status, args = validate_input(args, isVrf)
-    if status is False:
+    valid = validate_input(args, isVrf)
+    if not valid:
+        return -1
+
+    args = transform_input(args)
+    if not args:
         return -1
 
     if isVrf:
