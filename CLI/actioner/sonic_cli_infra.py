@@ -13,7 +13,7 @@ def stp_mode_get():
     global g_stp_resp
 
     aa = cc.ApiClient()
-    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None)
+    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None, False)
     if not g_stp_resp.ok():
         return 0
 
