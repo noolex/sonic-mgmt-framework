@@ -60,6 +60,7 @@ limitations under the License.
   <xs:attribute name="ptype" type="stringType" use="optional"/>
   <xs:attribute name="view" type="stringType" use="optional"/>
   <xs:attribute name="viewid" type="stringType" use="optional"/>
+  <xs:attribute name="view_names" type="stringType" use="optional"/>
   <xs:attribute name="namespace" type="stringType" use="optional"/>
   <xs:attribute name="access" type="stringType" use="optional"/>
   <xs:attribute name="mode" type="stringType" use="optional"/>
