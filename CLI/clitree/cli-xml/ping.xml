@@ -13,14 +13,13 @@
                  args="ping-option"
                  args_help="Ping options(-h  for help)">
 				 <ACTION builtin="clish_pyobj">sonic_cli_ping ping ${ping-option}</ACTION>
-                <ACTION builtin="clish_pyobj">sonic_cli_ping ping ${ping-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="ping vrf mgmt"
                  help="Ping using management VRF"
                  args="ping-vrf-option"
                  args_help="Ping options(-h  for help)">
-                <ACTION builtin="clish_pyobj">sonic_cli_ping ping vrf mgmt ${ping-vrf-option} </ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_ping ping vrf mgmt ${ping-vrf-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="ping vrf"
@@ -30,7 +29,7 @@
                  <PARAM name="vrf-name"
                         help="Ping using given VRF name"
                         ptype="VRF_NAME"/>
-                <ACTION builtin="clish_pyobj">sonic_cli_ping ping vrf ${vrf-name} ${ping-vrf-option} </ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_ping ping vrf ${vrf-name} ${ping-vrf-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="ping6"
