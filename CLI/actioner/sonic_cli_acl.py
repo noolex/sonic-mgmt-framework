@@ -546,7 +546,7 @@ def handle_unbind_acl_request(args):
 
 def handle_get_acl_details_request(args):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/state/counter-capability')
-    resp = acl_client.get(keypath)
+    resp = acl_client.get(keypath, depth=None, ignore404=False)
     if resp.ok():
         counter_mode = resp.content["openconfig-acl:counter-capability"].split(":")[1]
     else:
@@ -555,22 +555,22 @@ def handle_get_acl_details_request(args):
     if len(args) == 1:
         if counter_mode == "AGGREGATE_ONLY":
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets')
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
         else:
             keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
     elif len(args) == 2:
         if counter_mode == "AGGREGATE_ONLY":
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
         else:
             keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname=args[1])
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
     else:
         if counter_mode != "INTERFACE_ONLY":
             raise SonicAclCLIError("Per interface counter mode not set")
         keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname=args[1])
-        response = acl_client.get(keypath)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
 
     response.counter_mode = counter_mode
     return response
@@ -578,7 +578,7 @@ def handle_get_acl_details_request(args):
 
 def handle_get_all_acl_binding_request(args):
     keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST')
-    return acl_client.get(keypath)
+    return acl_client.get(keypath, depth=None, ignore404=False)
 
 
 def set_acl_remark_request(args):
@@ -988,7 +988,7 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
         log.log_debug("No Cache present")
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}',
                           name=acl_name, acl_type=acl_type)
-        response = acl_client.get(keypath)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
         if response.ok():
             log.log_debug(response.content)
             __convert_oc_acl_set_to_user_fmt(response.content['openconfig-acl:acl-set'][0], output)
@@ -1007,7 +1007,7 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
     if intf_name != "CtrlPlane":
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/{stage}-acl-sets/{stage}-acl-set={setname},{acltype}',
                           id=intf_name, stage=stage.lower(), setname=acl_name, acltype=acl_type)
-        response = acl_client.get(keypath)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
         if not response.ok():
             raise SonicAclCLIError("{}".format(response.error_message()))
 
@@ -1070,7 +1070,7 @@ def __process_acl_counters_request_by_type_and_name(response, args):
     else:
         log.log_debug("ACL {} Type {} has ZERO ports. Show only ACL configuration.".format(acl_data["aclname"], acl_type))
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
-        response = acl_client.get(keypath)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
         if response.ok():
             __handle_get_acl_details_aggregate_mode_response(response.content, args)
         else:
@@ -1102,7 +1102,7 @@ def __process_acl_counters_request_by_type(response, args):
 
             acl_name = acl["aclname"].replace("_" + args[0], "")
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=acl_name, acl_type=args[0])
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
             if response.ok():
                 __handle_get_acl_details_aggregate_mode_response(response.content, [args[0], acl_name])
             else:
