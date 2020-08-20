@@ -215,6 +215,10 @@ def show_qos_intf_pfc_wd(render_tables):
     cmds = []
     ifkey = ''
 
+    # skip if render_tables is None
+    if render_tables is None:
+        return 'CB_SUCCESS', ''
+
     if 'name' in render_tables:
         ifkey = render_tables['name']
 
@@ -243,6 +247,10 @@ def show_qos_intf_pfc_wd(render_tables):
 
 def show_qos_pfc_wd(render_tables):
     cmds = []
+
+    # skip if render_tables is None
+    if render_tables is None:
+        return 'CB_SUCCESS', ''
 
     pfc_wd_list = None
     if 'sonic-qos-pfc:sonic-qos-pfc/PFC_WD' in render_tables:
