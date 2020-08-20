@@ -964,6 +964,15 @@ def run(func, args):
                         tup = interfaces['interface']
                         value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: [ifutils.name_to_int_val(item[0])])
 
+            elif func == 'delete_phy_if_ip' or func == 'delete_mgmt_if_ip' or func == 'delete_vlan_if_ip' or func == 'delete_po_if_ip' or func == 'delete_lo_if_ip':
+                if 'sonic-interface:output' in api_response:
+                    value = api_response['sonic-interface:output']
+                    if value["status"] != 0:
+                        if value["status-detail"] != '':
+                            print("%Error: {}".format(value["status-detail"]))
+                        else:
+                            print("%Error: Internal error.")
+
             if api_response is None:
                 print("Failed")
                 return 1
