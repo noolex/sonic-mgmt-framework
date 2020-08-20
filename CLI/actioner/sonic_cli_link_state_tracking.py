@@ -199,7 +199,7 @@ def show_link_state_tracking_group_info(args):
         uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST={grp_name}', grp_name=args[0])
     else:
         uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST')
-    return lst_client.get(uri, None, False)
+    return lst_client.get(uri, depth=None, ignore404=False)
 
 
 def generic_set_response_handler(response, args):
@@ -329,7 +329,7 @@ def show_running_lst_group(render_tables):
 
     aa = cc.ApiClient()
     if 'group' in render_tables:
-        response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={group}', group=render_tables['group']), None, False)
+        response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={group}', group=render_tables['group']), depth=None, ignore404=False)
         if response.ok():
             status = 'CB_SUCCESS'
             if bool(response.content):
@@ -337,7 +337,7 @@ def show_running_lst_group(render_tables):
                 __show_running_config_group(output, group)
 
     else:
-        response = lst_client.get('/restconf/data/openconfig-lst-ext:lst/lst-groups', None, False)
+        response = lst_client.get('/restconf/data/openconfig-lst-ext:lst/lst-groups', depth=None, ignore404=False)
         if response.ok():
             status = 'CB_SUCCESS'
             if bool(response.content):
@@ -366,7 +366,7 @@ def show_running_lst_interface(render_tables):
     status = 'CB_FAIL'
     output = []
     aa = cc.ApiClient()
-    response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}', id=render_tables['name']), None, False)
+    response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}', id=render_tables['name']), depth=None, ignore404=False)
     if response.ok():
         status = 'CB_SUCCESS'
         data = response.content['openconfig-lst-ext:interface'][0]

@@ -102,7 +102,7 @@ def create_classifier(args):
 def delete_classifier(args):
     # try to delete fbs entry first by checking if fbs object exists, else delete copp entry
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={classifier_name}', classifier_name=args[0])
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, depth=None, ignore404=False)
     if response.ok():
         keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={classifier_name}', classifier_name=args[0])
         return fbs_client.delete(keypath)
@@ -362,7 +362,7 @@ def __convert_tcp_flags(flags):
 def __update_tcp_flags(classifier, flags, delete=False):
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/tcp-flags',
                       class_name=classifier)
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath,None,False)
     data = None
     if response.ok() and bool(response.content):
         data = response.content
@@ -420,7 +420,7 @@ def create_flow_copp(args):
     # inputs: <policy_name> <class_name> [priority]
     keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}',
                       copp_name=args[1])
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, None,False)
     if response.ok() and bool(response.content):
         if len(args) == 3:
             content = response.content
@@ -595,7 +595,7 @@ def clear_policer_action(args):
     if len(args) == 2:
         return fbs_client.delete(keypath)
 
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, depth=None, ignore404=False)
     if response.ok():
         data = response.content
         if len(args) == 2:
@@ -782,7 +782,7 @@ def show_policy_summary(args):
     else:
         keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST')
 
-    return fbs_client.get(keypath)
+    return fbs_client.get(keypath, depth=None, ignore404=False)
 
 
 def show_policy(args):
@@ -875,7 +875,7 @@ def get_copp_trap_id(name):
     trap_id_val = ""
     tmp_keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
                           copp_name=name)
-    tmp_response = fbs_client.get(tmp_keypath)
+    tmp_response = fbs_client.get(tmp_keypath, depth=None, ignore404=False)
     if tmp_response is None:
         trap_id_val = ""
 
@@ -1081,7 +1081,7 @@ def clear_copp_policer_action(args):
     keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
                       copp_name=args[0])
 
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, depth=None, ignore404=False)
     if response.ok():
         data = response.content
         if len(args) == 1:
@@ -1179,13 +1179,13 @@ def clear_copp_trap_priority_action(args):
 def show_copp_protocols(args):
     if args[0] == "actions":
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group')
-        return fbs_client.get(keypath)
+        return fbs_client.get(keypath, depth=None, ignore404=False)
     elif args[0] == "classifiers":
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
-        return fbs_client.get(keypath)
+        return fbs_client.get(keypath, depth=None, ignore404=False)
     elif args[0] == "policy":
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
-        return fbs_client.get(keypath)
+        return fbs_client.get(keypath, depth=None, ignore404=False)
     keypath = cc.Path('/restconf/operations/sonic-copp:get-match-protocols')
     return fbs_client.post(keypath, {})
 
@@ -1427,7 +1427,7 @@ def handle_show_copp_protocols_response(response, args, op_str):
                         if "config" in entry and "trap-group" in entry["config"]:
                             keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
                                               copp_name=entry["config"]["trap-group"])
-                            resp2 = fbs_client.get(keypath)
+                            resp2 = fbs_client.get(keypath, depth=None, ignore404=False)
                             if resp2.ok():
                                 content2 = resp2.content
                                 if "openconfig-copp-ext:copp-group" in content2:
