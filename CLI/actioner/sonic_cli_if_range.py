@@ -500,6 +500,7 @@ def run(func, args):
             if len(fail_list) != 0:
                 print("%Error: Failed to restore the following interfaces to their default configuration:\n" + "\n".join(fail_list))
                 return 1
+            print("%Info: Configuring only existing interfaces in range")
             return 0
         else:
             response = invoke_api(func, args)
