@@ -22,7 +22,6 @@ import ping_tr_common as ptc
 import urllib3
 urllib3.disable_warnings()
 import subprocess
-import re
 
 def do_tr_vrf(args, tr_type, vrfName):
     try:
@@ -37,7 +36,6 @@ def do_tr_vrf(args, tr_type, vrfName):
             else:
                 cmd = "traceroute -i " + vrfName + " " + args
 
-        cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
         subprocess.call(cmdList, shell=False)
 
@@ -56,7 +54,6 @@ def do_tr(args, tr_type):
         else:
             cmd = "traceroute " + args
 
-        cmd = re.sub('-i\s*Management', '-i eth', cmd)
         cmdList = cmd.split(' ')
         subprocess.call(cmdList, shell=False)
 
@@ -68,43 +65,6 @@ def do_tr(args, tr_type):
         log.syslog(log.LOG_ERR, str(e))
         return
 
-def transform_input(args):
-    result = re.search('(-i\s*)(Eth\d+/\d+/*\d*)', args, re.IGNORECASE)
-    if (result is not None) and (ptc.is_std_mode()):
-        interface = result.group(2)
-        alias = ptc.get_alias(interface)
-        if alias is None:
-            return None
-
-        args = re.sub('(-i\s*)(Eth\d+/\d+/*\d*)', '\g<1>' + alias, args, re.IGNORECASE)
-        print "Using the native name:", alias, "for the interface:", interface
-
-    #remove space betetween Interface Type and Interface ID.
-    args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
-    return args
-
-def validate_input(args, isVrf):
-    if len(args) == 0:
-        ptc.print_and_log("The command is not completed.")
-        return False
-
-    if(set(args) & ptc.blocked_chars):
-        ptc.print_and_log("Invalid argument")
-        return False
-
-    if ("fe80:" in args.lower()
-        or "ff01:" in args.lower()
-        or "ff02:" in args.lower()):
-        if isVrf:
-            ptc.print_and_log("VRF name does not work with link-local IPv6 addresses")
-            return False
-        result = re.search('(\s*-i\s*)', args)
-        if not result:
-            ptc.print_and_log("Interface name is required for link-local IPv6 addresses")
-            return False
-
-    return True
-
 def run(func, argv):
     isVrf = False
 
@@ -114,11 +74,11 @@ def run(func, argv):
     else:
         args = " ".join(argv[0:])
 
-    valid = validate_input(args, isVrf)
+    valid = ptc.validate_input(args, isVrf, func)
     if not valid:
         return -1
 
-    args = transform_input(args)
+    args = ptc.transform_input(args, func)
     if not args:
         return -1
 
