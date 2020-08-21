@@ -26,7 +26,7 @@ aa = cc.ApiClient()
 
 def generic_set_response_handler(response, args):
     if not response.ok():
-	print(response.error_message())
+        print(response.error_message())
 
 
 def generic_delete_response_handler(response, args):

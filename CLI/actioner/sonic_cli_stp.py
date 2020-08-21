@@ -58,7 +58,7 @@ def generic_set_response_handler(response, args):
             #print("%Error: {}".format(str(resp_content)))
     #else:
     if not response.ok():
-	print(response.error_message())
+        print(response.error_message())
 
 
 def generic_delete_response_handler(response, args):
@@ -67,7 +67,7 @@ def generic_delete_response_handler(response, args):
         if resp_content is not None:
             print("%Error: {}".format(str(resp_content)))
     elif response.status_code != '404':
-	print(response.error_message())
+        print(response.error_message())
 
 
 def generic_show_response_handler(output_data, args):
@@ -901,7 +901,6 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
         cmd += '\n no spanning-tree portfast'
 
     cmd_prfx = '\n spanning-tree '
-    cfg = intf_dict
 
     if 'bpdu-filter' in intf_dict.keys():
         if intf_dict["bpdu-filter"] == True:
@@ -945,7 +944,9 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
             if 'interfaces' in vlan_dict.keys():
                 if 'interface' in vlan_dict['interfaces']:
                     vport_list = vlan_dict['interfaces']['interface']
-                    for vport_dict in vport_list and 'config' in vport_dict.keys():
+                    for vport_dict in vport_list:
+                        if 'config' not in vport_dict.keys():
+                            continue
                         if vport_dict['name'] == intf_dict['name']:
                             if 'cost' in vport_dict['config'].keys():
                                 cmd += cmd_prfx + 'vlan ' + str(vlan_dict['vlan-id']) + ' cost ' + str(vport_dict['config']['cost'])
