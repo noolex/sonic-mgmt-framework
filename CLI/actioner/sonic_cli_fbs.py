@@ -23,7 +23,7 @@ import cli_client as cc
 from scripts.render_cli import show_cli_output
 import traceback
 import cli_log as log
-from sonic_cli_acl import pcp_map, proto_number_map, dscp_map, ethertype_map
+from sonic_cli_acl import pcp_map, proto_number_map, dscp_map, ethertype_map, acl_natsort_intf_prio
 from natsort import natsorted
 import sonic_cli_acl
 import ipaddress
@@ -1229,19 +1229,6 @@ def handle_generic_delete_response(response, args, op_str):
         return 0
 
 
-def __natsort_intf_prio(ifname):
-    if ifname[0].startswith('Ethernet'):
-        prio = 10000 + int(ifname[0].replace('Ethernet', ''), 0)
-    elif ifname[0].startswith('PortChannel'):
-        prio = 20000 + int(ifname[0].replace('PortChannel', ''), 0)
-    elif ifname[0].startswith('Vlan'):
-        prio = 30000 + int(ifname[0].replace('Vlan', ''), 0)
-    else:
-        prio = 40000
-
-    return prio
-
-
 def handle_show_policy_summary_response(response, args, op_str):
     if response.ok():
         filter_type = ['qos', 'monitoring', 'forwarding']
@@ -1276,7 +1263,7 @@ def handle_show_policy_summary_response(response, args, op_str):
             if len(if_data):
                 render_data[binding['INTERFACE_NAME']] = if_data
 
-        sorted_data = OrderedDict(natsorted(render_data.items(), key=__natsort_intf_prio))
+        sorted_data = OrderedDict(natsorted(render_data.items(), key=acl_natsort_intf_prio))
         log.log_debug(str(sorted_data))
         show_cli_output('show_service_policy_summary.j2', sorted_data)
     else:
@@ -1360,7 +1347,7 @@ def handle_show_service_policy_details_response(response, args, op_str):
                 output_dict[entry["INTERFACE_NAME"]] = entry
 
             # sort by intf name
-            sorted_intfs = natsorted(output_dict.keys(), key=__natsort_intf_prio)
+            sorted_intfs = natsorted(output_dict.keys(), key=acl_natsort_intf_prio)
             for intf_name in sorted_intfs:
                 intf_data = output_dict[intf_name]
                 render_data[intf_name] = OrderedDict()

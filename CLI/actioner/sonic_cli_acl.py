@@ -22,6 +22,7 @@ import collections
 from collections import OrderedDict
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+from natsort import natsorted
 import ipaddress
 import traceback
 import json
@@ -98,6 +99,21 @@ class SonicAclCLIError(RuntimeError):
 class SonicACLCLIStopNoError(RuntimeError):
     """Indicates that CLI processing should be stopped. No error will be displayed to user"""
     pass
+
+
+def acl_natsort_intf_prio(ifname):
+    if ifname[0].startswith('Ethernet'):
+        prio = 10000 + int(ifname[0].replace('Ethernet', ''), 0)
+    elif ifname[0].startswith('PortChannel'):
+        prio = 20000 + int(ifname[0].replace('PortChannel', ''), 0)
+    elif ifname[0].startswith('Vlan'):
+        prio = 30000 + int(ifname[0].replace('Vlan', ''), 0)
+    elif ifname == "Switch":
+        prio = 40000
+    else:
+        prio = 50000
+
+    return prio
 
 
 def handle_create_acl_request(args):
@@ -663,6 +679,7 @@ def handle_generic_set_response(response, args):
 
             return -1
         except Exception as e:
+            log.log_error(str(e))
             print(response.error_message())
 
     return 0
@@ -980,7 +997,7 @@ def __deep_copy(dst, src):
     return dst
 
 
-def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, stage, cache=dict()):
+def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, stage, cache):
     log.log_debug('ACL:{} Type:{} Intf:{} Stage:{}'.format(acl_name, acl_type, intf_name, stage))
     acl_name = acl_name.replace("_" + acl_type, "")
     output = OrderedDict()
@@ -1042,7 +1059,7 @@ def __process_acl_counters_request_by_name_and_inf(response, args):
     ports = acl_data.get("ports", [])
     intf_name = args[2] if len(args) == 3 else "".join(args[3:])
     if intf_name in ports:
-        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], intf_name, stage)
+        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], intf_name, stage, None)
     else:
         raise SonicAclCLIError("ACL {} not applied to {}".format(args[1], intf_name))
 
@@ -1136,8 +1153,13 @@ def handle_get_acl_details_response(response, args):
 
 
 def handle_get_all_acl_binding_response(response, args):
-    render_data = OrderedDict()
+    acl_typemap = {'L2': 'MAC', 'L3': 'IP', 'L3V6': 'IPV6'}
     log.log_debug(json.dumps(response.content, indent=4))
+    render_data = OrderedDict()
+    filter_acl_type = None
+    if len(args) == 1:
+        filter_acl_type = __convert_oc_acl_type_to_sonic_fmt(args[0])
+
     if response.ok():
         resp_content = response.content
         if bool(resp_content):
@@ -1147,29 +1169,20 @@ def handle_get_all_acl_binding_response(response, args):
                 else:
                     if_bind_list = render_data[intf_data["intfname"]]
 
-                if "L2" in intf_data.keys():
-                    aclname = intf_data["L2"]
-                    if aclname.endswith("ACL_L2"):
-                        aclname = aclname[:-7]
-                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "MAC", aclname]))
+                for acl_type in acl_typemap.keys():
+                    if filter_acl_type is not None and filter_acl_type != acl_type:
+                        continue
+                    if acl_type in intf_data.keys():
+                        aclname = intf_data[acl_type]
+                        if_bind_list.append(tuple([intf_data["stage"].capitalize(), acl_typemap[acl_type], aclname]))
 
-                if "L3" in intf_data.keys():
-                    aclname = intf_data["L3"]
-                    if aclname.endswith("ACL_IPV4"):
-                        aclname = aclname[:-9]
-                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "IP", aclname]))
-
-                if "L3V6" in intf_data.keys():
-                    aclname = intf_data["L3V6"]
-                    if aclname.endswith("ACL_IPV6"):
-                        aclname = aclname[:-9]
-                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "IPV6", aclname]))
-
+                if_bind_list.sort(key=lambda x: (x[0].replace('ress', '').replace('Ing', 'A'), x[1]))
                 render_data[intf_data["intfname"]] = if_bind_list
 
-            # TODO Sort the data in the order Eth->Po->Vlan->Switch
-            log.log_debug(str(render_data))
-            show_cli_output('show_access_group.j2', render_data)
+            # Sort the data in the order Eth->Po->Vlan->Switch
+            sorted_data = OrderedDict(natsorted(render_data.items(), key=acl_natsort_intf_prio))
+            log.log_debug(str(sorted_data))
+            show_cli_output('show_access_group.j2', sorted_data)
     else:
         if response.status_code != 404:
             print(response.error_message())
@@ -1215,10 +1228,12 @@ response_handlers = {
 }
 
 
-def run(op_str, args):
+def run(op_str, args=None):
     try:
         log.log_debug(str(args))
         correct_args = list()
+        if args is None:
+            args = list()
         for arg in args:
             if arg == "|" or arg == "\\|":
                 break
