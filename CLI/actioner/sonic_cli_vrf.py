@@ -37,6 +37,8 @@ def isMgmtVrfEnabled():
 
         response = api.get(request)
         response = response.content
+        if response is None:
+            return False
         response = response.get('openconfig-network-instance:enabled')
         if response is None:
             return False
