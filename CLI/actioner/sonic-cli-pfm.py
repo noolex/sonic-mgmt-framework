@@ -94,7 +94,7 @@ def run(func, args):
                         return
                     break
                 hasValidComp = True
-                if (len(response.content) == 0 or
+                if (response.content is None or len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
                     len(response.content['openconfig-platform:component'][0]) < 2 or
@@ -111,7 +111,7 @@ def run(func, args):
                             print response.error_message()
                             return
                         break
-                    if (len(response.content) == 0 or
+                    if (response.content is None or len(response.content) == 0 or
                         not ('openconfig-platform:component' in response.content) or
                         len(response.content['openconfig-platform:component']) == 0 or
                         len(response.content['openconfig-platform:component'][0]) < 2 or
@@ -132,7 +132,7 @@ def run(func, args):
                         return
                     break
                 hasValidComp = True
-                if (len(response.content) == 0 or
+                if (response.content is None or len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
                     len(response.content['openconfig-platform:component'][0]) < 2 or
@@ -220,7 +220,7 @@ def run(func, args):
                         return
                     break
                 hasValidComp = True
-                if (len(response.content) == 0 or
+                if (response.content is None or len(response.content) == 0 or
                     not ('openconfig-platform:component' in response.content) or
                     len(response.content['openconfig-platform:component']) == 0 or
                     not ('state' in response.content['openconfig-platform:component'][0])):
