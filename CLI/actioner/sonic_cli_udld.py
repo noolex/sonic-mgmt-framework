@@ -18,9 +18,7 @@
 ###########################################################################
 
 import sys
-import json
 import collections
-import re
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
