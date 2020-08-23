@@ -5,7 +5,9 @@
 {% set intf_info_list = json_output['interface'] %}
 {% for intf_info in intf_info_list %}
   {% set intfName = intf_info['interface-id'] %}
+  {% if 'output' in intf_info %}
   {% set output = intf_info['output'] %}
+  {% if 'queues' in output %}
   {% set queues = output['queues'] %}
   {% set queue_info_list = queues['queue'] %}
   {% for queue_info in queue_info_list %}
@@ -30,5 +32,7 @@
     {% set droppedBytes = q_stats_info['openconfig-qos-ext:dropped-octets'] %}
 {{'%-12s'|format(intfName)}}{{'%-5s'|format(queue_name)}}{{'%-22s'|format(packets)}}{{'%-22s'|format(bytes)}}{{'%-22s'|format(pps)}}{{'%-22s'|format(bps)}}{{'%-22s'|format(droppedPackets)}}{{'%-22s'|format(droppedBytes)}}
   {% endfor %}
+  {% endif %}
+  {% endif %}
 {% endfor %}
 {% endif %}

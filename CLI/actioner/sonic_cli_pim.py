@@ -262,9 +262,13 @@ def show_response(response):
 
 def show_intf_info(response):
     outputList = []
+    outputList2 = []
     intfState = ""
     intfsContainer = None
     intfList = None
+
+    if not response:
+        return
 
     if inputDict.get('port') is not None:
         intfList = response.get('openconfig-network-instance:interface')
@@ -325,18 +329,26 @@ def show_intf_info(response):
                     }
         outputList.append(intfEntry)
 
-    if inputDict.get('vrf') is None:
-        print "PIM Interface information for VRF: default"
-    else:
-        print "PIM Interface information for VRF:", inputDict.get('vrf')
+    if len(outputList) > 0:
+        vrfName = inputDict.get('vrf')
+        if vrfName is None:
+            vrfName = 'default'
 
-    show_cli_output("show_pim.j2", outputList)
+        outputList2.append('show_interface')
+        outputList2.append(vrfName)
+        outputList2.append(outputList)
+
+        show_cli_output("show_pim.j2", outputList2)
 
 def show_topology_src_info(response):
     outputList = []
+    outputList2 = []
     oilList2 = None
     srcList2 = None
     ipList = None
+
+    if not response:
+        return
 
     grpAddr = inputDict.get('grpAddr')
     try:
@@ -421,24 +433,29 @@ def show_topology_src_info(response):
         outputList.append(srcEntry)
 
         if len(outputList) > 0:
-            if inputDict.get('vrf') is None:
-                print "PIM Multicast Routing Table for VRF: default"
-            else:
-                print "PIM Multicast Routing Table for VRF:", inputDict.get('vrf')
-            print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
-            print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
-            print "K - Ack-Pending state\n"
+            vrfName = inputDict.get('vrf')
+            if vrfName is None:
+                vrfName = 'default'
 
-            show_cli_output("show_pim.j2", outputList)
+            outputList2.append('show_topo')
+            outputList2.append(vrfName)
+            outputList2.append(outputList)
+
+            show_cli_output("show_pim.j2", outputList2)
+
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
 
 def show_topology_info(response):
     outputList = []
+    outputList2 = []
     oilList2 = None
     srcList2 = None
     ipList = None
+
+    if not response:
+        return
 
     try:
         if inputDict.get('grpAddr') is not None:
@@ -550,43 +567,59 @@ def show_topology_info(response):
                 outputList.append(srcEntry)
 
         if len(outputList) > 0:
-            if inputDict.get('vrf') is None:
-                print "PIM Multicast Routing Table for VRF: default"
-            else:
-                print "PIM Multicast Routing Table for VRF:", inputDict.get('vrf')
-            print "Flags: S - Sparse, C - Connected, L - Local, P - Pruned,"
-            print "R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,"
-            print "K - Ack-Pending state\n"
+            vrfName = inputDict.get('vrf')
+            if vrfName is None:
+                vrfName = 'default'
 
-            show_cli_output("show_pim.j2", outputList)
+            outputList2.append('show_topo')
+            outputList2.append(vrfName)
+            outputList2.append(outputList)
+
+            show_cli_output("show_pim.j2", outputList2)
+
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
 
-def show_ssm_info(response):
+def get_ssm_ranges(response):
+    if not response:
+        return '232.0.0.0/8'
+
     ssmContainer = response.get('openconfig-network-instance:ssm')
-    if ssmContainer is None:
-        return
+    if not ssmContainer:
+        return '232.0.0.0/8'
 
     ssmState = ssmContainer.get('state')
-    if ssmState is None:
-        return
+    if not ssmState:
+        return '232.0.0.0/8'
 
     ssmRanges = ssmState.get('ssm-ranges')
-    if inputDict.get('vrf') is None:
-        print "PIM SSM information for VRF: default"
+    if not ssmRanges:
+        return '232.0.0.0/8'
     else:
-        print "PIM SSM information for VRF:", inputDict.get('vrf')
-    if ssmRanges is None or ssmRanges == "":
-       print "SSM group range : 232.0.0.0/8"
-    else:
-       print "SSM group range : ", ssmRanges
+        return ssmRanges
 
-    print ""
+def show_ssm_info(response):
+    outputList = []
+    ssmRanges = get_ssm_ranges(response)
+
+    vrfName = inputDict.get('vrf')
+    if vrfName is None:
+        vrfName = 'default'
+
+    outputList.append('show_ssm')
+    outputList.append(vrfName)
+    outputList.append(ssmRanges)
+
+    show_cli_output("show_pim.j2", outputList)
 
 def show_rpf_info(response):
     outputList = []
+    outputList2 = []
     rpfList = None
+
+    if not response:
+        return
 
     outputContainer = response.get('sonic-pim-show:output')
     if outputContainer is None:
@@ -611,18 +644,26 @@ def show_rpf_info(response):
                 outputList.append(rpfSubEntry)
 
     if len(outputList) > 0:
-        if inputDict.get('vrf') is None:
-            print "PIM RPF information for VRF: default"
-        else:
-            print "PIM RPF information for VRF:", inputDict.get('vrf')
-        show_cli_output("show_pim.j2", outputList)
+        vrfName = inputDict.get('vrf')
+        if vrfName is None:
+            vrfName = 'default'
+
+        outputList2.append('show_rpf')
+        outputList2.append(vrfName)
+        outputList2.append(outputList)
+
+        show_cli_output("show_pim.j2", outputList2)
 
 def show_nbr_info(response):
     outputList = []
+    outputList2 = []
     intfsContainer = None
     intfList = None
 
     givenNbr = inputDict.get('nbrAddr')
+
+    if not response:
+        return
 
     intfsContainer = response.get('openconfig-network-instance:interfaces')
     if intfsContainer is None:
@@ -684,20 +725,32 @@ def show_nbr_info(response):
                         }
             outputList.append(nbrEntry)
 
-    if inputDict.get('vrf') is None:
-        print "PIM Neighbor information for VRF: default"
-    else:
-        print "PIM Neighbor information for VRF:", inputDict.get('vrf')
-    show_cli_output("show_pim.j2", outputList)
+    if len(outputList) > 0:
+        vrfName = inputDict.get('vrf')
+        if vrfName is None:
+            vrfName = 'default'
+
+        outputList2.append('show_neighbor')
+        outputList2.append(vrfName)
+        outputList2.append(outputList)
+
+        show_cli_output("show_pim.j2", outputList2)
 
 def get_vrf_list():
     # Use SONIC model to get all configued VRF names and set the keys in the dictionary
     vrfList =  []
     keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
     response = apiClient.get(keypath)
+
+    if not response:
+        return None
+
     if response.ok():
         response = response.content
     else:
+        return None
+
+    if not response:
         return None
 
     if 'sonic-vrf:VRF_LIST' in response:
@@ -761,6 +814,7 @@ def handle_show_all(func, args):
     if vrfList is None:
         return
 
+    vrfCount = len(vrfList)
     vrfList.sort(key=string.lower)
     for vrf in vrfList:
         if vrf == "mgmt":
@@ -820,16 +874,17 @@ def run(func, args):
     status = 0
     count = process_args(args)
     if (count == 0):
-            return -1
+        return -1
 
     if func.startswith("patch"):
-      status =  handle_patch(func, args)
+        status =  handle_patch(func, args)
     elif func.startswith("del"):
-      status = handle_del(func, args)
+        status = handle_del(func, args)
     elif func.startswith("show"):
-      status = handle_show(func, args)
+        status = handle_show(func, args)
     elif func.startswith("clear"):
-      status = handle_clear(func, args)
+        status = handle_clear(func, args)
+
     inputDict = {}
     return status
 

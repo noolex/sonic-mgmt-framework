@@ -44,25 +44,24 @@ limitations under the License.
       <ACTION> if test "${lo-id}" != ""; then echo -n "Loopback${lo-id}"; fi</ACTION>
     </VAR>
     <VAR name="ethiflist" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${iface_range_num}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${iface_range_num}</ACTION>
     </VAR>
     <VAR name="ethiflist_nativeNum" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${phy-if-ethernet-name}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${phy-if-ethernet-name}</ACTION>
     </VAR>
     <VAR name="ethiflist_aliasNum" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${phy-if-eth-name}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${phy-if-eth-name}</ACTION>
     </VAR>
-
     <VAR name="vlaniflist" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${vlan_range_num}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${vlan_range_num}</ACTION>
     </VAR>
     <VAR name="poiflist" dynamic="true">
-    <!-- po_range_num is of format PortChannel<range> -->
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${po_range_num}</ACTION>
+      <!-- po_range_num is of format PortChannel<range> -->
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${po_range_num}</ACTION>
     </VAR>
     <VAR name="po-id-list" dynamic="true">
-    <!-- po-name is po-id prefixed with PortChannel -->
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${po-name}</ACTION>
+      <!-- po-name is po-id prefixed with PortChannel -->
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${po-name}</ACTION>
     </VAR>
     <VAR name="iflist_from_range" dynamic="true">
     <!-- Expanding given vlan/portchannel range into list of individual interfaces -->
@@ -438,7 +437,7 @@ limitations under the License.
         >
         <PARAM
                 name="phy-if-name"
-                help="Enter Physical interface global configuration"
+                help="Enter Physical interface configuration"
                 ptype="PHY_INTERFACE"
                 view="configure-if-view"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/ifname"
@@ -446,7 +445,7 @@ limitations under the License.
         />
         <PARAM
                 name="vlan-if-name"
-                help="Enter VLAN global configuration"
+                help="Enter VLAN interface configuration"
                 ptype="VLAN_INTERFACE"
                 view="configure-vlan-view"
                 dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name"
@@ -469,7 +468,7 @@ limitations under the License.
          >
          <PARAM
              name="mgmt-if-id"
-             help="Enter Management interface global configuration"
+             help="Enter Management interface configuration"
              ptype="MGMT_INTF_ID"
              >
          </PARAM>
@@ -489,7 +488,7 @@ limitations under the License.
         >
         <PARAM
                 name="lag-id"
-                help="Enter PortChannel interface global configuration"
+                help="Enter PortChannel interface configuration"
                 ptype="LAG_ID"
                 >
         </PARAM>
@@ -549,12 +548,12 @@ limitations under the License.
         view="configure-lo-view"
         viewid="lo_id=lo${lo-id};lo_name=Loopback${lo-id};"
         view_keys="name=*"
-        view_tables="sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST/loIfName={name}"
+        view_tables="sonic-loopback:sonic-loopback/LOOPBACK/LOOPBACK_LIST/name={name}"
         render_command_cb="interface_loopback"
         >
         <PARAM
                 name="lo-id"
-                help="Enter Loopback interface global configuration"
+                help="Enter Loopback interface configuration"
                 ptype="LO_ID"
                 >
         </PARAM>
@@ -814,6 +813,21 @@ limitations under the License.
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/port-speed body={"openconfig-if-ethernet:port-speed": "SPEED_UNKNOWN"}</ACTION>
         </COMMAND>
         <COMMAND
+            name="fec"
+            help="Configure FEC (forward error correction)">
+            <PARAM
+                name="fec"
+                help="FEC configuration of the interface"
+                dbpath="sonic-port:sonic-port/PORT/PORT_LIST/fec"
+                ptype="INTF_FEC" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec ${iface} ${fec}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no fec"
+            help="Set default FEC (forward error correction) configuration">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec ${iface} default</ACTION>
+        </COMMAND>
+        <COMMAND
             name="channel-group"
             render_command_cb="if_channel_group"
             help="Configure PortChannel parameters"
@@ -1002,6 +1016,22 @@ limitations under the License.
             help="Remove Nat Zone on the interface" >
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
         </COMMAND>
+        <COMMAND
+            name="description"
+            escape_chars=""
+            help="Textual description">
+            <PARAM
+                name="desc"
+                help="Textual description of the interface (Max: 240 characters)"
+                dbpath="sonic-loopback:sonic-loopback/LOOPBACK/LOOPBACK_LIST/description"
+                ptype="STRING_240" />
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no description"
+            help="Remove description" >
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
+        </COMMAND>
 </VIEW>
 
 <VIEW
@@ -1040,6 +1070,23 @@ limitations under the License.
             name="no nat-zone"
             help="Remove NAT Zone on a VLAN" >
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="description"
+            escape_chars=""
+            help="Textual description">
+            <PARAM
+                name="desc"
+                help="Textual description of the interface (Max: 240 characters)"
+                dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/description"
+                ptype="STRING_240" />
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no description"
+            help="Remove description" >
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
         </COMMAND>
 
       <COMMAND
@@ -1154,6 +1201,22 @@ limitations under the License.
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-interfaces-ext:nat-zone/config/nat-zone</ACTION>
         </COMMAND>
 
+        <COMMAND
+            name="description"
+            escape_chars=""
+            help="Textual description">
+            <PARAM
+                name="desc"
+                help="Textual description of the interface (Max: 240 characters)"
+                dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/description"
+                ptype="STRING_240" />
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no description"
+            help="Remove description" >
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/config/description body={"openconfig-interfaces:description": ""}</ACTION>
+        </COMMAND>
         <COMMAND
             name="switchport"
             help="Configure switchport parameters"
@@ -1322,18 +1385,6 @@ limitations under the License.
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST=${po_name}/graceful_shutdown_mode body={"sonic-portchannel:graceful_shutdown_mode": "disable"}</ACTION>
     </COMMAND>
 
-    <COMMAND
-        name="description"
-        help="Textual description of the interface (Max: 240 characters)">
-        <PARAM name="desc" help="description of the portchannel" ptype="STRING_240" />
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST=${po_name}/description body={"sonic-portchannel:description": "${desc}"}</ACTION>
-    </COMMAND>
-    <COMMAND
-        name="no description"
-        help="Remove description">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST=${po_name}/description body={"sonic-portchannel:description": ""}</ACTION>
-    </COMMAND>
-
     </VIEW> <!-- End of Configure View for PortChannel-->
 
     <VIEW
@@ -1370,6 +1421,7 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="description"
+            escape_chars=""
             help="Textual description">
             <PARAM
                 name="desc"

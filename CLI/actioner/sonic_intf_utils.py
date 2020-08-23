@@ -18,6 +18,7 @@
 ###########################################################################
 
 import re
+import syslog
 
 def name_to_int_val(ifName):
     val = 0
@@ -41,3 +42,20 @@ def name_to_int_val(ifName):
 
     return val
 
+def isMgmtVrfEnabled(cc):
+    api = cc.ApiClient()
+    try:
+        request = "/restconf/data/openconfig-network-instance:network-instances/network-instance=mgmt/state/enabled/"
+
+        response = api.get(request)
+        response = response.content
+        response = response.get('openconfig-network-instance:enabled')
+        if response is None:
+            return False
+        elif response is False:
+            return False
+        else:
+            return True
+    except Exception as e:
+        syslog.syslog(syslog.LOG_ERR, str(e))
+        return False

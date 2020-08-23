@@ -25,15 +25,15 @@ limitations under the License.
     <!--=======================================================-->
 
 <VIEW name="enable-view">
-  <COMMAND name="show running-configuration bgp" help="show current BGP configurations">
+  <COMMAND name="show running-configuration bgp" help="Display current BGP configurations">
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-      <PARAM name="vrf-name" help="Name of VRF (Max size 15, 'default' or prefixed by Vrf)" ptype="STRING_15"/>
+      <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp view_keys="vrf-name=${vrf-name}"</ACTION>
   </COMMAND>
-  <COMMAND name="show running-configuration bgp neighbor" help="show current BGP neighbor configurations">
+  <COMMAND name="show running-configuration bgp neighbor" help="Display current BGP neighbor configurations">
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="vrf-name" help="Name of VRF (Max size 15, 'default' or prefixed by Vrf)" ptype="STRING_15"/>
+      <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15"/>
          <PARAM name="nbopt" help="neighbor router" mode="switch" ptype="SUBCOMMAND" optional="true">
            <PARAM name="ip" help="Neighbor router" ptype="IPV4V6_ADDR"/>
            <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
@@ -47,10 +47,10 @@ limitations under the License.
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr view_keys="vrf-name=${vrf-name},neighbor=${ip}${Ethernet}${PortChannel}${Vlan}${instance}"</ACTION>
   </COMMAND>
-  <COMMAND name="show running-configuration bgp peer-group" help="show current BGP peer group configurations">
+  <COMMAND name="show running-configuration bgp peer-group" help="Display current BGP peer group configurations">
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="vrf-name" help="Name of VRF (Max size 15, 'default' or prefixed by Vrf)" ptype="STRING_15"/>
-         <PARAM name="peer-group-name" help="peer group name" ptype="STRING" optional="true"/>
+      <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15"/>
+         <PARAM name="peer-group-name" help="Name of peer-group" ptype="STRING_63" optional="true"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template view_keys="vrf-name=${vrf-name},pg=${peer-group-name}"</ACTION>
   </COMMAND>
@@ -500,7 +500,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on ebgp sessions" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/disable_ebgp_connected_rt_check=true">
+  <COMMAND name="disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on EBGP sessions" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/disable_ebgp_connected_rt_check=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_disable_ebgp_connected_route_check ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -647,7 +647,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="default subgroup-pkt-queue-max" help="subgroup-pkt-queue-max">
+  <COMMAND name="default subgroup-pkt-queue-max" help="Subgroup-pkt-queue-max">
        <PARAM name="maxval" help="Configure subgroup packet queue max" ptype="RANGE_20_100" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/default_subgroup_pkt_queue_max"/>
        <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_subgroup_pkt_queue_max ${vrf-name} ${maxval}</ACTION>
     <DOCGEN>
@@ -1039,7 +1039,7 @@ limitations under the License.
          </PARAM>
        </PARAM>
      </PARAM>
-     <PARAM name="limit" help="maximum number of BGP Dynamic Neighbors that can be created" mode="subcommand" ptype="SUBCOMMAND">
+     <PARAM name="limit" help="Maximum number of BGP Dynamic Neighbors that can be created" mode="subcommand" ptype="SUBCOMMAND">
        <PARAM name="lmt-val" help="Limit value" ptype="RANGE_1_5000" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/max_dynamic_neighbors"/>
      </PARAM>
     </PARAM>
@@ -1158,7 +1158,7 @@ limitations under the License.
   <COMMAND name="no deterministic-med" help="Pick the best-MED path among paths advertised from the neighboring AS">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_deterministic_med ${vrf-name}</ACTION>
   </COMMAND>
-  <COMMAND name="no disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on ebgp sessions">
+  <COMMAND name="no disable-ebgp-connected-route-check" help="Disable checking if nexthop is connected on EBGP sessions">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_disable_ebgp_connected_route_check ${vrf-name}</ACTION>
   </COMMAND>
   <COMMAND name="no graceful-shutdown" help="Graceful shutdown parameters">
@@ -1187,7 +1187,7 @@ limitations under the License.
   <COMMAND name="no default shutdown" help="Apply administrative shutdown to newly configured peers">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_shutdown ${vrf-name}</ACTION>
   </COMMAND>
-  <COMMAND name="no default subgroup-pkt-queue-max" help="subgroup-pkt-queue-max">
+  <COMMAND name="no default subgroup-pkt-queue-max" help="Subgroup-pkt-queue-max">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_subgroup_pkt_queue_max ${vrf-name}</ACTION>
   </COMMAND>
   <COMMAND name="no fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down">
@@ -1276,7 +1276,7 @@ limitations under the License.
          </PARAM>
        </PARAM>
      </PARAM>
-     <PARAM name="limit" help="limit for dynamic peers" mode="subcommand" ptype="SUBCOMMAND">
+     <PARAM name="limit" help="Limit for dynamic peers" mode="subcommand" ptype="SUBCOMMAND">
        <PARAM name="lmt-val" help="Limit value" ptype="RANGE_1_5000"/>
      </PARAM>
     </PARAM>
@@ -1658,8 +1658,8 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="local-as" help="Specify a local-as number">
     <PARAM name="asnum" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_asn">
-      <PARAM name="no-prepend" help="Do not prepend local-as to updates from ebgp peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_no_prepend=true">
-        <PARAM name="replace-as" help="Do not prepend local-as to updates from ibgp peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_replace_as=true"/>
+      <PARAM name="no-prepend" help="Do not prepend local-as to updates from EBGP peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_no_prepend=true">
+        <PARAM name="replace-as" help="Do not prepend local-as to updates from IBGP peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/local_as_replace_as=true"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Nbr ${vrf-name} ${nbr-addr} ${__cmd} &#xA; no-prepend:${no-prepend} replace-as:${replace-as} asnum:${asnum}</ACTION>
@@ -2371,8 +2371,8 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="local-as" help="Specify a local-as number">
     <PARAM name="asnum" help="Autonomous system number" ptype="RANGE_1_4294967295" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_asn">
-      <PARAM name="no-prepend" help="Do not prepend local-as to updates from ebgp peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_as_no_prepend=true">
-        <PARAM name="replace-as" help="Do not prepend local-as to updates from ibgp peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_as_replace_as=true"/>
+      <PARAM name="no-prepend" help="Do not prepend local-as to updates from EBGP peers" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_as_no_prepend=true">
+        <PARAM name="replace-as" help="Do not prepend local-as to updates from IBGP peers"  mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/local_as_replace_as=true"/>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:Pgp ${vrf-name} ${template-name} ${__cmd} &#xA; no-prepend:${no-prepend} replace-as:${replace-as} asnum:${asnum}</ACTION>

@@ -44,12 +44,16 @@ def generate_community_standard_body(args):
            match_options = "ALL"
         elif "any" == arg:
            match_options = "ANY"
+        elif "permit" == arg:
+           community_action = "PERMIT"
+        elif "deny" == arg:
+           community_action = "DENY"
         else:
            community_member.append(arg)
 
     body = {"openconfig-bgp-policy:community-sets":{"community-set":[{"community-set-name": args[4],
             "config":{"community-set-name":args[4],"community-member":community_member,
-            "match-set-options":match_options}}]}}
+            "match-set-options":match_options,"openconfig-bgp-policy-ext:action":community_action}}]}}
 
     return body
 
@@ -61,12 +65,16 @@ def generate_community_expanded_body(args):
            match_options = "ALL"
         elif "any" == arg:
            match_options = "ANY"
+        elif "permit" == arg:
+           community_action = "PERMIT"
+        elif "deny" == arg:
+           community_action = "DENY"
         else:
            member = "REGEX:"+arg
            community_member.append(member)
     body = {"openconfig-bgp-policy:community-sets":{"community-set":[{"community-set-name": args[4],
             "config":{"community-set-name":args[4],"community-member":community_member,
-            "match-set-options":match_options}}]}}
+            "match-set-options":match_options,"openconfig-bgp-policy-ext:action":community_action}}]}}
 
     return body
 
@@ -84,10 +92,14 @@ def generate_extcommunity_standard_body(args):
            extcommunity_member.append("route-origin:"+args[i+1])
         elif "rt" == arg:
            extcommunity_member.append("route-target:"+args[i+1])
+        elif "permit" == arg:
+           extcommunity_action = "PERMIT"
+        elif "deny" == arg:
+           extcommunity_action = "DENY"
         i = i + 1
 
     body = {"openconfig-bgp-policy:ext-community-sets":{"ext-community-set":[{"ext-community-set-name": args[4],
-            "config":{"ext-community-set-name":args[4],"ext-community-member":extcommunity_member,"match-set-options": match_options}}]}}
+            "config":{"ext-community-set-name":args[4],"ext-community-member":extcommunity_member,"match-set-options": match_options,"openconfig-bgp-policy-ext:action":extcommunity_action}}]}}
     return body
 
 def generate_extcommunity_expanded_body(args):
@@ -98,11 +110,15 @@ def generate_extcommunity_expanded_body(args):
            match_options = "ALL"
         elif "any" == arg:
            match_options = "ANY"
+        elif "permit" == arg:
+           extcommunity_action = "PERMIT"
+        elif "deny" == arg:
+           extcommunity_action = "DENY"
         else:
            extcommunity_member.append("REGEX:"+arg)
 
     body = {"openconfig-bgp-policy:ext-community-sets":{"ext-community-set":[{"ext-community-set-name": args[4],
-            "config":{"ext-community-set-name":args[4],"ext-community-member":extcommunity_member,"match-set-options": match_options}}]}}
+            "config":{"ext-community-set-name":args[4],"ext-community-member":extcommunity_member,"match-set-options": match_options,"openconfig-bgp-policy-ext:action":extcommunity_action}}]}}
     return body
 
 def generate_community_standard_delete_keypath(args):
@@ -122,6 +138,10 @@ def generate_community_standard_delete_keypath(args):
         elif "no-advertise" == arg:
            community_member += "NO_ADVERTISE"
            community_member += ","
+        elif "permit" == arg:
+           community_action = "PERMIT"
+        elif "deny" == arg:
+           community_action = "DENY"
         else:
            community_member += arg
            community_member += ","
@@ -135,10 +155,15 @@ def generate_community_standard_delete_keypath(args):
 def generate_community_expanded_delete_keypath(args):
     member_exits = 0
     community_member = ''
-    for arg in args[6:]:
+    for arg in args[7:]:
         member_exits = 1
-        community_member += "REGEX:"+arg
-        community_member += ","
+        if "permit" == arg:
+           community_action = "PERMIT"
+        elif "deny" == arg:
+           community_action = "DENY"
+        else:
+           community_member += "REGEX:"+arg
+           community_member += ","
 
     if member_exits:
        community_member = community_member[:-1]
@@ -159,6 +184,10 @@ def generate_extcommunity_standard_delete_keypath(args):
         elif "rt" == arg:
            community_member += "route-target:"+args[i+1]
            community_member += ","
+        elif "permit" == arg:
+           extcommunity_action = "PERMIT"
+        elif "deny" == arg:
+           extcommunity_action = "DENY"
         i = i + 1
     if member_exits:
        community_member = community_member[:-1]
@@ -172,8 +201,13 @@ def generate_extcommunity_expanded_delete_keypath(args):
     community_member = ''
     for arg in args[6:]:
         member_exits = 1
-        community_member += "REGEX:"+arg
-        community_member += ","
+        if "permit" == arg:
+           extcommunity_action = "PERMIT"
+        elif "deny" == arg:
+           extcommunity_action = "DENY"
+        else:
+           community_member += "REGEX:"+arg
+           community_member += ","
 
     if member_exits:
        community_member = community_member[:-1]
@@ -185,10 +219,15 @@ def generate_extcommunity_expanded_delete_keypath(args):
 def generate_aspath_delete_keypath(args):
     paths_exits = 0
     paths = ''
-    for arg in args[1:]:
+    for arg in args[2:]:
         paths_exits = 1
-        paths += arg
-        paths += ","
+        if "permit" == arg:
+           as_action = "PERMIT"
+        elif "deny" == arg:
+           as_action = "DENY"
+        else:
+           paths += arg
+           paths += ","
 
     if paths_exits:
        paths = paths[:-1]
@@ -249,9 +288,14 @@ def invoke(func, args):
 
     # bgp-as-path-list command
     elif func == 'bgp_as_path_list':
+        if args[1] == 'permit':
+             action = "PERMIT"
+        else:
+             action = "DENY"
+
         keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/openconfig-bgp-policy:bgp-defined-sets/as-path-sets')
         body = {"openconfig-bgp-policy:as-path-sets":{"as-path-set":[{"as-path-set-name": args[0],"config":{"as-path-set-name":args[0],
-                "as-path-set-member":[args[1]]}}]}}
+                "as-path-set-member":[args[2]],"openconfig-bgp-policy-ext:action":action}}]}}
         return aa.patch(keypath,body)
 
     # Remove the bgp-as-path-list set.

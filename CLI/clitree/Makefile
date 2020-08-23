@@ -38,7 +38,7 @@ $(cli_done): $(CLI_XML_FILES) $(CLI_XML_MACRO_FILES)
 	cp cli-xml/*.xml ${TGT_DIR}/command-tree
 	cp macro/*.xml ${TGT_DIR}/cli-macro
 	(cd scripts;./klish_platform_features_process.sh ../../clicfg ${TGT_DIR})
-	python scripts/klish_preproc_cmdtree.py ${TGT_DIR}/command-tree ${TGT_DIR}/cli-macro 3
+	python scripts/klish_preproc_cmdtree.py ${TGT_DIR}/command-tree ${TGT_DIR}/cli-macro 6 
 	cp ./../actioner/*.py ${TGT_DIR}/.
 	cp ../renderer/scripts/*.py ${TGT_DIR}/scripts
 	cp -r ../renderer/templates/* ${TGT_DIR}/render-templates
