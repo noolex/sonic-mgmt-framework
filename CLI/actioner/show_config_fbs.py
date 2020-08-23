@@ -2,7 +2,7 @@ import cli_client as cc
 from collections import OrderedDict
 from natsort import natsorted
 import sonic_cli_acl
-from sonic_cli_fbs import ethertype_to_user_fmt, __natsort_intf_prio
+from sonic_cli_fbs import ethertype_to_user_fmt
 
 def show_running_fbs_classifier(render_tables):
     fbs_client = cc.ApiClient()
@@ -240,7 +240,7 @@ def show_running_fbs_service_policy(render_tables):
                         if_data.append(tuple([policy_type, cfg_pdir_map[pdir], binding[key]]))
             if len(if_data):
                 render_data[binding['INTERFACE_NAME']] = if_data
-        sorted_data = OrderedDict(natsorted(render_data.items(), key=__natsort_intf_prio))
+        sorted_data = OrderedDict(natsorted(render_data.items(), key=sonic_cli_acl.acl_natsort_intf_prio))
         for  intf_name in sorted_data:
             if_bind_list = sorted_data[intf_name]
             for bind_entry in if_bind_list:
