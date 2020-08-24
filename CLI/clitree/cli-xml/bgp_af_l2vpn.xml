@@ -855,7 +855,8 @@ limitations under the License.
   <COMMAND name="show bgp l2vpn" help="Layer 2 Virtual Private Network"/>
   <COMMAND name="show bgp l2vpn evpn" help="Ethernet Virtual Private Network"/>
   <COMMAND name="show bgp l2vpn evpn route" help="EVPN Route information">
-    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN</ACTION>
+    <!--ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN</ACTION-->
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
     <DOCGEN>
     <DESCRIPTION>
       This command displays BGP EVPN routes in tabular format.
@@ -935,7 +936,8 @@ limitations under the License.
         </PARAM>
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN rd=${rdvalue} type=${types} mac=${macvalue} ip=${ipvalue}</ACTION>
+    <!--ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN rd=${rdvalue} type=${types} mac=${macvalue} ip=${ipvalue}</ACTION-->
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command displays BGP EVPN routes for a specific RD in detailed format.
@@ -949,7 +951,8 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="show bgp l2vpn evpn route detail" help="Display Detailed Information">
-    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes show_evpn_routes_detail.j2 default L2VPN_EVPN</ACTION>
+    <!--ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes show_evpn_routes_detail.j2 default L2VPN_EVPN</ACTION-->
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
     <DOCGEN>
     <DESCRIPTION>
       This command displays BGP EVPN routes in detail format.
@@ -1022,7 +1025,8 @@ limitations under the License.
     <PARAM name="type" help="EVPN route type subcommands" ptype="SUBCOMMAND" mode="switch">
       <MACRO name="BGP_EVPN_RT_TYPES" arg=""></MACRO>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN type=${type}</ACTION>
+    <!--ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes.j2 default L2VPN_EVPN type=${type}</ACTION-->
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   <DOCGEN>
     <DESCRIPTION>
       This command displays BGP EVPN routes of a specified type
@@ -1039,7 +1043,8 @@ limitations under the License.
     <PARAM name="type" help="EVPN route type subcommands" ptype="SUBCOMMAND" mode="switch">
       <MACRO name="BGP_EVPN_RT_TYPES" arg=""></MACRO>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN type=${type}</ACTION>
+    <!--ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_routes_filter show_evpn_routes_detail.j2 default L2VPN_EVPN type=${type}</ACTION-->
+    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   <DOCGEN>
     <DESCRIPTION>
       This command displays BGP EVPN routes of a specified type in detailed format
