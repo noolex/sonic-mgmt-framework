@@ -58,6 +58,7 @@ Fallback: {{fallback}}, {{fallbackoper}}
 Graceful shutdown: {{gracefulshutdown}}
 
 MTU {{po_intf['mtu']}}
+
 {% if 'speed' in po_intf %}
 {% if po_intf['speed']|int < 1000 %}
 LineSpeed {{ po_intf['speed'] }}MB
@@ -68,10 +69,19 @@ LineSpeed {{ (po_intf['speed']|int / 1000) }}GB
 
 {% endif %}
 
+{% if mode == "Static" %}
+{% if 'portchannel' in json_output and 'sonic-portchannel:LAG_MEMBER_TABLE' in json_output['portchannel'] and 'LAG_MEMBER_TABLE_LIST' in json_output['portchannel']['sonic-portchannel:LAG_MEMBER_TABLE'] %}
+{% for lag_mem in json_output['portchannel']['sonic-portchannel:LAG_MEMBER_TABLE']['LAG_MEMBER_TABLE_LIST'] %}
+{% if lag_mem['name'] == po_intf['lagname'] %}
+Members in this channel: {{ lag_mem['ifname'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endif %}
+
 
 {% endfor %}
 {% endif %}
-
 
 
 {% if json_output['lacp']['openconfig-lacp:interfaces'] and json_output['lacp']['openconfig-lacp:interfaces']['interface']%}
@@ -84,16 +94,6 @@ LineSpeed {{ (po_intf['speed']|int / 1000) }}GB
 {% if 'state' in intf %}
 
 LACP mode {{intf['state']['lacp-mode']}} interval {{intf['state']['interval']}} priority {{intf['state']['system-priority']}} address {{intf['state']['system-id-mac']}}
-
-{% else %}
-
-{% if 'portchannel' in json_output and 'sonic-portchannel:LAG_MEMBER_TABLE' in json_output['portchannel'] and 'LAG_MEMBER_TABLE_LIST' in json_output['portchannel']['sonic-portchannel:LAG_MEMBER_TABLE'] %}
-{% for lag_mem in json_output['portchannel']['sonic-portchannel:LAG_MEMBER_TABLE']['LAG_MEMBER_TABLE_LIST'] %}
-{% if lag_mem['name'] == po_intf['lagname'] %}
-Members in this channel: {{ lag_mem['ifname'] }}
-{% endif %}
-{% endfor %}
-{% endif %}
 
 {% endif %}
 
