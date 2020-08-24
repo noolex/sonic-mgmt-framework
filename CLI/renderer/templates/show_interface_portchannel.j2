@@ -111,6 +111,12 @@ Fallback: {{fallback}}, {{fallbackoper}}
 
 Graceful shutdown: {{gracefulshutdown}}
 
+{% if po_conf_intf['name'] == po_intf['lagname'] and 'description' in po_conf_intf %}
+{% if po_conf_intf['description'] != "" %}
+Description: {{po_conf_intf['description']}}
+{% endif %}
+{% endif %}
+
 MTU {{po_intf['mtu']}}
 {% if 'speed' in po_intf %}
 {% if po_intf['speed']|int < 1000 %}

@@ -25,32 +25,14 @@ use_sonic_db = True
 
 def shortcut_ip_helper_config_data(output):
     del_list = []
-    if "openconfig-interfaces:interfaces" in output:
-        interfaces = output["openconfig-interfaces:interfaces"]
+    if "openconfig-ip-helper:interfaces" in output:
+        interfaces = output["openconfig-ip-helper:interfaces"]
         if "interface" in interfaces:
             interfacelist = interfaces["interface"]
             for i, interface in enumerate(interfacelist):
-                if "subinterfaces" in interface:
-                    subinterfaces = interface["subinterfaces"]
-                    if "subinterface" in subinterfaces:
-                        subinterfacelist = subinterfaces["subinterface"]
-                        if len(subinterfacelist) > 0:
-                            subinterface = subinterfacelist[0]
-                            if "openconfig-if-ip:ipv4" in subinterface:
-                                ipv4 = subinterface["openconfig-if-ip:ipv4"]
-                                if "ip-helper" in ipv4:
-                                    iphelper = ipv4["ip-helper"]
-                                    output[interface["config"]["name"]] = ipv4["ip-helper"]
-                                    if "servers" in iphelper:
-                                        output[interface["config"]["name"]]["openconfig-if-ip:servers"] = iphelper["servers"]
-                                else:
-                                    del_list.append(i)
-                            else:
-                                del_list.append(i)
-                        else:
-                            del_list.append(i)
-                    else:
-                        del_list.append(i)
+                if "servers" in interface:
+                    output[interface["id"]] = {}
+                    output[interface["id"]]["openconfig-ip-helper:servers"] = interface["servers"]
                 else:
                     del_list.append(i)
 
@@ -60,37 +42,17 @@ def shortcut_ip_helper_config_data(output):
 
 def shortcut_ip_helper_counters_data(output):
     del_list = []
-    if "openconfig-interfaces:interfaces" in output:
-        interfaces = output["openconfig-interfaces:interfaces"]
+    if "openconfig-ip-helper:interfaces" in output:
+        interfaces = output["openconfig-ip-helper:interfaces"]
         if "interface" in interfaces:
             interfacelist = interfaces["interface"]
             for i, interface in enumerate(interfacelist):
-                if "subinterfaces" in interface:
-                    subinterfaces = interface["subinterfaces"]
-                    if "subinterface" in subinterfaces:
-                        subinterfacelist = subinterfaces["subinterface"]
-                        if len(subinterfacelist) > 0:
-                            subinterface = subinterfacelist[0]
-                            if "openconfig-if-ip:ipv4" in subinterface:
-                                ipv4 = subinterface["openconfig-if-ip:ipv4"]
-                                if "ip-helper" in ipv4:
-                                    iphelper = ipv4["ip-helper"]
-                                    if "state" in iphelper:
-                                        state = iphelper["state"]
-                                        if "counters" in state:
-                                            counters = state["counters"]
-                                            output[interface["config"]["name"]] = ipv4["ip-helper"]
-                                            output[interface["config"]["name"]]["openconfig-if-ip:counters"] = counters
-                                        else:
-                                            del_list.append(i)
-                                    else:
-                                        del_list.append(i)
-                                else:
-                                    del_list.append(i)
-                            else:
-                                del_list.append(i)
-                        else:
-                            del_list.append(i)
+                if "state" in interface:
+                    state = interface["state"]
+                    if "counters" in state:
+                        counters = state["counters"]
+                        output[interface["id"]] = {}
+                        output[interface["id"]]["openconfig-ip-helper:counters"] = counters
                     else:
                         del_list.append(i)
                 else:
@@ -170,8 +132,7 @@ def invoke_api(func, args=[]):
         return response
     elif func == 'iface_config':
         if len(args) > 0:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={iface}/subinterfaces/subinterface=0'
-                +'/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-helper/servers',
+            keypath = cc.Path('/restconf/data/openconfig-ip-helper:ip-helper/interfaces/interface={iface}/servers',
                     iface=args[0])
             response = api.get(keypath)
             output = response.content
@@ -179,14 +140,13 @@ def invoke_api(func, args=[]):
                 response.content[args[0]] = output
             return response
         else:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces')
+            keypath = cc.Path('/restconf/data/openconfig-ip-helper:ip-helper/interfaces')
             response = api.get(keypath)
             shortcut_ip_helper_config_data(response.content)
             return response
     elif func == 'iface_stats':
         if len(args) > 0:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={iface}/subinterfaces/subinterface=0'
-                +'/openconfig-if-ip:ipv4/openconfig-interfaces-ext:ip-helper/state/counters',
+            keypath = cc.Path('/restconf/data/openconfig-ip-helper:ip-helper/interfaces/interface={iface}/state/counters',
                     iface=args[0])
             response = api.get(keypath)
             output = response.content
@@ -194,7 +154,7 @@ def invoke_api(func, args=[]):
                 response.content[args[0]] = output
             return response
         else:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces')
+            keypath = cc.Path('/restconf/data/openconfig-ip-helper:ip-helper/interfaces')
             response = api.get(keypath)
             shortcut_ip_helper_counters_data(response.content)
             return response

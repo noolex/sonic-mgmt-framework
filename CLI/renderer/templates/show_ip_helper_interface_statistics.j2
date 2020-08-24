@@ -1,7 +1,7 @@
 {% if json_output %}
 {% for key in json_output %}
-{% if 'openconfig-if-ip:counters' in json_output[key] %}
-{% set counter_data = json_output[key]['openconfig-if-ip:counters'] %}
+{% if 'openconfig-ip-helper:counters' in json_output[key] %}
+{% set counter_data = json_output[key]['openconfig-ip-helper:counters'] %}
 {% set received = 0 %}
 {% set relayed = 0 %}
 {% set dropped = 0 %}
