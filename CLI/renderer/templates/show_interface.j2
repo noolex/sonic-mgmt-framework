@@ -12,6 +12,7 @@
 {% set vars = {'mode4': "not-set"} %}
 {% set vars = {'mode6': "not-set"} %}
 {% set vars = {'speed': ""} %}
+{% set vars = {'fec': ""} %}
 {% set vars = {'in_pkts':""} %}
 {% set vars = {'in_octets':""} %}
 {% set vars = {'in_bytes_per_sec': ""} %}
@@ -42,9 +43,12 @@
 {% for key_json in json_output %}
 {% set interface_list = json_output[key_json]["interface"] %}
 {% for interface in interface_list %}
+    {% set vars = {'ip_prim':""} %}
+    {% set ip_sec_list = [] %}
     {% for key in interface %}
       {% if "ethernet" in key %}
         {% if "state" in interface[key] %}
+          {% if vars.update({'fec':interface[key]["state"]["openconfig-if-ethernet-ext2:port-fec"]|replace("openconfig-platform-types:FEC_", "")}) %}{% endif %}
           {% if vars.update({'speed':interface[key]["state"]["port-speed"]|replace("openconfig-if-ethernet:SPEED_", "")}) %}{% endif %}
           {% if "counters" in interface[key]["state"] %}
           {% if vars.update({'in_oversize':interface[key]["state"]["counters"]["in-oversize-frames"]}) %}{% endif %}
@@ -97,13 +101,18 @@
               {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
               {% set ip_all = [] %}
               {% for ip in ip_list %}
-                {% set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() %}
-                {{ ip_all.append(ipfx)|default("", True)}}
+                {%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
+                {%- if "openconfig-interfaces-ext:secondary" in ip["state"] -%}
+                    {%- if vars.update({'secondary':ip["state"]["openconfig-interfaces-ext:secondary"]}) %}{% endif -%}
+                    {%- if vars.secondary == true -%}
+                        {{ ip_sec_list.append(ipfx)|default("", True)}}
+                    {% else %}
+                        {% if vars.update({'ip_prim':ipfx}) %}{% endif %}
+                    {% endif %}
+                {% endif %}
                 {% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
               {% endfor %}
-              {% if vars.update({'ipv4_src_pfx':ip_all|join(',')}) %}{% endif %}
             {% else %}
-	      {% if vars.update({'ipv4_src_pfx':""}) %}{% endif %}
               {% if vars.update({'mode4':"not-set"}) %}{% endif %}
             {% endif %}
             {% if subif["openconfig-if-ip:ipv6"] %}
@@ -112,13 +121,12 @@
                 {% set ip_list = subif["openconfig-if-ip:ipv6"]["addresses"]["address"] %}
                 {% set ipv6_all = [] %}
                 {% for ip in ip_list %}
-                  {% set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() %}
+                  {%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
                   {{ ipv6_all.append(ipfx)|default("", True)}}
                   {% if vars.update({'mode6':"MANUAL"}) %}{% endif %}
                 {% endfor %}
                 {% if vars.update({'ipv6_src_pfx':ipv6_all|join(',')}) %}{% endif %}
               {% else %}
-	        {% if vars.update({'ipv6_src_pfx':""}) %}{% endif %}
                 {% if vars.update({'mode6':"not-set"}) %}{% endif %}
               {% endif %}
               {% if subif["openconfig-if-ip:ipv6"]["state"] %}
@@ -142,9 +150,12 @@ Hardware is Eth
 {% if vars.description %}
 Description: {{ vars.description }}
 {% endif %}
-{% if vars.ipv4_src_pfx %}
-{{ vars.ipv4 }} address is {{ vars.ipv4_src_pfx }}
+{% if vars.ip_prim %}
+{{ vars.ipv4 }} address is {{ vars.ip_prim }}
 {% endif %}
+{% for ip in ip_sec_list  %}
+{{ vars.ipv4 }} secondary address is {{ ip }}
+{% endfor %}
 Mode of {{ vars.ipv4 }} address assignment: {{ vars.mode4 }}
 {% if vars.ipv6_src_pfx %}
 {{ vars.ipv6 }} address is {{ vars.ipv6_src_pfx }}
@@ -155,6 +166,9 @@ Interface IPv6 oper status: {{ vars.ipv6_status }}
 {% endif %}
 IP MTU {{ vars.mtu }} bytes
 LineSpeed {{ vars.speed }}, Auto-negotiation off
+{% if vars.fec != "" %}
+FEC: {{ vars.fec }}
+{% endif %}
 {% if vars.found_counters == True %}
 {{vars.rate_interval}} seconds input rate {{vars.in_pkts_per_sec}} packets/sec, {{vars.in_bits_per_sec}} bits/sec, {{vars.in_bytes_per_sec}} Bytes/sec
 {{vars.rate_interval}} seconds output rate {{vars.out_pkts_per_sec}} packets/sec, {{vars.out_bits_per_sec}} bits/sec, {{vars.out_bytes_per_sec}} Bytes/sec

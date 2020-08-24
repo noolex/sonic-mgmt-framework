@@ -248,11 +248,11 @@ def generate_show_bgp_routes(args):
       else:
          keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=vrf, identifier=IDENTIFIER,name1=NAME1)
          response = api.get(keypath)
-         if(response.ok()):
+         if(response.ok() and response.content is not None):
             d.update(response.content)
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/rib/afi-safis/afi-safi={afi_safi_name}/{type_name}/loc-rib', name=vrf, identifier=IDENTIFIER, name1=NAME1, afi_safi_name=afisafi, type_name=rib_type)
             response1 = api.get(keypath)
-            if(response1.ok()):
+            if(response1.ok() and response1.content is not None):
                if 'openconfig-network-instance:loc-rib' in response1.content:
                   route = response1.content['openconfig-network-instance:loc-rib']['routes']
                   tup = route['route']
@@ -264,11 +264,11 @@ def generate_show_bgp_routes(args):
    elif route_option == "routes":
       keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=vrf, identifier=IDENTIFIER,name1=NAME1)
       response = api.get(keypath)
-      if(response.ok()):
+      if(response.ok() and response.content is not None):
          d.update(response.content)
          keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/rib/afi-safis/afi-safi={afi_safi_name}/{type_name}/neighbors/neighbor={nbr_address}/adj-rib-in-post', name=vrf, identifier=IDENTIFIER, name1=NAME1, afi_safi_name=afisafi, type_name=rib_type, nbr_address = neighbour_ip)
          response1 = api.get(keypath)
-         if(response1.ok()):
+         if(response1.ok() and response1.content is not None):
             if 'openconfig-network-instance:adj-rib-in-post' in response1.content:
                route = response1.content['openconfig-network-instance:adj-rib-in-post']['routes']
                tup = route['route']
@@ -279,26 +279,27 @@ def generate_show_bgp_routes(args):
    elif route_option == "received-routes":
       keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=vrf, identifier=IDENTIFIER,name1=NAME1)
       response = api.get(keypath)
-      d.update(response.content)
-      keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/rib/afi-safis/afi-safi={afi_safi_name}/{type_name}/neighbors/neighbor={nbr_address}/adj-rib-in-pre', name=vrf, identifier=IDENTIFIER, name1=NAME1, afi_safi_name=afisafi, type_name=rib_type, nbr_address = neighbour_ip)
-      response1 = api.get(keypath)
-      if(response1.ok()):
-         if 'openconfig-network-instance:adj-rib-in-pre' in response1.content:
-            route = response1.content['openconfig-network-instance:adj-rib-in-pre']['routes']
-            tup = route['route']
-            route['route'] = sorted(tup, key=getPrefix)
-            response1.content['openconfig-network-instance:adj-rib-in-pre']['routes'] = route
-            d.update(response1.content)
-            show_cli_output("show_ip_bgp_routes.j2", d)
+      if(response.ok() and response.content is not None):
+         d.update(response.content)
+         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/rib/afi-safis/afi-safi={afi_safi_name}/{type_name}/neighbors/neighbor={nbr_address}/adj-rib-in-pre', name=vrf, identifier=IDENTIFIER, name1=NAME1, afi_safi_name=afisafi, type_name=rib_type, nbr_address = neighbour_ip)
+         response1 = api.get(keypath)
+         if(response1.ok() and response1.content is not None):
+            if 'openconfig-network-instance:adj-rib-in-pre' in response1.content:
+               route = response1.content['openconfig-network-instance:adj-rib-in-pre']['routes']
+               tup = route['route']
+               route['route'] = sorted(tup, key=getPrefix)
+               response1.content['openconfig-network-instance:adj-rib-in-pre']['routes'] = route
+               d.update(response1.content)
+               show_cli_output("show_ip_bgp_routes.j2", d)
 
    elif route_option == "advertised-routes":
       keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=vrf, identifier=IDENTIFIER,name1=NAME1)
       response = api.get(keypath)
-      if(response.ok()):
+      if(response.ok() and response.content is not None):
          d.update(response.content)
          keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/rib/afi-safis/afi-safi={afi_safi_name}/{type_name}/neighbors/neighbor={nbr_address}/adj-rib-out-post', name=vrf, identifier=IDENTIFIER, name1=NAME1, afi_safi_name=afisafi, type_name=rib_type, nbr_address = neighbour_ip)
          response1 = api.get(keypath)
-         if(response1.ok()):
+         if(response1.ok() and response1.content is not None):
             if 'openconfig-network-instance:adj-rib-out-post' in response1.content:
                route = response1.content['openconfig-network-instance:adj-rib-out-post']['routes']
                tup = route['route']
@@ -376,7 +377,7 @@ def generate_show_bgp_vrf_all(args):
     # Use SONIC model to get all configued VRF names
     keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
     sonic_vrfs = api.get(keypath)
-    if sonic_vrfs.ok():
+    if sonic_vrfs.ok() and sonic_vrfs.content is not None:
         args[5] = 'default'
         d = generate_show_bgp_routes(args)
         # then show bgp routes on remaining VRF
@@ -421,11 +422,11 @@ def generate_show_bgp_prefix_routes(args):
    d = { 'vrf': vrf }
    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/config', name=vrf, identifier=IDENTIFIER,name1=NAME1)
    response = api.get(keypath)
-   if(response.ok()):
+   if(response.ok() and response.content is not None):
        d.update(response.content)
        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/rib/afi-safis/afi-safi={afi_safi_name}/{type_name}/openconfig-rib-bgp-ext:loc-rib-prefix/routes/route={prefix_name}', name=vrf, identifier=IDENTIFIER, name1=NAME1, afi_safi_name=afisafi, type_name=rib_type, prefix_name=prefix_ip)
        response1 = api.get(keypath)
-       if(response1.ok()):
+       if(response1.ok() and response1.content is not None):
            if 'openconfig-rib-bgp-ext:route' in response1.content:
                if "bestpath" == rfilter:
                    rtList = response1.content['openconfig-rib-bgp-ext:route']
@@ -477,11 +478,11 @@ def generate_show_bgp_peer_groups(args, show_all=False):
    else:
       keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/peer-groups/peer-group={pgname}', name=vrf, identifier=IDENTIFIER,name1=NAME1,pgname=pg)
    response = api.get(keypath)
-   if(response.ok()):
+   if(response.ok() and response.content is not None):
        d.update(response.content)
        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/dynamic-neighbor-prefixes', name=vrf, identifier=IDENTIFIER, name1=NAME1)
        response1 = api.get(keypath)
-       if(response1.ok()):
+       if(response1.ok() and response1.content is not None):
           d.update(response1.content)
           show_cli_output("show_bgp_peer_group.j2", d)
 
@@ -511,7 +512,7 @@ def generate_show_bgp_stats(args):
    d = { 'vrf': vrf }
    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/config', name=vrf, identifier=IDENTIFIER,name1=NAME1)
    response = api.get(keypath)
-   if(response.ok()):
+   if(response.ok() and response.content is not None):
        keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp-statistics')
        body = {"sonic-bgp-show:input": {"vrf-name":vrf, "address-family":afisafi}}
        response = api.post(keypath, body)
@@ -1998,11 +1999,11 @@ def invoke_show_api(func, args=[]):
         d = {}
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
-        if response.ok():
+        if response.ok() and response.content is not None:
             d.update(response.content)
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors', name=args[1], identifier=IDENTIFIER, name1=NAME1)
             response = api.get(keypath)
-            if response.ok():
+            if response.ok() and response.content is not None:
                 if args[2] == 'ipv6':
                     afisafiname = 'openconfig-bgp-types:IPV6_UNICAST'
                 elif args[2] == 'evpn':
@@ -2034,12 +2035,12 @@ def invoke_show_api(func, args=[]):
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
-        if response.ok():
+        if response.ok() and response.content is not None:
             d.update(response.content)
 
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors/neighbor={nbr_addr}', name=args[1], identifier=IDENTIFIER, name1=NAME1, nbr_addr=args[3])
             response = api.get(keypath)
-            if response.ok():
+            if response.ok() and response.content is not None:
                if 'openconfig-network-instance:neighbor' in response.content:
                   tmp['neighbor'] = preprocess_bgp_nbrs(afisafiname, response.content['openconfig-network-instance:neighbor'])
                   d['openconfig-network-instance:neighbors'] = tmp
@@ -2061,11 +2062,11 @@ def invoke_show_api(func, args=[]):
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
-        if response.ok():
+        if response.ok() and response.content is not None:
             d.update(response.content)
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/neighbors', name=args[1], identifier=IDENTIFIER, name1=NAME1)
             response = api.get(keypath)
-            if response.ok():
+            if response.ok() and response.content is not None:
                if 'openconfig-network-instance:neighbors' in response.content:
                    tmp['neighbor'] = preprocess_bgp_nbrs(afisafiname, response.content['openconfig-network-instance:neighbors']['neighbor'])
                    d['openconfig-network-instance:neighbors'] = tmp

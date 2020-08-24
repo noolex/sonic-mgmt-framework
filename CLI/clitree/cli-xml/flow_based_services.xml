@@ -35,7 +35,7 @@ limitations under the License.
         <!-- show policy-map [NAME] | [type qos|monitoring|forwarding] -->
         <COMMAND name="show policy-map" help="Shows policy-map information">
             <PARAM name="show-fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max size 63)" ptype="STRING_63"/>
+                <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max: 63 characters)" ptype="STRING_63"/>
                 <PARAM name="type" help="Shows all policy-maps using the policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-policy-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-policy-name}" = "type"'>
@@ -77,7 +77,7 @@ limitations under the License.
 
         <!-- show service-policy policy NAME [interface NAME] -->
         <COMMAND name="show service-policy policy-map" help="Shows details by policy-map name">
-            <PARAM name="fbs-policy-name" help="Policy-map name (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-policy-name" help="Policy-map name (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="interface-type-options" help="Shows policy-maps applied to interface(s)" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
                 <PARAM name="interface" help="Shows policy-maps applied to interface" mode="subcommand" ptype="SUBCOMMAND">
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
@@ -113,7 +113,7 @@ limitations under the License.
 
         <!-- show running-config-configuration policy -->
         <COMMAND name="show running-configuration policy" help="Shows current policy configuration">
-            <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max size 63)" ptype="STRING_63" optional="true" />
+            <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max: 63 characters)" ptype="STRING_63" optional="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${show-fbs-policy-name}" </ACTION>
         </COMMAND>
 
@@ -122,7 +122,7 @@ limitations under the License.
 
         <!-- clear counters service-policy policy NAME [interface NAME] -->
         <COMMAND name="clear counters service-policy policy-map" help="Clear policy-map binding counters using policy-map name">
-            <PARAM name="fbs-policy-name" help="Policy-map name (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-policy-name" help="Policy-map name (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="interface-type-options" help="Clear counters for policy-maps applied to interface" ptype="SUBCOMMAND" mode="switch"  optional="true" order="true">
                 <PARAM name="interface" help="Clear counters for policy-maps applied to interface" mode="subcommand" ptype="SUBCOMMAND">
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
@@ -180,18 +180,18 @@ limitations under the License.
     <VIEW name="configure-view">
         <COMMAND name="policy-map" help="Configures policy-map" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}"
             data_and_render_cb="fbs_policy_render">
-            <PARAM name="fbs-policy-name" help="Name of the policy-map (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-policy-name" help="Name of the policy-map (Max: 63 characters)" ptype="STRING_63"/>
             <MACRO name="FBS-POLICY-TYPES" arg="false" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_policy_${fbs-policy-type} ${fbs-policy-name} ${fbs-policy-type}</ACTION>
         </COMMAND>
 
         <COMMAND name="no policy-map" help="Delete policy-map">
-            <PARAM name="fbs-policy-name" help="Name of the policy-map (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-policy-name" help="Name of the policy-map (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_policy ${fbs-policy-name}</ACTION>
         </COMMAND>
 
         <COMMAND name="class-map" help="Configures class-map" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}">
-            <PARAM name="fbs-class-name" help="Name of the class-map (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-class-name" help="Name of the class-map (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="match-type" help="Class-map match type" ptype="SUBCOMMAND" mode="subcommand" optional="false">
                 <PARAM name="fbs-class-type" help="Class-map match type" ptype="SUBCOMMAND" mode="switch">
                     <PARAM name="acl" help="Class-map using ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -205,7 +205,7 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="no class-map" help="Delete class-map">
-            <PARAM name="fbs-class-name" help="Name of the class-map (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-class-name" help="Name of the class-map (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_classifier ${fbs-class-name}</ACTION>
         </COMMAND>
 
@@ -213,7 +213,7 @@ limitations under the License.
 
         <COMMAND name="classifier" help="Configures flow based services classifier" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}"
             data_and_render_cb="fbs_classifier_render">
-            <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-class-name" help="Name of the classifier (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="match-type" help="Classifier match type" ptype="SUBCOMMAND" mode="subcommand" optional="false">
                 <PARAM name="fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch">
                     <PARAM name="acl" help="Classifier using ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -227,7 +227,7 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="no classifier" help="Delete flow based services classifier">
-            <PARAM name="fbs-class-name" help="Name of the classifier (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-class-name" help="Name of the classifier (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_classifier ${fbs-class-name}</ACTION>
         </COMMAND>
 
@@ -252,7 +252,7 @@ limitations under the License.
 
         <COMMAND name="class" help="Configures flow match criteria and its actions" view="configure-${fbs-policy-type}-flow-view"
                  viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type};fbs-class-name=${fbs-class-name}">
-            <PARAM name="fbs-class-name" help="Name of the class-map (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-class-name" help="Name of the class-map (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="priority" help="Flow priority in the policy-map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                 <PARAM name="fbs-flow-priority" help="Priority value." ptype="FLOW_PRIORITY" />
             </PARAM>
@@ -260,7 +260,7 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="no class" help="Delete flow match criteria and its actions">
-            <PARAM name="fbs-class-name" help="Name of the class-map (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="fbs-class-name" help="Name of the class-map (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_flow_${fbs-policy-type} ${fbs-policy-name} ${fbs-class-name}</ACTION>
         </COMMAND>
     </VIEW>

@@ -126,9 +126,7 @@
             render_command_cb="qos_wred_policy_green"
             >
             <MACRO name="WRED_THD_CONFIG" arg=""/>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic_cli_wred.py patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green ${prof_id} ${min-threshold} ${max-threshold} ${max-drop-rate}&#xA;
-            </ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_wred patch_openconfig_qos_ext_qos_wred_profiles_wred_profile_config_green ${prof_id} ${min-threshold} ${max-threshold} ${max-drop-rate}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                This command to configure WRED minimum, maximum thresholds

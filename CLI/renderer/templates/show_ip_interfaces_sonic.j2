@@ -23,16 +23,32 @@ Flags: U-Unnumbered interface
    {% if "sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in key %}
       {% set mgmtIntfTblList = json_output["sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST"] %}
       {% for ifKey in mgmtIntfTblList %}
+	 {% if "secondary" in ifKey %}
+            {% if vars.update({'secondary':ifKey["secondary"]}) %}{% endif %}
+            {% if vars.secondary == true %}
+                {% continue %}
+            {% endif %}
+         {% endif %}
          {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
          {% if vars.update({'ipv4_src_pfx':ifKey["ipPrefix"]}) %}{% endif %}
          {% if vars.update({'admin_state':"up"}) -%}{% endif -%}
          {% if vars.update({'oper_state':"up"}) -%}{% endif -%}
+         {% if vars.update({'vrf':""}) %}{% endif %}
+         {% if "isMgmtVrfEnabled" in json_output and json_output["isMgmtVrfEnabled"] == True%}
+            {% if vars.update({'vrf': "mgmt"}) %}{% endif %}
+         {% endif %}
         {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
         {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
 {{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
       {% endfor %}
    {% endif %}
    {% for ifKey in intfTblList %}
+	{% if "secondary" in ifKey %}
+            {% if vars.update({'secondary':ifKey["secondary"]}) %}{% endif %}
+            {% if vars.secondary == true %}
+                {% continue %}
+            {% endif %}
+        {% endif %}
         {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
         {% if vars.update({'ipv4_src_pfx':ifKey["ipPrefix"]}) %}{% endif %}
         {% if vars.update({'flags':""}) %}{% endif %}

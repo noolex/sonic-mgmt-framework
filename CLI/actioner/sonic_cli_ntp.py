@@ -43,6 +43,9 @@ def invoke_api(func, args=[]):
             print api_response.error_message()
             return False
 
+        if api_response.content == None:
+            return False
+
         ntp_config = api_response.content
         if len(ntp_config) != 0:
             ntp_data["global"] = ntp_config["openconfig-system:config"]
@@ -56,6 +59,9 @@ def invoke_api(func, args=[]):
             print api_response.error_message()
             return False
 
+        if api_response.content == None:
+            return False
+
         ntp_servers = api_response.content
         if len(ntp_servers) != 0:
             ntp_data["servers"] = ntp_servers["openconfig-system:server"]
@@ -67,6 +73,9 @@ def invoke_api(func, args=[]):
         api_response = api.get(keypath)
         if not api_response.ok():
             print api_response.error_message()
+            return False
+
+        if api_response.content == None:
             return False
   
         ntp_servers = api_response.content

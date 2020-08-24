@@ -419,8 +419,8 @@ def run(func, args):
                 iftype, ifrangelist = rangetolst(givenifrange)
                 iflist = invoke_api("get_available_interface_names_list", [iftype])
                 iflist = intersection(iflist, ifrangelist)
-            res = ",".join(natsorted(iflist))
-            sys.stdout.write(res)
+            res = ",".join(natsorted(iflist)).encode('ascii', 'ignore')
+            return res
 
         elif func == 'expand_if_range_to_list':
             givenifrange = args[0]

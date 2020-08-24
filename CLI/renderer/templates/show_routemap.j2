@@ -123,8 +123,8 @@ Route map {{'%s'| format(vars.pol_name)}}:
        {% set set_bgp =  actions[set] %}
        {% if "set-as-path-prepend" is in set_bgp %}
         {% set set_bgpas =  set_bgp['set-as-path-prepend'] %}
-        {% if "asn" in set_bgpas['config'] %}
-          {{"as-path prepend " + set_bgpas['config']['asn']|string()}}
+        {% if "openconfig-routing-policy-ext:asn-list" in set_bgpas['config'] %}
+      {{"as-path prepend " + set_bgpas['config']['openconfig-routing-policy-ext:asn-list']|string()}}
         {% endif %}
         {% if "repeat-n" in set_bgpas['config'] %}
           {{"repeat-n " + set_bgpas['config']['repeat-n']|string()}}
