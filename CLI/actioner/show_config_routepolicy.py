@@ -100,6 +100,40 @@ def show_routemap_set_metric(render_tables):
 
     return 'CB_SUCCESS', cmd_str
 
+def show_routemap_match_evpn(render_tables):
+    cmd_str = ''
+    if 'route-map-name' not in render_tables.keys() :
+        return 'CB_SUCCESS', cmd_str
+    if 'seq-num' not in render_tables.keys() :
+        return 'CB_SUCCESS', cmd_str
+
+    rmap_name = render_tables['route-map-name']
+    seq_num =  render_tables['seq-num']
+
+    if 'sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST' in render_tables:
+        tbl_rec_list = render_tables['sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST']
+
+        if not isinstance(tbl_rec_list, list) :
+            tbl_rec_list = [ tbl_rec_list ]
+
+        for rmap in tbl_rec_list :
+            if 'route_map_name' not in rmap.keys() :
+                continue
+            if 'stmt_name'  not in rmap.keys() :
+                continue
+            if rmap['route_map_name'] != rmap_name :
+                continue
+            if rmap['stmt_name'] != seq_num :
+                continue
+
+            if 'match_evpn_default_type5_route' in rmap.keys() :
+                cmd_str += "match evpn default-route ;"
+            if 'match_evpn_advertise_route_type' in rmap.keys() :
+                cmd_str += "match evpn route-type {} ;".format(rmap['match_evpn_advertise_route_type'].lower())
+            if 'match_evpn_vni_number' in rmap.keys() :
+                cmd_str += "match evpn vni {} ;".format(rmap['match_evpn_vni_number'])
+
+    return 'CB_SUCCESS', cmd_str
 def show_routemap_matchintf(render_tables):
     cmd_prfx = 'match interface '
     return show_get_if_cmd(render_tables,
