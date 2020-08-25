@@ -1,0 +1,1111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2020 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<CLISH_MODULE
+  xmlns="http://www.dellemc.com/sonic/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+  <PTYPE
+     name="PROTOCOL"
+     method="select"
+     pattern="UDP(UDP) TCP(TCP)"
+     help="Transport Protocol Method"/>
+  <PTYPE
+     name="IP_PROTOCOL"
+     method="select"
+     pattern="UDP(IP_UDP) TCP(IP_TCP)"
+     help="Transport Protocol Method"/>
+  <PTYPE
+     name="NODETYPE"
+     method="select"
+     pattern="ingress(INGRESS) egress(EGRESS)"
+     help="IFA Node Role"/>
+  <PTYPE
+     name="RANGE_1_1024"
+     method="integer"
+     pattern="1..1024"
+     help=""/>
+  <!-- =================== SHOW COMMANDS ===================  -->
+  <VIEW name="enable-view">
+    <COMMAND name="show tam" help="Shows telemetry and monitoring information"/>
+    <COMMAND name="show tam switch" help="Shows switch-id onfiguration">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_switch {"feature":"ANY","method":"GET","template":"show_tam_switch.j2"}</ACTION>
+
+      <DOCGEN>
+        <DESCRIPTION>
+           This command is used to show TAM device information.
+        </DESCRIPTION>
+        <USAGE>
+           This command displays the configured TAM Device Identifier.
+        </USAGE>
+        <EXAMPLE summary="show tam switch">
+           TAM Device information
+           ----------------------
+           Switch ID      : 23456
+           Enterprise ID  : 1234
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <COMMAND name="show tam collectors" help="Shows collector configuration">
+      <PARAM name="name" help="Shows specific collector configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_collectors {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_collector"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the details for all collectors or for a specific collector.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the details for all collectors or for a specific collector.
+        </USAGE>
+        <EXAMPLE summary="show tam collectors">
+           Name               IP Address       Port    Protocol
+           ----------------   --------------   ------  --------
+           IFA_Col_i19        192.168.78.121   7071    UDP
+           MOD_Col_m16        192.168.78.123   7076    UDP
+           
+           # show tam collectors IFA_Col_i19
+           Name          : IFA_Col_i19
+           IP Address    : 192.168.78.121
+           Port          : 7071
+           Protocol      : UDP
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <COMMAND name="show tam samplers" help="Shows sampler configuration">
+      <PARAM name="name" help="Shows specific sampler configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_samplers {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_sampler"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the details for all samplers or for a specific sampler.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the details for all samplers or for a specific sampler.
+        </USAGE>
+        <EXAMPLE summary="show tam samplers">
+           Name         Sample Rate
+           -----------  -----------
+           sflow_low    1
+           aggresive    2000
+           
+           # show tam samplers aggresive
+           Name          : aggresive
+           Sample Rate   : 2000
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <!-- =================== SHOW IFA ===================  -->
+    <COMMAND name="show tam ifa" help="Shows IFA configuration">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_ifa {"feature":"ANY","method":"GET","template":"show_tam_feature.j2"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the switch-wide attributes that are in use.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the switch-wide attributes that are in use.
+        </USAGE>
+        <EXAMPLE summary="show tam ifa">
+           Status             : Active
+           Version            : 2.0
+           Switch ID          : 2020
+           Enterprise ID      : 2345
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <COMMAND name="show tam ifa sessions" help="Shows IFA session configuration">
+      <PARAM name="name" help="Shows specific IFA session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_ifa_sessions {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_ifa_session"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the details for all ifa sessions or for a specific session.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the details for all ifa sessions or for a specific session. Note that only explicitly configured tuples in the associated flow-group are displayed.
+        </USAGE>
+        <EXAMPLE summary="show tam ifa sessions">
+           Name           Flow Group          Collector          Sampler           Node Type
+           -----------    ----------------    --------------     -------------     ----------
+           http_236       tcp_port_236        -                  aggresive         Ingress
+           http_239       tcp_port_239        -                  -                 Intermediate
+           http_241       tcp_port_241        IFA_Col_i19        -                 Egress
+           
+           sonic # show tam ifa sessions http_236
+           
+           Session            : http_236 (Ingress)
+           Flow Group Name    : tcp_port_236
+              Id              : 4025
+              Priority        : 100
+              SRC IP          : 13.92.96.32
+              DST IP          : 7.72.235.82
+              DST L4 Port     : 236
+              Ingress Intf    : Ethernet20
+           Collector          : None
+           Sampler            : aggresive
+           Packet Count       : 7656
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <!-- =================== SHOW TAIL TIMESTAMP ===================  -->
+    <COMMAND name="show tam tail-stamping" help="Shows tail-stamping configuration">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_tailstamping {"feature":"ANY","method":"GET","template":"show_tam_feature.j2"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the switch-wide attributes that are in use.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the switch-wide attributes that are in use.
+        </USAGE>
+        <EXAMPLE summary="show tam tail-stamping">
+           Status             : Active
+           Switch ID          : 2020
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <COMMAND name="show tam tail-stamping sessions" help="Shows tail-stamping session configuration">
+      <PARAM name="name" help="Shows specific tail-stamping session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_tailstamping_sessions {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_ts_session"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the details for all tail-stamping sessions or for a specific session.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the details for all tail-stamping sessions or for a specific session. Note that only explicitly configured tuples in the associated flow-group are displayed.
+        </USAGE>
+        <EXAMPLE summary="show tam tail-stamping sessions">
+           Name           Flow Group
+           -----------    ----------------
+           http_236       tcp_port_236
+           http_239       tcp_port_239
+           http_241       tcp_port_241
+           
+           sonic # show tam tail-stamping sessions http_236
+           
+           Session            : http_236
+           Flow Group Name    : tcp_port_236
+              Id              : 4025
+              Priority        : 100
+              SRC IP          : 13.92.96.32
+              DST IP          : 7.72.235.82
+              DST L4 Port     : 236
+           Packet Count       : 7656
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <!-- =================== SHOW DROP MONITORING ===================  -->
+    <COMMAND name="show tam drop-monitor" help="Shows drop-monitor configuration">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_dropmonitor {"feature":"ANY","method":"GET","template":"show_tam_feature.j2"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the switch-wide attributes that are in use.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the switch-wide attributes that are in use.
+        </USAGE>
+        <EXAMPLE summary="show tam drop-monitor">
+           Status             : Active
+           Switch ID          : 2020
+           Aging Interval     : 60
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <COMMAND name="show tam drop-monitor sessions" help="Shows drop-monitor session configuration">
+      <PARAM name="name" help="Shows specific drop-monitor session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_dropmonitor_sessions {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_mod_session"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the details for all drop-monitor sessions or for a specific session.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the details for all drop-monitor sessions or for a specific session. Note that only explicitly configured tuples in the associated flow-group are displayed.
+        </USAGE>
+        <EXAMPLE summary="show tam drop-monitor sessions">
+           Name           Flow Group          Collector          Sampler
+           -----------    ----------------    --------------     -------------
+           http_236       tcp_port_236        Col_i19            aggresive
+           http_239       tcp_port_239        Col_i19            aggresive
+           http_241       tcp_port_241        Col_i19            aggresive
+           
+           sonic # show tam drop-monitor sessions http_236
+           
+           Session            : http_236
+           Flow Group Name    : tcp_port_236
+              Id              : 4025
+              Priority        : 100
+              SRC IP          : 13.92.96.32
+              DST IP          : 7.72.235.82
+              DST L4 Port     : 236
+              Ingress Intf    : Ethernet20
+           Collector          : Col_i19
+           Sampler            : aggresive
+           Packet Count       : 7656
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <!-- =================== SHOW TAM FEATURES ===================  -->
+    <COMMAND name="show tam features" help="Shows current status of TAM features">
+      <PARAM name="feature" help="Shows current status of specific TAM feature" optional="true" mode="switch" default="all" ptype="SUBCOMMAND">
+        <PARAM name="ifa" help="Shows current status of IFA feature" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="drop-monitor" help="Shows current status of drop-monitor feature" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="tail-stamping" help="Shows current status of tail-stamping feature" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="thresholds" help="Shows current status of thresholds feature" ptype="SUBCOMMAND" mode="subcommand"/>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_features {"name":"${feature}","feature":"ANY","method":"GET","template":"show_tam_global_feature"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the current status for all TAM features or for a specific feature.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the current status for all TAM features or for a specific feature.
+        </USAGE>
+        <EXAMPLE summary="show tam features">
+           Name         Status
+           -----------  ---------
+           ifa          Active
+           drop-monitor Active
+           
+           sonic-cli# show tam features ifa
+           
+           Name          : ifa
+           Status        : Active
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+    <!-- =================== SHOW FLOWGROUPS ===================  -->
+    <COMMAND name="show tam flowgroups" help="Shows flow group configuration">
+      <PARAM name="name" help="Shows specific flow group configuration (up to 32 characters)" optional="true" default="all" ptype="STRING_32"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_flowgroups {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_flowgroup"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command lists the details for all flow-groups or for a specific flow-group.
+        </DESCRIPTION>
+        <USAGE>
+           This command lists the details for all flow-groups or for a specific flow-group. Note that only explicitly configured tuples are displayed.
+        </USAGE>
+        <EXAMPLE summary="show tam flow-groups">
+           Flow Group Name    : udp_port_239
+              Id              : 4025
+              Priority        : 100
+              SRC IP          : 10.72.195.23
+              DST L4 Port     : 239
+              Ingress Intf    : Ethernet20
+           Packet Count       : 10584
+           
+           Flow Group Name    : udp_port_241
+              Id              : 4022
+              Priority        : 99
+              SRC Port        : 1906
+              DST L4 Port     : 241
+           Packet Count       : 8654367
+           
+           sonic # show tam flow-groups udp_port_239
+           
+           Flow Group Name    : udp_port_239
+              Id              : 4025
+              Priority        : 100
+              SRC IP          : 10.72.195.23
+              DST L4 Port     : 239
+           Packet Count       : 10584
+        </EXAMPLE>
+      </DOCGEN>
+      <xi:include href="include/pipe.xml"/>
+    </COMMAND>
+  </VIEW>
+
+  <!-- =================== CONFIG TAM ===================  -->
+  <VIEW name="configure-view">
+    <COMMAND name="tam" help="Telemetry and monitoring configuration" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-view"
+             command_tables="sonic-tam-collectors:sonic-tam-collectors/TAM_COLLECTORS_TABLE/TAM_COLLECTORS_TABLE_LIST/name={name};sonic-tam-dropmonitor:sonic-tam-dropmonitor/TAM_DROPMONITOR_SESSIONS_TABLE/TAM_DROPMONITOR_SESSIONS_TABLE_LIST/name={name};sonic-tam-dropmonitor:sonic-tam-dropmonitor/TAM_DROPMONITOR_TABLE/TAM_DROPMONITOR_TABLE_LIST/name=global;sonic-tam-features:sonic-tam-features/TAM_STATE_FEATURES_TABLE/TAM_STATE_FEATURES_TABLE_LIST/name={name};sonic-tam-flowgroups:sonic-tam-flowgroups/TAM_FLOWGROUP_TABLE/TAM_FLOWGROUP_TABLE_LIST/name={name};sonic-tam-ifa:sonic-tam-ifa/TAM_IFA_SESSIONS_TABLE/TAM_IFA_SESSIONS_TABLE_LIST/name={name};sonic-tam-samplers:sonic-tam-samplers/TAM_SAMPLINGRATE_TABLE/TAM_SAMPLINGRATE_TABLE_LIST/name={name};sonic-tam-switch:sonic-tam-switch/TAM_SWITCH_TABLE/TAM_SWITCH_TABLE_LIST/name=global;sonic-tam-tailstamping:sonic-tam-tailstamping/TAM_TAILSTAMPING_SESSIONS_TABLE/TAM_TAILSTAMPING_SESSIONS_TABLE_LIST/name={name};sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST" render_command_cb="tam_config"/>
+  </VIEW>
+  <VIEW name="configure-tam-view" prompt="${SYSTEM_NAME}(config-tam)# " depth="2">
+    <COMMAND name="no" help="Unconfigures telemetry and monitoring feature" />
+    <COMMAND name="switch-id" help="Configures unique switch identifer (up to 32 bit number)" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="id" help="Configures switch-id value (1 to 65535)" ptype="UINT16"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_switch_id {"id":${id},"feature":"ANY","method":"PATCH"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command configures a 32-bit idenitifier that uniquely identifies the switch, and is used in the telemetry reports.
+        </DESCRIPTION>
+        <USAGE>
+           This command configures a 32-bit idenitifier that uniquely identifies the switch, and is used in the telemetry reports. When not configured, the last 16-bits from the system mac address are used.
+        </USAGE>
+        <EXAMPLE summary="switch-id &lt;number&gt;">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# switch-id 1234
+           sonic(config-tam)# exit
+           sonic(config)# exit
+           sonic# show tam switch
+           
+           TAM Device information
+           ----------------------
+           Switch ID      : 1234
+           Enterprise ID  : 4312
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no switch-id" help="Resets switch idenitifier to default" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_switch_id {"feature":"ANY","method":"DELETE"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command resets switch identifier to its default value. The default value is last 16-bits from the system mac address.
+        </DESCRIPTION>
+        <USAGE>
+           This command resets switch identifier to its default value. The default value is last 16-bits from the system mac address.
+        </USAGE>
+        <EXAMPLE summary="no switch-id">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# no switch-id
+           sonic(config-tam)# exit
+           sonic(config)# exit
+           sonic# show tam switch
+           
+           TAM Device information
+           ----------------------
+           Switch ID      : 51952
+           Enterprise ID  : 5678
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="enterprise-id" help="Configures unique enterprise identifier for IPFIX report (up to 32 bit)" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="id" help="Configures enterprise-id value (0 to 65535)" ptype="UINT16"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_enterprise_id {"id":${id},"feature":"ANY","method":"PATCH"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command configures a 32-bit idenitifier that is used in the IPFIX telemetry reports.
+        </DESCRIPTION>
+        <USAGE>
+           This command configures a 32-bit idenitifier that is used in the IPFIX telemetry reports. When not configured, the last 16-bits from the system mac address are used.
+        </USAGE>
+        <EXAMPLE summary="enterprise-id &lt;number&gt;">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# enterprise-id 5678
+           sonic(config-tam)# exit
+           sonic(config)# exit
+           sonic# show tam switch
+           
+           TAM Device information
+           ----------------------
+           Switch ID      : 1234
+           Enterprise ID  : 5678
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no enterprise-id" help="Resets enterprise idenitifier to default" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_enterprise_id {"feature":"ANY","method":"DELETE"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command resets enterprise identifier to its default value. The default value is last 16-bits from the system mac address
+        </DESCRIPTION>
+        <USAGE>
+           This command resets enterprise identifier to its default value. The default value is last 16-bits from the system mac address
+        </USAGE>
+        <EXAMPLE summary="no enterprise-id">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# no enterprise-id
+           sonic(config-tam)# exit
+           sonic(config)# exit
+           sonic# show tam switch
+           
+           TAM Device information
+           ----------------------
+           Switch ID      : 1234
+           Enterprise ID  : 51952
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="collector" help="Creates collector by specifying reachability information" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="name" help="Configures unique name for collector (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <PARAM name="ip" help="Configures collector IP address" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="ip_address" help="Collector IP Address" ptype="IPV4V6_ADDR"></PARAM>
+      </PARAM>
+      <PARAM name="port" help="Configures collector port" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="port_number" help="Collector Port (0 to 65535)" ptype="RANGE_0_65535"></PARAM>
+        <PARAM name="protocol" help="Configures collector protocol" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="protocol_type" help="Collector protocol" ptype="PROTOCOL" default="UDP"/>
+        </PARAM>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_collector {"feature":"ANY","method":"PATCH","name":"${name}","ip":"${ip_address}","protocol":"${protocol_type}","port":${port_number}}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command configures collector information.
+        </DESCRIPTION>
+        <USAGE>
+           This command configures collector information. A collector is typically a machine reachable from the switch, where the telemetry reports are sent.
+        </USAGE>
+        <EXAMPLE summary="collector &lt;name&gt; type {ipv4 | ipv6} ip &lt;ip-address&gt; port &lt;port-number&gt; [protocol { UDP | TCP }] ">
+           sonic(config-tam)# collector c2 ip 2.2.2.2 port 7676 protocol UDP
+           sonic(config-tam)#
+           sonic(config-tam)# show tam collectors
+           Name               IP Address       Port    Protocol
+           ----------------   --------------   ------  --------
+           c2                 2.2.2.2          7676    UDP
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no collector" help="Removes specific collector" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="name" help="Collector name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_collector {"feature":"ANY","method":"DELETE","name":"${name}"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command removes any configured collector information.
+        </DESCRIPTION>
+        <USAGE>
+           This command removes any configured collector information. A collector, while being associated with any TAM application, can't be removed.
+        </USAGE>
+        <EXAMPLE summary="no collector &lt;name&gt;">
+           sonic(config-tam)# no collector c2
+           sonic(config-tam)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="sampler" help="Creates sampler for traffic sampling" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="name" help="Configures unique name for sampler (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <PARAM name="rate" help="Configures sample rate" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="sampler_rate" help="Samples one packet in every 'rate'(1 to 65535) packets" ptype="SAMPLE_RATE"></PARAM>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_sampler {"feature":"ANY","method":"PATCH","name":"${name}","rate":${sampler_rate}}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command configures any configured sampler information.
+        </DESCRIPTION>
+        <USAGE>
+           TAM infrastructure supports setting up a sampling configuration and refer to this sampler configuration from the application which support sampling for the traffic. This command configures any configured sampler information.
+        </USAGE>
+        <EXAMPLE summary="sampler &lt;name&gt;  rate &lt;sample-rate&gt;">
+           sonic(config-tam)# sampler s34 rate 1000
+           sonic# show tam samplers
+           
+           Name         Sample Rate
+           -----------  -----------
+           s1           1
+           s34          1000
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no sampler" help="Removes specific sampler" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="name" help="Sampler name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_sampler {"feature":"ANY","method":"DELETE","name":"${name}"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command removes any configured sampler information.
+        </DESCRIPTION>
+        <USAGE>
+           This command removes any configured sampler information. A sampler, while being associated with any TAM application, can't be removed.
+        </USAGE>
+        <EXAMPLE summary="no sampler &lt;name&gt;">
+           sonic(config-tam)# no sampler s34
+           sonic# show tam samplers
+           
+           Name         Sample Rate
+           -----------  -----------
+           s1           1
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="flow-group" help="Creates flow-group by specifying the tuple information" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="name" help="Configures unique name for flow-group (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <PARAM name="src-mac" help="Source MAC address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="src_mac" help="Source MAC address" ptype="MAC_ADDR" default=""/>
+      </PARAM>
+      <PARAM name="dst-mac" help="Destination MAC address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="dst_mac" help="Destination MAC address" ptype="MAC_ADDR" default=""/>
+      </PARAM>
+      <PARAM name="ethertype" help="Ethertype of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="ether_type" help="Ethertype value (0x600-0xffff)" ptype="ETHERTYPE_VALUE" default=""/>
+      </PARAM>
+      <PARAM name="ip-type" help="Type of IP Address (IPv4/IPv6)" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="ip_type" help="IP Address Type" ptype="IP_TYPE" default=""></PARAM>
+      </PARAM>
+      <PARAM name="src-ip" help="Source IP address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="src_ip" help="IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR" default=""/>
+      </PARAM>
+      <PARAM name="dst-ip" help="Destination IP address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="dst_ip" help="IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR" default=""/>
+      </PARAM>
+      <PARAM name="l4-src-port" help="Source port (L4) of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="l4_src_port" help="Source port number (0 to 65535)" ptype="RANGE_0_65535" default=""/>
+      </PARAM>
+      <PARAM name="l4-dst-port" help="Destination port (L4) of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="l4_dst_port" help="Destination port number (0 to 65535)" ptype="RANGE_0_65535" default=""/>
+      </PARAM>
+      <PARAM name="priority" help="Priority of the flow-group among the other flow-groups created" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="priority_value" help="Priority value (1 to 1024)" ptype="RANGE_1_1024" default="100"/>
+      </PARAM>
+      <PARAM name="protocol" help="Protocol field of the IP header of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="protocol_value" help="Protocol value UDP/TCP" ptype="IP_PROTOCOL" default=""/>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","smac":"${src_mac}","dmac":"${dst_mac}","ethertype":"${ether_type}","sip":"${src_ip}","dip":"${dst_ip}","sport":"${l4_src_port}","dport":"${l4_dst_port}","priority":"${priority_value}","protocol":"${protocol_value}","ip_type":"${ip_type}"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command configures flow group by specifying a set of match criteria that defines a set of flows that are of interest.
+        </DESCRIPTION>
+        <USAGE>
+           This command configures flow group by specifying a set of match criteria that defines a set of flows that are of interest.
+        </USAGE>
+        <EXAMPLE summary="flow-group &lt;name&gt; [src-mac &lt;src_mac&gt; [dst-mac &lt;dst_mac&gt; [ethertype &lt;ethertype&gt; [src-ip &lt;src_ip&gt; [dst-ip &lt;dst_ip&gt; [src-l4-port &lt;src_l4_port&gt; [dst-l4-port &lt;dst_l4_port&gt; [protocol &lt;protocol&gt; [priority &lt;priority_value&gt;]">
+           sonic(config-tam)# flow-group f9 type ipv4 src-ip 192.1.2.3 dst-ip 172.6.5.4
+           sonic# show tam flowgroups
+           
+           Flow Group Name    : f9
+              Id              : 60
+              Priority        : 100
+              SRC IP          : 192.1.2.3/32
+              DST IP          : 172.6.5.4/32
+           Packet Count       :
+           
+           Flow Group Name    : DEMO
+              Id              : 1
+              Priority        : 100
+              SRC MAC         : 11:22:33:44:55:66
+              SRC IP          : 1.1.1.1/32
+              DST IP          : 4.4.4.4/32
+           Packet Count       :
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no flow-group" help="Removes specific flow-group" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="name" help="Flow-group name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_flowgroup {"feature":"ANY","method":"DELETE","name":"${name}"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command removes flow group.
+        </DESCRIPTION>
+        <USAGE>
+           This command removes flow group. Flow Groups that are actively referenced in other applications can't be removed.
+        </USAGE>
+        <EXAMPLE summary="no flow-group &lt;flow-group&gt;">
+           sonic(config-tam)# no flow-group f9
+           sonic# show tam flowgroups
+           
+           Flow Group Name    : DEMO
+              Id              : 1
+              Priority        : 100
+              SRC MAC         : 11:22:33:44:55:66
+              SRC IP          : 1.1.1.1/32
+              DST IP          : 4.4.4.4/32
+           Packet Count       :
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+  <!-- =================== CONFIG IFA FEATURE ===================  -->
+  <VIEW name="configure-tam-view">
+    <COMMAND name="ifa" help="Configures inband flow analyzer feature" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-ifa-view"/>
+  </VIEW>
+  <VIEW name="configure-tam-ifa-view" prompt="${SYSTEM_NAME}(config-tam-ifa)# " depth="3">
+    <COMMAND name="no" help="Unconfigures inband flow analyzer feature" />
+    <COMMAND name="enable" help="Enables IFA globally" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"IFA","method":"PATCH","status":"active"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command activates IFA feature on the switch.
+        </DESCRIPTION>
+        <USAGE>
+           This command activates IFA feature on the switch. IFA activated switches act as intermediate nodes for all IFA-tagged flows transiting the switch.
+        </USAGE>
+        <EXAMPLE summary="sonic (config-tam-ifa)# enable">
+           sonic(config)# tam
+           sonic(config-tam)# ifa
+           sonic(config-tam-ifa)# enable
+           sonic(config-tam-ifa)# end
+           sonic# show tam ifa
+           
+           Status               : Active
+           Switch ID            : 9876
+           Enterprise ID        : 8798
+           Version              : 2.0
+           Number of sessions   : 0
+           Number of collectors : 0
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no enable" help="Disables IFA globally" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"IFA","method":"PATCH","status":"inactive"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command deactivates IFA feature on the switch.
+        </DESCRIPTION>
+        <USAGE>
+           This command deactivates IFA feature on the switch. Deactivating IFA will purge all IFA configuration from the switch.
+        </USAGE>
+        <EXAMPLE summary="no enable">
+           sonic(config)# tam
+           sonic(config-tam)# ifa
+           sonic(config-tam-ifa)# no enable
+           sonic(config-tam-ifa)# end
+           sonic# show tam ifa
+           
+           Status               : Inactive
+           Switch ID            : 9876
+           Enterprise ID        : 8798
+           Version              : 2.0
+           Number of sessions   : 0
+           Number of collectors : 0
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="session" help="Creates IFA session" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="session_name" help="Configures unique name for IFA session (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <PARAM name="flowgroup" help="Configures flow-group for IFA session" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="flowgroup_name" help="Flow-group name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      </PARAM>
+      <PARAM name="collector" help="Configures collector for IFA session" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="collector_name" help="Collector name (up to 32 characters string)" ptype="STRING_63" default=""></PARAM>
+      </PARAM>
+      <PARAM name="sampler" help="Configures sampler for IFA session" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="sampler_name" help="Sampler name (up to 32 characters string)" ptype="STRING_63" default=""></PARAM>
+      </PARAM>
+      <PARAM name="node-type" help="Configures node type for IFA session" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="node_type" help="Node type" ptype="NODETYPE"/>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_ifa_session {"session":"${session_name}","flowgroup":"${flowgroup_name}","collector":"${collector_name}","sampler":"${sampler_name}","feature":"IFA","method":"PATCH","node_type":"${node_type}"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command creates IFA monitoring session associated a previously defined flow-group.
+        </DESCRIPTION>
+        <USAGE>
+           This command creates IFA monitoring session associated a previously defined flow-group.
+        </USAGE>
+        <EXAMPLE summary="session &lt;name&gt; flowgroup &lt;fg-name&gt; [collector &lt;col-name&gt;] [sample-rate &lt;sampler-name&gt;] node-type {ingress | egress }">
+           sonic(config-tam-ifa)# session ss1 flowgroup f9 sampler s1 node-type ingress
+           sonic(config-tam-ifa)#
+           sonic# show tam ifa sessions
+           
+           Name           Flow Group          Collector          Sampler           Node Type
+           -----------    ----------------    --------------     -------------     ----------
+           ss1            f9                                     s1                Ingress Node
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no session" help="Removes specific IFA session" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="session_name" help="Session name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_ifa_session {"session":"${session_name}","feature":"IFA","method":"DELETE"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command removes previously configured IFA session.
+        </DESCRIPTION>
+        <USAGE>
+           This command removes previously configured IFA session. When a sesssion that is previously created is removed, the associated flows are no longer processed for IFA as an ingress node or as an egress-node by the switch.
+        </USAGE>
+        <EXAMPLE summary="no session &lt;name&gt;">
+           sonic(config-tam-ifa)# no session ss1
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+  <!-- =================== CONFIG DROP MONITOR FEATURE ===================  -->
+  <VIEW name="configure-tam-view">
+    <COMMAND name="drop-monitor" help="Configures drop-monitor feature" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-dm-view"/>
+  </VIEW>
+  <VIEW name="configure-tam-dm-view" prompt="${SYSTEM_NAME}(config-tam-dm)# " depth="3">
+    <COMMAND name="no" help="Unconfigures drop-monitor feature" />
+    <COMMAND name="enable" help="Enables drop-monitor globally" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"DROPMONITOR","method":"PATCH","status":"active"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command activates Drop Monitor feature on the switch.
+        </DESCRIPTION>
+        <USAGE>
+           This command activates Drop Monitor feature on the switch.
+        </USAGE>
+        <EXAMPLE summary="sonic (config-tam-dm)# enable">
+           sonic(config-tam-dm)# enable
+           sonic(config-tam-dm)# end
+           sonic# show tam drop-monitor
+           
+           Status               : Active
+           Switch ID            : 9876
+           Number of sessions   : 2
+           Number of collectors : 1
+           Aging Interval       : 3000
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no enable" help="Disables drop-monitor globally" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"DROPMONITOR","method":"PATCH","status":"inactive"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command deactivates Drop Monitor feature on the switch.
+        </DESCRIPTION>
+        <USAGE>
+           This command deactivates Drop Monitor feature on the switch. Deactivating drop monitor will purge all drop monitor configuration from the switch.
+        </USAGE>
+        <EXAMPLE summary="no enable">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# drop-monitor
+           sonic(config-tam-dm)# no enable
+           sonic(config-tam-dm)# end
+           sonic# show tam drop-monitor
+           
+           Status               : Inactive
+           Switch ID            : 9876
+           Number of sessions   : 2
+           Number of collectors : 1
+           Aging Interval       : 3000
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="session" help="Creates drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="session_name" help="Configures unique name for drop-monitor session (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <PARAM name="flowgroup" help="Configures flow-group for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="flowgroup_name" help="Flow-group name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      </PARAM>
+      <PARAM name="collector" help="Configures collector for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="collector_name" help="Collector name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      </PARAM>
+      <PARAM name="sampler" help="Configures sampler for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="sampler_name" help="Sampler name (up to 32 characters string)" ptype="STRING_63" default=''></PARAM>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_dm_session {"session":"${session_name}","flowgroup":"${flowgroup_name}","collector":"${collector_name}","sampler":"${sampler_name}","feature":"DROPMONITOR","method":"PATCH"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command creates drop monitoring session associated a previously defined flow-group.
+        </DESCRIPTION>
+        <USAGE>
+           This command creates drop monitoring session associated a previously defined flow-group.
+        </USAGE>
+        <EXAMPLE summary="session &lt;name&gt; flowgroup &lt;fg-name&gt; collector &lt;col-name&gt; [sample-rate &lt;sampler-name&gt;]">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# drop-monitor
+           sonic(config-tam-dm)# session ss91 flowgroup f9 collector c2 sampler s1
+           sonic(config-tam-dm)# end
+           sonic# show tam drop-monitor sessions
+           
+           Name           Flow Group          Collector          Sampler
+           -----------    ----------------    --------------     -------------
+           ss1            f1                  c1                 s1
+           ss2            DEMO                c1                 s2
+           ss91           f9                  c2                 s1
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no session" help="Removes specific drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="session_name" help="Session name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_dm_session {"session":"${session_name}","feature":"DROPMONITOR","method":"DELETE"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command removes previously configured drop monitor session.
+        </DESCRIPTION>
+        <USAGE>
+           This command removes previously configured drop monitor session.
+        </USAGE>
+        <EXAMPLE summary="session &lt;name&gt; flowgroup &lt;fg-name&gt; collector &lt;col-name&gt; [sample-rate &lt;sampler-name&gt;]">
+           sonic(config-tam-dm)# no session ss91
+           sonic(config-tam-dm)# end
+           sonic# show tam drop-monitor sessions
+           
+           Name           Flow Group          Collector          Sampler
+           -----------    ----------------    --------------     -------------
+           ss1            f1                  c1                 s1
+           ss2            DEMO                c1                 s2
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="aging-interval" help="Configures drop-monitor aging-interval globally" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="aging_interval" help="Aging-interval value (1 to 65535)" ptype="SAMPLE_RATE"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_aginginterval {"feature":"DROPMONITOR","method":"PATCH","aging-interval":${aging_interval}}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command configures aging interval.
+        </DESCRIPTION>
+        <USAGE>
+           This command configures aging interval. If the Drop Monitor feature doesn't notice packet drops for this duration, it considers packet drops to have stopped.
+        </USAGE>
+        <EXAMPLE summary="aging-interval &lt;value&gt;">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# drop-monitor
+           sonic(config-tam-dm)# aging-interval 10
+           sonic(config-tam-dm)# end
+           sonic# show tam drop-monitor
+           
+           Status               : Inactive
+           Switch ID            : 9876
+           Number of sessions   : 3
+           Number of collectors : 2
+           Aging Interval       : 10
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no aging-interval" help="Resets aging-interval to default" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_aginginterval {"feature":"DROPMONITOR","method":"DELETE"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command resets aging interval to its default value.
+        </DESCRIPTION>
+        <USAGE>
+           This command resets aging interval to its default value. The default value for the aging interval is 5 seconds.
+        </USAGE>
+        <EXAMPLE summary="no aging-interval">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# drop-monitor
+           sonic(config-tam-dm)# no aging-interval
+           sonic(config-tam-dm)# end
+           sonic# show tam drop-monitor
+           
+           Status               : Inactive
+           Switch ID            : 9876
+           Number of sessions   : 3
+           Number of collectors : 2
+           Aging Interval       : 5
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+  <!-- =================== CONFIG TAIL STAMPING FEATURE ===================  -->
+  <VIEW name="configure-tam-view">
+    <COMMAND name="tail-stamping" help="Configures tail-stamping feature" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-ts-view"/>
+  </VIEW>
+  <VIEW name="configure-tam-ts-view" prompt="${SYSTEM_NAME}(config-tam-ts)# " depth="3">
+    <COMMAND name="no" help="Unconfigures tail-stamping feature" />
+    <COMMAND name="enable" help="Enables tail-stamping globally" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"TAILSTAMPING","method":"PATCH","status":"active"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command activates Tail Stamping feature on the switch.
+        </DESCRIPTION>
+        <USAGE>
+           This command activates Tail Stamping feature on the switch.
+        </USAGE>
+        <EXAMPLE summary="sonic (config-tam-ts)# enable">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# tail-stamping
+           sonic(config-tam-ts)# enable
+           sonic(config-tam-ts)# end
+           sonic# show tam tail-stamping
+           
+           Status               : Active
+           Switch ID            : 9876
+           Number of sessions   : 0
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no enable" help="Disables tail-stamping globally" ptype="SUBCOMMAND" mode="subcommand">
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"TAILSTAMPING","method":"PATCH","status":"inactive"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command deactivates Tail Stamping feature on the switch.
+        </DESCRIPTION>
+        <USAGE>
+           This command deactivates Tail Stamping feature on the switch. Deactivating tail stamping will purge all tail stamping configuration from the switch.
+        </USAGE>
+        <EXAMPLE summary="no enable">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# tail-stamping
+           sonic(config-tam-ts)# no enable
+           sonic(config-tam-ts)# end
+           sonic# show tam tail-stamping
+           
+           Status               : Inactive
+           Switch ID            : 9876
+           Number of sessions   : 0
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="session" help="Creates tail-stamping session" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="session_name" help="Configures unique name for tail-stamping session (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <PARAM name="flowgroup" help="Configures flow-group for tail-stamping session" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="flowgroup_name" help="Flow-group name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_ts_session {"session":"${session_name}","flowgroup":"${flowgroup_name}","feature":"TAILSTAMPING","method":"PATCH"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command creates tail stamping session associated a previously defined flow-group.
+        </DESCRIPTION>
+        <USAGE>
+           This command creates tail stamping session associated a previously defined flow-group.
+        </USAGE>
+        <EXAMPLE summary="session &lt;name&gt; flowgroup &lt;fg-name&gt;">
+           sonic# configure terminal
+           sonic(config)# tam
+           sonic(config-tam)# tail-stamping
+           sonic(config-tam-ts)# session ss66 flowgroup f9
+           sonic(config-tam-ts)# end
+           sonic# show tam tail-stamping sessions
+           
+           Name           Flow Group
+           -----------    ------------
+           ss66           f9
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no session" help="Removes specific tail-stamping session" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="session_name" help="Session name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_ts_session {"session":"${session_name}","feature":"TAILSTAMPING","method":"DELETE"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command removes previously configured tail stamping session.
+        </DESCRIPTION>
+        <USAGE>
+           This command removes previously configured tail stamping session.
+        </USAGE>
+        <EXAMPLE summary="no session &lt;name&gt;">
+           sonic(config-tam-ts)# no session ss66
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+  <!-- =================== associate the ingress interface to the flowgroup ===================  -->
+  <VIEW name="configure-if-view">
+    <COMMAND name="flow-group" help="Attaches specific flow-group to interface" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="name" help="Flow-group name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry associate_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","interface":"${iface}"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command attaches an existing flow group to an interface.
+        </DESCRIPTION>
+        <USAGE>
+           This command attaches an existing flow group to an interface.
+        </USAGE>
+        <EXAMPLE summary="flow-group &lt;name&gt;">
+           sonic# configure terminal
+           sonic(config)# interface Ethernet 46
+           sonic(conf-if-Ethernet46)# flow-group f1
+           sonic(conf-if-Ethernet46)# end
+           sonic# show tam flowgroups
+           
+           Flow Group Name    : DEMO
+              Id              : 1
+              Priority        : 100
+              SRC MAC         : 11:22:33:44:55:66
+              SRC IP          : 1.1.1.1/32
+              DST IP          : 4.4.4.4/32
+           Packet Count       :
+           
+           Flow Group Name    : f88
+              Id              : 409
+              Priority        : 100
+              SRC IP          : 1.1.1.1/32
+              DST IP          : 5.5.5.5/32
+           Packet Count       :
+           
+           Flow Group Name    : f1
+              Id              : 717
+              Priority        : 100
+              SRC MAC         : 00:00:00:00:00:01
+              DST MAC         : 00:00:00:00:00:02
+              SRC IP          : 3.3.3.3/32
+              DST IP          : 4.4.4.4/32
+              Ingress Intf    : Ethernet46
+           Packet Count       :
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no flow-group" help="Detaches specific flow-group from interface" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="name" help="Flow-group name (up to 32 characters string)" ptype="STRING_63"></PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry disassociate_flowgroup {"feature":"ANY","method":"DELETE","name":"${name}","interface":"${iface}"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+           This command detaches an existing flow group from an interface.
+        </DESCRIPTION>
+        <USAGE>
+           This command detaches an existing flow group from an interface.
+        </USAGE>
+        <EXAMPLE summary="[no] flow-group &lt;Flow-Group-Name&gt;">
+           sonic# configure terminal
+           sonic(config)# interface Ethernet 46
+           sonic(conf-if-Ethernet46)# no flow-group f1
+           sonic(conf-if-Ethernet46)# end
+           sonic# show tam flowgroups
+           
+           Flow Group Name    : DEMO
+              Id              : 1
+              Priority        : 100
+              SRC MAC         : 11:22:33:44:55:66
+              SRC IP          : 1.1.1.1/32
+              DST IP          : 4.4.4.4/32
+           Packet Count       :
+           
+           Flow Group Name    : f88
+              Id              : 409
+              Priority        : 100
+              SRC IP          : 1.1.1.1/32
+              DST IP          : 5.5.5.5/32
+           Packet Count       :
+           
+           Flow Group Name    : f1
+              Id              : 717
+              Priority        : 100
+              SRC MAC         : 00:00:00:00:00:01
+              DST MAC         : 00:00:00:00:00:01
+              SRC IP          : 3.3.3.3/32
+              DST IP          : 4.4.4.4/32
+           Packet Count       :
+           
+           sonic#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+</CLISH_MODULE>
