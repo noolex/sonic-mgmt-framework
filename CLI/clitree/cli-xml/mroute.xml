@@ -80,6 +80,37 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_mroute show_mroute vrf:${vrf-name} mroute:${mroute} summary:${summary} grpAddr:${grp-addr} srcAddr:${src-addr}</ACTION>
+             <DOCGEN>
+                 <DESCRIPTION>
+                    This command displays multicast route information.
+                </DESCRIPTION>
+
+                <USAGE>
+                   * show ip mroute [vrf {&lt;vrf-name&gt; | all}]
+                   * show ip mroute [vrf {&lt;vrf-name&gt; | all}] summary
+                </USAGE>
+
+                <EXAMPLE summary="show ip mroute [vrf {&lt;vrf-name&gt; | all}]">
+                    sonic# show ip mroute
+                    IP Multicast Routing Table
+                    * -> indicates installed route
+
+                      Source          Group           Input         Output        Uptime
+                    * 71.0.0.11       233.0.0.1       Vlan100       Vlan200       00:41:59
+                    * 71.0.0.22       233.0.0.1       Vlan100       Vlan200       00:41:54
+                                                                    Vlan201       00:41:59
+                    * 71.0.0.11       234.0.0.1       Vlan100       Vlan200       00:41:34
+                    * 71.0.0.33       234.0.0.1       Vlan100       Vlan200       00:41:31
+                                                                    Vlan201       00:41:44
+                    * 71.0.0.22       235.0.0.1       Vlan100       Vlan200       00:41:16
+                    * 71.0.0.33       235.0.0.1       Vlan100       Vlan200       00:41:14
+                </EXAMPLE>
+                <EXAMPLE summary="show ip mroute [vrf {&lt;vrf-name&gt; | all}] summary">
+                    sonic# show ip mroute summary
+                    Mroute Type      Installed/Total
+                    (S, G)           7/7
+                </EXAMPLE>
+             </DOCGEN>
         </COMMAND>
 
         <!-- ============== -->
@@ -101,6 +132,19 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_mroute clear_mroute vrf:${vrf-name} </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                   This command resets multicast route information.
+                </DESCRIPTION>
+
+                <USAGE>
+                   * clear ip mroute [vrf {&lt;vrf-name&gt; | all}] ==> To reset all IP Multicast routes for the particular VRF
+                </USAGE>
+                <EXAMPLE summary="clear ip mroute  [vrf {&lt;vrf-name&gt; | all}]">
+                    sonic# clear ip mroute
+                    sonic#
+                </EXAMPLE>
+             </DOCGEN>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>
