@@ -66,9 +66,15 @@
                help="Enter default configuration profile name"
                dbpath="sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST/default_config_profile"
                ptype="STRING">
+           <PARAM name="confirm"
+              help="Confirm the change of default configuration profile"
+              optional="true"
+              mode="subcommand"
+              ptype="SUBCOMMAND" dbpath="sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST/default_config_profile">
+            </PARAM>
         </PARAM>
         <ACTION
-             builtin="clish_pyobj">sonic_cli_cfg_profiles set_sonic_profiles_sonic_profiles ${config_profile}
+             builtin="clish_pyobj">sonic_cli_cfg_profiles set_sonic_profiles_sonic_profiles ${config_profile} ${confirm}
         </ACTION>
         <DOCGEN>
             <DESCRIPTION>
