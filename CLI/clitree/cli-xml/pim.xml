@@ -162,7 +162,7 @@ limitations under the License.
                    * show ip pim [vrf &lt;vrf-name&gt;] rpf
                 </USAGE>
 
-                <EXAMPLE summary="show ip pim [vrf {<vrf-name> | all}] interface [<intf-name>]">
+                <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] interface [&lt;intf-name&gt;]">
                     sonic # show ip pim interface
                     Interface       State       Address         PIM Nbrs       PIM DR          Hello-interval       PIM DR-Priority
                     Vlan100         up          100.0.0.2       1              100.0.0.2       30                   1
@@ -175,7 +175,7 @@ limitations under the License.
                     Vlan100         up          100.0.0.2       1              100.0.0.2       30                   1
                 </EXAMPLE>
 
-                <EXAMPLE summary="show ip pim [vrf {<vrf-name> | all}] neighbor [<nbr-ipv4-address>]">
+                <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] neighbor [&lt;nbr-ipv4-address&gt;]">
                     sonic# show ip pim neighbor
                     Interface       Neighbor        Uptime         Expirytime       DR-Priority
                     Vlan100         100.0.0.1       01:38:52       00:01:22         1
@@ -188,7 +188,7 @@ limitations under the License.
                     Vlan100         100.0.0.1       01:38:52       00:01:22         1
                 </EXAMPLE>
 
-                <EXAMPLE summary="show ip pim [vrf {<vrf-name> | all}] ssm">
+                <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] ssm">
                     If IP-prefix list is associated:
                     ===============================
                     sonic# show ip pim ssm
@@ -202,7 +202,7 @@ limitations under the License.
                     SSM group range : 232.0.0.0/8
                 </EXAMPLE>
 
-                <EXAMPLE summary="show ip pim [vrf {<vrf-name> | all}] topology [Group-addr | {Group-addr Source-addr}]">
+                <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] topology [Group-addr | {Group-addr Source-addr}]">
                     sonic# show ip pim topology
                     PIM Multicast Routing Table
 
@@ -253,7 +253,7 @@ limitations under the License.
                         vlan123   uptime/expiry-time: 13:02:40/Never
                 </EXAMPLE>
 
-                <EXAMPLE summary="show ip pim [vrf {<vrf-name> | all}] rpf">
+                <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] rpf">
                     sonic# show ip pim rpf
                     Source          Group           RpfIface       RpfAddress       RibNextHop       Metric       Pref
                     71.0.0.11       233.0.0.1       Vlan100        100.0.0.1        100.0.0.1        0            1
@@ -313,14 +313,14 @@ limitations under the License.
                     * clear ip pim [vrf &lt;vrf-name&gt;] oil ==> To rescan PIM OIL (Outgoing Interfaces List) of all multicast entries of a particular VRF
                 </USAGE>
 
-                <EXAMPLE summary="clear ip pim [vrf <vrf-name> ] interfaces">
+                <EXAMPLE summary="clear ip pim [vrf &lt;vrf-name&gt; ] interfaces">
                     sonic# clear ip pim interfaces
                     sonic#
                     ---------------------------------------
                     sonic# clear ip pim vrf Vrf2 interfaces
                     sonic#
                 </EXAMPLE>
-                <EXAMPLE summary="clear ip pim [vrf <vrf-name> ] oil">
+                <EXAMPLE summary="clear ip pim [vrf &lt;vrf-name&gt; ] oil">
                     sonic# clear ip pim oil
                     sonic#
                     ---------------------------------------
@@ -461,7 +461,7 @@ limitations under the License.
                 </EXAMPLE>
 
 
-                <EXAMPLE summary="ip pim [vrf <vrf-name>] join-prune-interval <value : (60-600 seconds)>">
+                <EXAMPLE summary="ip pim [vrf &lt;vrf-name&gt;] join-prune-interval &lt;value : (60-600 seconds)&gt;">
                   sonic(config)# ip pim join-prune-interval
                         &lt;0..600&gt;  Range 60-600 seconds
                     -------------------------------------------------------
@@ -472,7 +472,7 @@ limitations under the License.
                     sonic(config)#
                 </EXAMPLE>
 
-                <EXAMPLE summary="ip pim [vrf <vrf-name>] keep-alive-timer <value : (31-60000 seconds)>">
+                <EXAMPLE summary="ip pim [vrf &lt;vrf-name&gt;] keep-alive-timer &lt;value : (31-60000 seconds)&gt;">
                     sonic(config)# ip pim keep-alive-timer
                         &lt;31..60000&gt;  Range 31-60000 seconds
                     sonic(config)#
@@ -482,7 +482,7 @@ limitations under the License.
                     sonic(config)#
                 </EXAMPLE>
 
-                <EXAMPLE summary="ip pim [vrf <vrf-name>] ssm prefix-list <prefix-list-name>">
+                <EXAMPLE summary="ip pim [vrf &lt;vrf-name&gt;] ssm prefix-list &lt;vrefix-list-name&gt;">
                     sonic(config)# ip pim ssm
                       prefix-list  Configure prefix list name
 
