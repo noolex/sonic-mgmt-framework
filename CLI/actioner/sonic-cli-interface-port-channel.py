@@ -63,7 +63,7 @@ def invoke_api(func, args=[]):
         return api.get(path)
 
     if func == 'get_sonic_portchannel_sonic_portchannel_portchannel_global_portchannel_global_list':
-        path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL/PORTCHANNEL_GLOBAL_LIST=GLOBAL')
+        path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL')
         return api.get(path)
     if func == 'get_sonic_portchannel_sonic_portchannel_ip_addr_list':
         path = cc.Path('/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST')

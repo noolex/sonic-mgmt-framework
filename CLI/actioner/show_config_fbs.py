@@ -2,7 +2,7 @@ import cli_client as cc
 from collections import OrderedDict
 from natsort import natsorted
 import sonic_cli_acl
-from sonic_cli_fbs import ethertype_to_user_fmt, __natsort_intf_prio
+from sonic_cli_fbs import ethertype_to_user_fmt
 
 def show_running_fbs_classifier(render_tables):
     fbs_client = cc.ApiClient()
@@ -224,11 +224,12 @@ def show_running_fbs_service_policy(render_tables):
        ifname = render_tables['name'].replace(" ", "")
        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}', interface_name=ifname)
 
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, None, False)
     render_data = OrderedDict()
     cmd_str = ''
     policy_types = ['qos', 'monitoring', 'forwarding']
     directions = ['ingress', 'egress']
+    cfg_pdir_map = { directions[0]:"in",directions[1]:"out"}
     if response.ok():
         for binding in response.content.get('sonic-flow-based-services:POLICY_BINDING_TABLE_LIST', []):
             if_data = []
@@ -236,10 +237,10 @@ def show_running_fbs_service_policy(render_tables):
                 for policy_type in policy_types:
                     key = '{}_{}_POLICY'.format(pdir.upper(), policy_type.upper())
                     if key in binding:
-                        if_data.append(tuple([policy_type, pdir, binding[key]]))
+                        if_data.append(tuple([policy_type, cfg_pdir_map[pdir], binding[key]]))
             if len(if_data):
                 render_data[binding['INTERFACE_NAME']] = if_data
-        sorted_data = OrderedDict(natsorted(render_data.items(), key=__natsort_intf_prio))
+        sorted_data = OrderedDict(natsorted(render_data.items(), key=sonic_cli_acl.acl_natsort_intf_prio))
         for  intf_name in sorted_data:
             if_bind_list = sorted_data[intf_name]
             for bind_entry in if_bind_list:

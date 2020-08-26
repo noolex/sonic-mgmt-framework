@@ -10,7 +10,7 @@ def mac_acl_table_cb(render_tables):
     data = OrderedDict()
     cmd_str = ''
     keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -37,7 +37,7 @@ def mac_acl_table_cb(render_tables):
     #keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/')
     #Retrieve acl-set corresponding to the ACL name and type
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=input_str, acl_type=acl_type)
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -83,7 +83,7 @@ def ipv4_acl_table_cb(render_tables):
     data = OrderedDict()
     cmd_str = ''
     keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -110,7 +110,7 @@ def ipv4_acl_table_cb(render_tables):
     #keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/')
     #Retrieve acl-set corresponding to the ACL name and type
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=input_str, acl_type=acl_type)
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -156,7 +156,7 @@ def ipv6_acl_table_cb(render_tables):
     data = OrderedDict()
     cmd_str = ''
     keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -183,7 +183,7 @@ def ipv6_acl_table_cb(render_tables):
     #keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/')
     #Retrieve acl-set corresponding to the ACL name and type
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=input_str, acl_type=acl_type)
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -231,7 +231,7 @@ def acl_bind_cb(render_tables):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={intfname}',intfname=input_string)
     #keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST')
     #keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST={intfname},{stage}',intfname=input_string,stage='INGRESS')
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -289,7 +289,7 @@ def acl_global_bind_cb(render_tables):
     cmd_str = ''
     config_present = 0
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/ingress-acl-sets')
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -316,7 +316,7 @@ def acl_global_bind_cb(render_tables):
                 cmd_str+="\n"
 
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/egress-acl-sets')
-    response = acl_client.get(keypath)
+    response = acl_client.get(keypath, None, False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True

@@ -1,4 +1,4 @@
-import pdb, os, sys, logging, glob, copy
+import pdb, os, sys, logging, glob, copy, re
 from bs4 import BeautifulSoup
 from collections import OrderedDict
 try:
@@ -27,6 +27,7 @@ class CliDoc:
     ptyperoot = None
     feature_to_cli = OrderedDict()
     pytypesDict = dict()
+    viewToCommandDict = dict()
 
     """
     Implementation for CLI document generator
@@ -72,7 +73,13 @@ class CliDoc:
                     CliDoc.modelsDict[model] = soup
                     for command in soup.select('COMMAND[view]'):
                         CliDoc.create_viewDict(command, command['view'])
-                        
+                        if 'view_names' in command.attrs:
+                            view_list = list(filter(None, command.attrs['view_names'].split(' ')))
+                            for view in view_list:
+                                if view not in CliDoc.viewToCommandDict:
+                                    CliDoc.viewToCommandDict[view] = set()
+                                CliDoc.viewToCommandDict[view].add(command)
+
                     for param in soup.select('PARAM[view]'):
                         CliDoc.create_viewDict(param.find_parent('COMMAND'), param['view'])
 
@@ -311,45 +318,73 @@ class CliDoc:
                         cmdList.append(CliDoc.filter_extra_spaces(cli_string))
                     
                     # Prepare data for mode section
-                    view_name = command_tag.find_parent('VIEW')['name']
-                    if view_name == "configure-view":
-                        modeCmdList.add("configure terminal")
-                    elif view_name == "enable-view":
-                        pass
+                    modeCmds = []
+                    view_name = command_tag.find_parent('VIEW')['name']                    
+                    if view_name in CliDoc.viewToCommandDict:
+                        for command_entry in CliDoc.viewToCommandDict[view_name]:
+                            modeCmds.append(command_entry)
                     else:
-                        pass
-                    
-                    if view_name not in CliDoc.viewsSoupDict:
+                        if view_name == "configure-view":
+                            modeCmdList.add("configure terminal")
+                        elif view_name == "enable-view":
+                            pass
+                        else:
+                            pass
+                        
+                        if view_name not in CliDoc.viewsSoupDict:
+                            view_soup = None                            
+                            for view_data in CliDoc.viewsSoupDict:
+                                view_data_temp = view_data
+                                if '${' in view_data_temp:
+                                    while view_data_temp.find('$') != -1:
+                                        startIndex = view_data_temp.find('$')
+                                        endIndex = view_data_temp.find('}')
+                                        if endIndex == -1:
+                                            log.error("view name %s has mismatch ending identifier, make sure flower brackets match start and end" % (view_data_temp))
+                                            sys.exit(1)
+                                        token = view_data_temp[startIndex:endIndex+1]
+                                        view_data_temp = view_data_temp.replace(token, '.*')
+                                    if re.match(view_data_temp,view_name):
+                                        if view_soup is not None:
+                                            log.error("CliDocGen cannot determine the mode for view %s \
+                                                please make view name unique using unique prefix and suffix \
+                                                    or provide view name using view_names attribute in <COMMAND> tag" %( view_name))
+                                            sys.exit(1)
+                                        view_soup = CliDoc.viewsSoupDict[view_data]
+                                        modeCmds = view_soup.find_all('COMMAND')                                
+                        else:
+                            view_soup = CliDoc.viewsSoupDict[view_name]
+                            modeCmds = view_soup.find_all('COMMAND')
+
+                    if len(modeCmds) == 0:
                         log.warning("There is no command which takes to view with name: " + view_name)
-                    else:                    
-                        view_soup = CliDoc.viewsSoupDict[view_name]
-                        for ViewCmd in view_soup.find_all('COMMAND'):
-                            if ViewCmd is None:
-                                log.info("There is no command tag associated with view %s" % (view_name))
-                            else:
-                                baseCmd = ViewCmd['name']
-                                param_tags = ViewCmd.find_all('PARAM', attrs={'view':view_name})
-                                if len(param_tags) > 0:
-                                    for param_tag in param_tags:
-                                        modeCmd = CliDoc.get_cmd_for_mode(param_tag, baseCmd)
-                                        modeCmd = CliDoc.filter_extra_spaces(modeCmd)
-                                        if modeCmd == "exit" or modeCmd == "!" or modeCmd == "end":
-                                            pass
-                                        else:
-                                            modeCmdList.add(modeCmd)
-                                else:
-                                    if baseCmd == "exit" or baseCmd == "!" or baseCmd == "end":
+                    for ViewCmd in modeCmds:
+                        if ViewCmd is None:
+                            log.info("There is no command tag associated with view %s" % (view_name))
+                        else:
+                            baseCmd = ViewCmd['name']
+                            param_tags = ViewCmd.find_all('PARAM', attrs={'view':view_name})
+                            if len(param_tags) > 0:
+                                for param_tag in param_tags:
+                                    modeCmd = CliDoc.get_cmd_for_mode(param_tag, baseCmd)
+                                    modeCmd = CliDoc.filter_extra_spaces(modeCmd)
+                                    if modeCmd == "exit" or modeCmd == "!" or modeCmd == "end":
                                         pass
                                     else:
-                                        modesList = []                     
-                                        if ViewCmd.find('PARAM') is not None:
-                                            tempModesList = []
-                                            CliDoc.handle_params(ViewCmd, baseCmd, tempModesList)
-                                            if len(tempModesList) > 0:
-                                                modesList.append(tempModesList[-1])
-                                        else:
-                                            modesList.append(CliDoc.filter_extra_spaces(baseCmd))
-                                        modeCmdList = modeCmdList.union(set(modesList))
+                                        modeCmdList.add(modeCmd)
+                            else:
+                                if baseCmd == "exit" or baseCmd == "!" or baseCmd == "end":
+                                    pass
+                                else:
+                                    modesList = []                     
+                                    if ViewCmd.find('PARAM') is not None:
+                                        tempModesList = []
+                                        CliDoc.handle_params(ViewCmd, baseCmd, tempModesList)
+                                        if len(tempModesList) > 0:
+                                            modesList.append(tempModesList[-1])
+                                    else:
+                                        modesList.append(CliDoc.filter_extra_spaces(baseCmd))
+                                    modeCmdList = modeCmdList.union(set(modesList))
 
                     cliGuideFp = StringIO()
                     if command_tag["name"] not in commandsGuideDict:                      

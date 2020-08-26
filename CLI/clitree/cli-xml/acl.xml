@@ -49,6 +49,9 @@ limitations under the License.
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
         <!--show xxx access-group -->
+        <COMMAND name="show access-group" help="Show access-group information">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding</ACTION>
+        </COMMAND>
         <COMMAND name="show mac access-group" help="Show MAC access-group information">
             <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding ACL_L2</ACTION>
         </COMMAND>
