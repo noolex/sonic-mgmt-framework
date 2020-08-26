@@ -691,7 +691,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/fast_external_failover">
+  <COMMAND name="fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_fast_external_failover ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1214,7 +1214,7 @@ limitations under the License.
   <COMMAND name="no default subgroup-pkt-queue-max" help="Subgroup-pkt-queue-max">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_subgroup_pkt_queue_max ${vrf-name}</ACTION>
   </COMMAND>
-  <COMMAND name="no fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down">
+  <COMMAND name="no fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/fast_external_failover=false">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_fast_external_failover ${vrf-name} False</ACTION>
   </COMMAND>
   <COMMAND name="no network" help="Check BGP network route exists in IGP"/>
