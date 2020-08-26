@@ -25,6 +25,7 @@ import (
 	"log/syslog"
 	"net/http"
 	"net/url"
+	"runtime/debug"
 	"sort"
 	"strings"
 	"time"
@@ -120,6 +121,7 @@ write_resp:
 		w.WriteHeader(status)
 		w.Write([]byte(data))
 
+		debug.FreeOSMemory()
 	} else {
 		// No data, status only
 		w.WriteHeader(status)
