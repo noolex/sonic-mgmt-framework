@@ -18,9 +18,7 @@
 ###########################################################################
 
 import sys
-import json
 import collections
-import re
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
@@ -34,7 +32,7 @@ def invoke(func, args):
     if func == 'get_sonic_udld_sonic_udld_udld_udld_list':
         keypath = cc.Path('/restconf/data/sonic-udld:sonic-udld/UDLD/UDLD_LIST={id}', id='GLOBAL')
         resp = aa.get(keypath, None, False)
-        if not resp.ok() and resp.status_code == 404:
+        if not resp.ok():
             resp.set_error_message('UDLD not configured')
         return resp
 

@@ -205,11 +205,11 @@ def createYangHexStr(textString):
 def getEngineID():
   """ Construct SNMP engineID from the configured value or from scratch """
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/engine-id')
-  response=aa.get(keypath, None, False)
+  response=aa.get(keypath)
 
   # First, try to get engineID via rest
   engineID = ''
-  if response.ok() and len(response.content) != 0:
+  if response.ok() and response.content is not None and len(response.content) != 0:
     content = response.content
     if content.has_key('ietf-snmp:engine-id'):
       engineID = content['ietf-snmp:engine-id']
@@ -235,7 +235,7 @@ def getEngineID():
   # TEXTUAL-CONVENTION in RFC 3411 using the system MAC address.
   if len(engineID) == 0:
     keypath = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/mac', name="localhost")
-    response = aa.get(keypath)
+    response = aa.get(keypath, None, False)
     if response.ok():
         sysmac = response.content['sonic-device-metadata:mac'].encode('ascii')
     if sysmac == None:
@@ -273,7 +273,7 @@ def getAgentAddresses():
   datam = {}
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
   response = aa.get(keypath)
-  if response.ok() and 'ietf-snmp:listen' in response.content.keys():
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
     listenList = response.content['ietf-snmp:listen']
     if len(listenList) > 0:
       for listen in listenList:
@@ -292,17 +292,17 @@ def invoke(func, args):
     datam = {}
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/contact')
     response = aa.get(keypath)
-    if response.ok() and 'ietf-snmp-ext:contact' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:contact' in response.content.keys():
         datam['sysContact'] = response.content['ietf-snmp-ext:contact']
 
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/location')
     response = aa.get(keypath)
-    if response.ok() and 'ietf-snmp-ext:location' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:location' in response.content.keys():
         datam['sysLocation'] = response.content['ietf-snmp-ext:location']
 
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/trap-enable')
     response = aa.get(keypath)
-    if response.ok() and 'ietf-snmp-ext:trap-enable' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:trap-enable' in response.content.keys():
       trapEnable = response.content['ietf-snmp-ext:trap-enable']
       if trapEnable == True:
         datam['traps'] = 'enable'

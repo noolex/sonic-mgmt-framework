@@ -91,11 +91,10 @@ def run(func, args):
                         for mem_dict in memlst:
                             if mem_dict['name'] == pc_dict['lagname']:
                                 ifname = mem_dict['ifname']
-                                oper_status = invoke_api('get_sonic_port_sonic_port_port_table_port_table_list_oper_status', [ifname])
-                                if not oper_status.ok():
-                                    print oper_status.error_message()
-                                    return
-                                oper_status = oper_status.content['sonic-port:oper_status'][0].upper()
+                                if mem_dict['status'] == "enabled":
+                                    oper_status = "P"
+                                else:
+                                    oper_status = "D"
                                 pc_dict['members'].append(ifname+"("+oper_status+")")
                     show_cli_output(args[0], laglst)
                 else:

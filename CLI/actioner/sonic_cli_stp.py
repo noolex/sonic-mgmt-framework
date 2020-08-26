@@ -31,7 +31,7 @@ def stp_mode_get(aa):
     global g_stp_mode
     global g_stp_resp
 
-    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None)
+    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None, False)
     if not g_stp_resp.ok():
         print ("%Error: Entry not found or STP not enabled")
         return g_stp_resp,g_stp_mode
@@ -58,7 +58,7 @@ def generic_set_response_handler(response, args):
             #print("%Error: {}".format(str(resp_content)))
     #else:
     if not response.ok():
-	print(response.error_message())
+        print(response.error_message())
 
 
 def generic_delete_response_handler(response, args):
@@ -67,7 +67,7 @@ def generic_delete_response_handler(response, args):
         if resp_content is not None:
             print("%Error: {}".format(str(resp_content)))
     elif response.status_code != '404':
-	print(response.error_message())
+        print(response.error_message())
 
 
 def generic_show_response_handler(output_data, args):
@@ -579,7 +579,7 @@ def get_stp_response():
 
     output = {}
     api_response = aa.get(uri, None)
-    if api_response.ok():
+    if api_response.ok() and api_response.content is not None:
         if str in api_response.content and 'vlan' in api_response.content[str]:
             value = api_response.content[str]['vlan']
             for item in value:
@@ -603,7 +603,7 @@ def get_stp_vlan_response(vlan):
 
     output = {}
     api_response = aa.get(uri, None)
-    if api_response.ok():
+    if api_response.ok() and api_response.content is not None:
         if str in api_response.content:
             value = api_response.content[str]
             for item in value:
@@ -619,7 +619,7 @@ def get_stp_vlan_response(vlan):
 def show_stp_intfs(args):
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces')
     stp_intf_response = aa.get(uri, None)
-    if stp_intf_response.ok():
+    if stp_intf_response.ok() and stp_intf_response.content is not None:
         if 'openconfig-spanning-tree:interfaces' in stp_intf_response.content:
             value = stp_intf_response.content['openconfig-spanning-tree:interfaces']
             if 'interface' in value:
@@ -675,10 +675,10 @@ def show_stp_vlan_intfs(args):
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces/interface={name}', name=args[2])
     stp_intf_response = aa.get(uri, None)
     #stp_intf_response = aa.api_client.sanitize_for_serialization(stp_intf_response)
-    if stp_intf_response.ok():
+    if stp_intf_response.ok() and stp_intf_response.content is not None:
         output.update(stp_intf_response.content)
     else:
-        print ("% Error: Internal error")
+        #print ("% Error: Internal error")
         return None
 
     return output
@@ -725,7 +725,7 @@ def show_stp_inconsistentports(args):
 
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/global/config')
     stp_global_response = aa.get(uri, None)
-    if stp_global_response.ok():
+    if stp_global_response.ok() and stp_global_response.content is not None:
         output.update(stp_global_response.content)
 
     return output
@@ -738,7 +738,7 @@ def show_stp_inconsistentports_vlan(args):
 
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/global/config')
     stp_global_response = aa.get(uri, None)
-    if stp_global_response.ok():
+    if stp_global_response.ok() and stp_global_response.content is not None:
         output.update(stp_global_response.content)
 
     return output
@@ -901,7 +901,6 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
         cmd += '\n no spanning-tree portfast'
 
     cmd_prfx = '\n spanning-tree '
-    cfg = intf_dict
 
     if 'bpdu-filter' in intf_dict.keys():
         if intf_dict["bpdu-filter"] == True:
@@ -945,7 +944,9 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
             if 'interfaces' in vlan_dict.keys():
                 if 'interface' in vlan_dict['interfaces']:
                     vport_list = vlan_dict['interfaces']['interface']
-                    for vport_dict in vport_list and 'config' in vport_dict.keys():
+                    for vport_dict in vport_list:
+                        if 'config' not in vport_dict.keys():
+                            continue
                         if vport_dict['name'] == intf_dict['name']:
                             if 'cost' in vport_dict['config'].keys():
                                 cmd += cmd_prfx + 'vlan ' + str(vlan_dict['vlan-id']) + ' cost ' + str(vport_dict['config']['cost'])
@@ -1053,7 +1054,7 @@ def show_running_spanning_tree():
 
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp')  
     api_response = aa.get(uri, None)
-    if api_response.ok():
+    if api_response.ok() and api_response.content is not None:
         data = api_response.content['openconfig-spanning-tree:stp']
         if 'global' in data.keys() and \
                 'config' in data['global'].keys() and \

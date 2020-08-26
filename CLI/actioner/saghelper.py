@@ -25,14 +25,14 @@ import os
 import subprocess
 
 def get_netdev_all_sag_ifa(afi, isVarp=False):
-        if isVarp:
-            netdevPfx = 'varp'
-    output = subprocess.check_output("ip addr show type macvlan", shell=True)
-        else:
-            netdevPfx = 'Vlan'
-            output = subprocess.check_output("ip addr show type vlan", shell=True)
+    if isVarp:
+        netdevPfx = 'varp'
+        output = subprocess.check_output("ip addr show type macvlan", shell=True)
+    else:
+        netdevPfx = 'Vlan'
+        output = subprocess.check_output("ip addr show type vlan", shell=True)
     result = {}
-        iface = ""
+    iface = ""
     for row in output.split('\n'):
         row = row.lstrip()
         if len(row.split(" ")) < 2:
