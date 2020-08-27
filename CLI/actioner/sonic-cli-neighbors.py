@@ -373,7 +373,7 @@ def set_neighbors(keypath, body, del_req):
     if apiResponse.ok():
         response = apiResponse.content
     else:
-        print(response.error_message())
+        print(apiResponse.error_message())
         return -1
     return 0
 
