@@ -711,7 +711,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="network" help="Check BGP network route exists in IGP"/>
-  <COMMAND name="network import-check" help="" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/network_import_check">
+  <COMMAND name="network import-check" help="">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_network_import_check ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1218,7 +1218,7 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_fast_external_failover ${vrf-name} False</ACTION>
   </COMMAND>
   <COMMAND name="no network" help="Check BGP network route exists in IGP"/>
-  <COMMAND name="no network import-check" help="">
+  <COMMAND name="no network import-check" help="" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/network_import_check=false">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_network_import_check ${vrf-name} False</ACTION>
   </COMMAND>
   <COMMAND name="no route-map" help="Time in secs to wait before processing route-map changes"/>
