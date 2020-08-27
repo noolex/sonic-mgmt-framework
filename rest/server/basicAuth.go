@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-
 	"github.com/golang/glog"
 )
 
@@ -11,7 +10,7 @@ func BasicAuthenAndAuthor(r *http.Request, rc *RequestContext) error {
 	username, passwd, authOK := r.BasicAuth()
 	if !authOK {
 		glog.Errorf("[%s] User info not present", rc.ID)
-		return httpError(http.StatusUnauthorized, "")
+		return ErrNotFound
 	}
 
 	glog.Infof("[%s] Received user=%s", rc.ID, username)

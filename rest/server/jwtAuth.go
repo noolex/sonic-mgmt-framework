@@ -146,7 +146,7 @@ func JwtAuthenAndAuthor(r *http.Request, rc *RequestContext) (jwtToken, error) {
 	auth_hdr := r.Header.Get("Authorization")
 	if len(auth_hdr) == 0 {
 		glog.Errorf("[%s] JWT Token not present", rc.ID)
-		return token, httpError(http.StatusUnauthorized, "JWT Token not present")
+		return token, ErrNotFound
 	}
 	auth_parts := strings.Split(auth_hdr, " ")
 	if len(auth_parts) != 2 || auth_parts[0] != "Bearer" {

@@ -24,16 +24,19 @@ import (
 	"fmt"
 	"os/user"
 	"strings"
-
 	"github.com/Azure/sonic-mgmt-common/translib"
 	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
 	"sync"
+	"net/http"
 )
 
 type UserAuth map[string]bool
 
 var AuthLock sync.Mutex
+
+var ErrNotFound = httpError(http.StatusUnauthorized, "Authentication not provided")
+
 
 func (i UserAuth) String() string {
 	if i["none"] {

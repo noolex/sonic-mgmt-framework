@@ -507,28 +507,36 @@ func authMiddleware(inner http.Handler) http.Handler {
 		rc.ClientAuth = config.Auth
 		glog.V(2).Infof("Valid Auth Modes: %s", rc.ClientAuth)
 		var err error
+		var ret_err error
 		success := false
+
 		ts := time.Now()
 
 		if rc.ClientAuth.Enabled("password") || rc.ClientAuth.Enabled("user") {
 			err = BasicAuthenAndAuthor(r, rc)
 			if err == nil {
 				success = true
+			} else if err != ErrNotFound {
+				ret_err = err
 			}
 		}
-		if !success && rc.ClientAuth.Enabled("jwt") {
+		if !success && ret_err == nil && rc.ClientAuth.Enabled("jwt") {
 			_, err = JwtAuthenAndAuthor(r, rc)
 			if err == nil {
 				success = true
+			} else if err != ErrNotFound {
+				ret_err = err
 			}
 		}
-		if !success && rc.ClientAuth.Enabled("cert") {
+		if !success && ret_err == nil && rc.ClientAuth.Enabled("cert") {
 			err = ClientCertAuthenAndAuthor(r, rc)
 			if err == nil {
 				success = true
+			} else if err != ErrNotFound {
+				ret_err = err
 			}
 		}
-		if !success && rc.ClientAuth.Enabled("clisock") {
+		if !success && ret_err == nil && rc.ClientAuth.Enabled("clisock") {
 			err = CliUserAuthenAndAuthor(r, rc)
 			if err == nil {
 				success = true
@@ -540,7 +548,10 @@ func authMiddleware(inner http.Handler) http.Handler {
 		}
 
 		if !success {
-			writeErrorResponse(w, r, err)
+			if ret_err == nil {
+				ret_err = err
+			}
+			writeErrorResponse(w, r, ret_err)
 		} else {
 			inner.ServeHTTP(w, r)
 		}

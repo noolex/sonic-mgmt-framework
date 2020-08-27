@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 	"strings"
-
 	"github.com/golang/glog"
 )
 
@@ -16,7 +15,7 @@ func ClientCertAuthenAndAuthor(r *http.Request, rc *RequestContext) error {
 
 	if len(username) == 0 {
 		glog.Errorf("[%s] User info not present", rc.ID)
-		return httpError(http.StatusUnauthorized, "")
+		return ErrNotFound
 	}
 
 	if err := PopulateAuthStruct(username, &rc.Auth); err != nil {
