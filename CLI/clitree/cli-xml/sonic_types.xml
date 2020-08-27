@@ -1453,7 +1453,7 @@ limitations under the License.
        <PTYPE
         name="BURST"
         method="integer"
-        pattern="256..128000000"
+        pattern="250..125000000"
         help=""
         />
     <!--=======================================================-->
@@ -1467,9 +1467,10 @@ limitations under the License.
        <PTYPE
         name="QUEUE_BURST"
         method="integer"
-        pattern="0..128000000"
+        pattern="0..125000000"
         help=""
         />
+
     <!--=======================================================-->
        <PTYPE
         name="PORT_SEQ"
