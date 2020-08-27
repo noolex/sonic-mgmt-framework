@@ -136,11 +136,47 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
         syslog(LOG_WARNING, "clish_pyobj: Failed to allocate memory");
         return -1;
     }
-    char *p = strtok(buf, " ");
+
+    // trim leading and trailing whtespace
+    char *p = buf;
+    int len = strlen(buf);
+    while (isspace(p[len-1])) p[--len] = '\0';
+    while (*p && isspace(*p)) ++p, --len;
+
+    char *saved_ptr = '\0';
     size_t idx = 0;
-    while (p) {
-        token[idx++] = p;
-        p = strtok(NULL, " "); 
+    bool quoted = false;
+
+    while (*p) {
+	if (!saved_ptr) saved_ptr = p;
+	if (*p == ' ' && quoted == false) {
+	   while (*(p+1) && *(p+1)==' ') {
+	      memmove(p, p+1, strlen(p)-1);
+	      *(p+strlen(p)-1) = '\0';
+	   }
+	   *p = '\0';
+           token[idx++] = saved_ptr;
+	   saved_ptr = '\0';
+	} else if (*p == '\"') {
+	   if (!quoted && strchr((p+1), '\"')) {
+	      // open quote
+	      saved_ptr++;
+	      quoted = true;
+	   } else if (quoted) {
+	      // close quote
+	      quoted = false;
+	      *p = '\0';
+	   }
+	}
+	// escape chars
+	if (*p == '\\') {
+	   if (*(p+1) == '\\' || *(p+1) == '\"') {
+	      memmove(p, p+1, strlen(p)-1);
+	      *(p+strlen(p)-1) = '\0';
+	   }
+	}
+	if (*++p == '\0' && saved_ptr)
+           token[idx++] = saved_ptr;
     }
 
     PyObject *module, *name, *func, *args, *value;
