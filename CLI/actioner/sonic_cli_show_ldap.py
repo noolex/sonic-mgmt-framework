@@ -74,7 +74,8 @@ def get_sonic_ldap_servers():
         print("%Error: Get Failure")
         return
 
-    if (not 'openconfig-system:servers' in response.content) \
+    if     (not response.content)\
+        or (not 'openconfig-system:servers' in response.content)\
         or (not 'server' in response.content['openconfig-system:servers']):
         return
 
@@ -123,7 +124,8 @@ def get_sonic_ldap_maps():
         print("%Error: Get Failure")
         return
 
-    if (not (MODNAME_MAPS) in response.content) \
+    if         (not response.content) \
+            or (not (MODNAME_MAPS) in response.content) \
             or (not 'map' in response.content[MODNAME_MAPS]) \
             or (len(response.content[MODNAME_MAPS]['map']) == 0):
         return

@@ -661,12 +661,12 @@ def run(func, args):
         stat = {}
         tmpl = "show_crm_resources_all.j2"
         path = cc.Path(uri_stat)
-        resp = aa.get(path)
-        if (resp is not None) and resp.ok() and 'openconfig-system-crm:statistics' in resp.content:
+        resp = aa.get(path, None, False)
+        if (resp is not None) and resp.ok() and (resp.content is not None) and ('openconfig-system-crm:statistics' in resp.content):
             stat.update(resp.content['openconfig-system-crm:statistics'])
         path = cc.Path(uri_stat_acl)
-        resp = aa.get(path)
-        if (resp is not None) and resp.ok() and 'openconfig-system-crm:acl-statistics' in resp.content:
+        resp = aa.get(path, None, False)
+        if (resp is not None) and resp.ok() and (resp.content is not None) and ('openconfig-system-crm:acl-statistics' in resp.content):
             stat.update(resp.content['openconfig-system-crm:acl-statistics'])
         show_cli_output(tmpl, stat)
         return
@@ -676,7 +676,7 @@ def run(func, args):
 
     op = func.split('-')[0]
     if (op == 'show'):
-        resp = aa.get(path)
+        resp = aa.get(path, None, False)
     elif (op == 'no'):
         resp = aa.delete(path)
     elif (op == 'patch') and (body is not None):
@@ -684,7 +684,7 @@ def run(func, args):
     else:
         resp = None
     if (resp is not None) and resp.ok():
-        if tmpl is not None:
+        if (tmpl is not None) and (resp.content is not None):
             show_cli_output(tmpl, resp.content)
     else:
         print resp.error_message()

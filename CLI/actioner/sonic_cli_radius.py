@@ -313,7 +313,8 @@ def get_sonic_radius_servers(globals):
         print("%Error: Get Failure")
         return
 
-    if    (not 'openconfig-system:servers' in response.content)\
+    if    (not response.content)\
+       or (not 'openconfig-system:servers' in response.content)\
        or (not 'server' in response.content['openconfig-system:servers']):
         return
     server_list =  response.content['openconfig-system:servers']['server']

@@ -31,8 +31,11 @@ def run(func, args):
             print "No response"
             return 1
         if response.ok():
-            output = response.content['sonic-bgp-show:output']['response']
-            show_cli_output("dump.j2", output)
+            if response.content is not None:
+                content = response.content
+                if 'sonic-bgp-show:output' in content and 'response' in content['sonic-bgp-show:output']:
+                    output = response.content['sonic-bgp-show:output']['response']
+                    show_cli_output("dump.j2", output)
         else:
             print response.error_message()
             return 1

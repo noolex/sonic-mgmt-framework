@@ -23,7 +23,6 @@ import json
 import collections
 import re
 import time
-#import pdb
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
@@ -255,7 +254,7 @@ def invoke(func, args):
     #######################################
     if func == 'get_sonic_mclag_sonic_mclag':
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag')
-        return aa.get(keypath)
+        return aa.get(keypath, depth=None, ignore404=False)
 
     if func == 'get_sonic_mclag_sonic_mclag_mclag_domain':
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN')
@@ -263,7 +262,7 @@ def invoke(func, args):
 
     if func == 'get_sonic_mclag_sonic_mclag_mclag_interface_mclag_interface_list':
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_INTERFACE/MCLAG_INTERFACE_LIST={domain_id},{if_name}', domain_id=args[1], if_name=args[0])
-        return aa.get(keypath)
+        return aa.get(keypath, depth=None, ignore404=False)
 
     if func == 'get_sonic_mclag_sonic_mclag_mclag_local_intf_table_mclag_local_intf_table_list':
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_LOCAL_INTF_TABLE/MCLAG_LOCAL_INTF_TABLE_LIST={if_name}', if_name=args[0])
@@ -271,7 +270,7 @@ def invoke(func, args):
 
     if func == 'get_sonic_mclag_sonic_mclag_mclag_remote_intf_table_mclag_remote_intf_table_list':
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_REMOTE_INTF_TABLE/MCLAG_REMOTE_INTF_TABLE_LIST={domain_id},{if_name}', domain_id=args[1], if_name=args[0])
-        return aa.get(keypath)
+        return aa.get(keypath, depth=None, ignore404=False)
 
     if func == 'get_sonic_mclag_sonic_mclag_mclag_table':
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_TABLE')
@@ -299,7 +298,7 @@ def mclag_get_portchannel_traffic_disable(po_name):
     api_response = aa.get(path)
     if api_response.ok():
         response = api_response.content
-        if len(response) != 0:
+        if response is not None and len(response) != 0:
             if response['sonic-portchannel:traffic_disable']:
                 traffic_disable = 'Yes'
 
@@ -315,7 +314,7 @@ def mclag_get_local_if_port_isolate(po_name):
     api_response = aa.get(path)
     if api_response.ok():
         response = api_response.content
-        if len(response) != 0:
+        if response is not None and len(response) != 0:
             if response['sonic-mclag:port_isolate_peer_link']:
                 port_isolate = 'Yes'
 
@@ -333,7 +332,7 @@ def mclag_get_portchannel_oper_status(po_name):
     api_response = aa.get(path)
     if api_response.ok():
         response = api_response.content
-        if len(response) != 0:
+        if response is not None and len(response) != 0:
             po_oper_status = response['sonic-portchannel:oper_status']
     return po_oper_status
 
@@ -428,7 +427,7 @@ def mclag_show_mclag_interface(args):
             api_response = invoke("get_sonic_mclag_sonic_mclag_mclag_remote_intf_table_mclag_remote_intf_table_list", args[1:])
             if api_response.ok():
                 response = api_response.content
-                if len(response) != 0:
+                if response is not None and len(response) != 0:
                     mclag_remote_if = response['sonic-mclag:MCLAG_REMOTE_INTF_TABLE_LIST']
             
             count, mclag_iface_info = mclag_get_mclag_intf_dict(mclag_local_if, mclag_remote_if)
@@ -437,9 +436,10 @@ def mclag_show_mclag_interface(args):
             print("No MCLAG Interface " + args[1] + " in MCLAG domain " + args[2] + " or domain not found")
    
     else:
-        #error response
-        print api_response
-        print api_response.error_message()
+        if api_response.status_code != 404:
+            print api_response.error_message()
+        else:
+            print("No MCLAG Interface " + args[1] + " in MCLAG domain " + args[2] + " or domain not found")
 
     return
 
@@ -457,7 +457,7 @@ def mclag_show_mclag_brief(args):
     response = {}
     if api_response.ok():
         response = api_response.content
-        if len(response) != 0 and 'MCLAG_DOMAIN' in response['sonic-mclag:sonic-mclag']:
+        if response is not None and len(response) != 0 and 'MCLAG_DOMAIN' in response['sonic-mclag:sonic-mclag']:
             #{"MCLAG_DOMAIN_LIST":[{"domain_id":"5","peer_ip":"192.168.1.2","peer_link":"PortChannel30","source_ip":"192.168.1.1"}]}
             domain_cfg_info = {}
             #set default values - somehow it is not picking up from rest API, need to check
@@ -531,7 +531,7 @@ def mclag_show_mclag_separate_ip(args):
     response = {}
     if api_response.ok():
         response = api_response.content
-        if len(response) != 0:
+        if response is not None and len(response) != 0:
             show_cli_output(args[0], response)
         else:
             print("MCLAG separate IP interface not configured")
@@ -614,6 +614,5 @@ def run(func, args):
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
-    #pdb.set_trace()
     run(sys.argv[1], sys.argv[2:])
 
