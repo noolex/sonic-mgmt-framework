@@ -33,36 +33,39 @@ def prompt(msg):
         print ("Invalid input, expected [y/N]")
         x = raw_input(prompt_msg)
     if x.lower() == "n":
-        exit(0)
+        return False 
+    else:
+        return True
 
 def invoke(func, args):
     body = None
+    clearit = False
     aa = cc.ApiClient()
     if func == 'rpc_sonic_interface_clear_counters':
         if args[0] == "all":
-            prompt("Clear all Interface counters")
+            clearit = prompt("Clear all Interface counters")
         elif args[0] == "PortChannel":
-            prompt("Clear all PortChannel interface counters")
+            clearit = prompt("Clear all PortChannel interface counters")
         elif args[0] == "Eth" or args[0] == "Ethernet":
             args[0] = "Ethernet"
-            prompt("Clear all Ethernet interface counters")
+            clearit = prompt("Clear all Ethernet interface counters")
         else:
-            prompt("Clear counters for " + args[0])
-        keypath = cc.Path('/restconf/operations/sonic-interface:clear_counters')
-        body = {"sonic-interface:input":{"interface-param":args[0]}}
-        return aa.post(keypath, body)
-    else:
-        return 
+            clearit = prompt("Clear counters for " + args[0])
+
+        if clearit == True:
+            keypath = cc.Path('/restconf/operations/sonic-interface:clear_counters')
+            body = {"sonic-interface:input":{"interface-param":args[0]}}
+            return aa.post(keypath, body)
+
+    return None
 
 def run(func, args):
     try:
         api_response = invoke(func,args)
-        status = api_response.content["sonic-interface:output"]
-        if status["status"] != 0:
-            print status["status-detail"]
-    # prompt() returns SystemExit exception when exit() is called
-    except SystemExit:
-        return
+        if api_response is not None:
+            status = api_response.content["sonic-interface:output"]
+            if status["status"] != 0:
+                print status["status-detail"]
     except:
         print "%Error: Transaction Failure"
     return
