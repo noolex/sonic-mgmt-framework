@@ -20,7 +20,6 @@
 import sys
 import time
 import json
-import pdb
 import ast
 from rpipe_utils import pipestr
 from collections import OrderedDict
@@ -126,7 +125,7 @@ def generate_show_ip_ospf_interfaces(vrf, template, intfname):
     api = cc.ApiClient()
     keypath = []
     interfacename = ""
-    
+    countNbr = 0 
     vrfName = vrf
     interfacename = intfname
 
@@ -177,6 +176,17 @@ def generate_show_ip_ospf_interfaces(vrf, template, intfname):
     areasInfo['area'] = areaInfoList
     areasOuter = OrderedDict()
     areasOuter['openconfig-network-instance:areas'] = areasInfo  
+    if '.' in intfname or ':' in intfname:
+        countNbr = ospfv2_filter_neighbors_by_neighbor_id(areasOuter, intfname)
+        if countNbr == 0 and template == "show_ip_ospf_neighbor_detail.j2":
+            print("No such interface.")
+            return
+            
+        # since we have already filtered above, remove filter (don't filter in template)
+        intfparam = {'interfacename': intfname }
+        dlist.remove(intfparam)
+        # Change template to "neighbor detail", evenif "detail" option is not mentioned in CLI
+        template = "show_ip_ospf_neighbor_detail.j2"
     dlist.append(areasOuter)
     show_cli_output(template, dlist)
 
@@ -312,6 +322,24 @@ def ospfv2_filter_lsdb_by_ls_id(response, ls_id):
                         while temp_lsa_list:
                             lsa_type['lsas']['openconfig-ospfv2-ext:lsa-ext'].append(temp_lsa_list.pop())
 
+def ospfv2_filter_neighbors_by_neighbor_id(response, intfname):
+    count = 0
+    if 'openconfig-network-instance:areas' in  response and 'area' in response['openconfig-network-instance:areas']:
+        for i in range(len(response['openconfig-network-instance:areas']['area'])):
+            areainfo = response['openconfig-network-instance:areas']['area'][i]
+            if 'interfaces' in areainfo and 'interface' in areainfo['interfaces']:
+                for j in range(len(areainfo['interfaces']['interface'])):
+                    interfaceinfo = areainfo['interfaces']['interface'][j]
+                    if 'openconfig-ospfv2-ext:neighbors-list' in interfaceinfo and 'neighbor' in interfaceinfo['openconfig-ospfv2-ext:neighbors-list']:
+                        temp_nbr_list = []
+                        while interfaceinfo['openconfig-ospfv2-ext:neighbors-list']['neighbor']:
+                            nbr = interfaceinfo['openconfig-ospfv2-ext:neighbors-list']['neighbor'].pop()
+                            if 'neighbor-id' in nbr and nbr['neighbor-id'] == intfname:
+                                temp_nbr_list.append(nbr)
+                        while temp_nbr_list:
+                            interfaceinfo['openconfig-ospfv2-ext:neighbors-list']['neighbor'].append(temp_nbr_list.pop())
+                            count = count + 1
+    return count
 
 # The below function prepares area_id_list e.g. ['0.0.0.0', '0.0.0.1'] 
 # For area_id = 5, it is internally treated as string 0.0.0.5
