@@ -482,6 +482,18 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="VRF_OR_MGMT"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(mgmt)$"
+        help="WORD"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="VRF"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$"
+        help="WORD"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="STR_ASN_LST"
         pattern="^[0-9\,]*$"
         help="asn list"

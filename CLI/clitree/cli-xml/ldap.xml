@@ -93,12 +93,6 @@ limitations under the License.
      />
      
 <PTYPE
-     name="LDAP_VRF"
-     pattern="(Vrf(([0-9A-Za-z]){1,28}))|(mgmt)"
-     help="Name of VRF (Max size 32, (mgmt, or prefixed by Vrf)"
-/>
-
-<PTYPE
      name="BASE_DN"
      pattern=".*"
      help="Base distinguished name"
@@ -685,7 +679,7 @@ limitations under the License.
       command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}"
       command_keys="ldap_type=global"
       >
-        <PARAM name="vrf_name" help="" ptype="LDAP_VRF"
+        <PARAM name="vrf_name" help="Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)" ptype="VRF_OR_MGMT"
           dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/vrf_name"
           >
         </PARAM>
