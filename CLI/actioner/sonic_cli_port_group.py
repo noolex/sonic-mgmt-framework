@@ -20,7 +20,7 @@ def invoke(func, args):
 
     if func == 'get_openconfig_port_group_port_groups_openconfig_port_group_port_groups_state':
         resp = cc.Response(requests.Response())
-        resp.content = {}
+        resp.content = OrderedDict()
         path = cc.Path('/restconf/data/openconfig-port-group:port-groups/port-group')
         rsp = aa.get(path)
         if rsp.content and 'openconfig-port-group:port-group' in rsp.content:
