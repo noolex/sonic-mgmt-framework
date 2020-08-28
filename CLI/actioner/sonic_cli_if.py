@@ -464,6 +464,17 @@ def invoke_api(func, args=[]):
         if responseVlanVrfTbl.ok():
             d.update(responseVlanVrfTbl.content)
 
+        path = cc.Path('/restconf/data/sonic-sag:sonic-sag/SAG_INTF/SAG_INTF_LIST')
+        responseSAGTbl =  api.get(path)
+        if responseSAGTbl.ok():
+            if 'sonic-sag:SAG_INTF_LIST' in responseSAGTbl.content:
+                for sag in responseSAGTbl.content['sonic-sag:SAG_INTF_LIST']:
+                    if 'v6GwIp' in sag and func == 'ip_interfaces_get':
+                        del sag['v6GwIp']
+                    if 'v4GwIp' in sag and func == 'ip6_interfaces_get':
+                        del sag['v4GwIp']
+            d.update(responseSAGTbl.content)
+
 	return d
         
     # Add members to port-channel
