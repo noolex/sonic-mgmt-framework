@@ -92,6 +92,16 @@ def patch_stp_global_bpdu_filter(args):
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/global/config/bpdu-filter')
     return aa.patch(uri, body)
 
+def config_stp_loopguard(args):
+    body = { "openconfig-spanning-tree:loop-guard": args[0] }
+    uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/global/config/loop-guard')
+    return aa.patch(uri, body)
+
+def config_stp_portfast(args):
+    body = {"openconfig-spanning-tree-ext:portfast": args[0]}
+    uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/global/config/openconfig-spanning-tree-ext:portfast')
+    return aa.patch(uri, body)
+
 
 def delete_stp_vlan_config(args):
     op_str = args[0].strip()
@@ -350,10 +360,13 @@ def patch_stp_intf_bpdu_guard(args):
 
 def patch_stp_intf_root_guard(args):
     body = None
-    if len(args) == 2:
-        body = { "openconfig-spanning-tree:guard": 'NONE' }
+    if args[1] == "root":
+        body = { "openconfig-spanning-tree:guard": "ROOT"}
+    elif args[1] == "loop":
+        body = { "openconfig-spanning-tree:guard": "LOOP"}
     else:
-        body = { "openconfig-spanning-tree:guard": 'ROOT' }
+        body = { "openconfig-spanning-tree:guard": "NONE"}
+
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces/interface={name}/config/guard', name=args[0])
     return aa.patch(uri, body)
 
@@ -517,6 +530,9 @@ def delete_stp_intf_bpdu_filter(args):
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces/interface={name}/config/bpdu-filter', name=args[0])
     return aa.delete(uri, None)
 
+def delete_stp_intf_guard(args):
+    uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/interfaces/interface={name}/config/guard', name=args[0])
+    return aa.delete(uri, None)
 
 def delete_stp_vlan_intf_config(args):
     if args[0].strip() == "cost":
@@ -758,6 +774,8 @@ request_handlers = {
         'patch_openconfig_spanning_tree_ext_stp_global_config_hello_time': patch_stp_global_hello_time,
         'patch_openconfig_spanning_tree_ext_stp_global_config_max_age': patch_stp_global_max_age,
         'patch_openconfig_spanning_tree_ext_stp_global_config_bridge_priority': patch_stp_global_bridge_priority,
+        'patch_openconfig_spanning_tree_stp_global_config_loop_guard': config_stp_loopguard, 
+        'patch_openconfig_spanning_tree_ext_stp_global_config_portfast': config_stp_portfast, 
         'config_stp_vlan_subcmds': config_stp_vlan_subcmds,
         'config_stp_if_subcmds': config_stp_intf_subcmds,
         'config_stp_if_vlan_subcmds': config_stp_vlan_intf_subcmds,
@@ -779,6 +797,7 @@ request_handlers = {
         'delete_openconfig_spanning_tree_ext_stp_global_config_max_age': delete_stp_global_max_age,
         'delete_openconfig_spanning_tree_ext_stp_global_config_bridge_priority': delete_stp_global_bridge_priority,
         'delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter': delete_stp_intf_bpdu_filter,
+        'delete_openconfig_spanning_tree_stp_interfaces_interface_config_guard': delete_stp_intf_guard,
         'delete_stp_vlan_subcmds': delete_stp_vlan_config,
         'delete_stp_if_subcmds': delete_stp_intf_config,
         'delete_stp_if_vlan_subcmds': delete_stp_vlan_intf_config,
@@ -805,6 +824,8 @@ response_handlers = {
         'patch_openconfig_spanning_tree_ext_stp_global_config_hello_time': generic_set_response_handler,
         'patch_openconfig_spanning_tree_ext_stp_global_config_max_age': generic_set_response_handler,
         'patch_openconfig_spanning_tree_ext_stp_global_config_bridge_priority': generic_set_response_handler,
+        'patch_openconfig_spanning_tree_stp_global_config_loop_guard': generic_set_response_handler,
+        'patch_openconfig_spanning_tree_ext_stp_global_config_portfast': generic_set_response_handler, 
         'config_stp_vlan_subcmds': generic_set_response_handler,
         'config_stp_if_subcmds': generic_set_response_handler,
         'config_stp_if_vlan_subcmds': generic_set_response_handler,
@@ -826,6 +847,7 @@ response_handlers = {
         'delete_openconfig_spanning_tree_ext_stp_global_config_max_age': generic_delete_response_handler,
         'delete_openconfig_spanning_tree_ext_stp_global_config_bridge_priority': generic_delete_response_handler,
         'delete_openconfig_spanning_tree_stp_interfaces_interface_config_bpdu_filter': generic_delete_response_handler,
+        'delete_openconfig_spanning_tree_stp_interfaces_interface_config_guard': generic_delete_response_handler,
         'delete_stp_vlan_subcmds': generic_delete_response_handler,
         'delete_stp_if_subcmds': generic_delete_response_handler,
         'delete_stp_if_vlan_subcmds': generic_delete_response_handler,

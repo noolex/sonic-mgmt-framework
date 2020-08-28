@@ -583,7 +583,7 @@ limitations under the License.
         	ptype="SUBCOMMAND" mode="subcommand"
             >
         </PARAM>
-        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_global_config_loop_guard True&#xA;
+        <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_stp_global_config_loop_guard True&#xA;
 		</ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -609,7 +609,7 @@ limitations under the License.
         	ptype="SUBCOMMAND" mode="subcommand"
             >
         </PARAM>
-        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_portfast True&#xA;
+        <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_global_config_portfast True&#xA;
 		</ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -873,7 +873,7 @@ limitations under the License.
         	ptype="SUBCOMMAND" mode="subcommand"
             >
         </PARAM>
-        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_stp_global_config_loop_guard False&#xA;
+        <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_stp_global_config_loop_guard False&#xA;
 		</ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -899,7 +899,7 @@ limitations under the License.
         	ptype="SUBCOMMAND" mode="subcommand"
             >
         </PARAM>
-        <ACTION> python $SONIC_CLI_ROOT/sonic-cli-stp.py patch_openconfig_spanning_tree_ext_stp_global_config_portfast False&#xA;
+        <ACTION builtin="clish_pyobj"> sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_global_config_portfast False&#xA;
 		</ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -1125,13 +1125,34 @@ limitations under the License.
             sonic(conf-if-Ethernet0)# no spanning-tree bpduguard 
             sonic(conf-if-Ethernet0)# no spanning-tree cost
             sonic(conf-if-Ethernet0)# no spanning-tree enable
-            sonic(conf-if-Ethernet0)# no spanning-tree portfast
             sonic(conf-if-Ethernet0)# no spanning-tree port-priority
             sonic(conf-if-Ethernet0)# no spanning-tree uplinkfast 
             sonic(conf-if-Ethernet0)# no spanning-tree link-type
             sonic(conf-if-Ethernet0)# no spanning-tree port type
         </EXAMPLE>
     </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no spanning-tree portfast"
+        help="Disables portfast on the interface"
+        ptype="SUBCOMMAND"
+        mode="subcommand">
+        <ACTION builtin="clish_pyobj">
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} False&#xA;
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure spanning-tree portfast on an interface.
+            </DESCRIPTION>
+            <USAGE>
+                This command disables portfast on an interface
+            </USAGE>
+            <EXAMPLE>
+                sonic(config)# interface Ethernet 0
+                sonic(conf-if-Ethernet0)# no spanning-tree portfast
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -1365,7 +1386,7 @@ limitations under the License.
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
-        sonic-cli-stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} True&#xA;
+        sonic_cli_stp patch_openconfig_spanning_tree_ext_stp_interfaces_interface_config_portfast ${iface} True&#xA;
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
