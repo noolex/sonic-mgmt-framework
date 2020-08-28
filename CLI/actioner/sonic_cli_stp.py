@@ -31,16 +31,16 @@ def stp_mode_get(aa):
     global g_stp_mode
     global g_stp_resp
 
-    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None, False)
+    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config', None, False)
     if not g_stp_resp.ok():
         print ("%Error: Entry not found or STP not enabled")
         return g_stp_resp,g_stp_mode
 
     #g_stp_resp = aa.api_client.sanitize_for_serialization(g_stp_resp)
 
-    if g_stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
+    if g_stp_resp['openconfig-spanning-tree:config']['enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
         g_stp_mode = "PVST"
-    elif g_stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
+    elif g_stp_resp['openconfig-spanning-tree:config']['enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
         g_stp_mode = "RAPID_PVST"
     else:
         print ("%Error: Invalid STP mode")
