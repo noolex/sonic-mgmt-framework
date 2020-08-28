@@ -1,7 +1,9 @@
 {{ ' ' }}
 {{ 'Software Version'.ljust(18) }}: {{ json_output['software-version'] }}
+{{ 'Product'.ljust(18) }}: {{ json_output['product-description'] }}
 {{ 'Distribution'.ljust(18) }}: {{ json_output['distribution-version'] }}
 {{ 'Kernel'.ljust(18) }}: {{ json_output['kernel-version'] }}
+{{ 'Config DB Version'.ljust(18) }}: {{ json_output['config-db-version'] }}
 {{ 'Build Commit'.ljust(18) }}: {{ json_output['build-commit'] }}
 {{ 'Build Date'.ljust(18) }}: {{ json_output['build-date'] }}
 {{ 'Built By'.ljust(18) }}: {{ json_output['built-by'] }}
