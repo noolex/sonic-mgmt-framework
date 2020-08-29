@@ -219,7 +219,7 @@ limitations under the License.
         >
         <PARAM
             name="cir"
-            help="0 - 400000000"
+            help="32-400000000 kbps for physical interface queues, 0-100000 pps for CPU interface queues"
             ptype="QUEUE_CIR_PIR"
             >
         </PARAM>
@@ -238,7 +238,7 @@ limitations under the License.
         >
         <PARAM
             name="bc"
-            help="Committed Burst Size"
+            help="250-125000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
             ptype="QUEUE_BURST"
             >
         </PARAM>
@@ -257,7 +257,7 @@ limitations under the License.
         >
         <PARAM
             name="pir"
-            help="0 - 400000000"
+            help="32-400000000 kbps for physical interface queues, 0-100000 pps for CPU interface queues"
             ptype="QUEUE_CIR_PIR"
             >
         </PARAM>
@@ -279,7 +279,7 @@ limitations under the License.
         >
         <PARAM
             name="be"
-            help="Peak Burst Size"
+            help="250-125000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
             ptype="QUEUE_BURST"
             >
         </PARAM>
@@ -317,7 +317,7 @@ limitations under the License.
         >
         <PARAM
             name="pir"
-            help="0 - 400000000 Kilo bits per second"
+            help="32 - 400000000 Kilo bits per second"
             ptype="CIR_PIR_KBPS"
             >
         </PARAM>

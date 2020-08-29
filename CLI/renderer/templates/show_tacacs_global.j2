@@ -8,9 +8,6 @@
 {% set key = json_output['openconfig-system:config']['openconfig-system-ext:secret-key'] %}
 
 {% if srcintf -%}
-{% if srcintf == "eth0" %}
-{% set srcintf = "Management0" %}
-{% endif %}
 {{'source-interface  : '}}{{srcintf}}
 {% endif %}
 {% if timeout -%}

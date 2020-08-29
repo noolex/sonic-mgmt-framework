@@ -59,7 +59,7 @@
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${authtype} ${ip-address} &#xA;</ACTION>
     </COMMAND>
   
-    <COMMAND name="ip ospf authentication-key" help="Configures OSPFv2 plain text authentication type password" >
+    <COMMAND name="ip ospf authentication-key" help="Configures OSPFv2 plain text authentication type password" escape_chars="" >
       <PARAM name="authkey" help="Authentication password" ptype="STRING" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
       </PARAM>

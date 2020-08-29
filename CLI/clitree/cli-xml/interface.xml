@@ -769,6 +769,7 @@ limitations under the License.
 
         <COMMAND
             name="description"
+            escape_chars=""
             help="Textual description">
             <PARAM
                 name="desc"
