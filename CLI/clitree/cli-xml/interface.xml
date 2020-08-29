@@ -776,7 +776,7 @@ limitations under the License.
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
+	    <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
