@@ -370,9 +370,12 @@ def getDetails(fn, args):
         aginginterval = do_get(url)
         if (feature_status['ok'] and switch_status['ok'] and sessions['ok'] and aginginterval['ok']):
             if ((feature_status['content'] is not None) and (switch_status['content'] is not None)
-                and (sessions['content'] is not None) and (aginginterval['content'] is not None)):
+                and (sessions['content'] is not None)):
+                interval = {}
+                if aginginterval['content'] is not None:
+                  interval = aginginterval['content']
                 details['response'] = {'feature': 'dropmonitoring', 'feature_status': feature_status['content'],
-                        'switch_status': switch_status['content'], 'sessions': sessions['content'], 'aginginterval': aginginterval['content']}
+                        'switch_status': switch_status['content'], 'sessions': sessions['content'], 'aginginterval': interval}
         details['do_request'] = False
         details['ok'] = True
     elif fn == "show_dropmonitor_sessions":
@@ -553,7 +556,7 @@ def invoke_api(fn, args):
     else:
         if details['do_request']:
             response = getResponse(details)
-            details['status_code'] = response.status_code
+            details['status_code'] = response.response.status_code
             details['ok'] = response.ok()
             details['response'] = response.content
             details['error_message'] = response.error_message()
@@ -566,13 +569,21 @@ def run(fn, args):
             if result['method'] == 'GET':
                 show_cli_output(result['template'], result['response'], **(helper_functions))
         else:
-            if 'description' in result:
-                #description = result['description'].split("%Error: ",1)[1]
-                description = result['description']
-                message = "\n{} '{}' not found.\n".format(description, result['name']) 
-                print message
+            if (result['status_code'] == 404):
+                if 'description' in result:
+                    description = result['description']
+                    if ("%Error:" in description):
+                        description = (description.split("%Error:",1)[1]).strip()
+                    message = "\n{} '{}' not found.\n".format(description, result['name'])
+                    print message
     else:
-        print "\n" + result['error_message'] + "\n"
+        message = result['error_message']
+        if ("%Error:" in message):
+            message = (message.split("%Error:",1)[1]).strip()
+        if "does not match" in message:
+            message = "Invalid input the command."
+        print "\n" + message + "\n"
+    return 0
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
