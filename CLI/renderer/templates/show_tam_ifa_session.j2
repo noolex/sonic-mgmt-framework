@@ -1,0 +1,30 @@
+{% if json_output -%}
+{% if "openconfig-tam:ifa-session" in json_output %}
+{% set flows = json_output['openconfig-tam:ifa-session'] %}
+{% if flows|length > 0 %}
+{% set flow = flows[0]['config'] %}
+{{' '}}
+Name        : {{flow['name']}}    
+Flow Group  : {{'-' if flow['flowgroup'] == "" else flow['flowgroup']}}
+Collector   : {{'-' if flow['collector'] == "" else flow['collector']}}
+Sampler     : {{'-' if flow['sample-rate'] == "" else flow['sample-rate']}}
+{% if flow['node-type'] == "INGRESS" %}
+{% set node_type = "Ingress" %}
+{% elif flow['node-type'] == "EGRESS" %}
+{% set node_type = "Egress" %}
+{% else %}
+{% set node_type = "Intermediate" %}
+{% endif %}
+Node Type   : {{node_type}}
+{{' '}}
+{% else %}
+{{' '}}
+Session is not configured.
+{{' '}}
+{% endif %}
+{% endif %}
+{% else %}
+{{' '}}
+Session is not configured.
+{{' '}}
+{% endif %}
