@@ -21,6 +21,7 @@ import sys
 import time
 import json
 import ast
+import os
 from rpipe_utils import pipestr
 from collections import OrderedDict
 import cli_client as cc
@@ -439,6 +440,7 @@ def invoke_show_api(func, args=[]):
                 advrouter = ""
                 selforg = False
                 skipNextArg = False
+                maxAge = ""
 
                 for dbarg in args[j:]:
                     if skipNextArg == True:
@@ -458,13 +460,30 @@ def invoke_show_api(func, args=[]):
                     elif (dbarg == "adv-router"):
                         advrouter = args[j + 1]
                         skipNextArg = True
+                    elif (dbarg == "max-age"):
+                        maxAge = args[j]
                     elif (dbarg == "self-originate"):
                         selforg = True
 
                     j = j + 1
-
                 if (dbtype == "database"):
-                    return generate_show_ip_ospf_database(vrf, "show_ip_ospf_database.j2", lsid, advrouter, selforg)
+                    if maxAge == "" :
+                        return generate_show_ip_ospf_database(vrf, "show_ip_ospf_database.j2", lsid, advrouter, selforg)
+                    else:
+                        full_cmd = os.getenv('USER_COMMAND', None).split('|')[0]
+                        keypath = cc.Path('/restconf/operations/sonic-ospfv2-show:show-ospfv2-max-age-lsa')
+                        body = {"sonic-ospfv2-show:input": { "cmd":full_cmd }}
+                        response = cc.ApiClient().post(keypath, body)
+                        if not response:
+                            print "No response"
+                            return 1
+                        if response.ok():
+                            if 'sonic-ospfv2-show:output' in response.content and 'response' in response.content['sonic-ospfv2-show:output']:
+                                output = response.content['sonic-ospfv2-show:output']['response']
+                                show_cli_output("dump.j2", output)
+                        else:
+                            return 1
+                        return
                 if (dbtype == "router"):
                     return generate_show_ip_ospf_database(vrf, "show_ip_ospf_database_router.j2", lsid, advrouter, selforg)
                 elif (dbtype == "network"):
