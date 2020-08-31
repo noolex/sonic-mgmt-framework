@@ -59,11 +59,14 @@
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${authtype} ${ip-address} &#xA;</ACTION>
     </COMMAND>
   
-    <COMMAND name="ip ospf authentication-key" help="Configures OSPFv2 plain text authentication type password" >
-      <PARAM name="authkey" help="Authentication password" ptype="STRING" >
+    <COMMAND name="ip ospf authentication-key" help="Configures OSPFv2 plain text authentication type password" escape_chars="">
+      <PARAM name="authkey" help="Authentication password" ptype="STRING">
+        <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+            <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
+        </PARAM>
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
       </PARAM>
-      <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key ${iface} ${vlan_name} ${po_name} ${lo_name} ${authkey} ${ip-address} &#xA;</ACTION>
+      <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key ${iface} ${vlan_name} ${po_name} ${lo_name} ${authkey} ${encrypted} ${ip-address} &#xA;</ACTION>
     </COMMAND>
 
     <COMMAND name="no ip ospf authentication-key" help="Unconfigures OSPFv2 plain text authentication type password" >
@@ -133,15 +136,18 @@
 
     </COMMAND>
 
-    <COMMAND name="ip ospf message-digest-key" help="Configures OSPFv2 message digest key and password" >
+    <COMMAND name="ip ospf message-digest-key" help="Configures OSPFv2 message digest key and password" escape_chars="" command_keys="name=*,address=*,authentication-key-id=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE_MD_AUTHENTICATION/OSPFV2_INTERFACE_MD_AUTHENTICATION_LIST/name={name},address={address},authentication-key-id={authentication-key-id}" render_command_cb='interface_ip_ospf_md_auth'>
       <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" >
         <PARAM name="md5" help="Uses MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name = "md5key" help = "Message digest password" ptype = "STRING" >
+            <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
+            </PARAM>
             <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
           </PARAM>
         </PARAM>
       </PARAM>
-      <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${keyid} ${md5key} ${ip-address} &#xA;</ACTION>
+      <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${keyid} ${md5key} ${encrypted} ${ip-address} &#xA;</ACTION>
     </COMMAND>
 
     <COMMAND name="no ip ospf message-digest-key" help="Unconfigures OSPFv2 message digest key and password" >
