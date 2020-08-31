@@ -80,11 +80,11 @@ def get_keypath(func,args):
         else:
             body = {"sonic-neighbor:input":{"family": rcvdFamily, "ip": rcvdIpAddr, "ifname": rcvdIntfName, "vrf": rcvdVrf}}
     elif func == 'set_ipv4_arp_timeout':
-        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv4_arp_timeout')
-        body = {"sonic-neighbor:ipv4_arp_timeout": int(args[0])}
+        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST')
+        body = {"sonic-neighbor:NEIGH_GLOBAL_LIST": [{"sonic-neighbor:name": "Values", "sonic-neighbor:ipv4_arp_timeout": int(args[0])}]}
     elif func == 'set_ipv6_nd_cache_expiry':
-        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv6_nd_cache_expiry')
-        body = {"sonic-neighbor:ipv6_nd_cache_expiry": int(args[0])}
+        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST')
+        body = {"sonic-neighbor:NEIGH_GLOBAL_LIST": [{"sonic-neighbor:name": "Values", "sonic-neighbor:ipv6_nd_cache_expiry": int(args[0])}]}
     elif func == 'del_ipv4_arp_timeout':
         keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv4_arp_timeout')
     elif func == 'del_ipv6_nd_cache_expiry':
