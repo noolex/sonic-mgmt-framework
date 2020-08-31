@@ -34,13 +34,9 @@ PYLINT_DONE     := $(SONIC_CLI_ROOT)/pylint/.pylint_done
 TOOLS_DIR       := $(TOPDIR)/tools
 LINTER          := $(TOOLS_DIR)/test/pylint.sh
 
-all: $(CLIDEPS) $(SUBDIRS) $(PYLINT_DONE)
-$(SUBDIRS):
-	$(MAKE) -C $@
-
 .PHONY: clean
 
-all: $(PYLINT_DONE)
+all: $(CLIDEPS) $(PYLINT_DONE)
 	for dir in $(SUBDIRS); do \
     	$(MAKE) -C $$dir -f Makefile $@; \
 	done

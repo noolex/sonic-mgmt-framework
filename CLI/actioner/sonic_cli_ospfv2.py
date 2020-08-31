@@ -13,6 +13,7 @@ import ast
 from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+from six.moves.urllib.parse import quote
 
 ospf_config_cli_log_enabled = False
 def ospf_cli_log(log_string) :
@@ -379,7 +380,7 @@ def delete_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_add
     ospf_cli_log("delete_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_field))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name, 'ospfv2')
     ospf_rtr_pif_uri += '/global/openconfig-ospfv2-ext:passive-interfaces'
-    ospf_rtr_pif_uri += '/passive-interface={},{}'.format(intf_name, if_addr)
+    ospf_rtr_pif_uri += '/passive-interface={},{}'.format(quote(intf_name, safe=''), if_addr)
     if cfg_field != '' :
         ospf_rtr_pif_uri += '/{}'.format(cfg_field)
     ospf_cli_log("delete_ospf_router_passive_interface_config: uri {}".format(ospf_rtr_pif_uri))
@@ -389,7 +390,7 @@ def delete_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_add
 
 ############## OSPF interface config
 def get_ospf_intf_uri(intf_name, sub_intf=0):
-    ospf_intf_patch_uri = '/restconf/data/openconfig-interfaces:interfaces/interface={}'.format(intf_name)
+    ospf_intf_patch_uri = '/restconf/data/openconfig-interfaces:interfaces/interface={}'.format(quote(intf_name, safe=''))
     #ospf_intf_patch_uri += '/subinterfaces/subinterface={}'.format(sub_intf)
     return ospf_intf_patch_uri
 

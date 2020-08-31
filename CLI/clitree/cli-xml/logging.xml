@@ -33,6 +33,9 @@ limitations under the License.
         <PARAM name="lines" help="Output of last NUM lines" optional="true" ptype="LOGGING_REMOTE_PORT" default ="0" > </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging tpcm.j2 ${lines} </ACTION>
     </COMMAND>
+    <COMMAND help="total number of logging" name="show logging count">
+        <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_count infra_reboot.j2</ACTION>
+    </COMMAND>
     <COMMAND name="show logging servers" help="Displays logging server information">
       <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_servers </ACTION>
       <DOCGEN>

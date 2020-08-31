@@ -179,7 +179,7 @@ def invoke_api(func, args=[]):
         speed_map = {"10MBPS":"SPEED_10MB", "100MBPS":"SPEED_100MB", "1GIGE":"SPEED_1GB", "auto":"SPEED_1GB", "10GIGE":"SPEED_10GB",
                         "25GIGE":"SPEED_25GB", "40GIGE":"SPEED_40GB", "100GIGE":"SPEED_100GB" }
         if args[1] not in speed_map.keys():
-            print("%Error: Invalid port speed config")
+            print("%Error: Unsupported speed")
             return None
         else:
             speed = speed_map.get(args[1])

@@ -47,6 +47,8 @@ def invoke(func, args):
 
         if args.source is not '':
             entry["src_port"] = args.source
+            if args.direction is '':
+                return aa._make_error_response('%Error: Direction is not set')
 
         if args.source_lag is not '':
             entry["src_port"] = args.source_lag
