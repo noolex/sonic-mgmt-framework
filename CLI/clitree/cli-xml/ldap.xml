@@ -247,7 +247,7 @@ limitations under the License.
 				</PARAM>
 
 				<PARAM name="bind-timelimit" help="Configures global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	    
 				<PARAM name="idle-timelimit" help="Configures global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
@@ -388,7 +388,7 @@ limitations under the License.
 				</PARAM>
 
 				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	    
 				<PARAM name="idle-timelimit" help="Configures idle time limit" ptype="SUBCOMMAND" mode="subcommand">
@@ -497,7 +497,7 @@ limitations under the License.
 				</PARAM>
 
 				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	
 				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
@@ -594,7 +594,7 @@ limitations under the License.
 				</PARAM>
 
 				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	
 				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
