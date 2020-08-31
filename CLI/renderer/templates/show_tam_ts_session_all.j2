@@ -5,7 +5,7 @@
 {{' '}}
 Name           Flow Group
 -----------    ------------
-{% for session in sessions %}
+{% for session in sessions|sort(attribute='name') %}
 {% set session_config = session["state"] %}
 {{'%-15s'|format(session_config["name"])}}{{'%-15s'|format(session_config["flowgroup"])}}
 {% endfor %} 

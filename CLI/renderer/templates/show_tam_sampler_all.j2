@@ -5,7 +5,7 @@
 {{' '}}
 Name         Sample Rate
 -----------  -----------
-{% for sampler in samplers %}
+{% for sampler in samplers|sort(attribute='name') %}
 {% set sampler_state = sampler["state"] %}
 {{'%-13s'|format(sampler_state["name"])}}{{'%-29s'|format(sampler_state["sampling-rate"])}}
 {% endfor %}

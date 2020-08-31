@@ -5,7 +5,7 @@
 {{' '}}
 Name               IP Address                                Port      Protocol
 ----------------   ---------------------------------------   ------    --------
-{% for this_collector in collectors %}
+{% for this_collector in collectors|sort(attribute='name') %}
 {% set collector_config = this_collector["state"] %}
 {{'%-19s'|format(collector_config["name"])}}{{'%-42s'|format(collector_config["ip"])}}{{'%-10s'|format(collector_config["port"])}}{{'%-10s'|format(collector_config["protocol"])}}
 {% endfor %} 
