@@ -72,6 +72,8 @@ def run_get_openconfig_infra_state(func, argv):
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/uptime')
     elif argv[0] == "reboot-cause":
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/reboot-cause')
+    elif argv[0] == "user-list":
+       path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/show-user-list')
     else:
        print "%Error: invalid state command"
     api_response = aa.get(path)
@@ -79,6 +81,8 @@ def run_get_openconfig_infra_state(func, argv):
         if api_response.content is not None:
             response = api_response.content
             show_cli_output(templ, response)
+    else:
+        print api_response.error_message()
 
 def run_get_sonic_infra_config(func, argv):
     templ = argv[1]
