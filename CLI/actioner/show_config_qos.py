@@ -322,16 +322,21 @@ def show_scheduler_policy(render_tables):
 
 
         if cur_sp_name != spname and filter_name == '':
+            if cmd_str != '':
+                cmd_str += '!;'
+
             cur_sp_name = spname
-            cmd_str += '!;' + 'qos scheduler-policy ' + spname + ';'
+            cmd_str += 'qos scheduler-policy ' + spname + ';'
     
     
         if (spseq == '255'):
+            cmd_str += ' !;'
             cmd_str += ' port;'
 
             cmd_str += show_scheduler_instance('port', spname, sch)
 
         else:
+            cmd_str += ' !;'
             cmd_str += ' queue ' + spseq + ';'
 
             cmd_str += show_scheduler_instance('queue', spname, sch)
@@ -346,18 +351,18 @@ def show_scheduler_instance(stype, spname, scheduler_inst):
     for key in scheduler_inst:
         if 'pir' == key:
             if 'copp-scheduler-policy' != spname:
-                cmd_str += '    pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+                cmd_str += '  pir ' + str(int(scheduler_inst[key])*8/1000) + ';'
             else:
-                cmd_str += '    pir ' + str(int(scheduler_inst[key])) + ';'
+                cmd_str += '  pir ' + str(int(scheduler_inst[key])) + ';'
 
         if 'pbs' == key:
             cmd_str += '  pbs ' + str(scheduler_inst[key]) + ';'
 
         if 'cir' == key:
             if 'copp-scheduler-policy' != spname:
-                cmd_str += '    cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
+                cmd_str += '  cir ' + str(int(scheduler_inst[key])*8/1000) + ';'
             else:
-                cmd_str += '    cir ' + str(int(scheduler_inst[key])) + ';'
+                cmd_str += '  cir ' + str(int(scheduler_inst[key])) + ';'
 
         if 'cbs' == key:
             cmd_str += '  cbs ' + str(scheduler_inst[key]) + ';'
@@ -369,7 +374,7 @@ def show_scheduler_instance(stype, spname, scheduler_inst):
             cmd_str += '  weight ' + str(scheduler_inst[key]) + ';'
 
         if 'meter-type' == key:
-            cmd_str += '    meter-type ' + str(scheduler_inst[key].lower()) + ';'
+            cmd_str += '  meter-type ' + str(scheduler_inst[key].lower()) + ';'
 
     return cmd_str
 
