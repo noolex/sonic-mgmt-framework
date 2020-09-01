@@ -238,11 +238,7 @@ limitations under the License.
         >
         <PARAM
             name="bc"
-<<<<<<< HEAD
             help="250-125000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
-=======
-            help="256-128000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
->>>>>>> origin/broadcom_sonic_3.x_share
             ptype="QUEUE_BURST"
             >
         </PARAM>
@@ -283,11 +279,7 @@ limitations under the License.
         >
         <PARAM
             name="be"
-<<<<<<< HEAD
             help="250-125000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
-=======
-            help="256-128000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
->>>>>>> origin/broadcom_sonic_3.x_share
             ptype="QUEUE_BURST"
             >
         </PARAM>

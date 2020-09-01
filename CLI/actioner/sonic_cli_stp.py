@@ -31,11 +31,7 @@ def stp_mode_get(aa):
     global g_stp_mode
     global g_stp_resp
 
-<<<<<<< HEAD
-    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None, False)
-=======
     g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config', None, False)
->>>>>>> origin/broadcom_sonic_3.x_share
     if not g_stp_resp.ok():
         print ("%Error: Entry not found or STP not enabled")
         return g_stp_resp,g_stp_mode
