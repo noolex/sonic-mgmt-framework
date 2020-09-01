@@ -919,8 +919,8 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
         cmd += '\n no spanning-tree enable'
 
     if 'openconfig-spanning-tree-ext:portfast' in intf_dict.keys() and \
-            intf_dict['openconfig-spanning-tree-ext:portfast'] == False:
-        cmd += '\n no spanning-tree portfast'
+            intf_dict['openconfig-spanning-tree-ext:portfast'] == True:
+        cmd += '\n spanning-tree portfast'
 
     cmd_prfx = '\n spanning-tree '
 
@@ -930,8 +930,13 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
         else:
             cmd += cmd_prfx + 'bpdufilter disable'
 
-    if 'guard' in intf_dict.keys() and intf_dict['guard'] == "ROOT":
-        cmd += cmd_prfx + 'guard root'
+    if 'guard' in intf_dict.keys():
+        if intf_dict['guard'] == "ROOT":
+            cmd += cmd_prfx + 'guard root'
+        elif intf_dict['guard'] == "LOOP":
+            cmd += cmd_prfx + 'guard loop'
+        elif intf_dict['guard'] == "NONE":
+            cmd += cmd_prfx + 'guard none'
 
     if 'bpdu-guard' in intf_dict.keys() and intf_dict['bpdu-guard'] == True:
         if 'openconfig-spanning-tree-ext:bpdu-guard-port-shutdown' in intf_dict.keys() and \
@@ -1067,6 +1072,14 @@ def show_run_config_global(data, stp_mode):
             global_config['openconfig-spanning-tree-ext:bridge-priority'] != 32768:
         g_br_prio = global_config['openconfig-spanning-tree-ext:bridge-priority']
         print('spanning-tree priority {}'.format(global_config['openconfig-spanning-tree-ext:bridge-priority']))
+
+    if 'loop-guard' in global_config.keys() and global_config['loop-guard'] != False:
+        print('spanning-tree loopguard default')
+
+    if 'openconfig-spanning-tree-ext:portfast' in global_config.keys() and \
+            global_config['openconfig-spanning-tree-ext:portfast'] != False:
+        print('spanning-tree portfast default')
+
     return
 
 

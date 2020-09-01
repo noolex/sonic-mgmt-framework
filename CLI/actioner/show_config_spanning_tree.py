@@ -44,6 +44,35 @@ def show_config_spanning_tree_global_max_age(render_tables):
 
     return 'CB_SUCCESS', cmd_str
 
+def show_config_spanning_tree_global_loop_guard(render_tables):
+    cmd_str = ''
+    if 'sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST' not in render_tables:
+        return 'CB_SUCCESS', cmd_str
+
+    if len(render_tables['sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST']) == 0:
+        return 'CB_SUCCESS', cmd_str
+
+    db_entry = render_tables['sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST'][0]
+
+    if 'loop_guard' in db_entry.keys() and db_entry['loop_guard'] != False:
+        cmd_str = 'spanning-tree loopguard default'
+
+    return 'CB_SUCCESS', cmd_str
+
+def show_config_spanning_tree_global_portfast(render_tables):
+    cmd_str = ''
+    if 'sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST' not in render_tables:
+        return 'CB_SUCCESS', cmd_str
+
+    if len(render_tables['sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST']) == 0:
+        return 'CB_SUCCESS', cmd_str
+
+    db_entry = render_tables['sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST'][0]
+
+    if 'portfast' in db_entry.keys() and db_entry['portfast'] != False:
+        cmd_str = 'spanning-tree portfast default'
+
+    return 'CB_SUCCESS', cmd_str
 
 def show_config_spanning_tree_global_hello_time(render_tables):
     cmd_str = ''
@@ -250,9 +279,33 @@ def show_config_spanning_tree_intf(render_tables):
             if 'uplink_fast' in db_entry and db_entry['uplink_fast']:
                 cmd_list.append(cmd_prfx + 'uplinkfast')
 
+    if cmd_list:
+        cmd_str = ';'.join(cmd_list)
+    return 'CB_SUCCESS', cmd_str
+
+def show_config_spanning_tree_intf_guard(render_tables):
+    cmd_str = ''
+    cmd_list = []
+
+    if 'name' not in render_tables.keys():
+        return ret_err(g_err_transaction_fail, 'key:name not found in render_tables')
+
+    cmd_prfx = 'spanning-tree '
+    if 'sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST' in render_tables:
+        for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST']:
+
+            if 'ifname' not in db_entry.keys():
+                return ret_err(g_err_transaction_fail, 'key:ifname not found in STP_PORT_DB, render_table[name] = {}'.format(render_tables['name']))
+
+            if render_tables['name'] != db_entry['ifname']:
+                continue
+
             if 'root_guard' in db_entry and db_entry['root_guard']:
                 cmd_list.append(cmd_prfx + 'guard root')
-
+            elif 'loop_guard' in db_entry and db_entry['loop_guard'] == 'true':
+                cmd_list.append(cmd_prfx + 'guard loop')
+            elif 'loop_guard' in db_entry and db_entry['loop_guard'] == 'none':
+                cmd_list.append(cmd_prfx + 'guard none')
 
     if cmd_list:
         cmd_str = ';'.join(cmd_list)
