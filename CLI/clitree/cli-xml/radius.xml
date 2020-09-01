@@ -67,12 +67,6 @@ limitations under the License.
      help="(1..64)"
 />
 <!--=======================================================-->
-<PTYPE
-     name="RADIUS_VRF"
-     pattern="Vrf(([0-9A-Za-z]){1,12})"
-     help="VrfName"
-/>
-<!--=======================================================-->
 
 <VIEW name="enable-view">
     <COMMAND
@@ -383,8 +377,8 @@ limitations under the License.
                 />
               <PARAM
                 name="vrf-name"
-                help="VRF name"
-                ptype="RADIUS_VRF"
+                help="Name of VRF (Max: 15 characters, prefixed with Vrf)"
+                ptype = "VRF"
                 />
             </PARAM>
         </PARAM>
