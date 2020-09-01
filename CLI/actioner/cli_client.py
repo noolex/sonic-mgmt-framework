@@ -74,7 +74,6 @@ class ApiClient(object):
         client_token = os.getenv('REST_API_TOKEN', None)
 
         if client_token:
-            syslog.syslog(syslog.LOG_DEBUG, "cli_client request using token %s" % client_token)
             req_headers['Authorization'] = "Bearer " + client_token
 
         body = None
