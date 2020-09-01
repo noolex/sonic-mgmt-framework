@@ -36,7 +36,11 @@ def run_get_sonic_infra_reboot(func, argv):
        if argv[1] == '-h':
           process_msg = False
 
-    data={"Param":"sudo %s" %cmd}
+    if not os.getenv('KLISH_CLI_USER'):
+       data={"Param":"sudo %s" %cmd}
+    else:
+       user_string = "-u {}".format(os.getenv('KLISH_CLI_USER'))
+       data={"Param":"sudo %s %s" %(cmd, user_string)}
 
     aa = cc.ApiClient()
     keypath = cc.Path('/restconf/operations/openconfig-system-ext:reboot-ops')
