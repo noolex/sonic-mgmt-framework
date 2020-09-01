@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <Python.h>
 #include <stdarg.h>
+#include <malloc.h>
 
 void pyobj_init() {
     Py_Initialize();
@@ -247,6 +248,10 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
     Py_XDECREF(args_list);
 
     free(buf);
+
+    PyGC_Collect();
+    malloc_trim(0);
+
     PyGILState_Release(gstate);
     return ret_code;
 }
