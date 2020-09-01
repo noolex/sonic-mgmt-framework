@@ -65,7 +65,7 @@ def generate_ipprefix_uri(args, delete):
        if (ge_exits == 0 and le_exits == 0):
           _maskrange_length = "exact"
        elif (ge_exits == 1 and le_exits == 0):
-          if (ge_val <= mask_val):
+          if (ge_val < mask_val):
              is_error = 1
           _maskrange_length = ge + ".." + max
        elif (ge_exits == 0 and le_exits == 1):
@@ -73,12 +73,12 @@ def generate_ipprefix_uri(args, delete):
              is_error = 1
           _maskrange_length = _mask+".."+le
        else:
-          if ((ge_val <= mask_val) or (mask_val > le_val) or (ge_val > le_val)):
+          if ((ge_val < mask_val) or (mask_val > le_val) or (ge_val > le_val)):
              is_error = 1
           _maskrange_length = ge+".."+le
 
        if is_error:
-          print ("%Error: Invalid prefix range, make sure: len < ge <= le")
+          print ("%Error: Invalid prefix range, make sure: len <= ge <= le")
           exit(1)
        if delete:
           keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={prefix_list_name}/prefixes/prefix={prefix}%2F{mask},{masklength_range}', prefix_list_name=set_name, prefix=_prefix, mask=_mask, masklength_range=_maskrange_length)
