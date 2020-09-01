@@ -2,12 +2,20 @@
 {% if "openconfig-tam:ifa-session" in json_output %}
 {% set flows = json_output['openconfig-tam:ifa-session'] %}
 {% if flows|length > 0 %}
-{% set flow = flows[0]['config'] %}
+{% set flow = flows[0]['state'] %}
 {{' '}}
 Name        : {{flow['name']}}    
 Flow Group  : {{'-' if flow['flowgroup'] == "" else flow['flowgroup']}}
-Collector   : {{'-' if flow['collector'] == "" else flow['collector']}}
-Sampler     : {{'-' if flow['sample-rate'] == "" else flow['sample-rate']}}
+{% if "collector" in flow %}
+Collector   : {{flow['collector']}}
+{% else %}
+Collector   : -
+{% endif %}
+{% if "sample-rate" in flow %}
+Sampler     : {{flow['sample-rate']}}
+{% else %}
+Sampler     : -
+{% endif %}
 {% if flow['node-type'] == "INGRESS" %}
 {% set node_type = "Ingress" %}
 {% elif flow['node-type'] == "EGRESS" %}

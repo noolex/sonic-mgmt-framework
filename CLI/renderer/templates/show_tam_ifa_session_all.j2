@@ -14,7 +14,17 @@ Name           Flow Group          Collector          Sampler           Node Typ
 {% else %}
 {% set node_type = "Intermediate" %}
 {% endif %}
-{{'%-15s'|format(session_state["name"])}}{{'%-20s'|format(session_state["flowgroup"])}}{{'%-19s'|format(session_state["collector"])}}{{'%-18s'|format(session_state["sample-rate"])}}{{'%-20s'|format(node_type)}}
+{% if "collector" in session_state %}
+{% set collector = session_state["collector"] %}
+{% else %}
+{% set collector = "-" %}
+{% endif %}
+{% if "sample-rate" in session_state %}
+{% set sampler = session_state["sample-rate"] %}
+{% else %}
+{% set sampler = "-" %}
+{% endif %}
+{{'%-15s'|format(session_state["name"])}}{{'%-20s'|format(session_state["flowgroup"])}}{{'%-19s'|format(collector)}}{{'%-18s'|format(sampler)}}{{'%-20s'|format(node_type)}}
 {% endfor %} 
 {% else %}
 {{' '}}

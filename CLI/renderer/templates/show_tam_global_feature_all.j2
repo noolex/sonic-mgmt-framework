@@ -8,7 +8,5 @@ Name              Status
 {% set feature_state = feature["state"] %}
 {{'%-18s'|format(getFeatureDescription(feature_state["feature-ref"]))}}{{'%-15s'|format(getStatusDescription(feature_state["op-status"]))}}
 {% endfor %} 
-{{' '}}
 {% endif %}
 {% endif %}
-
