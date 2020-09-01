@@ -312,6 +312,7 @@ def invoke(func, args):
 
 #show vxlan interface 
 def vxlan_show_vxlan_interface(args):
+    response = None
     print ""
     sip_configured = False
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list", args)
@@ -368,6 +369,7 @@ def vxlan_show_vxlan_interface(args):
 
 #show vxlan vlan vni map 
 def vxlan_show_vxlan_vlanvnimap(args):
+    response = None
     print("")
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_map_vxlan_tunnel_map_list", args)
     if api_response.ok():
@@ -389,6 +391,7 @@ def vxlan_show_vxlan_vlanvnimap(args):
 
 #show vxlan vrf vni map 
 def vxlan_show_vxlan_vrfvnimap(args):
+    response = None
     print("")
     iter_len = 0
     api_response = invoke("get_list_sonic_vxlan_tunnel_vrf_vni_map_list", args)
@@ -418,6 +421,7 @@ def vxlan_show_vxlan_vrfvnimap(args):
 
 #show vxlan tunnel 
 def vxlan_show_vxlan_tunnel(args):
+    response = None
     print("")
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_table_vxlan_tunnel_table_list", args)
     if api_response.ok():
@@ -439,6 +443,7 @@ def vxlan_show_vxlan_tunnel(args):
 
 #show vxlan evpn remote vni
 def vxlan_show_vxlan_evpn_remote_vni(args):
+    response = None
     print("")
     arg_length = len(args);
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_evpn_remote_vni_table_evpn_remote_vni_table_list", args)
@@ -470,6 +475,7 @@ def vxlan_show_vxlan_evpn_remote_vni(args):
 
 #show vxlan evpn remote mac
 def vxlan_show_vxlan_evpn_remote_mac(args):
+    response = None
     print("")
     arg_length = len(args);
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_fdb_table_vxlan_fdb_table_list", args)
