@@ -35,7 +35,7 @@ type UserAuth map[string]bool
 
 var AuthLock sync.Mutex
 
-var ErrNotFound = httpError(http.StatusUnauthorized, "Authentication not provided")
+var ErrUnauthorized = httpError(http.StatusUnauthorized, "Authentication not provided")
 
 
 func (i UserAuth) String() string {

@@ -516,7 +516,7 @@ func authMiddleware(inner http.Handler) http.Handler {
 			err = BasicAuthenAndAuthor(r, rc)
 			if err == nil {
 				success = true
-			} else if err != ErrNotFound {
+			} else if err != ErrUnauthorized {
 				ret_err = err
 			}
 		}
@@ -524,7 +524,7 @@ func authMiddleware(inner http.Handler) http.Handler {
 			_, err = JwtAuthenAndAuthor(r, rc)
 			if err == nil {
 				success = true
-			} else if err != ErrNotFound {
+			} else if err != ErrUnauthorized {
 				ret_err = err
 			}
 		}
@@ -532,7 +532,7 @@ func authMiddleware(inner http.Handler) http.Handler {
 			err = ClientCertAuthenAndAuthor(r, rc)
 			if err == nil {
 				success = true
-			} else if err != ErrNotFound {
+			} else if err != ErrUnauthorized {
 				ret_err = err
 			}
 		}

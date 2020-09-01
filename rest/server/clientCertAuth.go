@@ -15,7 +15,7 @@ func ClientCertAuthenAndAuthor(r *http.Request, rc *RequestContext) error {
 
 	if len(username) == 0 {
 		glog.Errorf("[%s] User info not present", rc.ID)
-		return ErrNotFound
+		return ErrUnauthorized
 	}
 
 	if err := PopulateAuthStruct(username, &rc.Auth); err != nil {

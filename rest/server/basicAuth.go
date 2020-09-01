@@ -10,7 +10,7 @@ func BasicAuthenAndAuthor(r *http.Request, rc *RequestContext) error {
 	username, passwd, authOK := r.BasicAuth()
 	if !authOK {
 		glog.Errorf("[%s] User info not present", rc.ID)
-		return ErrNotFound
+		return ErrUnauthorized
 	}
 
 	glog.Infof("[%s] Received user=%s", rc.ID, username)
