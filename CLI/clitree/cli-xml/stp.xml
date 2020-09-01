@@ -318,6 +318,78 @@ limitations under the License.
 
 <!-- Config mode -->
 <VIEW name="configure-view">
+    <!-- no spanning tree -->
+    <COMMAND
+        name="no spanning-tree vlan"
+        help="Disables spanning-tree on a specific VLAN"
+        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/name={vlan_name}"
+        command_keys="vlan_name=*"
+        render_command_cb="no_spanning_tree_vlan"
+        >
+        <PARAM
+            name="vlan-range"
+            help="VLAN identifier"
+            ptype="STP_VLAN_ID"
+            >
+        </PARAM>
+            <PARAM
+                name="stp-vlan-subcmds"
+                help="Spanning tree subcommands"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="true"
+                >
+                <PARAM
+                    name="forward-time"
+                    help="Resets forward delay time to default value"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                </PARAM>
+                <PARAM
+                    name="hello-time"
+                    help="Resets hello time to default value"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                </PARAM>
+
+                <PARAM
+                    name="max-age"
+                    help="Resets max-age to default value"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                </PARAM>
+
+                <PARAM
+                    name="priority"
+                    help="Resets bridge priority to default value"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    >
+                </PARAM>
+            </PARAM>
+    <ACTION builtin="clish_pyobj">
+        sonic_cli_stp delete_stp_vlan_subcmds ${stp-vlan-subcmds} ${vlan-range}&#xA;
+    </ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Configure spanning-tree parameters on per VLAN basis
+        </DESCRIPTION>
+        <USAGE>
+            These commands are similar to the global level commands but allow disabling the spanning-tree parameters on per VLAN basis.
+        </USAGE>
+        <EXAMPLE>
+            sonic(config)#no spanning-tree vlan 100  
+            sonic(config)#no spanning-tree vlan 100 forward-time
+            sonic(config)#no spanning-tree vlan 100 hello-time
+            sonic(config)#no spanning-tree vlan 100 max-age 
+            sonic(config)#no spanning-tree vlan 100 priority
+        </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
     <COMMAND
         name="spanning-tree"
         help="Spanning tree configuration"
@@ -787,77 +859,6 @@ limitations under the License.
         </USAGE>
         <EXAMPLE>
             sonic(config)#no spanning-tree priority
-        </EXAMPLE>
-    </DOCGEN>
-    </COMMAND>
-
-    <COMMAND
-        name="no spanning-tree vlan"
-        help="Disables spanning-tree on a specific VLAN"
-        command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/name={vlan_name}"
-        command_keys="vlan_name=*"
-        render_command_cb="no_spanning_tree_vlan"
-        >
-        <PARAM
-            name="vlan-range"
-            help="VLAN identifier"
-            ptype="STP_VLAN_ID"
-            >
-        </PARAM>
-            <PARAM
-                name="stp-vlan-subcmds"
-                help="Spanning tree subcommands"
-                ptype="SUBCOMMAND"
-                mode="switch"
-                optional="true"
-                >
-                <PARAM
-                    name="forward-time"
-                    help="Resets forward delay time to default value"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    >
-                </PARAM>
-                <PARAM
-                    name="hello-time"
-                    help="Resets hello time to default value"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    >
-                </PARAM>
-
-                <PARAM
-                    name="max-age"
-                    help="Resets max-age to default value"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    >
-                </PARAM>
-
-                <PARAM
-                    name="priority"
-                    help="Resets bridge priority to default value"
-                    ptype="SUBCOMMAND"
-                    mode="subcommand"
-                    >
-                </PARAM>
-            </PARAM>
-    <ACTION builtin="clish_pyobj">
-        sonic_cli_stp delete_stp_vlan_subcmds ${stp-vlan-subcmds} ${vlan-range}&#xA;
-    </ACTION>
-    <DOCGEN>
-        <DESCRIPTION>
-            Configure spanning-tree parameters on per VLAN basis
-        </DESCRIPTION>
-        <USAGE>
-            These commands are similar to the global level commands but allow disabling the spanning-tree parameters on per VLAN basis.
-        </USAGE>
-        <EXAMPLE>
-            sonic(config)#no spanning-tree vlan 100  
-            sonic(config)#no spanning-tree vlan 100 forward-time
-            sonic(config)#no spanning-tree vlan 100 hello-time
-            sonic(config)#no spanning-tree vlan 100 max-age 
-            sonic(config)#no spanning-tree vlan 100 priority
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
