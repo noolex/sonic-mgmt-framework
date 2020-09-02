@@ -119,12 +119,15 @@ class SonicACLCLIStopNoError(RuntimeError):
 
 
 def acl_natsort_intf_prio(ifname):
-    if ifname[0].startswith('Ethernet'):
-        prio = 10000 + int(ifname[0].replace('Ethernet', ''), 0)
-    elif ifname[0].startswith('PortChannel'):
-        prio = 20000 + int(ifname[0].replace('PortChannel', ''), 0)
-    elif ifname[0].startswith('Vlan'):
-        prio = 30000 + int(ifname[0].replace('Vlan', ''), 0)
+    if isinstance(ifname, tuple):
+        ifname = ifname[0]
+
+    if ifname.startswith('Ethernet'):
+        prio = 10000 + int(ifname.replace('Ethernet', ''), 0)
+    elif ifname.startswith('PortChannel'):
+        prio = 20000 + int(ifname.replace('PortChannel', ''), 0)
+    elif ifname.startswith('Vlan'):
+        prio = 30000 + int(ifname.replace('Vlan', ''), 0)
     elif ifname == "Switch":
         prio = 40000
     else:
