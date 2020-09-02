@@ -338,13 +338,13 @@ limitations under the License.
             fi&#xA;
         elif test "${if-subcommands}" = "Eth"; then&#xA;
             if test "${iface_num}" = ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py get_all_ethernet show_interface_id.j2 ${__full_line}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_if_range "${ethiflist_aliasNum}" show_interface_id.j2 ${__full_line}&#xA;
             fi&#xA;
         elif test "${if-subcommands}" = "Ethernet"; then&#xA;
             if test "${iface_num}" = ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py get_all_ethernet show_interface_id.j2 ${__full_line}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_if_range "${ethiflist_nativeNum}" show_interface_id.j2  ${__full_line}&#xA;
             fi&#xA;

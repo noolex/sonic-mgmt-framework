@@ -17,31 +17,12 @@ import syslog as log
 import cli_client as cc
 import urllib3
 urllib3.disable_warnings()
+from sonic_intf_utils import is_intf_naming_mode_std
 import re
 
 #Invalid chars
 blocked_chars = frozenset(['&', ';', '<', '>', '|', '`', '\''])
 api = cc.ApiClient()
-
-def is_std_mode():
-    path = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode', name="localhost")
-    response = api.get(path)
-    if response is None:
-        return False
-
-    if response.ok():
-        response = response.content
-        if response is None:
-            return False
-
-    response = response.get('sonic-device-metadata:intf_naming_mode')
-    if response is None:
-        return False
-
-    if "standard" in response.lower():
-        return True
-    else:
-        return False
 
 def get_alias(interface):
     path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=interface)
@@ -63,7 +44,7 @@ def print_and_log(msg):
     log.syslog(log.LOG_ERR, msg)
 
 def transform_input(args, cmd):
-    if is_std_mode():
+    if is_intf_naming_mode_std():
         if 'ping' in cmd.lower():
             result = re.search('(-I\s*)(Eth\d+/\d+/*\d*)', args, re.IGNORECASE)
         else:
