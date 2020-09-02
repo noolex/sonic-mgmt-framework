@@ -93,6 +93,34 @@ def invoke_api(func, args=[]):
             print api_response.error_message()
             return False
 
+    elif func == 'delete_ntp_source':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface')
+        return api.delete(keypath)
+
+    elif func == 'set_ntp_server':
+      
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers') 
+        body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0]}, "address" : args[0]}]}}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_ntp_server':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers/server={server}',
+                          server=args[0])
+        return api.delete(keypath)
+
+    elif func == 'set_ntp_vrf':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
+        body = {"openconfig-system:config":{"openconfig-system-ext:vrf":args[0]}}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_ntp_vrf':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:vrf')
+        return api.delete(keypath)
+ 
     else:
         print("%Error: Invalid NTP CLI function: {}".format(func))
         return False
