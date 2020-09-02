@@ -63,7 +63,7 @@
 >         return result;
 91a126
 > 		const char *penultimate_text = NULL;
-94,95c129,149
+94,95c129,159
 < 		if ((0 != index) && (text[0] != '\0'))
 < 			index--;
 ---
@@ -86,20 +86,26 @@
 >                            examples respectively */
 >                         penultimate_text = lub_string_dup(lub_argv__get_arg(argv,
 >                                                 lub_argv__get_count(argv)-1));
+> 
+> 			/*If a command is matched, then pressing tab without current 
+> 			command complete, it should not show the next available param. 
+> 			Example: Pressing tab after "show interface", shows interface,
+> 			interface-naming, breakout and etc.
+> 			But expected output is interface and interface-naming.(Breakout and etc are params.) 
+> 			No need to print the next available param for "interface " nowitself. */
+> 			if (!(lub_string_nocasecmp(line, clish_command__get_name(cmd)))) {
+> 				idx--;
+> 			}
 >                 }
 > 
-105c159
+105c169
 < 			argv, &idx, completion, index + idx);
 ---
 > 			argv, &idx, completion, index + idx, NULL, NULL);
-110c164
-< 			const char *result;
----
-> 			const char *result = NULL;
-116a171,172
+116a181,182
 > 			if (BOOL_TRUE == clish_param__get_hidden(param))
 > 				continue;
-120c176,180
+120c186,190
 < 				result = clish_param__get_value(param);
 ---
 > 
@@ -107,7 +113,7 @@
 >                 		if (CLISH_PTYPE_METHOD_REGEXP_SELECT != 
 > 						clish_ptype__get_method(ptype))
 > 					result = clish_param__get_value(param);
-140,141c200,207
+140,141c210,217
 < 			if ((ptype = clish_param__get_ptype(param)))
 < 				clish_ptype_word_generator(ptype, matches, text);
 ---
@@ -119,7 +125,7 @@
 >                 		}
 > 
 > 			}
-144a211,213
+144a221,223
 > 		if(penultimate_text)
 >                         lub_string_free((char *)penultimate_text);
 > 
