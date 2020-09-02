@@ -21,6 +21,7 @@ from scripts.render_cli import show_cli_output
 import cli_client as cc
 import sys
 import sonic_intf_utils as ifutils
+from natsort import natsorted
 
 aa = cc.ApiClient()
 
@@ -1019,7 +1020,7 @@ def show_run_disabled_vlans():
     api_response = aa.get(uri, None)
     if api_response.ok() and api_response.content is not None:
         if 'openconfig-spanning-tree-ext:disabled-vlans' in api_response.content:
-            disabled_vlans = api_response.content['openconfig-spanning-tree-ext:disabled-vlans']
+            disabled_vlans = natsorted(api_response.content['openconfig-spanning-tree-ext:disabled-vlans'])
             for vlan in disabled_vlans:
                 print('no spanning-tree vlan ' + str(vlan))
     return 
