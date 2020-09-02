@@ -30,6 +30,7 @@ import syslog
 import traceback
 from natsort import natsorted
 import sonic_intf_utils as ifutils
+from sonic_cli_if_range import check_response
 from collections import OrderedDict 
 
 import urllib3
@@ -913,6 +914,38 @@ def getSonicId(item):
     ifName = state_dict['ifname']
     return ifutils.name_to_int_val(ifName)
 
+def get_all_eth_intfs_list():
+    response = cc.ApiClient().get(cc.Path('/restconf/data/sonic-port:sonic-port/PORT/PORT_LIST'))
+    if not(response and response.ok() and (response.content is not None) and ('sonic-port:PORT_LIST' in response.content)):
+        return None
+
+    intfList = []
+    is_mode_std = ifutils.is_intf_naming_mode_std()
+    for port_info in response.content['sonic-port:PORT_LIST']:
+        if is_mode_std:
+            intfList.append(port_info['alias'])
+        else:
+            intfList.append(port_info['ifname'])
+
+    return sorted(intfList, key= lambda intf: [ifutils.name_to_int_val(intf)])
+
+def hdl_get_all_ethernet(args):
+    get_response = []
+    response = {}
+
+    for intf in get_all_eth_intfs_list():
+        func = "get_openconfig_interfaces_interfaces_interface"
+        intfargs = [intf]+args[0:]
+        response = invoke_api(func, intfargs)
+        if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
+            get_response.append(response.content['openconfig-interfaces:interface'][0])
+
+    if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
+        response.content['openconfig-interfaces:interface'] = get_response
+        return check_response(response, func, intfargs)
+
+    return 0
+
 def run(func, args):
    
     if func == 'rpc_relay_clear':
@@ -933,6 +966,9 @@ def run(func, args):
             return 1
 
         return api_clear.post(path,body)
+
+    if func == "get_all_ethernet":
+        return hdl_get_all_ethernet(args)
 
     try:
         response = invoke_api(func, args)
