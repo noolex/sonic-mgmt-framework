@@ -119,7 +119,10 @@ def invoke(func, args):
             else:
                 err_count+=1
         if err_count > (end - start):
-            print("No valid breakout configurations")
+            if (end > start) or (config_resp.status_code != 500):
+                print("No valid breakout configurations")
+            else:
+                print("%Error: Invalid port")
         return resp
 
 
