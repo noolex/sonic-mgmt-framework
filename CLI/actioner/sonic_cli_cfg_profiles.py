@@ -35,7 +35,7 @@ def run(func, args):
       try:
            if func ==  'set_sonic_profiles_sonic_profiles':
                if len(args) < 2 or args[1].strip() != 'confirm':
-                   confirmed = prompt ("Device configuration will be erased.  You may lose connectivity, continue?")
+                   confirmed = prompt ("Device configuration will be erased. You may lose connectivity.\nContinue?")
                    if not confirmed:
                        return
 
@@ -55,7 +55,7 @@ def run(func, args):
                             show_cli_output(args[0], api_response.content['sonic-config-mgmt:DEFAULT_CONFIG_PROFILES'])
            else:
                 if func ==  'set_sonic_profiles_sonic_profiles':
-                    print "Applying factory default configuration.  This may take 120--180 seconds and also result in a reboot."
+                    print "Applying factory default configuration.\nThis may take 120--180 seconds and also result in a reboot."
       except:
             # system/network error
             print "%Error: Transaction Failure"
