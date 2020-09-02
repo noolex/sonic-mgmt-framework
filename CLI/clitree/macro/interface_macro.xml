@@ -63,6 +63,23 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_description  </ACTION>
     </COMMAND>
 </MACRODEF>
+<MACRODEF name="INTF_RANGE_DESCR">
+    <COMMAND
+        name="description"
+        escape_chars=""
+        help="Textual description">
+        <PARAM
+                name="desc"
+                help="Textual description of the interface (Max: 240 characters)"
+                ptype="STRING_240" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_description ${#desc}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no description"
+        help="Remove description">
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_description  </ACTION>
+    </COMMAND>
+</MACRODEF>
 <MACRODEF name="INTF_SPEED">
     <COMMAND
         name="speed"
