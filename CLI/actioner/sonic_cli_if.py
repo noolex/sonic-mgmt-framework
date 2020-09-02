@@ -940,7 +940,7 @@ def run(func, args):
    
     if func == 'rpc_relay_clear':
         api_clear = cc.ApiClient()
-        if not (args[0].startswith("Ethernet") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
+        if not (args[0].startswith("Eth") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
            print("%Error: Invalid Interface")
            return 1
 
