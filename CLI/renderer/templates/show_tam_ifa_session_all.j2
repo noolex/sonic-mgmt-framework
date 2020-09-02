@@ -5,7 +5,7 @@
 {{' '}}
 Name           Flow Group          Collector          Sampler           Node Type
 -----------    ----------------    --------------     -------------     ----------
-{% for session in sessions %}
+{% for session in sessions|sort(attribute='name') %}
 {% set session_state = session["state"] %}
 {% if session_state["node-type"] == "INGRESS" %}
 {% set node_type = "Ingress" %}

@@ -5,7 +5,7 @@
 {{' '}}
 Name           Flow Group          Collector          Sampler      
 -----------    ----------------    --------------     -------------
-{% for session in sessions %}
+{% for session in sessions|sort(attribute='name') %}
 {% set session_state = session["state"] %}
 {{'%-15s'|format(session_state["name"])}}{{'%-20s'|format(session_state["flowgroup"])}}{{'%-19s'|format(session_state["collector"])}}{{'%-15s'|format(session_state["sample-rate"])}}
 {% endfor %}
