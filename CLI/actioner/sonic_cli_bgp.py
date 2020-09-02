@@ -1986,6 +1986,58 @@ def preprocess_bgp_nbrs(afisafiname, nbrs):
     un_enbrs.extend(new_nbrs)
     return un_enbrs
 
+def generate_show_bgp_dampening(args=[]):
+    damp_option = ""
+    i=2
+    for arg in args[2:]:
+        if "dampening" == arg:
+             damp_option = args[i+1]
+        i = i + 1
+
+    keypath = []
+    body = None
+    vrf = args[0]
+    afisafi = "IPV4_UNICAST"
+    api = cc.ApiClient()
+
+    keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp')
+    inputs = {"vrf-name":vrf, "address-family":afisafi}
+    inputs['query-type'] = "DAMPENING"
+
+    if damp_option == "dampened-paths" :
+        inputs['dampening'] = "DAMPENED-PATHS"
+    elif damp_option == "flap-statistics" :
+        inputs['dampening'] = "FLAP-STATISTICS"
+    elif damp_option == "parameters" :
+        inputs['dampening'] = "PARAMETERS"
+
+    d = {}
+    body = {"sonic-bgp-show:input": inputs}
+    response = api.post(keypath, body)
+    if not response:
+        return 1
+    if(response.ok()):
+        d = response.content['sonic-bgp-show:output']['response']
+        if len(d) != 0 and "warning" not in d and "Unknown command:" not in d:
+            try:
+                if damp_option == "dampened-paths" :
+                    d = json.loads(d, object_pairs_hook=OrderedDict)
+                    show_cli_output("show_ip_bgp_damp_path.j2", d)
+                elif damp_option == "flap-statistics" :
+                    d = json.loads(d, object_pairs_hook=OrderedDict)
+                    show_cli_output("show_ip_bgp_damp_stats.j2",d)
+                elif damp_option == "parameters" :
+                    show_cli_output("show_ip_bgp_damp_param.j2", d)
+            except:
+                return 1
+        else:
+          d = json.loads(d)
+          print(d['warning'])
+    else:
+        print response.error_message()
+        return 1
+
+
 def invoke_show_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
@@ -3018,6 +3070,8 @@ def parseGloblShow(vrf_name, cmd, args=[]):
             return 0
         elif args[0] == 'summary':
             return generate_show_bgp_neighbors(args)
+        elif args[0] == 'dampening':
+            return generate_show_bgp_dampening([ vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4' ] + args[4:])
         else:
             return generate_show_bgp_routes(args)
 

@@ -52,6 +52,13 @@ limitations under the License.
         <PARAM name="statistics" help="Stats" ptype="SUBCOMMAND" mode="subcommand"/>
         <MACRO name="IP_BGP_NBR_SUB_CMDS">
         <PARAM name="summary" help="Summary of BGP neighbor status" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="dampening" help="Display detailed information about dampening" ptype="SUBCOMMAND" mode="subcommand" test='"4" = "arg1"'>
+            <PARAM name="dampenopt" help="Display detailed information about dampening" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="dampened-paths" help="Display paths suppressed due to dampening" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="flap-statistics" help="Display flap statistics of routes" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="parameters" help="Display detail of configured dampening parameters" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+        </PARAM>
       </PARAM>
     </MACRODEF>
 
