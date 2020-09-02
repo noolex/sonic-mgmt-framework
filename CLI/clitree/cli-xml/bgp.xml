@@ -141,10 +141,19 @@ limitations under the License.
         <PARAM name="peer-group-name" help="Name of peer-group" ptype="STRING_63" optional="true"/>
       </PARAM>
       <PARAM name="neighbors" help="Detailed information on BGP neighbors" ptype="SUBCOMMAND" mode="subcommand">
+       <PARAM name="neighbor_type" help="BGP all subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
         <PARAM name="neighbor-ip" help="Display one particular BGP neighbor" ptype="IPV4V6_ADDR" optional="true"/>
+        <PARAM name="interface" help="Interface to display Neighbor information about" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="neighbor-interface" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="Ethernet" help="Ethernet Interface to display BGP Neighbor information" ptype="PHY_INTERFACE" mode="subcommand"/>
+            <PARAM name="PortChannel" help="PortChannel to display BGP Neighbor information" ptype="PO_INTERFACE" mode="subcommand"/>
+            <PARAM name="Vlan" help="Vlan to display BGP Neighbor information" ptype="VLAN_INTERFACE" mode="subcommand"/>
+          </PARAM>
+        </PARAM>
+       </PARAM>
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${peer-group-name} ${neighbor-ip}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${peer-group-name} ${neighbor_type} ${__line}</ACTION>
   </COMMAND>
   <COMMAND name="clear bgp" help="Clear BGP"/>
   <COMMAND name="clear bgp all" help="Clear BGP all address-families">
