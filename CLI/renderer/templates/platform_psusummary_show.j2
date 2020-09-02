@@ -39,9 +39,9 @@
 {% endfor %}
 {% endif %}
 {% endif %}
-    {{'output-current (W)'.ljust(20)}} {{ns.output_current}}
+    {{'output-current (A)'.ljust(20)}} {{ns.output_current}}
     {{'output-power (W)'.ljust(20)}} {{ns.output_power}}
-    {{'output-voltage (W)'.ljust(20)}} {{ns.output_voltage}}
+    {{'output-voltage (V)'.ljust(20)}} {{ns.output_voltage}}
 {% for i in range(1, 10) %}
 {% set fan_name = psu_name + ' FAN ' + i|string %}
 {% if fan_name in psu_info %}
