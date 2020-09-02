@@ -78,7 +78,7 @@ limitations under the License.
            ----------------   --------------   ------  --------
            IFA_Col_i19        192.168.78.121   7071    UDP
            MOD_Col_m16        192.168.78.123   7076    UDP
-           
+
            # show tam collectors IFA_Col_i19
            Name          : IFA_Col_i19
            IP Address    : 192.168.78.121
@@ -103,7 +103,7 @@ limitations under the License.
            -----------  -----------
            sflow_low    1
            aggresive    2000
-           
+
            # show tam samplers aggresive
            Name          : aggresive
            Sample Rate   : 2000
@@ -146,9 +146,9 @@ limitations under the License.
            http_236       tcp_port_236        -                  aggresive         Ingress
            http_239       tcp_port_239        -                  -                 Intermediate
            http_241       tcp_port_241        IFA_Col_i19        -                 Egress
-           
+
            sonic # show tam ifa sessions http_236
-           
+
            Session            : http_236 (Ingress)
            Flow Group Name    : tcp_port_236
               Id              : 4025
@@ -197,9 +197,9 @@ limitations under the License.
            http_236       tcp_port_236
            http_239       tcp_port_239
            http_241       tcp_port_241
-           
+
            sonic # show tam tail-stamping sessions http_236
-           
+
            Session            : http_236
            Flow Group Name    : tcp_port_236
               Id              : 4025
@@ -246,9 +246,9 @@ limitations under the License.
            http_236       tcp_port_236        Col_i19            aggresive
            http_239       tcp_port_239        Col_i19            aggresive
            http_241       tcp_port_241        Col_i19            aggresive
-           
+
            sonic # show tam drop-monitor sessions http_236
-           
+
            Session            : http_236
            Flow Group Name    : tcp_port_236
               Id              : 4025
@@ -285,9 +285,9 @@ limitations under the License.
            -----------  ---------
            ifa          Active
            drop-monitor Active
-           
+
            sonic-cli# show tam features ifa
-           
+
            Name          : ifa
            Status        : Active
         </EXAMPLE>
@@ -313,16 +313,16 @@ limitations under the License.
               DST L4 Port     : 239
               Ingress Intf    : Ethernet20
            Packet Count       : 10584
-           
+
            Flow Group Name    : udp_port_241
               Id              : 4022
               Priority        : 99
               SRC Port        : 1906
               DST L4 Port     : 241
            Packet Count       : 8654367
-           
+
            sonic # show tam flow-groups udp_port_239
-           
+
            Flow Group Name    : udp_port_239
               Id              : 4025
               Priority        : 100
@@ -359,7 +359,7 @@ limitations under the License.
            sonic(config-tam)# exit
            sonic(config)# exit
            sonic# show tam switch
-           
+
            TAM Device information
            ----------------------
            Switch ID      : 1234
@@ -384,12 +384,12 @@ limitations under the License.
            sonic(config-tam)# exit
            sonic(config)# exit
            sonic# show tam switch
-           
+
            TAM Device information
            ----------------------
            Switch ID      : 51952
            Enterprise ID  : 5678
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -411,12 +411,12 @@ limitations under the License.
            sonic(config-tam)# exit
            sonic(config)# exit
            sonic# show tam switch
-           
+
            TAM Device information
            ----------------------
            Switch ID      : 1234
            Enterprise ID  : 5678
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -437,12 +437,12 @@ limitations under the License.
            sonic(config-tam)# exit
            sonic(config)# exit
            sonic# show tam switch
-           
+
            TAM Device information
            ----------------------
            Switch ID      : 1234
            Enterprise ID  : 51952
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -508,12 +508,12 @@ limitations under the License.
         <EXAMPLE summary="sampler &lt;name&gt;  rate &lt;sample-rate&gt;">
            sonic(config-tam)# sampler s34 rate 1000
            sonic# show tam samplers
-           
+
            Name         Sample Rate
            -----------  -----------
            s1           1
            s34          1000
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -531,11 +531,11 @@ limitations under the License.
         <EXAMPLE summary="no sampler &lt;name&gt;">
            sonic(config-tam)# no sampler s34
            sonic# show tam samplers
-           
+
            Name         Sample Rate
            -----------  -----------
            s1           1
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -551,14 +551,11 @@ limitations under the License.
       <PARAM name="ethertype" help="Ethertype of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="ether_type" help="Ethertype value (0x600-0xffff)" ptype="ETHERTYPE_VALUE" default=""/>
       </PARAM>
-      <PARAM name="ip-type" help="Type of IP Address (IPv4/IPv6)" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="ip_type" help="IP Address Type" ptype="IP_TYPE" default=""></PARAM>
-      </PARAM>
       <PARAM name="src-ip" help="Source IP address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="src_ip" help="IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR" default=""/>
+        <PARAM name="src_ip" help="IPv4 or IPv6" ptype="IPV4_IPV6_NETWORK" default=""/>
       </PARAM>
       <PARAM name="dst-ip" help="Destination IP address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="dst_ip" help="IPv4 or IPv6" ptype="IPV4_OR_IPV6_ADDR" default=""/>
+        <PARAM name="dst_ip" help="IPv4 or IPv6" ptype="IPV4_IPV6_NETWORK" default=""/>
       </PARAM>
       <PARAM name="l4-src-port" help="Source port (L4) of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="l4_src_port" help="Source port number (0 to 65535)" ptype="RANGE_0_65535" default=""/>
@@ -572,7 +569,7 @@ limitations under the License.
       <PARAM name="protocol" help="Protocol field of the IP header of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="protocol_value" help="Protocol value UDP/TCP" ptype="IP_PROTOCOL" default=""/>
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","smac":"${src_mac}","dmac":"${dst_mac}","ethertype":"${ether_type}","sip":"${src_ip}","dip":"${dst_ip}","sport":"${l4_src_port}","dport":"${l4_dst_port}","priority":"${priority_value}","protocol":"${protocol_value}","ip_type":"${ip_type}"}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","smac":"${src_mac}","dmac":"${dst_mac}","ethertype":"${ether_type}","sip":"${src_ip}","dip":"${dst_ip}","sport":"${l4_src_port}","dport":"${l4_dst_port}","priority":"${priority_value}","protocol":"${protocol_value}"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
            This command configures flow group by specifying a set of match criteria that defines a set of flows that are of interest.
@@ -583,14 +580,14 @@ limitations under the License.
         <EXAMPLE summary="flow-group &lt;name&gt; [src-mac &lt;src_mac&gt; [dst-mac &lt;dst_mac&gt; [ethertype &lt;ethertype&gt; [src-ip &lt;src_ip&gt; [dst-ip &lt;dst_ip&gt; [src-l4-port &lt;src_l4_port&gt; [dst-l4-port &lt;dst_l4_port&gt; [protocol &lt;protocol&gt; [priority &lt;priority_value&gt;]">
            sonic(config-tam)# flow-group f9 type ipv4 src-ip 192.1.2.3 dst-ip 172.6.5.4
            sonic# show tam flowgroups
-           
+
            Flow Group Name    : f9
               Id              : 60
               Priority        : 100
               SRC IP          : 192.1.2.3/32
               DST IP          : 172.6.5.4/32
            Packet Count       :
-           
+
            Flow Group Name    : DEMO
               Id              : 1
               Priority        : 100
@@ -598,7 +595,7 @@ limitations under the License.
               SRC IP          : 1.1.1.1/32
               DST IP          : 4.4.4.4/32
            Packet Count       :
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -616,7 +613,7 @@ limitations under the License.
         <EXAMPLE summary="no flow-group &lt;flow-group&gt;">
            sonic(config-tam)# no flow-group f9
            sonic# show tam flowgroups
-           
+
            Flow Group Name    : DEMO
               Id              : 1
               Priority        : 100
@@ -624,7 +621,7 @@ limitations under the License.
               SRC IP          : 1.1.1.1/32
               DST IP          : 4.4.4.4/32
            Packet Count       :
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -651,14 +648,14 @@ limitations under the License.
            sonic(config-tam-ifa)# enable
            sonic(config-tam-ifa)# end
            sonic# show tam ifa
-           
+
            Status               : Active
            Switch ID            : 9876
            Enterprise ID        : 8798
            Version              : 2.0
            Number of sessions   : 0
            Number of collectors : 0
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -678,14 +675,14 @@ limitations under the License.
            sonic(config-tam-ifa)# no enable
            sonic(config-tam-ifa)# end
            sonic# show tam ifa
-           
+
            Status               : Inactive
            Switch ID            : 9876
            Enterprise ID        : 8798
            Version              : 2.0
            Number of sessions   : 0
            Number of collectors : 0
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -716,11 +713,11 @@ limitations under the License.
            sonic(config-tam-ifa)# session ss1 flowgroup f9 sampler s1 node-type ingress
            sonic(config-tam-ifa)#
            sonic# show tam ifa sessions
-           
+
            Name           Flow Group          Collector          Sampler           Node Type
            -----------    ----------------    --------------     -------------     ----------
            ss1            f9                                     s1                Ingress Node
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -760,13 +757,13 @@ limitations under the License.
            sonic(config-tam-dm)# enable
            sonic(config-tam-dm)# end
            sonic# show tam drop-monitor
-           
+
            Status               : Active
            Switch ID            : 9876
            Number of sessions   : 2
            Number of collectors : 1
            Aging Interval       : 3000
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -787,13 +784,13 @@ limitations under the License.
            sonic(config-tam-dm)# no enable
            sonic(config-tam-dm)# end
            sonic# show tam drop-monitor
-           
+
            Status               : Inactive
            Switch ID            : 9876
            Number of sessions   : 2
            Number of collectors : 1
            Aging Interval       : 3000
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -824,7 +821,7 @@ limitations under the License.
            sonic(config-tam-dm)# session ss91 flowgroup f9 collector c2 sampler s1
            sonic(config-tam-dm)# end
            sonic# show tam drop-monitor sessions
-           
+
            Name           Flow Group          Collector          Sampler
            -----------    ----------------    --------------     -------------
            ss1            f1                  c1                 s1
@@ -848,7 +845,7 @@ limitations under the License.
            sonic(config-tam-dm)# no session ss91
            sonic(config-tam-dm)# end
            sonic# show tam drop-monitor sessions
-           
+
            Name           Flow Group          Collector          Sampler
            -----------    ----------------    --------------     -------------
            ss1            f1                  c1                 s1
@@ -874,13 +871,13 @@ limitations under the License.
            sonic(config-tam-dm)# aging-interval 10
            sonic(config-tam-dm)# end
            sonic# show tam drop-monitor
-           
+
            Status               : Inactive
            Switch ID            : 9876
            Number of sessions   : 3
            Number of collectors : 2
            Aging Interval       : 10
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -901,13 +898,13 @@ limitations under the License.
            sonic(config-tam-dm)# no aging-interval
            sonic(config-tam-dm)# end
            sonic# show tam drop-monitor
-           
+
            Status               : Inactive
            Switch ID            : 9876
            Number of sessions   : 3
            Number of collectors : 2
            Aging Interval       : 5
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -935,11 +932,11 @@ limitations under the License.
            sonic(config-tam-ts)# enable
            sonic(config-tam-ts)# end
            sonic# show tam tail-stamping
-           
+
            Status               : Active
            Switch ID            : 9876
            Number of sessions   : 0
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -960,11 +957,11 @@ limitations under the License.
            sonic(config-tam-ts)# no enable
            sonic(config-tam-ts)# end
            sonic# show tam tail-stamping
-           
+
            Status               : Inactive
            Switch ID            : 9876
            Number of sessions   : 0
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -989,11 +986,11 @@ limitations under the License.
            sonic(config-tam-ts)# session ss66 flowgroup f9
            sonic(config-tam-ts)# end
            sonic# show tam tail-stamping sessions
-           
+
            Name           Flow Group
            -----------    ------------
            ss66           f9
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -1032,7 +1029,7 @@ limitations under the License.
            sonic(conf-if-Ethernet46)# flow-group f1
            sonic(conf-if-Ethernet46)# end
            sonic# show tam flowgroups
-           
+
            Flow Group Name    : DEMO
               Id              : 1
               Priority        : 100
@@ -1040,14 +1037,14 @@ limitations under the License.
               SRC IP          : 1.1.1.1/32
               DST IP          : 4.4.4.4/32
            Packet Count       :
-           
+
            Flow Group Name    : f88
               Id              : 409
               Priority        : 100
               SRC IP          : 1.1.1.1/32
               DST IP          : 5.5.5.5/32
            Packet Count       :
-           
+
            Flow Group Name    : f1
               Id              : 717
               Priority        : 100
@@ -1057,7 +1054,7 @@ limitations under the License.
               DST IP          : 4.4.4.4/32
               Ingress Intf    : Ethernet46
            Packet Count       :
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -1078,7 +1075,7 @@ limitations under the License.
            sonic(conf-if-Ethernet46)# no flow-group f1
            sonic(conf-if-Ethernet46)# end
            sonic# show tam flowgroups
-           
+
            Flow Group Name    : DEMO
               Id              : 1
               Priority        : 100
@@ -1086,14 +1083,14 @@ limitations under the License.
               SRC IP          : 1.1.1.1/32
               DST IP          : 4.4.4.4/32
            Packet Count       :
-           
+
            Flow Group Name    : f88
               Id              : 409
               Priority        : 100
               SRC IP          : 1.1.1.1/32
               DST IP          : 5.5.5.5/32
            Packet Count       :
-           
+
            Flow Group Name    : f1
               Id              : 717
               Priority        : 100
@@ -1102,7 +1099,7 @@ limitations under the License.
               SRC IP          : 3.3.3.3/32
               DST IP          : 4.4.4.4/32
            Packet Count       :
-           
+
            sonic#
         </EXAMPLE>
       </DOCGEN>
