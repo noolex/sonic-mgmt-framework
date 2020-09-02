@@ -120,8 +120,11 @@ write_resp:
 		w.Header().Set("Content-Type", rtype)
 		w.WriteHeader(status)
 		w.Write([]byte(data))
-
-		debug.FreeOSMemory()
+		// if the size of byte array equals or greater than 10 MB, then free the memory
+		if len(data) >= 10000000 {
+			glog.Info("Calling FreeOSMemory..") 
+			debug.FreeOSMemory()	
+		}
 	} else {
 		// No data, status only
 		w.WriteHeader(status)
