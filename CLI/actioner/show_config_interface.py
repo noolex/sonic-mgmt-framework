@@ -153,10 +153,6 @@ def show_if_lag_config(render_tables):
                               cmd_str += "graceful-shutdown"
                           if portchannel['graceful_shutdown_mode'] == 'disable':
                               cmd_str += "no graceful-shutdown"
-                      if 'description' in portchannel:
-                          if portchannel['description'] != '':
-                              tmp_str = "description \"{}\"".format(str(portchannel['description']))
-                              cmd_str += tmp_str
 
     return 'CB_SUCCESS', cmd_str
 
