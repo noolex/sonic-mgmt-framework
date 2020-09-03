@@ -19,7 +19,7 @@
         <COMMAND
              name="show running-configuration interface vxlan"
              help="show VXLAN configuration">
-          <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vxlan view_keys="name=${iface}" </ACTION>
+          <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vxlan view_keys=\"name=${iface}\" </ACTION>
         </COMMAND>
         <COMMAND 
             name="show vxlan interface" 
@@ -335,7 +335,7 @@
       <COMMAND
             name="show configuration"
             help = "show vxlan configuration">
-            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vxlan view_keys="name=${iface}" </ACTION>   
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vxlan view_keys=\"name=${iface}\" </ACTION>   
       </COMMAND>    
         <COMMAND
             name="no"

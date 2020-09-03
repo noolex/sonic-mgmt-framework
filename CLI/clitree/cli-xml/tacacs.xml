@@ -246,16 +246,10 @@ limitations under the License.
                  mode="subcommand"
                  dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/vrf=mgmt">
           </PARAM>
-          <PARAM name="default"
-                 help="default VRF name"
-                 ptype="SUBCOMMAND"
-                 mode="subcommand"
-                 dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/vrf=default">
-          </PARAM>
         </PARAM>
       </PARAM>
 
-      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${#key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${mgmt}${default}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${#key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${mgmt}</ACTION>
     </COMMAND>
 
     <!-- no tacacs server -->
