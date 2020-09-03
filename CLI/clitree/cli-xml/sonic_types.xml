@@ -514,12 +514,6 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
-        name="UINT"
-        pattern="[0-9]+"
-        help="&lt;0..255&gt;"
-        />
-    <!--=======================================================-->
-    <PTYPE
         name="STRING"
         pattern="[^|]+"
         help="String"
