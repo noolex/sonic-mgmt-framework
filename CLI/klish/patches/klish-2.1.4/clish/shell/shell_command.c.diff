@@ -61,9 +61,11 @@
 < 	return result;
 ---
 >         return result;
-91a126
+92c126
+< 
+---
 > 		const char *penultimate_text = NULL;
-94,95c129,159
+94,95c128,158
 < 		if ((0 != index) && (text[0] != '\0'))
 < 			index--;
 ---
@@ -98,14 +100,18 @@
 > 			}
 >                 }
 > 
-105c169
+105c168
 < 			argv, &idx, completion, index + idx);
 ---
 > 			argv, &idx, completion, index + idx, NULL, NULL);
-116a181,182
+110c173
+< 			const char *result;
+---
+> 			const char *result = NULL;
+116a180,181
 > 			if (BOOL_TRUE == clish_param__get_hidden(param))
 > 				continue;
-120c186,190
+120c185,189
 < 				result = clish_param__get_value(param);
 ---
 > 
@@ -113,7 +119,7 @@
 >                 		if (CLISH_PTYPE_METHOD_REGEXP_SELECT != 
 > 						clish_ptype__get_method(ptype))
 > 					result = clish_param__get_value(param);
-140,141c210,217
+140,141c209,216
 < 			if ((ptype = clish_param__get_ptype(param)))
 < 				clish_ptype_word_generator(ptype, matches, text);
 ---
@@ -125,7 +131,7 @@
 >                 		}
 > 
 > 			}
-144a221,223
+144a220,222
 > 		if(penultimate_text)
 >                         lub_string_free((char *)penultimate_text);
 > 
