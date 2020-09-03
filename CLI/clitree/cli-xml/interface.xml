@@ -292,14 +292,6 @@ limitations under the License.
                     optional="true"
                     >
                  </PARAM>
-                 <PARAM
-                     name="params"
-                     help="Operating parameters"
-                     ptype="SUBCOMMAND"
-                     mode="subcommand"
-                     optional="true"
-                     >
-                  </PARAM>
           </PARAM>
          </PARAM>
    <ACTION>
