@@ -476,6 +476,12 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="DOMAIN_NAME_OR_IPADDR"
+        pattern="^((([a-zA-Z0-9_]([a-zA-Z0-9_\-]){0,61})?[a-zA-Z0-9]\.)*([a-zA-Z0-9_]([a-zA-Z0-9_\-]){0,61})?[a-zA-Z0-9]\.?)$|^\.$|(&IPV4_OR_IPV6_ADDR_PATTERN;)"
+        help="WORD"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="VRF_OR_DEFAULT"
         pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(default)$"
         help="WORD"
