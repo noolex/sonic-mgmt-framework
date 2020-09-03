@@ -127,12 +127,12 @@ Last clearing of "show interface" counters: {{ datetimeformat(counters['last-cle
 {% set space = "          " %}
 Input statistics:
 {{space}}{{counters['in-pkts']}} packets, {{counters['in-octets']}} octets
-{{counters['in-multicast-pkts']}} Multicasts, {{counters['in-broadcast-pkts']}} Broadcasts, {{counters['in-unicast-pkts']}} Unicasts
-{{counters['in-errors']}} error, {{counters['in-discards']}} discarded
+{{space}}{{counters['in-multicast-pkts']}} Multicasts, {{counters['in-broadcast-pkts']}} Broadcasts, {{counters['in-unicast-pkts']}} Unicasts
+{{space}}{{counters['in-errors']}} error, {{counters['in-discards']}} discarded
 Output statistics:
 {{space}}{{counters['out-pkts']}} packets, {{counters['out-octets']}} octets
-{{counters['out-multicast-pkts']}} Multicasts, {{counters['out-broadcast-pkts']}} Broadcasts, {{counters['out-unicast-pkts']}} Unicasts
-{{counters['out-errors']}} error, {{counters['out-discards']}} discarded
+{{space}}{{counters['out-multicast-pkts']}} Multicasts, {{counters['out-broadcast-pkts']}} Broadcasts, {{counters['out-unicast-pkts']}} Unicasts
+{{space}}{{counters['out-errors']}} error, {{counters['out-discards']}} discarded
 {% endif %}
 
 {{'\r\n'}}
