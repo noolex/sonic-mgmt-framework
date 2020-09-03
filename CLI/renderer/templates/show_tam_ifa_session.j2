@@ -3,7 +3,6 @@
 {% set flows = json_output['openconfig-tam:ifa-session'] %}
 {% if flows|length > 0 %}
 {% set flow = flows[0]['state'] %}
-{{' '}}
 Name        : {{flow['name']}}    
 Flow Group  : {{'-' if flow['flowgroup'] == "" else flow['flowgroup']}}
 {% if "collector" in flow %}
@@ -24,15 +23,6 @@ Sampler     : -
 {% set node_type = "Intermediate" %}
 {% endif %}
 Node Type   : {{node_type}}
-{{' '}}
-{% else %}
-{{' '}}
-Session is not configured.
-{{' '}}
 {% endif %}
 {% endif %}
-{% else %}
-{{' '}}
-Session is not configured.
-{{' '}}
 {% endif %}

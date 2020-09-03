@@ -3,18 +3,10 @@
 {% set tailstamps = json_output['openconfig-tam:tailstamping-session'] %}
 {% if tailstamps|length > 0 %}
 {% set tailstamp = tailstamps[0]['config'] %}
-{{' '}}
 Name        : {{tailstamp['name']}}    
 Flow Group  : {{tailstamp['flowgroup']}}
-{{' '}}
 {% else %}
-{{' '}}
-Session is not configured.
-{{' '}}
+%Error: Session is not configured.
 {% endif %}
 {% endif %}
-{% else %}
-{{' '}}
-Session is not configured.
-{{' '}}
 {% endif %}

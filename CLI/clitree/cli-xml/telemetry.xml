@@ -270,7 +270,6 @@ limitations under the License.
         <PARAM name="ifa" help="Shows current status of IFA feature" ptype="SUBCOMMAND" mode="subcommand"/>
         <PARAM name="drop-monitor" help="Shows current status of drop-monitor feature" ptype="SUBCOMMAND" mode="subcommand"/>
         <PARAM name="tail-stamping" help="Shows current status of tail-stamping feature" ptype="SUBCOMMAND" mode="subcommand"/>
-        <PARAM name="thresholds" help="Shows current status of thresholds feature" ptype="SUBCOMMAND" mode="subcommand"/>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_features {"name":"${feature}","feature":"ANY","method":"GET","template":"show_tam_global_feature"}</ACTION>
       <DOCGEN>
@@ -803,7 +802,7 @@ limitations under the License.
       <PARAM name="collector" help="Configures collector for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
         <PARAM name="collector_name" help="Collector name (up to 32 characters string)" ptype="STRING_63"></PARAM>
       </PARAM>
-      <PARAM name="sampler" help="Configures sampler for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="sampler" help="Configures sampler for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
         <PARAM name="sampler_name" help="Sampler name (up to 32 characters string)" ptype="STRING_63" default=''></PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_dm_session {"session":"${session_name}","flowgroup":"${flowgroup_name}","collector":"${collector_name}","sampler":"${sampler_name}","feature":"DROPMONITOR","method":"PATCH"}</ACTION>

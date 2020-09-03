@@ -534,17 +534,17 @@ def run(fn, args):
             if (result['status_code'] == 404):
                 if 'description' in result:
                     description = result['description']
-                    if ("%Error:" in description):
-                        description = (description.split("%Error:",1)[1]).strip()
-                    message = "\n{} '{}' not found.\n".format(description, result['name'])
+                    if ("%Error:" not in description):
+                        description = "%Error: " + description
+                    message = "{} '{}' not found.".format(description, result['name'])
                     print message
     else:
         message = result['error_message']
-        if ("%Error:" in message):
-            message = (message.split("%Error:",1)[1]).strip()
+        if ("%Error:" not in message):
+            message = "%Error: " + message
         if "does not match" in message:
-            message = "Invalid input the command."
-        print "\n" + message + "\n"
+            message = "%Error: Invalid input in the command."
+        print message
     return 0
 
 if __name__ == '__main__':
