@@ -110,7 +110,7 @@ limitations under the License.
     <!-- destination Ethernet <idx> source Ethernet <idx> direction [rx|tx|both] -->
 
   <COMMAND name="show configuration" help = "show configuration">
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mirror-view view_keys="name=${session_name}" </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mirror-view view_keys=\"name=${session_name}\" </ACTION>
   </COMMAND>
     <COMMAND name="destination" help="Mirror session destination interface">
       <PARAM name="phy-if-id" help="Physical interface" ptype="PHY_INTERFACE" optional="false"> </PARAM>

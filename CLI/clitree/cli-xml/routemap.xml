@@ -32,7 +32,7 @@ limitations under the License.
         <PARAM name="rt-map-name" help="Name of route-map" ptype="STRING_63" optional="true">
             <PARAM name="seq-nu" help="Sequence number" ptype="RANGE_1_65535" optional="true"/>
      </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-route-map view_keys="route-map-name=${rt-map-name},seq-num=${seq-nu}"</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-route-map view_keys=\"route-map-name=${rt-map-name},seq-num=${seq-nu}\"</ACTION>
     </COMMAND>
 </VIEW>
 
@@ -128,7 +128,7 @@ limitations under the License.
       depth="2">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <COMMAND name="show configuration" help="show route-map configuration">
-  <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-route-map view_keys="route-map-name=${name},seq-num=${seq_num}" </ACTION>
+  <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-route-map view_keys=\"route-map-name=${name},seq-num=${seq_num}\" </ACTION>
   </COMMAND>
 
   <COMMAND name="set" help="Set values in destination routing protocol"/>

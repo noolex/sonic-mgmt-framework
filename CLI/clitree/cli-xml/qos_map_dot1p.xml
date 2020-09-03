@@ -96,7 +96,7 @@ limitations under the License.
         />
 
      <COMMAND name="show configuration" help="show dot1p-tc-map configuration">
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-dot1p-tc-map view_keys="name=${map_name}"</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-dot1p-tc-map view_keys=\"name=${map_name}\"</ACTION>
      </COMMAND>
 
      <COMMAND name="dot1p" help="DOT1P value" mode="subcommand" ptype="SUBCOMMAND" >
