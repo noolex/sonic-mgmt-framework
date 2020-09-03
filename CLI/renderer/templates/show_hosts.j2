@@ -9,8 +9,17 @@ Source Interface: {{src_intf}}
      {% set server_list = servers['server'] %}
      {% if server_list -%}
        {% set server_ip = [] %}
+       {% set server_ip_vrf = "" %}
        {%for server in server_list %}
-       {% do server_ip.append(server['address']) %}
+         {% set config = server['config']%}
+         {% if 'address' in config %}
+           {% if 'openconfig-system-ext:vrf-name' in config %}
+            {% set server_ip_vrf = config['address'] + "(vrf: "+config['openconfig-system-ext:vrf-name']+")" %}
+            {% do server_ip.append(server_ip_vrf) %}
+           {% else %}
+            {% do server_ip.append(config['address']) %}
+           {% endif %}
+         {% endif %}
        {% endfor %}
 Name servers are: {{server_ip|join(', ')}}
     {% endif %}
