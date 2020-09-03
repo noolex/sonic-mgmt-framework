@@ -28,7 +28,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp configuration">
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-ipv6 view_keys="vrf-name=${vrf-name},afi_safi=ipv6_unicast" </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-ipv6 view_keys=\"vrf-name=${vrf-name},afi_safi=ipv6_unicast\" </ACTION>
     </COMMAND>
 
   <COMMAND name="redistribute" help="Redistribute information from another routing protocol" command_tables="sonic-route-common:sonic-route-common/ROUTE_REDISTRIBUTE/ROUTE_REDISTRIBUTE_LIST/vrf_name={vrf-name},src_protocol={src-protocol},dst_protocol={dst-protocol},addr_family={addr-family}" render_command_cb="bgp_af_ipv6_redist" >
@@ -163,7 +163,7 @@ limitations under the License.
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-nbr-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp neighbor IPv6 configuration">
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr-ipv6 view_keys="vrf-name=${vrf-name},nbr=${nbr-addr},afi-safi=ipv6_unicast" </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr-ipv6 view_keys=\"vrf-name=${vrf-name},nbr=${nbr-addr},afi-safi=ipv6_unicast\" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/admin_status=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_enabled ${vrf-name} ${nbr-addr} IPV6_UNICAST True</ACTION>
@@ -404,7 +404,7 @@ limitations under the License.
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-template-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp peer group IPv6 configuration">
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template-ipv6 view_keys="vrf-name=${vrf-name},pg=${template-name},afi-safi=ipv6_unicast" </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template-ipv6 view_keys=\"vrf-name=${vrf-name},pg=${template-name},afi-safi=ipv6_unicast\" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/admin_status=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_enabled ${vrf-name} ${template-name} IPV6_UNICAST True</ACTION>

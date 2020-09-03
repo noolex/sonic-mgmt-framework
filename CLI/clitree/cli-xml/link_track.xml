@@ -101,7 +101,7 @@ limitations under the License.
         <COMMAND name="show running-configuration link state" help="Show current link state tracking configuration" />
         <COMMAND name="show running-configuration link state tracking" help="Show current link state tracking configuration">
             <PARAM name="show-runn-grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME" optional="true"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-link-state-track view_keys="group=${show-runn-grp-name}" </ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-link-state-track view_keys=\"group=${show-runn-grp-name}\" </ACTION>
         </COMMAND>
     </VIEW>
 
