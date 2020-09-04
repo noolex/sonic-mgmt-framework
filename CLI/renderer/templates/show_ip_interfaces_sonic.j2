@@ -34,6 +34,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
          {% if vars.update({'admin_state':"up"}) -%}{% endif -%}
          {% if vars.update({'oper_state':"up"}) -%}{% endif -%}
          {% if vars.update({'vrf':""}) %}{% endif %}
+         {% if vars.update({'flags':""}) %}{% endif %}
          {% if "isMgmtVrfEnabled" in json_output and json_output["isMgmtVrfEnabled"] == True%}
             {% if vars.update({'vrf': "mgmt"}) %}{% endif %}
          {% endif %}
@@ -89,6 +90,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
             {% if vars.update({'admin_state':"down"}) %}{% endif %}
             {% if vars.update({'oper_state':"down"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
+            {% if vars.update({'flags':""}) %}{% endif %}
             {% for nKey in json_output %}
                 {% if "sonic-interface:INTERFACE_LIST" in nKey -%}
                     {% set portIntfList = json_output["sonic-interface:INTERFACE_LIST"] %}
@@ -126,6 +128,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
             {% if vars.update({'admin_state':"down"}) %}{% endif %}
             {% if vars.update({'oper_state':"down"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
+            {% if vars.update({'flags':""}) %}{% endif %}
             {% for nKey in json_output %}
                 {% if "sonic-portchannel-interface:PORTCHANNEL_INTERFACE_LIST" in nKey -%}
                     {% set lagIntfList = json_output["sonic-portchannel-interface:PORTCHANNEL_INTERFACE_LIST"] %}
@@ -162,6 +165,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
             {% if vars.update({'admin_state':"down"}) %}{% endif %}
             {% if vars.update({'oper_state':"down"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
+            {% if vars.update({'flags':""}) %}{% endif %}
             {% for nKey in json_output %}
                 {% if "sonic-vlan-interface:VLAN_INTERFACE_LIST" in nKey -%}
                     {% set vlanIntfList = json_output["sonic-vlan-interface:VLAN_INTERFACE_LIST"] %}
@@ -198,6 +202,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
             {% if vars.update({'admin_state':"up"}) %}{% endif %}
             {% if vars.update({'oper_state':"up"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
+            {% if vars.update({'flags':""}) %}{% endif %}
             {% for nKey in json_output %}
                 {% if "sonic-loopback-interface:LOOPBACK_INTERFACE_LIST" in nKey -%}
                     {% set loIntfList = json_output["sonic-loopback-interface:LOOPBACK_INTERFACE_LIST"] %}
