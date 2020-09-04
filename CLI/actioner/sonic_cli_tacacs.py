@@ -165,11 +165,17 @@ def run_config(func, args):
     else:
         print(response.error_message())
 
+def get_sonic_tacacs_all():
+    get_sonic_tacacs_global()
+    get_sonic_tacacs_server(['address=', 'show_tacacs_server.j2'])
+
 def run(func, args):
     if func == 'get_sonic_tacacs_global':
         get_sonic_tacacs_global()
     elif func == 'get_sonic_tacacs_server':
         get_sonic_tacacs_server(args)
+    elif func == 'get_sonic_tacacs_all':
+        get_sonic_tacacs_all()
     else:
         run_config(func, args)
 
