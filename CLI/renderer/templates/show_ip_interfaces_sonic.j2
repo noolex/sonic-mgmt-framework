@@ -37,6 +37,20 @@ Flags: U-Unnumbered interface
          {% if "isMgmtVrfEnabled" in json_output and json_output["isMgmtVrfEnabled"] == True%}
             {% if vars.update({'vrf': "mgmt"}) %}{% endif %}
          {% endif %}
+         {% if 'sonic-mgmt-port:MGMT_PORT_LIST' in json_output %}
+            {% set mgmtPortList = json_output["sonic-mgmt-port:MGMT_PORT_LIST"] %}
+            {% for port in mgmtPortList -%}
+                {% if vars.name == port["ifname"] -%}
+                    {% if "admin_status" in port %}
+                        {% if vars.update({'admin_state':port["admin_status"]}) %}{% endif %}
+                    {% endif %}
+                    {% if "oper_status" in port %}
+                        {% if vars.update({'oper_state':port["oper_status"]}) %}{% endif %}
+                    {% endif %}
+                    {% break %}
+                {% endif -%}
+            {% endfor -%}
+         {% endif %}
         {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
         {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
 {{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}

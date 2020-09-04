@@ -412,6 +412,18 @@ def invoke_api(func, args=[]):
             else:
                filter_address(d, False)
 
+            path = cc.Path('/restconf/data/sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/MGMT_PORT_LIST')
+            responseMgmtPortTbl = api.get(path)
+            if responseMgmtPortTbl.ok():
+                for port in responseMgmtPortTbl.content['sonic-mgmt-port:MGMT_PORT_LIST']:
+                    ifname = port['ifname']
+                    path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/oper-status', name=ifname)
+                    responseMgmtPortOperStatus = api.get(path)
+                    if responseMgmtPortOperStatus.ok():
+                        port.update({'oper_status' : responseMgmtPortOperStatus.content['openconfig-interfaces:oper-status'].lower()})
+                d.update(responseMgmtPortTbl.content)
+
+
         path = cc.Path('/restconf/data/sonic-interface:sonic-interface/INTF_TABLE/INTF_TABLE_IPADDR_LIST')
         responseIntfTbl = api.get(path)
         if responseIntfTbl.ok():
