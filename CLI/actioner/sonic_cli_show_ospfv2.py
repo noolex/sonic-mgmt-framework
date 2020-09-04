@@ -38,7 +38,7 @@ def generate_show_ip_ospf(vrf):
     dlist = []
     area_id_list = []
     d = { 'vrfName': vrfName }
-    area_id_list = build_area_id_list ()
+    area_id_list = build_area_id_list (vrfName)
     dlist.append(d)
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=vrfName)
     response = api.get(keypath)
@@ -136,7 +136,7 @@ def generate_show_ip_ospf_interfaces(vrf, template, intfname):
     d = { 'vrfName': vrfName }
     dlist.append(d)
 
-    area_id_list = build_area_id_list ()
+    area_id_list = build_area_id_list (vrfName)
     if len(area_id_list) == 0:
         print("% OSPF instance not found")
         return
@@ -228,7 +228,7 @@ def generate_show_ip_ospf_database(vrf, template, ls_id, adv_router, selforg):
     area_id_list = []
     d = { 'vrfName': vrfName }
     dlist.append(d)
-    area_id_list = build_area_id_list ()
+    area_id_list = build_area_id_list (vrfName)
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
@@ -344,7 +344,7 @@ def ospfv2_filter_neighbors_by_neighbor_id(response, intfname):
 
 # The below function prepares area_id_list e.g. ['0.0.0.0', '0.0.0.1'] 
 # For area_id = 5, it is internally treated as string 0.0.0.5
-def build_area_id_list ():
+def build_area_id_list (vrf_name):
     api = cc.ApiClient()
     output = []
 
@@ -366,6 +366,9 @@ def build_area_id_list ():
                 # request[2] = tableArea[2] or area-id column
                 areaId = area.get(request[2])
                 if areaId is None:
+                    continue
+                vrfName = area.get('vrf_name')
+                if vrfName is None or  vrfName != vrf_name:
                     continue
                 output.append(areaId)
             output.sort()

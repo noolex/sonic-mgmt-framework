@@ -829,10 +829,10 @@
       <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds ${vrf-name} ${__full_line} </ACTION>
         <DOCGEN>
     <DESCRIPTION>
-      Display ospf global information
+      Display ospf information
     </DESCRIPTION>
-    <EXAMPLE summary="Display ospf information for all vrf">
-      device# show ip ospf
+    <EXAMPLE summary="Display ospf information for default vrf">
+device# show ip ospf
  OSPF Routing Process, Router ID: 1.1.1.1
  Supports only single TOS (TOS0) routes
  This implementation conforms to RFC2328
@@ -880,11 +880,164 @@
    Number of opaque link LSA . Checksum Sum 0x
    Number of opaque area LSA 0. Checksum Sum 0x0
     </EXAMPLE>
+    <EXAMPLE summary="Display neighbor information for ospf on default vrf">
+sonic# show ip ospf neighbor | no-more
+ 
+Neighbor ID     Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
+10.59.142.247     1 Full/Backup       37.343s 64.1.1.2        Ethernet64:64.1.1.1      0     0     0
+    </EXAMPLE>
+    <EXAMPLE summary="Display neighbor detailed information for ospf on default vrf">
+sonic# show ip ospf neighbor detail | no-more
+Neighbor 10.59.142.247, interface address 64.1.1.2
+    In the area 0.0.0.0 via interface Ethernet64
+    Neighbor priority is 1, State is Full, 6 state changes
+    Most recent state change statistics:
+      Progressive change 7h3m25s ago
+    DR is 64.1.1.1, BDR is 64.1.1.2
+    Options 2 *|-|-|-|-|-|E|-
+    Dead timer due in 30.687s
+    Database Summary List 0
+    Link State Request List 0
+    Link State Retransmission List 0
+    Thread Inactivity Timer on
+    Thread Database Description Retransmision off
+    Thread Link State Request Retransmission on
+    Thread Link State Update Retransmission on
+    </EXAMPLE>
+    <EXAMPLE summary="Display interface information for ospf on default vrf">
+sonic# show ip ospf interface | no-more
+VRF Name: default
+Ethernet64 is up
+  ifindex 128, MTU 9100 bytes, BW 25000 Mbit UP,BROADCAST,RUNNING,MULTICAST
+  Internet Address 64.1.1.1/24, Broadcast 64.1.1.255, Area 0.0.0.0
+  MTU mismatch detection: enabled 
+  Router ID 10.59.143.131, Network Type BROADCAST, Cost: 4
+  Transmit Delay is 1 sec, State DR, Priority 1
+  Backup Designated Router (ID) 10.59.142.247, Interface Address 64.1.1.2
+  Saved Network-LSA sequence number 0x8000000f
+  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
+  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
+    Hello due in 9.023s
+  Neighbor Count is 1, Adjacent neighbor count is 1
+    </EXAMPLE>
+    <EXAMPLE summary="Display interface traffic information for ospf on default vrf">
+sonic# show ip ospf interface traffic | no-more
+ 
+Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack        
+                Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx        
+--------------------------------------------------------------------------------------------
+Ethernet64     2563/2563           3/3             1/1            17/30           29/16    
+    </EXAMPLE>
+    <EXAMPLE summary="Display database information for ospf on default vrf">
+sonic# show ip ospf database | no-more
+VRF Name: default
+         
+       OSPF Router with ID (10.59.143.131)
+ 
+                Router Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+10.59.142.247   10.59.142       1682 0x80000011 0xb56b 1
+10.59.143.131   10.59.143       1498 0x80000011 0xdc2c 1
+ 
+                Net Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+64.1.1.1        10.59.143.131   1538 0x8000000f 0x1c70
+    </EXAMPLE>
+    <EXAMPLE summary="Display database router information for ospf on default vrf">
+sonic# show ip ospf database router | no-more
+VRF Name: default
+     
+       OSPF Router with ID (10.59.143.131)
+     
+                 
+                Router Link States (Area 0.0.0.0)
+                 
+  LS age: 1709
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  Flags: 0x0  :
+  LS Type: router-LSA
+  Link State ID: 10.59.142.247
+  Advertising Router: 10.59.142
+  LS Seq Number: 80000011
+  Checksum: 0xb56b
+  Length: 36
+   
+   Number of Links: 1
+    
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 64.1.1.1
+     (Link Data) Router Interface address: 64.1.1.2
+      Number of TOS metrics: 0
+       TOS 0 Metric: 4
+    
+                             
+  LS age: 1525
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  Flags: 0x0  :
+  LS Type: router-LSA
+  Link State ID: 10.59.143.131
+  Advertising Router: 10.59.143
+  LS Seq Number: 80000011
+  Checksum: 0xdc2c
+  Length: 36
+   
+   Number of Links: 1
+    
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 64.1.1.1
+     (Link Data) Router Interface address: 64.1.1.1
+      Number of TOS metrics: 0
+       TOS 0 Metric: 4
+    </EXAMPLE>
+    <EXAMPLE summary="Display database network information for ospf on default vrf">
+sonic# show ip ospf database network | no-more
+VRF Name: default
+     
+       OSPF Router with ID (10.59.143.131)
+     
+     
+                Net Link States (Area 0.0.0.0)
+                 
+  LS age: 1602
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  LS Type: network-LSA
+  Link State ID: 64.1.1.1 (address of Designated Router)
+  Advertising Router: 10.59.143.131
+  LS Seq Number: 8000000f
+  Checksum: 0x1c70
+  Length: 32
+   
+  Network Mask: /24
+        Attached Router: 10.59.142.247
+                   
+        Attached Router: 10.59.143.131
+    </EXAMPLE>
   </DOCGEN>
      </COMMAND>
 
      <COMMAND name="show ip ospf route" help="Displays OSPFv2 routing table" >
         <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds default ${__full_line}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Display ospf route information for a user-vrf
+                </DESCRIPTION>
+                <EXAMPLE summary="Display ospf route information for user vrf">
+sonic# show ip ospf vrf Vrf1 route | no-more
+VRF Name: Vrf1
+============ OSPF network routing table ============
+N    101.1.1.0/24          [10] area: 0.0.0.0
+                           directly attached to Vlan101
+ 
+============ OSPF router routing table =============
+ 
+============ OSPF external routing table ===========
+                </EXAMPLE>
+            </DOCGEN>
      </COMMAND>
 
      <COMMAND name="show ip ospf vrfs" help="Displays OSPFv2 VRFs" >
