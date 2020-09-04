@@ -2,21 +2,14 @@
 {% if "openconfig-tam:tailstamping-sessions" in json_output %}
 {% set sessions = json_output['openconfig-tam:tailstamping-sessions']['tailstamping-session'] %}
 {% if sessions|length > 0 %}
-{{' '}}
 Name           Flow Group
 -----------    ------------
 {% for session in sessions|sort(attribute='name') %}
 {% set session_config = session["state"] %}
 {{'%-15s'|format(session_config["name"])}}{{'%-15s'|format(session_config["flowgroup"])}}
-{% endfor %} 
-{% else %}
-{{' '}}
-Sessions are not configured.
-{{' '}}
+{% endfor %}
 {% endif %}
 {% endif %}
 {% else %}
-{{' '}}
-Sessions are not configured.
-{{' '}}
+%Error: Sessions are not configured.
 {% endif %}

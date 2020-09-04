@@ -2,7 +2,6 @@
 {% if "openconfig-tam:ifa-sessions" in json_output %}
 {% set sessions = json_output['openconfig-tam:ifa-sessions']['ifa-session'] %}
 {% if sessions|length > 0 %}
-{{' '}}
 Name           Flow Group          Collector          Sampler           Node Type
 -----------    ----------------    --------------     -------------     ----------
 {% for session in sessions|sort(attribute='name') %}
@@ -25,15 +24,9 @@ Name           Flow Group          Collector          Sampler           Node Typ
 {% set sampler = "-" %}
 {% endif %}
 {{'%-15s'|format(session_state["name"])}}{{'%-20s'|format(session_state["flowgroup"])}}{{'%-19s'|format(collector)}}{{'%-18s'|format(sampler)}}{{'%-20s'|format(node_type)}}
-{% endfor %} 
-{% else %}
-{{' '}}
-Sessions are not configured.
-{{' '}}
+{% endfor %}
 {% endif %}
 {% endif %}
 {% else %}
-{{' '}}
-Sessions are not configured.
-{{' '}}
+%Error: Sessions are not configured.
 {% endif %}
