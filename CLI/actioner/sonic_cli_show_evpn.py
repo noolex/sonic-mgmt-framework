@@ -26,16 +26,15 @@ def run(func, args):
     if func == "get_evpn":
         keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp-evpn')
         body = {"sonic-bgp-show:input": { "cmd":full_cmd }}
-        response = cc.ApiClient().post(keypath, body)
+        response = cc.ApiClient().post(keypath, body, response_type='string')
         if not response:
             print "No response"
             return 1
         if response.ok():
             if response.content is not None:
                 content = response.content
-                if 'sonic-bgp-show:output' in content and 'response' in content['sonic-bgp-show:output']:
-                    output = response.content['sonic-bgp-show:output']['response']
-                    show_cli_output("dump.j2", output)
+                content = content[39:-3].replace('\u003e', '>')
+                show_cli_output("dump.j2", content)
         else:
             print response.error_message()
             return 1
