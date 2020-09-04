@@ -234,7 +234,7 @@ limitations under the License.
 
 <!-- Config mode -->
 <VIEW name="configure-view">
-    <COMMAND name = "ldap-server" help="Configures LDAP server" command_keys="ldap_type=global" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server" help="Configures LDAP server" command_keys="ldap_type=global" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
     	<PARAM name="ldap-global-options" help="" ptype="SUBCOMMAND" mode="switch">
 				<PARAM name="timelimit" help="Configures global search time limit" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
@@ -374,7 +374,7 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server nss" help="Configures LDAP server for NSS" command_keys="ldap_type=nss" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server nss" help="Configures LDAP server for NSS" command_keys="ldap_type=nss" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
     	<PARAM name="ldap-nss-options" help="" ptype="SUBCOMMAND" mode="switch">
     	
 				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
@@ -484,7 +484,7 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server pam" help="Configures LDAP server for PAM" command_keys="ldap_type=pam" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server pam" help="Configures LDAP server for PAM" command_keys="ldap_type=pam" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
     	<PARAM name="ldap-pam-options" help="" ptype="SUBCOMMAND" mode="switch">
 				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
@@ -581,7 +581,7 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server sudo" help="Configures LDAP server for SUDO" command_keys="ldap_type=sudo" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server sudo" help="Configures LDAP server for SUDO" command_keys="ldap_type=sudo" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
     	<PARAM name="ldap-sudo-options" help="" ptype="SUBCOMMAND" mode="switch">
 				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
@@ -717,7 +717,7 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ldap-server map" help="Configures LDAP server for map" command_keys="name=*;from=*" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST/name={name},from={from}" render_command_cb="ldap_map_config">
+    <COMMAND name="ldap-server map" help="Configures LDAP server for map" command_keys="name=*;from=*" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST/name={name},from={from}" render_command_cb="ldap_map_config" escape_chars="">
     	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
         <PARAM name="attribute" help="Configures attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         	<PARAM name="attribute_from_val" ptype="ATTR_FROM" help=""/>
