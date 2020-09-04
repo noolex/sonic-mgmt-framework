@@ -87,9 +87,10 @@ limitations under the License.
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Set the DR Priority for the PIM interface. This command
-                    allows user to set the priority of a node for becoming a DR. A higher value
-                    means higher chances of being elected.
+                    Set the DR Priority for the PIM interface. This command a
+                    allows user to set the priority of a node for becoming the DR on a network to
+                    which the interface is attached. A higher value means a higher chances of being
+                    elected.
                 </DESCRIPTION>
                 <USAGE>
                     ip pim dr-priority &lt;value&gt;
@@ -144,8 +145,8 @@ limitations under the License.
                 <DESCRIPTION>
                     Periodic interval for Hello messages to keep the PIM neighbor session alive.
                     This configuration internally configures the default hold-time (3.5 *
-                    Hello-interval) ; the period to keep the PIM neighbor session alive even
-                    without hello messages from that particular neighbor.
+                    Hello-interval); the period to keep the PIM neighbor session alive
+                    without receiving hello messages from that particular neighbor.
                 </DESCRIPTION>
                 <USAGE>
                     ip pim hello &lt;value&gt;
@@ -192,7 +193,7 @@ limitations under the License.
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    This command enables BFD support for PIM on the given interface.
+                    This command enables BFD processing for PIM on the given interface.
                 </DESCRIPTION>
                 <USAGE>
                     ip pim bfd
@@ -213,7 +214,7 @@ limitations under the License.
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    This command disables BFD support for PIM on the given interface.
+                    This command disables BFD processing for PIM on the given interface.
                 </DESCRIPTION>
                 <USAGE>
                     no ip pim sparse-mode

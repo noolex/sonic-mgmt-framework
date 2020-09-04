@@ -92,7 +92,8 @@ limitations under the License.
 
                 <EXAMPLE summary="show ip mroute [vrf {&lt;vrf-name&gt; | all}]">
                     sonic# show ip mroute
-                    IP Multicast Routing Table
+
+                    IP multicast routing table for VRF: default
                     * -> indicates installed route
 
                       Source          Group           Input         Output        Uptime
@@ -107,6 +108,8 @@ limitations under the License.
                 </EXAMPLE>
                 <EXAMPLE summary="show ip mroute [vrf {&lt;vrf-name&gt; | all}] summary">
                     sonic# show ip mroute summary
+
+                    IP multicast routing table summary for VRF: default
                     Mroute Type      Installed/Total
                     (S, G)           7/7
                 </EXAMPLE>
@@ -134,7 +137,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_mroute clear_mroute vrf:${vrf-name} </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                   This command resets multicast route information.
+                   This command is useful for debugging and resets multicast route information.
                 </DESCRIPTION>
 
                 <USAGE>

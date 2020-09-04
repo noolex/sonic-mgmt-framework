@@ -164,6 +164,8 @@ limitations under the License.
 
                 <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] interface [&lt;intf-name&gt;]">
                     sonic # show ip pim interface
+
+                    PIM interface information for VRF: default
                     Interface       State       Address         PIM Nbrs       PIM DR          Hello-interval       PIM DR-Priority
                     Vlan100         up          100.0.0.2       1              100.0.0.2       30                   1
                     Vlan200         up          200.0.0.2       1              200.0.0.3       30                   1
@@ -171,12 +173,16 @@ limitations under the License.
                     ----------------------------------------------------------------------------------------------------------------
 
                     sonic # show ip pim interface vlan 100
+
+                    PIM interface information for VRF: default
                     Interface       State       Address         PIM Nbrs       PIM DR          Hello-interval       PIM DR-Priority
                     Vlan100         up          100.0.0.2       1              100.0.0.2       30                   1
                 </EXAMPLE>
 
                 <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] neighbor [&lt;nbr-ipv4-address&gt;]">
                     sonic# show ip pim neighbor
+
+                    PIM neighbor information for VRF: default
                     Interface       Neighbor        Uptime         Expirytime       DR-Priority
                     Vlan100         100.0.0.1       01:38:52       00:01:22         1
                     Vlan200         200.0.0.3       01:22:33       00:01:13         1
@@ -184,6 +190,8 @@ limitations under the License.
                     --------------------------------------------------------------------------------
 
                     sonic# show ip pim neighbor 100.0.0.1
+
+                    PIM neighbor information for VRF: default
                     Interface       Neighbor        Uptime         Expirytime       DR-Priority
                     Vlan100         100.0.0.1       01:38:52       00:01:22         1
                 </EXAMPLE>
@@ -192,6 +200,8 @@ limitations under the License.
                     If IP-prefix list is associated:
                     ===============================
                     sonic# show ip pim ssm
+
+                    PIM SSM information for VRF: default
                     SSM group range : PIM_PLIST1
 
                     -----------------------------------------
@@ -199,13 +209,15 @@ limitations under the License.
                     If IP-prefix list is not associated:
                     ===================================
                     sonic# show ip pim ssm
+
+                    PIM SSM information for VRF: default
                     SSM group range : 232.0.0.0/8
                 </EXAMPLE>
 
                 <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] topology [Group-addr | {Group-addr Source-addr}]">
                     sonic# show ip pim topology
-                    PIM Multicast Routing Table
 
+                    PIM multicast routing table for VRF: default
                     (71.0.0.11, 233.0.0.1), uptime 13:08:24, expires 00:00:12
                       Incoming interface: vlan100, RPF neighbor 100.0.0.1
                       Outgoing interface list:
@@ -227,8 +239,8 @@ limitations under the License.
                     --------------------------------------------------------------------------------
 
                     sonic# show ip pim topology 233.0.0.1
-                    PIM Multicast Routing Table
 
+                    PIM multicast routing table for VRF: default
                     (71.0.0.11, 233.0.0.1), uptime 13:08:24, expires 00:00:12
                       Incoming interface: vlan100, RPF neighbor 100.0.0.1
                       Outgoing interface list:
@@ -244,8 +256,8 @@ limitations under the License.
                     --------------------------------------------------------------------------------
 
                     sonic# show ip pim topology 225.1.1.1 101.0.0.22
-                    PIM Multicast Routing Table
 
+                    PIM multicast routing table for VRF: default
                     (101.0.0.22, 225.1.1.1), uptime 13:07:51, expires 00:06:09
                       Incoming interface: vlan105, RPF neighbor 105.0.0.1
                       Outgoing interface list:
@@ -255,6 +267,8 @@ limitations under the License.
 
                 <EXAMPLE summary="show ip pim [vrf {&lt;vrf-name&gt; | all}] rpf">
                     sonic# show ip pim rpf
+
+                    PIM RPF information for VRF: default
                     Source          Group           RpfIface       RpfAddress       RibNextHop       Metric       Pref
                     71.0.0.11       233.0.0.1       Vlan100        100.0.0.1        100.0.0.1        0            1
                     71.0.0.22       235.0.0.1       Vlan100        100.0.0.1        100.0.0.1        0            1
@@ -305,7 +319,7 @@ limitations under the License.
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    These commands are useful in debugging and resets the PIM interfaces and OIL (Outgoing Interfaces List).
+                    These commands are useful for debugging. One resets the PIM interfaces. The other rescans the Outgoing Interface Lists (OILs).
                 </DESCRIPTION>
 
                 <USAGE>
@@ -412,22 +426,48 @@ limitations under the License.
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    The following PIM-SSM (IPv4) global configurations are
+                    The following PIM (IPv4) global configurations are
                     executed in configuration-view. All these commands can be executed per VRF. If
                     VRF is not specified, then it will be executed in "default" VRF context. Once
                     PIM global configurations are done on a particular non-default VRF, that VRF
-                    cannot be deleted from the system till relevant PIM configurations are cleared.
+                    cannot be deleted from the system until relevant PIM configurations are cleared.
+
+                    --------------------
+                    Join Prune Interval:
+                    --------------------
+                    Configure the frequency of join/prune messages on the specified interface.
+
+
+                    -----------------
+                    Keep Alive Timer:
+                    -----------------
+                    Period after last (S,G) data packet during which (S,G) Join state will be even in the absence of (S,G) Join messages.
+
+
+                    ------------------------------
+                    SSM Prefix-list configuration:
+                    ------------------------------
+                    Apart from standard PIM-SSM multicast range (232.0.0.0/8),
+                    user can qualify other multicast group address as PIM-SSM range using
+                    IP-prefix-list. User should create the corresponding IP-prefix-list using
+                    existing "ip prefix-list" CLI command and then associate that prefix-list to
+                    PIM through this CLI command. This IP-prefix-list cannot be deleted from the
+                    system until after removal of any PIM global configuration referring to the
+                    prefix list.
+
+                    -----
+                    ECMP:
+                    -----
+                    If PIM has the a choice of ECMP nexthops for a particular RPF, PIM will cause
+                    S,G flows to be spread out amongst the nexthops. If this command is not
+                    specified then the first nexthop found will be used
                 </DESCRIPTION>
 
                 <USAGE>
-                    ip pim [vrf &lt;vrf-name&gt;] join-prune-interval &lt;value : (60-600 seconds)&gt;
-                    no ip pim [vrf &lt;vrf-name&gt;] join-prune-interval
-                    ip pim [vrf &lt;vrf-name&gt;] keep-alive-timer &lt;value : (31-60000 seconds)&gt;
-                    no ip pim [vrf &lt;vrf-name&gt;] keep-alive-timer
-                    ip pim [vrf &lt;vrf-name&gt;] ssm prefix-list &lt;prefix-list-name&gt;
-                    no ip pim [vrf &lt;vrf-name&gt;] ssm prefix-list
-                    ip pim [vrf &lt;vrf-name&gt;] ecmp [rebalance]
-                    no ip pim [vrf &lt;vrf-name&gt;] ecmp [rebalance]
+                    * ip pim [vrf &lt;vrf-name&gt;] join-prune-interval &lt;value : (60-600 seconds)&gt;
+                    * ip pim [vrf &lt;vrf-name&gt;] keep-alive-timer &lt;value : (31-60000 seconds)&gt;
+                    * ip pim [vrf &lt;vrf-name&gt;] ssm prefix-list &lt;prefix-list-name&gt;
+                    * ip pim [vrf &lt;vrf-name&gt;] ecmp [rebalance]
                 </USAGE>
                 <EXAMPLE summary="List of PIM global and interface level commands">
                 sonic# configure terminal
