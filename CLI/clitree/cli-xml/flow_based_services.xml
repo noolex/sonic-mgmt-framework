@@ -114,7 +114,7 @@ limitations under the License.
         <!-- show running-config-configuration policy -->
         <COMMAND name="show running-configuration policy" help="Shows current policy configuration">
             <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max: 63 characters)" ptype="STRING_63" optional="true" />
-            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys=\"fbs-policy-name=${show-fbs-policy-name}\" </ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${show-fbs-policy-name}" </ACTION>
         </COMMAND>
 
 
