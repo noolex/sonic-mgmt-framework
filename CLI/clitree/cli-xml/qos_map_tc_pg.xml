@@ -96,7 +96,7 @@ limitations under the License.
         />
 
      <COMMAND name="show configuration" help="show tc-pg-map configuration">
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-tc-pg-map view_keys=\"name=${map_name}\"</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-tc-pg-map view_keys="name=${map_name}"</ACTION>
      </COMMAND>
 
      <COMMAND name="traffic-class" help="Traffic Class value" mode="subcommand" ptype="SUBCOMMAND" >

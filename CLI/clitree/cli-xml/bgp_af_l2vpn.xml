@@ -28,7 +28,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <COMMAND name="show configuration" help="show bgp configuration">
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-l2vpn view_keys=\"vrf-name=${vrf-name},afi_safi=l2vpn_evpn\" </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-l2vpn view_keys="vrf-name=${vrf-name},afi_safi=l2vpn_evpn" </ACTION>
   </COMMAND>
 
   <COMMAND name="no" help="no commands"/>
@@ -361,7 +361,7 @@ limitations under the License.
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-nbr-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp neighbor l2vpn evpn configuration">
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr-l2vpn view_keys=\"vrf-name=${vrf-name},nbr=${nbr-addr},afi-safi=l2vpn_evpn\" </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr-l2vpn view_keys="vrf-name=${vrf-name},nbr=${nbr-addr},afi-safi=l2vpn_evpn" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/admin_status=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_neighbors_neighbor_afi_safis_afi_safi_config_enabled ${vrf-name} ${nbr-addr} L2VPN_EVPN True</ACTION>
@@ -613,7 +613,7 @@ limitations under the License.
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-template-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp peer group l2vpn evpn configuration">
-      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template-l2vpn view_keys=\"vrf-name=${vrf-name},pg=${template-name},afi-safi=l2vpn_evpn\" </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template-l2vpn view_keys="vrf-name=${vrf-name},pg=${template-name},afi-safi=l2vpn_evpn" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/admin_status=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_peer_groups_peer_group_afi_safis_afi_safi_config_enabled ${vrf-name} ${template-name} L2VPN_EVPN True</ACTION>

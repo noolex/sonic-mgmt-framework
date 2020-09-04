@@ -98,19 +98,19 @@ limitations under the License.
         </COMMAND>
         <COMMAND name="show running-configuration mac access-list" help="Displays all MAC access-list configurations">
             <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mac-acl view_keys=\"access-list-name=${access-list-name}\"</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mac-acl view_keys="access-list-name=${access-list-name}"</ACTION>
         </COMMAND>
         <COMMAND name="show running-configuration ip" help="Current operating configuration">
         </COMMAND>
         <COMMAND name="show running-configuration ip access-list" help="Displays all IPV4 access-list configurations">
             <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv4-acl view_keys=\"access-list-name=${access-list-name}\"</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv4-acl view_keys="access-list-name=${access-list-name}"</ACTION>
         </COMMAND>
         <COMMAND name="show running-configuration ipv6" help="Current operating configuration">
         </COMMAND>
         <COMMAND name="show running-configuration ipv6 access-list" help="Displays all IPV6 access-list configurations">
             <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv6-acl view_keys=\"access-list-name=${access-list-name}\"</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv6-acl view_keys="access-list-name=${access-list-name}"</ACTION>
         </COMMAND>
     </VIEW>
 
