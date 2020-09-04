@@ -1,9 +1,4 @@
-{% set ns = namespace(output_current = 'N/A') %}
-{% set ns = namespace(output_power = 'N/A') %}
-{% set ns = namespace(output_voltage = 'N/A') %}
-{% set ns = namespace(fan_speed = 'N/A') %}
-{% set ns = namespace(fan_direction = 'N/A') %}
-{% set ns = namespace(type = 'Unknown') %}
+{% set ns = namespace(type = 'Unknown', output_current='N/A', output_power='N/A', output_voltage='N/A', fan_speed='N/A', fan_direction='N/A', status_led='N/A') %}
 {% for psu_name, psu_info in json_output.items() %}
 {% if 'state' in psu_info and 'empty' in psu_info['state'] and psu_info['state']['empty'] %}
 {{psu_name}}: {{'NOT PRESENT'}}
@@ -21,11 +16,16 @@
 {% set val = 'NOT OK' %}
 {% endif %}
 {% endif %}
+{% if key == 'openconfig-platform-ext:status-led' %}
+{% set ns.status_led = val %}
+{% continue %}
+{% endif %}
 {% if 'openconfig-platform-ext:' in key %}
 {% set key = key.split(':')[1] %}
 {% endif %}
     {{(((key | replace('-', ' ')) | replace('no', 'number')).title()).ljust(20)}} :{{val}}
 {% endfor %}
+    {{'Status LED:'.ljust(20)}} :{{ns.status_led}}
 {% endif %}
 {% if 'power-supply' in psu_info %}
 {% if 'state' in psu_info['power-supply'] %}
