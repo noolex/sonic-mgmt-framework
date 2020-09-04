@@ -109,6 +109,8 @@ def invoke_api(func, args=[]):
 
     # Config NAT Pool
     elif func == 'patch_openconfig_nat_nat_instances_instance_nat_pool_nat_pool_entry_config':
+        if not ((args[2].find(":")) == -1):
+            return api._make_error_response('%Error: NAT supports IPV4 addresses only')
         path = cc.Path('/restconf/data/openconfig-nat:nat/instances/instance={id}/nat-pool', id=args[0])
         body = { "openconfig-nat:nat-pool": { "nat-pool-entry": [ { "pool-name": args[1], "config": { "pool-name": args[1], "nat-ip": args[2] } } ] }}
         if len(args) > 3:
