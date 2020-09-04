@@ -181,6 +181,7 @@ def get_threshold_breach_event_reports(args):
     if response.ok():
         if response.content:
             api_response = response.content['sonic-threshold:THRESHOLD_BREACH_TABLE_LIST']
+            api_response = natsorted(api_response, key = lambda k:k['eventid'], reverse=True)
             for i in range(len(api_response)):
                 if "breachreport" not in api_response[i] and "buffer" not in api_response[i] and "type" not in api_response[i] \
 				and "port" not in api_response[i] and "index" not in api_response[i] and "breach_value" not in \
