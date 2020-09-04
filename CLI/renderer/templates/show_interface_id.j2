@@ -46,6 +46,7 @@
 {% for interfaces in json_output %}
 {% set interface_list = json_output[interfaces] %}
 {% for interface in interface_list %}
+    {{ ' ' }}
     {% for key in interface %}
       {% if "ethernet" in key %}
         {% if "state" in interface[key] %}
