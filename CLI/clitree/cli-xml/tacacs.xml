@@ -62,7 +62,11 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <COMMAND name="show tacacs-server" 
-             help="Show TACACS info"/>
+             help="Show TACACS information"
+             mode="subcommand"
+             ptype="SUBCOMMAND">
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs get_sonic_tacacs_all</ACTION>
+    </COMMAND>
     <COMMAND name="show tacacs-server global" 
              help="Show TACACS global configuration" 
              mode="subcommand" 
@@ -73,7 +77,7 @@ limitations under the License.
              help="Show TACACS server configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
-      <PARAM name="address" 
+      <PARAM name="address"
              help="Hostname or IPv4/IPv6 address of TACACS+ server"
              ptype="HOSTNAME_OR_IPADDR"
              optional="true"> 
@@ -165,7 +169,7 @@ limitations under the License.
              command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/ipaddress={addr}"
              escape_chars="">
       <PARAM name="host"
-             help="Hostname (Max: 253 characters) or IPv4/IPv6 address of TACACS+ server"
+             help="Hostname (Max: 63 characters) or IPv4/IPv6 address of TACACS+ server"
              ptype="HOSTNAME_OR_IPADDR"
              dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/ipaddress">
       </PARAM>
