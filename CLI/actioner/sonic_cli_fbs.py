@@ -878,8 +878,7 @@ def get_copp_trap_id(name):
     tmp_response = fbs_client.get(tmp_keypath, depth=None, ignore404=False)
     if tmp_response is None:
         trap_id_val = ""
-
-    if tmp_response.ok():
+    elif tmp_response.ok():
         response = tmp_response.content
         if 'openconfig-copp-ext:trap-ids' in response:
             trap_id_val = response['openconfig-copp-ext:trap-ids']
