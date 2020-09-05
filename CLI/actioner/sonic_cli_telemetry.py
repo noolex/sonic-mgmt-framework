@@ -204,6 +204,8 @@ def getFlowGroups(flowgroups):
                     if 'IN_PORTS' in inports:
                         response[name]['ports'] = ','.join(inports['IN_PORTS'])
 
+        response[name]['packets'] = data['statistics']['packets']
+
     return response
 
 helper_functions = {
