@@ -457,7 +457,12 @@
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="default" help="Suppresses OSPFv2 routing updates on all interfaces" ptype="SUBCOMMAND" mode="subcommand"/>
       <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" >
-        <PARAM name = "ipaddr" help = "Interface IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" />
+        <PARAM name = "interfacesubtype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true">
+          <PARAM name = "ipaddr" help = "Interface IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" >
+            <PARAM name="non-passive"  help = "Interface shall be non passive" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+          </PARAM>
+          <PARAM name="non-passive"  help = "Interface shall be non passive" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+        </PARAM>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface ${vrf-name} ${interfacename} ${ipaddr} ${__full_line} </ACTION>
@@ -467,9 +472,11 @@
     <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
       <PARAM name="default" help="Suppresses routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
       <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" >
-        <PARAM name = "ipaddr" help = "Interface IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" />
+        <PARAM name = "interfacesubtype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true">
+          <PARAM name = "ipaddr" help = "Interface IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" >
+          </PARAM>
+        </PARAM>
       </PARAM>
-      <PARAM name="default" help="Suppresses routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
     </PARAM>
     <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface ${vrf-name} ${interfacename} ${ipaddr} ${__full_line} </ACTION>
   </COMMAND>
