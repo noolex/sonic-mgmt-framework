@@ -20,6 +20,7 @@
 ###########################################################################
  
 import syslog as log
+from natsort import natsorted
 
 g_err_transaction_fail = '%Error: Transaction Failure'
 
@@ -166,19 +167,17 @@ def show_config_spanning_tree_vlan(render_tables):
                 #vlanid  field is created only when any field of table is modified.
                 continue;
 
-            missing_fields = [field for field in ['forward_delay', 'hello_time', 'max_age', 'priority'] if field not in db_entry.keys()]
-            if len(missing_fields) != 0:
-                return ret_err(g_err_transaction_fail, 'keys : {} not found in STP-VLAN-{}'.format(missing_fields, db_entry['vlanid']))
-                
-            cmd_prfx = cmd_sep + "spanning-tree vlan " + str(db_entry['vlanid']) + ' '
-            if db_entry["forward_delay"] != global_fwd_delay:
-                cmd_str += cmd_prfx + 'forward-time ' + str(db_entry['forward_delay'])
-            if db_entry["hello_time"] != global_hello_time:
-                cmd_str += cmd_prfx + 'hello-time ' + str(db_entry['hello_time'])
-            if db_entry["max_age"] != global_max_age:
-                cmd_str += cmd_prfx + 'max-age ' + str(db_entry['max_age'])
-            if db_entry["priority"] != global_br_prio:
-                cmd_str += cmd_prfx + 'priority ' + str(db_entry['priority'])
+            keys = ['forward_delay', 'hello_time', 'max_age', 'priority']
+            if all(key in db_entry.keys() for key in keys):
+                cmd_prfx = cmd_sep + "spanning-tree vlan " + str(db_entry['vlanid']) + ' '
+                if db_entry["forward_delay"] != global_fwd_delay:
+                    cmd_str += cmd_prfx + 'forward-time ' + str(db_entry['forward_delay'])
+                if db_entry["hello_time"] != global_hello_time:
+                    cmd_str += cmd_prfx + 'hello-time ' + str(db_entry['hello_time'])
+                if db_entry["max_age"] != global_max_age:
+                    cmd_str += cmd_prfx + 'max-age ' + str(db_entry['max_age'])
+                if db_entry["priority"] != global_br_prio:
+                    cmd_str += cmd_prfx + 'priority ' + str(db_entry['priority'])
 
     return 'CB_SUCCESS', cmd_str
 
@@ -186,13 +185,18 @@ def show_config_spanning_tree_vlan(render_tables):
 def show_config_no_spanning_tree_vlan(render_tables):
     cmd_str = ''
     cmd_list = []
+    disabled_vlans = []
     if 'sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST' in render_tables:
         for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST']:
             if 'enabled' in db_entry.keys() and db_entry["enabled"] == False:
-                cmd_list.append("no spanning-tree vlan " + db_entry['name'][4:])
+                disabled_vlans.append(db_entry['name'][4:])
 
+    disabled_vlans = natsorted(disabled_vlans)
+
+    cmd_list = ["no spanning-tree vlan " + vlan for vlan in disabled_vlans]
     if cmd_list:
         cmd_str = ';'.join(cmd_list)
+
     return 'CB_SUCCESS', cmd_str
 
 
