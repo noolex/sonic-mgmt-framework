@@ -854,7 +854,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <COMMAND name="aging-interval" help="Configures drop-monitor aging-interval globally" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="aging_interval" help="Aging-interval value (1 to 30) seconds" ptype="SAMPLE_RATE"></PARAM>
+      <PARAM name="aging_interval" help="Aging-interval value (1 to 30) seconds" ptype="AGING_INTERVAL"></PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_aginginterval {"feature":"DROPMONITOR","method":"PATCH","aging-interval":${aging_interval}}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
