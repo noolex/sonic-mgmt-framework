@@ -33,7 +33,9 @@ Flow Group Name    : {{ key }}
 {% if 'ports' in value %}
    Ingress Intf    : {{  value['ports'] }}
 {% endif %}
-Packet Count       : 0
+{% if 'packets' in value %}
+   Packet Count    : {{ value['packets'] }}
+{% endif %}
 {% endfor %}
 {% endif %}
 {% else %}
