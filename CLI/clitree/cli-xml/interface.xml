@@ -1572,6 +1572,17 @@ limitations under the License.
         <MACRO name="INTF_RANGE_SHUT_DESCR" arg="${iflist}"></MACRO>
 	<MACRO name="INTF_RNG_AGGREGATE_SWITCHPORT" arg="${iflist}"></MACRO>
 
+        <COMMAND
+            name="graceful-shutdown"
+            help="Enable graceful shutdown for the portchannels">
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=${iflist} graceful_shutdown_enabled True</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no graceful-shutdown"
+            help="Disable graceful shutdown for the portchannels">
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=${iflist} graceful_shutdown_enabled False</ACTION>
+        </COMMAND>
+
     </VIEW>
 
 <VIEW
