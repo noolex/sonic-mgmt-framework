@@ -138,21 +138,21 @@ def generateShowUdldInterfaceResponse(clientApi, args):
     keypath = cc.Path('/restconf/data/sonic-udld:sonic-udld/UDLD/UDLD_LIST={id}/msg_time', id='GLOBAL')
     resp = clientApi.get(keypath)
     gbl_msg_time = 0
-    if resp.ok() and 'sonic-udld:msg_time' in resp.content.keys():
+    if resp.ok() and resp.content is not None and 'sonic-udld:msg_time' in resp.content.keys():
         gbl_msg_time = resp.content['sonic-udld:msg_time']
 
     # Retrieve global UDLD aggresive
     keypath = cc.Path('/restconf/data/sonic-udld:sonic-udld/UDLD/UDLD_LIST={id}/aggressive', id='GLOBAL')
     resp = clientApi.get(keypath)
     gbl_aggressive = 0
-    if resp.ok() and 'sonic-udld:aggressive' in resp.content.keys():
+    if resp.ok() and resp.content is not None and 'sonic-udld:aggressive' in resp.content.keys():
         gbl_aggressive = resp.content['sonic-udld:aggressive']
 
     # Retrieve port level UDLD configs
     keypath = cc.Path('/restconf/data/sonic-udld:sonic-udld/UDLD_PORT/UDLD_PORT_LIST={ifname}', ifname=args[1])
     resp = clientApi.get(keypath)
     port_conf_dict = {}
-    if resp.ok() and 'sonic-udld:UDLD_PORT_LIST' in resp.content.keys():
+    if resp.ok() and resp.content is not None and 'sonic-udld:UDLD_PORT_LIST' in resp.content.keys():
         port_conf_dict = resp.content['sonic-udld:UDLD_PORT_LIST'][0]
         resp_status = resp.response.status_code
     else:
@@ -164,21 +164,21 @@ def generateShowUdldInterfaceResponse(clientApi, args):
     keypath = cc.Path('/restconf/data/sonic-udld:sonic-udld/_UDLD_GLOBAL_TABLE/_UDLD_GLOBAL_TABLE_LIST={id}', id='GLOBAL')
     resp = clientApi.get(keypath)
     gbl_oper_dict = {}
-    if resp.ok() and 'sonic-udld:_UDLD_GLOBAL_TABLE_LIST' in resp.content.keys():
+    if resp.ok() and resp.content is not None and 'sonic-udld:_UDLD_GLOBAL_TABLE_LIST' in resp.content.keys():
         gbl_oper_dict = resp.content['sonic-udld:_UDLD_GLOBAL_TABLE_LIST'][0]
 
     # Retrieve UDLD port local status
     keypath = cc.Path('/restconf/data/sonic-udld:sonic-udld/_UDLD_PORT_TABLE/_UDLD_PORT_TABLE_LIST={ifname}/status', ifname=args[1])
     resp = clientApi.get(keypath)
     port_status = 0
-    if resp.ok() and 'sonic-udld:status' in resp.content.keys():
+    if resp.ok() and resp.content is not None and 'sonic-udld:status' in resp.content.keys():
         port_status = resp.content['sonic-udld:status']
 
     # Retrieve neighbors info for a given interface
     keypath = cc.Path('/restconf/data/sonic-udld:sonic-udld/_UDLD_PORT_NEIGH_TABLE/_UDLD_PORT_NEIGH_TABLE_LIST')
     resp = clientApi.get(keypath)
     neigh_intf_info = []
-    if resp.ok() and 'sonic-udld:_UDLD_PORT_NEIGH_TABLE_LIST' in resp.content.keys():
+    if resp.ok() and resp.content is not None and 'sonic-udld:_UDLD_PORT_NEIGH_TABLE_LIST' in resp.content.keys():
         neigh_dict = resp.content['sonic-udld:_UDLD_PORT_NEIGH_TABLE_LIST']
         for neigh_info in neigh_dict:
             if neigh_info['ifname'] == args[1]:
