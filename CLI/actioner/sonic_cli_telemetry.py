@@ -250,8 +250,8 @@ def getFlowGroupDate(data, currentid):
             flowData["l2"]["config"]["destination-mac"] = data['dmac']
         if (data['ethertype'] != ""):
             flowData["l2"]["config"]["ethertype"] = int(data['ethertype'], 0)
-    if ((data['sip'] != "") or (data['dip'] != "")):
-        if (("." in data['sip']) or ("." in data['sip'])):
+    if ((data['sip'] != "") or (data['dip'] != "") or (data['protocol'] != "")):
+        if (("." in data['sip']) or ("." in data['sip']) or (data['protocol'] != "")):
             flowData["ipv4"] = {}
             flowData["ipv4"]["config"] = {}
             if ("." in data['sip']):
