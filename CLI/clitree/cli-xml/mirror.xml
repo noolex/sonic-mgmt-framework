@@ -28,7 +28,7 @@ limitations under the License.
         <PARAM
             name="session-name"
             help="Mirror session name"
-            ptype="STRING_72"
+            ptype="STRING_24"
             optional="true"
             >
         </PARAM>
@@ -73,7 +73,7 @@ limitations under the License.
         <PARAM
             name="session-name"
             help="Mirror session name"
-            ptype="STRING_72"
+            ptype="STRING_24"
             dbpath="sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION/MIRROR_SESSION_LIST/name"
             >
         </PARAM>
@@ -87,7 +87,7 @@ limitations under the License.
         <PARAM
             name="session-name"
             help="Mirror session name"
-            ptype="STRING_72"
+            ptype="STRING_24"
             >
         </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_mirror delete_mirror_session --session=${session-name}</ACTION>
@@ -110,7 +110,7 @@ limitations under the License.
     <!-- destination Ethernet <idx> source Ethernet <idx> direction [rx|tx|both] -->
 
   <COMMAND name="show configuration" help = "show configuration">
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mirror-view view_keys="name=${session_name}" </ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mirror view_keys="name=${session_name}" </ACTION>
   </COMMAND>
     <COMMAND name="destination" help="Mirror session destination interface">
       <PARAM name="phy-if-id" help="Physical interface" ptype="PHY_INTERFACE" optional="false"> </PARAM>
