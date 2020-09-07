@@ -85,7 +85,7 @@ def invoke(func, args):
     else:
         if len(args)<3:
             start = 1
-            end = 74
+            end = 106
             temp = args[1]
         else:
             start = int(args[0].split("/")[1])
@@ -112,6 +112,7 @@ def invoke(func, args):
                 state_resp.content["openconfig-platform-port:config"]["openconfig-port-breakout-ext:status"]=state.pop('openconfig-port-breakout-ext:status')
                 state_resp.content["openconfig-platform-port:config"]["openconfig-port-breakout-ext:members"]=state.pop('openconfig-port-breakout-ext:members')
                 resp.content[interface] = state_resp.content.pop("openconfig-platform-port:config")
+                resp.status_code = state_resp.status_code
                 continue
             if config_resp.content and "openconfig-platform-port:config" in config_resp.content:
                 resp.content[interface] = config_resp.content.pop("openconfig-platform-port:config")
