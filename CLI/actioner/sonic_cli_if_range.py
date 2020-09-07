@@ -208,6 +208,21 @@ def generate_body(func, args=[]):
 
         body["openconfig-if-aggregate:aggregation"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "TRUNK", "trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}})
 
+    # Graceful-shutdown mode config
+    elif func == 'graceful_shutdown_enabled':
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-aggregate:aggregation" : {"config": {}}
+               }
+
+        if args[1] == 'True':
+            mode = "enable"
+        else:
+            mode = "disable"
+
+        body["openconfig-if-aggregate:aggregation"]["config"].update( {"openconfig-interfaces-ext:graceful-shutdown-mode": mode} )
+
     # Speed config
     elif func == 'patch_port_speed':
         body = {
