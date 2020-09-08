@@ -541,15 +541,6 @@ limitations under the License.
     </COMMAND>
     <COMMAND name="flow-group" help="Creates flow-group by specifying the tuple information" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="name" help="Configures unique name for flow-group (up to 32 characters string)" ptype="STRING_63"></PARAM>
-      <PARAM name="src-mac" help="Source MAC address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="src_mac" help="Source MAC address" ptype="MAC_ADDR" default=""/>
-      </PARAM>
-      <PARAM name="dst-mac" help="Destination MAC address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="dst_mac" help="Destination MAC address" ptype="MAC_ADDR" default=""/>
-      </PARAM>
-      <PARAM name="ethertype" help="Ethertype of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="ether_type" help="Ethertype value (0x600-0xffff)" ptype="ETHERTYPE_VALUE" default=""/>
-      </PARAM>
       <PARAM name="src-ip" help="Source IP address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="src_ip" help="IPv4 or IPv6" ptype="IPV4_IPV6_NETWORK" default=""/>
       </PARAM>
@@ -568,7 +559,7 @@ limitations under the License.
       <PARAM name="protocol" help="Protocol field of the IP header of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="protocol_value" help="Protocol value UDP/TCP" ptype="IP_PROTOCOL" default=""/>
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","smac":"${src_mac}","dmac":"${dst_mac}","ethertype":"${ether_type}","sip":"${src_ip}","dip":"${dst_ip}","sport":"${l4_src_port}","dport":"${l4_dst_port}","priority":"${priority_value}","protocol":"${protocol_value}"}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","sip":"${src_ip}","dip":"${dst_ip}","sport":"${l4_src_port}","dport":"${l4_dst_port}","priority":"${priority_value}","protocol":"${protocol_value}"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
            This command configures flow group by specifying a set of match criteria that defines a set of flows that are of interest.
@@ -576,7 +567,7 @@ limitations under the License.
         <USAGE>
            This command configures flow group by specifying a set of match criteria that defines a set of flows that are of interest.
         </USAGE>
-        <EXAMPLE summary="flow-group &lt;name&gt; [src-mac &lt;src_mac&gt; [dst-mac &lt;dst_mac&gt; [ethertype &lt;ethertype&gt; [src-ip &lt;src_ip&gt; [dst-ip &lt;dst_ip&gt; [src-l4-port &lt;src_l4_port&gt; [dst-l4-port &lt;dst_l4_port&gt; [protocol &lt;protocol&gt; [priority &lt;priority_value&gt;]">
+        <EXAMPLE summary="flow-group &lt;name&gt; [src-ip &lt;src_ip&gt;] [dst-ip &lt;dst_ip&gt;] [src-l4-port &lt;src_l4_port&gt;] [dst-l4-port &lt;dst_l4_port&gt;] [protocol &lt;protocol&gt;] [priority &lt;priority_value&gt;]">
            sonic(config-tam)# flow-group f9 type ipv4 src-ip 192.1.2.3 dst-ip 172.6.5.4
            sonic# show tam flowgroups
 
@@ -585,15 +576,14 @@ limitations under the License.
               Priority        : 100
               SRC IP          : 192.1.2.3/32
               DST IP          : 172.6.5.4/32
-           Packet Count       :
+           Packet Count       : 5432
 
            Flow Group Name    : DEMO
               Id              : 1
               Priority        : 100
-              SRC MAC         : 11:22:33:44:55:66
               SRC IP          : 1.1.1.1/32
               DST IP          : 4.4.4.4/32
-           Packet Count       :
+           Packet Count       : 454
 
            sonic#
         </EXAMPLE>
@@ -619,7 +609,7 @@ limitations under the License.
               SRC MAC         : 11:22:33:44:55:66
               SRC IP          : 1.1.1.1/32
               DST IP          : 4.4.4.4/32
-           Packet Count       :
+           Packet Count       : 233
 
            sonic#
         </EXAMPLE>
