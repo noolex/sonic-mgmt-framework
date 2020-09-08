@@ -3036,14 +3036,14 @@ def parsePeergEvpn(vrf_name, template_name, cmd, args=[]):
     return rc
 
 def parseGloblShow(vrf_name, cmd, args=[]):
-    if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
-        try:
-            pipe_idx = args.index('\|')
-            args = args[:pipe_idx]
-        except:
-            # no pipe
-            pass
+    try:
+        pipe_idx = args.index('\|')
+        args = args[:pipe_idx]
+    except:
+        # no pipe
+        pass
 
+    if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
         if vrf_name == 'all':
             generate_show_bgp_vrf_all(args)
             return 0
