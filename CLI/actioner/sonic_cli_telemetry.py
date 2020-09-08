@@ -241,15 +241,6 @@ def getFlowGroupDate(data, currentid):
     flowData["config"]["id"] = int(currentid)
     if (data['priority'] != ""):
         flowData["config"]["priority"] = int(data['priority'])
-    if ((data['smac'] != "") or (data['dmac'] != "") or (data['ethertype'] != "")):
-        flowData["l2"] = {}
-        flowData["l2"]["config"] = {}
-        if (data['smac'] != ""):
-            flowData["l2"]["config"]["source-mac"] = data['smac']
-        if (data['dmac'] != ""):
-            flowData["l2"]["config"]["destination-mac"] = data['dmac']
-        if (data['ethertype'] != ""):
-            flowData["l2"]["config"]["ethertype"] = int(data['ethertype'], 0)
     if ((data['sip'] != "") or (data['dip'] != "") or (data['protocol'] != "")):
         if (("." in data['sip']) or ("." in data['sip']) or (data['protocol'] != "")):
             flowData["ipv4"] = {}
