@@ -340,6 +340,7 @@ limitations under the License.
              command_tables="sonic-tam-collectors:sonic-tam-collectors/TAM_COLLECTORS_TABLE/TAM_COLLECTORS_TABLE_LIST/name={name};sonic-tam-dropmonitor:sonic-tam-dropmonitor/TAM_DROPMONITOR_SESSIONS_TABLE/TAM_DROPMONITOR_SESSIONS_TABLE_LIST/name={name};sonic-tam-dropmonitor:sonic-tam-dropmonitor/TAM_DROPMONITOR_TABLE/TAM_DROPMONITOR_TABLE_LIST/name=global;sonic-tam-features:sonic-tam-features/TAM_STATE_FEATURES_TABLE/TAM_STATE_FEATURES_TABLE_LIST/name={name};sonic-tam-flowgroups:sonic-tam-flowgroups/TAM_FLOWGROUP_TABLE/TAM_FLOWGROUP_TABLE_LIST/name={name};sonic-tam-ifa:sonic-tam-ifa/TAM_IFA_SESSIONS_TABLE/TAM_IFA_SESSIONS_TABLE_LIST/name={name};sonic-tam-samplers:sonic-tam-samplers/TAM_SAMPLINGRATE_TABLE/TAM_SAMPLINGRATE_TABLE_LIST/name={name};sonic-tam-switch:sonic-tam-switch/TAM_SWITCH_TABLE/TAM_SWITCH_TABLE_LIST/name=global;sonic-tam-tailstamping:sonic-tam-tailstamping/TAM_TAILSTAMPING_SESSIONS_TABLE/TAM_TAILSTAMPING_SESSIONS_TABLE_LIST/name={name};sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST" render_command_cb="tam_config"/>
   </VIEW>
   <VIEW name="configure-tam-view" prompt="${SYSTEM_NAME}(config-tam)# " depth="2">
+      <NAMESPACE ref="configure-view" help="false" completion="false" />
     <COMMAND name="no" help="Unconfigures telemetry and monitoring feature" />
     <COMMAND name="switch-id" help="Configures unique switch identifer (up to 32 bit number)" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="id" help="Configures switch-id value (1 to 65535)" ptype="UINT16"/>
@@ -631,6 +632,7 @@ limitations under the License.
     <COMMAND name="ifa" help="Configures inband flow analyzer feature" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-ifa-view"/>
   </VIEW>
   <VIEW name="configure-tam-ifa-view" prompt="${SYSTEM_NAME}(config-tam-ifa)# " depth="3">
+      <NAMESPACE ref="configure-tam-view" help="false" completion="false" />
     <COMMAND name="no" help="Unconfigures inband flow analyzer feature" />
     <COMMAND name="enable" help="Enables IFA globally" ptype="SUBCOMMAND" mode="subcommand">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"IFA","method":"PATCH","status":"active"}</ACTION>
@@ -742,6 +744,7 @@ limitations under the License.
     <COMMAND name="drop-monitor" help="Configures drop-monitor feature" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-dm-view"/>
   </VIEW>
   <VIEW name="configure-tam-dm-view" prompt="${SYSTEM_NAME}(config-tam-dm)# " depth="3">
+      <NAMESPACE ref="configure-tam-view" help="false" completion="false" />
     <COMMAND name="no" help="Unconfigures drop-monitor feature" />
     <COMMAND name="enable" help="Enables drop-monitor globally" ptype="SUBCOMMAND" mode="subcommand">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"DROPMONITOR","method":"PATCH","status":"active"}</ACTION>
@@ -914,6 +917,7 @@ limitations under the License.
     <COMMAND name="tail-stamping" help="Configures tail-stamping feature" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-ts-view"/>
   </VIEW>
   <VIEW name="configure-tam-ts-view" prompt="${SYSTEM_NAME}(config-tam-ts)# " depth="3">
+      <NAMESPACE ref="configure-tam-view" help="false" completion="false" />
     <COMMAND name="no" help="Unconfigures tail-stamping feature" />
     <COMMAND name="enable" help="Enables tail-stamping globally" ptype="SUBCOMMAND" mode="subcommand">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_feature {"feature":"TAILSTAMPING","method":"PATCH","status":"active"}</ACTION>
@@ -1012,7 +1016,7 @@ limitations under the License.
   </VIEW>
   <!-- =================== associate the ingress interface to the flowgroup ===================  -->
   <VIEW name="configure-if-view">
-    <COMMAND name="flow-group" help="Attaches specific flow-group to interface" ptype="SUBCOMMAND" mode="subcommand">
+      <COMMAND name="flow-group" help="Attaches specific flow-group to interface" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-tam-flowgroups:sonic-tam-flowgroups/TAM_FLOWGROUP_TABLE/TAM_FLOWGROUP_TABLE_LIST/name={name};sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST" render_command_cb="tam_interface_config">
       <PARAM name="name" help="Flow-group name (up to 32 characters string)" ptype="STRING_63"></PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry associate_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","interface":"${iface}"}</ACTION>
       <DOCGEN>

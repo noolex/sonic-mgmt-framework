@@ -326,6 +326,8 @@ def getDetails(fn, args):
         details['url'] = switch_id_config_url
         body = getBody(fn)%(data['id'])
         details['body'] = json.loads(body)
+        details['description'] = "Any changes to the switch-wide global attributes are not immediately effective, if any of the TAM features are currently active."
+        details['name'] = ""
     elif fn == "delete_switch_id":
         details['url'] = switch_id_config_url
         #details['description'] = "Switch Id"
@@ -334,6 +336,8 @@ def getDetails(fn, args):
         details['url'] = enterprise_id_config_url
         body = getBody(fn)%(data['id'])
         details['body'] = json.loads(body)
+        details['description'] = "Any changes to the switch-wide global attributes are not immediately effective, if any of the TAM features are currently active."
+        details['name'] = ""
     elif fn == "delete_enterprise_id":
         details['url'] = enterprise_id_config_url
         #details['description'] = "Enterprise Id"
@@ -447,6 +451,8 @@ def getDetails(fn, args):
         details['url'] = dropmonitor_aginginterval_url
         body = getBody(fn)%(data['aging-interval'])
         details['body'] = json.loads(body)
+        details['description'] = "Any changes to ageing-interval are effective for newly created sessions only."
+        details['name'] = ""
     elif fn == "delete_aginginterval":
         details['url'] = dropmonitor_aginginterval_url+'/config/aging-interval'
         details['description'] = "Aging Interval"
@@ -477,7 +483,7 @@ def getDetails(fn, args):
         details['url'] = flowgroups_url
         flowGroupsIds = do_get(flowgroup_ids_url)
         idsSet = set()
-        maxSet = set(range(1000))
+        maxSet = set(range(254))
         currentid = 1
         if (flowGroupsIds['ok']):
             if (flowGroupsIds['content'] is not None):
@@ -540,6 +546,9 @@ def run(fn, args):
                         description = "%Error: " + description
                     message = "{} '{}' not found.".format(description, result['name'])
                     print message
+            elif (result['status_code'] == 204):
+                if 'description' in result:
+                    print "%Info: " + result['description']
     else:
         message = result['error_message']
         if ("%Error:" not in message):
