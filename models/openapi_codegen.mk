@@ -40,7 +40,7 @@ include codegen.config
 YANGAPI_DIR     := $(TOPDIR)/build/yaml
 YANGAPI_SPECS   := $(shell find $(YANGAPI_DIR) -name '*.yaml' 2> /dev/null)
 YANGAPI_NAMES   := $(filter-out $(YANGAPI_EXCLUDES), $(basename $(notdir $(YANGAPI_SPECS))))
-YANGAPI_SERVERS := $(addsuffix /.yangapi_done, $(addprefix $(SERVER_CODEGEN_DIR)/, $(YANGAPI_NAMES)))
+YANGAPI_SERVERS := $(addsuffix /.yangapi_validate_done, $(addprefix $(SERVER_CODEGEN_DIR)/, $(YANGAPI_NAMES)))
 
 OPENAPI_DIR     := openapi
 OPENAPI_SPECS   := $(shell find $(OPENAPI_DIR) -name '*.yaml')
@@ -95,20 +95,13 @@ $(CODEGEN_JAR): | $$(@D)/.
 	wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/$(CODEGEN_VER)/$(@F)
 
 #======================================================================
-# Generate openapi server in GO language for Yang generated OpenAPIs
-# specs.
+# Validate openapi specs
 #======================================================================
-%/.yangapi_done: $(YANGAPI_DIR)/$$(*F).yaml | $$(@D)/. $(CODEGEN_JAR) $(SERVER_DIST_INIT)
-	@echo "+++ Generating GO server for Yang API $$(basename $(@D)).yaml +++"
-	$(JAVA) -jar $(CODEGEN_JAR) generate \
-		-g go-server \
-		--input-spec $(YANGAPI_DIR)/$$(basename $(@D)).yaml \
-		--template-dir $(CODEGEN_TOOLS_DIR)/go-server/templates-yang \
-		--output $(@D)
-	rm -rf  $(@D)/go/api_*service.go
-	cp $(@D)/go/api_* $(SERVER_DIST_GO)/
-	cp $(@D)/go/routers.go $(SERVER_DIST_GO)/routers_$$(basename $(@D)).go
-	cp $(@D)/api/openapi.yaml $(SERVER_DIST_UI)/$$(basename $(@D)).yaml
+%/.yangapi_validate_done: $(YANGAPI_DIR)/$$(*F).yaml | $$(@D)/. $(CODEGEN_JAR) $(SERVER_DIST_INIT)
+	@echo "+++ Validating $$(basename $(@D)).yaml +++"
+	$(JAVA) -jar $(CODEGEN_JAR) validate \
+		--input-spec $(YANGAPI_DIR)/$$(basename $(@D)).yaml
+	cp $(YANGAPI_DIR)/$$(basename $(@D)).yaml $(SERVER_DIST_UI)/$$(basename $(@D)).yaml
 	touch $@
 
 #======================================================================
