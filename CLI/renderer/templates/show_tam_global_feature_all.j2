@@ -1,11 +1,11 @@
 {% if json_output -%}
 {% if "openconfig-tam:features-state" in json_output %}
 {% set features = json_output['openconfig-tam:features-state']['feature'] %}
-Name              Status
---------------    ---------
+Name            Status
+--------------  ---------
 {% for feature in features %}
 {% set feature_state = feature["state"] %}
-{{'%-18s'|format(getFeatureDescription(feature_state["feature-ref"]))}}{{'%-15s'|format(getStatusDescription(feature_state["op-status"]))}}
+{{'%-16s'|format(getFeatureDescription(feature_state["feature-ref"]))}}{{'%-15s'|format(getStatusDescription(feature_state["op-status"]))}}
 {% endfor %}
 {% endif %}
 {% endif %}
