@@ -1,25 +1,31 @@
-{% set ns = namespace(output_current = 'None') %}
-{% set ns = namespace(output_power = 'None') %}
-{% set ns = namespace(output_voltage = 'None') %}
-{% set ns = namespace(fan_speed = 'N/A') %}
-{% set ns = namespace(fan_direction = 'N/A') %}
+{% set ns = namespace(type = 'Unknown', output_current='N/A', output_power='N/A', output_voltage='N/A', fan_speed='N/A', fan_direction='N/A', status_led='N/A') %}
 {% for psu_name, psu_info in json_output.items() %}
 {% if 'state' in psu_info and 'empty' in psu_info['state'] and psu_info['state']['empty'] %}
-{{psu_name}}: {{'Not Present'}}
+{{psu_name}}: {{'NOT PRESENT'}}
 {% else %}
 {{psu_name}}:
 {% if 'state' in psu_info %}
 {% for key, val in psu_info['state'].items() %}
-{% if val is string %}
-{% if 'openconfig-platform-types:' in val %}
-{% set val = val.split(':')[1] %}
+{% if key == 'empty' %}
+{% continue %}
 {% endif %}
+{% if key == 'oper-status' %}
+{% if val == 'openconfig-platform-types:ACTIVE' %}
+{% set val = 'OK' %}
+{% else %}
+{% set val = 'NOT OK' %}
+{% endif %}
+{% endif %}
+{% if key == 'openconfig-platform-ext:status-led' %}
+{% set ns.status_led = val %}
+{% continue %}
 {% endif %}
 {% if 'openconfig-platform-ext:' in key %}
 {% set key = key.split(':')[1] %}
 {% endif %}
-    {{key.ljust(20)}} {{val}}
+    {{(((key | replace('-', ' ')) | replace('no', 'number')).title()).ljust(20)}} :{{val}}
 {% endfor %}
+    {{'Status LED:'.ljust(20)}} :{{ns.status_led}}
 {% endif %}
 {% if 'power-supply' in psu_info %}
 {% if 'state' in psu_info['power-supply'] %}
@@ -27,21 +33,29 @@
 {% if 'openconfig-platform-psu:' in key %}
 {% set key = key.split(':')[1] %}
 {% endif %}
-{% if 'output-current' in key %}
+{% if 'power-type' in key and val %}
+{% if val == 'VOLT_AC' %}
+{% set ns.type = 'AC' %}
+{% elif val == 'VOLT_DC' %}
+{% set ns.type = 'DC' %}
+{% endif %}
+{% endif %}
+{% if 'output-current' in key and val %}
 {% set ns.output_current = '%0.2f' | format(val|float) %}
 {% endif %}
-{% if 'output-power' in key %}
+{% if 'output-power' in key and val != 'None' %}
 {% set ns.output_power = '%0.2f' | format(val|float) %}
 {% endif %}
-{% if 'output-voltage' in key %}
+{% if 'output-voltage' in key and val != 'None' %}
 {% set ns.output_voltage = '%0.2f' | format(val|float) %}
 {% endif %}
 {% endfor %}
 {% endif %}
 {% endif %}
-    {{'output-current (A)'.ljust(20)}} {{ns.output_current}}
-    {{'output-power (W)'.ljust(20)}} {{ns.output_power}}
-    {{'output-voltage (V)'.ljust(20)}} {{ns.output_voltage}}
+    {{'Type (AC/DC)'.ljust(20)}} :{{ns.type}}
+    {{'Output Current (A)'.ljust(20)}} :{{ns.output_current}}
+    {{'Output Power (W)'.ljust(20)}} :{{ns.output_power}}
+    {{'Output Voltage (V)'.ljust(20)}} :{{ns.output_voltage}}
 {% for i in range(1, 10) %}
 {% set fan_name = psu_name + ' FAN ' + i|string %}
 {% if fan_name in psu_info %}
@@ -53,17 +67,17 @@
 {% if 'openconfig-platform-ext:direction' in psu_info[fan_name]['fan']['state'] %}
     {% set ns.fan_direction = psu_info[fan_name]['fan']['state']['openconfig-platform-ext:direction'] %}
 {% endif %}
-    {{'fan-speed (RPM)'.ljust(20)}} {{ns.fan_speed}}
-    {{'fan-direction'.ljust(20)}} {{ns.fan_direction}}
 {% endif %}
 {% endif %}
+    {{'Fan Speed (RPM)'.ljust(20)}} :{{ns.fan_speed}}
+    {{'Fan Direction'.ljust(20)}} :{{ns.fan_direction}}
 {% endif %}
-{% set ns.output_current = 'None' %}
-{% set ns.output_power = 'None' %}
-{% set ns.output_voltage = 'None' %}
+{% endfor %}
+{% set ns.output_current = 'N/A' %}
+{% set ns.output_power = 'N/A' %}
+{% set ns.output_voltage = 'N/A' %}
 {% set ns.fan_speed = 'N/A' %}
 {% set ns.fan_direction = 'N/A' %}
-{% endfor %}
-
+{% set ns.type = 'Unknown' %}
 {% endif %}
 {% endfor %}

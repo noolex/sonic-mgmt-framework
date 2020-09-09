@@ -161,8 +161,8 @@ limitations under the License.
     <PTYPE
         name="PHY_LB_PO_VL_INTERFACE"
         method="regexp_select"
-        ext_pattern="Ethernet(Port) Loopback(0-16383) PortChannel(1-128) Vlan(1-4093)"
-        alt_ext_pattern="Eth(slot/port[/subport]) Loopback(0-16383) PortChannel(1-128) Vlan(1-4093)"
+        ext_pattern="Ethernet(Port) Loopback(0-16383) PortChannel(1-256) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[/subport]) Loopback(0-16383) PortChannel(1-256) Vlan(1-4093)"
         ext_help="(Ethernet interface type) (Loopback interface type) (PortChannel interface type) (Vlan interface type)"
         pattern="&ETH_ALL_INTF;|&LOOPB_INTF;|&PO_ALL_INTF;|&VLAN_ALL_INTF;"
         alt_pattern="&ETH_ALL_INTF_ALIAS;|&LOOPB_INTF;|&PO_ALL_INTF;|&VLAN_ALL_INTF;"
@@ -529,12 +529,6 @@ limitations under the License.
         method="integer"
         pattern="0..65535"
         help="&lt;0..65535&gt;"
-        />
-    <!--=======================================================-->
-    <PTYPE
-        name="UINT"
-        pattern="[0-9]+"
-        help="&lt;0..255&gt;"
         />
     <!--=======================================================-->
     <PTYPE
@@ -1484,7 +1478,7 @@ limitations under the License.
        <PTYPE
         name="BURST"
         method="integer"
-        pattern="256..128000000"
+        pattern="250..125000000"
         help=""
         />
     <!--=======================================================-->
@@ -1498,9 +1492,10 @@ limitations under the License.
        <PTYPE
         name="QUEUE_BURST"
         method="integer"
-        pattern="0..128000000"
+        pattern="0..125000000"
         help=""
         />
+
     <!--=======================================================-->
        <PTYPE
         name="PORT_SEQ"

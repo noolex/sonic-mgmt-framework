@@ -21,6 +21,7 @@ import sys
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
+from ipaddress import ip_interface
 
 import urllib3
 urllib3.disable_warnings()
@@ -64,9 +65,25 @@ def invoke_api(func, args=[]):
     if func == 'get_sonic_portchannel_sonic_portchannel_portchannel_global_portchannel_global_list':
         path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL')
         return api.get(path)
-
+    if func == 'get_sonic_portchannel_sonic_portchannel_ip_addr_list':
+        path = cc.Path('/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST')
+        return api.get(path)
+ 
     return api.cli_not_implemented(func)
     
+def filter_address(api_response,lagName):
+    output ={}
+    ipv4_addr =[]
+    ipv6_addr =[]
+    ipList = api_response['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST']
+    for ip in ipList:
+        if ip_interface(ip['ip_prefix']).ip.version == 6:
+            ipv6_addr.append(ip)
+        else:
+            ipv4_addr.append(ip)
+    output['ipv4'] = ipv4_addr
+    output['ipv6'] = ipv6_addr
+    return output
 
 def get_lag_data(lagName):
 
@@ -78,10 +95,11 @@ def get_lag_data(lagName):
         if lagName == "all": #get_all_portchannels
             portchannel_func = 'get_sonic_portchannel_sonic_portchannel_lag_table'
             portchannel_conf_func = 'get_sonic_portchannel_sonic_portchannel_portchannel'
+	    portchannel_ip = 'get_sonic_portchannel_sonic_portchannel_ip_addr_list'
         else :
             portchannel_func = 'get_sonic_portchannel_sonic_portchannel_lag_table_lag_table_list'
             portchannel_conf_func = 'get_sonic_portchannel_sonic_portchannel_portchannel_portchannel_list'
-
+    	    portchannel_ip = 'get_sonic_portchannel_sonic_portchannel_ip_addr_list'
         output = {}
         response = invoke_api(portchannel_func, args)
         if response.ok():
@@ -95,6 +113,15 @@ def get_lag_data(lagName):
                 else:
                     output = api_response        
 
+        responseIp = invoke_api(portchannel_ip,args)
+        if responseIp.ok():
+            if responseIp.content is not None:
+                api_response = responseIp.content
+                if 'sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST' in api_response.keys():
+                    output_filter = filter_address(api_response,lagName)
+                    output['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv4'] = output_filter['ipv4']
+                    output['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv6'] = output_filter['ipv6']
+					
         # GET Config params
         resp = invoke_api(portchannel_conf_func, args)
         if resp.ok():
