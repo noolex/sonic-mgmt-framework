@@ -72,8 +72,11 @@ limitations under the License.
 	<COMMAND name="watermark interval"
 		help="Configure watermark snapshot interval"
 		ptype="SUBCOMMAND"
-		mode="subcommand">
-                <PARAM name="interval_value" help="Configure watermark snapshot interval value" ptype="RANGE_1_600"> </PARAM>
+                mode="subcommand"
+                command_tables="sonic-watermark:sonic-watermark/SNAPSHOT_TABLE/SNAPSHOT_TABLE_LIST/snapshotIntarvalPrefix"
+                >
+                <PARAM name="interval_value" help="Configure watermark snapshot interval value" ptype="RANGE_1_600"
+                dbpath="sonic-watermark:sonic-watermark/SNAPSHOT_TABLE/SNAPSHOT_TABLE_LIST/interval"> </PARAM>
 		<ACTION builtin="clish_pyobj">sonic_cli_watermark patch_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list_interval ${__full_line}</ACTION>
 	<DOCGEN>
         <DESCRIPTION>
@@ -91,9 +94,12 @@ limitations under the License.
 	<COMMAND name="watermark telemetry"
              help="Configure watermark telemetry interval"
              ptype="SUBCOMMAND"
-             mode="subcommand">
+             mode="subcommand"
+             command_tables="sonic-watermark:sonic-watermark/WATERMARK_TABLE/WATERMARK_TABLE_LIST/telemetryIntarvalPrefix"
+                >
 		<PARAM name="interval" help="watermark telemetry interval" ptype="SUBCOMMAND" mode="subcommand"></PARAM>
-		<PARAM name="interval_value" help="Configure watermark telemetry interval value" ptype="RANGE_1_600"> </PARAM>
+		<PARAM name="interval_value" help="Configure watermark telemetry interval value" ptype="RANGE_1_600"
+                dbpath="sonic-watermark:sonic-watermark/WATERMARK_TABLE/WATERMARK_TABLE_LIST/interval"> </PARAM>
 	        <ACTION builtin="clish_pyobj">sonic_cli_watermark patch_sonic_watermark_sonic_watermark_watermark_table_watermark_table_list_interval ${__full_line}</ACTION>
 	<DOCGEN>
         <DESCRIPTION>
