@@ -43,9 +43,8 @@ def clear_bgp_api(args):
    nipv4, nipv4ip = args[1].split("=")
    nipv6, nipv6ip = args[2].split("=")
    if args[3] == 'cleartype=ip-prefix':
-       # clear bgp ipv4/v6 unicast <ipv4-prefix/v6-prefix>
-       # replace keyword unicast with prefix
-       args[8] = 'prefix'
+       # clear bgp ipv4/v6 unicast [vrf X] <ipv4-prefix>
+       prefixip = args[11] if args[9] == 'vrf' else args[9]
 
    if args[5] == 'clearall':
        clearall = True
@@ -54,8 +53,6 @@ def clear_bgp_api(args):
    for arg in args[6:]:
         if "vrf" == arg:
            vrfname = args[i+1]
-        elif "prefix" == arg:
-           prefixip = args[i+1]
         elif "interface" == arg:
            ifname = args[i+1]
         elif "peer-group" == arg:
