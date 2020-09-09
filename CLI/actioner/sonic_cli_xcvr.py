@@ -20,6 +20,8 @@
 # modeled after sonic-cli-pfm.py
 
 import sys
+import json
+from natsort import natsorted
 from collections import OrderedDict
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
@@ -28,162 +30,99 @@ import sonic_intf_utils as ifutils
 
 def run(func, args):
 
-    api = cc.ApiClient()
+    # omit pipe arguments
+    if '\\|' in args:
+        args = args[:args.index('\\|')]
+    if '|' in args:
+        args = args[:args.index('|')]
+    # a workaround for 'do' command
+    if func == "do":
+        func = args[0]
+        args = args[1:]
 
+    uri_oc_plat = "/restconf/data/openconfig-platform:components"
+
+    aa = cc.ApiClient()
     path = None
     template = None
     last = len(args)
-    if_list = []
-    if_name = ' '
-
-    dom_dict = OrderedDict()
-    dom_loopback_support_keys = ['lb-host-side-input-support', 'lb-host-side-output-support',
-                                 'lb-media-side-input-support', 'lb-media-side-output-support',
-                                 'lb-per-lane-host-side-support', 'lb-per-lane-media-side-support',
-                                 'lb-simul-host-media-side-support']
-    dom_loopback_status_keys = ['lb-host-side-input-enable', 'lb-host-side-output-enable',
-                                'lb-media-side-input-enable', 'lb-media-side-output-enable',
-                                'lb-per-lane-host-side-enable', 'lb-per-lane-media-side-enable',
-                                'lb-simul-host-media-side-enable']
-    dom_parameter_keys = ['lol-lane-1', 'lol-lane-2', 'lol-lane-3', 'lol-lane-4',
-                          'lol-lane-5', 'lol-lane-6', 'lol-lane-7', 'lol-lane-8',
-                          'los-lane-1', 'los-lane-2', 'los-lane-3', 'los-lane-4',
-                          'los-lane-5', 'los-lane-6', 'los-lane-7', 'los-lane-8',
-                          'tx-bias-lane-1', 'tx-bias-lane-2', 'tx-bias-lane-3', 'tx-bias-lane-4',
-                          'tx-bias-lane-5', 'tx-bias-lane-6', 'tx-bias-lane-7', 'tx-bias-lane-8',
-                          'rx-power-lane-1', 'rx-power-lane-2', 'rx-power-lane-3', 'rx-power-lane-4',
-                          'rx-power-lane-5', 'rx-power-lane-6', 'rx-power-lane-7', 'rx-power-lane-8',
-                          'tx-power-lane-1', 'tx-power-lane-2', 'tx-power-lane-3', 'tx-power-lane-4',
-                          'tx-power-lane-5', 'tx-power-lane-6', 'tx-power-lane-7', 'tx-power-lane-8',
-                          'voltage', 'temperature']
-
+    if_name = None
+    xcvr_tmp = OrderedDict()
     xcvrInfo = OrderedDict()
-
-    aa = cc.ApiClient()
 
     for idx in range(0, last):
         # pull out the interface name
-        if  "Ethernet" in args[idx]:
+        if args[idx].startswith("Eth"):
             if_name = args[idx]
-            # print (if_name)
+            if idx < last - 1:
+                if_name += args[idx + 1]
             break
         func += "-"
         func += args[idx]
 
-    # print (func)
+    #print ("func={0}".format(func))
+    #print ("if_name='{0}'".format(if_name))
 
-    # If interface name is blank, get a list of all ports
-    if if_name == ' ':
-        path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT/PORT_LIST')
-        response = aa.get(path)
-        if not response.ok():
-            # print "all interfaces path is not good", response.content
-            return
-        try:
-            for d in response.content['sonic-port:PORT_LIST']:
-                if_list.append(d['ifname'])
-        except:
-            return
+    if if_name is None:
+        path = cc.Path(uri_oc_plat)
+        resp = aa.get(path)
+        key1 = 'openconfig-platform:components'
+        key2 = 'component'
+        if resp.ok() and (resp.content is not None) and (key1 in resp.content) and (key2 in resp.content[key1]):
+            for row in resp.content[key1][key2]:
+                name = row.get('name')
+                if (name is None) or (not name.startswith('Eth')):
+                    continue
+                xcvr_tmp[name] = row
     else:
-        # Single Interface
-        if_list.append(if_name)
+        path = cc.Path("{0}/component={1}".format(uri_oc_plat, if_name.replace('/', '%2F')))
+        resp = aa.get(path)
+        key = 'openconfig-platform:component'
+        if resp.ok() and (resp.content is not None) and (key in resp.content):
+            # The 1st row is our only interest
+            for row in resp.content[key]:
+                xcvr_tmp[if_name] = row
+                break
 
+    for intf in natsorted(xcvr_tmp.keys()):
+        xcvrInfo[intf] = xcvr_tmp[intf]
 
-    if func == "show-interface-transceiver-diagnostics-loopback-capability":
-        # Get loopback capability
-        template = "show_xcvr_loopback_capability.j2"
+    #print("DEBUG: {0}".format(json.dumps(xcvrInfo, indent=4)))
+
+    if func.startswith('show-'):
+        if func == "show-interface-transceiver-diagnostics-loopback-capability":
+            template = "show_xcvr_loopback_capability.j2"
+        elif func == "show-interface-transceiver-params":
+            template = "show_xcvr_oper_params.j2"
+        elif func == "show-interface-transceiver-diagnostics-loopback-controls":
+            template = "show_xcvr_loopback_ctrl.j2"
+
         # print "---->", template
-    elif func == "show-interface-transceiver-params":
-        template = "show_xcvr_oper_params.j2"
-        # print "---->", template
-    elif func == "show-interface-transceiver-diagnostics-loopback-controls":
-        template = "show_xcvr_oper_params.j2"
-        # print "---->", template
+        show_cli_output(template, xcvrInfo)
     else:
         # if not a 'show' command, then this is a config command
-        if 'no-' in func:
+        if func.startswith('no-'):
             on = 'False'
         else:
             on = 'True'
 
-        for nm in if_list:
-            if '/' in nm:
-                nm = nm.replace('/', '%2F')
-
+        for nm in natsorted(xcvrInfo.keys()):
             if 'media-side-input' in func:
                 keypath = cc.Path('/restconf/data/openconfig-platform:components/component={name}/openconfig-platform-transceiver:transceiver/config/openconfig-platform-ext:lb-media-side-input-enable', name=nm)
                 body = { "openconfig-platform-ext:lb-media-side-input-enable":  (on) }
                 # print("keypath = {}".format(keypath))
                 # print("body = {}".format(body))
-                return api.patch(keypath, body)
+                return aa.patch(keypath, body)
 
             if 'host-side-input' in func:
                 keypath = cc.Path('/restconf/data/openconfig-platform:components/component={name}/openconfig-platform-transceiver:transceiver/config/openconfig-platform-ext:lb-host-side-input-enable', name=nm)
                 body = { "openconfig-platform-ext:lb-host-side-input-enable":  (on) }
                 # print("keypath = {}".format(keypath))
                 # print("body = {}".format(body))
-                return api.patch(keypath, body)
+                return aa.patch(keypath, body)
 
             # print("Unsupported diagnostic loopback")
             # print " "
-        return
-
-
-    for nm in if_list:
-        if '/' in nm:
-            nm = nm.replace('/', '%2F')
-        path = cc.Path('/restconf/data/openconfig-platform:components/component=' + nm)
-        response = aa.get(path)
-        try:
-            xcvrInfo[nm] = response.content['openconfig-platform:component'][0]
-            # print response.content
-        except:
-            xcvrInfo[nm] = {}
-    # Clean up the data
-    # cli_dict = OrderedDict()
-    for val in sorted(xcvrInfo.keys(), key=lambda x: ifutils.name_to_int_val(x)):
-        d2 = OrderedDict()
-        try:
-            d = xcvrInfo[val]['openconfig-platform-transceiver:transceiver']['state']
-            # print "---> d unformatted == "
-            # print d
-            for k  in d:
-                # print("processing {}".format(k))
-                if ':' in k:
-                    a = k.split(':')[1]
-                    # print("key is {}".format(a))
-                    if a in dom_loopback_support_keys and func == "show-interface-transceiver-diagnostics-loopback-capability":
-                        value = d[k]
-                        # print "   k[1] = {}".format(type(k[1]))
-                        # print "value of key {} = {}".format(a,value)
-                        dom_dict[a]=value
-                    elif a in dom_parameter_keys and func == "show-interface-transceiver-params":
-                        value = d[k]
-                        # print "   k[1] = {}".format(type(k[1]))
-                        # print "value of key {} = {}".format(a,value)
-                        dom_dict[a]=value
-                    elif a in dom_loopback_status_keys and func == "show-interface-transceiver-diagnostics-loopback-controls":
-                        value = d[k]
-                        # print "   k[1] = {}".format(type(k[1]))
-                        # print "value of key {} = {}".format(a,value)
-                        dom_dict[a]=value
-                    else:
-                        # print("---->key will not be used<----")
-                        continue
-                else:
-                    continue
-        except:
-            continue
-
-        cli_dict = OrderedDict()
-        cli_dict[val] = (val, dom_dict)
-        try:
-            print " "
-            # print cli_dict
-            for k in cli_dict:
-                show_cli_output(template, (True, cli_dict[k]))
-        except Exception as e:
-            pass
     return
 
 if __name__ == '__main__':

@@ -1,0 +1,34 @@
+{% if json_output -%}
+{% for ifName in json_output %}
+{% if 'openconfig-platform-transceiver:transceiver' in json_output[ifName] -%}
+{% if 'state' in json_output[ifName]['openconfig-platform-transceiver:transceiver'] -%}
+
+{{' '}}
+{{ifName}}
+{{'---------------------------------------------------------------------'}}
+{{'Attribute'.ljust(25)}}:  {{'Value/State'}}
+{{'---------------------------------------------------------------------'}}
+{% set data = json_output[ifName]['openconfig-platform-transceiver:transceiver']['state'] %}
+
+{% set key = 'openconfig-platform-ext:lb-host-side-input-enable' %}
+{% set val = '' %}
+{% if data.get(key)  == 'True' %}
+{% set val = 'Enabled' %}
+{% else %}
+{% set val = 'Disabled' %}
+{% endif %}
+{{"Host Side Input Loopback".ljust(25)}}:  {{val}}
+
+{% set key = 'openconfig-platform-ext:lb-media-side-input-enable' %}
+{% set val = '' %}
+{% if data.get(key)  == 'True' %}
+{% set val = 'Enabled' %}
+{% else %}
+{% set val = 'Disabled' %}
+{% endif %}
+{{"Media Side Input Loopback".ljust(25)}}:  {{val}}
+
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}

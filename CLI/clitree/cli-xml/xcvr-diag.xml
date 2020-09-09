@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2020 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema     http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+  <VIEW name="enable-view">
+    <COMMAND name="show interface transceiver-diagnostics" help="Show transceiver diagnostics info">
+      <PARAM name="if-xcvr-diag-subcommands"
+             help="Interface transceiver diagnostics subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="loopback"  help="Show transceiver diagnostics loopback capability" mode="subcommand" ptype="SUBCOMMAND">
+          <PARAM name="if-xcvr-diag-lb-subcommands"
+                 help="Interface transceiver diagnostics loopback subcommands"
+                 mode="switch"
+                 ptype="SUBCOMMAND">
+            <PARAM name="capability" help="Show transceiver diagnostics loopback capability" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
+            <PARAM name="controls" help="Show transceiver diagnostics loopback controls" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+      <PARAM name="phy-if-name" help="Interface" ptype="PHY_INTERFACE" optional="true"></PARAM>
+      <ACTION builtin="clish_pyobj"> sonic_cli_xcvr ${__full_line} </ACTION>
+    </COMMAND>
+  </VIEW>
+  <VIEW name="configure-view">
+    <COMMAND name="interface diagnostics" help="Configure transceiver diagnostics">
+      <PARAM name="ifcfg-xcvr-diag-subcommands"
+             help="Configure transceiver diagnostics subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="loopback"  help="Configure transceiver diagnostics loopback" mode="subcommand" ptype="SUBCOMMAND">
+          <PARAM name="ifcfg-xcvr-diag-lb-subcommands"
+                 help="Configure transceiver diagnostics loopback subcommands"
+                 mode="switch"
+                 ptype="SUBCOMMAND">
+            <PARAM name="host-side-input" help="Host/System side input" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
+            <PARAM name="media-side-input" help="Media/Line side input" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+      <PARAM name="phy-if-name" help="Interface" ptype="PHY_INTERFACE" optional="true"></PARAM>
+      <ACTION builtin="clish_pyobj"> sonic_cli_xcvr ${__full_line} </ACTION>
+    </COMMAND>
+    <COMMAND name="no interface diagnostics" help="Configure transceiver diagnostics">
+      <PARAM name="ifcfg-xcvr-diag-subcommands"
+             help="Configure transceiver diagnostics subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND">
+        <PARAM name="loopback"  help="Configure transceiver diagnostics loopback" mode="subcommand" ptype="SUBCOMMAND">
+          <PARAM name="ifcfg-xcvr-diag-lb-subcommands"
+                 help="Configure transceiver diagnostics loopback subcommands"
+                 mode="switch"
+                 ptype="SUBCOMMAND">
+            <PARAM name="host-side-input" help="Host/System side input" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
+            <PARAM name="media-side-input" help="Media/Line side input" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+      <PARAM name="phy-if-name" help="Interface" ptype="PHY_INTERFACE" optional="true"></PARAM>
+      <ACTION builtin="clish_pyobj"> sonic_cli_xcvr ${__full_line} </ACTION>
+    </COMMAND>
+  </VIEW>
+</CLISH_MODULE>
