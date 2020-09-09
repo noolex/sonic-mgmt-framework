@@ -32,6 +32,7 @@ from natsort import natsorted
 import sonic_intf_utils as ifutils
 from sonic_cli_if_range import check_response
 from collections import OrderedDict 
+import sonic_cli_show_config
 
 import urllib3
 urllib3.disable_warnings()
@@ -902,6 +903,25 @@ def invoke_api(func, args=[]):
             keypath = cc.Path('/restconf/operations/sonic-counters:interface_counters')
         body = {}
         return api.post(keypath, body)
+    elif func == 'showrun':
+       arglen =0
+       try:
+         arglen = args.index('\\|')
+       except ValueError:
+         arglen = len(args)
+
+       if arglen == 3:
+         show_args=["views=configure-if,configure-lag,configure-vlan,configure-vxlan,configure-lo,configure-if-mgmt"]
+         sonic_cli_show_config.run('show_multi_views',show_args)
+       elif arglen > 3:
+          show_args= ["views=configure-if"]
+          intf = args[3]
+          if intf is not None and type(intf)== str:
+            if intf != "Ethernet" and intf != "Eth":
+               view_key_str = "view_keys=\"name=" + intf + "\""
+               show_args.append(view_key_str)
+          sonic_cli_show_config.run('show_view',show_args)
+       return
     return api.cli_not_implemented(func)
 
 def getId(item):
@@ -975,6 +995,8 @@ def run(func, args):
         if func == 'ip_interfaces_get' or func == 'ip6_interfaces_get':
             show_cli_output(args[0], response)
             return
+        elif func == 'showrun':
+            return    
         if response.ok():
           if response.content is not None:
             # Get Command Output
