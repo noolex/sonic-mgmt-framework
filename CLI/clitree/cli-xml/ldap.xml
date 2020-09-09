@@ -1124,7 +1124,7 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ldap-server map" help="Unconfigures LDAP server for map">
+    <COMMAND name="no ldap-server map" help="Unconfigures LDAP server for map" escape_chars="">
     	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
         <PARAM name="attribute" help="Unconfigures attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         	<PARAM name="attribute_from_val" ptype="ATTR_FROM" help=""/>
