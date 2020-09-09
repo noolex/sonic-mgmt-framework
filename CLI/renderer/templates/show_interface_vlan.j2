@@ -13,6 +13,7 @@
 {% for interfaces in json_output %}
 {% set interface_list = json_output[interfaces] %}
 {% for interface in interface_list %}
+    {{ ' ' }}
     {% for key in interface %}
       {% if "state" in key %}
         {% if vars.update({'name':interface[key]["name"]}) %}{% endif %}
@@ -90,7 +91,7 @@ Mode of {{ vars.ipv6 }} address assignment: {{ vars.mode6 }}
 Interface IPv6 oper status: {{ vars.ipv6_status }}
 {% endif %}
 IP MTU {{ vars.mtu }} bytes
-{%- endif %}
+{% endif %}
 {% endfor %}
 {% endfor %}
 {% endif %}
