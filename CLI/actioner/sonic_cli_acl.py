@@ -16,6 +16,23 @@
 # limitations under the License.
 #
 ###########################################################################
+#
+# Copyright 2019 Broadcom.  The term "Broadcom" refers to Broadcom Inc. and/or
+# its subsidiaries.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+###########################################################################
 
 import sys
 import collections
@@ -102,12 +119,15 @@ class SonicACLCLIStopNoError(RuntimeError):
 
 
 def acl_natsort_intf_prio(ifname):
-    if ifname[0].startswith('Ethernet'):
-        prio = 10000 + int(ifname[0].replace('Ethernet', ''), 0)
-    elif ifname[0].startswith('PortChannel'):
-        prio = 20000 + int(ifname[0].replace('PortChannel', ''), 0)
-    elif ifname[0].startswith('Vlan'):
-        prio = 30000 + int(ifname[0].replace('Vlan', ''), 0)
+    if isinstance(ifname, tuple):
+        ifname = ifname[0]
+
+    if ifname.startswith('Ethernet'):
+        prio = 10000 + int(ifname.replace('Ethernet', ''), 0)
+    elif ifname.startswith('PortChannel'):
+        prio = 20000 + int(ifname.replace('PortChannel', ''), 0)
+    elif ifname.startswith('Vlan'):
+        prio = 30000 + int(ifname.replace('Vlan', ''), 0)
     elif ifname == "Switch":
         prio = 40000
     else:
@@ -997,7 +1017,7 @@ def __deep_copy(dst, src):
     return dst
 
 
-def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, stage, cache):
+def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, stage, cache, continuation):
     log.log_debug('ACL:{} Type:{} Intf:{} Stage:{}'.format(acl_name, acl_type, intf_name, stage))
     acl_name = acl_name.replace("_" + acl_type, "")
     output = OrderedDict()
@@ -1042,7 +1062,7 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
     else:
         render_dict[intf_name] = output
 
-    show_cli_output('show_access_list_intf.j2', render_dict)
+    show_cli_output('show_access_list_intf.j2', render_dict, continuation=continuation)
 
 
 def __process_acl_counters_request_by_name_and_inf(response, args):
@@ -1059,7 +1079,7 @@ def __process_acl_counters_request_by_name_and_inf(response, args):
     ports = acl_data.get("ports", [])
     intf_name = args[2] if len(args) == 3 else "".join(args[3:])
     if intf_name in ports:
-        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], intf_name, stage, None)
+        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], intf_name, stage, None, False)
     else:
         raise SonicAclCLIError("ACL {} not applied to {}".format(args[1], intf_name))
 
@@ -1082,8 +1102,10 @@ def __process_acl_counters_request_by_type_and_name(response, args):
     ports = acl_data.get("ports", [])
     if len(ports) != 0:
         log.log_debug("ACL {} Type {} has ports.".format(acl_data["aclname"], acl_type))
+        cont = False
         for port in acl_data.get("ports", []):
-            __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache)
+            __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache, cont)
+            cont = True
     else:
         log.log_debug("ACL {} Type {} has ZERO ports. Show only ACL configuration.".format(acl_data["aclname"], acl_type))
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
@@ -1112,8 +1134,10 @@ def __process_acl_counters_request_by_type(response, args):
         ports = acl.get("ports", [])
         if len(ports) != 0:
             log.log_debug("ACL {} Type {} has ports.".format(acl["aclname"], acl_type))
+            cont = False
             for port in ports:
-                __get_and_show_acl_counters_by_name_and_intf(acl["aclname"], args[0], port, stage, cache)
+                __get_and_show_acl_counters_by_name_and_intf(acl["aclname"], args[0], port, stage, cache, cont)
+                cont = True
         else:
             log.log_debug("ACL {} Type {} has ZERO ports. Show only ACL configuration.".format(acl["aclname"], acl_type))
 

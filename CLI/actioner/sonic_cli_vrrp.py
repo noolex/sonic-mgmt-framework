@@ -293,6 +293,11 @@ def invoke(func, args):
 
 def run(func, args):
     try:
+        if func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority' and args[2] == "100":
+            func = 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority'
+            args[2] = args[3]
+
+
         api_response = invoke(func, args)
 
         if api_response.ok():

@@ -13,6 +13,7 @@
 {% set vars = {'mode6': "not-set"} %}
 {% set vars = {'speed': ""} %}
 {% set vars = {'fec': ""} %}
+{% set vars = {'unreliable_los': ""} %}
 {% set vars = {'in_pkts':""} %}
 {% set vars = {'in_octets':""} %}
 {% set vars = {'in_bytes_per_sec': ""} %}
@@ -51,6 +52,7 @@
       {% if "ethernet" in key %}
         {% if "state" in interface[key] %}
           {% if vars.update({'fec':interface[key]["state"]["openconfig-if-ethernet-ext2:port-fec"]|replace("openconfig-platform-types:FEC_", "")}) %}{% endif %}
+          {% if vars.update({'unreliable_los':interface[key]["state"]["openconfig-if-ethernet-ext2:port-unreliable-los"]|replace("openconfig-if-ethernet-ext2:UNRELIABLE_LOS_MODE_", "")|lower}) %}{% endif %}
           {% if vars.update({'speed':interface[key]["state"]["port-speed"]|replace("openconfig-if-ethernet:SPEED_", "")}) %}{% endif %}
           {% if "counters" in interface[key]["state"] %}
             {% if vars.update({'in_oversize':interface[key]["state"]["counters"]["in-oversize-frames"]}) %}{% endif %}
@@ -172,6 +174,9 @@ IP MTU {{ vars.mtu }} bytes
 LineSpeed {{ vars.speed }}, Auto-negotiation off
 {% if vars.fec != "" %}
 FEC: {{ vars.fec }}
+{% endif %}
+{% if vars.unreliable_los != "" %}
+Unreliable LOS: {{ vars.unreliable_los }}
 {% endif %}
 {% if vars.found_counters == True %}
 {% set datetime = datetimeformat(vars.last_clear) %}

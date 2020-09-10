@@ -21,6 +21,7 @@ from scripts.render_cli import show_cli_output
 import cli_client as cc
 import sys
 import sonic_intf_utils as ifutils
+from natsort import natsorted
 
 aa = cc.ApiClient()
 
@@ -114,10 +115,7 @@ def delete_stp_vlan_config(args):
     elif op_str == 'forward-time':
         return delete_stp_vlan_fwd_delay(args[1:])
     else:
-        return delete_stp_vlan_enable(args)
-
-    return None
-
+        return patch_stp_vlan_disable(args)
 
 
 def config_stp_vlan_subcmds(args):
@@ -195,15 +193,9 @@ def patch_stp_vlan_enable(args):
 
     return aa.patch(uri, body)
 
-def delete_stp_vlan_enable(args):
-    body = { "openconfig-spanning-tree-ext:spanning-tree-enable": False }
-    if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/config/spanning-tree-enable', vlan_id=args[0])
-    elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/config/openconfig-spanning-tree-ext:spanning-tree-enable',vlan_id=args[0])
-    else:
-        return None
-
+def patch_stp_vlan_disable(args):
+    body = {"openconfig-spanning-tree-ext:disabled-vlans": [int(args[0])]}
+    uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/global/config/openconfig-spanning-tree-ext:disabled-vlans')
     return aa.patch(uri, body)
 
 def patch_stp_global_fwd_delay(args):
@@ -880,7 +872,8 @@ def run(op_str, args):
         if op_str == 'show_running_spanning_tree':
             return show_running_spanning_tree()
 
-        if op_str != 'post_openconfig_spanning_tree_stp_global_config_enabled_protocol':
+        #allow vlan delete before mode config
+        if op_str not in ['post_openconfig_spanning_tree_stp_global_config_enabled_protocol', 'delete_stp_vlan_subcmds']:
             stp_mode_get(aa)
             if not g_stp_mode:
                 if 'process_stp_show' in op_str:
@@ -919,8 +912,8 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
         cmd += '\n no spanning-tree enable'
 
     if 'openconfig-spanning-tree-ext:portfast' in intf_dict.keys() and \
-            intf_dict['openconfig-spanning-tree-ext:portfast'] == False:
-        cmd += '\n no spanning-tree portfast'
+            intf_dict['openconfig-spanning-tree-ext:portfast'] == True:
+        cmd += '\n spanning-tree portfast'
 
     cmd_prfx = '\n spanning-tree '
 
@@ -930,8 +923,13 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
         else:
             cmd += cmd_prfx + 'bpdufilter disable'
 
-    if 'guard' in intf_dict.keys() and intf_dict['guard'] == "ROOT":
-        cmd += cmd_prfx + 'guard root'
+    if 'guard' in intf_dict.keys():
+        if intf_dict['guard'] == "ROOT":
+            cmd += cmd_prfx + 'guard root'
+        elif intf_dict['guard'] == "LOOP":
+            cmd += cmd_prfx + 'guard loop'
+        elif intf_dict['guard'] == "NONE":
+            cmd += cmd_prfx + 'guard none'
 
     if 'bpdu-guard' in intf_dict.keys() and intf_dict['bpdu-guard'] == True:
         if 'openconfig-spanning-tree-ext:bpdu-guard-port-shutdown' in intf_dict.keys() and \
@@ -990,15 +988,26 @@ def show_run_config_vlan(vlan_dict):
     if 'vlan-id' not in vlan_dict.keys():
         return
 
+    # if all fileds are 0, nothing to print, 
+    # this can happen when only enabled key is set in the STP_VLAN table
+    keys = ['forwarding-delay', 'hello-time', 'max-age', 'bridge-priority']
+    if all(key in vlan_dict.keys() for key in keys):
+        if all(vlan_dict[key] == 0 for key in keys):
+            return 
+
     cmd = ''
     prfx = '\nspanning-tree vlan '+ str(vlan_dict['vlan-id']) + ' '
-    if 'forwarding-delay' in vlan_dict.keys() and vlan_dict['forwarding-delay'] != g_fwd_delay:
+    if 'forwarding-delay' in vlan_dict.keys() \
+            and vlan_dict['forwarding-delay'] != g_fwd_delay:
         cmd += prfx + 'forward-time ' + str(vlan_dict['forwarding-delay'])
-    if 'hello-time' in vlan_dict.keys() and vlan_dict['hello-time'] != g_hello_time:
+    if 'hello-time' in vlan_dict.keys() \
+            and vlan_dict['hello-time'] != g_hello_time:
         cmd += prfx + 'hello-time ' + str(vlan_dict['hello-time'])
-    if 'max-age' in vlan_dict.keys() and vlan_dict['max-age'] != g_max_age:
+    if 'max-age' in vlan_dict.keys() \
+            and vlan_dict['max-age'] != g_max_age:
         cmd += prfx + 'max-age ' + str(vlan_dict['max-age'])
-    if 'bridge-priority' in vlan_dict.keys() and vlan_dict['bridge-priority'] != g_br_prio:
+    if 'bridge-priority' in vlan_dict.keys() \
+            and vlan_dict['bridge-priority'] != g_br_prio:
         cmd += prfx + 'priority ' + str(vlan_dict['bridge-priority'])
 
     if len(cmd) != 0:
@@ -1006,6 +1015,17 @@ def show_run_config_vlan(vlan_dict):
     return
 
 
+def show_run_disabled_vlans():
+    uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/global/config/openconfig-spanning-tree-ext:disabled-vlans')  
+    api_response = aa.get(uri, None)
+    if api_response.ok() and api_response.content is not None:
+        if 'openconfig-spanning-tree-ext:disabled-vlans' in api_response.content:
+            disabled_vlans = natsorted(api_response.content['openconfig-spanning-tree-ext:disabled-vlans'])
+            for vlan in disabled_vlans:
+                print('no spanning-tree vlan ' + str(vlan))
+    return 
+
+'''
 def show_run_disabled_vlans(vlan_list, stp_mode):
     cmd = ''
     for vlan_dict in vlan_list:
@@ -1024,7 +1044,7 @@ def show_run_disabled_vlans(vlan_list, stp_mode):
     if len(cmd) != 0:
         print('!' + cmd)
     return 
-
+'''
 
 def show_run_config_global(data, stp_mode):
     global g_max_age
@@ -1067,6 +1087,14 @@ def show_run_config_global(data, stp_mode):
             global_config['openconfig-spanning-tree-ext:bridge-priority'] != 32768:
         g_br_prio = global_config['openconfig-spanning-tree-ext:bridge-priority']
         print('spanning-tree priority {}'.format(global_config['openconfig-spanning-tree-ext:bridge-priority']))
+
+    if 'loop-guard' in global_config.keys() and global_config['loop-guard'] != False:
+        print('spanning-tree loopguard default')
+
+    if 'openconfig-spanning-tree-ext:portfast' in global_config.keys() and \
+            global_config['openconfig-spanning-tree-ext:portfast'] != False:
+        print('spanning-tree portfast default')
+
     return
 
 
@@ -1074,6 +1102,7 @@ def show_running_spanning_tree():
     stp_mode = ''
     aa = cc.ApiClient()
 
+    show_run_disabled_vlans()
     uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp')  
     api_response = aa.get(uri, None)
     if api_response.ok() and api_response.content is not None:
@@ -1092,7 +1121,7 @@ def show_running_spanning_tree():
 
             if stp_mode in data.keys():
                 if 'vlan' in data[stp_mode].keys():
-                    show_run_disabled_vlans(data[stp_mode]['vlan'], stp_mode)
+                    #show_run_disabled_vlans(data[stp_mode]['vlan'], stp_mode)
 
                     for vlan_dict in data[stp_mode]['vlan']:
                         show_run_config_vlan(vlan_dict['config'])

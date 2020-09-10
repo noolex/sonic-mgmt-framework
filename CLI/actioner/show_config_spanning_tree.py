@@ -20,6 +20,7 @@
 ###########################################################################
  
 import syslog as log
+from natsort import natsorted
 
 g_err_transaction_fail = '%Error: Transaction Failure'
 
@@ -44,6 +45,35 @@ def show_config_spanning_tree_global_max_age(render_tables):
 
     return 'CB_SUCCESS', cmd_str
 
+def show_config_spanning_tree_global_loop_guard(render_tables):
+    cmd_str = ''
+    if 'sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST' not in render_tables:
+        return 'CB_SUCCESS', cmd_str
+
+    if len(render_tables['sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST']) == 0:
+        return 'CB_SUCCESS', cmd_str
+
+    db_entry = render_tables['sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST'][0]
+
+    if 'loop_guard' in db_entry.keys() and db_entry['loop_guard'] != False:
+        cmd_str = 'spanning-tree loopguard default'
+
+    return 'CB_SUCCESS', cmd_str
+
+def show_config_spanning_tree_global_portfast(render_tables):
+    cmd_str = ''
+    if 'sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST' not in render_tables:
+        return 'CB_SUCCESS', cmd_str
+
+    if len(render_tables['sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST']) == 0:
+        return 'CB_SUCCESS', cmd_str
+
+    db_entry = render_tables['sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST'][0]
+
+    if 'portfast' in db_entry.keys() and db_entry['portfast'] != False:
+        cmd_str = 'spanning-tree portfast default'
+
+    return 'CB_SUCCESS', cmd_str
 
 def show_config_spanning_tree_global_hello_time(render_tables):
     cmd_str = ''
@@ -137,19 +167,17 @@ def show_config_spanning_tree_vlan(render_tables):
                 #vlanid  field is created only when any field of table is modified.
                 continue;
 
-            missing_fields = [field for field in ['forward_delay', 'hello_time', 'max_age', 'priority'] if field not in db_entry.keys()]
-            if len(missing_fields) != 0:
-                return ret_err(g_err_transaction_fail, 'keys : {} not found in STP-VLAN-{}'.format(missing_fields, db_entry['vlanid']))
-                
-            cmd_prfx = cmd_sep + "spanning-tree vlan " + str(db_entry['vlanid']) + ' '
-            if db_entry["forward_delay"] != global_fwd_delay:
-                cmd_str += cmd_prfx + 'forward-time ' + str(db_entry['forward_delay'])
-            if db_entry["hello_time"] != global_hello_time:
-                cmd_str += cmd_prfx + 'hello-time ' + str(db_entry['hello_time'])
-            if db_entry["max_age"] != global_max_age:
-                cmd_str += cmd_prfx + 'max-age ' + str(db_entry['max_age'])
-            if db_entry["priority"] != global_br_prio:
-                cmd_str += cmd_prfx + 'priority ' + str(db_entry['priority'])
+            keys = ['forward_delay', 'hello_time', 'max_age', 'priority']
+            if all(key in db_entry.keys() for key in keys):
+                cmd_prfx = cmd_sep + "spanning-tree vlan " + str(db_entry['vlanid']) + ' '
+                if db_entry["forward_delay"] != global_fwd_delay:
+                    cmd_str += cmd_prfx + 'forward-time ' + str(db_entry['forward_delay'])
+                if db_entry["hello_time"] != global_hello_time:
+                    cmd_str += cmd_prfx + 'hello-time ' + str(db_entry['hello_time'])
+                if db_entry["max_age"] != global_max_age:
+                    cmd_str += cmd_prfx + 'max-age ' + str(db_entry['max_age'])
+                if db_entry["priority"] != global_br_prio:
+                    cmd_str += cmd_prfx + 'priority ' + str(db_entry['priority'])
 
     return 'CB_SUCCESS', cmd_str
 
@@ -157,19 +185,19 @@ def show_config_spanning_tree_vlan(render_tables):
 def show_config_no_spanning_tree_vlan(render_tables):
     cmd_str = ''
     cmd_list = []
+    disabled_vlans = []
     if 'sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST' in render_tables:
         for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST']:
-            if 'vlanid' not in db_entry.keys():
-                #vlanid  field is created only when any field of table is modified.
-                continue;
-
             if 'enabled' in db_entry.keys() and db_entry["enabled"] == False:
-                cmd_list.append("no spanning-tree vlan " + str(db_entry['vlanid']))
+                disabled_vlans.append(db_entry['name'][4:])
 
+    disabled_vlans = natsorted(disabled_vlans)
+
+    cmd_list = ["no spanning-tree vlan " + vlan for vlan in disabled_vlans]
     if cmd_list:
         cmd_str = ';'.join(cmd_list)
-    return 'CB_SUCCESS', cmd_str
 
+    return 'CB_SUCCESS', cmd_str
 
 
 def show_config_spanning_tree_intf_vlan(render_tables):
@@ -250,9 +278,33 @@ def show_config_spanning_tree_intf(render_tables):
             if 'uplink_fast' in db_entry and db_entry['uplink_fast']:
                 cmd_list.append(cmd_prfx + 'uplinkfast')
 
+    if cmd_list:
+        cmd_str = ';'.join(cmd_list)
+    return 'CB_SUCCESS', cmd_str
+
+def show_config_spanning_tree_intf_guard(render_tables):
+    cmd_str = ''
+    cmd_list = []
+
+    if 'name' not in render_tables.keys():
+        return ret_err(g_err_transaction_fail, 'key:name not found in render_tables')
+
+    cmd_prfx = 'spanning-tree '
+    if 'sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST' in render_tables:
+        for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST']:
+
+            if 'ifname' not in db_entry.keys():
+                return ret_err(g_err_transaction_fail, 'key:ifname not found in STP_PORT_DB, render_table[name] = {}'.format(render_tables['name']))
+
+            if render_tables['name'] != db_entry['ifname']:
+                continue
+
             if 'root_guard' in db_entry and db_entry['root_guard']:
                 cmd_list.append(cmd_prfx + 'guard root')
-
+            elif 'loop_guard' in db_entry and db_entry['loop_guard'] == 'true':
+                cmd_list.append(cmd_prfx + 'guard loop')
+            elif 'loop_guard' in db_entry and db_entry['loop_guard'] == 'none':
+                cmd_list.append(cmd_prfx + 'guard none')
 
     if cmd_list:
         cmd_str = ';'.join(cmd_list)

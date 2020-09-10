@@ -199,6 +199,18 @@ def invoke_api(func, args=[]):
 
         body = { "openconfig-if-ethernet:port-fec": fec_map[fec]}
         return api.patch(path, body)
+
+    elif func == 'patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/openconfig-if-ethernet-ext2:port-unreliable-los', name=args[0])
+        los_map = {"auto": "UNRELIABLE_LOS_MODE_AUTO", "on": "UNRELIABLE_LOS_MODE_ON", "off": "UNRELIABLE_LOS_MODE_OFF", "default": "UNRELIABLE_LOS_MODE_OFF"}
+
+        los = args[1]
+        if los not in los_map:
+            print("%Error: Invalid port unreliable los config")
+            return None
+
+        body = { "openconfig-if-ethernet:port-unreliable-los": los_map[los]}
+        return api.patch(path, body)
     
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config':
         sp = args[1].split('/')
@@ -465,6 +477,17 @@ def invoke_api(func, args=[]):
         responseVlanVrfTbl =  api.get(path)
         if responseVlanVrfTbl.ok():
             d.update(responseVlanVrfTbl.content)
+
+        path = cc.Path('/restconf/data/sonic-sag:sonic-sag/SAG_INTF/SAG_INTF_LIST')
+        responseSAGTbl =  api.get(path)
+        if responseSAGTbl.ok():
+            if 'sonic-sag:SAG_INTF_LIST' in responseSAGTbl.content:
+                for sag in responseSAGTbl.content['sonic-sag:SAG_INTF_LIST']:
+                    if 'v6GwIp' in sag and func == 'ip_interfaces_get':
+                        del sag['v6GwIp']
+                    if 'v4GwIp' in sag and func == 'ip6_interfaces_get':
+                        del sag['v4GwIp']
+            d.update(responseSAGTbl.content)
 
 	return d
         
@@ -970,7 +993,7 @@ def run(func, args):
    
     if func == 'rpc_relay_clear':
         api_clear = cc.ApiClient()
-        if not (args[0].startswith("Ethernet") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
+        if not (args[0].startswith("Eth") or args[0].startswith("Vlan") or args[0].startswith("PortChannel")):
            print("%Error: Invalid Interface")
            return 1
 

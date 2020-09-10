@@ -50,7 +50,7 @@ limitations under the License.
 <PTYPE
      name="RADIUS_KEY"
      pattern="(^(([^ #,]){1,65})$)"
-     help="(Valid Chars: ASCII printable except SPACE, #, and COMMA, Max Len: 65) shared secret"
+     help="WORD"
 />
 <!--=======================================================-->
 <PTYPE
@@ -65,12 +65,6 @@ limitations under the License.
      method="integer"
      pattern="1..64"
      help="(1..64)"
-/>
-<!--=======================================================-->
-<PTYPE
-     name="RADIUS_VRF"
-     pattern="Vrf(([0-9A-Za-z]){1,12})"
-     help="VrfName"
 />
 <!--=======================================================-->
 
@@ -209,15 +203,16 @@ limitations under the License.
         help="Configures global shared secret for RADIUS"
         command_keys="type=global"
         command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        escape_chars=""
         >
         <PARAM
             name="key"
-            help=""
+            help="shared secret (ASCII printable except SPACE, #, and COMMA, Max Len: 65)"
             ptype="RADIUS_KEY"
             dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/passkey"
             >
         </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_key ${key}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_key ${#key}</ACTION>
         <DOCGEN>
           <DESCRIPTION>Configures global shared secret for RADIUS.</DESCRIPTION>
           <EXAMPLE>
@@ -253,11 +248,12 @@ limitations under the License.
         help="Configures a server for RADIUS"
         command_tables="sonic-system-radius:sonic-system-radius/RADIUS_SERVER/RADIUS_SERVER_LIST/ipaddress={addr}"
         render_command_cb="radius_host_config"
+        escape_chars=""
         >
         <PARAM
             name="host"
             help="Hostname or IP address of RADIUS server"
-            ptype="STRING"
+            ptype="DOMAIN_NAME_OR_IPADDR"
             >
         </PARAM>
 
@@ -300,7 +296,7 @@ limitations under the License.
             >
             <PARAM
                 name="vkey"
-                help="(default: global setting)"
+            help="shared secret (ASCII printable except SPACE, #, and COMMA, Max Len: 65)(default: global setting)"
                 ptype="RADIUS_KEY"
             >
             </PARAM>
@@ -383,13 +379,13 @@ limitations under the License.
                 />
               <PARAM
                 name="vrf-name"
-                help="VRF name"
-                ptype="RADIUS_VRF"
+                help="Name of VRF (Max: 15 characters, prefixed with Vrf)"
+                ptype = "VRF"
                 />
             </PARAM>
         </PARAM>
 
-        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${mgmt}${vrf-name} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${#vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${mgmt}${vrf-name} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
         <DOCGEN>
           <DESCRIPTION>Configures a server for RADIUS.</DESCRIPTION>
           <EXAMPLE>
@@ -419,7 +415,7 @@ limitations under the License.
         <PARAM
             name="host"
             help="Hostname or IP address of RADIUS server"
-            ptype="STRING"
+            ptype="DOMAIN_NAME_OR_IPADDR"
             >
         </PARAM>
 

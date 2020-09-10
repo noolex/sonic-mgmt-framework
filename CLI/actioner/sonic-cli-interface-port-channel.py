@@ -217,8 +217,8 @@ def get_global_config_data():
             if response == '':
                 value = "Disabled"
             elif response is not None:
-                if 'sonic-portchannel:PORTCHANNEL_GLOBAL_LIST' in response.keys():
-                    value = response['sonic-portchannel:PORTCHANNEL_GLOBAL_LIST']
+                if 'sonic-portchannel:PORTCHANNEL_GLOBAL' in response:
+                    value = response['sonic-portchannel:PORTCHANNEL_GLOBAL']['PORTCHANNEL_GLOBAL_LIST']
 
     except Exception as e:
         print("Exception when calling get_global_config_data : %s\n" %(e))

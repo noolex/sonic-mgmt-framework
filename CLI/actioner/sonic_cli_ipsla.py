@@ -422,8 +422,8 @@ def run(func, args):
             elif 'openconfig-ip-sla:ip-slas' in response.keys():
                 show_cli_output("show_ipsla_summary.j2", response)
                 return
-            elif 'history' in response.keys():
-                show_cli_output("show_ipsla_summary.j2", response)
+            elif 'sonic-ip-sla:output' in response.keys():
+                show_cli_output("show_ipsla_history.j2", response)
         else:
             print(api_response.error_message())
             return 1

@@ -23,11 +23,9 @@ import json
 from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
-import pprint
 import random
 
 api = cc.ApiClient()
-pp = pprint.PrettyPrinter(indent=4)
 
 tam_rest = '/restconf/data/openconfig-tam:tam'
 collectors_url = tam_rest+'/collectors'
@@ -203,8 +201,10 @@ def getFlowGroups(flowgroups):
             if (inportsData['content'] is not None):
                 if 'sonic-acl:ACL_RULE_LIST' in inportsData['content']:
                     inports = inportsData['content']['sonic-acl:ACL_RULE_LIST'][0]
-                    if 'IN_PORTS' in inports: 
+                    if 'IN_PORTS' in inports:
                         response[name]['ports'] = ','.join(inports['IN_PORTS'])
+
+        response[name]['packets'] = data['statistics']['packets']
 
     return response
 
@@ -226,10 +226,58 @@ def getBody(fn):
         'patch_dm_session': """{"openconfig-tam:dropmonitor-sessions":{"dropmonitor-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","collector":"%s","sample-rate":"%s"}}]}}""",
         'patch_aginginterval': """{"openconfig-tam:global":{"config":{"aging-interval":%d}}}""",
         'patch_feature': """{"openconfig-tam:features":{"feature":[{"feature-ref":"%s","config":{"feature-ref":"%s","status":"%s"}}]}}""",
-        'patch_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":"%s","priority":"%s","ip-version":"%s"},"l2":{"config":{"source-mac":"%s","destination-mac":"%s","ethertype":"%s"}},"ipv4":{"config":{"source-address":"%s","destination-address":"%s","protocol":"%s"}},"ipv6":{"config":{"source-address":"%s","destination-address":"%s","protocol":"%s"}},"transport":{"config":{"source-port":"%s","destination-port":"%s"}}}]}}""",
         'associate_flowgroup': """{"sonic-acl:IN_PORTS": ["%s"]}"""
     }
     return body[fn]
+
+def getFlowGroupDate(data, currentid):
+    flowGroupData = {}
+    flowGroupData["openconfig-tam:flowgroups"] = {}
+    flowGroupData["openconfig-tam:flowgroups"]["flowgroup"] = []
+    flowData = {}
+    flowData["name"] = data["name"]
+    flowData["config"] = {}
+    flowData["config"]["name"] = data["name"]
+    flowData["config"]["id"] = int(currentid)
+    if (data['priority'] != ""):
+        flowData["config"]["priority"] = int(data['priority'])
+    if ((data['smac'] != "") or (data['dmac'] != "") or (data['ethertype'] != "")):
+        flowData["l2"] = {}
+        flowData["l2"]["config"] = {}
+        if (data['smac'] != ""):
+            flowData["l2"]["config"]["source-mac"] = data['smac']
+        if (data['dmac'] != ""):
+            flowData["l2"]["config"]["destination-mac"] = data['dmac']
+        if (data['ethertype'] != ""):
+            flowData["l2"]["config"]["ethertype"] = int(data['ethertype'], 0)
+    if ((data['sip'] != "") or (data['dip'] != "") or (data['protocol'] != "")):
+        if (("." in data['sip']) or ("." in data['sip']) or (data['protocol'] != "")):
+            flowData["ipv4"] = {}
+            flowData["ipv4"]["config"] = {}
+            if ("." in data['sip']):
+                flowData["ipv4"]["config"]["source-address"] = data['sip']
+            if ("." in data['dip']):
+                flowData["ipv4"]["config"]["destination-address"] = data['dip']
+            if (data['protocol'] != ""):
+                flowData["ipv4"]["config"]["protocol"] = data['protocol']
+        if ((":" in data['sip']) or (":" in data['dip'])):
+            flowData["ipv6"] = {}
+            flowData["ipv6"]["config"] = {}
+            if (":" in data['sip']):
+                flowData["ipv6"]["config"]["source-address"] = data['sip']
+            if (":" in data['dip']):
+                flowData["ipv6"]["config"]["destination-address"] = data['dip']
+            if (data['protocol'] != ""):
+                flowData["ipv6"]["config"]["protocol"] = data['protocol']
+    if ((data['sport'] != "") or (data['dport'] != "")):
+        flowData["transport"] = {}
+        flowData["transport"]["config"] = {}
+        if (data['sport'] != ""):
+            flowData["transport"]["config"]["source-port"] = int(data['sport'])
+        if (data['dport'] != ""):
+            flowData["transport"]["config"]["destination-port"] = int(data['dport'])
+    flowGroupData["openconfig-tam:flowgroups"]["flowgroup"].append(flowData)
+    return flowGroupData
 
 def getDetails(fn, args):
     data = json.loads(args[0])
@@ -241,7 +289,7 @@ def getDetails(fn, args):
         if (data['name'] == 'all'):
             details['url'] = collectors_url
             details['template'] = data['template']+"_all.j2"
-        else: 
+        else:
             details['url'] = collectors_url+'/collector={}'.format(data['name'])
             details['template'] = data['template']+".j2"
             details['description'] = "Collector"
@@ -258,7 +306,7 @@ def getDetails(fn, args):
         if (data['name'] == 'all'):
             details['url'] = samplers_url
             details['template'] = data['template']+"_all.j2"
-        else: 
+        else:
             details['url'] = samplers_url+'/sampler={}'.format(data['name'])
             details['template'] = data['template']+".j2"
             details['description'] = "Sampler"
@@ -370,9 +418,12 @@ def getDetails(fn, args):
         aginginterval = do_get(url)
         if (feature_status['ok'] and switch_status['ok'] and sessions['ok'] and aginginterval['ok']):
             if ((feature_status['content'] is not None) and (switch_status['content'] is not None)
-                and (sessions['content'] is not None) and (aginginterval['content'] is not None)):
+                and (sessions['content'] is not None)):
+                interval = {}
+                if aginginterval['content'] is not None:
+                    interval = aginginterval['content']
                 details['response'] = {'feature': 'dropmonitoring', 'feature_status': feature_status['content'],
-                        'switch_status': switch_status['content'], 'sessions': sessions['content'], 'aginginterval': aginginterval['content']}
+                        'switch_status': switch_status['content'], 'sessions': sessions['content'], 'aginginterval': interval}
         details['do_request'] = False
         details['ok'] = True
     elif fn == "show_dropmonitor_sessions":
@@ -437,90 +488,7 @@ def getDetails(fn, args):
         if (len(idsSet) != 0):
             diff = maxSet.difference(idsSet)
             currentid = list(random.sample(diff, 1))[0]
-        body = getBody(fn)%(data['name'], data['name'], currentid, data['priority'], data['ip_type'].upper(), data['smac'], data['dmac'], data['ethertype'], data['sip'], data['dip'], data['protocol'], data['sip'], data['dip'], data['protocol'], data['sport'], data['dport'])
-        details['body'] = json.loads(body)
-        if data['ip_type'] == "":
-            del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["config"]["ip-version"]
-            del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]
-            del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]
-        elif data['ip_type'] == "ipv4":
-            del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]
-            if data['sip'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]["config"]["source-address"]
-            if data['dip'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]["config"]["destination-address"]
-            if data['protocol'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]["config"]["protocol"]
-        elif data['ip_type'] == "ipv6":
-            del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]
-            if data['sip'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]["config"]["source-address"]
-            if data['dip'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]["config"]["destination-address"]
-            if data['protocol'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]["config"]["protocol"]
-        if ((data['smac'] == "") and (data['dmac'] == "") and (data['ethertype'] == "")):
-            del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["l2"]
-        else:
-            if data['smac'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["l2"]["config"]["source-mac"]
-            if data['dmac'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["l2"]["config"]["destination-mac"]
-            if data['ethertype'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["l2"]["config"]["ethertype"]
-        if ((data['sport'] == "") and (data['dport'] == "")):
-            del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["transport"]
-        else:
-            if data['sport'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["transport"]["config"]["source-port"]
-            if data['dport'] == "":
-                del details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["transport"]["config"]["destination-port"]
-       
-        try:
-            identity = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["config"]["id"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["config"]["id"]  = int(identity)
-        except KeyError:
-            pass
-        try:
-            priority = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["config"]["priority"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["config"]["priority"] = int(priority)
-        except KeyError:
-            pass
-        try:
-            ethertype = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["l2"]["config"]["ethertype"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["l2"]["config"]["ethertype"] = int(ethertype, 0)
-        except KeyError:
-            pass
-        try:
-            sport = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["transport"]["config"]["source-port"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["transport"]["config"]["source-port"] = int(sport)
-        except KeyError:
-            pass
-        try:
-            dport = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["transport"]["config"]["destination-port"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["transport"]["config"]["destination-port"] = int(dport)
-        except KeyError:
-            pass
-        try:
-            sip = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]["config"]["source-address"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]["config"]["source-address"] = sip+"/32"
-        except KeyError:
-            pass
-        try:
-            dip = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]["config"]["destination-address"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv4"]["config"]["destination-address"] = dip+"/32"
-        except KeyError:
-            pass
-        try:
-            sip = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]["config"]["source-address"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]["config"]["source-address"] = sip+"/128"
-        except KeyError:
-            pass
-        try:
-            dip = details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]["config"]["destination-address"]
-            details['body']["openconfig-tam:flowgroups"]["flowgroup"][0]["ipv6"]["config"]["destination-address"] = dip+"/128"
-        except KeyError:
-            pass
+        details['body'] = getFlowGroupDate(data, currentid)
     elif fn == "delete_flowgroup":
         details['url'] = flowgroups_url+'/flowgroup={}'.format(data['name'])
         details['description'] = "Flowgroup"
@@ -533,7 +501,6 @@ def getDetails(fn, args):
         details['url'] = attach_flowgroup_url+"=TAM,"+data['name']+"/IN_PORTS"
     else:
         details = None
- 
     return details
 
 def getResponse(details):
@@ -553,7 +520,7 @@ def invoke_api(fn, args):
     else:
         if details['do_request']:
             response = getResponse(details)
-            details['status_code'] = response.status_code
+            details['status_code'] = response.response.status_code
             details['ok'] = response.ok()
             details['response'] = response.content
             details['error_message'] = response.error_message()
@@ -566,13 +533,21 @@ def run(fn, args):
             if result['method'] == 'GET':
                 show_cli_output(result['template'], result['response'], **(helper_functions))
         else:
-            if 'description' in result:
-                #description = result['description'].split("%Error: ",1)[1]
-                description = result['description']
-                message = "\n{} '{}' not found.\n".format(description, result['name']) 
-                print message
+            if (result['status_code'] == 404):
+                if 'description' in result:
+                    description = result['description']
+                    if ("%Error:" not in description):
+                        description = "%Error: " + description
+                    message = "{} '{}' not found.".format(description, result['name'])
+                    print message
     else:
-        print "\n" + result['error_message'] + "\n"
+        message = result['error_message']
+        if ("%Error:" not in message):
+            message = "%Error: " + message
+        if "does not match" in message:
+            message = "%Error: Invalid input in the command."
+        print message
+    return 0
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

@@ -2,8 +2,7 @@
 {% if "openconfig-tam:flowgroups" in json_output %}
 {% set flowgroups = json_output['openconfig-tam:flowgroups']['flowgroup'] %}
 {% set allgroups = getFlowGroups(flowgroups) %}
-{{' '}}
-{% for key, value in allgroups.items() %}
+{% for key, value in allgroups.items()|sort %}
 Flow Group Name    : {{ key }}
    Id              : {{ value['id'] }}
    Priority        : {{ value['priority'] }}
@@ -34,16 +33,11 @@ Flow Group Name    : {{ key }}
 {% if 'ports' in value %}
    Ingress Intf    : {{  value['ports'] }}
 {% endif %}
-Packet Count       : 0
-{{' '}}
+{% if 'packets' in value %}
+   Packet Count    : {{ value['packets'] }}
+{% endif %}
 {% endfor %}
-{% else %}
-{{' '}}
-Flowgroups are not configured.
-{{' '}}
 {% endif %}
 {% else %}
-{{' '}}
-Flowgroups are not configured.
-{{' '}}
+%Error: Flowgroups are not configured.
 {% endif %}

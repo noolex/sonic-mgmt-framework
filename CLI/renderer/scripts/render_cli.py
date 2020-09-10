@@ -122,9 +122,10 @@ def _write(string, disable_page=False):
                     break
     return False
 
-def write(t_str):
+def write(t_str, continuation=False):
     global line_count
-    line_count = 0
+    if not continuation:
+        line_count = 0
     q = False
 
     render_init(0)
@@ -140,7 +141,7 @@ def write(t_str):
                 return True
     return False
 
-def show_cli_output(template_file, response, **kwargs):
+def show_cli_output(template_file, response, continuation=False, **kwargs):
     # Create the jinja2 environment.
     # Notice the use of trim_blocks, which greatly helps control whitespace.
 
@@ -164,4 +165,4 @@ def show_cli_output(template_file, response, **kwargs):
 
     if response is not None:
         t_str = (j2_env.get_template(template_file).render(json_output=response, **kwargs))
-        return write(t_str)
+        return write(t_str, continuation=continuation)
