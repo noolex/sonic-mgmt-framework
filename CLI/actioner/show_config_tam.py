@@ -66,7 +66,7 @@ def getIpType(type):
        return "ipv4"
 
 def getProtocol(proto):
-   if type == "6":
+   if proto == 6:
        return "TCP"
    else:
        return "UDP"
@@ -178,8 +178,6 @@ def show_tam_dropmonitor(DropmonitorCfg, AgingIntervalCfg):
             if 'sample-rate' in s:
                 CMDS_STRING += ' sampler ' + s['sample-rate']
             CMDS_STRING += "\n"
-    if (CMDS_STRING != ""):
-        CMDS_STRING = " drop-monitor\n" + CMDS_STRING
     return CMDS_STRING
 
 def show_tam_ifa(IfaCfg):
@@ -196,8 +194,6 @@ def show_tam_ifa(IfaCfg):
             if 'node-type' in i:
                 CMDS_STRING += ' node-type ' + i['node-type']
             CMDS_STRING += "\n"
-    if (CMDS_STRING != ""):
-        CMDS_STRING = " ifa\n" + CMDS_STRING
     return CMDS_STRING
 
 def show_tam_tailstamping(TailstampingCfg):
@@ -208,8 +204,6 @@ def show_tam_tailstamping(TailstampingCfg):
             if 'flowgroup' in t:
                 CMDS_STRING += ' flowgroup ' + t['flowgroup']
             CMDS_STRING += "\n"
-    if (CMDS_STRING != ""):
-        CMDS_STRING = " tail-stamping\n" + CMDS_STRING
     return CMDS_STRING
 
 def GetFeatureStatus(FeaturesCfg):
@@ -237,33 +231,37 @@ def show_tam_config(render_tables):
    tamCfg = get_tam_config_cmds(SwitchCfg, CollectorsCfg, SamplingrateCfg, FlowgroupCfg, AclRules)
    CMDS_STRING_TAM += tamCfg
 
-   dropMonitorCmds =  '!\n'
-   ifaCmds =  '!\n'
-   tailstampingCmds =  '!\n'
+   dropMonitorCmds =  ""
+   ifaCmds =  ""
+   tailstampingCmds =  ""
+   
    if ((len(DropmonitorCfg) != 0) or (len(AgingIntervalCfg) != 0)):
        dropMonitorCmds += show_tam_dropmonitor(DropmonitorCfg, AgingIntervalCfg)
-       if 'DROPMONITOR' in featuresCfg:
-           if (featuresCfg['DROPMONITOR'] == "ACTIVE"):
-               dropMonitorCmds += '  enable\n'
+   if 'DROPMONITOR' in featuresCfg:
+       if (featuresCfg['DROPMONITOR'] == "ACTIVE"):
+           dropMonitorCmds += '  enable\n'
+
+   if (dropMonitorCmds != ""):
+        CMDS_STRING_TAM += '!' + "\n" + " drop-monitor"+"\n"+dropMonitorCmds + "\n"
+   
    if (len(IfaCfg) != 0):
        ifaCmds += show_tam_ifa(IfaCfg)
-       if 'IFA' in featuresCfg:
-           if (featuresCfg['IFA'] == "ACTIVE"):
-               ifaCmds += '  enable\n'
+   if 'IFA' in featuresCfg:
+       if (featuresCfg['IFA'] == "ACTIVE"):
+           ifaCmds += '  enable\n'
+   
+   if (ifaCmds != ""):
+        CMDS_STRING_TAM += '!' + "\n" + " ifa"+"\n"+ifaCmds + "\n"
+   
    if (len(TailstampingCfg) != 0):
        tailstampingCmds += show_tam_tailstamping(TailstampingCfg)
-       if 'TAILSTAMPING' in featuresCfg:
-           if (featuresCfg['TAILSTAMPING'] == "ACTIVE"):
-               tailstampingCmds += '  enable\n'
+   if 'TAILSTAMPING' in featuresCfg:
+       if (featuresCfg['TAILSTAMPING'] == "ACTIVE"):
+           tailstampingCmds += '  enable\n'
 
-   if (dropMonitorCmds != "") or (ifaCmds != "") or (tailstampingCmds != ""):
-       if (dropMonitorCmds != ""):
-           CMDS_STRING_TAM += dropMonitorCmds
-       if (ifaCmds != ""):
-           CMDS_STRING_TAM += ifaCmds
-       if (tailstampingCmds != ""):
-           CMDS_STRING_TAM += tailstampingCmds
-    
+   if (tailstampingCmds != ""):
+        CMDS_STRING_TAM += '!' + "\n" + " tail-stamping"+"\n"+tailstampingCmds + "\n"
+
 
    return 'CB_SUCCESS', CMDS_STRING_TAM
 
