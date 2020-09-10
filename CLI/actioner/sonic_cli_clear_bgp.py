@@ -45,12 +45,11 @@ def clear_bgp_api(args):
    if args[3] == 'cleartype=ip-prefix':
        # clear bgp ipv4/v6 unicast <ipv4-prefix/v6-prefix>
        # replace keyword unicast with prefix
-       if args[6] == 'dampening':
-          dampening = True
-          args[6] = 'prefix'
-       else:
-          args[7] = 'prefix'
-          
+       args[8] = 'prefix'
+
+   if args[5] == 'clearall':
+       clearall = True
+ 
    i = 6
    for arg in args[6:]:
         if "vrf" == arg:
@@ -68,10 +67,7 @@ def clear_bgp_api(args):
         elif "evpn" == arg:
            af = "EVPN"
         elif "*" == arg:
-           if len(args) > 7:
-              cinall = True
-           else:
-              clearall = True
+           cinall = True
         elif "external" == arg:
            external = True
         elif "dampening" == arg:
@@ -105,7 +101,10 @@ def clear_bgp_api(args):
       address = nipv6ip
    keypath = cc.Path('/restconf/operations/sonic-bgp-clear:clear-bgp')
    if clearall == True:
-      body = {"sonic-bgp-clear:input": { "clear-all": clearall}}
+      if asnval != "":
+          body = {"sonic-bgp-clear:input": { "clear-all": clearall, "vrf-name": vrfname, "all": cinall, "address": address, "interface": ifname, "asn": int(asnval), "prefix": prefixip, "peer-group": pg, "external": external, "in": cin, "out": cout, "soft": soft}}
+      else:
+          body = {"sonic-bgp-clear:input": { "clear-all": clearall, "vrf-name": vrfname, "all": cinall, "dampening": dampening, "address": address, "interface": ifname, "prefix": prefixip, "peer-group": pg, "external": external, "in": cin, "out": cout, "soft": soft}}
    elif asnval != "":
       body = {"sonic-bgp-clear:input": { "vrf-name": vrfname, "family": af, "all": cinall, "address": address, "interface": ifname, "asn": int(asnval), "prefix": prefixip, "peer-group": pg, "external": external, "in": cin, "out": cout, "soft": soft}}
    else:

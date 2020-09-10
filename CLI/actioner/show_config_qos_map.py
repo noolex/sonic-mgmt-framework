@@ -60,7 +60,10 @@ def qos_map_dscp_tc_cb(render_tables):
             continue
 
         if map_name == '':
-            cmd_str += '!;' + 'qos map dscp-tc ' + map['name'] + ';'
+            if cmd_str != '':
+                cmd_str += '!;'
+
+            cmd_str += 'qos map dscp-tc ' + map['name'] + ';'
 
     
         entries = map['dscp-map-entries']['dscp-map-entry']
@@ -113,7 +116,10 @@ def qos_map_dot1p_tc_cb(render_tables):
             continue
 
         if map_name == '':
-            cmd_str += '!;' + 'qos map dot1p-tc ' + map['name'] + ';'
+            if cmd_str != '':
+                cmd_str += '!;'
+
+            cmd_str += 'qos map dot1p-tc ' + map['name'] + ';'
 
     
         entries = map['dot1p-map-entries']['dot1p-map-entry']
@@ -162,7 +168,10 @@ def qos_map_tc_queue_cb(render_tables):
             continue
 
         if map_name == '':
-            cmd_str += '!;' + 'qos map tc-queue ' + map['name'] + ';'
+            if cmd_str != '':
+                cmd_str += '!;'
+
+            cmd_str += 'qos map tc-queue ' + map['name'] + ';'
 
     
         entries = map['forwarding-group-queue-map-entries']['forwarding-group-queue-map-entry']
@@ -208,7 +217,10 @@ def qos_map_tc_pg_cb(render_tables):
             continue
 
         if map_name == '':
-            cmd_str += '!;' + 'qos map tc-pg ' + map['name'] + ';'
+            if cmd_str != '':
+                cmd_str += '!;'
+
+            cmd_str += 'qos map tc-pg ' + map['name'] + ';'
 
     
         entries = map['forwarding-group-priority-group-map-entries']['forwarding-group-priority-group-map-entry']
@@ -254,7 +266,10 @@ def qos_map_pfc_queue_cb(render_tables):
             continue
 
         if map_name == '':
-            cmd_str += '!;' + 'qos map pfc-priority-queue ' + map['name'] + ';'
+            if cmd_str != '':
+                cmd_str += '!;'
+
+            cmd_str += 'qos map pfc-priority-queue ' + map['name'] + ';'
 
     
         entries = map['pfc-priority-queue-map-entries']['pfc-priority-queue-map-entry']
@@ -300,7 +315,10 @@ def qos_map_tc_dscp_cb(render_tables):
             continue
 
         if map_name == '':
-            cmd_str += '!;' + 'qos map tc-dscp ' + map['name'] + ';'
+            if cmd_str != '':
+                cmd_str += '!;'
+
+            cmd_str += 'qos map tc-dscp ' + map['name'] + ';'
 
     
         entries = map['forwarding-group-dscp-map-entries']['forwarding-group-dscp-map-entry']
@@ -347,7 +365,10 @@ def qos_map_tc_dot1p_cb(render_tables):
             continue
 
         if map_name == '':
-            cmd_str += '!;' + 'qos map tc-dot1p ' + map['name'] + ';'
+            if cmd_str != '':
+                cmd_str += '!;'
+
+            cmd_str += 'qos map tc-dot1p ' + map['name'] + ';'
 
     
         entries = map['forwarding-group-dot1p-map-entries']['forwarding-group-dot1p-map-entry']

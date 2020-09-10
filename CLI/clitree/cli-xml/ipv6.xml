@@ -505,7 +505,7 @@ limitations under the License.
             elif test -n "${address}"; then&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 address ${address} ${__full_line}&#xA;
             elif test -n "${summary}"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route_summary show_ip_route_summary_rpc.j2 ${__full_line}&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route_summary show_ip_route_summary_rpc.j2 ${__line}&#xA;
             else&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 ${__full_line}&#xA;
             fi&#xA;

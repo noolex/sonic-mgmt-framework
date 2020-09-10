@@ -141,15 +141,48 @@ limitations under the License.
         <PARAM name="peer-group-name" help="Name of peer-group" ptype="STRING_63" optional="true"/>
       </PARAM>
       <PARAM name="neighbors" help="Detailed information on BGP neighbors" ptype="SUBCOMMAND" mode="subcommand">
+       <PARAM name="neighbor_type" help="BGP all subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
         <PARAM name="neighbor-ip" help="Display one particular BGP neighbor" ptype="IPV4V6_ADDR" optional="true"/>
+        <PARAM name="interface" help="Interface to display Neighbor information about" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="neighbor-interface" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="Ethernet" help="Ethernet Interface to display BGP Neighbor information" ptype="PHY_INTERFACE" mode="subcommand"/>
+            <PARAM name="PortChannel" help="PortChannel to display BGP Neighbor information" ptype="PO_INTERFACE" mode="subcommand"/>
+            <PARAM name="Vlan" help="Vlan to display BGP Neighbor information" ptype="VLAN_INTERFACE" mode="subcommand"/>
+          </PARAM>
+        </PARAM>
+       </PARAM>
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${peer-group-name} ${neighbor-ip}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow ${vrf-name} ${__cmd} &#xA; ${querytype} ${peer-group-name} ${neighbor_type} ${__line}</ACTION>
   </COMMAND>
   <COMMAND name="clear bgp" help="Clear BGP"/>
+  <COMMAND name="clear bgp all" help="Clear BGP all address-families">
+    <MACRO name="NEW_BGP_CLR_ALL_OPTIONS" arg=""></MACRO>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ipv4} n-ipv6=${ipv6} cleartype=${cleartype} dampopt=${damptype} clearall ${__full_line}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command clears/resets all BGP information including neighbors,
+        peer-group etc.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to clear BGP information. Following is a partial list of
+        information with command syntax that can be cleared.
+        - clear bgp all *
+          This command clears all BGP neighbors in the all address-families activated
+        - clear bgp all A.B.C.D/A::B
+          Clear peers with address of peer_ip and this address-family activated.
+        - clear bgp all A.B.C.D/A::B soft {in | out}
+          'in" option will send route-refresh request unless using 'soft-reconfiguration inbound.
+          'out' option will resend all outbound updates
+      </USAGE>
+      <EXAMPLE summary="Below command resets a BGP neighbor 14.14.14.1">
+        leaf4# clear bgp all 14.14.14.1
+      </EXAMPLE>
+    </DOCGEN>
+  </COMMAND>
   <COMMAND name="clear bgp ipv4" help="Clear BGP IPv4">
-    <MACRO name="NEW_BGP_CLR_OPTIONS" arg="4,,IPV4_ADDR_ABC"></MACRO>
-    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ip-addr} n-ipv6= cleartype=${cleartype} ${__full_line}</ACTION>
+    <MACRO name="NEW_BGP_CLR_OPTIONS" arg="4"></MACRO>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ipv4-addr} n-ipv6=${ipv6-addr} cleartype=${cleartype} dampopt=${damptype} ${__full_line}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command clears/resets BGP information including neighbors,
@@ -175,8 +208,8 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="clear bgp ipv6" help="Clear BGP IPv6">
-    <MACRO name="NEW_BGP_CLR_OPTIONS" arg="6,V6,IPV6_ADDR"></MACRO>
-    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4= n-ipv6=${ip-addr} cleartype=${cleartype} ${__full_line}</ACTION>
+    <MACRO name="NEW_BGP_CLR_OPTIONS" arg="6"></MACRO>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ipv4-addr} n-ipv6=${ipv6-addr} cleartype=${cleartype} dampopt=${damptype} ${__full_line}</ACTION>
   </COMMAND>
 </VIEW>
 
@@ -667,7 +700,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/fast_external_failover">
+  <COMMAND name="fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_fast_external_failover ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -687,7 +720,7 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
   <COMMAND name="network" help="Check BGP network route exists in IGP"/>
-  <COMMAND name="network import-check" help="" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/network_import_check">
+  <COMMAND name="network import-check" help="">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_network_import_check ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1190,11 +1223,11 @@ limitations under the License.
   <COMMAND name="no default subgroup-pkt-queue-max" help="Subgroup-pkt-queue-max">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_global_defaults_config_subgroup_pkt_queue_max ${vrf-name}</ACTION>
   </COMMAND>
-  <COMMAND name="no fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down">
+  <COMMAND name="no fast-external-failover" help="Immediately reset session if a link to a directly connected external peer goes down" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/fast_external_failover=false">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_fast_external_failover ${vrf-name} False</ACTION>
   </COMMAND>
   <COMMAND name="no network" help="Check BGP network route exists in IGP"/>
-  <COMMAND name="no network import-check" help="">
+  <COMMAND name="no network import-check" help="" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/network_import_check=false">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_network_import_check ${vrf-name} False</ACTION>
   </COMMAND>
   <COMMAND name="no route-map" help="Time in secs to wait before processing route-map changes"/>

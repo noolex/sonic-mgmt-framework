@@ -484,13 +484,18 @@ def run(func, args):
             if args[0] == "":
                 return 1
             iflist = args[0].rstrip().split(',') 
+            get_response = []
+            response = {}
             for intf in iflist:
                 func = "get_openconfig_interfaces_interfaces_interface"
                 intfargs = [intf]+args[1:]
                 response = invoke_api(func, intfargs)
-                if check_response(response, func, intfargs):
-                    print "%Error: Interface: "+intf
-            return
+                if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
+                    get_response.append(response.content['openconfig-interfaces:interface'][0])
+            if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
+                response.content['openconfig-interfaces:interface'] = get_response
+                return check_response(response, func, intfargs)
+            return 0
         elif func == 'default_port_config_range':
             api = cc.ApiClient()
             iflistStr = args[0].split("=")[1]

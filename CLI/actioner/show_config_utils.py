@@ -16,7 +16,7 @@ formatter = logging.Formatter(log_format)
 sh  = logging.handlers.SysLogHandler()
 sh.setFormatter(formatter)
 log.addHandler(sh)
-log.setLevel('WARN')
+log.setLevel('ERROR')
 
 
 cmdlist = []

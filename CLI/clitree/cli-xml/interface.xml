@@ -92,7 +92,7 @@ limitations under the License.
             <PARAM
                name="iface_num"
                help="Physical Interface"
-               ptype="UINT"
+               ptype="UINT16"
                optional="true">
             </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${phy-if-ethernet-name}" </ACTION>
@@ -330,13 +330,13 @@ limitations under the License.
             fi&#xA;
         elif test "${if-subcommands}" = "Eth"; then&#xA;
             if test "${iface_num}" = ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py get_all_ethernet show_interface_id.j2 ${__full_line}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_if_range "${ethiflist_aliasNum}" show_interface_id.j2 ${__full_line}&#xA;
             fi&#xA;
         elif test "${if-subcommands}" = "Ethernet"; then&#xA;
             if test "${iface_num}" = ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py get_all_ethernet show_interface_id.j2 ${__full_line}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_if_range "${ethiflist_nativeNum}" show_interface_id.j2  ${__full_line}&#xA;
             fi&#xA;
@@ -761,13 +761,14 @@ limitations under the License.
 
         <COMMAND
             name="description"
+            escape_chars=""
             help="Textual description">
             <PARAM
                 name="desc"
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+	    <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1033,7 +1034,7 @@ limitations under the License.
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-loopback:sonic-loopback/LOOPBACK/LOOPBACK_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${lo_name} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1089,7 +1090,7 @@ limitations under the License.
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${vlan_name} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1218,7 +1219,7 @@ limitations under the License.
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${po_name} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1436,7 +1437,7 @@ limitations under the License.
                 help="Textual description of the interface"
                 ptype="STRING"
                 dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/MGMT_PORT_LIST/description" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"

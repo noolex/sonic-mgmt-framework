@@ -73,7 +73,7 @@ clear counters [interface <interface>]
                                 <PARAM
                                     name="ifId"
                                     help="Physical Interface"
-                                    ptype="UINT"
+                                    ptype="UINT16"
                                     optional="true"
                                     >
                                 </PARAM>
@@ -93,7 +93,7 @@ clear counters [interface <interface>]
                             </PARAM>
                         </PARAM>
                  </PARAM>
-            <ACTION builtin="clish_pyobj">sonic-cli-counters rpc_sonic_interface_clear_counters ${interface-switch}${ifId}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic-cli-counters rpc_interfaces_clear_counters ${interface-switch}${ifId}</ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>

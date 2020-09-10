@@ -86,7 +86,9 @@ def invoke(func, args):
 def run(func, args):
     try:
         api_response = invoke(func,args)
-
+        if api_response.errors():
+            print api_response.error_message()
+            return
         if api_response.ok():
             response = api_response.content
             if response is not None and len(response) is not 0:

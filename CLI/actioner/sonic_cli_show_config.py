@@ -195,12 +195,13 @@ class cli_xml_view:
         #All table keys for this view. for e.g. for config-router-bgp: vrfname=*, ip-prfx=*
         #Data represented as "view-keys" tag in the xml.
         self.table_keys = collections.OrderedDict()
-        for keyVal in command_line[CONFIG_VIEW_TABLE_KEYS_IDX].split(','):
-            if len(keyVal.split("=")) != 2:
-               log.warning("cli_xml_view init: Invalid key format; skip this key {}" .format(keyVal))
-               continue
+        if command_line[CONFIG_VIEW_TABLE_KEYS_IDX]:
+            for keyVal in command_line[CONFIG_VIEW_TABLE_KEYS_IDX].split(','):
+                if len(keyVal.split("=")) != 2:
+                   log.warn("cli_xml_view init: Invalid key format; skip this key {}" .format(keyVal))
+                   continue
 
-            self.table_keys.update({keyVal.split("=")[0]:keyVal.split("=")[1]})
+                self.table_keys.update({keyVal.split("=")[0]:keyVal.split("=")[1]})
 
         #List of all tables to be accessed for this view. This aggregated while parsing every command for the view.
         #Primary table is added to this list.
@@ -211,7 +212,7 @@ class cli_xml_view:
         self.table_list = list(filter(None, table_lst))
 
         if not self.table_list:
-            log.warn("cli_xml_view init: table list length zero for view {}" .format(self.name))
+            log.debug("cli_xml_view init: table list length zero for view {}" .format(self.name))
         else:
             #Primary table for this view. for e.g. "sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/vrf_name={vrf-name}"
             #Data represented as "view_table" tag in the xml.
@@ -520,20 +521,21 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
 
     if cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX]:
         log.debug('cmd_keys tag {}' .format(cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX]))
-        for cmd_key in cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX].split(','):
-            cmd_key_lst = cmd_key.split("=")
-            if len(cmd_key_lst) != 2:
-                log.warning("Invalid key format; skip this key {}, view_name {}, key_tag {}" \
-                    .format(cmd_key, view.name, cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX]))
-                continue
-            #remove invalid keys
-            key = cmd_key_lst[0].lstrip()
-            value = cmd_key_lst[1].rstrip()
+        if cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX]:
+            for cmd_key in cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX].split(','):
+                cmd_key_lst = cmd_key.split("=")
+                if len(cmd_key_lst) != 2:
+                    log.warning("Invalid key format; skip this key {}, view_name {}, key_tag {}" \
+                        .format(cmd_key, view.name, cmd_line_parts[CONFIG_VIEW_SEC_TABLE_KEYS_IDX]))
+                    continue
+                #remove invalid keys
+                key = cmd_key_lst[0].lstrip()
+                value = cmd_key_lst[1].rstrip()
 
-            if value is None or value == '*' or len(value.split('/')) >1:
-                log.debug("command key invalid {} for view {}, skip key " .format(cmd_key, view))
-                continue
-            member_keys.update({key:value})
+                if value is None or value == '*' or len(value.split('/')) >1:
+                    log.debug("command key invalid {} for view {}, skip key " .format(cmd_key, view))
+                    continue
+                member_keys.update({key:value})
 
 
     if db_render_callback:

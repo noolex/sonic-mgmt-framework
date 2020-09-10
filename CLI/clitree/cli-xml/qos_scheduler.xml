@@ -238,7 +238,7 @@ limitations under the License.
         >
         <PARAM
             name="bc"
-            help="256-128000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
+            help="250-125000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
             ptype="QUEUE_BURST"
             >
         </PARAM>
@@ -279,7 +279,7 @@ limitations under the License.
         >
         <PARAM
             name="be"
-            help="256-128000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
+            help="250-125000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
             ptype="QUEUE_BURST"
             >
         </PARAM>
@@ -317,7 +317,7 @@ limitations under the License.
         >
         <PARAM
             name="pir"
-            help="0 - 400000000 Kilo bits per second"
+            help="32 - 400000000 Kilo bits per second"
             ptype="CIR_PIR_KBPS"
             >
         </PARAM>
