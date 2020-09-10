@@ -2,10 +2,9 @@
 {% if "openconfig-tam:ifa-sessions" in json_output %}
 {% set sessions = json_output['openconfig-tam:ifa-sessions']['ifa-session'] %}
 {% if sessions|length > 0 %}
-{{' '}}
 Name           Flow Group          Collector          Sampler           Node Type
 -----------    ----------------    --------------     -------------     ----------
-{% for session in sessions %}
+{% for session in sessions|sort(attribute='name') %}
 {% set session_state = session["state"] %}
 {% if session_state["node-type"] == "INGRESS" %}
 {% set node_type = "Ingress" %}
@@ -14,16 +13,20 @@ Name           Flow Group          Collector          Sampler           Node Typ
 {% else %}
 {% set node_type = "Intermediate" %}
 {% endif %}
-{{'%-15s'|format(session_state["name"])}}{{'%-20s'|format(session_state["flowgroup"])}}{{'%-19s'|format(session_state["collector"])}}{{'%-18s'|format(session_state["sample-rate"])}}{{'%-20s'|format(node_type)}}
-{% endfor %} 
+{% if "collector" in session_state %}
+{% set collector = session_state["collector"] %}
 {% else %}
-{{' '}}
-Sessions are not configured.
-{{' '}}
+{% set collector = "-" %}
+{% endif %}
+{% if "sample-rate" in session_state %}
+{% set sampler = session_state["sample-rate"] %}
+{% else %}
+{% set sampler = "-" %}
+{% endif %}
+{{'%-15s'|format(session_state["name"])}}{{'%-20s'|format(session_state["flowgroup"])}}{{'%-19s'|format(collector)}}{{'%-18s'|format(sampler)}}{{'%-20s'|format(node_type)}}
+{% endfor %}
 {% endif %}
 {% endif %}
 {% else %}
-{{' '}}
-Sessions are not configured.
-{{' '}}
+%Error: Sessions are not configured.
 {% endif %}

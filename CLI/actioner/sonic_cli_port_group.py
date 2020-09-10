@@ -29,6 +29,7 @@ def invoke(func, args):
                      resp.content[pg['id']] = pg['state']
                 else:
                     break
+            resp.content = OrderedDict(sorted(resp.content.iteritems(), key=lambda x: int(x[0])))
         if (resp is not None) or (not resp.content) or (len(resp.content)<1):
             resp.set_error_message("Port-group is not supported")
         return resp

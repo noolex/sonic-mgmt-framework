@@ -18,7 +18,12 @@ def show(args):
     body = None
     aa = cc.ApiClient()
     keypath = cc.Path('/restconf/data/sonic-storm-control:sonic-storm-control/PORT_STORM_CONTROL/PORT_STORM_CONTROL_LIST')
-    response = aa.get(keypath)
+    api_response = aa.get(keypath)
+    if api_response.ok() == False:
+        return
+    response = api_response.content
+    if not response:
+        return
     if (arg_length == 1):
         show_cli_output(args[0],response)
     else:

@@ -2,13 +2,7 @@
 {% if "openconfig-tam:sampler" in json_output %}
 {% set samplers = json_output['openconfig-tam:sampler'] %}
 {% set sampler = samplers[0]['state'] %}
-{{' '}}
 Name          : {{sampler['name']}} 
 Sample Rate   : {{sampler['sampling-rate']}}
-{{' '}}
 {% endif %}
-{% else %}
-{{' '}}
-Sampler is not configured.
-{{' '}}
 {% endif %}

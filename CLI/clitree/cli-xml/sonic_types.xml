@@ -483,8 +483,26 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="DOMAIN_NAME_OR_IPADDR"
+        pattern="^((([a-zA-Z0-9_]([a-zA-Z0-9_\-]){0,61})?[a-zA-Z0-9]\.)*([a-zA-Z0-9_]([a-zA-Z0-9_\-]){0,61})?[a-zA-Z0-9]\.?)$|^\.$|(&IPV4_OR_IPV6_ADDR_PATTERN;)"
+        help="WORD"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="VRF_OR_DEFAULT"
         pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(default)$"
+        help="WORD"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="VRF_OR_MGMT"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(mgmt)$"
+        help="WORD"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="VRF"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$"
         help="WORD"
         />
     <!--=======================================================-->
@@ -553,6 +571,12 @@ limitations under the License.
     <PTYPE
         name="STRING_20"
         pattern="(^([a-zA-Z0-9_-]){1,20})$"
+        help="String(Max: 20 characters)"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="STRING_24"
+        pattern="(^([a-zA-Z0-9_-]){1,24})$"
         help="String(Max: 20 characters)"
         />
     <!--=======================================================-->
@@ -637,6 +661,13 @@ limitations under the License.
         method="select"
         pattern="FC RS off"
         help="FEC (forward error correction) mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="INTF_UNRELIABLE_LOS"
+        method="select"
+        pattern="auto on off"
+        help="Unreliable LOS mode"
         />
     <!--=======================================================-->
     <PTYPE

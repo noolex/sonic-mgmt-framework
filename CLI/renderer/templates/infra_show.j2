@@ -1,4 +1,10 @@
 {% for key,value in json_output.items() %}
+{% if 'openconfig-system-ext:show-user-list' == key %}
+{% for item in value %}
+{{ item }}
+{% endfor %}
+{% else %}
 {{value}}
+{% endif %}
 {% endfor %}
 

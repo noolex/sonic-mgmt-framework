@@ -9,7 +9,7 @@
 
 {% set ip_sla_entry = ipslaoutput['ip-sla'] %}
 
-{% for ip_sla_instance in ip_sla_entry %}
+{% for ip_sla_instance in ip_sla_entry | sort(attribute="ip-sla-id") %}
 
 {% set sla_config = ip_sla_instance['config'] %}
 {% set sla_state = ip_sla_instance['state'] %}

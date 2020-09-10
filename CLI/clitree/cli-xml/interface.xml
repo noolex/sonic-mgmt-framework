@@ -320,14 +320,6 @@ limitations under the License.
                     optional="true"
                     >
                  </PARAM>
-                 <PARAM
-                     name="params"
-                     help="Operating parameters"
-                     ptype="SUBCOMMAND"
-                     mode="subcommand"
-                     optional="true"
-                     >
-                  </PARAM>
           </PARAM>
          </PARAM>
    <ACTION>
@@ -855,6 +847,21 @@ limitations under the License.
             name="no fec"
             help="Set default FEC (forward error correction) configuration">
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec ${iface} default</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="unreliable-los"
+            help="Configure unreliable LOS mode">
+            <PARAM
+                name="los"
+                help="Unreliable LOS mode configuration"
+                dbpath="sonic-port:sonic-port/PORT/PORT_LIST/override_unreliable_los"
+                ptype="INTF_UNRELIABLE_LOS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} ${los}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no unreliable-los"
+            help="Set default unreliable LOS mode configuration">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} default</ACTION>
         </COMMAND>
         <COMMAND
             name="channel-group"
@@ -1593,6 +1600,17 @@ limitations under the License.
         <MACRO name="INTF_MTU" arg="${iflist}"></MACRO>
         <MACRO name="INTF_RANGE_SHUT_DESCR" arg="${iflist}"></MACRO>
 	<MACRO name="INTF_RNG_AGGREGATE_SWITCHPORT" arg="${iflist}"></MACRO>
+
+        <COMMAND
+            name="graceful-shutdown"
+            help="Enable graceful shutdown for the portchannels">
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=${iflist} graceful_shutdown_enabled True</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no graceful-shutdown"
+            help="Disable graceful shutdown for the portchannels">
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=${iflist} graceful_shutdown_enabled False</ACTION>
+        </COMMAND>
 
     </VIEW>
 
