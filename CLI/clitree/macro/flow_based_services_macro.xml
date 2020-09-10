@@ -62,12 +62,12 @@
     </MACRODEF>
 
     <MACRODEF name="CLASSIFIER-DESCRIPTION">
-        <COMMAND name="description" help="Configure classifier description">
+        <COMMAND name="description" help="Configure class-map description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_description ${fbs-class-name} ${description-value}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no description" help="Clear classifier description">
+        <COMMAND name="no description" help="Clear class-map description">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_description ${fbs-class-name}</ACTION>
         </COMMAND>
     </MACRODEF>
