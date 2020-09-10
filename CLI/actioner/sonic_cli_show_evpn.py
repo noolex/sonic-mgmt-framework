@@ -22,7 +22,7 @@ from scripts.render_cli import show_cli_output
 import os
 
 def run(func, args):
-    full_cmd = os.getenv('USER_COMMAND', None).split('|')[0]
+    full_cmd = os.getenv('USER_COMMAND', None).split('|')[0].lstrip('do ')
     if func == "get_evpn":
         keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp-evpn')
         body = {"sonic-bgp-show:input": { "cmd":full_cmd }}
