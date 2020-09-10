@@ -10,6 +10,7 @@ default_protocol_string = {
 def show_ip_helper_address(render_tables):
     cmd_str = ''
     cmd_prfx = 'ip helper-address '
+    intfdata = []
     if 'sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST' in render_tables:
         intfdata = render_tables['sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST']
         key = 'portname'
