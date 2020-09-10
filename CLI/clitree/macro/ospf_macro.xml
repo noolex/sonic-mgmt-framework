@@ -11,6 +11,23 @@
 <MACRODEF name="BIND-INTF-TO-OSPF">
 
     <COMMAND name = "ip ospf" help = "Configures OSPFv2 interface mode parameters" command_keys="name=*,address=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE/OSPFV2_INTERFACE_LIST/name={name},address={address}" render_command_cb='interface_ip_ospf'>
+      <ACTION> </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 parameters within an IPv4 interface.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 parameters under an IPv4 interface. IPv4 interface
+          can be Ethernet interface, VLAN interface, Portchannel interface or a Loopback interface.
+          Every OSPFv2 parameter on an interface can be associated with its specific IPv4 addresss
+          by explicitely specifying the IPv4 address after the parameter. Specifying interface IPv4
+          address is an optional.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 parameters within an IPv4 interface" >
+          sonic-cli(config-router-ospf)# no ip ospf interface
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name = "no ip ospf" help = "Unconfigures OSPFv2 interface mode parameters" >
@@ -18,6 +35,19 @@
 
     <COMMAND name = "no ip ospf interface" help = "Unconfigures all OSPFv2 parameters in the interfaces" >
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_unconfig ${iface} ${vlan_name} ${po_name} ${lo_name} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unconfigures all OSPFv2 parameters within an IPv4 interface.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigures all OSPFv2 parameters under an IPv4 interface. IPv4 interface
+          can be Ethernet interface, VLAN interface, Portchannel interface or a Loopback interface.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures all OSPFv2 parameters in the interfaces" >
+          sonic-cli(config-router-ospf)# no ip ospf interface
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
 
@@ -26,11 +56,40 @@
          <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR"  optional="true" />
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_area_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${area-id} ${ip-address}  &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface area identifier.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to associate an interface into an OSPFv2 area. Area identifier
+          can be configured only when there is an already configured OSPFv2 router within the
+          interface VRF and there are no network commands configured within that router.
+          Area identifier configuration on an interface will get auto unconfigured while
+          OSPFv2 router gets unconfigured from the VRF.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 interface area identifier" >
+          sonic-cli(config-router-ospf)# ip ospf area 19
+          sonic-cli(config-router-ospf)# ip ospf area 19.0.0.1
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf area" help="Unconfigures OSPFv2 area identifier" >
          <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR"  optional="true" />
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_area_id ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unconfigures OSPFv2 interface area identifier.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigure OSPFv2 interface area identifier.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface area identifier" >
+          sonic-cli(config-router-ospf)# no ip ospf
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="ip ospf authentication" help="Enable OSPFv2 authentication" >
@@ -38,12 +97,30 @@
           <PARAM name="message-digest" help="Message digest authentication type" ptype="SUBCOMMAND" mode="subcommand" >
              <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
           </PARAM>
-          <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand"> 
+          <PARAM name="null" help="Use null authentication" ptype="SUBCOMMAND" mode="subcommand">
              <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
           </PARAM>
-        </PARAM>    
-        <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" /> 
+        </PARAM>
+        <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${authtype} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface authentication type.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to enable OSPFv2 authentication type for OSPFv2 messages.
+          Authentocation types can be clear text authentication, message-digest authentication
+          or no authentication. Interface mode authentication type would override router mode
+          area authentication type. Based on the configured authentication type, corresponding
+          configured authentication key would be used for OPSFV2 message authentication.
+        </USAGE>
+        <EXAMPLE summary="Enable OSPFv2 authentication" >
+          sonic-cli(config-router-ospf)# ip ospf authentication
+          sonic-cli(config-router-ospf)# ip ospf authentication message-digest
+          sonic-cli(config-router-ospf)# ip ospf authentication null
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf authentication" help="Disable OSPFv2 authentication" >
@@ -57,41 +134,131 @@
         </PARAM>
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${authtype} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unconfigures OSPFv2 interface authentication type.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigure OSPFv2 interface authentication type.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface authentication type" >
+          sonic-cli(config-router-ospf)# no ip ospf authentication
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
-  
+
     <COMMAND name="ip ospf authentication-key" help="Configures OSPFv2 plain text authentication type password" escape_chars="">
       <PARAM name="authkey" help="Authentication password" ptype="STRING">
-        <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true" hidden="true">
             <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
         </PARAM>
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key ${iface} ${vlan_name} ${po_name} ${lo_name} ${authkey} ${encrypted} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface clear text authentication key.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 clear text authentication key. Clear text
+          authentication key can be up to eight characters long. User provided actual
+          password will be displayed as encrypted string in show configuration comamnd
+          displays and saved as encrypted string in configuration file. It is recomended
+          to use only actual password and not to use encrypted string as password.
+        </USAGE>
+        <EXAMPLE summary="Enable OSPFv2 authentication" >
+          sonic-cli(config-router-ospf)# ip ospf authentication-key pa$$woRd
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf authentication-key" help="Unconfigures OSPFv2 plain text authentication type password" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unconfigures OSPFv2 interface clear text authentication key.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigure OSPFv2 interface clear text authentication key.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface clear text authentication key" >
+          sonic-cli(config-router-ospf)# no ip ospf authentication
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
-  
+
     <COMMAND name="ip ospf bfd" help="Configures OSPFv2 interface BFD" >
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_bfd ${iface} ${vlan_name} ${po_name} ${lo_name} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface BFD.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 interface BFD. Enabling BFD will
+          establish a BFD session between the OSPF neighbors. Any failure in BFD
+          session will bring down the OSPFv2 session.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 interface BFD" >
+          sonic-cli(config-router-ospf)# ip ospf bfd
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf bfd" help="Unconfigures OSPFv2 interface BFD" >
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_bfd ${iface} ${vlan_name} ${po_name} ${lo_name} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unconfigures OSPFv2 interface BFD.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigure OSPFv2 interface BFD.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface BFD" >
+          sonic-cli(config-router-ospf)# no ip ospf bfd
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
- 
+
     <COMMAND name="ip ospf cost" help="Configures OSPFv2 interface cost" >
       <PARAM name="interface-cost" help="Cost value" ptype="RANGE_1_65535" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_cost ${iface} ${vlan_name} ${po_name} ${lo_name} ${interface-cost} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface cost.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 interface cost.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 interface cost" >
+          sonic-cli(config-router-ospf)# ip ospf cost 38
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf cost" help="Unconfigures OSPFv2 interface cost" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_cost ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unconfigures OSPFv2 interface cost.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigure OSPFv2 interface BFD.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface cost" >
+          sonic-cli(config-router-ospf)# no ip ospf cost
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
 
@@ -123,24 +290,48 @@
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_dead_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${deadtype} ${ip-address} &#xA;</ACTION>
     </COMMAND>
+
     <COMMAND name="ip ospf hello-interval" help="Configures OSPFv2 neighbour hello interval" >
       <PARAM name="hellointerval" help="Time in seconds" ptype="RANGE_1_65535" optional="true">
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${hellointerval} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface neighbour hello interval.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 interface neighbour hello interval.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 interface neighbour hello interval" >
+          sonic-cli(config-router-ospf)# ip ospf thello-interval 20
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf hello-interval" help="Unconfigures OSPFv2 neighbour hello interval" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_interval ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
-
+      <DOCGEN>
+        <DESCRIPTION>
+          Unonfigures OSPFv2 neighbour hello interval.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigures OSPFv2 interface neighbour hello interval.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface neighbour hello interval." >
+          sonic-cli(config-router-ospf)# no ip ospf hello-interval
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="ip ospf message-digest-key" help="Configures OSPFv2 message digest key and password" escape_chars="" command_keys="name=*,address=*,authentication-key-id=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE_MD_AUTHENTICATION/OSPFV2_INTERFACE_MD_AUTHENTICATION_LIST/name={name},address={address},authentication-key-id={authentication-key-id}" render_command_cb='interface_ip_ospf_md_auth'>
       <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" >
         <PARAM name="md5" help="Uses MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name = "md5key" help = "Message digest password" ptype = "STRING" >
-            <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+            <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true" hidden="true">
               <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
             </PARAM>
             <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
@@ -148,6 +339,23 @@
         </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${keyid} ${md5key} ${encrypted} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface message digest authentication key.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 message digest authentication key. Message
+          digest authentication key can be up to sixteen characters long. User provided
+          actual password will be displayed as encrypted string in show configuration comamnd
+          displays and saved as encrypted string in configuration file. It is recomended
+          to use only actual password and not to use encrypted string as password.
+        </USAGE>
+        <EXAMPLE summary="Enable OSPFv2 authentication" >
+          sonic-cli(config-router-ospf)# ip ospf message-digest-key 10 md5 mDpa$$woRd
+          sonic-cli(config-router-ospf)# ip ospf message-digest-key 19 md5 mDpa$$woRd
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf message-digest-key" help="Unconfigures OSPFv2 message digest key and password" >
@@ -157,17 +365,54 @@
         </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key_id ${iface} ${vlan_name} ${po_name} ${lo_name} ${keyid} 0 ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unconfigures OSPFv2 interface clear text authentication key.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigure OSPFv2 interface message digest authentication key.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface message digest authentication key" >
+          sonic-cli(config-router-ospf)# no ip ospf message-digest-key 10 md5
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
 
     <COMMAND name="ip ospf mtu-ignore" help="Disables OSPFv2 MTU mismatch detection" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_mtu_ignore ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Disables OSPFv2 MTU mismatch detection.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to disable OSPFv2 MTU mismatch detection. MTU mismatch
+          detection is enabled by default.
+        </USAGE>
+        <EXAMPLE summary="Disables OSPFv2 MTU mismatch detection" >
+          sonic-cli(config-router-ospf)# ip ospf mtu-ignore
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf mtu-ignore" help="Enables OSPFv2 MTU mismatch detection" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_mtu_ignore ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Enables OSPFv2 MTU mismatch detection.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to enable OSPFv2 MTU mismatch detection.
+        </USAGE>
+        <EXAMPLE summary="Enables OSPFv2 MTU mismatch detection" >
+          sonic-cli(config-router-ospf)# no ip ospf mtu-ignore
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="ip ospf network" help="Configures OSPFv2 interface network type" >
@@ -176,10 +421,38 @@
         <PARAM name = "point-to-point" help = "Point-to-point link network" ptype = "SUBCOMMAND" mode="subcommand" />
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_network_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${networktype}  &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface network type.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 interface network type. Broadcast and
+          Point-to-point networks types are supported. By default Network type will be
+          broacast.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 interface network type" >
+          sonic-cli(config-router-ospf)# ip ospf network point-to-point
+          sonic-cli(config-router-ospf)# ip ospf network broadcast
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf network" help="Unconfigures OSPFv2 interface network type" >
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_network_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${networktype}  &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unonfigures OSPFv2 interface network type.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigures OSPFv2 interface network type. Unconfiguring
+          network will make network type as default type, i.e. broadcast.
+        </USAGE>
+        <EXAMPLE summary="Unonfigures OSPFv2 interface network type." >
+          sonic-cli(config-router-ospf)# no ip ospf network
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="ip ospf priority" help="Configures OSPFv2 adjacency router priority">
@@ -187,11 +460,35 @@
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_priority ${iface} ${vlan_name} ${po_name} ${lo_name} ${priorityval} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 adjacency router priority.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 adjacency router priority.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 adjacency router priority" >
+          sonic-cli(config-router-ospf)# ip ospf priority 19
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
-  
+
     <COMMAND name="no ip ospf priority" help="Unconfigures OSPFv2 adjacency router priority">
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_priority ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unconfigures OSPFv2 adjacency router priority.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigure OSPFv2 adjacency router priority.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 adjacency router priority" >
+          sonic-cli(config-router-ospf)# no ip ospf priority
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="ip ospf retransmit-interval" help="Configures OSPFv2 LSA retransmit interval" >
@@ -199,23 +496,71 @@
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_retransmit_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${retransmitinterval} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface LSA retransmit interval.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 interface LSA retransmit interval.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 interface  LSA retransmit interval" >
+          sonic-cli(config-router-ospf)# ip ospf retransmit-interval 35
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf retransmit-interval" help="Unconfigures OSPFv2 LSA retransmit interval" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_retransmit_interval ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unonfigures OSPFv2 LSA retransmit interval.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigures OSPFv2 interface LSA retransmit interval.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface LSA retransmit interval." >
+          sonic-cli(config-router-ospf)# no ip ospf retransmit-interval
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
- 
+
     <COMMAND name="ip ospf transmit-delay" help="Configures OSPFv2 LSA transmit delay interval" >
       <PARAM name = "transmitdelay" help = "Time in seconds" ptype = "RANGE_1_65535" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR"  optional="true"/>
       </PARAM>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_transmit_delay ${iface} ${vlan_name} ${po_name} ${lo_name} ${transmitdelay} ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Configures OSPFv2 interface LSA transmit delay interval.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to configure OSPFv2 interface LSA transmit delay interval.
+        </USAGE>
+        <EXAMPLE summary="Configures OSPFv2 interface  LSA transmit delay interval" >
+          sonic-cli(config-router-ospf)# ip ospf transmit-delay 35
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
     <COMMAND name="no ip ospf transmit-delay" help="Unconfigures OSPFv2 LSA transmit delay interval" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR"  optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_transmit_delay ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Unonfigures OSPFv2 LSA transmit delay interval.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to unconfigures OSPFv2 interface LSA transmit delay interval.
+        </USAGE>
+        <EXAMPLE summary="Unconfigures OSPFv2 interface LSA transmit delay interval." >
+          sonic-cli(config-router-ospf)# no ip ospf transmit-delay
+        </EXAMPLE>
+        <FEATURE> OSPFv2 </FEATURE>
+      </DOCGEN>
     </COMMAND>
 
 </MACRODEF>
