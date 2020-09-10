@@ -733,7 +733,7 @@ limitations under the License.
                 ptype="LO_ID"
                 >
         </PARAM>
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=Loopback${lo-id}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_interfaces_interfaces_interface Loopback${lo-id} </ACTION>
     </COMMAND>
     <COMMAND
          name="interface CPU"
