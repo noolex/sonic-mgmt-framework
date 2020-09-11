@@ -51,6 +51,7 @@ def invoke(func, args):
     if commandType == 'ldap_global_config' or commandType == 'ldap_nss_config' or commandType == 'ldap_pam_config' or commandType == 'ldap_sudo_config':
         if isDel == False :
             field_val = args[1]
+            field_val = field_val.replace("\\\\", "\\")
             
         if args[0] == "timelimit" :
             field_name = "search-time-limit"
@@ -183,10 +184,11 @@ def invoke(func, args):
         
         if isDel == False :
             keypath = cc.Path(baseServerGrpUri)
-            body = {"openconfig-system:server-group":[{"name":"LDAP","config":{"name":"LDAP"},"openconfig-aaa-ldap-ext:ldap":{"maps":{"map":[{"config":{"to":args[3]},"from":args[1],"name":mapName}]}}}]}
+            body = {"openconfig-system:server-group":[{"name":"LDAP","config":{"name":"LDAP"},"openconfig-aaa-ldap-ext:ldap":{"maps":{"map":[{"config":{"to":args[3].replace("\\\\", "\\")},"from":args[1].replace("\\\\", "\\"),"name":mapName}]}}}]}
             return aa.patch(keypath, body)
         else:
-            keypath = cc.Path(baseLdapUri+modName+'ldap/maps/map='+mapName+','+args[1])
+            keyVal = args[1].replace("\\\\", "\\")
+            keypath = cc.Path(baseLdapUri+modName+'ldap/maps/map='+mapName+','+keyVal.replace("/","%2F"))
             return aa.delete(keypath)
     elif func == 'ldap_server_src_if_config':
         path = cc.Path('/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/source-interface')

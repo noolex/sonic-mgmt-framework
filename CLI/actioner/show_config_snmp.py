@@ -290,7 +290,7 @@ def show_snmp_agentaddress(render_tables):
     lst = 'SNMP_AGENT_ADDRESS_CONFIG_LIST'
     if (tbl in render_tables) and (lst in render_tables[tbl]):
         for ent in render_tables[tbl][lst]:
-            addr = ent.get('addr')
+            addr = ent.get('ip')
             if (addr is None) or (addr in ['None', 'NONE', 'none']):
                 continue
 

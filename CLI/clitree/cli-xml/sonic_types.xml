@@ -652,7 +652,7 @@ limitations under the License.
     <PTYPE
         name="INTF_SPEED"
         method="select"
-        pattern="10(10MBPS) 100(100MBPS) 1000(1GIGE) 10000(10GIGE) 25000(25GIGE) 40000(40GIGE) 100000(100GIGE) auto(AUTO)"
+        pattern="10(10MBPS) 100(100MBPS) 1000(1GIGE) 10000(10GIGE) 25000(25GIGE) 40000(40GIGE) 100000(100GIGE)"
         help="Port speed"
         />
     <!--=======================================================-->

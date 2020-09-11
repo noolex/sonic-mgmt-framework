@@ -63,6 +63,7 @@ view_dependency= \
 config_view_hierarchy= \
       ['configure',
        'configure-nat',
+       'configure-tam',
        'configure-wred',
        'configure-qos-scheduler-policy',
        'configure-dscp-tc-map',
@@ -91,7 +92,6 @@ config_view_hierarchy= \
        'configure-policy',
        'configure-mclag',
        'configure-mirror',
-       'configure-tam',
        'configure-ipsla',
        'configure-bfd',
        'configure-switch-resource',
@@ -116,6 +116,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'bgp_pg_af_attr'          : show_bgp_pg_af_attr_cmd,
                   'bgp_pg_af_max_prefix'    : show_bgp_pg_af_max_prefix_cmd,
                   'bgp_pg_af_allowas'       : show_bgp_pg_af_allowas_cmd,
+                  'tam_config'              : show_tam_config,
                   'if_channel_group'        : show_if_channel_group_cmd,
                   'if_switchport_access'    : show_if_switchport_access,
                   'if_switchport_trunk'     : show_if_switchport_trunk,
@@ -242,7 +243,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ldap_map_config'         : show_ldap_map_config,
                   'igmp_snooping_config'    : show_igmp_snooping_intf_config,
                   'if_lag_config'           : show_if_lag_config,
-		  'tam_config'              : show_tam_config,
+                  'tam_interface_config'    : show_tam_interface_config,
                   'ip_sla_config'           : show_ip_sla_config,
                   'bfd_config'              : show_bfd_config,
 		  'switch_resource_flow_scale_entry' : show_switch_resource_flow_scale_entry,
@@ -267,10 +268,39 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'mac_acl_table_cb'        : mac_acl_table_cb,
                   'ipv4_acl_table_cb'       : ipv4_acl_table_cb,
                   'ipv6_acl_table_cb'       : ipv6_acl_table_cb,
+<<<<<<< HEAD
                   'username_config'         : show_username_config,
                   'if_vrf_binding'          : show_if_vrf_binding,
+||||||| merged common ancestors
+<<<<<<< Temporary merge branch 1
+||||||| merged common ancestors
+<<<<<<< Temporary merge branch 1
+=======
+                  'username_config'         : show_username_config,
+                  'if_vrf_binding'          : show_if_vrf_binding,
+>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> origin/broadcom_sonic_3.x_share
                   'acl_bind_cb'             : acl_bind_cb,
                   'acl_global_bind_cb'      : acl_global_bind_cb,
+<<<<<<< HEAD
+||||||| merged common ancestors
+<<<<<<< Temporary merge branch 1
+                  'username_config'         : show_username_config,
+                  'if_vrf_binding' : show_if_vrf_binding,
+||||||| merged common ancestors
+||||||| merged common ancestors
+=======
+                  'username_config'         : show_username_config,
+                  'if_vrf_binding' : show_if_vrf_binding,
+>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> Temporary merge branch 2
+=======
+                  'username_config'         : show_username_config,
+                  'if_vrf_binding'          : show_if_vrf_binding,
+		  'intf_unreliable_los' : show_if_unreliable_los,
+>>>>>>> origin/broadcom_sonic_3.x_share
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

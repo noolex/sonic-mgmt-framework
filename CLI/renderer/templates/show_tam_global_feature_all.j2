@@ -1,11 +1,29 @@
 {% if json_output -%}
 {% if "openconfig-tam:features-state" in json_output %}
 {% set features = json_output['openconfig-tam:features-state']['feature'] %}
+<<<<<<< HEAD
 Name              Status
 --------------    ---------
+||||||| merged common ancestors
+{{' '}}
+Name              Status
+--------------    ---------
+=======
+Name            Status
+--------------  ---------
+>>>>>>> origin/broadcom_sonic_3.x_share
 {% for feature in features %}
 {% set feature_state = feature["state"] %}
+<<<<<<< HEAD
 {{'%-18s'|format(getFeatureDescription(feature_state["feature-ref"]))}}{{'%-15s'|format(getStatusDescription(feature_state["op-status"]))}}
 {% endfor %}
+||||||| merged common ancestors
+{{'%-18s'|format(getFeatureDescription(feature_state["feature-ref"]))}}{{'%-15s'|format(getStatusDescription(feature_state["op-status"]))}}
+{% endfor %} 
+{{' '}}
+=======
+{{'%-16s'|format(getFeatureDescription(feature_state["feature-ref"]))}}{{'%-15s'|format(getStatusDescription(feature_state["op-status"]))}}
+{% endfor %}
+>>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}
 {% endif %}

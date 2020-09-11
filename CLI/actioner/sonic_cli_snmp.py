@@ -10,6 +10,8 @@ import cli_client as cc
 import socket
 import ipaddress
 import netifaces
+import syslog
+import traceback
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 from swsssdk import ConfigDBConnector
@@ -333,6 +335,75 @@ def getAgentAddresses():
 
   return agentAddresses
 
+# Return the list of interfaces
+#   eg. ['Ethernet0', 'Ethernet1', etc.
+#   or: "
+def interfaces_list():
+    names = []
+    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces')
+    response = aa.get(keypath)
+    if response.ok():
+        content = response.content
+        if content:
+            interfaces = content.get("openconfig-interfaces:interfaces")
+            if interfaces:
+                interface = interfaces.get("interface")
+                if interface:
+                    for c in interface:
+                        config = c.get("config")
+                        if config:
+                            name = config.get("name")
+                            if name:
+                                names.append(str(name))
+    ifaces = netifaces.interfaces()
+    for iface in ifaces:
+        if iface[:8].lower() != "ethernet":
+            names.append(iface)
+    return names
+
+# Are we in native mode (eg: "Ethernet80") or standard mode (eg: "Eth1/21/1")
+def is_in_standard_mode():
+    keypath = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode', name="localhost")
+    response = aa.get(keypath)
+    if response.ok():
+        content = response.content
+        if content == None:
+            return False
+        try:
+            mode = content['sonic-device-metadata:intf_naming_mode']
+            return mode.lower() == "standard"
+        except:
+            return False
+    else:
+        return False
+
+# Construct a list of interfaces [[standard, native], ...]
+#   Eg. [['Ethernet0', 'Eth1/1'], ['Ethernet1', 'Eth1/2'], ...]
+def alias_interfaces_list():
+    names =[]
+    keypath = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE')
+    response = aa.get(keypath)
+    if response.ok():
+        content = response.content
+        if content != None:
+            port_table = content['sonic-port:PORT_TABLE']
+            port_table_list = port_table['PORT_TABLE_LIST']
+            for l in port_table_list:
+                try:
+                    n = [l['alias'], l['ifname']]
+                    names.append(n)
+                except:
+                    pass
+    return names
+
+def convert_to_native(data, standard):
+    if standard in [i[1] for i in data]:
+        for x in data:
+            if standard in x[1]:
+                return x[0]
+    return standard
+
+
 def invoke(func, args):
   if func == 'snmp_get':
     datam = {}
@@ -443,17 +514,28 @@ def invoke(func, args):
       response = aa.delete(keypath, True)
 
     if func == 'snmp_agentaddr':    # Need to test parameters before setting
+<<<<<<< HEAD
       if key == 'None':
         key=findNextKeyForAgentEntry()
+||||||| merged common ancestors
+=======
+      if key == 'None':
+        key=findNextKeyForAgentEntry()
+      standard_mode = is_in_standard_mode()
+      if standard_mode:
+          std_nat_interfaces = alias_interfaces_list()
+>>>>>>> origin/broadcom_sonic_3.x_share
       ipAddrValid = False
       ifValid = True
       if not interface == '':
         ifValid = False
       ip = ipaddress.ip_address(unicode(ipAddress))
-      for intf in netifaces.interfaces():
+      if_names = interfaces_list() if standard_mode else netifaces.interfaces()
+      for intf in if_names:
         if intf == interface:
           ifValid = True
-        ipaddresses = netifaces.ifaddresses(intf)
+        intf_native = convert_to_native(std_nat_interfaces, intf) if standard_mode else intf
+        ipaddresses = netifaces.ifaddresses(intf_native)
         if ipFamily[ip.version] in ipaddresses:
           for ipaddr in ipaddresses[ipFamily[ip.version]]:
             testAddr = ipaddr['addr']
@@ -1109,10 +1191,10 @@ def invoke(func, args):
     if srcIf == 'mgmt' :
       ifValid = True
     elif not srcIf == None:
-      for intf in netifaces.interfaces():
-        if intf == srcIf:
+      standard_mode = is_in_standard_mode()
+      if_names = interfaces_list() if standard_mode else netifaces.interfaces()
+      if srcIf in if_names:
           ifValid = True
-          break
 
     tag = [ type ]
     if ifValid == True:
@@ -1198,11 +1280,12 @@ def run(func, args):
       if api_response.status_code == 404:               # Resource not found
         return
       else:
-        print(api_response.error_message())
+        print "Error: {}".format(api_response.error_message())
         sys.exit(-1)
 
-  except:
+  except Exception as e:
     # system/network error
+    syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
     print "%Error: Transaction Failure"
 
 if __name__ == '__main__':

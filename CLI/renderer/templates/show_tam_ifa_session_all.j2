@@ -2,9 +2,20 @@
 {% if "openconfig-tam:ifa-sessions" in json_output %}
 {% set sessions = json_output['openconfig-tam:ifa-sessions']['ifa-session'] %}
 {% if sessions|length > 0 %}
+<<<<<<< HEAD
 Name           Flow Group          Collector          Sampler           Node Type
 -----------    ----------------    --------------     -------------     ----------
 {% for session in sessions|sort(attribute='name') %}
+||||||| merged common ancestors
+{{' '}}
+Name           Flow Group          Collector          Sampler           Node Type
+-----------    ----------------    --------------     -------------     ----------
+{% for session in sessions %}
+=======
+Name                              Flow Group                        Collector                         Sampler                           Node Type
+--------------------------------  --------------------------------  --------------------------------  --------------------------------  ----------
+{% for session in sessions|sort(attribute='name') %}
+>>>>>>> origin/broadcom_sonic_3.x_share
 {% set session_state = session["state"] %}
 {% if session_state["node-type"] == "INGRESS" %}
 {% set node_type = "Ingress" %}
@@ -16,6 +27,7 @@ Name           Flow Group          Collector          Sampler           Node Typ
 {% if "collector" in session_state %}
 {% set collector = session_state["collector"] %}
 {% else %}
+<<<<<<< HEAD
 {% set collector = "-" %}
 {% endif %}
 {% if "sample-rate" in session_state %}
@@ -25,8 +37,31 @@ Name           Flow Group          Collector          Sampler           Node Typ
 {% endif %}
 {{'%-15s'|format(session_state["name"])}}{{'%-20s'|format(session_state["flowgroup"])}}{{'%-19s'|format(collector)}}{{'%-18s'|format(sampler)}}{{'%-20s'|format(node_type)}}
 {% endfor %}
+||||||| merged common ancestors
+{{' '}}
+Sessions are not configured.
+{{' '}}
+=======
+{% set collector = "-" %}
+{% endif %}
+{% if "sample-rate" in session_state %}
+{% set sampler = session_state["sample-rate"] %}
+{% else %}
+{% set sampler = "-" %}
+{% endif %}
+{{'%-34s'|format(session_state["name"])}}{{'%-34s'|format(session_state["flowgroup"])}}{{'%-34s'|format(collector)}}{{'%-34s'|format(sampler)}}{{'%-20s'|format(node_type)}}
+{% endfor %}
+>>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}
 {% endif %}
 {% else %}
+<<<<<<< HEAD
 %Error: Sessions are not configured.
+||||||| merged common ancestors
+{{' '}}
+Sessions are not configured.
+{{' '}}
+=======
+Sessions are not configured.
+>>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}

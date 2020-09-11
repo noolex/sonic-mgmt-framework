@@ -2,14 +2,33 @@
 {% if "openconfig-tam:samplers" in json_output %}
 {% set samplers = json_output['openconfig-tam:samplers']['sampler'] %}
 {% if samplers|length > 0 %}
+<<<<<<< HEAD
 Name         Sample Rate
 -----------  -----------
 {% for sampler in samplers|sort(attribute='name') %}
+||||||| merged common ancestors
+{{' '}}
+Name         Sample Rate
+-----------  -----------
+{% for sampler in samplers %}
+=======
+Name                              Sample Rate
+--------------------------------  -----------
+{% for sampler in samplers|sort(attribute='name') %}
+>>>>>>> origin/broadcom_sonic_3.x_share
 {% set sampler_state = sampler["state"] %}
-{{'%-13s'|format(sampler_state["name"])}}{{'%-29s'|format(sampler_state["sampling-rate"])}}
+{{'%-34s'|format(sampler_state["name"])}}{{'%-30s'|format(sampler_state["sampling-rate"])}}
 {% endfor %}
 {% endif %}
 {% endif %}
 {% else %}
+<<<<<<< HEAD
 %Error: Samplers are not configured.
+||||||| merged common ancestors
+{{' '}}
+Samplers are not configured.
+{{' '}}
+=======
+Samplers are not configured.
+>>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}

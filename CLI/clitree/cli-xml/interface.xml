@@ -849,6 +849,7 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec ${iface} default</ACTION>
         </COMMAND>
         <COMMAND
+<<<<<<< HEAD
             name="unreliable-los"
             help="Configure unreliable LOS mode">
             <PARAM
@@ -864,6 +865,25 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} default</ACTION>
         </COMMAND>
         <COMMAND
+||||||| merged common ancestors
+=======
+            name="unreliable-los"
+            help="Configure unreliable LOS mode"
+                command_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={iface}"
+                render_command_cb="intf_unreliable_los">
+            <PARAM
+                name="los"
+                help="Unreliable LOS mode configuration"
+                ptype="INTF_UNRELIABLE_LOS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} ${los}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no unreliable-los"
+            help="Set default unreliable LOS mode configuration">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} default</ACTION>
+        </COMMAND>
+        <COMMAND
+>>>>>>> origin/broadcom_sonic_3.x_share
             name="channel-group"
             render_command_cb="if_channel_group"
             help="Configure PortChannel parameters"
