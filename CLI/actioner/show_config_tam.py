@@ -57,6 +57,9 @@ def getAclRuleHash(aclRules):
             ruleHash[name]['L4_DST_PORT'] = r['L4_DST_PORT']
         if 'IN_PORTS' in r:
             ruleHash[name]['IN_PORTS'] = r['IN_PORTS']
+        if 'PRIORITY' in r:
+            ruleHash[name]['PRIORITY'] = r['PRIORITY']
+
     return ruleHash
 
 def getIpType(type):
