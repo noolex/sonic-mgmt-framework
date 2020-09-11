@@ -141,7 +141,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <ACTION
-        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/servers body={"openconfig-system:servers":{"server":[ {"address": "${ip}${server-name}","config":{"address":"${ip}${server-name}"}}]}}
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_server ${ip} ${server-name}
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -179,7 +179,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <ACTION
-        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/servers/server=${ip}${server-name}
+        builtin="clish_pyobj">sonic_cli_ntp delete_ntp_server ${ip} ${server-name}
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -269,7 +269,7 @@ limitations under the License.
     <COMMAND name="no ntp source-interface"
              help="Delete NTP source-interface">
       <ACTION
-        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface
+        builtin="clish_pyobj">sonic_cli_ntp delete_ntp_source 
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -309,7 +309,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <ACTION
-        builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/ntp/config body={"openconfig-system:config":{"openconfig-system-ext:vrf":"${mgmt}${default}"}}
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_vrf ${mgmt} ${default}
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -332,7 +332,7 @@ limitations under the License.
     <COMMAND name="no ntp vrf"
              help="Disable NTP on VRF">
       <ACTION
-        builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:vrf
+        builtin="clish_pyobj">sonic_cli_ntp delete_ntp_vrf
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
