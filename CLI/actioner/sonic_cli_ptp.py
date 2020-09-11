@@ -297,6 +297,12 @@ def run(func, args):
                         errDict[k] = v
 
                         if "error-message" in errDict:
+                            # intercept error message and return more user friendly error message to user
+                            if (errDict["error-message"] == "Resource not found" or
+                               errDict["error-message"] == "This object is not supported in this build" or
+                               errDict["error-message"] == "This object is not supported in this platform"):
+                                print("PTP feature not supported")
+                                return
                             print("%Error: " + errDict["error-message"])
                             sys.exit(-1)
                 print("%Error: Transaction Failure")
