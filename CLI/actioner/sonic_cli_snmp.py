@@ -10,6 +10,8 @@ import cli_client as cc
 import socket
 import ipaddress
 import netifaces
+import syslog
+import traceback
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 from swsssdk import ConfigDBConnector
@@ -1272,11 +1274,12 @@ def run(func, args):
       if api_response.status_code == 404:               # Resource not found
         return
       else:
-        print(api_response.error_message())
+        print "Error: {}".format(api_response.error_message())
         sys.exit(-1)
 
-  except:
+  except Exception as e:
     # system/network error
+    syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
     print "%Error: Transaction Failure"
 
 if __name__ == '__main__':
