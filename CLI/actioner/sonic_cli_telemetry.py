@@ -437,7 +437,7 @@ def getDetails(fn, args):
         details['url'] = dropmonitor_aginginterval_url
         body = getBody(fn)%(data['aging-interval'])
         details['body'] = json.loads(body)
-        details['description'] = "%Info: Any changes to ageing-interval are effective for newly created sessions only."
+        details['description'] = "%Info: Any changes to aging-interval are effective for newly created sessions only."
         details['name'] = ""
     elif fn == "delete_aginginterval":
         details['url'] = dropmonitor_aginginterval_url+'/config/aging-interval'
