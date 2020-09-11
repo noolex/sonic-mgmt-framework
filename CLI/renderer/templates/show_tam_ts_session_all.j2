@@ -2,45 +2,14 @@
 {% if "openconfig-tam:tailstamping-sessions" in json_output %}
 {% set sessions = json_output['openconfig-tam:tailstamping-sessions']['tailstamping-session'] %}
 {% if sessions|length > 0 %}
-<<<<<<< HEAD
-Name           Flow Group
------------    ------------
-{% for session in sessions|sort(attribute='name') %}
-||||||| merged common ancestors
-{{' '}}
-Name           Flow Group
------------    ------------
-{% for session in sessions %}
-=======
 Name                              Flow Group
 --------------------------------  --------------------------------
 {% for session in sessions|sort(attribute='name') %}
->>>>>>> origin/broadcom_sonic_3.x_share
 {% set session_config = session["state"] %}
-<<<<<<< HEAD
-{{'%-15s'|format(session_config["name"])}}{{'%-15s'|format(session_config["flowgroup"])}}
-{% endfor %}
-||||||| merged common ancestors
-{{'%-15s'|format(session_config["name"])}}{{'%-15s'|format(session_config["flowgroup"])}}
-{% endfor %} 
-{% else %}
-{{' '}}
-Sessions are not configured.
-{{' '}}
-=======
 {{'%-34s'|format(session_config["name"])}}{{'%-34s'|format(session_config["flowgroup"])}}
 {% endfor %}
->>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}
 {% endif %}
 {% else %}
-<<<<<<< HEAD
-%Error: Sessions are not configured.
-||||||| merged common ancestors
-{{' '}}
 Sessions are not configured.
-{{' '}}
-=======
-Sessions are not configured.
->>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}

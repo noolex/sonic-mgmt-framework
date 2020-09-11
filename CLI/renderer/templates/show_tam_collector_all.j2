@@ -2,45 +2,14 @@
 {% if "openconfig-tam:collectors" in json_output %}
 {% set collectors = json_output['openconfig-tam:collectors']['collector'] %}
 {% if collectors|length > 0 %}
-<<<<<<< HEAD
-Name               IP Address                                Port      Protocol
-----------------   ---------------------------------------   ------    --------
-{% for this_collector in collectors|sort(attribute='name') %}
-||||||| merged common ancestors
-{{' '}}
-Name               IP Address                                Port      Protocol
-----------------   ---------------------------------------   ------    --------
-{% for this_collector in collectors %}
-=======
 Name                              IP Address                               Port   Protocol
 --------------------------------  ---------------------------------------  -----  --------
 {% for this_collector in collectors|sort(attribute='name') %}
->>>>>>> origin/broadcom_sonic_3.x_share
 {% set collector_config = this_collector["state"] %}
-<<<<<<< HEAD
-{{'%-19s'|format(collector_config["name"])}}{{'%-42s'|format(collector_config["ip"])}}{{'%-10s'|format(collector_config["port"])}}{{'%-10s'|format(collector_config["protocol"])}}
-{% endfor %}
-||||||| merged common ancestors
-{{'%-19s'|format(collector_config["name"])}}{{'%-42s'|format(collector_config["ip"])}}{{'%-10s'|format(collector_config["port"])}}{{'%-10s'|format(collector_config["protocol"])}}
-{% endfor %} 
-{% else %}
-{{' '}}
-Collectors are not configured.
-{{' '}}
-=======
 {{'%-34s'|format(collector_config["name"])}}{{'%-41s'|format(collector_config["ip"])}}{{'%-7s'|format(collector_config["port"])}}{{'%-10s'|format(collector_config["protocol"])}}
 {% endfor %}
->>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}
 {% endif %}
 {% else %}
-<<<<<<< HEAD
-%Error: Collectors are not configured.
-||||||| merged common ancestors
-{{' '}}
 Collectors are not configured.
-{{' '}}
-=======
-Collectors are not configured.
->>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}

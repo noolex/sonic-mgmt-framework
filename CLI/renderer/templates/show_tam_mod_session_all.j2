@@ -2,33 +2,14 @@
 {% if "openconfig-tam:dropmonitor-sessions" in json_output %}
 {% set sessions = json_output['openconfig-tam:dropmonitor-sessions']['dropmonitor-session'] %}
 {% if sessions|length > 0 %}
-<<<<<<< HEAD
-Name           Flow Group          Collector          Sampler      
------------    ----------------    --------------     -------------
-{% for session in sessions|sort(attribute='name') %}
-||||||| merged common ancestors
-{{' '}}
-Name           Flow Group          Collector          Sampler      
------------    ----------------    --------------     -------------
-{% for session in sessions %}
-=======
 Name                              Flow Group                        Collector                         Sampler
 --------------------------------  --------------------------------  --------------------------------  --------------------------------
 {% for session in sessions|sort(attribute='name') %}
->>>>>>> origin/broadcom_sonic_3.x_share
 {% set session_state = session["state"] %}
 {{'%-34s'|format(session_state["name"])}}{{'%-34s'|format(session_state["flowgroup"])}}{{'%-34s'|format(session_state["collector"])}}{{'%-34s'|format(session_state["sample-rate"])}}
 {% endfor %}
 {% endif %}
 {% endif %}
 {% else %}
-<<<<<<< HEAD
-%Error: Sessions are not configured.
-||||||| merged common ancestors
-{{' '}}
 Sessions are not configured.
-{{' '}}
-=======
-Sessions are not configured.
->>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}
