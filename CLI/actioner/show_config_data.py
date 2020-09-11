@@ -268,39 +268,11 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'mac_acl_table_cb'        : mac_acl_table_cb,
                   'ipv4_acl_table_cb'       : ipv4_acl_table_cb,
                   'ipv6_acl_table_cb'       : ipv6_acl_table_cb,
-<<<<<<< HEAD
-                  'username_config'         : show_username_config,
-                  'if_vrf_binding'          : show_if_vrf_binding,
-||||||| merged common ancestors
-<<<<<<< Temporary merge branch 1
-||||||| merged common ancestors
-<<<<<<< Temporary merge branch 1
-=======
-                  'username_config'         : show_username_config,
-                  'if_vrf_binding'          : show_if_vrf_binding,
->>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/broadcom_sonic_3.x_share
                   'acl_bind_cb'             : acl_bind_cb,
                   'acl_global_bind_cb'      : acl_global_bind_cb,
-<<<<<<< HEAD
-||||||| merged common ancestors
-<<<<<<< Temporary merge branch 1
-                  'username_config'         : show_username_config,
-                  'if_vrf_binding' : show_if_vrf_binding,
-||||||| merged common ancestors
-||||||| merged common ancestors
-=======
-                  'username_config'         : show_username_config,
-                  'if_vrf_binding' : show_if_vrf_binding,
->>>>>>> Temporary merge branch 2
-=======
->>>>>>> Temporary merge branch 2
-=======
                   'username_config'         : show_username_config,
                   'if_vrf_binding'          : show_if_vrf_binding,
-		  'intf_unreliable_los' : show_if_unreliable_los,
->>>>>>> origin/broadcom_sonic_3.x_share
+		          'intf_unreliable_los'     : show_if_unreliable_los,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

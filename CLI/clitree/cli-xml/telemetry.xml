@@ -541,34 +541,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <COMMAND name="flow-group" help="Creates flow-group by specifying the tuple information" ptype="SUBCOMMAND" mode="subcommand">
-<<<<<<< HEAD
-      <PARAM name="name" help="Configures unique name for flow-group (up to 32 characters string)" ptype="STRING_63"></PARAM>
-      <PARAM name="src-mac" help="Source MAC address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="src_mac" help="Source MAC address" ptype="MAC_ADDR" default=""/>
-      </PARAM>
-      <PARAM name="dst-mac" help="Destination MAC address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="dst_mac" help="Destination MAC address" ptype="MAC_ADDR" default=""/>
-      </PARAM>
-      <PARAM name="ethertype" help="Ethertype of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="ether_type" help="Ethertype value (0x600-0xffff)" ptype="ETHERTYPE_VALUE" default=""/>
-      </PARAM>
-||||||| merged common ancestors
-      <PARAM name="name" help="Configures unique name for flow-group (up to 32 characters string)" ptype="STRING_63"></PARAM>
-      <PARAM name="src-mac" help="Source MAC address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="src_mac" help="Source MAC address" ptype="MAC_ADDR" default=""/>
-      </PARAM>
-      <PARAM name="dst-mac" help="Destination MAC address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="dst_mac" help="Destination MAC address" ptype="MAC_ADDR" default=""/>
-      </PARAM>
-      <PARAM name="ethertype" help="Ethertype of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="ether_type" help="Ethertype value (0x600-0xffff)" ptype="ETHERTYPE_VALUE" default=""/>
-      </PARAM>
-      <PARAM name="ip-type" help="Type of IP Address (IPv4/IPv6)" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="ip_type" help="IP Address Type" ptype="IP_TYPE" default=""></PARAM>
-      </PARAM>
-=======
       <PARAM name="name" help="Configures unique name for flow-group (up to 32 characters string)" ptype="STRING_32"></PARAM>
->>>>>>> origin/broadcom_sonic_3.x_share
       <PARAM name="src-ip" help="Source IP address of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="src_ip" help="IPv4 or IPv6" ptype="IPV4_IPV6_NETWORK" default=""/>
       </PARAM>
@@ -587,13 +560,7 @@ limitations under the License.
       <PARAM name="protocol" help="Protocol field of the IP header of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="protocol_value" help="Protocol value UDP/TCP" ptype="IP_PROTOCOL" default=""/>
       </PARAM>
-<<<<<<< HEAD
-      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","smac":"${src_mac}","dmac":"${dst_mac}","ethertype":"${ether_type}","sip":"${src_ip}","dip":"${dst_ip}","sport":"${l4_src_port}","dport":"${l4_dst_port}","priority":"${priority_value}","protocol":"${protocol_value}"}</ACTION>
-||||||| merged common ancestors
-      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","smac":"${src_mac}","dmac":"${dst_mac}","ethertype":"${ether_type}","sip":"${src_ip}","dip":"${dst_ip}","sport":"${l4_src_port}","dport":"${l4_dst_port}","priority":"${priority_value}","protocol":"${protocol_value}","ip_type":"${ip_type}"}</ACTION>
-=======
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_flowgroup {"feature":"ANY","method":"PATCH","name":"${name}","sip":"${src_ip}","dip":"${dst_ip}","sport":"${l4_src_port}","dport":"${l4_dst_port}","priority":"${priority_value}","protocol":"${protocol_value}"}</ACTION>
->>>>>>> origin/broadcom_sonic_3.x_share
       <DOCGEN>
         <DESCRIPTION>
            This command configures flow group by specifying a set of match criteria that defines a set of flows that are of interest.
@@ -610,31 +577,15 @@ limitations under the License.
               Priority        : 100
               SRC IP          : 192.1.2.3/32
               DST IP          : 172.6.5.4/32
-<<<<<<< HEAD
-           Packet Count       :
-
-||||||| merged common ancestors
-           Packet Count       :
-           
-=======
            Packet Count       : 5432
 
->>>>>>> origin/broadcom_sonic_3.x_share
            Flow Group Name    : DEMO
               Id              : 1
               Priority        : 100
               SRC IP          : 1.1.1.1/32
               DST IP          : 4.4.4.4/32
-<<<<<<< HEAD
-           Packet Count       :
-
-||||||| merged common ancestors
-           Packet Count       :
-           
-=======
            Packet Count       : 454
 
->>>>>>> origin/broadcom_sonic_3.x_share
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -659,16 +610,8 @@ limitations under the License.
               SRC MAC         : 11:22:33:44:55:66
               SRC IP          : 1.1.1.1/32
               DST IP          : 4.4.4.4/32
-<<<<<<< HEAD
-           Packet Count       :
-
-||||||| merged common ancestors
-           Packet Count       :
-           
-=======
            Packet Count       : 233
 
->>>>>>> origin/broadcom_sonic_3.x_share
            sonic#
         </EXAMPLE>
       </DOCGEN>
@@ -852,16 +795,8 @@ limitations under the License.
       <PARAM name="collector" help="Configures collector for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
         <PARAM name="collector_name" help="Collector name (up to 32 characters string)" ptype="STRING_32"></PARAM>
       </PARAM>
-<<<<<<< HEAD
-      <PARAM name="sampler" help="Configures sampler for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
-        <PARAM name="sampler_name" help="Sampler name (up to 32 characters string)" ptype="STRING_63" default=''></PARAM>
-||||||| merged common ancestors
-      <PARAM name="sampler" help="Configures sampler for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="sampler_name" help="Sampler name (up to 32 characters string)" ptype="STRING_63" default=''></PARAM>
-=======
       <PARAM name="sampler" help="Configures sampler for drop-monitor session" ptype="SUBCOMMAND" mode="subcommand">
         <PARAM name="sampler_name" help="Sampler name (up to 32 characters string)" ptype="STRING_32" default=''></PARAM>
->>>>>>> origin/broadcom_sonic_3.x_share
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_dm_session {"session":"${session_name}","flowgroup":"${flowgroup_name}","collector":"${collector_name}","sampler":"${sampler_name}","feature":"DROPMONITOR","method":"PATCH"}</ACTION>
       <DOCGEN>

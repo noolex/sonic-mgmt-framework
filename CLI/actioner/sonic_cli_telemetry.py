@@ -192,33 +192,6 @@ def getFlowGroups(flowgroups):
             transport = flowgroup['transport']['state']
             if 'source-port' in transport: response[name]['src_port'] = transport['source-port']
             if 'destination-port' in transport: response[name]['dst_port'] = transport['destination-port']
-<<<<<<< HEAD
-
-        # get inports
-        url = inports_get_url+"TAM,"+name
-        inportsData = do_get(url)
-        if (inportsData['ok']):
-            if (inportsData['content'] is not None):
-                if 'sonic-acl:ACL_RULE_LIST' in inportsData['content']:
-                    inports = inportsData['content']['sonic-acl:ACL_RULE_LIST'][0]
-                    if 'IN_PORTS' in inports:
-                        response[name]['ports'] = ','.join(inports['IN_PORTS'])
-
-        response[name]['packets'] = data['statistics']['packets']
-
-||||||| merged common ancestors
-
-        # get inports
-        url = inports_get_url+"TAM,"+name
-        inportsData = do_get(url)
-        if (inportsData['ok']):
-            if (inportsData['content'] is not None):
-                if 'sonic-acl:ACL_RULE_LIST' in inportsData['content']:
-                    inports = inportsData['content']['sonic-acl:ACL_RULE_LIST'][0]
-                    if 'IN_PORTS' in inports: 
-                        response[name]['ports'] = ','.join(inports['IN_PORTS'])
-
-=======
         # inports
         if 'interfaces' in data:
             interfaces = data['interfaces']
@@ -228,7 +201,6 @@ def getFlowGroups(flowgroups):
                 t[int(n)] = i
             response[name]['ports'] = ','.join(str(t[x]) for x in sorted(t))
         response[name]['packets'] = data['statistics']['packets']
->>>>>>> origin/broadcom_sonic_3.x_share
     return response
 
 helper_functions = {
@@ -249,69 +221,10 @@ def getBody(fn):
         'patch_dm_session': """{"openconfig-tam:dropmonitor-sessions":{"dropmonitor-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","collector":"%s","sample-rate":"%s"}}]}}""",
         'patch_aginginterval': """{"openconfig-tam:global":{"config":{"aging-interval":%d}}}""",
         'patch_feature': """{"openconfig-tam:features":{"feature":[{"feature-ref":"%s","config":{"feature-ref":"%s","status":"%s"}}]}}""",
-<<<<<<< HEAD
-        'associate_flowgroup': """{"sonic-acl:IN_PORTS": ["%s"]}"""
-||||||| merged common ancestors
-        'patch_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":"%s","priority":"%s","ip-version":"%s"},"l2":{"config":{"source-mac":"%s","destination-mac":"%s","ethertype":"%s"}},"ipv4":{"config":{"source-address":"%s","destination-address":"%s","protocol":"%s"}},"ipv6":{"config":{"source-address":"%s","destination-address":"%s","protocol":"%s"}},"transport":{"config":{"source-port":"%s","destination-port":"%s"}}}]}}""",
-        'associate_flowgroup': """{"sonic-acl:IN_PORTS": ["%s"]}"""
-=======
         'associate_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":%d,"interfaces":["%s"]}}]}}"""
->>>>>>> origin/broadcom_sonic_3.x_share
     }
     return body[fn]
 
-<<<<<<< HEAD
-def getFlowGroupDate(data, currentid):
-    flowGroupData = {}
-    flowGroupData["openconfig-tam:flowgroups"] = {}
-    flowGroupData["openconfig-tam:flowgroups"]["flowgroup"] = []
-    flowData = {}
-    flowData["name"] = data["name"]
-    flowData["config"] = {}
-    flowData["config"]["name"] = data["name"]
-    flowData["config"]["id"] = int(currentid)
-    if (data['priority'] != ""):
-        flowData["config"]["priority"] = int(data['priority'])
-    if ((data['smac'] != "") or (data['dmac'] != "") or (data['ethertype'] != "")):
-        flowData["l2"] = {}
-        flowData["l2"]["config"] = {}
-        if (data['smac'] != ""):
-            flowData["l2"]["config"]["source-mac"] = data['smac']
-        if (data['dmac'] != ""):
-            flowData["l2"]["config"]["destination-mac"] = data['dmac']
-        if (data['ethertype'] != ""):
-            flowData["l2"]["config"]["ethertype"] = int(data['ethertype'], 0)
-    if ((data['sip'] != "") or (data['dip'] != "") or (data['protocol'] != "")):
-        if (("." in data['sip']) or ("." in data['sip']) or (data['protocol'] != "")):
-            flowData["ipv4"] = {}
-            flowData["ipv4"]["config"] = {}
-            if ("." in data['sip']):
-                flowData["ipv4"]["config"]["source-address"] = data['sip']
-            if ("." in data['dip']):
-                flowData["ipv4"]["config"]["destination-address"] = data['dip']
-            if (data['protocol'] != ""):
-                flowData["ipv4"]["config"]["protocol"] = data['protocol']
-        if ((":" in data['sip']) or (":" in data['dip'])):
-            flowData["ipv6"] = {}
-            flowData["ipv6"]["config"] = {}
-            if (":" in data['sip']):
-                flowData["ipv6"]["config"]["source-address"] = data['sip']
-            if (":" in data['dip']):
-                flowData["ipv6"]["config"]["destination-address"] = data['dip']
-            if (data['protocol'] != ""):
-                flowData["ipv6"]["config"]["protocol"] = data['protocol']
-    if ((data['sport'] != "") or (data['dport'] != "")):
-        flowData["transport"] = {}
-        flowData["transport"]["config"] = {}
-        if (data['sport'] != ""):
-            flowData["transport"]["config"]["source-port"] = int(data['sport'])
-        if (data['dport'] != ""):
-            flowData["transport"]["config"]["destination-port"] = int(data['dport'])
-    flowGroupData["openconfig-tam:flowgroups"]["flowgroup"].append(flowData)
-    return flowGroupData
-
-||||||| merged common ancestors
-=======
 def getFlowGroupDate(data, currentid):
     flowGroupData = {}
     flowGroupData["openconfig-tam:flowgroups"] = {}
@@ -352,7 +265,6 @@ def getFlowGroupDate(data, currentid):
     flowGroupData["openconfig-tam:flowgroups"]["flowgroup"].append(flowData)
     return flowGroupData
 
->>>>>>> origin/broadcom_sonic_3.x_share
 def getDetails(fn, args):
     data = json.loads(args[0])
     details = {}
@@ -648,21 +560,6 @@ def run(fn, args):
             if result['method'] == 'GET':
                 show_cli_output(result['template'], result['response'], **(helper_functions))
         else:
-<<<<<<< HEAD
-            if (result['status_code'] == 404):
-                if 'description' in result:
-                    description = result['description']
-                    if ("%Error:" not in description):
-                        description = "%Error: " + description
-                    message = "{} '{}' not found.".format(description, result['name'])
-                    print message
-||||||| merged common ancestors
-            if 'description' in result:
-                #description = result['description'].split("%Error: ",1)[1]
-                description = result['description']
-                message = "\n{} '{}' not found.\n".format(description, result['name']) 
-                print message
-=======
             if (result['status_code'] == 404):
                 if 'description' in result:
                     description = result['description']
@@ -674,19 +571,7 @@ def run(fn, args):
                 if 'description' in result:
                     if '%Info' in result['description']:
                         print result['description']
->>>>>>> origin/broadcom_sonic_3.x_share
     else:
-<<<<<<< HEAD
-        message = result['error_message']
-        if ("%Error:" not in message):
-            message = "%Error: " + message
-        if "does not match" in message:
-            message = "%Error: Invalid input in the command."
-        print message
-    return 0
-||||||| merged common ancestors
-        print "\n" + result['error_message'] + "\n"
-=======
         if 'error_message' in result:
             message = result['error_message']
             if ("%Error:" not in message):
@@ -695,7 +580,6 @@ def run(fn, args):
                 message = "%Error: Invalid input in the command."
             print message
     return 0
->>>>>>> origin/broadcom_sonic_3.x_share
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

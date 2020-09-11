@@ -165,22 +165,6 @@
                 </PARAM>
               </PARAM>
               <PARAM name="authentication-key" help="Simple text authentication password" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-<<<<<<< HEAD
-                <PARAM name="auth-key" help="Authentication password" ptype="STRING">
-                   <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
-                </PARAM>
-              </PARAM>
-              <PARAM name="message-digest-key" help="Message-digest authentication key identifier" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                <PARAM name="keyid" help="Key identifier" ptype="RANGE_1_255" >
-                  <PARAM name="md5" help="Message-digest authentication password" ptype="SUBCOMMAND" mode="subcommand" >
-                    <PARAM name="md5key" help="Authentication password" ptype="STRING" >
-                      <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
-                    </PARAM>
-                  </PARAM>
-                </PARAM>
-||||||| merged common ancestors
-                <PARAM name="auth-key" help="Authentication password" ptype="STRING" />
-=======
                 <PARAM name="auth-key" help="Authentication password" ptype="STRING">
                    <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true" hidden="true"/>
                 </PARAM>
@@ -193,7 +177,6 @@
                     </PARAM>
                   </PARAM>
                 </PARAM>
->>>>>>> origin/broadcom_sonic_3.x_share
               </PARAM>
               <PARAM name="dead-interval" help="Configures adjacency dead interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "deadinterval" help = "Dead interval value in seconds" ptype = "RANGE_1_65535" />

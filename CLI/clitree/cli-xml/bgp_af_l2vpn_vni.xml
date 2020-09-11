@@ -148,13 +148,6 @@ limitations under the License.
           </EXAMPLE>
         </DOCGEN>
       </COMMAND>
-<<<<<<< HEAD
-      <COMMAND name="show bgp l2vpn evpn route vni" help="VxLAN Network Identifier">
-        <PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE"></PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
-      </COMMAND>
-||||||| merged common ancestors
-=======
       <COMMAND name="show bgp l2vpn evpn route vni" help="VxLAN Network Identifier">
         <PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE"></PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
@@ -170,7 +163,6 @@ limitations under the License.
           </EXAMPLE>
         </DOCGEN>
       </COMMAND>
->>>>>>> origin/broadcom_sonic_3.x_share
     </VIEW>
 
 </CLISH_MODULE>

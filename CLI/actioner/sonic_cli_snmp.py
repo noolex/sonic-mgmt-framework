@@ -514,17 +514,11 @@ def invoke(func, args):
       response = aa.delete(keypath, True)
 
     if func == 'snmp_agentaddr':    # Need to test parameters before setting
-<<<<<<< HEAD
-      if key == 'None':
-        key=findNextKeyForAgentEntry()
-||||||| merged common ancestors
-=======
       if key == 'None':
         key=findNextKeyForAgentEntry()
       standard_mode = is_in_standard_mode()
       if standard_mode:
           std_nat_interfaces = alias_interfaces_list()
->>>>>>> origin/broadcom_sonic_3.x_share
       ipAddrValid = False
       ifValid = True
       if not interface == '':
