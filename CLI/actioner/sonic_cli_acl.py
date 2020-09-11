@@ -124,6 +124,17 @@ def acl_natsort_intf_prio(ifname):
 
     if ifname.startswith('Ethernet'):
         prio = 10000 + int(ifname.replace('Ethernet', ''), 0)
+    elif ifname.startswith('Eth'):
+        portnum = ifname.replace('Eth', '')
+        parts = portnum.split('/')
+        # Ideally slot on Pizzabox is supposed to be 0. Just in case its changed in future
+        slot=int(parts[0])+1
+        port=int(parts[1])
+        try:
+            breakout = int(parts[2])
+        except IndexError:
+            breakout = 1
+        prio = 10000 + slot*(port*16 + breakout)
     elif ifname.startswith('PortChannel'):
         prio = 20000 + int(ifname.replace('PortChannel', ''), 0)
     elif ifname.startswith('Vlan'):
@@ -1062,7 +1073,8 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
     else:
         render_dict[intf_name] = output
 
-    show_cli_output('show_access_list_intf.j2', render_dict, continuation=continuation)
+    if show_cli_output('show_access_list_intf.j2', render_dict, continuation=continuation):
+        raise SonicACLCLIStopNoError
 
 
 def __process_acl_counters_request_by_name_and_inf(response, args):
@@ -1101,9 +1113,11 @@ def __process_acl_counters_request_by_type_and_name(response, args):
     stage = acl_data.get("stage", "INGRESS")
     ports = acl_data.get("ports", [])
     if len(ports) != 0:
+        # Sort and show 
+        ports = natsorted(ports, key=acl_natsort_intf_prio)
         log.log_debug("ACL {} Type {} has ports.".format(acl_data["aclname"], acl_type))
         cont = False
-        for port in acl_data.get("ports", []):
+        for port in ports:
             __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache, cont)
             cont = True
     else:
@@ -1133,6 +1147,8 @@ def __process_acl_counters_request_by_type(response, args):
         stage = acl.get("stage", "INGRESS")
         ports = acl.get("ports", [])
         if len(ports) != 0:
+            # Sort and show 
+            ports = natsorted(ports, key=acl_natsort_intf_prio)
             log.log_debug("ACL {} Type {} has ports.".format(acl["aclname"], acl_type))
             cont = False
             for port in ports:
@@ -1270,6 +1286,8 @@ def run(op_str, args=None):
     except SonicAclCLIError as e:
         print("%Error: {}".format(e.message))
         return -1
+    except SonicACLCLIStopNoError:
+        pass
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))
