@@ -18,6 +18,7 @@
 import syslog as log
 import sys
 import cli_client as cc
+import ipaddress
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 
@@ -262,14 +263,14 @@ def process_oc_nbrs(response):
         if rcvdIntfName == "eth0":
             rcvdIntfName = "Management0"
 
-        nbrEntry = {'ipAddr':ipAddr,
+        nbrEntry = {'ipAddr':ipaddress.ip_address(ipAddr),
                     'macAddr':macAddr,
                     'intfName':rcvdIntfName,
                     'egressPort':egressPort
                     }
         outputList.append(nbrEntry)
 
-    return outputList
+    return sorted(outputList, key=lambda k: k['ipAddr'])
 
 def process_sonic_nbrs(response):
     outputList  = []
@@ -317,7 +318,7 @@ def process_sonic_nbrs(response):
         if ifName == "eth0":
             ifName = "Management0"
 
-        nbrEntry = {'ipAddr':ipAddr,
+        nbrEntry = {'ipAddr':ipaddress.ip_address(ipAddr),
                            'macAddr':macAddr,
                            'intfName':ifName,
                            'egressPort':egressPort
@@ -330,7 +331,7 @@ def process_sonic_nbrs(response):
             elif (rcvdIpAddr is None and rcvdMacAddr is None):
                 outputList.append(nbrEntry)
 
-    return outputList
+    return sorted(outputList, key=lambda k: k['ipAddr'])
 
 def clear_neighbors(keypath, body):
     status = ""
