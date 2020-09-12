@@ -547,7 +547,7 @@ limitations under the License.
     <PTYPE
         name="PASSWORD_STR"
         pattern="[^,]+"
-        help="String"
+        help="WORD"
         />
     <!--=======================================================-->
     <PTYPE
