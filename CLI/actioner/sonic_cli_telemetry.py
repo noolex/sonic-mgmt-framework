@@ -469,9 +469,9 @@ def getDetails(fn, args):
         details['url'] = flowgroups_url
         flowGroupsIds = do_get(flowgroup_ids_url)
         idsSet = set()
-        maxSet = set(range(1, 255, 1))
+        maxSet = set(range(2, 255, 1))
         flowGroupsMap = {}
-        currentid = 1
+        currentid = 2
         if (flowGroupsIds['ok']):
             if (flowGroupsIds['content'] is not None):
                 if 'sonic-tam-flowgroups:TAM_FLOWGROUP_TABLE_LIST' in flowGroupsIds['content']:
