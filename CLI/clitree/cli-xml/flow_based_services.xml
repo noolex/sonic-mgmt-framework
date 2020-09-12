@@ -333,39 +333,6 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_dscp ${fbs-class-name}</ACTION>
         </COMMAND>
 
-        <COMMAND name="match source-port" help="Match packets using TCP/UDP source port">
-            <PARAM name="l4-port-oper" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="eq" help="Match TCP/UDP Port equal to" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="eq-port-val" help="TCP/UDP port number" ptype="RANGE_0_65535"/>
-                </PARAM>
-                <PARAM name="range" help="Match TCP/UDP port range" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="begin-port-val" help="TCP/UDP port number begin" ptype="RANGE_0_65534"/>
-                    <PARAM name="end-port-val" help="TCP/UDP port number end" ptype="RANGE_1_65535"/>
-                </PARAM>
-            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_layer4_port ${fbs-class-name} source ${__params}</ACTION>
-        </COMMAND>
-        <COMMAND name="no match source-port" help="Delete match packets using TCP/UDP source port">
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_layer4_port ${fbs-class-name} source</ACTION>
-        </COMMAND>
-
-        <COMMAND name="match destination-port" help="Match packets using TCP/UDP destination port">
-            <PARAM name="l4-port-oper" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="eq" help="Match TCP/UDP Port equal to" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="eq-port-val" help="TCP/UDP port number" ptype="RANGE_0_65535"/>
-                </PARAM>
-                <PARAM name="range" help="Match TCP/UDP port range" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="begin-port-val" help="TCP/UDP port number begin" ptype="RANGE_0_65534"/>
-                    <PARAM name="end-port-val" help="TCP/UDP port number end" ptype="RANGE_1_65535"/>
-                </PARAM>
-            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_layer4_port ${fbs-class-name} destination ${__params}</ACTION>
-        </COMMAND>
-        <COMMAND name="no match destination-port" help="Delete match packets using TCP/UDP destination port">
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_layer4_port ${fbs-class-name} destination</ACTION>
-        </COMMAND>
-
-        <!-- CLEANUP -->
         <COMMAND name="match l4-port" help="Match packets using TCP/UDP port">
             <PARAM name="l4-port-type" help="" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="source" help="Match TCP/UDP source port" ptype="SUBCOMMAND" mode="subcommand" />
@@ -383,7 +350,6 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_layer4_port ${fbs-class-name} ${__params}</ACTION>
         </COMMAND>
 
-        <!-- CLEANUP -->
         <COMMAND name="no match l4-port" help="Delete match packets using TCP/UDP port">
             <PARAM name="l4-port-type" help="" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="source" help="Delete match on source TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand"/>
