@@ -316,7 +316,9 @@ limitations under the License.
 <MACRODEF name="INTF_IPV6_ENABLE">
     <COMMAND
         name="ipv6 enable"
-        help="Enable IPv6" >
+        help="Enable IPv6"
+        command_tables= "arg2"
+        dbpath= "arg3">
         <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_ipv6_enabled True</ACTION>
     </COMMAND>
     <COMMAND

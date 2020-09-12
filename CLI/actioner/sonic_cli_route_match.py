@@ -67,6 +67,39 @@ def invoke_api(func, args=[]):
         keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-bgp-policy:bgp-conditions/match-as-path-set/config/as-path-set', name=args[0], name1= args[1])
         return api.delete(keypath)
 
+    elif func == 'patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_evpn':
+        index = 0
+        for arg in args[index:]:
+            if (arg == "match_evpn_cmd_type" and args[index + 1] == "default-route"):
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-bgp-policy:bgp-conditions/match-evpn-set/config/default-type5-route', name=args[0], name1= args[1])
+                body = {"openconfig-bgp-policy:default-type5-route": True}
+                break
+            if (arg == "match_evpn_cmd_type" and args[index + 1] == "route-type"):
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-bgp-policy:bgp-conditions/match-evpn-set/config/route-type', name=args[0], name1= args[1])
+                body = {"openconfig-bgp-policy:route-type": args[index + 3].upper() }
+                break
+            if (arg == "match_evpn_cmd_type" and args[index + 1] == "vni"):
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-bgp-policy:bgp-conditions/match-evpn-set/config/vni-number', name=args[0], name1= args[1])
+                body = {"openconfig-bgp-policy:vni-number": int(args[index + 4])}
+                break
+            index = index + 1
+        return api.patch(keypath, body)
+
+    elif func == 'delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_evpn':
+        index = 0
+        for arg in args[index:]:
+            if (arg == "match_evpn_cmd_type" and args[index + 1] == "default-route"):
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-bgp-policy:bgp-conditions/match-evpn-set/config/default-type5-route', name=args[0], name1= args[1])
+                break
+            if (arg == "match_evpn_cmd_type" and args[index + 1] == "route-type"):
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-bgp-policy:bgp-conditions/match-evpn-set/config/route-type', name=args[0], name1= args[1])
+                break
+            if (arg == "match_evpn_cmd_type" and args[index + 1] == "vni"):
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/openconfig-bgp-policy:bgp-conditions/match-evpn-set/config/vni-number', name=args[0], name1= args[1])
+                break
+            index = index + 1
+        return api.delete(keypath)
+
     elif func == 'patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface':
         keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/match-interface/config/interface',name=args[0], name1= args[1])
         body = {"openconfig-routing-policy:interface":args[3] if args[2] == 'phy-if-name' else args[2] + args[3]}

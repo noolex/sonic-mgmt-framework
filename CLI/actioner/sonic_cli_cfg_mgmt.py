@@ -139,7 +139,9 @@ def run_erase(argv):
                 else:
                     status = response["sonic-config-mgmt:output"]
                     if status["status"] != 0:
-                        print status["status-detail"] 
+                        print status["status-detail"]
+                    if argv != ['no', 'write', 'erase']:
+                        print ("Configuration erase command will take effect on the next reboot.")
             else:
                 #error response
                 print api_response.error_message()

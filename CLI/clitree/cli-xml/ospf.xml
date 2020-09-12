@@ -33,10 +33,10 @@
   <NAMESPACE ref="configure-view" help="false" completion="false" />
 
   <COMMAND name="show configuration" help="Displays current OSPFv2 router configuration">
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-ospf view_keys=\"vrf-name=${vrf-name}\"</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-ospf view_keys="vrf-name=${vrf-name}"</ACTION>
   </COMMAND>
 
-  <COMMAND name="area" help="Configures OSPFv2 area parameters" command_keys="vrf_name=*,area-id=*,prefix=*,remote-router-id=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST/vrf_name={vrf-name},area-id={area-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_VIRTUAL_LINK/OSPFV2_ROUTER_AREA_VIRTUAL_LINK_LIST/vrf_name={vrf-name},area-id={area-id},remote-router-id={remote-router-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE/OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE_LIST/vrf_name={vrf-name},area-id={area-id},prefix={prefix}" render_command_cb='router_ospf_area'>
+  <COMMAND name="area" help="Configures OSPFv2 area parameters" command_keys="vrf_name=*,area-id=*,prefix=*,remote-router-id=*,authentication-key-id=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST/vrf_name={vrf-name},area-id={area-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_VIRTUAL_LINK/OSPFV2_ROUTER_AREA_VIRTUAL_LINK_LIST/vrf_name={vrf-name},area-id={area-id},remote-router-id={remote-router-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_VLMD_AUTHENTICATION/OSPFV2_ROUTER_AREA_VLMD_AUTHENTICATION_LIST/vrf_name={vrf-name},area-id={area-id},remote-router-id={remote-router-id},${,authentication-key-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE/OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE_LIST/vrf_name={vrf-name},area-id={area-id},prefix={prefix}" render_command_cb='router_ospf_area' escape_chars="">
       <PARAM name = "areaid" help = "OSPFv2 area identifier" ptype = "AREA_NUM_DOT" />
       <PARAM name = "areacmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true"> 
         <PARAM name="authentication" help="Enables area level authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true">
@@ -100,21 +100,25 @@
           <PARAM name = "vlinkip" help = "Router ID of the remote ABR" ptype = "IP_ADDR" >
             <PARAM name = "vlinkcmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
               <PARAM name="authentication" help="Enables authentication on the virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+                <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                   <PARAM name="null" help="Enables null authentication type" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
                   <PARAM name="message-digest" help="Enables message-digest authentication type" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                    <PARAM name="message-digest-key" help="Message-digest authentication key identifier" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                      <PARAM name="keyid" help="Key identifier" ptype="RANGE_1_255" >
-                        <PARAM name="md5" help="Message-digest authentication password" ptype="SUBCOMMAND" mode="subcommand" >
-                          <PARAM name="md5key" help="Authentication password" ptype="STRING" />
-                        </PARAM>
-                      </PARAM>
-                    </PARAM>
                   </PARAM>
                 </PARAM>
               </PARAM>
               <PARAM name="authentication-key" help="Simple text authentication password" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                <PARAM name="auth-key" help="Authentication password" ptype="STRING" />
+                <PARAM name="auth-key" help="Authentication password" ptype="STRING">
+                   <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+                </PARAM>
+              </PARAM>
+              <PARAM name="message-digest-key" help="Message-digest authentication key identifier" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="keyid" help="Key identifier" ptype="RANGE_1_255" >
+                  <PARAM name="md5" help="Message-digest authentication password" ptype="SUBCOMMAND" mode="subcommand" >
+                    <PARAM name="md5key" help="Authentication password" ptype="STRING" >
+                      <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+                    </PARAM>
+                  </PARAM>
+                </PARAM>
               </PARAM>
               <PARAM name="dead-interval" help="Configures adjacency dead interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
                 <PARAM name = "deadinterval" help = "Dead interval value in seconds" ptype = "RANGE_1_65535" />
@@ -195,15 +199,15 @@
           <PARAM name = "vlinkip" help = "Router ID of the remote ABR" ptype = "IP_ADDR" >
             <PARAM name = "vlinkcmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
               <PARAM name="authentication" help="Disables authentication on the virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+                <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
                   <PARAM name="null" help="Unconfigures null authentication type" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
                   <PARAM name="message-digest" help="Unconfigures message-digest authentication parameters" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                    <PARAM name="message-digest-key" help="Message-digest authentication key identifier" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-                      <PARAM name="keyid" help="Key identifier" ptype="RANGE_1_255" >
-                        <PARAM name="md5" help="Message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" />
-                      </PARAM>
-                    </PARAM>
                   </PARAM>
+                </PARAM>
+              </PARAM>
+              <PARAM name="message-digest-key" help="Message-digest authentication key identifier" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="keyid" help="Key identifier" ptype="RANGE_1_255" >
+                  <PARAM name="md5" help="Message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" />
                 </PARAM>
               </PARAM>
               <PARAM name="authentication-key" help="Unconfigures authentication password" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
@@ -825,10 +829,10 @@
       <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds ${vrf-name} ${__full_line} </ACTION>
         <DOCGEN>
     <DESCRIPTION>
-      Display ospf global information
+      Display ospf information
     </DESCRIPTION>
-    <EXAMPLE summary="Display ospf information for all vrf">
-      device# show ip ospf
+    <EXAMPLE summary="Display ospf information for default vrf">
+device# show ip ospf
  OSPF Routing Process, Router ID: 1.1.1.1
  Supports only single TOS (TOS0) routes
  This implementation conforms to RFC2328
@@ -876,11 +880,164 @@
    Number of opaque link LSA . Checksum Sum 0x
    Number of opaque area LSA 0. Checksum Sum 0x0
     </EXAMPLE>
+    <EXAMPLE summary="Display neighbor information for ospf on default vrf">
+sonic# show ip ospf neighbor | no-more
+ 
+Neighbor ID     Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
+10.59.142.247     1 Full/Backup       37.343s 64.1.1.2        Ethernet64:64.1.1.1      0     0     0
+    </EXAMPLE>
+    <EXAMPLE summary="Display neighbor detailed information for ospf on default vrf">
+sonic# show ip ospf neighbor detail | no-more
+Neighbor 10.59.142.247, interface address 64.1.1.2
+    In the area 0.0.0.0 via interface Ethernet64
+    Neighbor priority is 1, State is Full, 6 state changes
+    Most recent state change statistics:
+      Progressive change 7h3m25s ago
+    DR is 64.1.1.1, BDR is 64.1.1.2
+    Options 2 *|-|-|-|-|-|E|-
+    Dead timer due in 30.687s
+    Database Summary List 0
+    Link State Request List 0
+    Link State Retransmission List 0
+    Thread Inactivity Timer on
+    Thread Database Description Retransmision off
+    Thread Link State Request Retransmission on
+    Thread Link State Update Retransmission on
+    </EXAMPLE>
+    <EXAMPLE summary="Display interface information for ospf on default vrf">
+sonic# show ip ospf interface | no-more
+VRF Name: default
+Ethernet64 is up
+  ifindex 128, MTU 9100 bytes, BW 25000 Mbit UP,BROADCAST,RUNNING,MULTICAST
+  Internet Address 64.1.1.1/24, Broadcast 64.1.1.255, Area 0.0.0.0
+  MTU mismatch detection: enabled 
+  Router ID 10.59.143.131, Network Type BROADCAST, Cost: 4
+  Transmit Delay is 1 sec, State DR, Priority 1
+  Backup Designated Router (ID) 10.59.142.247, Interface Address 64.1.1.2
+  Saved Network-LSA sequence number 0x8000000f
+  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
+  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
+    Hello due in 9.023s
+  Neighbor Count is 1, Adjacent neighbor count is 1
+    </EXAMPLE>
+    <EXAMPLE summary="Display interface traffic information for ospf on default vrf">
+sonic# show ip ospf interface traffic | no-more
+ 
+Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack        
+                Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx        
+--------------------------------------------------------------------------------------------
+Ethernet64     2563/2563           3/3             1/1            17/30           29/16    
+    </EXAMPLE>
+    <EXAMPLE summary="Display database information for ospf on default vrf">
+sonic# show ip ospf database | no-more
+VRF Name: default
+         
+       OSPF Router with ID (10.59.143.131)
+ 
+                Router Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+10.59.142.247   10.59.142       1682 0x80000011 0xb56b 1
+10.59.143.131   10.59.143       1498 0x80000011 0xdc2c 1
+ 
+                Net Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+64.1.1.1        10.59.143.131   1538 0x8000000f 0x1c70
+    </EXAMPLE>
+    <EXAMPLE summary="Display database router information for ospf on default vrf">
+sonic# show ip ospf database router | no-more
+VRF Name: default
+     
+       OSPF Router with ID (10.59.143.131)
+     
+                 
+                Router Link States (Area 0.0.0.0)
+                 
+  LS age: 1709
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  Flags: 0x0  :
+  LS Type: router-LSA
+  Link State ID: 10.59.142.247
+  Advertising Router: 10.59.142
+  LS Seq Number: 80000011
+  Checksum: 0xb56b
+  Length: 36
+   
+   Number of Links: 1
+    
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 64.1.1.1
+     (Link Data) Router Interface address: 64.1.1.2
+      Number of TOS metrics: 0
+       TOS 0 Metric: 4
+    
+                             
+  LS age: 1525
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  Flags: 0x0  :
+  LS Type: router-LSA
+  Link State ID: 10.59.143.131
+  Advertising Router: 10.59.143
+  LS Seq Number: 80000011
+  Checksum: 0xdc2c
+  Length: 36
+   
+   Number of Links: 1
+    
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 64.1.1.1
+     (Link Data) Router Interface address: 64.1.1.1
+      Number of TOS metrics: 0
+       TOS 0 Metric: 4
+    </EXAMPLE>
+    <EXAMPLE summary="Display database network information for ospf on default vrf">
+sonic# show ip ospf database network | no-more
+VRF Name: default
+     
+       OSPF Router with ID (10.59.143.131)
+     
+     
+                Net Link States (Area 0.0.0.0)
+                 
+  LS age: 1602
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  LS Type: network-LSA
+  Link State ID: 64.1.1.1 (address of Designated Router)
+  Advertising Router: 10.59.143.131
+  LS Seq Number: 8000000f
+  Checksum: 0x1c70
+  Length: 32
+   
+  Network Mask: /24
+        Attached Router: 10.59.142.247
+                   
+        Attached Router: 10.59.143.131
+    </EXAMPLE>
   </DOCGEN>
      </COMMAND>
 
      <COMMAND name="show ip ospf route" help="Displays OSPFv2 routing table" >
         <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds default ${__full_line}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Display ospf route information for a user-vrf
+                </DESCRIPTION>
+                <EXAMPLE summary="Display ospf route information for user vrf">
+sonic# show ip ospf vrf Vrf1 route | no-more
+VRF Name: Vrf1
+============ OSPF network routing table ============
+N    101.1.1.0/24          [10] area: 0.0.0.0
+                           directly attached to Vlan101
+ 
+============ OSPF router routing table =============
+ 
+============ OSPF external routing table ===========
+                </EXAMPLE>
+            </DOCGEN>
      </COMMAND>
 
      <COMMAND name="show ip ospf vrfs" help="Displays OSPFv2 VRFs" >

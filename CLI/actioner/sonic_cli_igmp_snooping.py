@@ -76,8 +76,7 @@ def invoke(func, args):
                          {
                             "name": args[0],
                             "config" : {
-                            "querier": True,
-                            "enabled": True
+                            "querier": True
                             }
                         }
                         ]
@@ -90,8 +89,7 @@ def invoke(func, args):
                             {
                                 "name": args[0],
                                 "config" : {
-                                "fast-leave": True,
-                                "enabled": True
+                                "fast-leave": True
                                 }
                             }
                             ]
@@ -106,8 +104,7 @@ def invoke(func, args):
                             {
                                 "name": args[0],
                                 "config" : {
-                                    "version": int(args[2]),
-                                    "enabled": True
+                                    "version": int(args[2])
                                     }
                                 }
                             ]
@@ -122,8 +119,7 @@ def invoke(func, args):
                                 {
                                     "name": args[0],
                                     "config" : {
-                                        "query-interval": int(args[2]),
-                                        "enabled": True
+                                        "query-interval": int(args[2])
                                         }
                                     }
                                 ]
@@ -138,8 +134,7 @@ def invoke(func, args):
                                 {
                                     "name": args[0],
                                     "config" : {
-                                        "last-member-query-interval": int(args[2]),
-                                        "enabled": True
+                                        "last-member-query-interval": int(args[2])
                                         }
                                     }
                                 ]
@@ -154,8 +149,7 @@ def invoke(func, args):
                                 {
                                     "name": args[0],
                                     "config" : {
-                                        "query-max-response-time": int(args[2]),
-                                        "enabled": True
+                                        "query-max-response-time": int(args[2])
                                         }
                                     }
                                 ]
@@ -170,8 +164,7 @@ def invoke(func, args):
                                 {
                                     "name": args[0],
                                     "config" : {
-                                        "mrouter-interface": [(args[3])],
-                                        "enabled": True
+                                        "mrouter-interface": [(args[3])]
                                         }
                                     }
                                 ]
@@ -180,7 +173,7 @@ def invoke(func, args):
                    }
 
         elif args[1] == 'static-group' :
-            body = {"openconfig-network-instance-deviation:igmp-snooping":{"interfaces":{"interface":[{"config":{"enabled":True,"name":args[0]},"name":args[0],"staticgrps":{"static-multicast-group":[{"config":{"outgoing-interface":[args[4]]},"group":args[2],"source-addr":"0.0.0.0"}]}}]}}}
+            body = {"openconfig-network-instance-deviation:igmp-snooping":{"interfaces":{"interface":[{"config":{"name":args[0]},"name":args[0],"staticgrps":{"static-multicast-group":[{"config":{"outgoing-interface":[args[4]]},"group":args[2],"source-addr":"0.0.0.0"}]}}]}}}
         else:    
             print("%Error: Invalid command")
             exit(1)

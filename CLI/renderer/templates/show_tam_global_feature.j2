@@ -1,0 +1,7 @@
+{% if json_output -%}
+{% if "openconfig-tam:feature" in json_output %}
+{% set feature = json_output['openconfig-tam:feature'] %}
+Name          : {{getFeatureDescription(feature[0]['state']['feature-ref'])}}
+Status        : {{getStatusDescription(feature[0]['state']['op-status'])}}
+{% endif %}
+{% endif %}

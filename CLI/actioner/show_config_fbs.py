@@ -143,8 +143,8 @@ def show_running_fbs_policy(render_tables):
                 cmd_str += '' if index == 0 else "!;" 
                 index += 1
                 match_type = render_data[policy_name]['TYPE'].lower()
-                cmd_str += 'policy {} type {};'.format(policy_name, match_type)
-                if 'DESCRIPTION' in render_data:
+                cmd_str += 'policy-map {} type {};'.format(policy_name, match_type)
+                if 'DESCRIPTION' in render_data and render_data['DESCRIPTION'] != "":
                     cmd_str += ' description {} ;'.format(render_data['DESCRIPTION'])
                 for flow in render_data[policy_name]['FLOWS']:
                     flow_data = render_data[policy_name]['FLOWS'][flow]
@@ -152,7 +152,7 @@ def show_running_fbs_policy(render_tables):
                     if 'PRIORITY' in flow_data:
                         priority = "priority " + str(flow_data['PRIORITY']) 
                     cmd_str += ' class {} {} ;'.format(flow_data['CLASS_NAME'], priority)
-                    if 'DESCRIPTION' in flow_data:
+                    if 'DESCRIPTION' in flow_data and flow_data['DESCRIPTION'] != "":
                         cmd_str += ' description {} ;'.format(flow_data['DESCRIPTION'])
                     if match_type == 'copp':
                         if 'TRAP_GROUP' in flow_data:
@@ -169,16 +169,16 @@ def show_running_fbs_policy(render_tables):
 
                         pstr = ""
                         if 'SET_POLICER_CIR' in flow_data:
-                            pstr += ' cir {}'.format(flow_data['SET_POLICER_CIR'])
+                            pstr += 'cir {} '.format(flow_data['SET_POLICER_CIR'])
                         if 'SET_POLICER_CBS' in flow_data:
-                            pstr += ' cbs {}'.format(flow_data['SET_POLICER_CBS'])
+                            pstr += 'cbs {} '.format(flow_data['SET_POLICER_CBS'])
                         if 'SET_POLICER_PIR' in flow_data:
-                            pstr += ' pir {}'.format(flow_data['SET_POLICER_PIR'])
+                            pstr += 'pir {} '.format(flow_data['SET_POLICER_PIR'])
                         if 'SET_POLICER_PBS' in flow_data:
-                            pstr += ' pbs {}'.format(flow_data['SET_POLICER_PBS'])
+                            pstr += 'pbs {} '.format(flow_data['SET_POLICER_PBS'])
                         if pstr != "":
                             cmd_str += '  police {} ;'.format(pstr)
-
+                        cmd_str += ' !;'
                     elif match_type == 'forwarding':
                         if 'DEFAULT_PACKET_ACTION' in flow_data:
                             cmd_str += ' set interface null ;'
@@ -206,10 +206,11 @@ def show_running_fbs_policy(render_tables):
                                 if "PRIORITY" in nhop:
                                     prio_str = "priority " + str(nhop["PRIORITY"])
                                 cmd_str += '  set ipv6 next-hop {} {} {} ;'.format(nhop["IP_ADDRESS"], vrf_str, prio_str)
+                        cmd_str += ' !;'
                     elif match_type == 'monitoring':
                         if 'SET_MIRROR_SESSION' in flow_data:
                             cmd_str += '  set mirror-session {} ;'.format(flow_data['SET_MIRROR_SESSION'])
-                    pass
+                        cmd_str += ' !;'
 
     return 'CB_SUCCESS', cmd_str, True
 

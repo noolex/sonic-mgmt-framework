@@ -161,6 +161,52 @@ def entryNotFound(response):
       return True
   return False
 
+def findKeyForAgentEntry(ipAddr, port, interface):
+  """ Search the Agent Table for ipAddr and return the key
+      Keys are of the form agentEntry1, agentEntry2, etc.
+  """
+  keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
+  entry = "None"
+  response = aa.get(keypath)
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
+    listenList = response.content['ietf-snmp:listen']
+    if len(listenList) > 0:
+      for listen in listenList:
+        iface = ""
+        udp = listen['udp']
+        if (ipAddr == udp['ip']) and (int(port) == udp['port']):
+          if udp.has_key('ietf-snmp-ext:interface'):
+            iface = udp['ietf-snmp-ext:interface']
+          if interface == iface:
+            entry = listen['name']
+            break
+
+  return entry
+
+def findNextKeyForAgentEntry():
+  """ Find the next available agentEntry key """
+  index = 1
+  key = "agentEntry{}".format(index)
+  keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
+  response=aa.get(keypath)
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
+    listenList = response.content['ietf-snmp:listen']
+    if len(listenList) > 0:
+      while 1:
+        for listen in listenList:
+          found = False
+          if listen['name'] == key:
+            found = True
+            break;
+
+        if found == True:
+          index += 1
+          key = "agentEntry{}".format(index)
+        else:
+          break
+
+  return key
+
 def findKeyForTargetEntry(ipAddr):
   """ Search the Target Table for ipAddr and return the key
       Keys are of the form targetEntry1, targetEntry2, etc.
@@ -358,9 +404,7 @@ def invoke(func, args):
       body = {"ietf-snmp-ext:trap-enable": True}
       response = aa.patch(keypath, body)
     else:
-      body = {"ietf-snmp-ext:trap-enable": False}
-      response = aa.patch(keypath, body)
-#      response = aa.delete(keypath)                  # delete operation deletes "system"
+      response = aa.delete(keypath)
     return response
 
   elif func == 'snmp_engine':
@@ -390,7 +434,17 @@ def invoke(func, args):
       index = args.index('interface')
       interface = args[index+1]
 
+    response = None
+    # Since the key to the YANG model is the listening address i.e. the listen name
+    # there can exist only a single entry per name.
+    key=findKeyForAgentEntry(ipAddress, port, interface)
+    if not key == 'None':
+      keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen={name}', name=key)
+      response = aa.delete(keypath, True)
+
     if func == 'snmp_agentaddr':    # Need to test parameters before setting
+      if key == 'None':
+        key=findNextKeyForAgentEntry()
       ipAddrValid = False
       ifValid = True
       if not interface == '':
@@ -457,13 +511,10 @@ def invoke(func, args):
       udp['port'] = int(port, 10)
       if len(interface) > 0:
         udp['ietf-snmp-ext:interface'] = interface
-      listen = {'name' : str(ip),
+      listen = {'name' : key,
                 'udp' : udp }
       body = { 'ietf-snmp:engine' : { 'listen' : [ listen ] }}
       response = aa.patch(keypath, body)
-    else:
-      keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen={index}', index=ipAddress)
-      response = aa.delete(keypath)
 
     return response
 

@@ -29,7 +29,7 @@ limitations under the License.
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand" optional="true">
       <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15"/>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp view_keys=\"vrf-name=${vrf-name}\"</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp view_keys="vrf-name=${vrf-name}"</ACTION>
   </COMMAND>
   <COMMAND name="show running-configuration bgp neighbor" help="Display current BGP neighbor configurations">
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand">
@@ -45,14 +45,14 @@ limitations under the License.
            </PARAM>
          </PARAM>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr view_keys=\"vrf-name=${vrf-name},neighbor=${ip}${Ethernet}${PortChannel}${Vlan}${instance}\"</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr view_keys="vrf-name=${vrf-name},neighbor=${ip}${Ethernet}${PortChannel}${Vlan}${instance}"</ACTION>
   </COMMAND>
   <COMMAND name="show running-configuration bgp peer-group" help="Display current BGP peer group configurations">
     <PARAM name="vrf" help="VRF Instance" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15"/>
          <PARAM name="peer-group-name" help="Name of peer-group" ptype="STRING_63" optional="true"/>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template view_keys=\"vrf-name=${vrf-name},pg=${peer-group-name}\"</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template view_keys="vrf-name=${vrf-name},pg=${peer-group-name}"</ACTION>
   </COMMAND>
   <COMMAND name="show bgp ipv4" help="IPv4 information">
     <MACRO name="NEW_BGP_SHW_OPTIONS" arg="4,"></MACRO>
@@ -182,7 +182,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="clear bgp ipv4" help="Clear BGP IPv4">
     <MACRO name="NEW_BGP_CLR_OPTIONS" arg="4"></MACRO>
-    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ipv4-addr} n-ipv6=${ipv6-addr} cleartype=${cleartype} dampopt=${damptype} ${__full_line}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ipv4-addr} n-ipv6=${ipv6-addr} cleartype=${cleartype} dampopt=${damptype} ${__line}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command clears/resets BGP information including neighbors,
@@ -258,7 +258,7 @@ limitations under the License.
       depth="2">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <COMMAND name="show configuration" help="show bgp configuration">
-    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp view_keys=\"vrf-name=${vrf-name}\"</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp view_keys="vrf-name=${vrf-name}"</ACTION>
   </COMMAND>
 
   <COMMAND name="router-id" help="Override configured router identifier">
@@ -1337,7 +1337,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp nbr configuration">
-     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr view_keys=\"vrf-name=${vrf-name},neighbor=${nbr-addr}\"</ACTION>
+     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr view_keys="vrf-name=${vrf-name},neighbor=${nbr-addr}"</ACTION>
    </COMMAND>
   <COMMAND name="description" help="Assign a string describing the neighbor">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR/BGP_NEIGHBOR_LIST/name"/>
@@ -2070,7 +2070,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
    <COMMAND name="show configuration" help="show bgp peer group configuration">
-     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template view_keys=\"vrf-name=${vrf-name},pg=${template-name}\"</ACTION>
+     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template view_keys="vrf-name=${vrf-name},pg=${template-name}"</ACTION>
    </COMMAND>
   <COMMAND name="description" help="Assign a string describing the neighbor">
     <PARAM name="String" help="Enter the string (max 80 characters) to describe neighbor/peer-group" ptype="STRING" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP/BGP_PEER_GROUP_LIST/name"/>

@@ -2,17 +2,54 @@
 {{'LLDP Neighbors'.ljust(20)}}
 {{'-----------------------------------------------------------'}}
 {% for neigh in json_output %}
-{% if 'neighbors' in neigh %}
+{% if 'neighbors' in neigh and 'neighbor' in neigh['neighbors'] and (neigh['neighbors']['neighbor'] | length) > 0 %}
 {% set value = neigh['neighbors']['neighbor'][0] %}
-{{'Interface:'}}{{'   '}}{{value['id']}}{{',via:'}}{{' LLDP'}}
+{% set id = '' %}
+{% set chassis_id = '' %}
+{% set port_id = '' %}
+{% set port_desc = '' %}
+{% set sys_name = '' %}
+{% set sys_desc = '' %}
+{% set ttl = '' %}
+{% set mgmt_addr = '' %}
+
+{% if 'id' in value %}
+{% set id = value['id'].strip() %}
+{% endif %}
+
+
+{% if 'state' in value %}
+{% if 'system-name' in value['state']%}
+{% set sys_name = value['state']['system-name'].strip() %}
+{% endif %}
+{% if 'port-id' in value['state'] %}
+{% set port_id = value['state']['port-id'].strip() %}
+{% endif %}
+{% if 'port-description' in value['state'] %}
+{% set port_desc = value['state']['port-description'].strip() %}
+{% endif %}
+{% if 'chassis-id' in value['state'] %}
+{% set chassis_id = value['state']['chassis-id'].strip() %}
+{% endif %}
+{% if 'system-description' in value['state'] %}
+{% set sys_desc = value['state']['system-description'].strip() %}
+{% endif %}
+{% if 'ttl' in value['state'] %}
+{% set ttl = value['state']['ttl'] %}
+{% endif %}
+{% if 'management-address' in value['state'] %}
+{% set mgmt_addr = value['state']['management-address'].strip() %}
+{% endif %}
+{% endif %}
+
+{{'Interface:'}}{{'   '}}{{id}}{{',via:'}}{{' LLDP'}}
 {{'  Chassis:'}}
-{{'    ChassisID:    '}}{{value['state']['chassis-id']}}
-{{'    SysName:      '}}{{value['state']['system-name']}}
-{% set desc = value['state']['system-description'].split('\r\n')[1:] %}
-{{'    SysDescr:     '}}{{value['state']['system-description'].split('\r\n')[0]}}
-{{'    TTL:          '}}{{value['state']['ttl']}}
-{% if value['state']['management-address'] %}
-{% set mgmt_ip = value['state']['management-address'].split(',') %}
+{{'    ChassisID:    '}}{{chassis_id}}
+{{'    SysName:      '}}{{sys_name}}
+{{'    SysDescr:     '}}{{sys_desc.split('\r\n')[0]}}
+{{'    TTL:          '}}{{ttl}}
+{% if mgmt_addr %}
+{% set mgmt_ip = mgmt_addr.split(',') %}
 {{'    MgmtIP:       '}}{{mgmt_ip[0]}}
 {% if mgmt_ip|length > 1 %}
 {{'    MgmtIP:       '}}{{mgmt_ip[1]}}
@@ -21,20 +58,20 @@
 {% for v in desc %}
 {{'                  '}}{{v}}
 {% endfor %}
-{% if 'capabilities' in value.keys() %}
+{% if 'capabilities' in value and 'capability' in value['capabilities'] %}
 {% for cap in  value['capabilities']['capability'] %}
-{%  if cap['state']['enabled'] == true %}
+{%  set en = 'OFF' %}
+{%  if 'state' in cap and 'enabled' in cap['state'] and cap['state']['enabled'] == true %}
 {%  set en = 'ON' %}
 {% endif %}
-{%  if cap['state']['enabled'] == false %}
-{%  set en = 'OFF' %}
-{% endif %}
+{% if 'name' in cap %}
 {{'    Capability:   '}}{{cap['name'].split(':')[1]}}{{', '}}{{en}}
+{% endif %}
 {% endfor %}
 {% endif %}
 {{'  Port'}}
-{{'    PortID:       '}}{{value['state']['port-id']}}
-{{'    PortDescr:    '}}{{value['state']['port-description']}}
+{{'    PortID:       '}}{{port_id}}
+{{'    PortDescr:    '}}{{port_desc}}
 {{'-----------------------------------------------------------'}}
 {% endif %}
 {% endfor %}

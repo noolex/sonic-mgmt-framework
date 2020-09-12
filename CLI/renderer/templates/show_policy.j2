@@ -90,7 +90,7 @@
             {% endif %}
         {% endfor %}
         {% if "APPLIED_INTERFACES" in json_output[policy_name] %}
-            {{- '  Applied to' }}
+            {{- '  Applied to:' }}
             {% for port_data in json_output[policy_name]["APPLIED_INTERFACES"] %}
                 {{- "   " }} {{ port_data["INTERFACE_NAME"] }} at {{ port_data["STAGE"].capitalize() }}
             {% endfor %}

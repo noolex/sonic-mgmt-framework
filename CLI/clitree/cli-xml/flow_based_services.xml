@@ -112,9 +112,9 @@ limitations under the License.
         </COMMAND>
 
         <!-- show running-config-configuration policy -->
-        <COMMAND name="show running-configuration policy" help="Shows current policy configuration">
+        <COMMAND name="show running-configuration policy-map" help="Shows current policy-map configuration">
             <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max: 63 characters)" ptype="STRING_63" optional="true" />
-            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys=\"fbs-policy-name=${show-fbs-policy-name}\" </ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${show-fbs-policy-name}" </ACTION>
         </COMMAND>
 
 
@@ -525,52 +525,17 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="police" help="Set rate limiting parameters">
-            <!--
-            <PARAM name="cir" help="Committed information rate in bits per second." ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-            </PARAM>
-            <PARAM name="policer-cbs-bc" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                </PARAM>
-                <PARAM name="bc" help="Indicates how much CIR can be exceeded in bytes per second." ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                    <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                </PARAM>
-            </PARAM>
-            <PARAM name="pir" help="Peak information rate in bits per second" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-            </PARAM>
-            <PARAM name="policer-cbs-bc" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                </PARAM>
-                <PARAM name="be" help="Indicates how much the PIR can be exceeded in bytes per second" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                </PARAM>
-            </PARAM>
-            -->
-
             <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
                     <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    <PARAM name="policer-cbs-bc" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                        <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
-                            <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
-                        <PARAM name="bc" help="Indicates how much CIR can be exceeded in bytes per second." ptype="SUBCOMMAND" mode="subcommand">
-                            <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
+                    <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
                     </PARAM>
                     <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
                         <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
                     </PARAM>
-                    <PARAM name="policer-pbs-be" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                        <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                            <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
-                        <PARAM name="be" help="Indicates how much the PIR can be exceeded in bytes per second" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                            <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
                     </PARAM>
                 </PARAM>
                 <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
@@ -578,44 +543,17 @@ limitations under the License.
                     <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
                         <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
                     </PARAM>
-                    <PARAM name="policer-pbs-be" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                        <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                            <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
-                        <PARAM name="be" help="Indicates how much the PIR can be exceeded in bytes per second" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                            <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="bc" help="Indicates how much CIR can be exceeded in bytes per second." ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    </PARAM>
-                    <PARAM name="policer-pbs-be" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                        <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                            <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
-                        <PARAM name="be" help="Indicates how much the PIR can be exceeded in bytes per second" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                            <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
                     </PARAM>
                 </PARAM>
                 <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand">
                     <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    <PARAM name="policer-pbs-be" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                        <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                            <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
-                        <PARAM name="be" help="Indicates how much the PIR can be exceeded in bytes per second" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                            <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                        </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
                     </PARAM>
                 </PARAM>
                 <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                </PARAM>
-                <PARAM name="be" help="Indicates how much the PIR can be exceeded in bytes per second" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
                     <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
                 </PARAM>
             </PARAM>

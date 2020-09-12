@@ -161,8 +161,10 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
 	} else if (*p == '\"') {
 	   if (!quoted && strchr((p+1), '\"')) {
 	      // open quote
-	      saved_ptr++;
-	      quoted = true;
+	      if (*saved_ptr == '\"') {
+		 saved_ptr++;
+	         quoted = true;
+	      }
 	   } else if (quoted) {
 	      // close quote
 	      quoted = false;

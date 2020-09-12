@@ -7,6 +7,7 @@ import json
 import collections
 import re
 import cli_client as cc
+import time
 from scripts.render_cli import show_cli_output
 
 def stp_mode_get():
@@ -35,7 +36,11 @@ def run_get_sonic_infra_reboot(func, argv):
        if argv[1] == '-h':
           process_msg = False
 
-    data={"Param":"sudo %s" %cmd}
+    if not os.getenv('KLISH_CLI_USER'):
+       data={"Param":"sudo %s" %cmd}
+    else:
+       user_string = "-u {}".format(os.getenv('KLISH_CLI_USER'))
+       data={"Param":"sudo %s %s" %(cmd, user_string)}
 
     aa = cc.ApiClient()
     keypath = cc.Path('/restconf/operations/openconfig-system-ext:reboot-ops')
@@ -49,6 +54,9 @@ def run_get_sonic_infra_reboot(func, argv):
        print("%s in process ....."%cmd) 
 
     api_response = aa.post(keypath, body)
+
+    if process_msg:
+       time.sleep(1)
 
     try:
         if api_response.ok():
@@ -68,6 +76,8 @@ def run_get_openconfig_infra_state(func, argv):
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/uptime')
     elif argv[0] == "reboot-cause":
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/reboot-cause')
+    elif argv[0] == "user-list":
+       path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/show-user-list')
     else:
        print "%Error: invalid state command"
     api_response = aa.get(path)
@@ -75,6 +85,8 @@ def run_get_openconfig_infra_state(func, argv):
         if api_response.content is not None:
             response = api_response.content
             show_cli_output(templ, response)
+    else:
+        print api_response.error_message()
 
 def run_get_sonic_infra_config(func, argv):
     templ = argv[1]

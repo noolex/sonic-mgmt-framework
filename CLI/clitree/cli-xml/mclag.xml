@@ -57,7 +57,7 @@
     <COMMAND
             name="show configuration"
             help = "show configuration">
-            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mclag view_keys=\"name=${id}\" </ACTION>            
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mclag view_keys="name=${id}" </ACTION>            
     </COMMAND>    
     <COMMAND name="no" help="Disables or resets configuration">
       <ACTION builtin="clish_nop"> </ACTION>

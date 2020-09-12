@@ -12,7 +12,7 @@ And respective tables for different if-types for fetching admin/oper status like
 {% set vars = {'flags': ""} %}
 {% set vars = {'ipv4_src_pfx': ""} %}
 {% if (("sonic-interface:INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in json_output)) %}
-Flags: U-Unnumbered interface
+Flags: U-Unnumbered interface, A-Anycast IP
 -----------------------------------------------------------------------------------------------
 {{'%-20s'|format("Interface")}}{{'%-35s'|format("IP address/mask")}}{{'%-15s'|format("VRF")}}{{'%-15s'|format("Admin/Oper")}}{{'%-15s'|format("Flags")}}
 -----------------------------------------------------------------------------------------------
@@ -34,14 +34,62 @@ Flags: U-Unnumbered interface
          {% if vars.update({'admin_state':"up"}) -%}{% endif -%}
          {% if vars.update({'oper_state':"up"}) -%}{% endif -%}
          {% if vars.update({'vrf':""}) %}{% endif %}
+         {% if vars.update({'flags':""}) %}{% endif %}
          {% if "isMgmtVrfEnabled" in json_output and json_output["isMgmtVrfEnabled"] == True%}
             {% if vars.update({'vrf': "mgmt"}) %}{% endif %}
+         {% endif %}
+         {% if 'sonic-mgmt-port:MGMT_PORT_LIST' in json_output %}
+            {% set mgmtPortList = json_output["sonic-mgmt-port:MGMT_PORT_LIST"] %}
+            {% for port in mgmtPortList -%}
+                {% if vars.name == port["ifname"] -%}
+                    {% if "admin_status" in port %}
+                        {% if vars.update({'admin_state':port["admin_status"]}) %}{% endif %}
+                    {% endif %}
+                    {% if "oper_status" in port %}
+                        {% if vars.update({'oper_state':port["oper_status"]}) %}{% endif %}
+                    {% endif %}
+                    {% break %}
+                {% endif -%}
+            {% endfor -%}
          {% endif %}
         {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
         {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
 {{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
       {% endfor %}
    {% endif %}
+    {% if "sonic-sag:SAG_INTF_LIST" in key -%}
+        {% set sagIntfList = json_output["sonic-sag:SAG_INTF_LIST"] -%}    
+        {% for sagIntf in sagIntfList -%}
+            {% set sagvars = ({'admin_state':'down','oper_state':'down','vrf':'','flags':''}) %}
+            {% if sagvars.update({'name':sagIntf["ifname"]}) -%}{% endif -%}
+            {% if sagvars.name == sagIntf["ifname"] -%}
+                {% if "v4GwIp" in sagIntf -%}
+                    {% if sagvars.update({'admin_state':"up"}) -%}{% endif -%}
+                    {% if sagvars.update({'ipv4_src_pfx':sagIntf["v4GwIp"]}) -%}{% endif -%}
+                {% endif -%}
+                {% if "v6GwIp" in sagIntf -%}
+                    {% if sagvars.update({'admin_state':"up"}) -%}{% endif -%}
+                    {% if sagvars.update({'ipv4_src_pfx':sagIntf["v6GwIp"]}) -%}{% endif -%}
+                {% endif -%}
+                {% if "oper" in sagIntf -%}
+                    {% if sagvars.update({'oper_state':sagIntf["oper"]}) -%}{% endif -%}
+                {% endif -%}
+                {% set admin_op = sagvars.admin_state|string() + "/" + sagvars.oper_state|string() -%}
+                {% if sagvars.update({'admin_oper':admin_op}) -%}{% endif -%}     
+                {% if "mode" in sagIntf and sagIntf["mode"] == "sag" -%}
+                    {% if sagvars.update({'flags':"A"}) -%}{% endif -%}
+                {% endif -%}
+            {% endif -%}
+            {% if "v4GwIp" in sagIntf or "v6GwIp" in sagIntf -%}       
+{{'%-20s'|format(sagvars.name)}}{{'%-35s'|format(sagvars.ipv4_src_pfx[0])}}{{'%-15s'|format(sagvars.vrf)}}{{'%-15s'|format(sagvars.admin_oper)}}{{'%-15s'|format(sagvars.flags)}}
+            {% if sagvars.ipv4_src_pfx|length > 1 -%}
+                {% for pfx in sagvars.ipv4_src_pfx[1:] %}
+{{'%-20s'|format('')}}{{'%-35s'|format(pfx)}}
+                {% endfor %}
+            {% endif %}
+            {% endif %}
+        {% endfor -%}    
+    {% endif %}
    {% for ifKey in intfTblList %}
 	{% if "secondary" in ifKey %}
             {% if vars.update({'secondary':ifKey["secondary"]}) %}{% endif %}
@@ -56,6 +104,7 @@ Flags: U-Unnumbered interface
             {% if vars.update({'admin_state':"down"}) %}{% endif %}
             {% if vars.update({'oper_state':"down"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
+            {% if vars.update({'flags':""}) %}{% endif %}
             {% for nKey in json_output %}
                 {% if "sonic-interface:INTERFACE_LIST" in nKey -%}
                     {% set portIntfList = json_output["sonic-interface:INTERFACE_LIST"] %}
@@ -93,6 +142,7 @@ Flags: U-Unnumbered interface
             {% if vars.update({'admin_state':"down"}) %}{% endif %}
             {% if vars.update({'oper_state':"down"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
+            {% if vars.update({'flags':""}) %}{% endif %}
             {% for nKey in json_output %}
                 {% if "sonic-portchannel-interface:PORTCHANNEL_INTERFACE_LIST" in nKey -%}
                     {% set lagIntfList = json_output["sonic-portchannel-interface:PORTCHANNEL_INTERFACE_LIST"] %}
@@ -129,6 +179,7 @@ Flags: U-Unnumbered interface
             {% if vars.update({'admin_state':"down"}) %}{% endif %}
             {% if vars.update({'oper_state':"down"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
+            {% if vars.update({'flags':""}) %}{% endif %}
             {% for nKey in json_output %}
                 {% if "sonic-vlan-interface:VLAN_INTERFACE_LIST" in nKey -%}
                     {% set vlanIntfList = json_output["sonic-vlan-interface:VLAN_INTERFACE_LIST"] %}
@@ -165,6 +216,7 @@ Flags: U-Unnumbered interface
             {% if vars.update({'admin_state':"up"}) %}{% endif %}
             {% if vars.update({'oper_state':"up"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
+            {% if vars.update({'flags':""}) %}{% endif %}
             {% for nKey in json_output %}
                 {% if "sonic-loopback-interface:LOOPBACK_INTERFACE_LIST" in nKey -%}
                     {% set loIntfList = json_output["sonic-loopback-interface:LOOPBACK_INTERFACE_LIST"] %}

@@ -70,5 +70,12 @@
                 builtin="clish_pyobj">sonic_cli_infra get_openconfig_infra_state reboot-cause infra_show.j2
             </ACTION>
         </COMMAND>
+        <COMMAND
+            name="show users"
+            help="Show users">
+            <ACTION
+                builtin="clish_pyobj">sonic_cli_infra get_openconfig_infra_state user-list infra_show.j2
+            </ACTION>
+        </COMMAND>
     </VIEW>
 </CLISH_MODULE>
