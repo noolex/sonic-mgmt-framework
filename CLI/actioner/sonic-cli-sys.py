@@ -34,12 +34,14 @@ urllib3.disable_warnings()
 
 plugins = dict()
 
-def hashed_pw(pw):
+def get_pwd(pw):
+    clear_pwd = hashed_pwd = ""
     pwd = pw.replace("\\","")
     if pwd[:3] == '$6$':
-        return pwd
-    salt = base64.b64encode(os.urandom(6), './')
-    return crypt(pwd, '$6$' + salt)
+        hashed_pwd = pwd
+    else:
+        clear_pwd = pwd
+    return clear_pwd, hashed_pwd
 
 def util_capitalize(value):
     for key,val in value.items():
@@ -99,11 +101,12 @@ def invoke(func, args):
 	return aa.get(path)
 
     elif func == 'patch_openconfig_system_system_aaa_authentication_users_user':
+        clear_pwd, hashed_pwd = get_pwd(args[1])
         body =  { "openconfig-system:user": [{"username": args[0],
-					     "config": {
- 							 "username": args[0],
-        						 "password": "",
-        						 "password-hashed": hashed_pw(args[1]),
+                                             "config": {
+                                                         "username": args[0],
+                                                         "password": clear_pwd,
+                                                         "password-hashed": hashed_pwd,
                                                          "ssh-key": "",
                                                          "role": args[2]
                                                         }
@@ -111,7 +114,7 @@ def invoke(func, args):
                                            ]
                 }
         path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/users/user={username}',username=args[0])
-	return aa.patch(path,body)
+        return aa.patch(path,body)
     elif func == 'delete_openconfig_system_system_aaa_authentication_users_user':
         path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/users/user={username}',username=args[0])
         return aa.delete(path)
