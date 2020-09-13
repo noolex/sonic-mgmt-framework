@@ -45,6 +45,49 @@ limitations under the License.
                 <PARAM name="copp" help="Shows all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows flow based services policy-map related information 
+              </DESCRIPTION>
+              <USAGE>
+                  Policy-map type and policy-map name arguments are optional. If type argument or policy-map name not provided command will show all policy-map information. Else it show corresponding policy-map information of given type or given name
+              </USAGE>
+              <EXAMPLE summary="Displays policy-map information">
+               Policy policy_mirror Type monitoring
+                 Description:
+                 Flow class1 at priority 10
+                   Description:
+                   set mirror-session mirror1
+                 Applied to:
+                   Vlan100 at Ingress
+               
+               Policy policy_qos Type qos
+                 Description:
+                 Flow class_permit_ipv6 at priority 10
+                   Description:
+                   police cir 300000000 cbs 300000000 pir 300000000 pbs 300000000
+                 Flow class_permit_ip at priority 10
+                   Description:
+                   police cir 300000000 cbs 300000000 pir 300000000 pbs 300000000
+                 Applied to:
+                   Vlan100 at Egress
+
+               Policy policy_vrf Type forwarding
+                 Description:
+                 Flow class_permit_ipv6 at priority 10
+                   Description:
+                   set ipv6 nexthop 1211::2 priority 20
+                   set ipv6 nexthop 1212::2 vrf Vrf-BLUE priority 30
+                 Flow class_permit_ip at priority 10
+                   Description:
+                   set ip nexthop 12.12.1.2 vrf default priority 30
+                   set ip nexthop 12.12.2.2 vrf Vrf-BLUE priority 20
+                   set ip nexthop 12.12.1.2 priority 10
+                 Applied to:
+                   Vlan100 at Ingress
+                   Switch at Ingress
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
         <!-- show class-map [NAME] [type acl|fields] -->
         <COMMAND name="show class-map" help="Shows class-map information">
@@ -58,6 +101,23 @@ limitations under the License.
                 <PARAM name="copp" help="Shows class-maps which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${show-fbs-class-name} ${show-fbs-class-type}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows flow based services class-map related information 
+              </DESCRIPTION>
+              <USAGE>
+                  Class-map match type and class-map name arguments are optional. If match type argument or class-map name not provided command will show all cclass-map information. Else it show corresponding class-map information of given type or given name
+              </USAGE>
+              <EXAMPLE summary="Displays class-map information">
+               sonic# show class-map class_permit_ip
+               Class-map class_permit_ip match-type fields
+                 Description:
+                 Match:
+                 Referenced in flows:
+                   policy policy_qos at priority 10
+                   policy policy_vrf at priority 10
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
 
@@ -73,6 +133,26 @@ limitations under the License.
             </PARAM>
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy_summary ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows summary of applied flow based services policies 
+              </DESCRIPTION>
+              <USAGE>
+                  Interface argument is optional. If interface is not specified it shows all service applied interfaces and their policy information. If interface is specified it shows service applied policy information for given interface.If interface is Switch it shows global/Switch level service policies.
+              </USAGE>
+              <EXAMPLE summary="Displays summary of applied flow based service policies">
+              sonic# show service-policy summary 
+              Vlan100                            
+                  monitoring policy policy_mirror at ingress
+                  forwarding policy policy_vrf at ingress   
+                  qos policy policy_qos at egress
+              Switch
+                  forwarding policy policy_vrf at ingress
+              CtrlPlane
+                  qos policy oob-qos-policy at ingress
+              </EXAMPLE>
+           </DOCGEN>
+             
         </COMMAND>
 
         <!-- show service-policy policy NAME [interface NAME] -->
@@ -85,6 +165,46 @@ limitations under the License.
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_policy ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows flow based services applied policies information by policy name
+              </DESCRIPTION>
+              <USAGE>
+                  policy-map interface argument is optional. If interface is not specified then it shows all services applied interfaces information for given policy. If interface is also specified then it gives service applied information for given policy name and given interface 
+              </USAGE>
+              <EXAMPLE summary="Displays fbs service applied for given policy policy_vrf">
+              show service-policy policy-map policy_vrf
+              Vlan100
+                Policy policy_vrf type forwarding at ingress
+                Description:
+                  Flow class_permit_ipv6 at priority 10 (Inactive)
+                    Description:
+                    set ipv6 nexthop 1211::2 priority 20
+                    set ipv6 nexthop 1212::2 vrf Vrf-BLUE priority 30
+                    Packet matches: 0 frames 0 bytes
+                  Flow class_permit_ip at priority 10 (Inactive)
+                    Description:
+                    set ip nexthop 12.12.1.2 vrf default priority 30
+                    set ip nexthop 12.12.2.2 vrf Vrf-BLUE priority 20
+                    set ip nexthop 12.12.1.2 priority 10
+                    Packet matches: 0 frames 0 bytes
+              Switch
+                Policy policy_vrf type forwarding at ingress
+                Description:
+                  Flow class_permit_ipv6 at priority 10 (Inactive)
+                    Description:
+                    set ipv6 nexthop 1211::2 priority 20
+                    set ipv6 nexthop 1212::2 vrf Vrf-BLUE priority 30
+                    Packet matches: 0 frames 0 bytes
+                  Flow class_permit_ip at priority 10 (Inactive)
+                    Description:
+                    set ip nexthop 12.12.1.2 vrf default priority 30
+                    set ip nexthop 12.12.2.2 vrf Vrf-BLUE priority 20
+                    set ip nexthop 12.12.1.2 priority 10
+                    Packet matches: 0 frames 0 bytes
+              </EXAMPLE>
+           </DOCGEN>
+ 
         </COMMAND>
 
         <!-- show service-policy interface NAME [type qos|monitoring|forwarding] -->
@@ -92,24 +212,131 @@ limitations under the License.
             <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows flow based services applied policies information by interface name
+              </DESCRIPTION>
+              <USAGE>
+                  policy-map type is optional. If type is not specified then all policies applied to this given interface will be shown. If type is also provided then only corresponding type policies applied on the given interface will be shown
+              </USAGE>
+              <EXAMPLE summary="Display fbs service applied on given interface vlan 100">
+              show service-policy interface Vlan 100
+              Vlan100                                      
+                Policy policy_mirror type monitoring at ingress
+                Description:                                   
+                  Flow class1 at priority 10 (Active)        
+                    Description:                               
+                    Packet matches: 0 frames 0 bytes           
+                Policy policy_vrf type forwarding at ingress   
+                Description:                                   
+                  Flow class_permit_ipv6 at priority 10 (Inactive)
+                    Description:                                  
+                    set ipv6 nexthop 1211::2 priority 20          
+                    set ipv6 nexthop 1212::2 vrf Vrf-BLUE priority 30
+                    Packet matches: 0 frames 0 bytes                 
+                  Flow class_permit_ip at priority 10 (Active)     
+                    Description:                                     
+                    set ip nexthop 12.12.1.2 vrf default priority 30 
+                    set ip nexthop 12.12.2.2 vrf Vrf-BLUE priority 20
+                    set ip nexthop 12.12.1.2 priority 10             
+                    Packet matches: 0 frames 0 bytes                 
+                Policy policy_qos type qos at egress
+                Description:
+                  Flow class_permit_ipv6 at priority 10 (Inactive)
+                    Description:
+                    police: cir 300000000 cbs 300000000 pir 300000000 pbs 300000000 (Active)
+                      type bytes mode color-blind
+                      operational cir 0 cbs 0 pir 0 pbs 0
+                      green 0 packets 0 bytes action forward
+                      yellow 0 packets 0 bytes action forward
+                      red 0 packets 0 bytes action drop
+                    Packet matches: 0 frames 0 bytes
+                  Flow class_permit_ip at priority 10 (Inactive)
+                    Description:
+                    police: cir 300000000 cbs 300000000 pir 300000000 pbs 300000000 (Active)
+                      type bytes mode color-blind
+                      operational cir 0 cbs 0 pir 0 pbs 0
+                      green 0 packets 0 bytes action forward
+                      yellow 0 packets 0 bytes action forward
+                      red 0 packets 0 bytes action drop
+                    Packet matches: 0 frames 0 bytes
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
 
         <!-- show service-policy Switch [type qos|monitoring|forwarding] -->
         <COMMAND name="show service-policy Switch" help="Switch/Global interface">
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface Switch ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows Global/Switch level flow based services applied policies information 
+              </DESCRIPTION>
+              <USAGE>
+              </USAGE>
+              <EXAMPLE summary="Displays service policies applied at the Switch level">
+              Sonic# show service-policy Switch
+              Switch
+                Policy policy_vrf type forwarding at ingress
+                Description:
+                  Flow class_permit_ipv6 at priority 10 (Inactive)
+                    Description:
+                    set ipv6 nexthop 1211::2 priority 20
+                    set ipv6 nexthop 1212::2 vrf Vrf-BLUE priority 30
+                    Packet matches: 0 frames 0 bytes
+                  Flow class_permit_ip at priority 10 (Inactive)
+                    Description:
+                    set ip nexthop 12.12.1.2 vrf default priority 30
+                    set ip nexthop 12.12.2.2 vrf Vrf-BLUE priority 20
+                    set ip nexthop 12.12.1.2 priority 10
+                    Packet matches: 0 frames 0 bytes
+
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <!-- show running-config-configuration class-map -->
         <COMMAND name="show running-configuration class-map" help="Shows current class-map configuration">
             <PARAM name="show-fbs-class-name" help="Name of the class-map" ptype="STRING_63" optional="true"/>
             <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${show-fbs-class-name} </ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows running configuration of class-map(s)
+              </DESCRIPTION>
+              <USAGE>
+                  Class-map name is optional. If Class-map name provided it will show all running configuration of all class-maps configured
+              </USAGE>
+              <EXAMPLE summary="show running-configuration class-map">
+               sonic# show running-configuration class-map class_permit_ipv6
+               class-map class_permit_ipv6 match-type fields match-all
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <!-- show running-config-configuration policy -->
         <COMMAND name="show running-configuration policy-map" help="Shows current policy-map configuration">
             <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max: 63 characters)" ptype="STRING_63" optional="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${show-fbs-policy-name}" </ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows running configuration of policy-map(s)
+              </DESCRIPTION>
+              <USAGE>
+                  Policy-map name is optional. If Policy-map name provided it will show all running configuration of all policy-maps configured
+              </USAGE>
+              <EXAMPLE summary="show running-configuration policy-map">
+                 sonic# show running-configuration policy-map policy_vrf
+                 policy-map policy_vrf type forwarding
+                  class class_permit_ipv6 priority 10
+                   set ipv6 next-hop 1211::2  priority 20
+                   set ipv6 next-hop 1212::2 vrf Vrf-BLUE priority 30
+                  class class_permit_ip priority 10
+                   set ip next-hop 12.12.1.2 vrf default priority 30
+                   set ip next-hop 12.12.2.2 vrf Vrf-BLUE priority 20
+                   set ip next-hop 12.12.1.2  priority 10
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="clear counters service-policy" help="Clear all policy-map binding counters" />
@@ -124,6 +351,17 @@ limitations under the License.
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_details_by_policy ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Clears flow based services applied policies counters by policy name 
+              </DESCRIPTION>
+              <USAGE>
+                 Interface argument is optional. If not specified it clear fbs policies counters for given policy-map for all interfaces
+              </USAGE>
+              <EXAMPLE summary="clear counters service-policy policy_name">
+               clear counters service-policy policy-map policy_vrf interface Vlan 100
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <!-- clear counters service-policy interface NAME [type qos|monitoring|forwarding] -->
@@ -131,12 +369,34 @@ limitations under the License.
             <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_details_by_interface ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Clears flow based services applied policies counters by interface
+              </DESCRIPTION>
+              <USAGE>
+                 Policy-map type argument is optional. If policy-map type not specified it clear fbs policies counters for given interfaces for all policies matching that interface.
+              </USAGE>
+              <EXAMPLE summary="clear counters service-policy interface">
+               clear counters service-policy interface Vlan 100 type qos               
+              </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
         <!-- clear counters service-policy Switch [type qos|monitoring|forwarding] -->
         <COMMAND name="clear counters service-policy Switch" help="Clear counters for policy-maps applied Switch/Global interface">
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_details_by_interface Switch ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Clears flow based services applied policy-map applied at Switch/Global level
+              </DESCRIPTION>
+              <USAGE>
+                 Policy-map type argument is optional. If policy-map type not specified it clear fbs policies counters for given interfaces for all policies matching that interface.
+              </USAGE>
+              <EXAMPLE summary="clear counters service-policy Switch">
+               sonic# clear counters service-policy Switch type qos
+              </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     </VIEW>
 
@@ -149,11 +409,33 @@ limitations under the License.
             <PARAM name="fbs-policy-name" help="Name of the policy-map (Max: 63 characters)" ptype="STRING_63"/>
             <MACRO name="FBS-POLICY-TYPES" arg="false" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_policy_${fbs-policy-type} ${fbs-policy-name} ${fbs-policy-type}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures Policy-map 
+              </DESCRIPTION>
+              <USAGE>
+                 Policy-map name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character
+              </USAGE>
+              <EXAMPLE summary="Creates policy-map of type Forwarding">
+              sonic(config)# policy-map policy_vrf type forwarding
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no policy-map" help="Delete policy-map">
             <PARAM name="fbs-policy-name" help="Name of the policy-map (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_policy ${fbs-policy-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Deletes Policy-map 
+              </DESCRIPTION>
+              <USAGE>
+                 Policy-map name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character
+              </USAGE>
+              <EXAMPLE summary="Deletes policy-map">
+              sonic(config)# no policy-map policy_vrf
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="class-map" help="Configures class-map" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}"
@@ -169,11 +451,34 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_classifier_${fbs-class-type} ${fbs-class-name} ${fbs-class-type}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures Class-map 
+              </DESCRIPTION>
+              <USAGE>
+                 Class-map name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character. 
+              </USAGE>
+              <EXAMPLE summary="Creates class-map with match type fields">
+              sonic(config)# class-map class_permit_ip match-type fields
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no class-map" help="Delete flow based services class-map">
             <PARAM name="fbs-class-name" help="Name of the class-map (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_classifier ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Deletes Class-map 
+              </DESCRIPTION>
+              <USAGE>
+                 Class-map name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character. 
+              </USAGE>
+              <EXAMPLE summary="Deletes class-map">
+              sonic(config)# no class-map class_permit_ip
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
 
         <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
@@ -189,10 +494,33 @@ limitations under the License.
         <COMMAND name="description" help="Configures policy-map description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policy_description ${fbs-policy-name} ${description-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures Policy-map description 
+              </DESCRIPTION>
+              <USAGE>
+                 A string describing the policy-map max 256 characters. Description should be in double quotes if it has spaces
+              </USAGE>
+              <EXAMPLE summary="add description for policy-map">
+                 sonic(config-policy-map)# description "Vrf policy information"
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no description" help="Clear policy-map description">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_policy_description ${fbs-policy-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map description 
+              </DESCRIPTION>
+              <USAGE>
+                 A string describing the policy-map max 256 characters. Description should be in double quotes if it has spaces
+              </USAGE>
+              <EXAMPLE summary="removes description for policy-map">
+                 sonic(config-policy-map)# no description 
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
 
         <COMMAND name="class" help="Configures flow match criteria and its actions" view="configure-${fbs-policy-type}-flow-view"
@@ -229,10 +557,31 @@ limitations under the License.
             </PARAM>
             <PARAM name="access-list-name" help="ACL Name" ptype="STRING_63" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_match_acl ${fbs-class-name} ${acl-type} ${access-list-name}</ACTION>
+             <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match ACL 
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match acess-group attributes">
+               sonic(config)# class-map class_ip_acl match-type acl
+               sonic(config-class-map)# match access-group ip ip_acl1
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
 
         <COMMAND name="no match access-group" help="Delete match using access-list">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_match_acl ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match ACL  
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes class-map match acess-group">
+               sonic(config)# class-map class_ip_acl match-type acl
+               sonic(config-class-map)# no match access-group 
+              </EXAMPLE>
+           </DOCGEN>
+
+
         </COMMAND>
     </VIEW>
 
@@ -250,21 +599,58 @@ limitations under the License.
         <COMMAND name="match source-address" help="Match packets using source address">
             <MACRO name="MATCH-ADDRESS-TYPES-ADD" arg="source,Source" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_source_address ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match packet source-address
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match packet source-address">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# match source-address ip 1.1.1.1/32
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match source-address" help="Delete match using source address">
             <MACRO name="MATCH-ADDRESS-TYPES-DEL" arg="source" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_source_address ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match packet source-address
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes class-map match packet source-address">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# no match source-address
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
 
         <COMMAND name="match destination-address" help="Match packets using destination address">
             <MACRO name="MATCH-ADDRESS-TYPES-ADD" arg="destination,Destination" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_destination_address ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match packet destination-address
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match packet source-address">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# match destination-address ip 2.1.1.1/32
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match destination-address" help="Delete match using destination address">
             <MACRO name="MATCH-ADDRESS-TYPES-DEL" arg="destination" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_destination_address ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match packet destination-address
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match packet source-address">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# no match destination-address
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="match ethertype" help="Match packets using ethertype">
@@ -272,19 +658,55 @@ limitations under the License.
                 <MACRO name="ACL-MAC-ETHERTYPE-OPTIONS" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_ethertype ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match packet criteria ethertype 
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match packet ethertype">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# match ethertype ip
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match ethertype" help="Delete match using ethertype">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_ethertype ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match packet criteria ethertype 
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes class-map match packet ethertype">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# no match ethertype
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="match vlan" help="Match packets using VLAN ID">
             <PARAM name="vlan-val" help="VLAN ID value (range 1-4094)" ptype="VLAN_RANGE"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_vlan ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match packet criteria vlan ID
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match packet vlan id ">
+               sonic(config)# class-map class1_fields match-type fields match-all 
+               sonic(config-class-map)# match vlan 200
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match vlan" help="Delete match using VLAN ID">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_vlan ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match packet criteria vlan ID
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes class-map match packet vlan ID ">
+               sonic(config)# class-map class1_fields match-type fields match-all 
+               sonic(config-class-map)# no match vlan
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="match pcp" help="Match packets using PCP">
@@ -292,19 +714,55 @@ limitations under the License.
                 <MACRO name="ACL-MAC-PCP-VAL-OPTIONS" arg="mask-disable"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_pcp ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match packet criteria pcp
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match packet PCP ">
+               sonic(config)# class-map class1_fields match-type fields match-all 
+               sonic(config-class-map)# match pcp vi
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match pcp" help="Match packets using PCP">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_pcp ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match packet criteria pcp
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes class-map match packet PCP ">
+               sonic(config)# class-map class1_fields match-type fields match-all 
+               sonic(config-class-map)# no match pcp
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="match dei" help="Match packets using DEI value">
             <PARAM name="dei-val" help="DEI value (range 0-1)" ptype="DEI_VALUE"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_dei ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match packet criteria DEI
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match packet PCP ">
+               sonic(config)# class-map class1_fields match-type fields match-all 
+               sonic(config-class-map)# match dei 0
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match dei" help="Delete match packets using DEI value">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_dei ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match packet criteria DEI
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes class-map match packet PCP ">
+               sonic(config)# class-map class1_fields match-type fields match-all 
+               sonic(config-class-map)# no match dei
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="match ip" help="Match packets using IP/IPv6 protocol"/>
@@ -317,20 +775,56 @@ limitations under the License.
                 <PARAM name="udp" help="UDP packets" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_ip_protocol ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Updates class-map match ip attributes
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match ip attributes">
+               sonic(config)# class-map class1_fields match-type fields match-all 
+               sonic(config-class-map)# match ip protocol tcp
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match ip" help="Delete match packets using IP/IPv6 protocol"/>
         <COMMAND name="no match ip protocol" help="Delete match packets using IP/IPv6 protocol">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_ip_protocol ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match ip attributes
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes class-map match ip attributes">
+               sonic(config)# class-map class1_fields match-type fields match-all 
+               sonic(config-class-map)# no match ip protocol
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="match dscp" help="Match packets using DSCP value">
             <MACRO name="IP-DSCP-VALUE-OPTIONS" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_dscp ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match dscp
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match dscp">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# match dscp cs1
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match dscp" help="Match DSCP">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_dscp ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match dscp
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match dscp">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# no match dscp 
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="match l4-port" help="Match packets using TCP/UDP port">
@@ -348,6 +842,18 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_layer4_port ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match l4 source port
+              </DESCRIPTION>
+              <USAGE>
+                  Match on source port is allowed only when IP protocol is set to TCP or UDP
+              </USAGE>
+              <EXAMPLE summary="Configures class-map match l4 source port ">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# match l4-port source eq 10
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match l4-port" help="Delete match packets using TCP/UDP port">
@@ -356,16 +862,49 @@ limitations under the License.
                 <PARAM name="destination" help="Delete match on destination TCP/UDP Port" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_layer4_port ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match l4 source port
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes class-map match l4 source port">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# no match l4-port source 
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="match tcp-flags" help="Match packets using TCP flags">
             <MACRO name="FBS-TCP-FLAGS" arg="Match" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_match_tcp_flags ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures class-map match TCP Flags
+              </DESCRIPTION>
+              <USAGE>
+                  Match on TCP flags is allowed only when IP protocol is set to TCP. not-xxx keyword can be used to match the corresponding flag set to 0
+              </USAGE>
+              <EXAMPLE summary="Configures class-map match tcp flags">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# match tcp-flags urg
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no match tcp-flags" help="Delete match using TCP flags">
             <MACRO name="FBS-TCP-FLAGS" arg="Delete match" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_match_tcp_flags ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map match TCP Flags
+              </DESCRIPTION>
+              <USAGE>
+                  Match on TCP flags is allowed only when IP protocol is set to TCP. not-xxx keyword can be used to match the corresponding flag set to 0
+              </USAGE>
+              <EXAMPLE summary="Removes class-map match tcp flags">
+                  sonic(config)# class-map class1_fields match-type fields match-all 
+                  sonic(config-class-map)# no match tcp-flags urg
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
     </VIEW>
 
@@ -402,37 +941,123 @@ limitations under the License.
         <COMMAND name="description" help="Configures flow description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_flow_description ${fbs-policy-name} ${fbs-class-name} ${description-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Updates description for qos flows 
+              </DESCRIPTION>
+              <USAGE>
+                 A string describing the qos flow max 256 characters. Description should be in double quotes if it has spaces
+              </USAGE>
+              <EXAMPLE summary="Configures description for qos flows">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)# description "qos flow1"
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no description" help="Clear flow description">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_flow_description ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes description for qos flows 
+              </DESCRIPTION>
+              <USAGE>
+                 A string describing the qos flow max 256 characters. Description should be in double quotes if it has spaces
+              </USAGE>
+              <EXAMPLE summary="Removes description for qos flows">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)# no description 
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="set pcp" help="Set PCP remarking">
             <PARAM name="pcp-value" help="PCP remarking value (0-7)" ptype="PCP_VALUE" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_pcp_remarking_action ${fbs-policy-name} ${fbs-class-name} ${pcp-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures PCP Remarking action for Qos Flow
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures PCP remarking action for Qos flow">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#set pcp 1
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no set pcp" help="Clear PCP remarking">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_pcp_remarking_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes PCP Remarking action for Qos Flow
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes PCP remarking action for Qos flow">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#no set pcp 
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="set dscp" help="Set DSCP remarking">
             <PARAM name="dscp-value" help="DSCP remarking value (0-63)" ptype="RANGE_0_63" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_dscp_remarking_action ${fbs-policy-name} ${fbs-class-name} ${dscp-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures DSCP Remarking action for Qos Flow
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures DSCP remarking action for Qos flow">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#set dscp 10
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no set dscp" help="Clear DSCP remarking">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_dscp_remarking_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures DSCP Remarking action for Qos Flow
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes DSCP remarking action for Qos flow">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#no set dscp
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="set traffic-class" help="Set traffic class">
             <PARAM name="tc-value" help="Traffic class value (0-7)" ptype="PCP_VALUE" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_traffic_class_action ${fbs-policy-name} ${fbs-class-name} ${tc-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures set traffic class action for Qos Flow
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures traffic class action for Qos Flow">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#set traffic-class 1
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no set traffic-class" help="Clear traffic class">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_traffic_class_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes set traffic class action for Qos Flow
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes traffic class action for Qos Flow">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#no set traffic-class
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="police" help="Set rate limiting parameters">
@@ -469,6 +1094,25 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policer_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures policer action for Qos Flow
+              </DESCRIPTION>
+              <USAGE>
+                  CIR: Committed information rate in bits per second. CIR is mandatory. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000)cir 300000000 cbs 300000000 pir 300000000 pbs 300000000.
+                  CBS: Committed burst size in bytes. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the CIR in bytes. If configured by the user, it must be greater than or equal to CIR in bytes. 
+                  PIR: Peak information rate in bits per second. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000). If configured by the user, it must be greater than CIR 
+                  PBS: Peak burst size. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the PIR value in bytes. If configured by the user, it must be greater than PIR value in bytes and also CBS value 
+                  If only CIR is configured, then its 1 rate, 2 color policer.  Any traffic exceeding CIR value will be marked as red and will be dropped.
+
+                  If both CIR and PIR is configured, then is 2 rate 3 color policer. Any traffic that exceeds CIR but less than PIR will be marked as yellow. Any traffic that is more than PIR will be marked as red and will be dropped
+              </USAGE>
+              <EXAMPLE summary="Configures traffic class action for Qos Flow">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#cir 300000000 cbs 300000000 pir 300000000 pbs 300000000
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no police" help="Clear or reset rate limiting parameters">
@@ -477,6 +1121,26 @@ limitations under the License.
             <PARAM name="pir" help="Clear peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <PARAM name="pbs" help="Clear peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_policer_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Unconfigures policer action for Qos Flow
+              </DESCRIPTION>
+              <USAGE>
+                  CIR: Committed information rate in bits per second. CIR is mandatory. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000)cir 300000000 cbs 300000000 pir 300000000 pbs 300000000.
+                  CBS: Committed burst size in bytes. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the CIR in bytes. If configured by the user, it must be greater than or equal to CIR in bytes. 
+                  PIR: Peak information rate in bits per second. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000). If configured by the user, it must be greater than CIR 
+                  PBS: Peak burst size. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the PIR value in bytes. If configured by the user, it must be greater than PIR value in bytes and also CBS value 
+                  If only CIR is configured, then its 1 rate, 2 color policer.  Any traffic exceeding CIR value will be marked as red and will be dropped.
+
+                  If both CIR and PIR is configured, then is 2 rate 3 color policer. Any traffic that exceeds CIR but less than PIR will be marked as yellow. Any traffic that is more than PIR will be marked as red and will be dropped
+              </USAGE>
+              <EXAMPLE summary="Unconfigures traffic class action for Qos Flow">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#no police 
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
     </VIEW>
 
@@ -492,10 +1156,31 @@ limitations under the License.
         <COMMAND name="set mirror-session" help="Set mirror session result">
             <PARAM name="session-name" help="Mirror session name" ptype="STRING"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_mirror_session_action ${fbs-policy-name} ${fbs-class-name} ${session-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures mirror session name for monitoring flow
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures mirror session name for monitoring Flow">
+                  sonic(config)# policy-map policy_mirror type monitoring
+                  sonic(config-policy-map)# class class1 priority 10
+                  sonic(config-policy-map-flow)# set mirror-session mirror1
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
 
         <COMMAND name="no set mirror-session" help="Delete mirror session result">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_mirror_session_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Unconfigures mirror session name for monitoring flow
+              </DESCRIPTION>
+              <EXAMPLE summary="Unconfiguresd mirror session name for monitoring Flow">
+                  sonic(config)# policy-map policy_mirror type monitoring
+                  sonic(config-policy-map)# class class1 priority 10
+                  sonic(config-policy-map-flow)# no set mirror-session
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
     </VIEW>
 
@@ -510,18 +1195,62 @@ limitations under the License.
             <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv4,DOTTED_QUAD" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_next_hop_action ${fbs-policy-name} ${fbs-class-name} ip ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures ip next hop for forwarding flow
+              </DESCRIPTION>
+              <USAGE>
+                  If the VRF name is not specified then it will be derived from the VRF of the interface on which the policy is applied or default will be used for global application.
+                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first. If more than 1 next-hops have the same priority then the next-hop which is configured first will be used
+              </USAGE>
+              <EXAMPLE summary="Configures ip next hop for forwarding Flow">
+                  sonic(config)# policy-map policy_vrf type forwarding
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  set ip next-hop 12.12.2.2 vrf Vrf-BLUE priority 20
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="set ipv6" help="Internet Protocol Version 6 (IPv6)">
             <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv6,IPV6_ADDR" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_next_hop_action ${fbs-policy-name} ${fbs-class-name} ipv6 ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures ipv6 next hop for forwarding flow
+              </DESCRIPTION>
+              <USAGE>
+                  If the VRF name is not specified then it will be derived from the VRF of the interface on which the policy is applied or default will be used for global application.
+                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first. If more than 1 next-hops have the same priority then the next-hop which is configured first will be used
+              </USAGE>
+              <EXAMPLE summary="Configures ipv6 next hop for forwarding Flow">
+                  sonic(config)# policy-map policy_vrf type forwarding
+                  sonic(config-policy-map)# class class_permit_ipv6 priority 10
+                  sonic(config-policy-map)# set ipv6 next-hop 1211::2  priority 20
+
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="set interface" help="Set egress interface">
             <MACRO name="FBS-EGRESS-INTF-OPTIONS" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_egress_interface_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures ip interface for forwarding flow
+              </DESCRIPTION>
+              <USAGE>
+                  Egress interfaces configuration is valid only if the classifier uses MAC/L2 ACL for match. Only L2 switched traffic will be forwarded to the configured egress interface.  Combining egress interface with IPv4 or IPv6 next-hops is not permitted.
+                  Drop action(set interface to null) if configured will be of the lowest priority and will be chosen if none of the configured next-hops or egress interfaces can be used for forwarding
+              </USAGE>
+              <EXAMPLE summary="Configures ip next hop for forwarding Flow">
+                  sonic(config)# policy-map policy_vrf type forwarding
+                  sonic(config-policy-map)# class class10 priority 10
+                  sonic(config-policy-map-flow)# set interface Eth 1/9
+                  sonic(config-policy-map-flow)# set interface null
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no" help="Negate a command or set its defaults"/>
@@ -530,18 +1259,63 @@ limitations under the License.
             <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv4,DOTTED_QUAD" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_next_hop_action ${fbs-policy-name} ${fbs-class-name} ip ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Unconfigures ip next hop for forwarding flow
+              </DESCRIPTION>
+              <USAGE>
+                  If the VRF name is not specified then it will be derived from the VRF of the interface on which the policy is applied or default will be used for global application.
+                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first. If more than 1 next-hops have the same priority then the next-hop which is configured first will be used
+              </USAGE>
+              <EXAMPLE summary="Unconfigures ip next hop for forwarding Flow">
+                  sonic(config)# policy-map policy_vrf type forwarding
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#no set ip next-hop 12.12.2.2 vrf Vrf-BLUE priority 20
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no set ipv6" help="Internet Protocol Version 6 (IPv6)">
             <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv6,IPV6_ADDR" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_next_hop_action ${fbs-policy-name} ${fbs-class-name} ipv6 ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Unconfigures ipv6 next hop for forwarding flow
+              </DESCRIPTION>
+              <USAGE>
+                  If the VRF name is not specified then it will be derived from the VRF of the interface on which the policy is applied or default will be used for global application.
+                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first. If more than 1 next-hops have the same priority then the next-hop which is configured first will be used
+              </USAGE>
+              <EXAMPLE summary="Unconfigures ipv6 next hop for forwarding Flow">
+                  sonic(config)# policy-map policy_vrf type forwarding
+                  sonic(config-policy-map)# class class_permit_ipv6 priority 10
+                  sonic(config-policy-map)# no set ipv6 next-hop 1211::2  priority 20
+
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
 
         <COMMAND name="no set interface" help="Set egress interface">
             <MACRO name="FBS-EGRESS-INTF-OPTIONS" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_egress_interface_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Unconfigures ip interface for forwarding flow
+              </DESCRIPTION>
+              <USAGE>
+                  Egress interfaces configuration is valid only if the classifier uses MAC/L2 ACL for match. Only L2 switched traffic will be forwarded to the configured egress interface.  Combining egress interface with IPv4 or IPv6 next-hops is not permitted.
+                  Drop action(set interface to null) if configured will be of the lowest priority and will be chosen if none of the configured next-hops or egress interfaces can be used for forwarding
+              </USAGE>
+              <EXAMPLE summary="Unconfigures ip next hop for forwarding Flow">
+                  sonic(config)# policy-map policy_vrf type forwarding
+                  sonic(config-policy-map)# class class10 priority 10
+                  sonic(config-policy-map-flow)# no set interface Eth 1/9
+              </EXAMPLE>
+           </DOCGEN>
+
         </COMMAND>
     </VIEW>
 
@@ -555,6 +1329,15 @@ limitations under the License.
         <COMMAND name="set copp-action" help="Binds a CoPP action group to the class-map">
             <PARAM name="copp-action-name" help="Name of the CoPP action group (up to 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_action_group ${fbs-policy-name} ${fbs-class-name} ${copp-action-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Updates class-map match ACL attributes 
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures class-map match acess-group attributes">
+               sonic(config)# class-map class_ip_acl match-type acl
+               sonic(config-class-map)# match access-group ip ip_acl1
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
     </VIEW>
 
