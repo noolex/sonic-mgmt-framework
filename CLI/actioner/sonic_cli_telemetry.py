@@ -42,6 +42,29 @@ feature_config_url = tam_rest+'/features'
 flowgroups_url = tam_rest+'/flowgroups'
 flowgroup_ids_url = '/restconf/data/sonic-tam-flowgroups:sonic-tam-flowgroups/TAM_FLOWGROUP_TABLE/TAM_FLOWGROUP_TABLE_LIST'
 detach_flowgroup_url = '/restconf/data/openconfig-tam:tam/flowgroups/flowgroup={name}/config/interfaces={interfaces}'
+intf_naming_mode_url = '/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode'
+intf_alias_url = '/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST'
+
+def get_intf_alias():
+    intfList = {}
+    path = cc.Path(intf_naming_mode_url, name="localhost")
+    tmp_response = api.get(path)
+    if tmp_response.ok():
+        response = tmp_response.content
+        if response and 'sonic-device-metadata:intf_naming_mode' in response and response['sonic-device-metadata:intf_naming_mode'] == 'standard':
+            path = cc.Path(intf_alias_url)
+            tmp_response = api.get(path)
+            if tmp_response.ok():
+                response = tmp_response.content
+                if response is None:
+                    return intfList
+                if 'sonic-port:PORT_TABLE_LIST' in response:
+                    for entry in response['sonic-port:PORT_TABLE_LIST']:
+                        if 'alias' in entry:
+                            intfList[entry['alias']] = {}
+                            intfList[entry['alias']] = entry['ifname']
+    return intfList
+
 
 def do_get(url):
     result = {}
@@ -196,9 +219,13 @@ def getFlowGroups(flowgroups):
         if 'interfaces' in data:
             interfaces = data['interfaces']
             t = {}
+            getIntfList = get_intf_alias()
             for i in interfaces:
                 n = i.split('Ethernet')[1]
-                t[int(n)] = i
+                if (len(getIntfList) > 0):
+                    t[int(n)] = getIntfList[i]
+                else:
+                    t[int(n)] = i
             response[name]['ports'] = ','.join(str(t[x]) for x in sorted(t))
         response[name]['packets'] = data['statistics']['packets']
     return response
