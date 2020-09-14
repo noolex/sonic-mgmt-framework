@@ -230,7 +230,7 @@ def patch_stp_global_bridge_priority(args):
 
 def config_stp_intf_bpdu_guard_subcmds(args):
     ifname  = args[0].strip()
-    if args[1].strip() == "port-shutdown":
+    if len(args) == 2:
         return patch_stp_intf_bpdu_guard_shutdown([ifname, True])
     else:
         return patch_stp_intf_bpdu_guard([ifname, True])
