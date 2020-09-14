@@ -24,6 +24,8 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 import random
+from natsort import natsorted
+from collections import OrderedDict
 
 api = cc.ApiClient()
 
@@ -228,7 +230,7 @@ def getFlowGroups(flowgroups):
                     t[int(n)] = i
             response[name]['ports'] = ','.join(str(t[x]) for x in sorted(t))
         response[name]['packets'] = data['statistics']['packets']
-    return response
+    return OrderedDict(natsorted(response.items()))
 
 helper_functions = {
     'getFeatureDescription': getFeatureDescription,
