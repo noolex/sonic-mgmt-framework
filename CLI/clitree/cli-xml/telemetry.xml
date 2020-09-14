@@ -44,7 +44,7 @@ limitations under the License.
   <!-- =================== SHOW COMMANDS ===================  -->
   <VIEW name="enable-view">
     <COMMAND name="show tam" help="Shows telemetry and monitoring information"/>
-    <COMMAND name="show tam switch" help="Shows switch-id onfiguration">
+    <COMMAND name="show tam switch" help="Shows switch-id configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_switch {"feature":"ANY","method":"GET","template":"show_tam_switch.j2"}</ACTION>
 
       <DOCGEN>
@@ -342,15 +342,15 @@ limitations under the License.
   <VIEW name="configure-tam-view" prompt="${SYSTEM_NAME}(config-tam)# " depth="2">
       <NAMESPACE ref="configure-view" help="false" completion="false" />
     <COMMAND name="no" help="Unconfigures telemetry and monitoring feature" />
-    <COMMAND name="switch-id" help="Configures unique switch identifer (up to 32 bit number)" ptype="SUBCOMMAND" mode="subcommand">
+    <COMMAND name="switch-id" help="Configures unique switch identifier (up to 32 bit number)" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="id" help="Configures switch-id value (32 bit)" ptype="RANGE_1_4294967295"/>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_switch_id {"id":${id},"feature":"ANY","method":"PATCH"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
-           This command configures a 32-bit idenitifier that uniquely identifies the switch, and is used in the telemetry reports.
+           This command configures a 32-bit identifier that uniquely identifies the switch, and is used in the telemetry reports.
         </DESCRIPTION>
         <USAGE>
-           This command configures a 32-bit idenitifier that uniquely identifies the switch, and is used in the telemetry reports. When not configured, the last 16-bits from the system mac address are used.
+           This command configures a 32-bit identifier that uniquely identifies the switch, and is used in the telemetry reports. When not configured, the last 16-bits from the system mac address are used.
         </USAGE>
         <EXAMPLE summary="switch-id &lt;number&gt;">
            sonic# configure terminal
@@ -368,7 +368,7 @@ limitations under the License.
         </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="no switch-id" help="Resets switch idenitifier to default" ptype="SUBCOMMAND" mode="subcommand">
+    <COMMAND name="no switch-id" help="Resets switch identifier to default" ptype="SUBCOMMAND" mode="subcommand">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_switch_id {"feature":"ANY","method":"DELETE"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -399,10 +399,10 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_enterprise_id {"id":${id},"feature":"ANY","method":"PATCH"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
-           This command configures a 32-bit idenitifier that is used in the IPFIX telemetry reports.
+           This command configures a 32-bit identifier that is used in the IPFIX telemetry reports.
         </DESCRIPTION>
         <USAGE>
-           This command configures a 32-bit idenitifier that is used in the IPFIX telemetry reports. When not configured, the last 16-bits from the system mac address are used.
+           This command configures a 32-bit identifier that is used in the IPFIX telemetry reports. When not configured, the last 16-bits from the system mac address are used.
         </USAGE>
         <EXAMPLE summary="enterprise-id &lt;number&gt;">
            sonic# configure terminal
@@ -421,7 +421,7 @@ limitations under the License.
         </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="no enterprise-id" help="Resets enterprise idenitifier to default" ptype="SUBCOMMAND" mode="subcommand">
+    <COMMAND name="no enterprise-id" help="Resets enterprise identifier to default" ptype="SUBCOMMAND" mode="subcommand">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry delete_enterprise_id {"feature":"ANY","method":"DELETE"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -721,7 +721,7 @@ limitations under the License.
            This command removes previously configured IFA session.
         </DESCRIPTION>
         <USAGE>
-           This command removes previously configured IFA session. When a sesssion that is previously created is removed, the associated flows are no longer processed for IFA as an ingress node or as an egress-node by the switch.
+           This command removes previously configured IFA session. When a session that is previously created is removed, the associated flows are no longer processed for IFA as an ingress node or as an egress-node by the switch.
         </USAGE>
         <EXAMPLE summary="no session &lt;name&gt;">
            sonic(config-tam-ifa)# no session ss1
