@@ -1488,7 +1488,7 @@ limitations under the License.
         <COMMAND
             name="no speed"
             help="Set default speed config">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body = {"openconfig-if-ethernet:port-speed": "SPEED_1GB"}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body={"openconfig-if-ethernet:port-speed": "SPEED_1GB"}</ACTION>
         </COMMAND>
 
     </VIEW>
