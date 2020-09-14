@@ -690,7 +690,7 @@ def set_counter_mode_request(args):
     return acl_client.patch(keypath, body)
 
 
-def handle_generic_set_response(response, args):
+def handle_generic_set_response(response, op_str, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
@@ -700,23 +700,25 @@ def handle_generic_set_response(response, args):
             error_data = response.errors().get('error', list())[0]
             if 'error-app-tag' in error_data:
                 if error_data['error-app-tag'] == 'too-many-elements':
-                    print('Error: Exceeds maximum number of ACL / ACL Rules.')
+                    print('%Error: Exceeds maximum number of ACL / ACL Rules.')
                 elif error_data['error-app-tag'] == 'counters-in-use':
-                    print('Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
+                    print('%Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
+                elif error_data['error-app-tag'] == 'update-not-allowed':
+                    print("%Error: Creating ACLs with same name and different type not allowed")
                 else:
                     print(response.error_message())
             else:
                 print(response.error_message())
-
             return -1
         except Exception as e:
             log.log_error(str(e))
             print(response.error_message())
+            return -1
 
     return 0
 
 
-def handle_generic_delete_response(response, args):
+def handle_generic_delete_response(response, op_str, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
@@ -1176,7 +1178,7 @@ def __handle_get_acl_details_interface_mode_response(response, args):
         __process_acl_counters_request_by_name_and_inf(response, args)
 
 
-def handle_get_acl_details_response(response, args):
+def handle_get_acl_details_response(response, op_str, args):
     if response.ok():
         if response.counter_mode == 'AGGREGATE_ONLY':
             __handle_get_acl_details_aggregate_mode_response(response.content, args)
@@ -1192,7 +1194,7 @@ def handle_get_acl_details_response(response, args):
             raise SonicAclCLIError('ACL {} not found'.format(args[1]))
 
 
-def handle_get_all_acl_binding_response(response, args):
+def handle_get_all_acl_binding_response(response, op_str, args):
     acl_typemap = {'L2': 'MAC', 'L3': 'IP', 'L3V6': 'IPV6'}
     log.log_debug(json.dumps(response.content, indent=4))
     render_data = OrderedDict()
@@ -1228,7 +1230,7 @@ def handle_get_all_acl_binding_response(response, args):
             print(response.error_message())
 
 
-def clear_acl_counters_response(response, args):
+def clear_acl_counters_response(response, op_str, args):
     if not response.ok():
         print(response.error_message())
     else:
@@ -1282,7 +1284,7 @@ def run(op_str, args=None):
         log.log_debug(str(correct_args))
         resp = request_handlers[op_str](correct_args)
         if resp:
-            return response_handlers[op_str](resp, correct_args)
+            return response_handlers[op_str](resp, op_str, correct_args)
     except SonicAclCLIError as e:
         print("%Error: {}".format(e.message))
         return -1
