@@ -32,7 +32,7 @@ Standard extended community list {{'%s'| format(vars.list_name)}}:  match: {{'%s
      {% if "route-target" in mem %}
      {% set mem = "rt:" + mem[13:] %}
      {% elif "route-origin" in mem %}
-     {% set mem = "soo:" + mem[15:] %}
+     {% set mem = "soo:" + mem[13:] %}
      {% elif "REGEX" is in mem  %}
      {% set mem = mem[6:] %}
      {% endif %}
