@@ -29,23 +29,23 @@ limitations under the License.
     <COMMAND name = "show bfd" help = "Show BFD commands" >
     </COMMAND>
     
-    <COMMAND name = "show bfd peer" help = "BFD peer status" >
+    <COMMAND name = "show bfd peer" help = "Displays specific BFD peer" >
             <PARAM name = "address" help = "" ptype = "SUBCOMMAND" mode="switch" >
                 <PARAM name = "peer_ipv4" help = "IPv4 peer address" ptype = "IP_ADDR" > </PARAM>
                 <PARAM name = "peer_ipv6" help = "IPv6 peer address" ptype = "IPV6_ADDR"> </PARAM>
             </PARAM>
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure VRF name" ptype = "STRING" default="default"> </PARAM>
+                <PARAM name = "vrfname" help = "VRF name (prefixed by Vrf)" ptype = "STRING" default="default"> </PARAM>
             </PARAM>
-            <PARAM name = "multihop" help = "Configure multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
-            <PARAM name = "local-address" help = "Configure local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name = "multihop" help = "Specify multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
+            <PARAM name = "local-address" help = "Specify local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "localaddress" help = "" ptype = "SUBCOMMAND" mode="switch" >
                     <PARAM name = "local_ipv4" help = "IPv4 local address" ptype = "IP_ADDR" default="null"> </PARAM>
                     <PARAM name = "local_ipv6" help = "IPv6 local address" ptype = "IPV6_ADDR" default="null"> </PARAM>
                 </PARAM>
             </PARAM>
-            <PARAM name = "interface" help = "Configure local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null"> </PARAM>
+            <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
+                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING" default="null"> </PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_peer.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
@@ -103,23 +103,23 @@ limitations under the License.
 	</DOCGEN>
     </COMMAND>
 
-    <COMMAND name = "show bfd peer counters" help = "Show BFD peer counters information" >
+    <COMMAND name = "show bfd peer counters" help = "Displays specific BFD peer counters information" >
             <PARAM name = "address" help = "" ptype = "SUBCOMMAND" mode="switch" >
                 <PARAM name = "peer_ipv4" help = "IPv4 peer address" ptype = "IP_ADDR" > </PARAM>
                 <PARAM name = "peer_ipv6" help = "IPv6 peer address" ptype = "IPV6_ADDR"> </PARAM>
             </PARAM>
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure VRF name" ptype = "STRING" default="default"> </PARAM>
+                <PARAM name = "vrfname" help = "VRF name (prefixed by Vrf)" ptype = "STRING" default="default"> </PARAM>
             </PARAM>
-            <PARAM name = "multihop" help = "Configure multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
-            <PARAM name = "local-address" help = "Configure local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name = "multihop" help = "Specify multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
+            <PARAM name = "local-address" help = "Specify local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "localaddress" help = "" ptype = "SUBCOMMAND" mode="switch" >
                     <PARAM name = "local_ipv4" help = "IPv4 local address" ptype = "IP_ADDR" default="null" > </PARAM>
                     <PARAM name = "local_ipv6" help = "IPv6 local address" ptype = "IPV6_ADDR" default="null"> </PARAM>
                 </PARAM>
             </PARAM>
-            <PARAM name = "interface" help = "Configure local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null"> </PARAM>
+            <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
+                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING" default="null"> </PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_counter.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
     <DOCGEN>
@@ -151,13 +151,13 @@ limitations under the License.
     </DOCGEN> 
     </COMMAND>
   
-    <COMMAND name = "show bfd peers" help = "BFD peers status" >
-            <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure VRF name" ptype = "STRING" default="all"> </PARAM>
+    <COMMAND name = "show bfd peers" help = "Displays all BFD peers" >
+            <PARAM name = "vrf" help = "Displays BFD peers associated with the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
+                <PARAM name = "vrfname" help = "VRF name (prefixed by Vrf)" ptype = "STRING" default="all"> </PARAM>
             </PARAM>
             <PARAM name = "showtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional = "true" >
-                <PARAM name = "brief" help = "Show BFD peer information in tabular form" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
-                <PARAM name = "counters" help = "Show BFD peer counters information" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
+                <PARAM name = "brief" help = "Displays BFD peers information in tabular form" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
+                <PARAM name = "counters" help = "Displays BFD peers counters information" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_bfd_peers show_bfd_peers_brief.j2 ${showtype} ${vrfname} </ACTION>
     <DOCGEN>
@@ -267,28 +267,28 @@ limitations under the License.
         </DOCGEN>
     </COMMAND>
  
-    <COMMAND name = "clear bfd" help = "Bidirection Forwarding Detection" >
+    <COMMAND name = "clear bfd" help = "Clear BFD" >
     </COMMAND>
 
-    <COMMAND name = "clear bfd peer" help = "BFD peer status" >
+    <COMMAND name = "clear bfd peer" help = "Clear BFD peer status" >
             <PARAM name = "address" help = "" ptype = "SUBCOMMAND" mode="switch" >
                 <PARAM name = "peer_ipv4" help = "IPv4 Peer address" ptype = "IP_ADDR" > </PARAM>
                 <PARAM name = "peer_ipv6" help = "IPv6 Peer address" ptype = "IPV6_ADDR"> </PARAM>
             </PARAM>
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure VRF name" ptype = "STRING" default="default"> </PARAM>
+                <PARAM name = "vrfname" help = "VRF name (prefixed by Vrf)" ptype = "STRING" default="default"> </PARAM>
             </PARAM>
-            <PARAM name = "multihop" help = "Configure multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
-            <PARAM name = "local-address" help = "Configure local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name = "multihop" help = "Specify multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
+            <PARAM name = "local-address" help = "Specify local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "localaddress" help = "" ptype = "SUBCOMMAND" mode="switch" >
                     <PARAM name = "local_ipv4" help = "IPv4 local address" ptype = "IP_ADDR"> </PARAM>
                     <PARAM name = "local_ipv4" help = "IPv6 local address" ptype = "IPV6_ADDR"> </PARAM>
                 </PARAM>
             </PARAM>
-            <PARAM name = "interface" help = "Configure local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING"> </PARAM>
+            <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
+                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING"> </PARAM>
             </PARAM>
-            <PARAM name = "counters" help = "clear BFD peer counters information" ptype="SUBCOMMAND" mode="subcommand" > </PARAM>
+            <PARAM name = "counters" help = "Clear BFD peer counters information" ptype="SUBCOMMAND" mode="subcommand" > </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd_clear clear_bfd ${__full_line} </ACTION> 
         <DOCGEN>
             <DESCRIPTION>
@@ -372,7 +372,7 @@ limitations under the License.
                 <PARAM name = "peer_ipv6" help = "IPv6 peer address" ptype = "IPV6_ADDR" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
             </PARAM>
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure VRF name" ptype = "STRING" default="default" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
+                <PARAM name = "vrfname" help = "VRF name (prefixed by Vrf)" ptype = "STRING" default="default" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
             </PARAM>
             <PARAM name = "multihop" help = "Configure multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
             <PARAM name = "local-address" help = "Configure local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
@@ -422,17 +422,17 @@ limitations under the License.
                 <PARAM name = "peer_ipv6" help = "IPv6 peer address" ptype = "IPV6_ADDR"> </PARAM>
             </PARAM>
             <PARAM name = "vrf" help = "Specify the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
-                <PARAM name = "vrfname" help = "Configure VRF name" ptype = "STRING" default="default"> </PARAM>
+                <PARAM name = "vrfname" help = "VRF name (prefixed by Vrf)" ptype = "STRING" default="default"> </PARAM>
             </PARAM>
-            <PARAM name = "multihop" help = "Configure multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
-            <PARAM name = "local-address" help = "Configure local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name = "multihop" help = "Specify multihop" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> </PARAM>
+            <PARAM name = "local-address" help = "Specify local address" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "localaddress" help = "" ptype = "SUBCOMMAND" mode="switch" >
                     <PARAM name = "local_ipv4" help = "IPv4 local address" ptype = "IP_ADDR" default="null"> </PARAM>
                     <PARAM name = "local_ipv6" help = "IPv6 local address" ptype = "IPV6_ADDR" default="null"> </PARAM>
                 </PARAM>
             </PARAM>
-            <PARAM name = "interface" help = "Configure local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null"> </PARAM>
+            <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
+                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING" default="null"> </PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd delete_openconfig_bfd_ext_bfd_sessions  ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
