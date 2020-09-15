@@ -198,18 +198,6 @@ def invoke_api(func, args=[]):
 
         body = { "openconfig-if-ethernet:port-fec": fec_map[fec]}
         return api.patch(path, body)
-
-    elif func == 'patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/openconfig-if-ethernet-ext2:port-unreliable-los', name=args[0])
-        los_map = {"auto": "UNRELIABLE_LOS_MODE_AUTO", "on": "UNRELIABLE_LOS_MODE_ON", "off": "UNRELIABLE_LOS_MODE_OFF", "default": "UNRELIABLE_LOS_MODE_OFF"}
-
-        los = args[1]
-        if los not in los_map:
-            print("%Error: Invalid port unreliable los config")
-            return None
-
-        body = { "openconfig-if-ethernet:port-unreliable-los": los_map[los]}
-        return api.patch(path, body)
     
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config':
         sp = args[1].split('/')

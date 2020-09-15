@@ -77,18 +77,7 @@ def show_if_switchport_access(render_tables):
 
     return 'CB_SUCCESS', cmd_str
 
-def show_if_unreliable_los(render_tables):
-    cmd_str = ''
 
-    if 'name' in render_tables:
-       ifname_key = render_tables['name']
-       if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
-           port_entry = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
-           if ifname_key == port_entry['ifname'] and \
-              port_entry['override_unreliable_los'] != "off":
-               cmd_str = 'unreliable-los ' + port_entry['override_unreliable_los']
-
-    return 'CB_SUCCESS', cmd_str
 
 def find_ranges(vlan_lst):
     ranges = []

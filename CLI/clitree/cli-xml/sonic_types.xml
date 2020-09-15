@@ -657,13 +657,6 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
-        name="INTF_UNRELIABLE_LOS"
-        method="select"
-        pattern="auto on off"
-        help="Unreliable LOS mode"
-        />
-    <!--=======================================================-->
-    <PTYPE
         name="MGMT_INTF_SPEED"
         method="select"
         pattern="10(10MBPS) 100(100MBPS) 1000(1GIGE) auto(1GIGE)"
