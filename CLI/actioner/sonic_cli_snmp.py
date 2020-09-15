@@ -1276,12 +1276,11 @@ def run(func, args):
       if api_response.status_code == 404:               # Resource not found
         return
       else:
-        print "Error: {}".format(api_response.error_message())
-        sys.exit(-1)
+        print (api_response.error_message())
 
-  except Exception as e:
+  except:
     # system/network error
-    syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
+    syslog.syslog(syslog.LOG_ERR, "Exception: " + traceback.format_exc())
     print "%Error: Transaction Failure"
 
 if __name__ == '__main__':
