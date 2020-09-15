@@ -59,7 +59,7 @@ def get_port_num(aa, interface):
         tmp_response = aa.get(path)
         if tmp_response.ok():
             response = tmp_response.content
-            if 'sonic-device-metadata:intf_naming_mode' in response and response['sonic-device-metadata:intf_naming_mode'] == 'standard':
+            if response and 'sonic-device-metadata:intf_naming_mode' in response and response['sonic-device-metadata:intf_naming_mode'] == 'standard':
                 path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=interface)
                 tmp_response = aa.get(path)
                 if tmp_response.ok():

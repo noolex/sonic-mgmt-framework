@@ -66,7 +66,7 @@ Route map {{'%s'| format(vars.pol_name)}}:
       {{"med " + match_bgp['config']['med-eq']|string()}}
          {%endif %}
          {% if "openconfig-bgp-policy-ext:next-hop-set" in match_bgp['config'] %}
-      {{"nexthop " + match_bgp['config']['openconfig-bgp-policy-ext:next-hop-set']}}
+      {{"ip nexthop prefix-list " + match_bgp['config']['openconfig-bgp-policy-ext:next-hop-set']}}
          {%endif %}
          {% if "origin-eq" in match_bgp['config'] %}
       {{"origin " + match_bgp['config']['origin-eq']}}
@@ -76,7 +76,10 @@ Route map {{'%s'| format(vars.pol_name)}}:
       {% if "match-prefix-set" is in match %}
        {% set match_prefix =  conditions[match] %}
        {% if "prefix-set" in match_prefix['config'] %}
-      {{"prefix " + match_prefix['config']['prefix-set']}}
+      {{"ip address prefix-list " + match_prefix['config']['prefix-set']}}
+       {%endif %}
+       {% if "openconfig-routing-policy-ext:ipv6-prefix-set" in match_prefix['config'] %}
+      {{"ipv6 address prefix-list " + match_prefix['config']['openconfig-routing-policy-ext:ipv6-prefix-set']}}
        {%endif %}
       {%endif %}
       {% if "match-interface" is in match %}

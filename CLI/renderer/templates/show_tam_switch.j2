@@ -1,0 +1,7 @@
+{% if json_output and 'openconfig-tam:switch' in json_output-%}
+{% set tam_info = json_output['openconfig-tam:switch'] %}
+TAM Device information
+----------------------
+Switch ID      : {{tam_info["state"]["op-switch-id"]}}
+Enterprise ID  : {{tam_info["state"]["op-enterprise-id"]}}
+{% endif %}

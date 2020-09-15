@@ -182,7 +182,7 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="clear bgp ipv4" help="Clear BGP IPv4">
     <MACRO name="NEW_BGP_CLR_OPTIONS" arg="4"></MACRO>
-    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ipv4-addr} n-ipv6=${ipv6-addr} cleartype=${cleartype} dampopt=${damptype} ${__full_line}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_bgp clear_bgp asn=${as-num-dot} n-ipv4=${ipv4-addr} n-ipv6=${ipv6-addr} cleartype=${cleartype} dampopt=${damptype} ${__line}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         This command clears/resets BGP information including neighbors,

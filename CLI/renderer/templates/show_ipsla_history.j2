@@ -1,6 +1,6 @@
 {% if json_output %}
 
-{% set ip_sla_history = json_output['openconfig-ip-sla:output'] %}
+{% set ip_sla_history = json_output['sonic-ip-sla:output']['IPSLA_HISTORY'] %}
 
 {{ '%-25s %-25s'|format("Timestamp", "Event") }}
 {{ '%-25s %-25s'|format("---------", "-----") }}

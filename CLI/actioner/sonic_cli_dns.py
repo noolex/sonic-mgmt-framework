@@ -42,7 +42,10 @@ def invoke_api(func, args=[]):
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_dns_server_address':
         keypath = cc.Path(DNS+'servers')
-        body = { "openconfig-system:servers": { "server" : [{ "config" : {"address": args[0]}, "address" : args[0]}]}}
+        if len(args) == 2:
+            body = { "openconfig-system:servers": { "server" : [{ "config" : {"address": args[0], "openconfig-system-ext:vrf-name" : args[1]}, "address" : args[0]}]}}
+        else:    
+            body = { "openconfig-system:servers": { "server" : [{ "config" : {"address": args[0]}, "address" : args[0]}]}}
         return api.patch(keypath, body)
     elif func == 'delete_openconfig_dns_global_config_source_address':
         keypath = cc.Path(DNS +

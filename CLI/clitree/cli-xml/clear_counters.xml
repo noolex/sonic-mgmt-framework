@@ -73,7 +73,7 @@ clear counters [interface <interface>]
                                 <PARAM
                                     name="ifId"
                                     help="Physical Interface"
-                                    ptype="UINT"
+                                    ptype="UINT16"
                                     optional="true"
                                     >
                                 </PARAM>

@@ -33,6 +33,9 @@ limitations under the License.
         <PARAM name="lines" help="Output of last NUM lines" optional="true" ptype="LOGGING_REMOTE_PORT" default ="0" > </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging tpcm.j2 ${lines} </ACTION>
     </COMMAND>
+    <COMMAND help="total number of logging" name="show logging count">
+        <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_count infra_reboot.j2</ACTION>
+    </COMMAND>
     <COMMAND name="show logging servers" help="Displays logging server information">
       <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_servers </ACTION>
       <DOCGEN>
@@ -61,7 +64,7 @@ limitations under the License.
       command_tables="sonic-system-logging:sonic-system-logging/SYSLOG_SERVER/SYSLOG_SERVER_LIST/ipaddress={address}"
       render_command_cb="logging_server_cmd"
       >
-      <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="STRING"> </PARAM>
+      <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="DOMAIN_NAME_OR_IPADDR"> </PARAM>
       <PARAM name="remote-port" help="Configures remote server port" mode="subcommand" ptype="SUBCOMMAND" optional="true">
         <PARAM name="vrport" help="Port number (default 514)" ptype="LOGGING_REMOTE_PORT"> </PARAM>
       </PARAM>
@@ -101,7 +104,7 @@ limitations under the License.
     <!-- no commands -->
     <COMMAND name="no logging" help="Unconfigures syslog configuration"/>
     <COMMAND name="no logging server" help="Unconfigures syslog server configuration">
-      <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="STRING"> </PARAM>
+      <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="DOMAIN_NAME_OR_IPADDR"> </PARAM>
       <PARAM name="attribute" help="" ptype="STRING" mode="switch" optional="true">
         <PARAM name="remote-port" help="Unconfigures syslog server port" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
         <PARAM name="source-interface" help="Unconfigures source interface" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>

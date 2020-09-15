@@ -540,8 +540,8 @@ def set_policer_action(args):
                 value = value.replace('tbps', '000000000000')
             elif value.endswith('bps'):
                 value = value.replace('bps', '')
-        elif args[index] == 'cbs' or args[index] == 'bc':
-            key = 'bc'
+        elif args[index] == 'cbs':
+            key = 'cbs'
             value = args[index + 1]
             if value.endswith('KB'):
                 value = value.replace('KB', '000')
@@ -566,8 +566,8 @@ def set_policer_action(args):
                 value = value.replace('tbps', '000000000000')
             elif value.endswith('bps'):
                 value = value.replace('bps', '')
-        elif args[index] == 'pbs' or args[index] == 'be':
-            key = 'be'
+        elif args[index] == 'pbs':
+            key = 'pbs'
             value = args[index + 1]
             if value.endswith('KB'):
                 value = value.replace('KB', '000')
@@ -599,16 +599,16 @@ def clear_policer_action(args):
     if response.ok():
         data = response.content
         if len(args) == 2:
-            delete_params = ['cir', 'bc', 'pir', 'be']
+            delete_params = ['cir', 'cbs', 'pir', 'pbs']
         else:
             delete_params = []
             for feat in args[2:]:
                 if feat == 'cir' or feat == 'pir':
                     delete_params.append(feat)
                 elif feat == 'cbs':
-                    delete_params.append('bc')
+                    delete_params.append('cbs')
                 elif feat == 'pbs':
-                    delete_params.append('be')
+                    delete_params.append('pbs')
 
         for feat in delete_params:
             if feat in data['openconfig-fbs-ext:config'].keys():
@@ -878,8 +878,7 @@ def get_copp_trap_id(name):
     tmp_response = fbs_client.get(tmp_keypath, depth=None, ignore404=False)
     if tmp_response is None:
         trap_id_val = ""
-
-    if tmp_response.ok():
+    elif tmp_response.ok():
         response = tmp_response.content
         if 'openconfig-copp-ext:trap-ids' in response:
             trap_id_val = response['openconfig-copp-ext:trap-ids']

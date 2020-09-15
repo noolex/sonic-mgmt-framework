@@ -45,16 +45,30 @@
     </COMMAND>
   </VIEW>
   <VIEW name="configure-view">
-    <COMMAND name="no ztp" help="Administratively disable ZTP">
-      <ACTION builtin="clish_nop"/>
-    </COMMAND>
-    <COMMAND name="no ztp enable" help="Administratively disable ZTP">
+    <COMMAND
+      name="no ztp"
+      help="Administratively disable ZTP"
+      >
+      <PARAM
+        name = "enable"
+        help = "Administratively disable ZTP"
+        ptype = "SUBCOMMAND"
+        mode = "subcommand"
+        >
+      </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_ztp patch_openconfig_ztp_ztp_config ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="ztp" help="Configure ZTP">
-      <ACTION builtin="clish_nop"/>
-    </COMMAND>
-    <COMMAND name="ztp enable" help="Administratively enable ZTP">
+    <COMMAND 
+      name="ztp" 
+      help="Configure ZTP"
+      >
+      <PARAM
+        name = "enable"
+        help = "Administratively enable ZTP"
+        ptype = "SUBCOMMAND"
+        mode = "subcommand"
+        >
+      </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_ztp patch_openconfig_ztp_ztp_config ${__full_line} </ACTION>
       <DOCGEN>
           <DESCRIPTION>

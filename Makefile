@@ -41,8 +41,7 @@ all: rest cli ham
 $(GO_MOD):
 	$(GO) mod init github.com/Azure/sonic-mgmt-framework
 
-$(GO_DEPS): $(GO_MOD)
-	$(MAKE) -C models -f openapi_codegen.mk go-server-init
+$(GO_DEPS): $(GO_MOD) models-init
 	$(GO) mod vendor
 	$(MGMT_COMMON_DIR)/patches/apply.sh vendor
 	touch  $@
@@ -86,8 +85,11 @@ rest-server: go-deps-clean
 rest-clean: go-deps-clean models-clean
 	$(MAKE) -C rest clean
 
+models-init:
+	$(MAKE) -C models -f openapi_codegen.mk go-server-init
+
 .PHONY: models
-models:
+models: | models-init
 	$(MAKE) -C models
 
 models-clean:
@@ -134,4 +136,8 @@ clean: rest-clean models-clean
 cleanall: clean
 	git clean -fX tools CLI
 	$(RM) tools/swagger_codegen/swagger-codegen*.jar
+
+go-clean:
+	test -d $(GOPATH)/pkg && chmod -R u+w $(GOPATH)/pkg || true
+	$(RM) -r $(GOPATH)/pkg $${HOME}/.cache/go-build $${HOME}/.cache/staticcheck
 

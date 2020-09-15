@@ -3036,14 +3036,14 @@ def parsePeergEvpn(vrf_name, template_name, cmd, args=[]):
     return rc
 
 def parseGloblShow(vrf_name, cmd, args=[]):
-    if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
-        try:
-            pipe_idx = args.index('\|')
-            args = args[:pipe_idx]
-        except:
-            # no pipe
-            pass
+    try:
+        pipe_idx = args.index('\|')
+        args = args[:pipe_idx]
+    except:
+        # no pipe
+        pass
 
+    if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
         if vrf_name == 'all':
             generate_show_bgp_vrf_all(args)
             return 0
@@ -3078,16 +3078,16 @@ def parseGloblShow(vrf_name, cmd, args=[]):
     elif cmd == 'show bgp all':
         vrf_arg = [ 'vrf' , vrf_name ]
         if args[0] == 'peer-group':
-            if len(args) == 5:
+            if len(args) == 5 or args[4] == 'vrf' and len(args) == 7:
                 response = invoke_show_api('get_show_bgp_peer_group_all', vrf_arg + args)
             else:
                 response = invoke_show_api('get_show_bgp_peer_group', vrf_arg + args)
         elif args[0] == 'neighbors':
             if args[1] == 'neighbor-ip':
-                response = invoke_show_api('get_ip_bgp_neighbors_neighborip', [ None, vrf_name, 'ipAll', args[6] ])
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip', [ None, vrf_name, 'ipAll', args[-1] ])
                 show_cli_output('show_ip_bgp_neighbors.j2', response)
             elif args[1] == 'interface':
-                response = invoke_show_api('get_ip_bgp_neighbors_neighborip', [ None, vrf_name, 'ipAll', args[7] ])
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip', [ None, vrf_name, 'ipAll', args[-1] ])
                 show_cli_output('show_ip_bgp_neighbors.j2', response)
             else:
                 response = invoke_show_api('get_ip_bgp_neighbors', [ None, vrf_name, 'ipAll' ])

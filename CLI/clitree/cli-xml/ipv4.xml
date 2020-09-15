@@ -114,7 +114,7 @@ limitations under the License.
             elif test -n "${address}"; then&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 address ${address} ${__full_line}&#xA;
             elif test -n "${summary}"; then&#xA;
-               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route_summary show_ip_route_summary_rpc.j2 ${__full_line}&#xA;
+               python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route_summary show_ip_route_summary_rpc.j2 ${__line}&#xA;
             else&#xA;
                python $SONIC_CLI_ROOT/sonic-cli-ip-route-rpc.py show_ip_route show_ip_route_rpc.j2 ${__full_line}&#xA;
             fi&#xA;
@@ -140,7 +140,7 @@ limitations under the License.
     <COMMAND name="clear ip dhcp-relay" help="Clear ipv4 dhcp-relay statistics">
       <PARAM name="clear-subcommands" help="Clear subcommands" mode="switch" ptype="SUBCOMMAND">
       <PARAM help="clear ip dhcp-relay statistics" name="statistics" optional="false" mode="subcommand" ptype="SUBCOMMAND">
-        <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32"/>
+        <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING"/>
       </PARAM>
       </PARAM>
       <ACTION> python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_relay_clear  ${ifName}  ${__full_line}

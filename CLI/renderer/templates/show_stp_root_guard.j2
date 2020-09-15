@@ -1,9 +1,10 @@
 {% set vars = {'vlan_name': ""} %}
 {% set vars = {'intf_name': ""} %}
+{% set vars = {'intf_state': ""} %}
 {% if json_output -%}
 {% if json_output is iterable %}
-{% if "openconfig-spanning-tree:enabled-protocol" is in json_output %}
-{% set stp_protocol = json_output['openconfig-spanning-tree:enabled-protocol'][0]%}
+{% if "openconfig-spanning-tree:config" is in json_output %}
+{% set stp_protocol = json_output['openconfig-spanning-tree:config']['enabled-protocol'][0]%}
 {%endif%}
 {% set vlan_list = {} %}
 {% if stp_protocol == "openconfig-spanning-tree-ext:PVST" %}
@@ -23,9 +24,14 @@
 {%endif%}
 {%endif%}
 {% if "openconfig-spanning-tree:config" in json_output %}
-{% set timeout = json_output['openconfig-spanning-tree:config']['openconfig-spanning-tree-ext:rootguard-timeout'] %} 
+{% set timeout = json_output['openconfig-spanning-tree:config']['openconfig-spanning-tree-ext:rootguard-timeout'] %}
 {% endif %}
 Root guard timeout: {{'%-3s'|format(timeout)}} secs
+{% set loop_guard_str = "Disabled" %}
+{% if json_output['openconfig-spanning-tree:config']['loop-guard'] == True %}
+{% set loop_guard_str = "Enabled" %}
+{% endif %}
+Loop guard default: {{'%s'|format(loop_guard_str)}}
 {{" "}}
 ----------------------------------------------------------------------
 {{'%-17s'|format("PortNum")}}{{'%-6s'|format("VLAN")}}{{'%-45s'|format("Inconsistency State")}}
@@ -45,11 +51,15 @@ Root guard timeout: {{'%-3s'|format(timeout)}} secs
           {%endif %}
           {% if stp_protocol == "openconfig-spanning-tree-types:RAPID_PVST" %}
             {% set root_gtime = intf['state']['openconfig-spanning-tree-ext:root-guard-timer'] %}
+            {% if vars.update({'intf_state':intf['state']['port-state']| replace('openconfig-spanning-tree-types:',"")| replace('openconfig-spanning-tree-ext:BPDU_DIS',"BPDU-DIS")| replace('openconfig-spanning-tree-ext:ROOT_INC',"ROOT-INC")| replace('openconfig-spanning-tree-ext:LOOP_INC',"LOOP-INC")| replace('openconfig-spanning-tree-ext:',"")}) %}{% endif %}
           {%endif %}
           {% set root_gtime_string = "(" + root_gtime |string() + " seconds left on timer)"%}
           {% if root_gtime > 0 %}
 {{'%-17s'|format(vars.intf_name)}}{{'%-6s'|format(vars.vlan_name)}}{{'%-18s'|format("Root Inconsistent")}}{{'%-26s'|format(root_gtime_string)}}
             {% endif %}
+		  {% if vars.intf_state == "LOOP-INC" %}
+{{'%-17s'|format(vars.intf_name)}}{{'%-6s'|format(vars.vlan_name)}}{{'%-18s'|format("Loop Inconsistent")}}
+          {% endif %}
         {% endif %}
     {% endfor %}
 {% endfor %}

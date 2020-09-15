@@ -51,7 +51,7 @@ limitations under the License.
            name="ip dhcp-relay source-interface"
            help="Configures DHCP relay source interface"
            command_tables="arg2" >
-           <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32" dbpath="arg4/dhcp_relay_src_intf">  </PARAM>
+           <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING" dbpath="arg4/dhcp_relay_src_intf">  </PARAM>
            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -179,7 +179,7 @@ limitations under the License.
            help="Configures DHCPv6 relay source interface"
            command_tables="arg2" >
            
-           <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING_32" dbpath="arg4/dhcpv6_relay_src_intf">  </PARAM>
+           <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING" dbpath="arg4/dhcpv6_relay_src_intf">  </PARAM>
            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -431,10 +431,10 @@ limitations under the License.
        <PARAM   help="Show IP DHCP relay information" name="relay-cmd"  mode="switch"  ptype="SUBCOMMAND"  optional="false">
            <PARAM help="Show IP DHCP relay information in brief" name="brief" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
            <PARAM help="Show IP DHCP relay information in detail" name="detailed" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-               <PARAM help="Interface Name" optional="true" name="ifName1"  ptype="STRING_32"/>
+               <PARAM help="Interface Name" optional="true" name="ifName1"  ptype="STRING"/>
            </PARAM>
            <PARAM help="Show IP DHCP relay statistics" name="statistics" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-               <PARAM help="Interface Name" optional="false" name="ifName" ptype="STRING_32"/>
+               <PARAM help="Interface Name" optional="false" name="ifName" ptype="STRING"/>
            </PARAM>
         </PARAM>
     </MACRODEF>

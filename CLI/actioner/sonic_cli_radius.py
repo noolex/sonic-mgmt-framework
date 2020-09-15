@@ -135,7 +135,7 @@ def invoke_api(func, args):
               "openconfig-system:name": "RADIUS",\
               "openconfig-system:config": {\
                 "openconfig-system:name": "RADIUS",\
-                "openconfig-system-ext:secret-key": args[0]\
+                "openconfig-system-ext:secret-key": (args[0]).replace("\\\\", "\\")\
               }\
             }]\
           }\
@@ -160,7 +160,7 @@ def invoke_api(func, args):
         auth_port = (args[1])[10:]
         timeout = (args[2])[8:]
         retransmit = (args[3])[11:]
-        key = (args[4])[4:]
+        key = ((args[4])[4:]).replace("\\\\", "\\")
         auth_type = (args[5])[10:]
         priority = (args[6])[9:]
         vrf = (args[7])[4:]
