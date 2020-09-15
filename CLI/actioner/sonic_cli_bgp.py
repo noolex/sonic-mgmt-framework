@@ -2085,7 +2085,7 @@ def invoke_show_api(func, args=[]):
             afisafiname = args[2]
         else:
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/state', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
         if response.ok() and response.content is not None:
             d.update(response.content)
@@ -2112,7 +2112,7 @@ def invoke_show_api(func, args=[]):
             afisafiname = args[2]
         else:
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/state', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
         if response.ok() and response.content is not None:
             d.update(response.content)

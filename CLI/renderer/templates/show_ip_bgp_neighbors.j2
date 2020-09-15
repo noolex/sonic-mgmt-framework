@@ -1,8 +1,6 @@
-{% if 'openconfig-network-instance:neighbors' in json_output and 'openconfig-network-instance:global' in json_output %}
+{% if 'openconfig-network-instance:neighbors' in json_output and 'openconfig-network-instance:state' in json_output %}
     {% set neighbor_list = json_output['openconfig-network-instance:neighbors'] %}
-    {% set bgp_global = json_output['openconfig-network-instance:global'] %}
-    {% set g_config = bgp_global['config'] %}
-    {% set g_state = bgp_global['state'] %}
+    {% set g_state = json_output['openconfig-network-instance:state'] %}
     {% if 'neighbor' in neighbor_list %}
         {{ '\n' }}
         {% set neighbors = neighbor_list['neighbor'] %}
