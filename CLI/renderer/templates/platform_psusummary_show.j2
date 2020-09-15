@@ -53,9 +53,9 @@
 {% endif %}
 {% endif %}
     {{'Type (AC/DC)'.ljust(20)}} :{{ns.type}}
-    {{'Output Current (W)'.ljust(20)}} :{{ns.output_current}}
+    {{'Output Current (A)'.ljust(20)}} :{{ns.output_current}}
     {{'Output Power (W)'.ljust(20)}} :{{ns.output_power}}
-    {{'Output Voltage (W)'.ljust(20)}} :{{ns.output_voltage}}
+    {{'Output Voltage (V)'.ljust(20)}} :{{ns.output_voltage}}
 {% for i in range(1, 10) %}
 {% set fan_name = psu_name + ' FAN ' + i|string %}
 {% if fan_name in psu_info %}

@@ -100,15 +100,10 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface Switch ${__params}</ACTION>
         </COMMAND>
 
-        <!-- show running-config-configuration classifier -->
-        <COMMAND name="show running-configuration classifier" help="Shows current classifier configuration">
-            <PARAM name="fbs-class-name" help="Name of the classifier" ptype="STRING_63" optional="true"/>
-            <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
-        </COMMAND>
-
+        <!-- show running-config-configuration class-map -->
         <COMMAND name="show running-configuration class-map" help="Shows current class-map configuration">
-            <PARAM name="fbs-class-name" help="Name of the classifier" ptype="STRING_63" optional="true"/>
-            <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
+            <PARAM name="show-fbs-class-name" help="Name of the class-map" ptype="STRING_63" optional="true"/>
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${show-fbs-class-name} </ACTION>
         </COMMAND>
 
         <!-- show running-config-configuration policy -->
@@ -117,10 +112,9 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${show-fbs-policy-name}" </ACTION>
         </COMMAND>
 
-
         <COMMAND name="clear counters service-policy" help="Clear all policy-map binding counters" />
 
-        <!-- clear counters service-policy policy NAME [interface NAME] -->
+        <!-- clear counters service-policy policy-map NAME [interface NAME] -->
         <COMMAND name="clear counters service-policy policy-map" help="Clear policy-map binding counters using policy-map name">
             <PARAM name="fbs-policy-name" help="Policy-map name (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="interface-type-options" help="Clear counters for policy-maps applied to interface" ptype="SUBCOMMAND" mode="switch"  optional="true" order="true">
@@ -144,34 +138,6 @@ limitations under the License.
             <MACRO name="FBS-POLICY-TYPES" arg="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_details_by_interface Switch ${__params}</ACTION>
         </COMMAND>
-
-        <!--
-        <COMMAND name="show policy" help="Shows policy-map information">
-            <PARAM name="show-fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-policy-name" help="Shows policy-map information using policy-map name (Max size 63)" ptype="STRING_63"/>
-                <PARAM name="type" help="Shows all policy-maps using policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
-            </PARAM>
-            <PARAM name="show-fbs-policy-type" help="policy type" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-policy-name}" = "type"'>
-                <PARAM name="qos" help="Shows all QoS policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="monitoring" help="Shows all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="forwarding" help="Shows all forwarding Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Shows all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
-        </COMMAND>
-        -->
-        <COMMAND name="show classifier" help="Shows flow based services policy information">
-            <PARAM name="show-fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-class-name" help="Name of the classifier" ptype="STRING_63"/>
-                <PARAM name="match-type" help="Shows all classifiers using the match type" ptype="SUBCOMMAND" mode="subcommand" />
-            </PARAM>
-            <PARAM name="show-fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-class-name}" = "match-type"'>
-                <PARAM name="acl" help="Shows classifier which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="fields" help="Shows classifier which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Shows classifier which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
-            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${show-fbs-class-name} ${show-fbs-class-type}</ACTION>
-        </COMMAND>
     </VIEW>
 
     <!--===================================================================================-->
@@ -190,7 +156,8 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_policy ${fbs-policy-name}</ACTION>
         </COMMAND>
 
-        <COMMAND name="class-map" help="Configures class-map" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}">
+        <COMMAND name="class-map" help="Configures class-map" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}"
+            data_and_render_cb="fbs_classifier_render">
             <PARAM name="fbs-class-name" help="Name of the class-map (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="match-type" help="Class-map match type" ptype="SUBCOMMAND" mode="subcommand" optional="false">
                 <PARAM name="fbs-class-type" help="Class-map match type" ptype="SUBCOMMAND" mode="switch">
@@ -204,30 +171,8 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_classifier_${fbs-class-type} ${fbs-class-name} ${fbs-class-type}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no class-map" help="Delete class-map">
+        <COMMAND name="no class-map" help="Delete flow based services class-map">
             <PARAM name="fbs-class-name" help="Name of the class-map (Max: 63 characters)" ptype="STRING_63"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_classifier ${fbs-class-name}</ACTION>
-        </COMMAND>
-
-
-
-        <COMMAND name="classifier" help="Configures flow based services classifier" view="configure-${fbs-class-type}-classifier-view" viewid="fbs-class-name=${fbs-class-name}"
-            data_and_render_cb="fbs_classifier_render">
-            <PARAM name="fbs-class-name" help="Name of the classifier (Max: 63 characters)" ptype="STRING_63"/>
-            <PARAM name="match-type" help="Classifier match type" ptype="SUBCOMMAND" mode="subcommand" optional="false">
-                <PARAM name="fbs-class-type" help="Classifier match type" ptype="SUBCOMMAND" mode="switch">
-                    <PARAM name="acl" help="Classifier using ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
-                    <PARAM name="fields" help="Classifier using L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand">
-                        <PARAM name="match-all" help="Match all fields" ptype="SUBCOMMAND" mode="subcommand"/>
-                    </PARAM>
-                    <PARAM name="copp" help="Classifier using CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
-                </PARAM>
-            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_classifier_${fbs-class-type} ${fbs-class-name} ${fbs-class-type}</ACTION>
-        </COMMAND>
-
-        <COMMAND name="no classifier" help="Delete flow based services classifier">
-            <PARAM name="fbs-class-name" help="Name of the classifier (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_classifier ${fbs-class-name}</ACTION>
         </COMMAND>
 
@@ -469,12 +414,12 @@ limitations under the License.
 
         <MACRO name="CLASSIFIER-DESCRIPTION"/>
 
-        <COMMAND name="match protocol" help="Matches protocol trap to classifier">
+        <COMMAND name="match protocol" help="Matches protocol trap to class-map">
             <PARAM name="trap-id" help="Name of the trap id" ptype="STRING_63" dbpath="sonic-copp:sonic-copp/COPP_TRAP/COPP_TRAP_LIST/trap_ids"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_match_protocol ${fbs-class-name} ${trap-id}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no match protocol" help="Deletes a match of protocol trap to classifier">
+        <COMMAND name="no match protocol" help="Deletes a match of protocol trap to class-map">
             <PARAM name="trap-id" help="Name of the trap id" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_match_protocol ${fbs-class-name} ${trap-id}</ACTION>
         </COMMAND>
@@ -641,7 +586,7 @@ limitations under the License.
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
         <COMMAND name="set" help="Set parameters" />
 
-        <COMMAND name="set copp-action" help="Binds a CoPP action group to the classifier">
+        <COMMAND name="set copp-action" help="Binds a CoPP action group to the class-map">
             <PARAM name="copp-action-name" help="Name of the CoPP action group (up to 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_copp_action_group ${fbs-policy-name} ${fbs-class-name} ${copp-action-name}</ACTION>
         </COMMAND>

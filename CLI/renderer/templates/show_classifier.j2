@@ -4,14 +4,14 @@
     {% set class_data = json_output[class_name] %}
     {% if class_data["MATCH_TYPE"].lower() == "copp" %}
         {% if 'TRAP_IDS' in class_data %}
-            {{- 'Classifier' }} {{ class_name }} {{ 'match-type copp' }}
+            {{- 'Class-map' }} {{ class_name }} {{ 'match-type copp' }}
             {% set list = class_data['TRAP_IDS'].split(',') %}
             {% for i in list %}
                 {{- '  protocol' }} {{ i }}
             {% endfor %}
         {% endif %}
     {% else %}
-    {{- 'Classifier'}} {{ class_name }} {{ 'match-type' }} {{ class_data["MATCH_TYPE"].lower() }}{{ "\n" }}
+    {{- 'Class-map'}} {{ class_name }} {{ 'match-type' }} {{ class_data["MATCH_TYPE"].lower() }}{{ "\n" }}
     {{- '  Description:' }} {{ class_data["DESCRIPTION"] }}{{ "\n" }}
     {{- '  Match:' }}{{ "\n" }}
     {% if ("ACL_NAME" in class_data) and (class_data["ACL_NAME"] ) %}

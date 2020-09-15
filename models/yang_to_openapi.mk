@@ -22,6 +22,7 @@ BUILD_DIR := $(TOPDIR)/build
 
 YANGAPI_DIR                 := $(TOPDIR)/build/yaml
 MD_DIR                      := $(TOPDIR)/build/restconf_md
+SERVER_DIST_DIR             := $(BUILD_DIR)/rest_server/dist/openapi
 
 YANGDIR                     := yangs
 YANGDIR_COMMON              := $(YANGDIR)/common
@@ -61,10 +62,12 @@ $(YANGAPI_DIR)/.done: $(YANG_MOD_FILES) $(YANG_COMMON_FILES) | $(OPENAPI_GEN_PRE
 	@echo "+++++ Generating YAML files for Yang modules +++++"
 	$(PYANG) \
 		-f swaggerapi \
-		--with-md-doc \
 		--outdir $(YANGAPI_DIR) \
-		--md-outdir $(MD_DIR) \
 		--plugindir $(PYANG_PLUGIN_DIR) \
+		--with-md-doc \
+		--md-outdir $(MD_DIR) \
+		--with-serverstub \
+		--stub-outdir $(SERVER_DIST_DIR) \
 		-p $(YANGDIR_COMMON):$(YANGDIR):$(YANGDIR_EXTENSIONS) \
 		$(YANG_MOD_FILES)
 	@echo "+++++ Generation of  YAML files for Yang modules completed +++++"
@@ -81,6 +84,8 @@ $(YANGAPI_DIR)/.sonic_done: $(SONIC_YANG_MOD_FILES) $(SONIC_YANG_COMMON_FILES) |
 		--outdir $(YANGAPI_DIR) \
 		--md-outdir $(MD_DIR) \
 		--plugindir $(PYANG_PLUGIN_DIR) \
+		--with-serverstub \
+		--stub-outdir $(SERVER_DIST_DIR) \
 		-p $(YANGDIR_SONIC_COMMON):$(YANGDIR_SONIC) \
 		$(SONIC_YANG_MOD_FILES)
 	@echo "+++++ Generation of  YAML files for Sonic Yang modules completed +++++"

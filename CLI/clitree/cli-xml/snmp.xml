@@ -281,7 +281,7 @@ Before each command articulation, a comment is shown with the desired command sy
         <PARAM name="udp-port" help="UDP listening port" ptype="LISTEN_PORT" />
       </PARAM>
       <PARAM name = "interface" help = "Specify an interface" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-          <PARAM name = "ifname" help = "Interface name" ptype = "STRING_32" > </PARAM>
+          <PARAM name = "ifname" help = "Interface name" ptype = "STRING" > </PARAM>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_agentaddr  ${__params}</ACTION>
