@@ -767,7 +767,13 @@ def show_views(func, args = []):
 
 def run(func = '', args=[]):
     global format_read
-    showrun_log(logging.DEBUG,"args {}",args) 
+    global CMDS_STRING
+    showrun_log(logging.DEBUG,"args {}",args)
+
+    #Reset global 
+    CMDS_STRING = ""
+    db.clear_cache()
+
     if format_read == False:
         template_path = os.getenv('SHOW_CONFIG_TOOLS', RENDERER_TEMPLATE_PATH)
         format_file = os.path.join(template_path, FORMAT_FILE)
