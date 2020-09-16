@@ -46,6 +46,7 @@ flowgroup_ids_url = '/restconf/data/sonic-tam-flowgroups:sonic-tam-flowgroups/TA
 detach_flowgroup_url = '/restconf/data/openconfig-tam:tam/flowgroups/flowgroup={name}/config/interfaces={interfaces}'
 intf_naming_mode_url = '/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode'
 intf_alias_url = '/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST'
+clear_flowgroup_counters_url = '/restconf/operations/openconfig-tam:clear-flowgroup-counters'
 
 def get_intf_alias():
     intfList = {}
@@ -250,7 +251,8 @@ def getBody(fn):
         'patch_dm_session': """{"openconfig-tam:dropmonitor-sessions":{"dropmonitor-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","collector":"%s","sample-rate":"%s"}}]}}""",
         'patch_aginginterval': """{"openconfig-tam:global":{"config":{"aging-interval":%d}}}""",
         'patch_feature': """{"openconfig-tam:features":{"feature":[{"feature-ref":"%s","config":{"feature-ref":"%s","status":"%s"}}]}}""",
-        'associate_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":%d,"interfaces":["%s"]}}]}}"""
+        'associate_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":%d,"interfaces":["%s"]}}]}}""",
+        'clear_flowgroup_counters': """{"openconfig-tam:input":{}}"""
     }
     return body[fn]
 
@@ -555,6 +557,15 @@ def getDetails(fn, args):
             details['description'] = "Flowgroup"
             details['name'] = data['name']
             details['status_code'] = 404
+    elif fn == "clear_flowgroup_counters":
+        details['url'] = clear_flowgroup_counters_url
+        body = getBody(fn)
+        if (data['name'] == ""):
+            details['body'] = json.loads(body)
+        else:
+            details['body'] = json.loads(body)
+            details['body']['openconfig-tam:input']['name'] = {}
+            details['body']['openconfig-tam:input']['name'] = data['name']
     else:
         details = None
     return details
@@ -566,6 +577,8 @@ def getResponse(details):
         return api.patch(details['url'], details['body'])
     elif details['method'] == 'PUT':
         return api.put(details['url'], details['body'])
+    elif details['method'] == 'POST':
+        return api.post(details['url'], details['body'])
     else:
         return api.delete(details['url'])
 

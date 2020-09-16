@@ -332,8 +332,64 @@ limitations under the License.
       </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
+    <!-- =================== CLEAR FLOWGROUP COUNTERS ===================  -->
+    <COMMAND name="clear counters tam" help="Clear TAM flowgroup counters">
+      <PARAM name="flowgroup_name" help="" mode="switch" ptype="SUBCOMMAND">
+        <PARAM name="flow-groups" help="Clear flowgroup counters" mode="subcommand" ptype="SUBCOMMAND">
+          <PARAM name="options" help="" mode="switch" ptype="SUBCOMMAND">
+            <PARAM name="all" help="Clear counters for all the folwgroups" mode="subcommand" ptype="SUBCOMMAND"></PARAM>
+            <PARAM name="name" help="Name of the flowgroup" ptype="STRING_32"></PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry clear_flowgroup_counters {"name":"${name}","feature":"ANY","method":"POST","template":"show_clear_flowgroup"}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          This command is used to clear flowgroup counters.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to clear flowgroup counters.
+        </USAGE>
+        <EXAMPLE summary="clear counters tam flow-groups">
+          sonic-cli# clear counters tam flow-groups all
+          sonic-cli# clear counters tam flow-groups flowgroup_name
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <!-- =================== SHOW RUNNING CONFIGURATION TAM ===================  -->
+    <COMMAND name="show running-configuration tam" help="Displays all TAM configurations">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-tam</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          This command is used to show TAM running configuration.
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to view TAM running configuration.
+        </USAGE>
+        <EXAMPLE summary="show running-configuration tam">
+          sonic-cli# show running-configuration tam
+          !
+          !
+          tam
+           switch-id 3232
+           enterprise-id 434
+           collector c1 ip 1.1.1.1 port 1111 protocol UDP
+           sampler s1 rate 1
+           sampler s2 rate 655
+           sampler s4 rate 65550
+           sampler s5 rate 999999999
+           flow-group f1 src-ip 10.1.1.10/24 dst-ip 30.1.1.10/24 protocol TCP l4-src-port 8080 priority 100
+           flow-group f2 src-ip 10.1.1.10/32 dst-ip 30.1.1.10/32 protocol UDP priority 100
+          !
+           drop-monitor
+            aging-interval 23
+          !
+           ifa
+            session ifa1 flowgroup f1 collector c1 node-type EGRESS
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
   </VIEW>
-
   <!-- =================== CONFIG TAM ===================  -->
   <VIEW name="configure-view">
     <COMMAND name="tam" help="Telemetry and monitoring configuration" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-view"
