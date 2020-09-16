@@ -504,17 +504,6 @@ def invoke_api(func, args=[]):
             body = { "openconfig-interfaces-ext:fallback": False }
         return api.patch(path, body)
 
-    # Configure IGMP
-    elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/joins', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:joins":{"join":[{"mcastgrpaddr":args[1],"srcaddr":args[2],"config":{"mcastgrpaddr":args[1],"srcaddr":args[2]}}]}}
-        return api.patch(path, body)
-
-    # Delete IGMP
-    elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/joins/join={mcastgrpaddr},{srcaddr}', name=args[0], index="0",mcastgrpaddr=args[1], srcaddr=args[2])
-        return api.delete(path)
-
     # Enable IGMP
     elif func == 'patch_openconfig_if_ip_enable_igmp':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/enabled', name=args[0], index="0")
@@ -525,61 +514,6 @@ def invoke_api(func, args=[]):
     # Disable IGMP
     elif func == 'patch_openconfig_if_ip_disable_igmp':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP Version
-    elif func == 'patch_openconfig_igmp_version_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/version', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:version" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP Version
-    elif func == 'delete_openconfig_igmp_version_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/version', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP query-interval
-    elif func == 'patch_openconfig_igmp_queryinterval_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/query-interval', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:query-interval" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP query-interval
-    elif func == 'delete_openconfig_igmp_queryinterval_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/query-interval', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP last-member-query-count
-    elif func == 'patch_openconfig_igmp_lmquerycount_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/last-member-query-count', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:last-member-query-count" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP last-member-query-count
-    elif func == 'delete_openconfig_igmp_lmquerycount_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/last-member-query-count', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP last-member-query-interval
-    elif func == 'patch_openconfig_igmp_lmqueryinterval_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/last-member-query-interval', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:last-member-query-interval" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP last-member-query-interval
-    elif func == 'delete_openconfig_igmp_lmqueryinterval_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/last-member-query-interval', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP query-max-response-time
-    elif func == 'patch_openconfig_igmp_querymaxrestime_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/query-max-response-time', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:query-max-response-time" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP query-max-response-time
-    elif func == 'delete_openconfig_igmp_querymaxrestime_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/query-max-response-time', name=args[0], index="0")
         return api.delete(path)
 
     # Config IPv4 Unnumbered interface
