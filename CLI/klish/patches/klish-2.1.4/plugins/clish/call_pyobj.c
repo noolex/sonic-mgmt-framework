@@ -219,10 +219,20 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
 
     value = PyObject_CallObject(func, args);
     if (value == NULL) {
-        lub_dump_printf("%%Error: Internal error.\n");
-        pyobj_handle_error();
-        syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", cmd, arg);
-        ret_code = 1;
+        PyObject *type, *value, *traceback;
+        PyErr_Fetch(&type, &value, &traceback);
+        if (!PyErr_GivenExceptionMatches(type, PyExc_SystemExit)) {
+           PyErr_Restore(&type, &value, &traceback);
+           lub_dump_printf("%%Error: Internal error.\n");
+           pyobj_handle_error();
+           syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", cmd, arg);
+           ret_code = 1;
+        } else {
+           syslog(LOG_WARNING, "clish_pyobj: Aborted [cmd=%s][args:%s]", cmd, arg);
+        }
+        Py_XDECREF(type);
+        Py_XDECREF(value);
+        Py_XDECREF(traceback);
     } else {
         if (PyInt_Check(value)) {
             ret_code = PyInt_AsLong(value);
