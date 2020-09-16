@@ -137,14 +137,10 @@ def generate_body(func, args=[]):
 
     #Configure description
     elif func == 'patch_description':
-        body = {"name": args[0],"config": {}}
-        full_cmd = os.getenv('USER_COMMAND', None)
-        match = re.search('description (["]?.*["]?)', full_cmd)
-        if match:
-            body["config"].update( {"description": match.group(1) } )
-        else:
-            body["config"].update( {"description": "" } )
-
+        if len(args) == 1:
+            body = {"name": args[0],"config": {"description": ""}}
+        if len(args) == 2:
+            body = {"name": args[0],"config": {"description": args[1]}}
 
     # Enable or diable interface
     elif func == 'patch_enabled':
