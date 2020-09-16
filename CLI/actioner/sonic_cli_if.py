@@ -178,8 +178,8 @@ def invoke_api(func, args=[]):
         
     elif func == 'patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/port-speed', name=args[0])
-        speed_map = {"10MBPS":"SPEED_10MB", "100MBPS":"SPEED_100MB", "1GIGE":"SPEED_1GB", "auto":"SPEED_1GB", "10GIGE":"SPEED_10GB",
-                        "25GIGE":"SPEED_25GB", "40GIGE":"SPEED_40GB", "100GIGE":"SPEED_100GB" }
+        speed_map = {"10MBPS":"SPEED_10MB", "100MBPS":"SPEED_100MB", "1GIGE":"SPEED_1GB", "10GIGE":"SPEED_10GB",
+                        "25GIGE":"SPEED_25GB", "40GIGE":"SPEED_40GB", "100GIGE":"SPEED_100GB"}
         if args[1] not in speed_map.keys():
             print("%Error: Unsupported speed")
             return None
@@ -1036,6 +1036,10 @@ def run(func, args):
           if response.content is not None:
             # Get Command Output
             api_response = response.content
+            if api_response is None:
+                print("Failed")
+                return 1
+
             if 'openconfig-interfaces:interfaces' in api_response:
                 value = api_response['openconfig-interfaces:interfaces']
                 if 'interface' in value:
@@ -1066,30 +1070,26 @@ def run(func, args):
                         else:
                             print("%Error: Internal error.")
 
-            if api_response is None:
-                print("Failed")
-                return 1
-            else:
-                if func == 'get_openconfig_interfaces_interfaces_interface':
-                    show_cli_output(args[1], api_response)
-                elif func == 'get_openconfig_interfaces_interfaces':
-                    show_cli_output(args[0], api_response)
-                elif func == 'get_sonic_port_sonic_port_port_table':
-                    show_cli_output(args[0], api_response)
-                elif func == 'get_openconfig_relay_agent_relay_agent':
-                    show_cli_output(args[0], api_response)
-                elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6':
-                    show_cli_output(args[0], api_response)
-                elif func == 'get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state':
-                    show_cli_output(args[0], api_response)
-                elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_state':
-                    show_cli_output(args[0], api_response)
-                elif func == 'get_openconfig_relay_agent_relay_agent_detail':
-                    show_cli_output(args[0], api_response)
-                elif func == 'get_openconfig_relay_agent_relay_agent_detail_dhcpv6':
-                    show_cli_output(args[0], api_response)
-                elif func == 'rpc_interface_counters':
-                    show_cli_output(args[0], api_response)
+            if func == 'get_openconfig_interfaces_interfaces_interface':
+                show_cli_output(args[1], api_response)
+            elif func == 'get_openconfig_interfaces_interfaces':
+                show_cli_output(args[0], api_response)
+            elif func == 'get_sonic_port_sonic_port_port_table':
+                show_cli_output(args[0], api_response)
+            elif func == 'get_openconfig_relay_agent_relay_agent':
+                show_cli_output(args[0], api_response)
+            elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6':
+                show_cli_output(args[0], api_response)
+            elif func == 'get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state':
+                show_cli_output(args[0], api_response)
+            elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_state':
+                show_cli_output(args[0], api_response)
+            elif func == 'get_openconfig_relay_agent_relay_agent_detail':
+                show_cli_output(args[0], api_response)
+            elif func == 'get_openconfig_relay_agent_relay_agent_detail_dhcpv6':
+                show_cli_output(args[0], api_response)
+            elif func == 'rpc_interface_counters':
+                show_cli_output(args[0], api_response)
 
         else:
             print response.error_message()

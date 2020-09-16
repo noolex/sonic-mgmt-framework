@@ -31,7 +31,7 @@
             {% if "interface" in peer %}
                 {% if vars.update({'interface':peer['interface']}) %}{% endif %}
             {% endif %}
-            {% if "async" in peer['state'] %}
+            {% if "async" in peer %}
                 {% if "transmitted-packets" in peer['async'] %}
                     {% if vars.update({'controlPktOut':peer['async']['transmitted-packets']}) %}{% endif %}
                 {% endif %}

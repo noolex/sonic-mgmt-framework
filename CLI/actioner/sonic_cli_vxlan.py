@@ -25,7 +25,6 @@ import re
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-
 vxlan_global_info = []
 
 def config_response_handler(api_response, func, args):
@@ -115,7 +114,7 @@ def invoke(func, args):
             keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
             api_response = aa.get(keypath_nvo)
             response = api_response.content
-            if len(response) != 0:
+            if response is not None and len(response) != 0:
                 response = aa.delete(keypath_nvo)
                 if response.ok():
                     return aa.delete(keypath)
@@ -152,7 +151,7 @@ def invoke(func, args):
             keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
             api_response = aa.get(keypath_nvo)
             response = api_response.content
-            if len(response) != 0:
+            if response is not None and len(response) != 0:
                 response = aa.delete(keypath_nvo)
                 if response.ok():
                     return aa.delete(keypath)

@@ -59,7 +59,6 @@ clear counters [interface <interface>]
                                     name="ifId"
                                     help="Physical Interface"
                                     ptype="ETH_PHY_SLOT_PORT_SUBPORT"
-                                    optional="true"
                                     >
                                 </PARAM>
                             </PARAM>
@@ -74,7 +73,6 @@ clear counters [interface <interface>]
                                     name="ifId"
                                     help="Physical Interface"
                                     ptype="UINT16"
-                                    optional="true"
                                     >
                                 </PARAM>
                             </PARAM>
@@ -87,7 +85,6 @@ clear counters [interface <interface>]
                                 <PARAM 
                                     name="ifId"
                                     help="PortChannel interface number"
-                                    optional="true"
                                     ptype="LAG_ID">
                                 </PARAM>
                             </PARAM>
