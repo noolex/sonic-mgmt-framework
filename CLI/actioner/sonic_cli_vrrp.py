@@ -325,6 +325,9 @@ def run(func, args):
                 else:
                     response[u'afi'] = 1
                 show_cli_output("show_vrrp_summary.j2", response)
+        elif func == 'post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config' and '%Error: Resource not found' in api_response.error_message():
+            print('%Error: Configure interface IP before configuring VRRP')
+            return 1 
         else:
             #error response
             print(api_response.error_message())
