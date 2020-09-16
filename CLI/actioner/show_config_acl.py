@@ -21,7 +21,7 @@ def __show_running_acl(render_tables, acl_type):
     else:
         keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
         response = acl_client.get(keypath, depth=None, ignore404=False)
-        if not response.ok():
+        if not response.ok() or not bool(response.content):
             log.log_debug("No ACLs configured")
             return cmd_str
 
