@@ -32,6 +32,7 @@ from natsort import natsorted
 import sonic_intf_utils as ifutils
 from sonic_cli_if_range import check_response
 from collections import OrderedDict 
+import sonic_cli_show_config
 
 import urllib3
 urllib3.disable_warnings()
@@ -197,6 +198,18 @@ def invoke_api(func, args=[]):
             return None
 
         body = { "openconfig-if-ethernet:port-fec": fec_map[fec]}
+        return api.patch(path, body)
+
+    elif func == 'patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/openconfig-if-ethernet-ext2:port-unreliable-los', name=args[0])
+        los_map = {"auto": "UNRELIABLE_LOS_MODE_AUTO", "on": "UNRELIABLE_LOS_MODE_ON", "off": "UNRELIABLE_LOS_MODE_OFF", "default": "UNRELIABLE_LOS_MODE_OFF"}
+
+        los = args[1]
+        if los not in los_map:
+            print("%Error: Invalid port unreliable los config")
+            return None
+
+        body = { "openconfig-if-ethernet:port-unreliable-los": los_map[los]}
         return api.patch(path, body)
     
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config':
@@ -411,6 +424,18 @@ def invoke_api(func, args=[]):
                filter_address(d, True)
             else:
                filter_address(d, False)
+
+            path = cc.Path('/restconf/data/sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/MGMT_PORT_LIST')
+            responseMgmtPortTbl = api.get(path)
+            if responseMgmtPortTbl.ok():
+                for port in responseMgmtPortTbl.content['sonic-mgmt-port:MGMT_PORT_LIST']:
+                    ifname = port['ifname']
+                    path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/oper-status', name=ifname)
+                    responseMgmtPortOperStatus = api.get(path)
+                    if responseMgmtPortOperStatus.ok():
+                        port.update({'oper_status' : responseMgmtPortOperStatus.content['openconfig-interfaces:oper-status'].lower()})
+                d.update(responseMgmtPortTbl.content)
+
 
         path = cc.Path('/restconf/data/sonic-interface:sonic-interface/INTF_TABLE/INTF_TABLE_IPADDR_LIST')
         responseIntfTbl = api.get(path)
@@ -913,6 +938,25 @@ def invoke_api(func, args=[]):
             keypath = cc.Path('/restconf/operations/sonic-counters:interface_counters')
         body = {}
         return api.post(keypath, body)
+    elif func == 'showrun':
+       arglen =0
+       try:
+         arglen = args.index('\\|')
+       except ValueError:
+         arglen = len(args)
+
+       if arglen == 3:
+         show_args=["views=configure-if,configure-lag,configure-vlan,configure-vxlan,configure-lo,configure-if-mgmt"]
+         sonic_cli_show_config.run('show_multi_views',show_args)
+       elif arglen > 3:
+          show_args= ["views=configure-if"]
+          intf = args[3]
+          if intf is not None and type(intf)== str:
+            if intf != "Ethernet" and intf != "Eth":
+               view_key_str = "view_keys=\"name=" + intf + "\""
+               show_args.append(view_key_str)
+          sonic_cli_show_config.run('show_view',show_args)
+       return
     return api.cli_not_implemented(func)
 
 def getId(item):
@@ -986,6 +1030,8 @@ def run(func, args):
         if func == 'ip_interfaces_get' or func == 'ip6_interfaces_get':
             show_cli_output(args[0], response)
             return
+        elif func == 'showrun':
+            return    
         if response.ok():
           if response.content is not None:
             # Get Command Output

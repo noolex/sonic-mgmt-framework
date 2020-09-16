@@ -23,6 +23,10 @@ cmdlist = []
 f2ecmdlst = []
 DUMMYSTR = 'dummystr'
 
+def showrun_log(lvl, msg, *args):
+   if log.isEnabledFor(lvl):
+      log.log(lvl, msg .format(*args))
+
 
 #  parse table path, returns dict of table key, value
 def get_view_table_keys(table_path):
@@ -32,7 +36,7 @@ def get_view_table_keys(table_path):
         for sub_path in path.split(','):
             match = re.search(r"(.+)={(.+)}", sub_path)
             if match is not None:
-                log.debug("subpath {}, group1 {}, group2 {}" .format( sub_path, match.group(1), match.group(2)))
+                showrun_log(logging.DEBUG,"subpath {}, group1 {}, group2 {}", sub_path, match.group(1), match.group(2))
                 table_keys_map.update({match.group(1):match.group(2)})
 
     return table_keys_map
@@ -56,7 +60,7 @@ def parammatch(xmlval, dbparamval):
 def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
     global cmdlist
 
-    log.debug('dbpathstr {} nodestr {} table_keys {} ' .format(dbpathstr, nodestr, tables.keys()))
+    showrun_log(logging.DEBUG,'dbpathstr {} nodestr {} table_keys {} ', dbpathstr, nodestr, tables.keys())
 
     key_val = (nodestr.split('|', 1)[0]).split('##')
     present_n   = key_val[5] # P or NP
@@ -67,8 +71,8 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
     name_n      = key_val[0] # %s or namest
     valid_n     = False
 
-    log.debug('present_n {} mode_n {} key_n {} dbpath_n {}, name_n {}'
-        .format(present_n, mode_n, key_n, dbpath_n, name_n))
+    showrun_log(logging.DEBUG,'present_n {} mode_n {} key_n {} dbpath_n {}, name_n {}',
+        present_n, mode_n, key_n, dbpath_n, name_n)
 
     if dbpath_n == '':
         if present_n == 'NP':
@@ -93,29 +97,29 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
             for table_path in tables:
                 table_path_nokeys = '/'.join(table_path.split('/')[:-1])
 
-                log.debug("dbpath_table {}, table_path {}, table_path_no_keys {}"\
-                 .format(dbpath_table, table_path, table_path_nokeys))
+                showrun_log(logging.DEBUG,"dbpath_table {}, table_path {}, table_path_no_keys {}",
+                 dbpath_table, table_path, table_path_nokeys)
                 if dbpath_table == table_path_nokeys:
                     dbpathstr = table_path_nokeys
                     filter_keys = collections.OrderedDict()
                     table_path_keys = get_view_table_keys(table_path)
                     paramval = dbpath_n.replace(dbpathstr, '')[1:]
-                    log.debug("table_path_keys {}" .format(table_path_keys))
+                    showrun_log(logging.DEBUG,"table_path_keys {}",table_path_keys)
 
-                    for table_path_key, table_path_key_value in table_path_keys.items():
+                    for table_path_key, table_path_key_value in table_path_keys.iteritems():
                         view_key_val = view_keys.get(table_path_key_value)
                         if view_key_val:
                             if view_key_val != "*":
                                 filter_keys.update({table_path_key: view_key_val})
                             else:
-                                log.warn("key {} missing, skippingg node" .format(table_path_key_value))
+                                showrun_log(logging.WARNING,"key {} missing, skippingg node",table_path_key_value)
                                 return valid_n
-                    log.debug("filter keys {} table_path {} " .format(filter_keys, table_path))
+                    showrun_log(logging.DEBUG,"filter keys {} table_path {} ", filter_keys, table_path)
 
                     table = tables[table_path]
-                    log.debug("table {} " .format(table))  
+                    showrun_log(logging.DEBUG,"table {} ",table)  
                     match = True
-                    for key, value in filter_keys.items():
+                    for key, value in filter_keys.iteritems():
                         if key not in table:
                             match = False
                             break
@@ -123,18 +127,18 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
                             match = False
                             break
                     if match == True:
-                        log.debug("found rec with keys {}" .format(filter_keys))
+                        showrun_log(logging.DEBUG,"found rec with keys {}",filter_keys)
                         view_member = table
                     else:
-                        log.debug("rec not found for keys {}" .format(filter_keys))
+                        showrun_log(logging.DEBUG,"rec not found for keys {}", filter_keys)
                         return valid_n
 
         xml_paramval = paramval.split('=')
         
         if present_n == 'P':
             if xml_paramval[0] not in view_member:
-                log.debug("PARAM {} not in db, process next cmd option "\
-                 .format(xml_paramval[0]) )
+                showrun_log(logging.DEBUG,"PARAM {} not in db, process next cmd option ",
+                 xml_paramval[0] )
                 return False
 
             valid_n = True
@@ -158,7 +162,7 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
 
                 if len(xml_paramval) > 1:
                     if parammatch(value_str, xml_paramval[1]) == False:
-                        log.debug("Param match failed db val {}, xml val {}" .format(value_str, xml_paramval[1]))
+                        showrun_log(logging.DEBUG,"Param match failed db val {}, xml val {}", value_str, xml_paramval[1])
                         return False
                 if name_n != '%s':
                     cmdstr = name_n
@@ -167,7 +171,7 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
 
                 cmdlist.append(cmdstr)
             else:
-                log.debug(" DB value for key {} is None, skip to next cmd option" .format(xml_paramval[0]))
+                showrun_log(logging.DEBUG," DB value for key {} is None, skip to next cmd option" ,xml_paramval[0])
                 return False
 
         else:
@@ -194,14 +198,14 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
                     cmdlist.append(DUMMYSTR)
                     return True
 
-    log.debug("cmdlist {}" .format(cmdlist))
+    showrun_log(logging.DEBUG,"cmdlist {}" ,cmdlist)
     return valid_n              
 
 
 
 def process_node(view_member, dbpathstr, nodestr, tables, view_keys):
 
-    log.debug('dbpathstr {} nodestr {} viewkey{} ' .format(dbpathstr, nodestr, view_keys))
+    showrun_log(logging.DEBUG,'dbpathstr {} nodestr {} viewkey{} ' ,dbpathstr, nodestr, view_keys)
 
     nodestr_parts = nodestr.split('|', 1)
     key_val = (nodestr_parts[0]).split('##')
@@ -213,12 +217,12 @@ def process_node(view_member, dbpathstr, nodestr, tables, view_keys):
     dbpath_n = key_val[2]  # '' or valid dbpath
     name_n  = key_val[0]  # %s or namestr 
 
-    log.debug('present_n {} mode_n {} key_n {} dbpath_n {}, name_n {}'
-        .format(present_n, mode_n, key_n, dbpath_n, name_n))
+    showrun_log(logging.DEBUG,'present_n {} mode_n {} key_n {} dbpath_n {}, name_n {}',
+        present_n, mode_n, key_n, dbpath_n, name_n)
 
     ret = formatcmdstr(view_member, dbpathstr, nodestr_parts[0], tables, view_keys)
     if ret is False:
-        log.debug("Failed to process nodestr {}" .format(nodestr_parts[0]))
+        showrun_log(logging.DEBUG,"Failed to process nodestr {}", nodestr_parts[0])
         return False
 
     if len(nodestr_parts) ==1:
@@ -237,8 +241,8 @@ def process_cmd(view_member, dbpathstr, table_list, tables, view_keys, cmd_line)
     global f2ecmdlst
     cmdmap = {}
     cmdfound = False
-    log.debug("Enter: dbpathstr: {},  table_list: {}, view_keys: {}"
-                    .format(dbpathstr, table_list, view_keys))
+    showrun_log(logging.DEBUG,"Enter: dbpathstr: {},  table_list: {}, view_keys: {}",
+                    dbpathstr, table_list, view_keys)
 
     cmd_line_parts = cmd_line.split(':::')
     cmdoptlst = (cmd_line_parts[0]).split(';;;')
@@ -256,7 +260,7 @@ def process_cmd(view_member, dbpathstr, table_list, tables, view_keys, cmd_line)
         nodestrlst = cmdmap[swnode.split('%%%')[0]]
         for nodestr in nodestrlst:
             ret= process_node(view_member, dbpathstr, nodestr, tables, view_keys)
-        log.debug('f2ecmdlst {}' .format(f2ecmdlst))
+        showrun_log(logging.DEBUG,'f2ecmdlst {}',f2ecmdlst)
 
         if f2ecmdlst:
             cmdfound = True
@@ -268,7 +272,7 @@ def process_cmd(view_member, dbpathstr, table_list, tables, view_keys, cmd_line)
             f2ecmdlst = []
 
     fcmdlst = sorted(list(set(fcmdlst)), key=len)
-    log.debug('fcmdlst {}' .format(fcmdlst))
+    showrun_log(logging.DEBUG,'fcmdlst {}' ,fcmdlst)
 
     printlst_tmp =[]
     for i, j in enumerate(fcmdlst):

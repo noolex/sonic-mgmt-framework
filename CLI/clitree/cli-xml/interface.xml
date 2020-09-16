@@ -69,34 +69,62 @@ limitations under the License.
     </VAR>
 
     <VIEW name="enable-view">
-    <!-- show running-configuration interface -->
-    <COMMAND
-           name="show running-configuration interface"
-           help="Show interface info">
-        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-if,configure-lag,configure-vlan,configure-vxlan,configure-lo,configure-if-mgmt</ACTION>
-      </COMMAND>
-    <COMMAND
-           name="show running-configuration interface Eth"
-           help="Show physical interface info">
-            <PARAM
-               name="iface_num"
-               help="Physical Interface"
-               ptype="ETH_PHY_SLOT_PORT_SUBPORT"
-               optional="true">
+   <!-- show running-configuration interface -->
+     <COMMAND
+         name="show running-configuration interface"
+         help="Show interface info"
+         >
+         <PARAM
+             name="if-subcommands"
+             help="Interface subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND"
+             optional="true"
+             >
+             <PARAM
+               name="port"
+               help="Physical interface ID"
+               ptype="PHY_INTERFACE">
             </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${phy-if-eth-name}" </ACTION>
-      </COMMAND>
-    <COMMAND
-           name="show running-configuration interface Ethernet"
-           help="Show physical interface info">
-            <PARAM
-               name="iface_num"
-               help="Physical Interface"
-               ptype="UINT16"
-               optional="true">
-            </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${phy-if-ethernet-name}" </ACTION>
-      </COMMAND>
+             <!-- show interface Ethernet [<id>] -->
+             <PARAM
+                 name="Eth"
+                 help="Physical Interface"
+                 test="${SONIC_CLI_IFACE_MODE} = standard"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 hidden="true"
+                 >
+                 <PARAM
+                    name="iface_num"
+                    help="Physical Interface"
+                    ptype="ETH_RANGE_PHY_SLOT_PORT_SUBPORT"
+                    optional="true"
+                    hidden="true"
+                    >
+                 </PARAM>
+             </PARAM>
+             <PARAM
+                 name="Ethernet"
+                 help="Physical Interface"
+                 test="-z ${SONIC_CLI_IFACE_MODE}"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 hidden="true"
+                 >
+                 <PARAM
+                    name="iface_num"
+                    help="Physical Interface"
+                    ptype="ETHER_RANGE"
+                    optional="true"
+                    hidden="true"
+                    >
+                </PARAM>
+             </PARAM>
+          </PARAM>
+         <ACTION builtin="clish_pyobj">sonic_cli_if showrun show runnning-configuration interface ${port}${Ethernet}${Eth}${iface_num}</ACTION>
+    </COMMAND>
+
       <COMMAND
            name="show running-configuration interface Vlan"
            help="Show interface Vlan info">
@@ -705,7 +733,7 @@ limitations under the License.
                 ptype="LO_ID"
                 >
         </PARAM>
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=Loopback${lo-id}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_interfaces_interfaces_interface Loopback${lo-id} </ACTION>
     </COMMAND>
     <COMMAND
          name="interface CPU"
@@ -819,6 +847,21 @@ limitations under the License.
             name="no fec"
             help="Set default FEC (forward error correction) configuration">
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec ${iface} default</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="unreliable-los"
+            help="Configure unreliable LOS mode">
+            <PARAM
+                name="los"
+                help="Unreliable LOS mode configuration"
+                dbpath="sonic-port:sonic-port/PORT/PORT_LIST/override_unreliable_los"
+                ptype="INTF_UNRELIABLE_LOS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} ${los}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no unreliable-los"
+            help="Set default unreliable LOS mode configuration">
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} default</ACTION>
         </COMMAND>
         <COMMAND
             name="channel-group"

@@ -38,7 +38,7 @@
   <VIEW name="configure-view">
     <COMMAND name="username" help="Add new user" ptype="SUBCOMMAND" mode="subcommand" command_keys="username=*" command_tables="sonic-system-aaa:sonic-system-aaa/USER/USER_LIST/username={username}" render_command_cb="username_config">
        <PARAM name="user-name" help="User name string" ptype="STRING_32"></PARAM>
-           <PARAM name="password" help="Clear text password/Encrypted password" ptype="SUBCOMMAND" mode="subcommand"> <PARAM name="passwd" help="Clear text password string/$6$(encrypted password)" ptype="PASSWORD_STR"></PARAM>
+           <PARAM name="password" help="Clear text password/Encrypted password" ptype="SUBCOMMAND" mode="subcommand"> <PARAM name="passwd" help="Password format &lt;clear text password&gt;(Hashed to SHA-512)&#xA;&#009;&#009;&#032;&#032;&#032;$&lt;id&gt;$&lt;salt&gt;$&lt;password hash&gt;" ptype="PASSWORD_STR"></PARAM>
 	       <PARAM name="role" help="User role" ptype="SUBCOMMAND" mode="subcommand"> <PARAM name="rl" help="User role (admin/operator)" ptype="STRING">
 	       </PARAM>
            </PARAM>
