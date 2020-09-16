@@ -38,12 +38,12 @@ def invoke_api(func, args):
        path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/TELEMETRY/TELEMETRY_LIST=gnmi/client_auth')
        return api.get(path)
     elif func == 'set_sonic_client_auth_rest':
-       path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/REST_SERVER/REST_SERVER_LIST=default/client_auth')
-       body = { "sonic-client-auth:client_auth": args[0].strip(',') }
+       path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/REST_SERVER')
+       body = { "sonic-client-auth:REST_SERVER": {"REST_SERVER_LIST": [{"server": "default","client_auth": args[0].strip(',')}]}}
        return api.patch(path, body)
     elif func == 'set_sonic_client_auth_telemetry':
-       path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/TELEMETRY/TELEMETRY_LIST=gnmi/client_auth')
-       body = { "sonic-client-auth:client_auth": args[0].strip(',') }
+       path = cc.Path('/restconf/data/sonic-client-auth:sonic-client-auth/TELEMETRY')
+       body = { "sonic-client-auth:TELEMETRY": {"TELEMETRY_LIST": [{"server": "gnmi","client_auth": args[0].strip(',')}]}}
        return api.patch(path, body)
     else:
        body = {}
