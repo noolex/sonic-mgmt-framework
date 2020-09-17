@@ -148,11 +148,11 @@ def run(func, args):
 		if 'default' == args[1]:
                     value = sorted(value['process'], key = lambda x: int(x['pid']))
 		elif 'cpu' == args[1]:
-                    value = sorted(value['process'], key = lambda x: x['state']['cpu-utilization'], reverse=True)
+                    value = sorted(value['process'], key = lambda x: float(x['state']['cpu-utilization']), reverse=True)
 		elif 'mem-util' == args[1]:
-                    value = sorted(value['process'], key = lambda x: x['state']['memory-utilization'], reverse=True)
+                    value = sorted(value['process'], key = lambda x: float(x['state']['memory-utilization']), reverse=True)
 		elif 'mem-usage' == args[1]:
-                    value = sorted(value['process'], key = lambda x: x['state']['memory-usage'], reverse=True)
+                    value = sorted(value['process'], key = lambda x: int(x['state']['memory-usage']), reverse=True)
 	        elif 'pid' == args[1]:
 		    for proc in value['process']:
 		        if proc['pid'] == args[2]:
