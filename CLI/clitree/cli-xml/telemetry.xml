@@ -37,6 +37,11 @@ limitations under the License.
      pattern="ingress(INGRESS) egress(EGRESS)"
      help="IFA Node Role"/>
   <PTYPE
+     name="TS_NODETYPE"
+     method="select"
+     pattern="normal(NORMAL) ifa(IFA)"
+     help="Tail Stamping Node Role"/>
+  <PTYPE
      name="RANGE_1_1024"
      method="integer"
      pattern="1..1024"
@@ -1020,7 +1025,10 @@ limitations under the License.
       <PARAM name="flowgroup" help="Configures flow-group for tail-stamping session" ptype="SUBCOMMAND" mode="subcommand">
         <PARAM name="flowgroup_name" help="Flow-group name (up to 32 characters string)" ptype="STRING_32"></PARAM>
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_ts_session {"session":"${session_name}","flowgroup":"${flowgroup_name}","feature":"TAILSTAMPING","method":"PATCH"}</ACTION>
+      <PARAM name="node-type" help="Configures node type for tail-stamping session" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name="node_type" help="Node type" ptype="TS_NODETYPE" default="NORMAL"/>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_ts_session {"session":"${session_name}","flowgroup":"${flowgroup_name}","feature":"TAILSTAMPING","method":"PATCH","node_type":"${node_type}"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
            This command creates tail stamping session associated a previously defined flow-group.
@@ -1028,17 +1036,18 @@ limitations under the License.
         <USAGE>
            This command creates tail stamping session associated a previously defined flow-group.
         </USAGE>
-        <EXAMPLE summary="session &lt;name&gt; flowgroup &lt;fg-name&gt;">
+        <EXAMPLE summary="session &lt;name&gt; flowgroup &lt;fg-name&gt; {node-type &lt;normal|ifa&gt;}">
            sonic# configure terminal
            sonic(config)# tam
            sonic(config-tam)# tail-stamping
-           sonic(config-tam-ts)# session ss66 flowgroup f9
+           sonic(config-tam-ts)# session ss66 flowgroup f9 node-type ifa
            sonic(config-tam-ts)# end
            sonic# show tam tail-stamping sessions
 
-           Name           Flow Group
-           -----------    ------------
-           ss66           f9
+           Name           Flow Group     Node Type
+           -----------    ------------   ------------
+           ss66           f9             IFA
+           ss99           f10            Normal
 
            sonic#
         </EXAMPLE>

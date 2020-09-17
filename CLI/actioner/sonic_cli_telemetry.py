@@ -247,7 +247,7 @@ def getBody(fn):
         'patch_switch_id': """{"openconfig-tam:switch-id":%d}""",
         'patch_enterprise_id': """{"openconfig-tam:enterprise-id":%d}""",
         'patch_ifa_session': """{"openconfig-tam:ifa-sessions":{"ifa-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","collector":"%s","sample-rate":"%s","node-type":"%s"}}]}}""",
-        'patch_ts_session': """{"openconfig-tam:tailstamping-sessions":{"tailstamping-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s"}}]}}""",
+        'patch_ts_session': """{"openconfig-tam:tailstamping-sessions":{"tailstamping-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","node-type":"%s"}}]}}""",
         'patch_dm_session': """{"openconfig-tam:dropmonitor-sessions":{"dropmonitor-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","collector":"%s","sample-rate":"%s"}}]}}""",
         'patch_aginginterval': """{"openconfig-tam:global":{"config":{"aging-interval":%d}}}""",
         'patch_feature': """{"openconfig-tam:features":{"feature":[{"feature-ref":"%s","config":{"feature-ref":"%s","status":"%s"}}]}}""",
@@ -421,7 +421,7 @@ def getDetails(fn, args):
             details['name'] = data['name']
     elif fn == "patch_ts_session":
         details['url'] = tailstamping_sessions_url
-        body = getBody(fn)%(data['session'],data['session'],data['flowgroup'])
+        body = getBody(fn)%(data['session'],data['session'],data['flowgroup'],data['node_type'])
         details['body'] = json.loads(body)
     elif fn == "delete_ts_session":
         details['url'] = tailstamping_sessions_url+'/tailstamping-session={}'.format(data['session'])

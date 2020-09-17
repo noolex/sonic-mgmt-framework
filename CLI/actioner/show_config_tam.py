@@ -206,6 +206,8 @@ def show_tam_tailstamping(TailstampingCfg):
             CMDS_STRING += '  session ' + t['name']
             if 'flowgroup' in t:
                 CMDS_STRING += ' flowgroup ' + t['flowgroup']
+            if 'node-type' in t:
+                CMDS_STRING += ' node-type ' + t['node-type']
             CMDS_STRING += "\n"
     return CMDS_STRING
 
