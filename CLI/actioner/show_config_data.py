@@ -272,26 +272,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'acl_global_bind_cb'      : acl_global_bind_cb,
                   'username_config'         : show_username_config,
                   'if_vrf_binding'          : show_if_vrf_binding,
-<<<<<<< HEAD
-		          'intf_unreliable_los'     : show_if_unreliable_los,
-||||||| merged common ancestors
-		  'intf_unreliable_los' : show_if_unreliable_los,
-||||||| merged common ancestors
-<<<<<<< Temporary merge branch 1
+		  'intf_unreliable_los'     : show_if_unreliable_los,
                   'username_config'         : show_username_config,
-                  'if_vrf_binding' : show_if_vrf_binding,
-||||||| merged common ancestors
-||||||| merged common ancestors
-=======
-                  'username_config'         : show_username_config,
-                  'if_vrf_binding' : show_if_vrf_binding,
->>>>>>> Temporary merge branch 2
-=======
->>>>>>> Temporary merge branch 2
-=======
->>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/broadcom_sonic_3.x_share
+                  'if_vrf_binding'          : show_if_vrf_binding,
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
