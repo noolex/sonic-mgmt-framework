@@ -36,7 +36,7 @@ limitations under the License.
             />
           <PARAM 
             name = "vrf-name"
-            help = "VRF name (up to 15 characters)"
+            help = "Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)"
             ptype = "VRF_OR_MGMT"
             />
         </PARAM>
@@ -80,7 +80,7 @@ limitations under the License.
       >
       <PARAM
         name="vrf-name"
-        help="VRF name (up to 15 characters)"
+        help="Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)"
         ptype="VRF_OR_MGMT"
         dbpath="sonic-ssh-server-vrf:sonic-ssh-server-vrf/SSH_SERVER_VRF/SSH_SERVER_VRF_LIST/vrf_name"
         >
@@ -106,7 +106,7 @@ limitations under the License.
       >
       <PARAM
         name="vrf-name"
-        help="VRF name (up to 15 characters)"
+        help="Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)"
         ptype="VRF_OR_MGMT"
         >
       </PARAM>

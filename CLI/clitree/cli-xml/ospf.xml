@@ -33,7 +33,7 @@
         on which the router have to be configured. If VRF name is not specified then
         the command is considered for VRF default. Upon successful configuration CLI
         mode will be changed to config-router-ospf.
-        Technical details on OSPFv2 support is also availbale at
+        Technical details on OSPFv2 support is also available at
         http://docs.frrouting.org/en/latest/
       </USAGE>
       <EXAMPLE summary="" >
@@ -1525,9 +1525,17 @@
       <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds ${vrf-name} ${__full_line} </ACTION>
         <DOCGEN>
     <DESCRIPTION>
-      Display ospf information
+      Display show related ospf information for a specific vrf
     </DESCRIPTION>
-    <EXAMPLE summary="Display ospf information for default vrf">
+    <USAGE>
+      Use this command to display global, neighbors, interfaces etc information 
+      related to an OSPFv2 router. User can optionally specify VRF
+      on which the router have to be configured. If VRF name is not specified then
+      the command is considered for VRF default.
+      Technical details on OSPFv2 support is also available at
+      http://docs.frrouting.org/en/latest/
+    </USAGE>
+    <EXAMPLE summary="Display global ospf information for default vrf">
 device# show ip ospf
  OSPF Routing Process, Router ID: 1.1.1.1
  Supports only single TOS (TOS0) routes
@@ -1581,6 +1589,12 @@ sonic# show ip ospf neighbor | no-more
 
 Neighbor ID     Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
 10.59.142.247     1 Full/Backup       37.343s 64.1.1.2        Ethernet64:64.1.1.1      0     0     0
+
+Leaf1# show ip ospf neighbor Ethernet66 | no-more
+ 
+Neighbor ID     Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
+2.2.2.2           1 Full/Backup       38.245s 64.1.1.2        Ethernet66:64.1.1.1      0     0     0
+ 
     </EXAMPLE>
     <EXAMPLE summary="Display neighbor detailed information for ospf on default vrf">
 sonic# show ip ospf neighbor detail | no-more
@@ -1599,6 +1613,40 @@ Neighbor 10.59.142.247, interface address 64.1.1.2
     Thread Database Description Retransmision off
     Thread Link State Request Retransmission on
     Thread Link State Update Retransmission on
+
+Leaf1# show ip ospf neighbor 2.2.2.2 | no-more
+Neighbor 2.2.2.2, interface address 64.1.1.2
+    In the area 0.0.0.0 via interface Ethernet66
+    Neighbor priority is 1, State is Full, 5 state changes
+    Most recent state change statistics:
+      Progressive change 0h1m11s ago
+    DR is 64.1.1.1, BDR is 64.1.1.2
+    Options 2 *|-|-|-|-|-|E|-
+    Dead timer due in 33.203s
+    Database Summary List 0
+    Link State Request List 0
+    Link State Retransmission List 0
+    Thread Inactivity Timer on
+    Thread Database Description Retransmision off
+    Thread Link State Request Retransmission on
+    Thread Link State Update Retransmission on
+ 
+Neighbor 2.2.2.2, interface address 65.1.1.2
+    In the area 0.0.0.1 via interface Ethernet67
+    Neighbor priority is 1, State is Full, 5 state changes
+    Most recent state change statistics:
+      Progressive change 0h1m10s ago
+    DR is 65.1.1.1, BDR is 65.1.1.2
+    Options 2 *|-|-|-|-|-|E|-
+    Dead timer due in 34.590s
+    Database Summary List 0
+    Link State Request List 0
+    Link State Retransmission List 0
+    Thread Inactivity Timer on
+    Thread Database Description Retransmision off
+    Thread Link State Request Retransmission on
+    Thread Link State Update Retransmission on
+ 
     </EXAMPLE>
     <EXAMPLE summary="Display interface information for ospf on default vrf">
 sonic# show ip ospf interface | no-more
@@ -1615,6 +1663,21 @@ Ethernet64 is up
   Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
     Hello due in 9.023s
   Neighbor Count is 1, Adjacent neighbor count is 1
+
+Leaf1# show ip ospf interface Ethernet67 | no-more
+VRF Name: default
+Ethernet67 is up
+  ifindex 926, MTU 9100 bytes, BW 25000 Mbit UP,BROADCAST,RUNNING,MULTICAST
+  Internet Address 65.1.1.1/24, Broadcast 65.1.1.255, Area 0.0.0.1
+  MTU mismatch detection: enabled 
+  Router ID 1.1.1.1, Network Type BROADCAST, Cost: 4
+  Transmit Delay is 1 sec, State DR, Priority 1
+  Backup Designated Router (ID) 2.2.2.2, Interface Address 65.1.1.2
+  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
+  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
+    Hello due in 7.957s
+  Neighbor Count is 1, Adjacent neighbor count is 1
+ 
     </EXAMPLE>
     <EXAMPLE summary="Display interface traffic information for ospf on default vrf">
 sonic# show ip ospf interface traffic | no-more
@@ -1623,6 +1686,14 @@ Interface       HELLO            DB-Desc         LS-Req           LS-Update     
                 Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx
 --------------------------------------------------------------------------------------------
 Ethernet64     2563/2563           3/3             1/1            17/30           29/16
+
+Leaf1# show ip ospf interface traffic Ethernet67 | no-more
+
+Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack        
+                Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx        
+--------------------------------------------------------------------------------------------
+Ethernet67       19/22             2/3             1/1             3/3             2/2     
+
     </EXAMPLE>
     <EXAMPLE summary="Display database information for ospf on default vrf">
 sonic# show ip ospf database | no-more
@@ -1713,6 +1784,352 @@ VRF Name: default
 
         Attached Router: 10.59.143.131
     </EXAMPLE>
+<<<<<<< HEAD
+||||||| merged common ancestors
+||||||| merged common ancestors
+=======
+    <EXAMPLE summary="Display neighbor information for ospf on default vrf">
+sonic# show ip ospf neighbor | no-more
+ 
+Neighbor ID     Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
+10.59.142.247     1 Full/Backup       37.343s 64.1.1.2        Ethernet64:64.1.1.1      0     0     0
+    </EXAMPLE>
+    <EXAMPLE summary="Display neighbor detailed information for ospf on default vrf">
+sonic# show ip ospf neighbor detail | no-more
+Neighbor 10.59.142.247, interface address 64.1.1.2
+    In the area 0.0.0.0 via interface Ethernet64
+    Neighbor priority is 1, State is Full, 6 state changes
+    Most recent state change statistics:
+      Progressive change 7h3m25s ago
+    DR is 64.1.1.1, BDR is 64.1.1.2
+    Options 2 *|-|-|-|-|-|E|-
+    Dead timer due in 30.687s
+    Database Summary List 0
+    Link State Request List 0
+    Link State Retransmission List 0
+    Thread Inactivity Timer on
+    Thread Database Description Retransmision off
+    Thread Link State Request Retransmission on
+    Thread Link State Update Retransmission on
+    </EXAMPLE>
+    <EXAMPLE summary="Display interface information for ospf on default vrf">
+sonic# show ip ospf interface | no-more
+VRF Name: default
+Ethernet64 is up
+  ifindex 128, MTU 9100 bytes, BW 25000 Mbit UP,BROADCAST,RUNNING,MULTICAST
+  Internet Address 64.1.1.1/24, Broadcast 64.1.1.255, Area 0.0.0.0
+  MTU mismatch detection: enabled 
+  Router ID 10.59.143.131, Network Type BROADCAST, Cost: 4
+  Transmit Delay is 1 sec, State DR, Priority 1
+  Backup Designated Router (ID) 10.59.142.247, Interface Address 64.1.1.2
+  Saved Network-LSA sequence number 0x8000000f
+  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
+  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
+    Hello due in 9.023s
+  Neighbor Count is 1, Adjacent neighbor count is 1
+    </EXAMPLE>
+    <EXAMPLE summary="Display interface traffic information for ospf on default vrf">
+sonic# show ip ospf interface traffic | no-more
+ 
+Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack        
+                Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx        
+--------------------------------------------------------------------------------------------
+Ethernet64     2563/2563           3/3             1/1            17/30           29/16    
+    </EXAMPLE>
+    <EXAMPLE summary="Display database information for ospf on default vrf">
+sonic# show ip ospf database | no-more
+VRF Name: default
+         
+       OSPF Router with ID (10.59.143.131)
+ 
+                Router Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+10.59.142.247   10.59.142       1682 0x80000011 0xb56b 1
+10.59.143.131   10.59.143       1498 0x80000011 0xdc2c 1
+ 
+                Net Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+64.1.1.1        10.59.143.131   1538 0x8000000f 0x1c70
+    </EXAMPLE>
+    <EXAMPLE summary="Display database router information for ospf on default vrf">
+sonic# show ip ospf database router | no-more
+VRF Name: default
+     
+       OSPF Router with ID (10.59.143.131)
+     
+                 
+                Router Link States (Area 0.0.0.0)
+                 
+  LS age: 1709
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  Flags: 0x0  :
+  LS Type: router-LSA
+  Link State ID: 10.59.142.247
+  Advertising Router: 10.59.142
+  LS Seq Number: 80000011
+  Checksum: 0xb56b
+  Length: 36
+   
+   Number of Links: 1
+    
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 64.1.1.1
+     (Link Data) Router Interface address: 64.1.1.2
+      Number of TOS metrics: 0
+       TOS 0 Metric: 4
+    
+                             
+  LS age: 1525
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  Flags: 0x0  :
+  LS Type: router-LSA
+  Link State ID: 10.59.143.131
+  Advertising Router: 10.59.143
+  LS Seq Number: 80000011
+  Checksum: 0xdc2c
+  Length: 36
+   
+   Number of Links: 1
+    
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 64.1.1.1
+     (Link Data) Router Interface address: 64.1.1.1
+      Number of TOS metrics: 0
+       TOS 0 Metric: 4
+    </EXAMPLE>
+    <EXAMPLE summary="Display database network information for ospf on default vrf">
+sonic# show ip ospf database network | no-more
+VRF Name: default
+     
+       OSPF Router with ID (10.59.143.131)
+     
+     
+                Net Link States (Area 0.0.0.0)
+                 
+  LS age: 1602
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  LS Type: network-LSA
+  Link State ID: 64.1.1.1 (address of Designated Router)
+  Advertising Router: 10.59.143.131
+  LS Seq Number: 8000000f
+  Checksum: 0x1c70
+  Length: 32
+   
+  Network Mask: /24
+        Attached Router: 10.59.142.247
+                   
+        Attached Router: 10.59.143.131
+    </EXAMPLE>
+>>>>>>> Temporary merge branch 2
+=======
+    <EXAMPLE summary="Display database summary information for ospf on default vrf">
+Leaf1# show ip ospf database summary | no-more
+VRF Name: default
+     
+       OSPF Router with ID (1.1.1.1)
+     
+     
+                Summary Link States (Area 0.0.0.0)
+                 
+  LS age: 468
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x11
+  LS Type: summary-LSA
+  Link State ID: 65.1.1.0 (summary Network Number)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x0e04
+  Length: 28
+   
+  Network Mask: /24
+        TOS: 0  Metric: 4
+                   
+                             
+  LS age: 429
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  LS Type: summary-LSA
+  Link State ID: 65.1.1.0 (summary Network Number)
+  Advertising Router: 2.2.2.2
+  LS Seq Number: 80000002
+  Checksum: 0xed1f
+  Length: 28
+   
+  Network Mask: /24
+        TOS: 0  Metric: 4
+                   
+                             
+                Summary Link States (Area 0.0.0.1)
+                 
+  LS age: 468
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x11
+  LS Type: summary-LSA
+  Link State ID: 64.1.1.0 (summary Network Number)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x1bf7
+  Length: 28
+   
+  Network Mask: /24
+        TOS: 0  Metric: 4
+                   
+                             
+  LS age: 429
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  LS Type: summary-LSA
+  Link State ID: 64.1.1.0 (summary Network Number)
+  Advertising Router: 2.2.2.2
+  LS Seq Number: 80000002
+  Checksum: 0xfa13
+  Length: 28
+   
+  Network Mask: /24
+        TOS: 0  Metric: 4
+    </EXAMPLE>
+    <EXAMPLE summary="Display database asbr-summary information for ospf on default vrf">
+Leaf1# show ip ospf database asbr-summary | no-more
+VRF Name: default
+     
+       OSPF Router with ID (1.1.1.1)
+     
+                 
+                ASBR-Summary Link States (Area 0.0.0.0)
+                 
+  LS age: 38
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Type: summary-LSA
+  Link State ID: 2.2.2.2 (AS Boundary Router address)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x0b41
+  Length: 28
+   
+  Network Mask: /0
+        TOS: 0  Metric: 4
+    </EXAMPLE>
+    <EXAMPLE summary="Display database external information for ospf on default vrf">
+Leaf1# show ip ospf database external | no-more
+VRF Name: default
+     
+       OSPF Router with ID (1.1.1.1)
+     
+                AS External Link States
+                 
+  LS age: 52
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  LS Type: AS-external-LSA
+  Link State ID: 25.1.1.1 (External Network Number)
+  Advertising Router: 2.2.2.2
+  LS Seq Number: 80000001
+  Checksum: 0x0892
+  Length: 36
+       
+  Network Mask: /32
+        Metric Type: 2 (Larger than any link state path)                                
+        TOS: 0  
+        Metric: 20
+        Forward Address: 0.0.0.0
+        External Route Tag: 0
+    </EXAMPLE>
+    <EXAMPLE summary="Display database max-age LSA information for ospf on default vrf">
+Leaf1# show ip ospf database max-age 
+       OSPF Router with ID (1.1.1.1)
+                MaxAge Link States:
+    </EXAMPLE>
+    <EXAMPLE summary="Display self originated database information for ospf on default vrf">
+Leaf1# show ip ospf database self-originate | no-more
+VRF Name: default
+         
+       OSPF Router with ID (1.1.1.1)
+ 
+                Router Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+1.1.1.1         1.1.1.1          777 0x80000004 0x7b42 1
+ 
+                Net Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+64.1.1.1        1.1.1.1          777 0x80000001 0x8581
+ 
+                Summary Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Route
+65.1.1.0        1.1.1.1          816 0x80000001 0x0e04 65.1.1.0/24
+ 
+                ASBR-Summary Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+2.2.2.2         1.1.1.1          360 0x80000001 0x0b41
+ 
+                Router Link States (Area 0.0.0.1)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+1.1.1.1         1.1.1.1          776 0x80000004 0x8d2e 1
+ 
+                Net Link States (Area 0.0.0.1)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+65.1.1.1        1.1.1.1          776 0x80000001 0x788d
+ 
+                Summary Link States (Area 0.0.0.1)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Route
+64.1.1.0        1.1.1.1          816 0x80000001 0x1bf7 64.1.1.0/24
+    </EXAMPLE>
+    <EXAMPLE summary="Display database network information with advertising-router option for ospf on default vrf">
+Leaf1# show ip ospf database network adv-router 1.1.1.1 | no-more
+VRF Name: default
+     
+       OSPF Router with ID (1.1.1.1)
+     
+     
+                Net Link States (Area 0.0.0.0)
+                 
+  LS age: 886
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  LS Type: network-LSA
+  Link State ID: 64.1.1.1 (address of Designated Router)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x8581
+  Length: 32
+   
+  Network Mask: /24
+        Attached Router: 1.1.1.1
+                   
+        Attached Router: 2.2.2.2
+                   
+                             
+                Net Link States (Area 0.0.0.1)
+                 
+  LS age: 886
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  LS Type: network-LSA
+  Link State ID: 65.1.1.1 (address of Designated Router)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x788d
+  Length: 32
+   
+  Network Mask: /24
+        Attached Router: 1.1.1.1
+                   
+        Attached Router: 2.2.2.2
+                   
+    </EXAMPLE>
+    <FEATURE> OSPFv2 </FEATURE>
+>>>>>>> origin/broadcom_sonic_3.x_share
   </DOCGEN>
      </COMMAND>
 
@@ -1720,8 +2137,15 @@ VRF Name: default
         <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds default ${__full_line}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
-                    Display ospf route information for a user-vrf
+                Display ospf route information for a user-vrf
                 </DESCRIPTION>
+                <USAGE>
+                Use this command to display ospf routes in an OSPFv2 router. User can
+                optionally specify VRF on which the router have to be configured. 
+                If VRF name is not specified then the command is considered for VRF 
+                default. Technical details on OSPFv2 support is also available at
+                http://docs.frrouting.org/en/latest/
+                </USAGE>
                 <EXAMPLE summary="Display ospf route information for user vrf">
 sonic# show ip ospf vrf Vrf1 route | no-more
 VRF Name: Vrf1
@@ -1733,6 +2157,7 @@ N    101.1.1.0/24          [10] area: 0.0.0.0
 
 ============ OSPF external routing table ===========
                 </EXAMPLE>
+            <FEATURE> OSPFv2 </FEATURE>
             </DOCGEN>
      </COMMAND>
 

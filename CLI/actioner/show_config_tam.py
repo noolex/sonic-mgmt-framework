@@ -57,6 +57,9 @@ def getAclRuleHash(aclRules):
             ruleHash[name]['L4_DST_PORT'] = r['L4_DST_PORT']
         if 'IN_PORTS' in r:
             ruleHash[name]['IN_PORTS'] = r['IN_PORTS']
+        if 'PRIORITY' in r:
+            ruleHash[name]['PRIORITY'] = r['PRIORITY']
+
     return ruleHash
 
 def getIpType(type):
@@ -203,6 +206,8 @@ def show_tam_tailstamping(TailstampingCfg):
             CMDS_STRING += '  session ' + t['name']
             if 'flowgroup' in t:
                 CMDS_STRING += ' flowgroup ' + t['flowgroup']
+            if 'node-type' in t:
+                CMDS_STRING += ' node-type ' + t['node-type']
             CMDS_STRING += "\n"
     return CMDS_STRING
 

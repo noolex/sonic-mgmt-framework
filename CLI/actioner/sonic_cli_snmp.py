@@ -12,6 +12,7 @@ import ipaddress
 import netifaces
 import syslog
 import traceback
+import psutil
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 from swsssdk import ConfigDBConnector
@@ -520,24 +521,25 @@ def invoke(func, args):
       if standard_mode:
           std_nat_interfaces = alias_interfaces_list()
       ipAddrValid = False
-      ifValid = True
-      if not interface == '':
-        ifValid = False
-      ip = ipaddress.ip_address(unicode(ipAddress))
-      if_names = interfaces_list() if standard_mode else netifaces.interfaces()
-      for intf in if_names:
-        if intf == interface:
+      ifValid = False
+      net_if_addrs_dict = psutil.net_if_addrs()
+      if interface == '':
+        ifValid = True
+      else:
+        interface = convert_to_native(std_nat_interfaces, interface) if standard_mode else interface
+        if net_if_addrs_dict.get(interface):
           ifValid = True
-        intf_native = convert_to_native(std_nat_interfaces, intf) if standard_mode else intf
-        ipaddresses = netifaces.ifaddresses(intf_native)
-        if ipFamily[ip.version] in ipaddresses:
-          for ipaddr in ipaddresses[ipFamily[ip.version]]:
-            testAddr = ipaddr['addr']
-            if '%' in testAddr:                 # some IPv6 addresses include an interface at the end
-              testAddr = testAddr[0:testAddr.index('%')]
-            if ipAddress == testAddr:
-              ipAddrValid = True
-              break
+      if ifValid:
+        ip = ipaddress.ip_address(unicode(ipAddress))
+        for intf, ipaddrs in net_if_addrs_dict.items():
+          for _ip in ipaddrs:
+            if ipFamily[ip.version] == _ip.family:
+              testAddr = _ip.address
+              if '%' in testAddr:            # some IPv6 addresses include an interface at the end
+                testAddr = testAddr[0:testAddr.index('%')]
+              if ipAddress == testAddr:
+                ipAddrValid = True
+                break
 
       portValid = True
       if ipAddrValid == True and not port == '161':
@@ -1274,12 +1276,11 @@ def run(func, args):
       if api_response.status_code == 404:               # Resource not found
         return
       else:
-        print "Error: {}".format(api_response.error_message())
-        sys.exit(-1)
+        print (api_response.error_message())
 
-  except Exception as e:
+  except:
     # system/network error
-    syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
+    syslog.syslog(syslog.LOG_ERR, "Exception: " + traceback.format_exc())
     print "%Error: Transaction Failure"
 
 if __name__ == '__main__':
