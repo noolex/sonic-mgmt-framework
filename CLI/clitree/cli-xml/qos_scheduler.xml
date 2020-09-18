@@ -169,7 +169,7 @@ limitations under the License.
 
         <COMMAND
             name="weight"
-            help="scheduer weight"
+            help="scheduler weight"
         >
         <PARAM
             name="weight"
@@ -191,7 +191,7 @@ limitations under the License.
 
         <COMMAND
             name="meter-type"
-            help="scheduer meter type (packets/bytes)"
+            help="scheduler meter type (packets/bytes)"
         >
         <PARAM
             name="meter_type"

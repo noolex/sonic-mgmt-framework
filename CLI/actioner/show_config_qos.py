@@ -320,7 +320,6 @@ def show_scheduler_policy(render_tables):
                 if sch['name'] != filter_name:
                     continue
 
-
         if cur_sp_name != spname and filter_name == '':
             if cmd_str != '':
                 cmd_str += '!;'
