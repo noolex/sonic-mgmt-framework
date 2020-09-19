@@ -231,40 +231,7 @@ def getFlowGroups(flowgroups):
                     t[int(n)] = i
             response[name]['ports'] = ','.join(str(t[x]) for x in sorted(t))
         response[name]['packets'] = data['statistics']['packets']
-<<<<<<< HEAD
-    return response
-||||||| merged common ancestors
-||||||| merged common ancestors
-
-        # get inports
-        url = inports_get_url+"TAM,"+name
-        inportsData = do_get(url)
-        if (inportsData['ok']):
-            if (inportsData['content'] is not None):
-                if 'sonic-acl:ACL_RULE_LIST' in inportsData['content']:
-                    inports = inportsData['content']['sonic-acl:ACL_RULE_LIST'][0]
-                    if 'IN_PORTS' in inports: 
-                        response[name]['ports'] = ','.join(inports['IN_PORTS'])
-
-=======
-
-        # get inports
-        url = inports_get_url+"TAM,"+name
-        inportsData = do_get(url)
-        if (inportsData['ok']):
-            if (inportsData['content'] is not None):
-                if 'sonic-acl:ACL_RULE_LIST' in inportsData['content']:
-                    inports = inportsData['content']['sonic-acl:ACL_RULE_LIST'][0]
-                    if 'IN_PORTS' in inports:
-                        response[name]['ports'] = ','.join(inports['IN_PORTS'])
-
-        response[name]['packets'] = data['statistics']['packets']
-
->>>>>>> Temporary merge branch 2
-    return response
-=======
     return OrderedDict(natsorted(response.items()))
->>>>>>> origin/broadcom_sonic_3.x_share
 
 helper_functions = {
     'getFeatureDescription': getFeatureDescription,
@@ -284,21 +251,8 @@ def getBody(fn):
         'patch_dm_session': """{"openconfig-tam:dropmonitor-sessions":{"dropmonitor-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","collector":"%s","sample-rate":"%s"}}]}}""",
         'patch_aginginterval': """{"openconfig-tam:global":{"config":{"aging-interval":%d}}}""",
         'patch_feature': """{"openconfig-tam:features":{"feature":[{"feature-ref":"%s","config":{"feature-ref":"%s","status":"%s"}}]}}""",
-<<<<<<< HEAD
-        'associate_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":%d,"interfaces":["%s"]}}]}}"""
-||||||| merged common ancestors
-<<<<<<< Temporary merge branch 1
-        'associate_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":%d,"interfaces":["%s"]}}]}}"""
-||||||| merged common ancestors
-        'patch_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":"%s","priority":"%s","ip-version":"%s"},"l2":{"config":{"source-mac":"%s","destination-mac":"%s","ethertype":"%s"}},"ipv4":{"config":{"source-address":"%s","destination-address":"%s","protocol":"%s"}},"ipv6":{"config":{"source-address":"%s","destination-address":"%s","protocol":"%s"}},"transport":{"config":{"source-port":"%s","destination-port":"%s"}}}]}}""",
-        'associate_flowgroup': """{"sonic-acl:IN_PORTS": ["%s"]}"""
-=======
-        'associate_flowgroup': """{"sonic-acl:IN_PORTS": ["%s"]}"""
->>>>>>> Temporary merge branch 2
-=======
         'associate_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":%d,"interfaces":["%s"]}}]}}""",
         'clear_flowgroup_counters': """{"openconfig-tam:input":{}}"""
->>>>>>> origin/broadcom_sonic_3.x_share
     }
     return body[fn]
 
