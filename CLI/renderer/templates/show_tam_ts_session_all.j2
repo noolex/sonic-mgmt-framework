@@ -2,38 +2,10 @@
 {% if "openconfig-tam:tailstamping-sessions" in json_output %}
 {% set sessions = json_output['openconfig-tam:tailstamping-sessions']['tailstamping-session'] %}
 {% if sessions|length > 0 %}
-<<<<<<< HEAD
-Name                              Flow Group
---------------------------------  --------------------------------
-||||||| merged common ancestors
-<<<<<<< Temporary merge branch 1
-Name                              Flow Group
---------------------------------  --------------------------------
-=======
 Name                              Flow Group                        Node Type
 --------------------------------  --------------------------------  ---------
->>>>>>> origin/broadcom_sonic_3.x_share
 {% for session in sessions|sort(attribute='name') %}
 {% set session_config = session["state"] %}
-<<<<<<< HEAD
-{{'%-34s'|format(session_config["name"])}}{{'%-34s'|format(session_config["flowgroup"])}}
-{% endfor %}
-||||||| merged common ancestors
-<<<<<<< Temporary merge branch 1
-{{'%-34s'|format(session_config["name"])}}{{'%-34s'|format(session_config["flowgroup"])}}
-{% endfor %}
-||||||| merged common ancestors
-{{'%-15s'|format(session_config["name"])}}{{'%-15s'|format(session_config["flowgroup"])}}
-{% endfor %} 
-{% else %}
-{{' '}}
-Sessions are not configured.
-{{' '}}
-=======
-{{'%-15s'|format(session_config["name"])}}{{'%-15s'|format(session_config["flowgroup"])}}
-{% endfor %}
->>>>>>> Temporary merge branch 2
-=======
 {% if session_config["node-type"] == "NORMAL" %}
 {% set node_type = "Normal" %}
 {% else %}
@@ -41,7 +13,6 @@ Sessions are not configured.
 {% endif %}
 {{'%-34s'|format(session_config["name"])}}{{'%-34s'|format(session_config["flowgroup"])}}{{'%-10s'|format(node_type)}}
 {% endfor %}
->>>>>>> origin/broadcom_sonic_3.x_share
 {% endif %}
 {% endif %}
 {% else %}
