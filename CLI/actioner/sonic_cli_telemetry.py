@@ -233,11 +233,19 @@ def getFlowGroups(flowgroups):
         response[name]['packets'] = data['statistics']['packets']
     return OrderedDict(natsorted(response.items()))
 
+def getNatSortData(data):
+    natSorted = {}
+    for r in data:
+        k = r['name']
+        natSorted[k] = r['state']
+    return OrderedDict(natsorted(natSorted.items()))
+
 helper_functions = {
     'getFeatureDescription': getFeatureDescription,
     'getStatusDescription': getStatusDescription,
     'printFeatureDetails': printFeatureDetails,
     'getFlowGroups': getFlowGroups,
+    'getNatSortData': getNatSortData,
 }
 
 def getBody(fn):
