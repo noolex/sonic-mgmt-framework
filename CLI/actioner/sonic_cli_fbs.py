@@ -1204,6 +1204,13 @@ def handle_generic_set_response(response, args, op_str):
             if 'error-app-tag' in error_data:
                 if error_data['error-app-tag'] == 'too-many-elements':
                     print('%Error: Configuration limit reached.')
+                elif error_data['error-app-tag'] == 'update-not-allowed':
+                    if op_str.startswith('create_policy_'):
+                        print("%Error: Creating policy-maps with same name and different type not allowed")
+                    elif op_str.startswith('create_classifier_'):
+                        print("%Error: Creating class-maps with same name and different match-types not allowed")
+                    else:
+                        print("%Error: Update not allowed for this configuration")
                 elif error_data['error-app-tag'] != 'same-policy-already-applied':
                     print(response.error_message())
             else:

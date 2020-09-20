@@ -124,6 +124,17 @@ def acl_natsort_intf_prio(ifname):
 
     if ifname.startswith('Ethernet'):
         prio = 10000 + int(ifname.replace('Ethernet', ''), 0)
+    elif ifname.startswith('Eth'):
+        portnum = ifname.replace('Eth', '')
+        parts = portnum.split('/')
+        # Ideally slot on Pizzabox is supposed to be 0. Just in case its changed in future
+        slot=int(parts[0])+1
+        port=int(parts[1])
+        try:
+            breakout = int(parts[2])
+        except IndexError:
+            breakout = 1
+        prio = 10000 + slot*(port*16 + breakout)
     elif ifname.startswith('PortChannel'):
         prio = 20000 + int(ifname.replace('PortChannel', ''), 0)
     elif ifname.startswith('Vlan'):
@@ -679,7 +690,7 @@ def set_counter_mode_request(args):
     return acl_client.patch(keypath, body)
 
 
-def handle_generic_set_response(response, args):
+def handle_generic_set_response(response, op_str, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
@@ -689,23 +700,25 @@ def handle_generic_set_response(response, args):
             error_data = response.errors().get('error', list())[0]
             if 'error-app-tag' in error_data:
                 if error_data['error-app-tag'] == 'too-many-elements':
-                    print('Error: Exceeds maximum number of ACL / ACL Rules.')
+                    print('%Error: Exceeds maximum number of ACL / ACL Rules.')
                 elif error_data['error-app-tag'] == 'counters-in-use':
-                    print('Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
+                    print('%Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
+                elif error_data['error-app-tag'] == 'update-not-allowed':
+                    print("%Error: Creating ACLs with same name and different type not allowed")
                 else:
                     print(response.error_message())
             else:
                 print(response.error_message())
-
             return -1
         except Exception as e:
             log.log_error(str(e))
             print(response.error_message())
+            return -1
 
     return 0
 
 
-def handle_generic_delete_response(response, args):
+def handle_generic_delete_response(response, op_str, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
@@ -1062,7 +1075,8 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
     else:
         render_dict[intf_name] = output
 
-    show_cli_output('show_access_list_intf.j2', render_dict, continuation=continuation)
+    if show_cli_output('show_access_list_intf.j2', render_dict, continuation=continuation):
+        raise SonicACLCLIStopNoError
 
 
 def __process_acl_counters_request_by_name_and_inf(response, args):
@@ -1101,9 +1115,11 @@ def __process_acl_counters_request_by_type_and_name(response, args):
     stage = acl_data.get("stage", "INGRESS")
     ports = acl_data.get("ports", [])
     if len(ports) != 0:
+        # Sort and show 
+        ports = natsorted(ports, key=acl_natsort_intf_prio)
         log.log_debug("ACL {} Type {} has ports.".format(acl_data["aclname"], acl_type))
         cont = False
-        for port in acl_data.get("ports", []):
+        for port in ports:
             __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache, cont)
             cont = True
     else:
@@ -1133,6 +1149,8 @@ def __process_acl_counters_request_by_type(response, args):
         stage = acl.get("stage", "INGRESS")
         ports = acl.get("ports", [])
         if len(ports) != 0:
+            # Sort and show 
+            ports = natsorted(ports, key=acl_natsort_intf_prio)
             log.log_debug("ACL {} Type {} has ports.".format(acl["aclname"], acl_type))
             cont = False
             for port in ports:
@@ -1160,7 +1178,7 @@ def __handle_get_acl_details_interface_mode_response(response, args):
         __process_acl_counters_request_by_name_and_inf(response, args)
 
 
-def handle_get_acl_details_response(response, args):
+def handle_get_acl_details_response(response, op_str, args):
     if response.ok():
         if response.counter_mode == 'AGGREGATE_ONLY':
             __handle_get_acl_details_aggregate_mode_response(response.content, args)
@@ -1176,7 +1194,7 @@ def handle_get_acl_details_response(response, args):
             raise SonicAclCLIError('ACL {} not found'.format(args[1]))
 
 
-def handle_get_all_acl_binding_response(response, args):
+def handle_get_all_acl_binding_response(response, op_str, args):
     acl_typemap = {'L2': 'MAC', 'L3': 'IP', 'L3V6': 'IPV6'}
     log.log_debug(json.dumps(response.content, indent=4))
     render_data = OrderedDict()
@@ -1212,7 +1230,7 @@ def handle_get_all_acl_binding_response(response, args):
             print(response.error_message())
 
 
-def clear_acl_counters_response(response, args):
+def clear_acl_counters_response(response, op_str, args):
     if not response.ok():
         print(response.error_message())
     else:
@@ -1266,10 +1284,12 @@ def run(op_str, args=None):
         log.log_debug(str(correct_args))
         resp = request_handlers[op_str](correct_args)
         if resp:
-            return response_handlers[op_str](resp, correct_args)
+            return response_handlers[op_str](resp, op_str, correct_args)
     except SonicAclCLIError as e:
         print("%Error: {}".format(e.message))
         return -1
+    except SonicACLCLIStopNoError:
+        pass
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))

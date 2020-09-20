@@ -137,7 +137,8 @@ limitations under the License.
         <USAGE>
             This command is useful in viewing the spanning-tree information
         </USAGE>
-        <EXAMPLE summary="Shows spanning-tree">
+        <EXAMPLE summary="show spanning-tree">
+			sonic(config)# do show spanning-tree
             Spanning-tree Mode: PVST
              
             VLAN 100 - STP instance 0
@@ -155,9 +156,9 @@ limitations under the License.
             00646cb9c51613ca  1600      10643c2c992d8235  PortChannel120   2    15   
              
             STP Port Parameters:
-            Port            Prio Path      Port Uplink BPDU   State      Designated Designated       Designated       
-            Num             rity Cost      Fast Fast   Filter            Cost       Root             bridge           
-            PortChannel1    128  800       N    N      N      FORWARDING 800        00646cb9c51613ca 10643c2c992d8235 
+			Port            Prio Path      Port Uplink BPDU   Guard State      Designated Designated       Designated
+			Num             rity Cost      Fast Fast   Filter Type             Cost       Root             bridge 
+            PortChannel1    128  800       N    N      N      -		FORWARDING 800        00646cb9c51613ca 10643c2c992d8235 
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
@@ -190,7 +191,7 @@ limitations under the License.
         <USAGE>
             This command is useful in viewing the spanning-tree counters information
         </USAGE>
-        <EXAMPLE summary="Shows spanning-tree counters">
+        <EXAMPLE summary="show spanning-tree counters">
             sonic(config)# do show spanning-tree counters
              
             VLAN 100 - STP instance 0
@@ -211,11 +212,11 @@ limitations under the License.
 
     <COMMAND
         name="show spanning-tree inconsistentports"
-        help="Root guard information for all VLANs"
+        help="Root/Loop guard information for all VLANs"
         >
         <PARAM
             name="vlan"
-            help="Root guard information for a specific VLAN"
+            help="Root/Loop guard information for a specific VLAN"
             ptype="SUBCOMMAND"
             mode="subcommand"
             optional="true"
@@ -232,20 +233,22 @@ limitations under the License.
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Shows spanning-tree root inconsistent information
+            Shows spanning-tree root or loop inconsistent information
         </DESCRIPTION>
         <USAGE>
-            This command is useful in viewing the spanning-tree root inconsistent ports information
+            This command is useful in viewing the spanning-tree root or loop inconsistent ports information
         </USAGE>
-        <EXAMPLE summary="Shows spanning-tree inconsistentports">
+        <EXAMPLE summary="show spanning-tree inconsistentports">
             sonic# show spanning-tree inconsistentports 
              
             Root guard timeout: 30  secs
-             
+            Loop guard default: Enabled
+
             ----------------------------------------------------------------------
             PortNum          VLAN  Inconsistency State                          
             ----------------------------------------------------------------------
             Ethernet48       100   Root Inconsistent (29 seconds left on timer)
+			Ethernet49       10    Loop Inconsistent
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
@@ -264,7 +267,7 @@ limitations under the License.
         <USAGE>
             This command is useful in viewing the spanning-tree BPDU guard information for the ports
         </USAGE>
-        <EXAMPLE summary="Shows spanning-tree bpdu-guard">
+        <EXAMPLE summary="show spanning-tree bpdu-guard">
             sonic#show spanning-tree bpdu-guard 
             PortNum         Shutdown    Port shut          
                             Configured  due to BPDU guard  
@@ -1171,10 +1174,10 @@ limitations under the License.
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Unconfigure guard root/loop on an interface.
+            Unconfigure guard root or loop on an interface.
         </DESCRIPTION>
         <USAGE>
-            This commands allows disabling guard root/loop on an interface
+            This commands allows disabling guard root or loop on an interface
         </USAGE>
         <EXAMPLE>
             sonic(config)# interface Ethernet 0
@@ -1483,6 +1486,7 @@ limitations under the License.
         <EXAMPLE>
             sonic(config)# interface Ethernet 0
             sonic(conf-if-Ethernet0)# spanning-tree guard root 
+            sonic(conf-if-Ethernet0)# spanning-tree guard loop
         </EXAMPLE>
     </DOCGEN>
     </COMMAND>
@@ -1779,10 +1783,10 @@ limitations under the License.
     </ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Unconfigure guard root/loop on a port-channel interface.
+            Unconfigure guard root or loop on a port-channel interface.
         </DESCRIPTION>
         <USAGE>
-            This commands allows disabling guard root/loop on a port-channel interface 
+            This commands allows disabling guard root or loop on a port-channel interface 
         </USAGE>
         <EXAMPLE>
             sonic(config)# interface PortChannel 1 
@@ -2152,6 +2156,7 @@ limitations under the License.
 		<EXAMPLE>
             sonic(config)# interface PortChannel 1
 			sonic(conf-if-po1)# spanning-tree guard root
+			sonic(conf-if-po1)# spanning-tree guard loop
 		</EXAMPLE>
 	</DOCGEN>
     </COMMAND>

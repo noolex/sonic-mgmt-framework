@@ -145,7 +145,6 @@ def run(fn, args):
                     print("% Error: Internal error")
                     return -1
     else:
-        print(response.error_message())
         return -1
     return 0
 
