@@ -235,22 +235,41 @@ def run():
         template_file = sys.argv[3]
 
     global_config_response = get_global_config_data()
+    lag_list =[]
+    pc_list =[]
+    lacp_list = []
+    lacp_tbl = {}
+    api_response = {}
+    api_response1 = {}
+    checkAll = True
 
     for intf in iflist:
         api_response = get_lag_data(intf)
         api_response1 = get_lacp_data(intf)
         get_counters(api_response)
+        if intf is not 'all':
+            checkAll = False
+            lag_list.append(api_response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0])
+            pc_list.append(api_response['sonic-portchannel:PORTCHANNEL']['PORTCHANNEL_LIST'][0])
+	    if 'openconfig-lacp:interfaces' in api_response1.keys() and api_response1['openconfig-lacp:interfaces']['interface']:
+                lacp_list.append(api_response1['openconfig-lacp:interfaces']['interface'][0])
 
-        # Combine Outputs
-        response = {"portchannel": api_response, "lacp": api_response1, "global": global_config_response}
+    if checkAll is False:
+        api_response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] = lag_list
+        api_response['sonic-portchannel:PORTCHANNEL']['PORTCHANNEL_LIST'] = pc_list
+	if lacp_list:
+            if 'openconfig-lacp:interfaces' not in api_response1.keys():
+                lacp_tbl['interface'] = lacp_list
+                api_response1['openconfig-lacp:interfaces']= lacp_tbl
+            else:
+                api_response1['openconfig-lacp:interfaces']['interface'] = lacp_list
 
-        # Check for PortChannel existence
-        if 'LAG_TABLE_LIST' not in response['portchannel']['sonic-portchannel:LAG_TABLE'] or \
-            'admin_status' not in response['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0].keys():
-            response = {}
+    response = {"portchannel": api_response, "lacp":api_response1 , "global": global_config_response}
+    if 'LAG_TABLE_LIST' not in response['portchannel']['sonic-portchannel:LAG_TABLE'] or \
+        'admin_status' not in response['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0].keys():
+        response = {}
 
-        show_cli_output(template_file, response)
-
+    show_cli_output(template_file, response)
 
 if __name__ == '__main__':
 
