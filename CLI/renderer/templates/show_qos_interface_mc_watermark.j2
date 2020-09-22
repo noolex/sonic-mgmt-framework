@@ -16,8 +16,6 @@
        {% else %}
        {% set index = qname[1]|int %}
        {% endif %}
-       {# Hack to start MC display as MC8 #}
-       {% set index = 8 + mccount.value %}
        {% if mcindex.update({mccount.value|string :  "MC" + index|string }) %} {% endif %}
        {% set mccount.value = mccount.value + 1 %}
        {% if watermark.update({ traffic_type + index|string :  q_stats_info['openconfig-qos-ext:watermark']}) %} {% endif %}
@@ -25,23 +23,6 @@
        {% set uccount.value = uccount.value + 1 %}
     {% endif %}
 {% endfor %}
-{# Hack to fill queue show to 8 in case if count is less #}
-{% if mccount.value < 8 %}
-  {% for n in range(mccount.value, 8) %}
-    {% if mc_index_start_zero.value  == true %}
-       {% set index = n %}
-    {% else %}
-       {% set index = n + uccount.value %}
-    {% endif %}
-    {# Hack to start MC display as MC8 #}
-    {% set index = 8 + mccount.value %}
-    {% if mcindex.update({mccount.value|string :  "MC" + index|string }) %} {% endif %}
-    {% set mccount.value = mccount.value + 1 %}
-    {% if watermark.update({ "MC" + index|string :  "0"}) %} {% endif %}
-  {% endfor %}
-{% endif %}
-{# Hack to limit queue show to 8 #}
-{% set mccount.value =  8 %}
 {{'Egress queue watermark per multicast queue:'}}
 {{ '\n' -}}
 {%- for n in range(0, mccount.value) %}

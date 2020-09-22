@@ -22,8 +22,6 @@
     {% endif %}
     {% if watermark.update({ traffic_type + qname[1] :  q_stats_info['openconfig-qos-ext:persistent-watermark-percent']}) %} {% endif %}
   {% endfor %}
-{# Hack to limit queue show to 8 #}
-{% set uccount.value =  8 %}
 {% if header.value == false %}
 {{'Egress shared pool persistent watermark occupancy per unicast queue:'}}
 {{ '\n' -}}
