@@ -22,6 +22,8 @@ import time
 import json
 import ast
 import os
+import syslog
+import traceback
 from rpipe_utils import pipestr
 import cli_client as cc
 from netaddr import *
@@ -523,7 +525,8 @@ def run(func, args):
             return check_response(response, func, args)
 
     except Exception as e:
-        print("%Error: Transaction Failure ", e)
+        syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
+        print("%Error: Internal error.")
         return 1
 
 if __name__ == '__main__':
