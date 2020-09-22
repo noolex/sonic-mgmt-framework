@@ -11,7 +11,7 @@ And respective tables for different if-types for fetching admin/oper status like
 {% set vars = {'vrf': ""} %}
 {% set vars = {'flags': ""} %}
 {% set vars = {'ipv4_src_pfx': ""} %}
-{% if (("sonic-interface:INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in json_output)) %}
+{% if (("sonic-interface:INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-sag:SAG_INTF_LIST" in json_output)) %}
 Flags: U-Unnumbered interface, A-Anycast IP
 -----------------------------------------------------------------------------------------------
 {{'%-20s'|format("Interface")}}{{'%-35s'|format("IP address/mask")}}{{'%-15s'|format("VRF")}}{{'%-15s'|format("Admin/Oper")}}{{'%-15s'|format("Flags")}}
