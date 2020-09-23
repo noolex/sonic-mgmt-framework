@@ -18,7 +18,7 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
     {{('Network'|string).ljust(15)}}{{('From'|string ).ljust(11)}}{{('Reuse'| string ).ljust(10)}}{{('Path'| string ).ljust(5)}}
 {% for ids, paths in json_output['routes'].items() -%}
   {% if vars.update({'routerIds':ids}) %}{% endif %}
-  {% for path in  paths["paths"] %}
+  {% for path in paths %}
   {% if vars.update({'peerHost':path["peerHost"]}) %}{% endif %}
   {% if vars.update({'bdiFlap':path["bdiFlap"]}) %}{% endif %}
   {% if vars.update({'reuseTimerMsecs':path["reuseTimerMsecs"]}) %}{% endif %}

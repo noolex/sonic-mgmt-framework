@@ -114,7 +114,10 @@ def invoke_api(func, args=[]):
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
         body = {"openconfig-system:config":{"openconfig-system-ext:vrf":args[0]}}
-        return api.patch(keypath, body)
+        api_response = api.patch(keypath, body)
+        if not api_response.ok():
+            print api_response.error_message()
+            return False
 
     elif func == 'delete_ntp_vrf':
 

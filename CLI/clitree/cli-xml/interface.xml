@@ -849,21 +849,6 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_fec ${iface} default</ACTION>
         </COMMAND>
         <COMMAND
-            name="unreliable-los"
-            help="Configure unreliable LOS mode">
-            <PARAM
-                name="los"
-                help="Unreliable LOS mode configuration"
-                dbpath="sonic-port:sonic-port/PORT/PORT_LIST/override_unreliable_los"
-                ptype="INTF_UNRELIABLE_LOS" />
-            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} ${los}</ACTION>
-        </COMMAND>
-        <COMMAND
-            name="no unreliable-los"
-            help="Set default unreliable LOS mode configuration">
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los ${iface} default</ACTION>
-        </COMMAND>
-        <COMMAND
             name="channel-group"
             render_command_cb="if_channel_group"
             help="Configure PortChannel parameters"
@@ -892,7 +877,8 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="no shutdown"
-            help="Enable the interface">
+            help="Enable the interface"
+            dbpath="sonic-port:sonic-port/PORT/PORT_LIST/admin_status=up">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
         </COMMAND>
 
@@ -1602,6 +1588,7 @@ limitations under the License.
             />
 
         <MACRO name="INTF_MTU" arg="${iflist}"></MACRO>
+        <MACRO name="INTF_RANGE_DESCR" arg="${iflist}"></MACRO>
 
     </VIEW>
 

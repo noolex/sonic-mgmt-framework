@@ -42,6 +42,10 @@ static void pyobj_handle_error() {
     PyErr_Fetch(&type, &value, &traceback);
     PyErr_NormalizeException(&type, &value, &traceback);
 
+    if (!PyErr_GivenExceptionMatches(type, PyExc_SystemExit)) {
+       lub_dump_printf("%%Error: Internal error.\n");
+    }
+
     py_module = PyImport_ImportModule("traceback");
     if (py_module) {
         py_func = PyObject_GetAttrString(py_module, "format_exception");
@@ -187,7 +191,6 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
     name = PyBytes_FromString(token[0]);
     module = PyImport_Import(name);
     if (module == NULL) {
-        lub_dump_printf("%%Error: Internal error.\n");
         syslog(LOG_WARNING, "clish_pyobj: Failed to load module %s", token[0]);
         pyobj_handle_error();
         free(buf);
@@ -219,10 +222,9 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
 
     value = PyObject_CallObject(func, args);
     if (value == NULL) {
-        lub_dump_printf("%%Error: Internal error.\n");
-        pyobj_handle_error();
-        syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", cmd, arg);
-        ret_code = 1;
+       pyobj_handle_error();
+       syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", cmd, arg);
+       ret_code = 1;
     } else {
         if (PyInt_Check(value)) {
             ret_code = PyInt_AsLong(value);
