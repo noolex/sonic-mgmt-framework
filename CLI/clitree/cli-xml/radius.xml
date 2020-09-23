@@ -102,7 +102,7 @@ limitations under the License.
         >
         <PARAM
             name="source_ip"
-            help=""
+            help="Source IP Addr (default: Routing Stack assigned)"
             ptype="IPV4V6_ADDR"
             dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/src_ip"
             >
@@ -118,7 +118,7 @@ limitations under the License.
         >
         <PARAM
             name="nas_ip"
-            help=""
+            help="NAS-IP|IPV6-Addr (default: MGMT_INTERFACE IP addr.)"
             ptype="IPV4V6_ADDR"
             dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/nas_ip"
             >
