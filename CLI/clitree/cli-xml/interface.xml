@@ -1511,11 +1511,35 @@ limitations under the License.
                 ptype="MGMT_INTF_SPEED"
                 dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/MGMT_PORT_LIST/speed" />
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface} ${speed}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure the speed of a port.
+               </DESCRIPTION>
+               <USAGE>
+                    speed speed-in-Mbps
+               </USAGE>
+               <EXAMPLE summary="speed">
+                    sonic(conf-if-Ethernet0)# speed 10000
+                    sonic(conf-if-Ethernet0)#
+               </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
         <COMMAND
             name="no speed"
             help="Set default speed config">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body={"openconfig-if-ethernet:port-speed": "SPEED_1GB"}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure the speed of a port back to default.
+               </DESCRIPTION>
+               <USAGE>
+                   no speed
+               </USAGE>
+               <EXAMPLE summary="no speed">
+                    sonic(conf-if-Ethernet0)# no speed
+                    sonic(conf-if-Ethernet0)#
+               </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
     </VIEW>
