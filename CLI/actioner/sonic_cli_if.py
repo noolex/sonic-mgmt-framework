@@ -88,6 +88,48 @@ def get_helper_adr_str(args):
 
     return ipAdrStr[:-1];
 
+def build_relay_address_info (args):
+    api = cc.ApiClient()
+    output = {}
+
+    if len(args) < 0:
+        return output
+
+    tIntf = ("/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST",
+             "sonic-interface:INTERFACE_LIST",
+             "portname")
+    tVlanIntf = ("/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST",
+                 "sonic-vlan:VLAN_LIST",
+                 "name")
+    tPortChannelIntf = ("/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST",
+                        "sonic-portchannel-interface:PORTCHANNEL_INTERFACE_LIST",
+                        "pch_name")
+
+    requests = [tIntf, tVlanIntf, tPortChannelIntf]
+
+    reqStr = args[0]
+    for request in requests:
+        keypath = cc.Path(request[0])
+        try:
+            response = api.get(keypath)
+            response = response.content
+            if not response is None:
+                intfsList = response.get(request[1])
+            if not intfsList is None:
+                for intf in intfsList:
+                    intfName = intf.get(request[2])
+                    if not intfName is None:
+                        if not ((reqStr.find("ipv6") == -1)):
+                            relay_addresses = intf.get('dhcpv6_servers')
+                        elif not ((reqStr.find("ip") == -1)):
+                            relay_addresses = intf.get('dhcp_servers')
+                        if not relay_addresses is None:
+                            output[intfName] = relay_addresses
+        except  Exception as e:
+            log.syslog(log.LOG_ERR, str(e))
+            print "%Error: Internal error"
+    return output
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
@@ -800,12 +842,14 @@ def invoke_api(func, args=[]):
            return api.delete(path)
 
     elif func == 'get_openconfig_relay_agent_relay_agent':
-        path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp')
-        return api.get(path)
+        output = build_relay_address_info(args)
+        show_cli_output('show_dhcp_relay_brief_sonic.j2', output)
+        return api.get("")
 
     elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6':
-        path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6')
-        return api.get(path)
+        output = build_relay_address_info(args)
+        show_cli_output('show_dhcp_relay_brief_sonic.j2', output)
+        return api.get("")
 
     elif func == 'get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state':
         path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/state', id=args[1])
@@ -997,10 +1041,6 @@ def run(func, args):
             elif func == 'get_openconfig_interfaces_interfaces':
                 show_cli_output(args[0], api_response)
             elif func == 'get_sonic_port_sonic_port_port_table':
-                show_cli_output(args[0], api_response)
-            elif func == 'get_openconfig_relay_agent_relay_agent':
-                show_cli_output(args[0], api_response)
-            elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6':
                 show_cli_output(args[0], api_response)
             elif func == 'get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state':
                 show_cli_output(args[0], api_response)
