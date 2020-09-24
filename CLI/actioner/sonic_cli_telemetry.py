@@ -232,41 +232,6 @@ def getFlowGroups(flowgroups):
             response[name]['ports'] = ','.join(str(t[x]) for x in sorted(t))
         response[name]['packets'] = data['statistics']['packets']
     return OrderedDict(natsorted(response.items()))
-<<<<<<< HEAD
-||||||| merged common ancestors
-||||||| merged common ancestors
-||||||| merged common ancestors
-
-        # get inports
-        url = inports_get_url+"TAM,"+name
-        inportsData = do_get(url)
-        if (inportsData['ok']):
-            if (inportsData['content'] is not None):
-                if 'sonic-acl:ACL_RULE_LIST' in inportsData['content']:
-                    inports = inportsData['content']['sonic-acl:ACL_RULE_LIST'][0]
-                    if 'IN_PORTS' in inports: 
-                        response[name]['ports'] = ','.join(inports['IN_PORTS'])
-
-=======
-
-        # get inports
-        url = inports_get_url+"TAM,"+name
-        inportsData = do_get(url)
-        if (inportsData['ok']):
-            if (inportsData['content'] is not None):
-                if 'sonic-acl:ACL_RULE_LIST' in inportsData['content']:
-                    inports = inportsData['content']['sonic-acl:ACL_RULE_LIST'][0]
-                    if 'IN_PORTS' in inports:
-                        response[name]['ports'] = ','.join(inports['IN_PORTS'])
-
-        response[name]['packets'] = data['statistics']['packets']
-
->>>>>>> Temporary merge branch 2
-    return response
-=======
-    return response
->>>>>>> Temporary merge branch 2
-=======
 
 def getNatSortData(data):
     natSorted = {}
@@ -274,7 +239,6 @@ def getNatSortData(data):
         k = r['name']
         natSorted[k] = r['state']
     return OrderedDict(natsorted(natSorted.items()))
->>>>>>> origin/broadcom_sonic_3.x_share
 
 helper_functions = {
     'getFeatureDescription': getFeatureDescription,
