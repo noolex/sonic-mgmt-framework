@@ -47,6 +47,7 @@ detach_flowgroup_url = '/restconf/data/openconfig-tam:tam/flowgroups/flowgroup={
 intf_naming_mode_url = '/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode'
 intf_alias_url = '/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST'
 clear_flowgroup_counters_url = '/restconf/operations/openconfig-tam:clear-flowgroup-counters'
+get_acl_rule_url = '/restconf/data/sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST'
 
 def get_intf_alias():
     intfList = {}
@@ -264,7 +265,7 @@ def getBody(fn):
     }
     return body[fn]
 
-def getFlowGroupDate(data, currentid):
+def getFlowGroupDate(data, currentid, priority):
     flowGroupData = {}
     flowGroupData["openconfig-tam:flowgroups"] = {}
     flowGroupData["openconfig-tam:flowgroups"]["flowgroup"] = []
@@ -273,8 +274,7 @@ def getFlowGroupDate(data, currentid):
     flowData["config"] = {}
     flowData["config"]["name"] = data["name"]
     flowData["config"]["id"] = int(currentid)
-    if (data['priority'] != ""):
-        flowData["config"]["priority"] = int(data['priority'])
+    flowData["config"]["priority"] = int(priority)
     if ((data['sip'] != "") or (data['dip'] != "") or (data['protocol'] != "")):
         if (("." in data['sip']) or ("." in data['dip']) or (data['protocol'] != "")):
             flowData["ipv4"] = {}
@@ -510,6 +510,8 @@ def getDetails(fn, args):
         idsSet = set()
         maxSet = set(range(2, 255, 1))
         flowGroupsMap = {}
+        thisPriority = data['priority']
+        configuredPriority = ""
         currentid = 2
         if (flowGroupsIds['ok']):
             if (flowGroupsIds['content'] is not None):
@@ -520,6 +522,14 @@ def getDetails(fn, args):
                         flowGroupsMap[i['name']] = i['id']
         if data['name'] in flowGroupsMap:
             currentid = flowGroupsMap[data['name']]
+            rule_url = get_acl_rule_url+'=TAM,'+data['name']
+            currentRule = do_get(rule_url)
+            if currentRule['ok']:
+                if (currentRule['content'] is not None):
+                    if 'sonic-acl:ACL_RULE_LIST' in currentRule['content']:
+                        thisRule = currentRule['content']['sonic-acl:ACL_RULE_LIST'][0]
+                        if 'PRIORITY' in thisRule:
+                            configuredPriority = str(thisRule['PRIORITY'])
         elif (len(idsSet) != 0):
             diff = maxSet.difference(idsSet)
             if (len(diff) != 0):
@@ -530,7 +540,12 @@ def getDetails(fn, args):
                 details['description'] = "%Error: Maximum number (253) of flowgroups are already created."
                 details['name'] = ""
                 details['status_code'] = 400
-        details['body'] = getFlowGroupDate(data, currentid)
+        currentPriority = "100"
+        if (configuredPriority != ""):
+            currentPriority = configuredPriority
+        if (thisPriority != ""):
+            currentPriority = thisPriority
+        details['body'] = getFlowGroupDate(data, currentid, currentPriority)
     elif fn == "delete_flowgroup":
         details['url'] = flowgroups_url+'/flowgroup={}'.format(data['name'])
         details['description'] = "Flowgroup"
@@ -635,13 +650,14 @@ def run(fn, args):
                     if '%Info' in result['description']:
                         print result['description']
     else:
-        if 'error_message' in result:
-            message = result['error_message']
-            if ("%Error:" not in message):
-                message = "%Error: " + message
-            if "does not match" in message:
-                message = "%Error: Invalid input in the command."
-            print message
+        if not(result is None):
+            if 'error_message' in result:
+                message = result['error_message']
+                if ("%Error:" not in message):
+                    message = "%Error: " + message
+                if "does not match" in message:
+                    message = "%Error: Invalid input in the command."
+                print message
     return 0
 
 if __name__ == '__main__':
