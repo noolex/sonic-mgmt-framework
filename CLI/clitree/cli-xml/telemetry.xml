@@ -616,7 +616,7 @@ limitations under the License.
         <PARAM name="l4_dst_port" help="Destination port number (0 to 65535)" ptype="RANGE_0_65535" default=""/>
       </PARAM>
       <PARAM name="priority" help="Priority of the flow-group among the other flow-groups created" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="priority_value" help="Priority value (1 to 1024)" ptype="RANGE_1_1024" default="100"/>
+        <PARAM name="priority_value" help="Priority value (1 to 1024)" ptype="RANGE_1_1024" default=""/>
       </PARAM>
       <PARAM name="protocol" help="Protocol field of the IP header of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="protocol_value" help="Protocol value UDP/TCP" ptype="IP_PROTOCOL" default=""/>
