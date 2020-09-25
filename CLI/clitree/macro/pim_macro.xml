@@ -17,23 +17,23 @@ limitations under the License.
 
 <ROOT>
     <MACRODEF name="BIND-INTF-TO-PIM">
-        <COMMAND hidden="true"
+        <COMMAND
             name="ip pim"
             help="Add PIM configurations on interface">
         </COMMAND>
-        <COMMAND hidden="true"
+        <COMMAND
             name="no ip pim"
             help="Remove PIM configurations from interface">
         </COMMAND>
 
-        <COMMAND hidden="true"
+        <COMMAND
             name="ip pim sparse-mode"
             command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
             command_keys="vrf_name=*,address_family=ipv4"
             dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/mode=sm"
             help="Enable PIM sparse-mode">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_mode intf:arg1 2>/dev/stdout
+                sonic_cli_pim patch_pim_interface_config_mode intf:arg1
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -50,11 +50,11 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND hidden="true"
+        <COMMAND
             name="no ip pim sparse-mode"
             help="Disable PIM sparse-mode">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_mode intf:arg1 2>/dev/stdout
+                sonic_cli_pim del_pim_interface_config_mode intf:arg1
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -72,18 +72,18 @@ limitations under the License.
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND hidden="true"
+        <COMMAND
             name="ip pim drpriority"
             command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
             command_keys="vrf_name=*,address_family=ipv4"
             help="Set the Designated Router (DR) priority">
-            <PARAM hidden="true"
+            <PARAM
                 help="Designated Router (DR) Priority"
                 name="drprio"
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/dr-priority"
                 ptype="RANGE_1_4294967295"></PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_drprio intf:arg1 drprio:${drprio} 2>/dev/stdout
+                sonic_cli_pim patch_pim_interface_config_drprio intf:arg1 drprio:${drprio}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -106,11 +106,11 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND hidden="true"
+        <COMMAND
             name="no ip pim drpriority"
             help="Clear the Designated Router (DR) priority">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_drprio intf:arg1 2>/dev/stdout
+                sonic_cli_pim del_pim_interface_config_drprio intf:arg1
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -128,18 +128,18 @@ limitations under the License.
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND hidden="true"
+        <COMMAND
             name="ip pim hello"
             command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
             command_keys="vrf_name=*,address_family=ipv4"
             help="Set the Hello interval">
-            <PARAM hidden="true"
+            <PARAM
                 help="Hello interval in seconds"
                 name="hello"
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/hello-interval"
                 ptype="RANGE_1_255"></PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_hello intf:arg1 hello:${hello} 2>/dev/stdout
+                sonic_cli_pim patch_pim_interface_config_hello intf:arg1 hello:${hello}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -161,11 +161,11 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND hidden="true"
+        <COMMAND
             name="no ip pim hello"
             help="Clear the Hello interval">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_hello intf:arg1 2>/dev/stdout
+                sonic_cli_pim del_pim_interface_config_hello intf:arg1
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -182,14 +182,14 @@ limitations under the License.
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND hidden="true"
+        <COMMAND
             name="ip pim bfd"
             command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
             command_keys="vrf_name=*,address_family=ipv4"
             dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/bfd-enabled=true"
             help="Enable BFD">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_bfd intf:arg1 2>/dev/stdout
+                sonic_cli_pim patch_pim_interface_config_bfd intf:arg1
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -206,11 +206,11 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND hidden="true"
+        <COMMAND
             name="no ip pim bfd"
             help="Disable BFD">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_bfd intf:arg1 2>/dev/stdout
+                sonic_cli_pim del_pim_interface_config_bfd intf:arg1
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
