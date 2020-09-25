@@ -34,18 +34,18 @@ def show_wred_policy (render_tables, color):
             if wred_key == wred['name']:
                if color == 'green' and 'wred_green_enable' in wred and 'green_min_threshold' in wred and 'green_max_threshold' in wred and 'green_drop_probability' in wred:
                    if wred['wred_green_enable'] == True:
-                      g_min = int(wred['green_min_threshold'])/1024
-                      g_max = int(wred['green_max_threshold'])/1024
+                      g_min = int(wred['green_min_threshold'])/1000
+                      g_max = int(wred['green_max_threshold'])/1000
                       cmd_str += 'green minimum-threshold ' + str(g_min) + ' maximum-threshold ' + str(g_max) +  ' drop-probability ' + wred['green_drop_probability'] + ';'
                if color == 'yellow' and 'wred_yellow_enable' in wred and 'yellow_min_threshold' in wred and 'yellow_max_threshold' in wred and 'yellow_drop_probability' in wred:
                    if wred['wred_yellow_enable'] == True:
-                      y_min = int(wred['yellow_min_threshold'])/1024
-                      y_max = int(wred['yellow_max_threshold'])/1024
+                      y_min = int(wred['yellow_min_threshold'])/1000
+                      y_max = int(wred['yellow_max_threshold'])/1000
                       cmd_str += 'yellow minimum-threshold ' + str(y_min) + ' maximum-threshold ' + str(y_max) +  ' drop-probability ' + wred['yellow_drop_probability'] + ';'
                if color == 'red' and 'wred_red_enable' in wred and 'red_min_threshold' in wred and 'red_max_threshold' in wred and 'red_drop_probability' in wred:
                    if wred['wred_red_enable'] == True:
-                      r_min = int(wred['red_min_threshold'])/1024
-                      r_max = int(wred['red_max_threshold'])/1024
+                      r_min = int(wred['red_min_threshold'])/1000
+                      r_max = int(wred['red_max_threshold'])/1000
                       cmd_str += 'red minimum-threshold ' + str(r_min) + ' maximum-threshold ' + str(r_max) +  ' drop-probability ' + wred['red_drop_probability'] + ';'
 
                if 'ecn' in wred:
