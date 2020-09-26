@@ -36,6 +36,19 @@ limitations under the License.
         <DESCRIPTION>
           Displays IPv4 static-anycast-gateway information.
         </DESCRIPTION>
+        <EXAMPLE summary="Display IPv4 SAG information" >
+          sonic# show ip static-anycast-gateway
+          Configured Anycast Gateway MAC address: 00:22:33:44:55:66
+          IPv4 Anycast Gateway MAC address: enable
+          Total number of gateway: 3
+          Total number of gateway admin UP: 3
+          Total number of gateway oper UP: 3
+          Interfaces Gateway Address      Vrf        Admin/Oper
+          ---------- ---------------      ------     ----------
+          Vlan3      30.30.1.1/24                       up/up
+          Vlan5      50.0.0.1/24                        up/up
+          Vlan54     54.1.1.1/24                        up/up
+        </EXAMPLE>
      </DOCGEN>
 
     </COMMAND>
@@ -48,6 +61,18 @@ limitations under the License.
         <DESCRIPTION>
           Displays IPv6 static-anycast-gateway information.
         </DESCRIPTION>
+        <EXAMPLE summary="Display IPv6 SAG information" >
+          sonic# show ipv6 static-anycast-gateway
+          Configured Anycast Gateway MAC address: 00:22:33:44:55:66
+          IPv6 Anycast Gateway MAC address: enable
+          Total number of gateway: 2
+          Total number of gateway admin UP: 2
+          Total number of gateway oper UP: 2
+          Interfaces Gateway Address      Vrf        Admin/Oper
+          ---------- ---------------      ------     ----------
+          Vlan3      30::1/64                           up/up
+          Vlan5      50::1/64                           up/up
+        </EXAMPLE>
      </DOCGEN>
 	</COMMAND>
 
@@ -63,6 +88,9 @@ limitations under the License.
         <DESCRIPTION>
           Configures IPv4 Static Anycast Gateway Address for an Interface.
         </DESCRIPTION>
+        <EXAMPLE summary="Configures IPv4 Static Anycast Gateway Address for an Interface" >
+          sonic(conf-if-Vlan5)# ip anycast-address 50.0.0.1/24
+        </EXAMPLE>
      </DOCGEN>
 
     </COMMAND>
@@ -74,6 +102,9 @@ limitations under the License.
         <DESCRIPTION>
           Removes IPv4 Static Anycast Gateway Address from an Interface.
         </DESCRIPTION>
+        <EXAMPLE summary="Removes IPv4 Static Anycast Gateway Address from an Interface" >
+          sonic(conf-if-Vlan5)# no ip anycast-address 50.0.0.1/24
+        </EXAMPLE>
      </DOCGEN>
     </COMMAND>
     <!-- ipv6 anycast-address -->
@@ -84,6 +115,9 @@ limitations under the License.
         <DESCRIPTION>
           Configures IPv6 Static Anycast Gateway Address for an Interface.
         </DESCRIPTION>
+        <EXAMPLE summary="Configures IPv6 Static Anycast Gateway Address for an Interface" >
+          sonic(conf-if-Vlan5)# ipv6 anycast-address 50::1/64
+        </EXAMPLE>
      </DOCGEN>
     </COMMAND>
     <!-- no ipv6 anycast-address -->
@@ -94,6 +128,9 @@ limitations under the License.
         <DESCRIPTION>
           Removes IPv6 Static Anycast Gateway Address from an Interface.
         </DESCRIPTION>
+        <EXAMPLE summary="Removes IPv6 Static Anycast Gateway Address from an Interface" >
+          sonic(conf-if-Vlan5)# no ipv6 anycast-address 50::1/64
+        </EXAMPLE>
      </DOCGEN>
     </COMMAND>
   </VIEW>
@@ -106,6 +143,9 @@ limitations under the License.
         <DESCRIPTION>
           Configures MAC address for all the Static Anycast Gateway Addresses on the system.
         </DESCRIPTION>
+        <EXAMPLE summary="Configures MAC address for all the Static Anycast Gateway Addresses on the system" >
+          sonic(conf-if-Vlan5)# ip anycast-mac-address 00:22:33:44:55:66
+        </EXAMPLE>
      </DOCGEN>
     </COMMAND>
     <!-- no ip anycast-mac-address -->
@@ -116,6 +156,9 @@ limitations under the License.
         <DESCRIPTION>
           Removes MAC address for all the Static Anycast Gateway Addresses on the system.
         </DESCRIPTION>
+        <EXAMPLE summary="Configures MAC address for all the Static Anycast Gateway Addresses on the system" >
+          sonic(conf-if-Vlan5)# no ip anycast-mac-address
+        </EXAMPLE>
      </DOCGEN>
     </COMMAND>
 
@@ -151,6 +194,12 @@ limitations under the License.
           <DESCRIPTION>
             Enable/Disable IPv4 Static Anycast Gateway functionality. By default it is enabled.
           </DESCRIPTION>
+          <EXAMPLE summary="Enable IPv4 Static Anycast Gateway" >
+            sonic(config)# ip anycast-address enable
+          </EXAMPLE>
+          <EXAMPLE summary="Disable IPv4 Static Anycast Gateway" >
+            sonic(config)# ip anycast-address disable
+          </EXAMPLE>
         </DOCGEN>
 
 		</COMMAND>
@@ -185,8 +234,14 @@ limitations under the License.
 
         <DOCGEN>
           <DESCRIPTION>
-            Enable/Disable IPv4 Static Anycast Gateway functionality. By default it is enabled.
+            Enable/Disable IPv6 Static Anycast Gateway functionality. By default it is enabled.
           </DESCRIPTION>
+          <EXAMPLE summary="Enable IPv6 Static Anycast Gateway" >
+            sonic(config)# ipv6 anycast-address enable
+          </EXAMPLE>
+          <EXAMPLE summary="Disable IPv6 Static Anycast Gateway" >
+            sonic(config)# ipv6 anycast-address disable
+          </EXAMPLE>
         </DOCGEN>
 
 		</COMMAND>
