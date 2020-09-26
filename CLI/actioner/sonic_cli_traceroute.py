@@ -68,6 +68,10 @@ def do_tr(args, tr_type):
 def run(func, argv):
     isVrf = False
 
+    if len(argv) < 1:
+        ptc.print_and_log("The command is not completed.")
+        return -1
+
     if argv[0] == "vrf":
         args = " ".join(argv[2:])
         isVrf = True
