@@ -22,17 +22,18 @@
 
 
 def show_config_errdisable_cause(render_tables):
+    enabled_cause_list = []
+
+    if 'sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST' in render_tables:
+        if len(render_tables['sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST']) == 1:
+            for cause in render_tables['sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST'][0].keys():
+                if render_tables['sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST'][0][cause] == 'enabled':
+                    enabled_cause_list.append(cause)
+
     cmd_str = ''
     cmd_prfx = 'errdisable recovery cause '
-    if 'sonic-errdisable:sonic-errdisable/ERRDISABLE' in render_tables:
-        if "ERRDISABLE_LIST" in render_tables['sonic-errdisable:sonic-errdisable/ERRDISABLE']:
-            if len(render_tables['sonic-errdisable:sonic-errdisable/ERRDISABLE']['ERRDISABLE_LIST']) == 1:
-                for cause in render_tables['sonic-errdisable:sonic-errdisable/ERRDISABLE']['ERRDISABLE_LIST'][0].keys():
-                    if render_tables['sonic-errdisable:sonic-errdisable/ERRDISABLE']['ERRDISABLE_LIST'][0][cause] == 'enabled':
-                        if cmd_str:
-                            cmd_str = cmd_str + ";" + cmd_prfx + cause
-                        else:
-                            cmd_str = cmd_prfx + cause
+    for cause in enabled_cause_list:
+        cmd_str = cmd_str + ";" + cmd_prfx + cause
 
     return 'CB_SUCCESS', cmd_str
 
