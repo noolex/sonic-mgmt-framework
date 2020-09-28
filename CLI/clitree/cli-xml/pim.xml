@@ -660,21 +660,21 @@ limitations under the License.
     <!-- Ethernet Config -->
     <!-- =============== -->
     <VIEW name="configure-if-view">
-        <MACRO name="BIND-INTF-TO-PIM" arg="${iface_uri}"></MACRO>
+        <MACRO name="BIND-INTF-TO-PIM" arg="${iface}, ${iface_uri}"></MACRO>
     </VIEW>
 
     <!-- ================== -->
     <!-- PortChannel Config -->
     <!-- ================== -->
     <VIEW name="configure-lag-view">
-        <MACRO name="BIND-INTF-TO-PIM" arg="${po_name}"></MACRO>
+        <MACRO name="BIND-INTF-TO-PIM" arg="${po_name}, ${po_name}"></MACRO>
     </VIEW>
 
     <!-- =========== -->
     <!-- VLAN Config -->
     <!-- =========== -->
     <VIEW name="configure-vlan-view">
-        <MACRO name="BIND-INTF-TO-PIM" arg="${vlan_name}"></MACRO>
+        <MACRO name="BIND-INTF-TO-PIM" arg="${vlan_name}, ${vlan_name}"></MACRO>
     </VIEW>
 
 </CLISH_MODULE>

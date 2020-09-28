@@ -54,7 +54,7 @@ limitations under the License.
             name="no ip pim sparse-mode"
             help="Disable PIM sparse-mode">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_mode intf:arg1
+                sonic_cli_pim del_pim_interface_config_mode intf:arg1 intf_uri:arg2
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -110,7 +110,7 @@ limitations under the License.
             name="no ip pim drpriority"
             help="Clear the Designated Router (DR) priority">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_drprio intf:arg1
+                sonic_cli_pim del_pim_interface_config_drprio intf:arg1 intf_uri:arg2
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -165,7 +165,7 @@ limitations under the License.
             name="no ip pim hello"
             help="Clear the Hello interval">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_hello intf:arg1
+                sonic_cli_pim del_pim_interface_config_hello intf:arg1 intf_uri:arg2
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -210,7 +210,7 @@ limitations under the License.
             name="no ip pim bfd"
             help="Disable BFD">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_bfd intf:arg1
+                sonic_cli_pim del_pim_interface_config_bfd intf:arg1 intf_uri:arg2
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
