@@ -99,30 +99,25 @@ def run(func, args):
 
         # print "---->", template
         show_cli_output(template, xcvrInfo)
-    else:
+    elif func.find('interface-transceiver-diagnostics-loopback') >= 0:
         # if not a 'show' command, then this is a config command
-        if func.startswith('no-'):
-            on = 'False'
-        else:
-            on = 'True'
-
         for nm in natsorted(xcvrInfo.keys()):
             if 'media-side-input' in func:
                 keypath = cc.Path('/restconf/data/openconfig-platform:components/component={name}/openconfig-platform-transceiver:transceiver/config/openconfig-platform-ext:lb-media-side-input-enable', name=nm)
-                body = { "openconfig-platform-ext:lb-media-side-input-enable":  (on) }
-                # print("keypath = {}".format(keypath))
-                # print("body = {}".format(body))
-                return aa.patch(keypath, body)
-
-            if 'host-side-input' in func:
+                if func.startswith('no-'):
+                    aa.delete(keypath)
+                else:
+                    body = { "openconfig-platform-ext:lb-media-side-input-enable": "True" }
+                    aa.patch(keypath, body)
+            elif 'host-side-input' in func:
                 keypath = cc.Path('/restconf/data/openconfig-platform:components/component={name}/openconfig-platform-transceiver:transceiver/config/openconfig-platform-ext:lb-host-side-input-enable', name=nm)
-                body = { "openconfig-platform-ext:lb-host-side-input-enable":  (on) }
-                # print("keypath = {}".format(keypath))
-                # print("body = {}".format(body))
-                return aa.patch(keypath, body)
-
-            # print("Unsupported diagnostic loopback")
-            # print " "
+                if func.startswith('no-'):
+                    aa.delete(keypath)
+                else:
+                    body = { "openconfig-platform-ext:lb-host-side-input-enable": "True" }
+                    aa.patch(keypath, body)
+            else:
+                print("Unknown diagnostic loopback control: {0}".format(func))
     return
 
 if __name__ == '__main__':

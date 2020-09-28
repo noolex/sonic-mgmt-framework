@@ -51,6 +51,7 @@ from show_config_swresource import *
 from show_config_sag import *
 from show_config_vrrp import *
 from show_config_acl import *
+from show_config_xcvr_diag import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -173,6 +174,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'snmp_user'               : show_snmp_user,
                   'snmp_view'               : show_snmp_view,
                   'sflow_source_if'         : show_sflow_source_if,
+                  'xcvr_diag_ctrl'          : show_xcvr_diag_ctrl,
                   'qos_map_dscp_tc_cb'      : qos_map_dscp_tc_cb,
                   'qos_map_dot1p_tc_cb'     : qos_map_dot1p_tc_cb,
                   'qos_map_tc_queue_cb'     : qos_map_tc_queue_cb,
