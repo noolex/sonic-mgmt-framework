@@ -168,6 +168,7 @@ limitations under the License.
                      >
                      <PARAM name="rate" help="Rate and Utilization Counters of interfaces" ptype="SUBCOMMAND" mode="subcommand" />
                      <PARAM name="phy-if-name" help="Physical Interface" ptype="PHY_INTERFACE" optional="true"/>
+		    <PARAM name ="po-name" help = "PortChannel" ptype="PO_INTERFACE_RANGE" optional = "true"/>
                 </PARAM>
              </PARAM>
 
@@ -308,6 +309,8 @@ limitations under the License.
         elif test "${if-subcommands}" = "counters"; then&#xA;
             if test "${if-cnt-subcommands}" = "rate"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters_rate.j2 if-name=${phy-if-name}&#xA;
+           elif test "${if-cnt-subcommands}" = "po-name"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters.j2 if-name=${po-name}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters.j2 if-name=${phy-if-name}&#xA;
             fi&#xA;
