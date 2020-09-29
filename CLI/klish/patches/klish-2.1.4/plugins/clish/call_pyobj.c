@@ -249,7 +249,6 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
     Py_XDECREF(func);
     Py_XDECREF(args);
     Py_XDECREF(value);
-    Py_XDECREF(args_list);
 
     free(buf);
 
