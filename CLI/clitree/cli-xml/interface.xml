@@ -113,7 +113,7 @@ limitations under the License.
            help="Show interface PortChannel  info">
             <PARAM
                name="po-id"
-               help="Vlan Interface"
+               help="PortChannel Interface"
                ptype="LAG_ID"
                optional="true">
             </PARAM>
@@ -168,7 +168,7 @@ limitations under the License.
                      >
                      <PARAM name="rate" help="Rate and Utilization Counters of interfaces" ptype="SUBCOMMAND" mode="subcommand" />
                      <PARAM name="phy-if-name" help="Physical Interface" ptype="PHY_INTERFACE" optional="true"/>
-		    <PARAM name ="po-name" help = "PortChannel" ptype="PO_INTERFACE_RANGE" optional = "true"/>
+		    <PARAM name ="po-name" help = "PortChannel Interface" ptype="PO_INTERFACE_RANGE" optional = "true"/>
                 </PARAM>
              </PARAM>
 
