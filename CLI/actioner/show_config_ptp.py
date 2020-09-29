@@ -40,11 +40,11 @@ def show_ptp_two_step(render_tables):
     cmd_prfx = 'ptp two-step '
     if 'sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST' in render_tables:
         for ptp_inst in render_tables['sonic-ptp:sonic-ptp/PTP_CLOCK/PTP_CLOCK_LIST']:
-          if 'two-step' in ptp_inst:
-            two_step = ptp_inst['two-step']
-            if two_step == "1":
+          if 'two-step-flag' in ptp_inst:
+            two_step = ptp_inst['two-step-flag']
+            if two_step == 1:
                 cmd_str = cmd_prfx + "enable"
-            elif two_step == "0":
+            elif two_step == 0:
                 cmd_str = cmd_prfx + "disable"
 
     return 'CB_SUCCESS', cmd_str
