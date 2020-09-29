@@ -233,11 +233,19 @@ def getFlowGroups(flowgroups):
         response[name]['packets'] = data['statistics']['packets']
     return OrderedDict(natsorted(response.items()))
 
+def getNatSortData(data):
+    natSorted = {}
+    for r in data:
+        k = r['name']
+        natSorted[k] = r['state']
+    return OrderedDict(natsorted(natSorted.items()))
+
 helper_functions = {
     'getFeatureDescription': getFeatureDescription,
     'getStatusDescription': getStatusDescription,
     'printFeatureDetails': printFeatureDetails,
     'getFlowGroups': getFlowGroups,
+    'getNatSortData': getNatSortData,
 }
 
 def getBody(fn):
@@ -514,7 +522,14 @@ def getDetails(fn, args):
             currentid = flowGroupsMap[data['name']]
         elif (len(idsSet) != 0):
             diff = maxSet.difference(idsSet)
-            currentid = list(random.sample(diff, 1))[0]
+            if (len(diff) != 0):
+                currentid = list(random.sample(diff, 1))[0]
+            else:
+                details['do_request'] = False
+                details['ok'] = True
+                details['description'] = "%Error: Maximum number (253) of flowgroups are already created."
+                details['name'] = ""
+                details['status_code'] = 400
         details['body'] = getFlowGroupDate(data, currentid)
     elif fn == "delete_flowgroup":
         details['url'] = flowgroups_url+'/flowgroup={}'.format(data['name'])
@@ -609,6 +624,12 @@ def run(fn, args):
                         description = "%Error: " + description
                     message = "{} '{}' not found.".format(description, result['name'])
                     print message
+            elif (result['status_code'] == 400):
+                if 'description' in result:
+                    description = result['description']
+                    if ("%Error:" not in description):
+                        description = "%Error: " + description
+                    print description
             elif (result['status_code'] == 204):
                 if 'description' in result:
                     if '%Info' in result['description']:

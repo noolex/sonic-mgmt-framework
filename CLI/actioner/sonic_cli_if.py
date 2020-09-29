@@ -88,6 +88,48 @@ def get_helper_adr_str(args):
 
     return ipAdrStr[:-1];
 
+def build_relay_address_info (args):
+    api = cc.ApiClient()
+    output = {}
+
+    if len(args) < 0:
+        return output
+
+    tIntf = ("/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST",
+             "sonic-interface:INTERFACE_LIST",
+             "portname")
+    tVlanIntf = ("/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST",
+                 "sonic-vlan:VLAN_LIST",
+                 "name")
+    tPortChannelIntf = ("/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_LIST",
+                        "sonic-portchannel-interface:PORTCHANNEL_INTERFACE_LIST",
+                        "pch_name")
+
+    requests = [tIntf, tVlanIntf, tPortChannelIntf]
+
+    reqStr = args[0]
+    for request in requests:
+        keypath = cc.Path(request[0])
+        try:
+            response = api.get(keypath)
+            response = response.content
+            if not response is None:
+                intfsList = response.get(request[1])
+            if not intfsList is None:
+                for intf in intfsList:
+                    intfName = intf.get(request[2])
+                    if not intfName is None:
+                        if not ((reqStr.find("ipv6") == -1)):
+                            relay_addresses = intf.get('dhcpv6_servers')
+                        elif not ((reqStr.find("ip") == -1)):
+                            relay_addresses = intf.get('dhcp_servers')
+                        if not relay_addresses is None:
+                            output[intfName] = relay_addresses
+        except  Exception as e:
+            log.syslog(log.LOG_ERR, str(e))
+            print "%Error: Internal error"
+    return output
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
@@ -200,18 +242,6 @@ def invoke_api(func, args=[]):
         body = { "openconfig-if-ethernet:port-fec": fec_map[fec]}
         return api.patch(path, body)
 
-    elif func == 'patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_los':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/openconfig-if-ethernet-ext2:port-unreliable-los', name=args[0])
-        los_map = {"auto": "UNRELIABLE_LOS_MODE_AUTO", "on": "UNRELIABLE_LOS_MODE_ON", "off": "UNRELIABLE_LOS_MODE_OFF", "default": "UNRELIABLE_LOS_MODE_OFF"}
-
-        los = args[1]
-        if los not in los_map:
-            print("%Error: Invalid port unreliable los config")
-            return None
-
-        body = { "openconfig-if-ethernet:port-unreliable-los": los_map[los]}
-        return api.patch(path, body)
-    
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config':
         sp = args[1].split('/')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
@@ -529,17 +559,6 @@ def invoke_api(func, args=[]):
             body = { "openconfig-interfaces-ext:fallback": False }
         return api.patch(path, body)
 
-    # Configure IGMP
-    elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/joins', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:joins":{"join":[{"mcastgrpaddr":args[1],"srcaddr":args[2],"config":{"mcastgrpaddr":args[1],"srcaddr":args[2]}}]}}
-        return api.patch(path, body)
-
-    # Delete IGMP
-    elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_igmp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/joins/join={mcastgrpaddr},{srcaddr}', name=args[0], index="0",mcastgrpaddr=args[1], srcaddr=args[2])
-        return api.delete(path)
-
     # Enable IGMP
     elif func == 'patch_openconfig_if_ip_enable_igmp':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/enabled', name=args[0], index="0")
@@ -550,61 +569,6 @@ def invoke_api(func, args=[]):
     # Disable IGMP
     elif func == 'patch_openconfig_if_ip_disable_igmp':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP Version
-    elif func == 'patch_openconfig_igmp_version_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/version', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:version" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP Version
-    elif func == 'delete_openconfig_igmp_version_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/version', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP query-interval
-    elif func == 'patch_openconfig_igmp_queryinterval_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/query-interval', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:query-interval" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP query-interval
-    elif func == 'delete_openconfig_igmp_queryinterval_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/query-interval', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP last-member-query-count
-    elif func == 'patch_openconfig_igmp_lmquerycount_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/last-member-query-count', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:last-member-query-count" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP last-member-query-count
-    elif func == 'delete_openconfig_igmp_lmquerycount_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/last-member-query-count', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP last-member-query-interval
-    elif func == 'patch_openconfig_igmp_lmqueryinterval_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/last-member-query-interval', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:last-member-query-interval" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP last-member-query-interval
-    elif func == 'delete_openconfig_igmp_lmqueryinterval_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/last-member-query-interval', name=args[0], index="0")
-        return api.delete(path)
-
-    # Configure IGMP query-max-response-time
-    elif func == 'patch_openconfig_igmp_querymaxrestime_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/query-max-response-time', name=args[0], index="0")
-        body = {"openconfig-igmp-ext:query-max-response-time" : int(args[1])}
-        return api.patch(path, body)
-
-    # Delete IGMP query-max-response-time
-    elif func == 'delete_openconfig_igmp_querymaxrestime_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config/query-max-response-time', name=args[0], index="0")
         return api.delete(path)
 
     # Config IPv4 Unnumbered interface
@@ -878,12 +842,14 @@ def invoke_api(func, args=[]):
            return api.delete(path)
 
     elif func == 'get_openconfig_relay_agent_relay_agent':
-        path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp')
-        return api.get(path)
+        output = build_relay_address_info(args)
+        show_cli_output('show_dhcp_relay_brief_sonic.j2', output)
+        return api.get("")
 
     elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6':
-        path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcpv6')
-        return api.get(path)
+        output = build_relay_address_info(args)
+        show_cli_output('show_dhcp_relay_brief_sonic.j2', output)
+        return api.get("")
 
     elif func == 'get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state':
         path = cc.Path('/restconf/data/openconfig-relay-agent:relay-agent/dhcp/interfaces/interface={id}/state', id=args[1])
@@ -1075,10 +1041,6 @@ def run(func, args):
             elif func == 'get_openconfig_interfaces_interfaces':
                 show_cli_output(args[0], api_response)
             elif func == 'get_sonic_port_sonic_port_port_table':
-                show_cli_output(args[0], api_response)
-            elif func == 'get_openconfig_relay_agent_relay_agent':
-                show_cli_output(args[0], api_response)
-            elif func == 'get_openconfig_relay_agent_relay_agent_dhcpv6':
                 show_cli_output(args[0], api_response)
             elif func == 'get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state':
                 show_cli_output(args[0], api_response)

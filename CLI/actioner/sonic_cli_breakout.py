@@ -131,6 +131,8 @@ def run(func, args):
     try:
         api_response = invoke(func, args)
         if api_response.ok():
+            if (func.find("openconfig_platform_port_components_component_port_breakout_mode_config") != -1):
+                print("Dynamic Port Breakout in-progress, use \'show interface breakout port {}\' to check status.".format(args[0]))
             if api_response.content is not None:
                 if func == 'dependencies':
                     temp = args[1]
