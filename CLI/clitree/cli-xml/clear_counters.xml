@@ -59,7 +59,6 @@ clear counters [interface <interface>]
                                     name="ifId"
                                     help="Physical Interface"
                                     ptype="ETH_PHY_SLOT_PORT_SUBPORT"
-                                    optional="true"
                                     >
                                 </PARAM>
                             </PARAM>
@@ -73,8 +72,7 @@ clear counters [interface <interface>]
                                 <PARAM
                                     name="ifId"
                                     help="Physical Interface"
-                                    ptype="UINT"
-                                    optional="true"
+                                    ptype="UINT16"
                                     >
                                 </PARAM>
                             </PARAM>
@@ -87,13 +85,12 @@ clear counters [interface <interface>]
                                 <PARAM 
                                     name="ifId"
                                     help="PortChannel interface number"
-                                    optional="true"
                                     ptype="LAG_ID">
                                 </PARAM>
                             </PARAM>
                         </PARAM>
                  </PARAM>
-            <ACTION builtin="clish_pyobj">sonic-cli-counters rpc_sonic_interface_clear_counters ${interface-switch}${ifId}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic-cli-counters rpc_interfaces_clear_counters ${interface-switch}${ifId}</ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>

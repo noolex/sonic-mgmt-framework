@@ -57,7 +57,7 @@ def show_if_vrf_binding(render_tables):
         return 'CB_SUCCESS', cmd_str
 
     for item in intfdata:
-        if render_tables['name'] == item[key] and item['vrf_name']:
+        if render_tables['name'] == item[key] and 'vrf_name' in item:
             cmd_str = 'ip vrf forwarding ' + item['vrf_name']
             break  
         

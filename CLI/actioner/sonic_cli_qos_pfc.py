@@ -103,8 +103,8 @@ def getPfcQueueCounters(ifName, queue):
     counters = []
     uriStat = interfacePfcUri
     keypath = cc.Path(uriStat +  '/pfc-queue/pfc-queue={queue}/statistics', intfName=ifName, queue=str(queue))
-    response = aa.get(keypath)
-    if (response is not None) and (response.ok()):
+    response = aa.get(keypath, None, False)
+    if (response is not None) and (response.ok()) and (response.content is not None):
         if 'openconfig-qos-ext:statistics' in response.content.keys():
             data = response.content['openconfig-qos-ext:statistics']
             for stat in STATS_DISPLAY_ORDER:
@@ -125,8 +125,8 @@ def getPauseCounters(ifName, rx):
     uriStat = interfacePfcUri
     for cos in range(0,8):
         keypath = cc.Path(uriStat +  '/pfc-priorities/pfc-priority={dot1p}/state/statistics', intfName=ifName, dot1p=str(cos))
-        response = aa.get(keypath)
-        if (response is not None) and (response.ok()):
+        response = aa.get(keypath, None, False)
+        if (response is not None) and (response.ok()) and (response.content is not None):
             if 'openconfig-qos-ext:statistics' in response.content.keys():
                 data = response.content['openconfig-qos-ext:statistics']
                 #key = 'pfc' + str(cos)
@@ -142,10 +142,10 @@ def getPauseCounters(ifName, rx):
 
 def getPortList():
     path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT/PORT_LIST')
-    response = aa.get(path)
+    response = aa.get(path, None, False)
     portList = []
     intfList = {}
-    if response.ok() and ('sonic-port:PORT_LIST' in response.content):
+    if response.ok() and (response.content is not None) and ('sonic-port:PORT_LIST' in response.content):
         intfList = response.content['sonic-port:PORT_LIST']
         for intf in intfList:
             intfName = intf.get('ifname')
@@ -187,9 +187,9 @@ def getPfcStatistics(ifName):
 
 def getPfcQueueStatistics(ifName):
     path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/queues', interface_id=ifName)
-    response = aa.get(path)
+    response = aa.get(path, None, False)
     ques = []
-    if response.ok() and ('openconfig-qos:queues' in response.content):
+    if response.ok() and (response.content is not None) and ('openconfig-qos:queues' in response.content):
         queues = response.content['openconfig-qos:queues']['queue']
         for queue in queues:
             _, q = queue['state']['name'].split(':', 1)
@@ -220,14 +220,16 @@ def getQosIntfSummary(ifName):
     info = { ifName: {} }
 
     path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/output/scheduler-policy/config', interface_id=ifName)
-    data = aa.get(path)
+    data = aa.get(path, None, False)
     if (not data.ok()) or (not data.content):
+        data.content = {}
         data.content['openconfig-qos:config'] = {'name':''}
     info[ifName].update({'policy': data.content['openconfig-qos:config']['name']})
 
     path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=ifName)
-    data = aa.get(path)
+    data = aa.get(path, None, False)
     if (not data.ok()) or (not data.content):
+        data.content = {}
         data.content['openconfig-qos-maps-ext:config'] = {
             'dscp-to-forwarding-group':'',
             'dot1p-to-forwarding-group':'',
@@ -240,8 +242,9 @@ def getQosIntfSummary(ifName):
     info[ifName].update({'interface-maps': data.content['openconfig-qos-maps-ext:config']})
 
     path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-ext:pfc', interface_id=ifName)
-    data = aa.get(path)
+    data = aa.get(path, None, False)
     if (not data.ok()) or (not data.content):
+        data.content = {}
         data.content['openconfig-qos-ext:pfc'] = {}
     info[ifName].update({'pfc': data.content['openconfig-qos-ext:pfc']})
 
@@ -307,9 +310,9 @@ def invoke(func, args):
 
         elif args[1] == 'on':
             keypath = cc.Path(interfacePfcWdUri + '/state', intfName=args[0])
-            response = aa.get(keypath, body)
+            response = aa.get(keypath, None, False)
             cfg = {}
-            if response.ok():
+            if response.ok() and (response.content is not None):
                 if 'openconfig-qos-ext:state' in response.content.keys():
                     cfg = response.content['openconfig-qos-ext:state']
 
@@ -342,14 +345,14 @@ def invoke(func, args):
     elif func == 'show_pfc_watchdog':
         interval="Not Available"
         keypath = cc.Path(globalPfcWdUri + '/poll/config/poll-interval')
-        response = aa.get(keypath, body)
-        if response.ok():
+        response = aa.get(keypath, None, False)
+        if response.ok() and (response.content is not None):
             if 'openconfig-qos-ext:poll-interval' in response.content.keys():
                 interval = response.content['openconfig-qos-ext:poll-interval']
         keypath = cc.Path(globalPfcWdUri + '/flex/config/counter-poll')
-        response = aa.get(keypath, body)
+        response = aa.get(keypath, None, False)
         poll="Not Available"
-        if response.ok():
+        if response.ok() and (response.content is not None):
             if 'openconfig-qos-ext:counter-poll' in response.content.keys():
                 poll = response.content['openconfig-qos-ext:counter-poll']
                 # find key based on dictionary value
@@ -378,8 +381,8 @@ def invoke(func, args):
         datam['restoration-time'] = "0"
 
         keypath = cc.Path(interfacePfcWdUri + '/state', intfName=args[0])
-        response = aa.get(keypath, body)
-        if response.ok():
+        response = aa.get(keypath, None, False)
+        if response.ok() and (response.content is not None):
             if 'openconfig-qos-ext:state' in response.content.keys():
                 state = response.content['openconfig-qos-ext:state']
                 if 'action' in state.keys():
@@ -411,7 +414,7 @@ def invoke(func, args):
             response.content = collections.OrderedDict()
             for port in getPortList():
                 data = getPfcStatistics(port)
-                if (data is None) or (not data.ok()):
+                if (data is None) or (not data.ok()) or (not data.content):
                     continue
                 response.content.update(data.content)
         else:
@@ -426,7 +429,7 @@ def invoke(func, args):
             response.content = collections.OrderedDict()
             for port in getPortList():
                 data = getPfcQueueStatistics(port)
-                if (data is None) or (not data.ok()):
+                if (data is None) or (not data.ok()) or (not data.content):
                     continue
                 response.content.update(data.content)
         else:
@@ -441,7 +444,7 @@ def invoke(func, args):
             response.content = collections.OrderedDict()
             for port in getPortList():
                 data = getQosIntfSummary(port)
-                if (data is None) or (not data.ok()):
+                if (data is None) or (not data.ok()) or (not data.content):
                     continue
                 response.content.update(data.content)
         else:
@@ -454,13 +457,13 @@ def invoke(func, args):
         if args[0].split(':')[0].lower() in [ 'ethernetall', 'ethall' ]:
             path = cc.Path('/restconf/data/openconfig-qos:qos/queues')
             tmpl = 'show_qos_queue_config_all.j2'
-        data = aa.get(path)
-        if data.ok():
+        data = aa.get(path, None, False)
+        if data.ok() and (data.content is not None):
             od = collections.OrderedDict()
             for port in natsorted(data.content.keys()):
                 od[port] = data.content[port]
             data.content = od
-            show_cli_output(tmpl, data)
+            show_cli_output(tmpl, data.content)
         return None
 
     else:
@@ -484,9 +487,9 @@ def run(func, args):
                 if apiResponse.status_code == RESPONSE_NO_CONTENT:
                     message = apiResponse.error_message()
                     print message[7:]
-                elif func.startswith('show_port'):
+                elif func.startswith('show_port') and (response is not None):
                     show_cli_output(args[1], response)
-                elif func.startswith('show_pfc'):
+                elif func.startswith('show_pfc') and (response is not None):
                     show_cli_output(args[0], response)
             elif response is None:
                 return

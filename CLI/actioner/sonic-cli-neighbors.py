@@ -18,6 +18,7 @@
 import syslog as log
 import sys
 import cli_client as cc
+import ipaddress
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 
@@ -80,11 +81,11 @@ def get_keypath(func,args):
         else:
             body = {"sonic-neighbor:input":{"family": rcvdFamily, "ip": rcvdIpAddr, "ifname": rcvdIntfName, "vrf": rcvdVrf}}
     elif func == 'set_ipv4_arp_timeout':
-        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv4_arp_timeout')
-        body = {"sonic-neighbor:ipv4_arp_timeout": int(args[0])}
+        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST')
+        body = {"sonic-neighbor:NEIGH_GLOBAL_LIST": [{"sonic-neighbor:name": "Values", "sonic-neighbor:ipv4_arp_timeout": int(args[0])}]}
     elif func == 'set_ipv6_nd_cache_expiry':
-        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv6_nd_cache_expiry')
-        body = {"sonic-neighbor:ipv6_nd_cache_expiry": int(args[0])}
+        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST')
+        body = {"sonic-neighbor:NEIGH_GLOBAL_LIST": [{"sonic-neighbor:name": "Values", "sonic-neighbor:ipv6_nd_cache_expiry": int(args[0])}]}
     elif func == 'del_ipv4_arp_timeout':
         keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_GLOBAL/NEIGH_GLOBAL_LIST=Values/ipv4_arp_timeout')
     elif func == 'del_ipv6_nd_cache_expiry':
@@ -262,14 +263,14 @@ def process_oc_nbrs(response):
         if rcvdIntfName == "eth0":
             rcvdIntfName = "Management0"
 
-        nbrEntry = {'ipAddr':ipAddr,
+        nbrEntry = {'ipAddr':ipaddress.ip_address(ipAddr),
                     'macAddr':macAddr,
                     'intfName':rcvdIntfName,
                     'egressPort':egressPort
                     }
         outputList.append(nbrEntry)
 
-    return outputList
+    return sorted(outputList, key=lambda k: k['ipAddr'])
 
 def process_sonic_nbrs(response):
     outputList  = []
@@ -317,7 +318,7 @@ def process_sonic_nbrs(response):
         if ifName == "eth0":
             ifName = "Management0"
 
-        nbrEntry = {'ipAddr':ipAddr,
+        nbrEntry = {'ipAddr':ipaddress.ip_address(ipAddr),
                            'macAddr':macAddr,
                            'intfName':ifName,
                            'egressPort':egressPort
@@ -330,7 +331,7 @@ def process_sonic_nbrs(response):
             elif (rcvdIpAddr is None and rcvdMacAddr is None):
                 outputList.append(nbrEntry)
 
-    return outputList
+    return sorted(outputList, key=lambda k: k['ipAddr'])
 
 def clear_neighbors(keypath, body):
     status = ""
@@ -373,7 +374,7 @@ def set_neighbors(keypath, body, del_req):
     if apiResponse.ok():
         response = apiResponse.content
     else:
-        print(response.error_message())
+        print(apiResponse.error_message())
         return -1
     return 0
 

@@ -169,7 +169,7 @@ limitations under the License.
 
         <COMMAND
             name="weight"
-            help="scheduer weight"
+            help="scheduler weight"
         >
         <PARAM
             name="weight"
@@ -191,7 +191,7 @@ limitations under the License.
 
         <COMMAND
             name="meter-type"
-            help="scheduer meter type (packets/bytes)"
+            help="scheduler meter type (packets/bytes)"
         >
         <PARAM
             name="meter_type"
@@ -219,8 +219,8 @@ limitations under the License.
         >
         <PARAM
             name="cir"
-            help="0 - 100000"
-            ptype="CPU_CIR_PIR_CBS_PBS"
+            help="32-400000000 kbps for physical interface queues, 0-100000 pps for CPU interface queues"
+            ptype="QUEUE_CIR_PIR"
             >
         </PARAM>
          <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_cir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${cir}
@@ -238,8 +238,8 @@ limitations under the License.
         >
         <PARAM
             name="bc"
-            help="Committed Burst Size"
-            ptype="CPU_CIR_PIR_CBS_PBS"
+            help="250-125000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
+            ptype="QUEUE_BURST"
             >
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_bc ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${bc}
@@ -257,8 +257,8 @@ limitations under the License.
         >
         <PARAM
             name="pir"
-            help="0 - 100000"
-            ptype="CPU_CIR_PIR_CBS_PBS"
+            help="32-400000000 kbps for physical interface queues, 0-100000 pps for CPU interface queues"
+            ptype="QUEUE_CIR_PIR"
             >
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_pir ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${pir}
@@ -279,8 +279,8 @@ limitations under the License.
         >
         <PARAM
             name="be"
-            help="Peak Burst Size"
-            ptype="CPU_CIR_PIR_CBS_PBS"
+            help="250-125000000 bytes for physical interface queues, 0-100000 packets for CPU interface queues"
+            ptype="QUEUE_BURST"
             >
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_be ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name} ${be}
@@ -317,7 +317,7 @@ limitations under the License.
         >
         <PARAM
             name="pir"
-            help="0 - 400000000 Kilo bits per second"
+            help="32 - 400000000 Kilo bits per second"
             ptype="CIR_PIR_KBPS"
             >
         </PARAM>

@@ -1,5 +1,12 @@
 {% set mode, minlinks, description,fallback, gracefulshutdown, fallbackoper = "LACP", "1", "", "Disabled", "Disabled", "Nonoperational" %}
 
+{% set vars = {'ipv4': ""} %}
+{% set vars = {'ipv6': ""} %}
+{% set vars = {'ipv6_addr': ""} %}
+{% set vars = {'mode4': ""} %}
+{% set vars = {'mode6': ""} %}
+{% set vars = {'ip_prim':""} %}
+{% set ip_sec_list = [] %}
 {% set global = json_output['global'][0] %}
 {% if global %}
 {% if global['graceful_shutdown_mode'] == 'enable' %}
@@ -40,6 +47,53 @@ Description: {{description}}
 {% endif %}
 Minimum number of links to bring PortChannel up is {{minlinks}}
 
+{% if vars.update({'mode4':"not-set"}) %}{% endif %}
+{% if vars.update({'ipv4':"IPV4"}) %}{% endif %}
+{%if json_output['portchannel']['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv4']%}
+{% if vars.update({'ip_prim':""}) %}{% endif %}
+{% set ip_sec_list = []%}
+{% for ip in json_output['portchannel']['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv4']%}
+{% if ip['pch_name'] == po_intf['lagname'] %}
+{% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
+{%- set ipfx = ip['ip_prefix']|string() -%}
+{% if 'secondary' in ip %}
+{{ ip_sec_list.append(ipfx)|default("", True)}}
+{% else %}
+{% if vars.update({'ip_prim':ipfx}) %}{% endif %}
+{%endif%}
+{%endif%}
+{%endfor%}
+{%- if vars.update({'secondary_ip':ip_sec_list}) %}{% endif -%}
+{%endif%}
+
+{% if vars.ip_prim %}
+{{ vars.ipv4 }} address is {{ vars.ip_prim }}
+{% endif %}
+{% if vars.secondary_ip %}
+{% for ip in vars.secondary_ip  %}
+{{ vars.ipv4 }} secondary address is {{ ip }}
+{% endfor %}
+{%endif%}
+Mode of {{ vars.ipv4 }} address assignment: {{ vars.mode4 }}
+
+{% if vars.update({'mode6':"not-set"}) %}{% endif %}
+{% if vars.update({'ipv6':"IPV6"}) %}{% endif %}
+{%if json_output['portchannel']['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv6']%}
+{% if vars.update({'ipv6_addr':""}) %}{% endif %}
+{% for ip in json_output['portchannel']['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv6']%}
+{% if ip['pch_name'] == po_intf['lagname'] %}
+{% if vars.update({'mode6':"MANUAL"}) %}{% endif %}
+{%- set ipfx = ip['ip_prefix']|string() -%}
+{% if vars.update({'ipv6_addr':ipfx}) %}{% endif %}
+{% endif %}
+{%endfor%}
+{% endif %}
+
+{% if vars.ipv6_addr %}
+{{ vars.ipv6 }} address is {{ vars.ipv6_addr }}
+{% endif %}
+Mode of {{ vars.ipv6 }} address assignment: {{ vars.mode6 }}
+
 {% if po_conf_intf['name'] == po_intf['lagname'] and 'graceful_shutdown_mode' in po_conf_intf and po_conf_intf['graceful_shutdown_mode'] == 'disable' %}
 {% set gracefulshutdown = "Disabled" %}
 {% endif %}
@@ -58,6 +112,7 @@ Fallback: {{fallback}}, {{fallbackoper}}
 Graceful shutdown: {{gracefulshutdown}}
 
 MTU {{po_intf['mtu']}}
+
 {% if 'speed' in po_intf %}
 {% if po_intf['speed']|int < 1000 %}
 LineSpeed {{ po_intf['speed'] }}MB
@@ -68,10 +123,19 @@ LineSpeed {{ (po_intf['speed']|int / 1000) }}GB
 
 {% endif %}
 
+{% if mode == "Static" %}
+{% if 'portchannel' in json_output and 'sonic-portchannel:LAG_MEMBER_TABLE' in json_output['portchannel'] and 'LAG_MEMBER_TABLE_LIST' in json_output['portchannel']['sonic-portchannel:LAG_MEMBER_TABLE'] %}
+{% for lag_mem in json_output['portchannel']['sonic-portchannel:LAG_MEMBER_TABLE']['LAG_MEMBER_TABLE_LIST'] %}
+{% if lag_mem['name'] == po_intf['lagname'] %}
+Members in this channel: {{ lag_mem['ifname'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endif %}
+
 
 {% endfor %}
 {% endif %}
-
 
 
 {% if json_output['lacp']['openconfig-lacp:interfaces'] and json_output['lacp']['openconfig-lacp:interfaces']['interface']%}
@@ -84,16 +148,6 @@ LineSpeed {{ (po_intf['speed']|int / 1000) }}GB
 {% if 'state' in intf %}
 
 LACP mode {{intf['state']['lacp-mode']}} interval {{intf['state']['interval']}} priority {{intf['state']['system-priority']}} address {{intf['state']['system-id-mac']}}
-
-{% else %}
-
-{% if 'portchannel' in json_output and 'sonic-portchannel:LAG_MEMBER_TABLE' in json_output['portchannel'] and 'LAG_MEMBER_TABLE_LIST' in json_output['portchannel']['sonic-portchannel:LAG_MEMBER_TABLE'] %}
-{% for lag_mem in json_output['portchannel']['sonic-portchannel:LAG_MEMBER_TABLE']['LAG_MEMBER_TABLE_LIST'] %}
-{% if lag_mem['name'] == po_intf['lagname'] %}
-Members in this channel: {{ lag_mem['ifname'] }}
-{% endif %}
-{% endfor %}
-{% endif %}
 
 {% endif %}
 
@@ -127,12 +181,12 @@ Last clearing of "show interface" counters: {{ datetimeformat(counters['last-cle
 {% set space = "          " %}
 Input statistics:
 {{space}}{{counters['in-pkts']}} packets, {{counters['in-octets']}} octets
-{{counters['in-multicast-pkts']}} Multicasts, {{counters['in-broadcast-pkts']}} Broadcasts, {{counters['in-unicast-pkts']}} Unicasts
-{{counters['in-errors']}} error, {{counters['in-discards']}} discarded
+{{space}}{{counters['in-multicast-pkts']}} Multicasts, {{counters['in-broadcast-pkts']}} Broadcasts, {{counters['in-unicast-pkts']}} Unicasts
+{{space}}{{counters['in-errors']}} error, {{counters['in-discards']}} discarded
 Output statistics:
 {{space}}{{counters['out-pkts']}} packets, {{counters['out-octets']}} octets
-{{counters['out-multicast-pkts']}} Multicasts, {{counters['out-broadcast-pkts']}} Broadcasts, {{counters['out-unicast-pkts']}} Unicasts
-{{counters['out-errors']}} error, {{counters['out-discards']}} discarded
+{{space}}{{counters['out-multicast-pkts']}} Multicasts, {{counters['out-broadcast-pkts']}} Broadcasts, {{counters['out-unicast-pkts']}} Unicasts
+{{space}}{{counters['out-errors']}} error, {{counters['out-discards']}} discarded
 {% endif %}
 
 {{'\r\n'}}

@@ -1,0 +1,32 @@
+{% if json_output -%}
+{% if "openconfig-tam:ifa-sessions" in json_output %}
+{% set tmpSessions = json_output['openconfig-tam:ifa-sessions']['ifa-session'] %}
+{% if tmpSessions|length > 0 %}
+Name                              Flow Group                        Collector                         Sampler                           Node Type
+--------------------------------  --------------------------------  --------------------------------  --------------------------------  ----------
+{% set sessions = getNatSortData(tmpSessions) %}
+{% for k in sessions %}
+{% if sessions[k]["node-type"] == "INGRESS" %}
+{% set node_type = "Ingress" %}
+{% elif sessions[k]["node-type"] == "EGRESS" %}
+{% set node_type = "Egress" %}
+{% else %}
+{% set node_type = "Intermediate" %}
+{% endif %}
+{% if "collector" in sessions[k] %}
+{% set collector = sessions[k]["collector"] %}
+{% else %}
+{% set collector = "-" %}
+{% endif %}
+{% if "sample-rate" in sessions[k] %}
+{% set sampler = sessions[k]["sample-rate"] %}
+{% else %}
+{% set sampler = "-" %}
+{% endif %}
+{{'%-34s'|format(sessions[k]["name"])}}{{'%-34s'|format(sessions[k]["flowgroup"])}}{{'%-34s'|format(collector)}}{{'%-34s'|format(sampler)}}{{'%-20s'|format(node_type)}}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% else %}
+Sessions are not configured.
+{% endif %}

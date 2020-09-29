@@ -1,0 +1,43 @@
+{% if json_output -%}
+{% if "openconfig-tam:flowgroups" in json_output %}
+{% set flowgroups = json_output['openconfig-tam:flowgroups']['flowgroup'] %}
+{% set allgroups = getFlowGroups(flowgroups) %}
+{% for key, value in allgroups.items() %}
+Flow Group Name    : {{ key }}
+   Id              : {{ value['id'] }}
+   Priority        : {{ value['priority'] }}
+{% if 'src_mac' in value %}
+   SRC MAC         : {{ value['src_mac'] }}
+{% endif %}
+{% if 'dst_mac' in value %}
+   DST MAC         : {{ value['dst_mac'] }}
+{% endif %}
+{% if 'ethertype' in value %}
+   ETHERTYPE       : {{ value['ethertype'] }}
+{% endif %}
+{% if 'src_ip' in value %}
+   SRC IP          : {{ value['src_ip'] }}
+{% endif %}
+{% if 'dst_ip' in value %}
+   DST IP          : {{ value['dst_ip'] }}
+{% endif %}
+{% if 'protocol' in value %}
+   PROTOCOL        : {{ value['protocol'] }}
+{% endif %}
+{% if 'src_port' in value %}
+   SRC L4 Port     : {{ value['src_port'] }}
+{% endif %}
+{% if 'dst_port' in value %}
+   DST L4 Port     : {{ value['dst_port'] }}
+{% endif %}
+{% if 'ports' in value %}
+   Ingress Intf    : {{  value['ports'] }}
+{% endif %}
+{% if 'packets' in value %}
+   Packet Count    : {{ value['packets'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% else %}
+Flowgroups are not configured.
+{% endif %}

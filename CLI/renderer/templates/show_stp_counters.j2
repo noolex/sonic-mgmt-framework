@@ -9,8 +9,8 @@
 {% set vars = {'conf_bpdu_rx': ""} %}
 {% if json_output -%}
 {% if json_output is iterable %}
-{% if "openconfig-spanning-tree:enabled-protocol" is in json_output %}
-{% set stp_protocol = json_output['openconfig-spanning-tree:enabled-protocol'][0]%}
+{% if "openconfig-spanning-tree:config" is in json_output %}
+{% set stp_protocol = json_output['openconfig-spanning-tree:config']['enabled-protocol'][0]%}
 {%endif%}
 {% set vlan_list = {} %}
 {% if stp_protocol == "openconfig-spanning-tree-ext:PVST" %}

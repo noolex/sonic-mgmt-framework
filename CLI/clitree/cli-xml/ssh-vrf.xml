@@ -36,8 +36,8 @@ limitations under the License.
             />
           <PARAM 
             name = "vrf-name"
-            help = "Name of VRF"
-            ptype = "STRING_15"
+            help = "Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)"
+            ptype = "VRF_OR_MGMT"
             />
         </PARAM>
 		<ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf get_openconfig_system_ssh_server_vrfs ${vrf-name} </ACTION>
@@ -80,8 +80,8 @@ limitations under the License.
       >
       <PARAM
         name="vrf-name"
-        help="Name of VRF"
-        ptype="STRING_15"
+        help="Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)"
+        ptype="VRF_OR_MGMT"
         dbpath="sonic-ssh-server-vrf:sonic-ssh-server-vrf/SSH_SERVER_VRF/SSH_SERVER_VRF_LIST/vrf_name"
         >
       </PARAM>
@@ -106,8 +106,8 @@ limitations under the License.
       >
       <PARAM
         name="vrf-name"
-        help="Name of VRF"
-        ptype="STRING_15"
+        help="Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)"
+        ptype="VRF_OR_MGMT"
         >
       </PARAM>
 	  <ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf delete_openconfig_system_ssh_server_vrf ${vrf-name}</ACTION>

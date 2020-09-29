@@ -71,6 +71,7 @@ def show_ptp_network_transport(render_tables):
 
 def show_ptp_master_table(render_tables):
 
+    underlying_interface = None
     cmd_str = ''
     cmd_prfx = 'ptp port master-table '
     if 'sonic-ptp:sonic-ptp/PTP_PORT/PTP_PORT_LIST' in render_tables:
@@ -81,7 +82,8 @@ def show_ptp_master_table(render_tables):
                 unicast_table = ptp_inst['unicast-table'].split(",")
                 if len(unicast_table) == 1 and unicast_table[0] == '':
                     unicast_table = []
-                for i, address in enumerate(unicast_table):
-                    cmd_str += cmd_prfx + underlying_interface + " add "+ address + ";"
+                if (underlying_interface is not None):
+                    for i, address in enumerate(unicast_table):
+                        cmd_str += cmd_prfx + underlying_interface + " add "+ address + ";"
 
     return 'CB_SUCCESS', cmd_str

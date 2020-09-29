@@ -14,6 +14,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+<!--
+Copyright 2019 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
 
 <!DOCTYPE CLISH_MODULE [
         <!ENTITY ACL_MAC_ADDR "^([0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}|[0-9a-fA-F]{4}(\.[0-9a-fA-F]{4}){2})$">
@@ -33,28 +49,130 @@ limitations under the License.
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
         <!--show xxx access-group -->
+        <COMMAND name="show access-group" help="Show access-group information">
+            <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Display ACL binding summary
+                </DESCRIPTION>
+                <EXAMPLE summary="show access-group">
+                    Ingress IPV6 access-list ipv6acl-example on Ethernet0
+                    Ingress IP access-list ipacl-example on PortChannel1
+                    Ingress MAC access-list macacl-example on Vlan100
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl table [name]
+                </ALTCMD>
+            </DOCGEN>
+        </COMMAND>
         <COMMAND name="show mac access-group" help="Show MAC access-group information">
             <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding ACL_L2</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Display MAC ACL binding summary
+                </DESCRIPTION>
+                <EXAMPLE summary="show mac access-group">
+                    Ingress MAC access-list macacl-example on Vlan100
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl table [name]
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="show ip access-group" help="Show IPv4 access-group information">
             <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding ACL_IPV4</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Display IPv4 ACL binding summary
+                </DESCRIPTION>
+                <EXAMPLE summary="show ip access-group">
+                    Ingress IP access-list ipacl-example on PortChannel1
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl table [name]
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="show ipv6 access-group" help="Show IPv6 access-group information">
             <ACTION builtin="clish_pyobj">sonic_cli_acl get_all_acl_binding ACL_IPV6</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Display IPv6 ACL binding summary
+                </DESCRIPTION>
+                <EXAMPLE summary="show ipv6 access-group">
+                    Ingress IPV6 access-list ipv6acl-example on Ethernet0
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl table [name]
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
 
         <!--show xxx access-lists [NAME] -->
         <COMMAND name="show mac access-lists" help="Show MAC access-lists information">
             <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Show,MAC" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_L2 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show MAC ACL rules and statistics
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name and interface names are optional. If ACL name is not specified then all MAC ACLs will be displayed. ACL statistics will be shown only if the ACL is applied globally or to any interface.
+                </USAGE>
+                <EXAMPLE summary="show mac access-lists">
+                    mac access-list macacl-example
+                        seq 10 permit host 00:00:10:00:00:01 host 00:00:20:00:00:01 (10 packets) [1000 bytes]
+                        seq 20 permit host 00:00:10:00:00:02 host 00:00:20:00:00:02 (20 packets) [2000 bytes]
+                        seq 30 permit host 00:00:10:00:00:03 host 00:00:20:00:00:03 (30 packets) [3000 bytes]
+                        seq 40 permit host 00:00:10:00:00:04 host 00:00:20:00:00:04 (40 packets) [4000 bytes]
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl rule [name] [rule_name]
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="show ip access-lists" help="Show IPv4 access-lists information">
             <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Show,IPv4" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_IPV4 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IPv4 ACL rules and statistics
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name and interface names are optional. If ACL name is not specified then all IPv4 ACLs will be displayed. ACL statistics will be shown only if the ACL is applied globally or to any interface.
+                </USAGE>
+                <EXAMPLE summary="show ip access-lists">
+                    ip access-list ipacl-example
+                        seq 10 permit ip host 10.1.1.1 host 20.1.1.1 (0 packets) [0 bytes]
+                        seq 20 permit ip host 10.1.1.2 host 20.1.1.2 (0 packets) [0 bytes]
+                        seq 30 permit ip host 10.1.1.3 host 20.1.1.3 (0 packets) [0 bytes]
+                        seq 40 permit ip host 10.1.1.4 host 20.1.1.4 (0 packets) [0 bytes]
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl rule [name] [rule_name]
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="show ipv6 access-lists" help="Show IPv6 access-lists information">
             <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Show,IPv6" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_IPV6 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IPv6 ACL rules and statistics
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name and interface names are optional. If ACL name is not specified then all IPv6 ACLs will be displayed. ACL statistics will be shown only if the ACL is applied globally or to any interface.
+                </USAGE>
+                <EXAMPLE summary="show ipv6 access-lists">
+                    ipv6 access-list ipv6acl-example
+                        seq 100 permit ipv6 host abcd::1 host bcde::1 (0 packets) [0 bytes]
+                        seq 200 permit tcp host abcd::2 host bcde::2 (0 packets) [0 bytes]
+                        seq 300 permit udp host abcd::3 host bcde::3 (0 packets) [0 bytes]
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl rule [name] [rule_name]
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
 
         <!-- clear counters xxx access-list -->
@@ -62,54 +180,137 @@ limitations under the License.
         <COMMAND name="clear mac access-list counters" help="Clear MAC ACL counters">
             <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Clear,MAC" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L2 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Clear MAC ACL rules statistics
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name and interface names are optional. If ACL name is not specified then all MAC ACLs statistics will be cleared.
+                </USAGE>
+                <EXAMPLE summary="clear mac access-list counters">
+                    sonic# clear mac access-list counters
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl rule [name] [rule_name] -c
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND name="clear ip access-list" help="Clear IPv4 ACL counters" />
         <COMMAND name="clear ip access-list counters" help="Clear IPv4 ACL counters">
             <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Clear,IPv4" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L3 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Clear IPv4 ACL rules statistics
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name and interface names are optional. If ACL name is not specified then all IPv4 ACLs statistics will be cleared.
+                </USAGE>
+                <EXAMPLE summary="clear ip access-list counters">
+                    sonic# clear ip access-list counters ipacl-example
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl rule [name] [rule_name] -c
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="clear ipv6 counters" help="Clear IPv6 ACL Counters" />
+        <COMMAND name="clear ipv6 access-list" help="Clear IPv6 ACL Counters" />
         <COMMAND name="clear ipv6 access-list counters" help="Clear IPv6 ACL counters">
             <MACRO name="ACL-SHOW-CLEAR-COMMAND-OPTIONS" arg="Clear,IPv6" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_counters L3V6 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Clear IPv6 ACL rules statistics
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name and interface names are optional. If ACL name is not specified then all IPv6 ACLs statistics will be cleared.
+                </USAGE>
+                <EXAMPLE summary="clear ipv6 access-list counters">
+                    sonic# clear ipv6 access-list counters ipv6acl-example
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show acl rule [name] [rule_name] -c
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
-        <COMMAND name="show running-configuration mac" help="Current operating configuration">
-        </COMMAND>
-        <COMMAND name="show running-configuration mac access-list" help="Displays all MAC access-list configurations">
+        <COMMAND name="show running-configuration mac" help="Show current MAC ACL configuration"/>
+        <COMMAND name="show running-configuration mac access-list" help="Show current MAC ACL configuration">
             <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mac-acl view_keys="access-list-name=${access-list-name}"</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show current MAC ACL configuration.
+                </DESCRIPTION>
+                <USAGE>
+                    ACL Name is optional. If no ACL name is specified then configuration for all MAC ACLs will be displayed.
+                </USAGE>
+                <EXAMPLE summary="show running-configuration mac access-list">
+                    mac access-list macacl-example
+                     seq 10 permit host 00:00:10:00:00:01 host 00:00:20:00:00:01
+                     seq 20 permit host 00:00:10:00:00:02 host 00:00:20:00:00:02
+                     seq 30 permit host 00:00:10:00:00:03 host 00:00:20:00:00:03
+                     seq 40 permit host 00:00:10:00:00:04 host 00:00:20:00:00:04
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
-        <COMMAND name="show running-configuration ip" help="Current operating configuration">
-        </COMMAND>
-        <COMMAND name="show running-configuration ip access-list" help="Displays all IPV4 access-list configurations">
+        <COMMAND name="show running-configuration ip" help="Show current IPv4 ACL configuration"/>
+        <COMMAND name="show running-configuration ip access-list" help="Show current IPv4 ACL configuration">
             <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv4-acl view_keys="access-list-name=${access-list-name}"</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show current IPv4 ACL configuration.
+                </DESCRIPTION>
+                <USAGE>
+                    ACL Name is optional. If no ACL name is specified then configuration for all IPv4 ACLs will be displayed.
+                </USAGE>
+                <EXAMPLE summary="show running-configuration ip access-list">
+                    ip access-list ipacl-example
+                     seq 10 permit ip host 10.1.1.1 host 20.1.1.1
+                     seq 20 permit ip host 10.1.1.2 host 20.1.1.2
+                     seq 30 permit ip host 10.1.1.3 host 20.1.1.3
+                     seq 40 permit ip host 10.1.1.4 host 20.1.1.4
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
-        <COMMAND name="show running-configuration ipv6" help="Current operating configuration">
-        </COMMAND>
-        <COMMAND name="show running-configuration ipv6 access-list" help="Displays all IPV6 access-list configurations">
+        <COMMAND name="show running-configuration ipv6" help="Show current IPv6 ACL configuration"/>
+        <COMMAND name="show running-configuration ipv6 access-list" help="Show current IPv6 ACL configuration">
             <PARAM name="access-list-name" help="Access list name" ptype="STRING_63" optional="true"> </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv6-acl view_keys="access-list-name=${access-list-name}"</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show current IPv6 ACL configuration.
+                </DESCRIPTION>
+                <USAGE>
+                    ACL Name is optional. If no ACL name is specified then configuration for all IPv6 ACLs will be displayed.
+                </USAGE>
+                <EXAMPLE summary="show running-configuration ipv6 access-list">
+                    ipv6 access-list ipv6acl-example
+                      seq 100 permit ipv6 host abcd::1 host bcde::1
+                      seq 200 permit tcp host abcd::2 host bcde::2
+                      seq 300 permit udp host abcd::3 host bcde::3
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     </VIEW>
 
     <!--============================== INTERFACE ETHERNET MODE COMMANDS ======================-->
     <VIEW name="configure-if-view">
-        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
+        <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE PORTCHANNEL MODE COMMANDS ======================-->
     <VIEW name="configure-lag-view">
-        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
+        <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE VLAN MODE COMMANDS ======================-->
     <VIEW name="configure-vlan-view">
-        <COMMAND name="mac" help="Configure MAC parameters" dbpath="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST=${access-list-name}"/>
+        <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
@@ -118,57 +319,211 @@ limitations under the License.
         <!-- Global binding options -->
 
         <!-- mac access-list -->
-        <COMMAND 
-            name="mac access-list" 
-            help="Configure MAC access-list" 
-            view="configure-mac-acl-view" 
-            viewid="name=${access-list-name}"
-            view_tables="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST/aclname={access-list-name}"
-            data_and_render_cb="mac_acl_table_cb">
+        <COMMAND name="mac access-list" help="Configure MAC access-list" view="configure-mac-acl-view" viewid="name=${access-list-name}" data_and_render_cb="mac_acl_table_cb">
             <PARAM name="access-list-name" help="Name of the MAC access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_L2</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Create MAC ACL
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character. ACL name must be unique across all ACL types.
+                </USAGE>
+                <EXAMPLE summary="Create MAC ACL">
+                    sonic(config)# mac access-list macacl-example
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <!-- ip access-list -->
-        <COMMAND 
-            name="ip access-list" 
-            help="Configure IPv4 access-list" 
-            view="configure-ipv4-acl-view" 
-            viewid="name=${access-list-name}"
-            view_tables="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST/aclname={access-list-name}"
-            data_and_render_cb="ipv4_acl_table_cb">
+        <COMMAND name="ip access-list" help="Configure IPv4 access-list" view="configure-ipv4-acl-view" viewid="name=${access-list-name}" data_and_render_cb="ipv4_acl_table_cb">
             <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_IPV4</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Create IPv4 ACL
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character. ACL name must be unique across all ACL types.
+                </USAGE>
+                <EXAMPLE summary="Create IPv4 ACL">
+                    sonic(config)# ip access-list ipacl-example
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <!-- ipv6 access-list -->
-        <COMMAND 
-            name="ipv6 access-list" 
-            help="Configure IPv6 access-list" 
-            view="configure-ipv6-acl-view" 
-            viewid="name=${access-list-name}"
-            view_tables="sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST/aclname={access-list-name}"
-            data_and_render_cb="ipv6_acl_table_cb">
+        <COMMAND name="ipv6 access-list" help="Configure IPv6 access-list" view="configure-ipv6-acl-view" viewid="name=${access-list-name}" data_and_render_cb="ipv6_acl_table_cb">
             <PARAM name="access-list-name" help="Name of the IPv6 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl ${access-list-name} ACL_IPV6</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Create IPv6 ACL
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character. ACL name must be unique across all ACL types.
+                </USAGE>
+                <EXAMPLE summary="Create IPv6 ACL">
+                    sonic(config)# ipv6 access-list ipv6acl-example
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
         <!-- no mac access-list -->
         <COMMAND name="no mac access-list" help="Delete MAC access-list">
             <PARAM name="access-list-name" help="Name of the MAC access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_L2</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete MAC ACL
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character.
+                </USAGE>
+                <EXAMPLE summary="Delete MAC ACL">
+                    sonic(config)# no mac access-list macacl-example
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <!-- no ip access-list -->
         <COMMAND name="no ip access-list" help="Delete IPv4 access-list">
             <PARAM name="access-list-name" help="Name of the IPv4 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_IPV4</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete IPv4 ACL
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character.
+                </USAGE>
+                <EXAMPLE summary="Delete IPv4 ACL">
+                    sonic(config)# no ip access-list ipacl-example
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <!-- no ipv6 access-list -->
         <COMMAND name="no ipv6 access-list" help="Delete IPv6 access-list">
             <PARAM name="access-list-name" help="Name of the IPv6 access-list (Max size 63)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl ${access-list-name} ACL_IPV6</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete IPv6 ACL
+                </DESCRIPTION>
+                <USAGE>
+                    ACL name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character.
+                </USAGE>
+                <EXAMPLE summary="Delete IPv6 ACL">
+                    sonic(config)# no ipv6 access-list ipv6acl-example
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
-        <!-- Gloabl ACL Binding -->
-        <MACRO name="ACL-BINDING-OPTIONS" arg="Switch" />
+        <!-- Global ACL Binding -->
+        <COMMAND name="mac access-group" help="Specify MAC access control for packets" data_and_render_cb="acl_global_bind_cb">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_L2 Switch ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Apply MAC ACL globally.
+                </DESCRIPTION>
+                <USAGE>
+                    ACL must be created first and must be of type MAC to be applied. Only 1 ACL of a given type can be applied globally per direction. 
+                </USAGE>
+                <EXAMPLE summary="Apply MAC ACL globally">
+                    sonic(config)# mac access-group macacl-example in
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND name="ip access-group" help="Specify IP access control for packets">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV4 Switch ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Apply IPv4 ACL globally
+                </DESCRIPTION>
+                <USAGE>
+                    ACL must be created first and must be of type IPv4 to be applied. Only 1 ACL of a given type can be applied globally per direction.
+                </USAGE>
+                <EXAMPLE summary="Apply IPv4 ACL globally">
+                    sonic(config)# ip access-group ipacl-example in
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND name="ipv6 access-group" help="Specify IPv6 access control for packets">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV6 Switch ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Apply IPv6 ACL globally
+                </DESCRIPTION>
+                <USAGE>
+                    ACL must be created first and must be of type IPv6 to be applied. Only 1 ACL of a given type can be applied globally per direction.
+                </USAGE>
+                <EXAMPLE summary="Apply IPv4 ACL globally">
+                    sonic(config)# ipv6 access-group ipv6acl-example out
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
+        <!-- no mac|ip|ipv6 access-group NAME in|out -->
+        <COMMAND name="no mac access-group" help="Specify MAC access control for packets">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_L2 Switch ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Remove MAC ACL thats applied globally.
+                </DESCRIPTION>
+                <EXAMPLE summary="Unbind MAC ACL globally">
+                    sonic(config)# no mac access-group macacl-example in
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND name="no ip access-group" help="Specify IP access control for packets">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV4 Switch ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Remove IPv4 ACL thats applied globally.
+                </DESCRIPTION>
+                <EXAMPLE summary="Unbind IPv4 ACL globally">
+                    sonic(config)# no ip access-group ipacl-example in
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND name="no ipv6 access-group" help="Specify IPv6 access control for packets">
+            <PARAM name="access-list-name" help="Name of access-list (Max size 63)" ptype="STRING_63"/>
+            <PARAM name="direction-switch" help="Configure the direction to apply the access list" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="in" help="Apply access-list at ingress direction" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Apply access-list at egress direction" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV6 Switch ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Remove IPv6 ACL thats applied globally.
+                </DESCRIPTION>
+                <EXAMPLE summary="Unbind IPv6 ACL globally">
+                    sonic(config)# no ipv6 access-group ipv6acl-example out
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
     </VIEW>
 
     <VIEW name="configure-mac-acl-view" prompt="${SYSTEM_NAME}(config-mac-acl)# " depth="2">
@@ -176,10 +531,7 @@ limitations under the License.
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_L2"/>
-        <COMMAND 
-            name="seq" 
-            help="Sequence number"
-            data_and_render_cb="mac_acl_rule_cb">
+        <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <PARAM name="src-mac-options-switch" help="" ptype="SUBCOMMAND" mode="switch" test='"${action-options}" != "remark"'>
@@ -219,14 +571,18 @@ limitations under the License.
                 <MACRO name="RULE-COMMON-OPTIONS" arg=""/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_L2 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Create a MAC ACL Rule.
+                </DESCRIPTION>
+                <USAGE>
+                    The rule will be created if there is no existing rule with the same sequence number. ACL Rule cant be updated. To update, the rule must be deleted and added with updated parameters.
+                </USAGE>
+                <EXAMPLE summary="Add MAC ACL Rule">
+                    sonic(config-mac-acl)# seq 10 permit host 00:00:10:00:00:01 host 00:00:20:00:00:01
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
-        <!--
-        <COMMAND
-            name="show configuration"
-            help = "show mac access-list configuration">
-            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_L2 ${name}</ACTION>
-        </COMMAND>    
-        -->
     </VIEW>
     <VIEW name="configure-ipv4-acl-view" prompt="${SYSTEM_NAME}(config-ipv4-acl)# " depth="2">
         <!-- Inheritance -->
@@ -234,10 +590,7 @@ limitations under the License.
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV4"/>
 
-        <COMMAND 
-            name="seq" 
-            help="Sequence number"
-            view_tables="sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST/aclname={access-list-name}">
+        <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <MACRO name="IP-PROTOCOL-OPTIONS" arg="icmp,ICMP,ip,IPv4" />
@@ -251,14 +604,18 @@ limitations under the License.
                 <MACRO name="RULE-COMMON-OPTIONS"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_IPV4 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Create a IPv4 ACL Rule.
+                </DESCRIPTION>
+                <USAGE>
+                    The rule will be created if there is no existing rule with the same sequence number. ACL Rule cant be updated. To update, the rule must be deleted and added with updated parameters.
+                </USAGE>
+                <EXAMPLE summary="Add MAC ACL Rule">
+                    sonic(config-ip-acl)# seq 10 permit ip host 10.1.1.1 host 20.1.1.1
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
-        <!--
-        <COMMAND
-            name="show configuration"
-            help = "show ipv4 access-list configuration">
-            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_IPV4 ${name}</ACTION>
-        </COMMAND>    
-        -->
     </VIEW>
 
     <VIEW name="configure-ipv6-acl-view" prompt="${SYSTEM_NAME}(config-ipv6-acl)# " depth="2">
@@ -267,10 +624,7 @@ limitations under the License.
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV6"/>
 
-        <COMMAND 
-            name="seq" 
-            help="Sequence number"
-            view_tables="sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST/aclname={access-list-name}">
+        <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
                 <MACRO name="ACL-ACTION-OPTIONS"/>
                 <MACRO name="IP-PROTOCOL-OPTIONS" arg="icmpv6,ICMPv6,ipv6,IPv6" />
@@ -284,13 +638,17 @@ limitations under the License.
                 <MACRO name="RULE-COMMON-OPTIONS"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_acl create_acl_rule ${name} ACL_IPV6 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Create a IPv6 ACL Rule.
+                </DESCRIPTION>
+                <USAGE>
+                    The rule will be created if there is no existing rule with the same sequence number. ACL Rule cant be updated. To update, the rule must be deleted and added with updated parameters.
+                </USAGE>
+                <EXAMPLE summary="Add MAC ACL Rule">
+                    sonic(config-ip-acl)# seq 100 permit ipv6 host abcd::1 host bcde::1
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
-        <!--
-        <COMMAND
-            name="show configuration"
-            help = "show ipv6 access-list configuration">
-            <ACTION builtin="clish_pyobj">sonic_cli_acl get_acl_details ACL_IPV6 ${name}</ACTION>
-        </COMMAND>    
-        -->
     </VIEW>
 </CLISH_MODULE>

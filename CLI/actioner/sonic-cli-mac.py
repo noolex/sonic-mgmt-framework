@@ -80,13 +80,34 @@ def invoke(func, args):
     elif func == 'get_openconfig_network_instance_ext_network_instances_network_instance_fdb_state':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/state', name='default')
         return aa.get(keypath)
+    elif func == 'patch_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list':
+        keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING/MAC_DAMPENING_LIST')
+        body = {
+                "sonic-mac-dampening:MAC_DAMPENING_LIST": [
+                    {
+                        "config": "config",
+                        "threshold": int(args[1])
+                        }
+                    ]
+                }
+        return aa.patch(keypath,body)
+    elif func == 'get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list':
+        keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING/MAC_DAMPENING_LIST')
+        api_response = aa.get(keypath)
+        if api_response.ok():
+            response = api_response.content
+            if response is not None and len(response) is not 0:
+                print_content = response['sonic-mac-dampening:MAC_DAMPENING_LIST']
+                print "MAC Dampening-Threshold Value: {}".format(print_content[0]['threshold'])
     else:
         return body
 
 def run(func, args):
     try:
         api_response = invoke(func,args)
-
+        if api_response.errors():
+            print api_response.error_message()
+            return
         if api_response.ok():
             response = api_response.content
             if response is not None and len(response) is not 0:

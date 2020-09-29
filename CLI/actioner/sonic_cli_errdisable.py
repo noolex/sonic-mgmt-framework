@@ -26,7 +26,7 @@ aa = cc.ApiClient()
 
 def generic_set_response_handler(response, args):
     if not response.ok():
-	print(response.error_message())
+        print(response.error_message())
 
 
 def generic_delete_response_handler(response, args):
@@ -82,7 +82,7 @@ def show_errdisable_recovery(args):
     uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable')  
     output = {}
     api_response = aa.get(uri, None)
-    if api_response.ok():
+    if api_response.ok() and api_response.content is not None:
         output.update(api_response.content)
     return output
 

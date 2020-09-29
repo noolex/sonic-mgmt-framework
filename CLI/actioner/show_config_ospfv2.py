@@ -189,12 +189,17 @@ def show_router_ospf_passive_interface_config(render_tables):
 
         intf_p, _, intf_v = ospf_get_key_value(tbl_rec, 'name')
         addr_p, _, addr_v = ospf_get_key_value(tbl_rec, 'address')
+        nonp_p, _, nonp_v = ospf_get_key_value(tbl_rec, 'non-passive')
 
+        temp_cmd = ''
         if intf_p :
-           cmd_str += 'passive-interface {}'.format(intf_v)
+           temp_cmd += 'passive-interface {}'.format(intf_v)
            if addr_p and addr_v != '' and addr_v != '0.0.0.0' :
-               cmd_str += ' {}'.format(addr_v)
-           cmd_str += cmd_end
+               temp_cmd += ' {}'.format(addr_v)
+           if nonp_p and nonp_v == True :
+               temp_cmd += ' non-passive'
+
+           cmd_str += temp_cmd + cmd_end
 
 
     ospf_debug_print("show_router_ospf_passive_interface_config: cmd_str {}".format(cmd_str))
@@ -242,6 +247,7 @@ def show_router_ospf_area_config(render_tables):
         if area_p == False:
             continue
 
+        cmd_str_len = len(cmd_str)
         cmd_area_prefix = 'area {}'.format(area_v)
 
         match_value = { 'TEXT' : '', 'MD5HMAC' : 'message-digest' }
@@ -272,6 +278,8 @@ def show_router_ospf_area_config(render_tables):
         match_value = { 'ENABLE' : 'enable', 'DISABLE' : 'disable', 'DEFAULT' : 'default'}
         cmd_str += ospf_generate_command(tbl_rec, 'shortcut', cmd_prefix, match_value=match_value)
 
+        if cmd_str_len == len(cmd_str) :
+            cmd_str += cmd_area_prefix + cmd_end
 
     status, sub_cmd_str = show_router_ospf_area_vlink_config(render_tables)
     if status == 'CB_SUCCESS' :
@@ -354,6 +362,9 @@ def show_router_ospf_area_vlink_config(render_tables):
     present, tbl_path, tbl_rec_list = ospf_get_key_value(render_tables, tbl_path)
     if present == False :
         ospf_debug_print("show_router_ospf_area_vlink_config: AREA_VIRTUAL_LINK not present")
+        status, sub_cmd_str = show_router_ospf_area_vlmd_auth_config(render_tables)
+        if status == 'CB_SUCCESS' :
+            cmd_str += sub_cmd_str
         return 'CB_SUCCESS', cmd_str
 
     ospf_debug_print("show_router_ospf_area_vlink_config: AREA_VIRTUAL_LINK {}".format(tbl_rec_list))
@@ -384,32 +395,36 @@ def show_router_ospf_area_vlink_config(render_tables):
         temp_cmd = ''
 
         ospf_debug_print("show_router_ospf_area_vlink_config: {}".format(cmd_vlink_str))
+        cmd_str += cmd_vlink_str + cmd_end
 
         auth_p, _, auth_v = ospf_get_key_value(tbl_rec, 'authentication-type')
         if auth_p :
-            if auth_v == 'TEXT' or auth_v == '' :
-                akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-key')
-                if akey_p :
-                    temp_cmd = cmd_vlink_str + ' authentication-key {}'.format(akey_v)
-                    temp_cmd += ' {}'.format(akey_v)
+            if auth_v == 'TEXT' :
+                temp_cmd = cmd_vlink_str + ' authentication'
+                cmd_str += temp_cmd + cmd_end
+                sub_cmd_p = True
             elif auth_v == 'MD5HMAC' :
-                akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-md5-key')
-                akeyid_p, _, akeyid_v = ospf_get_key_value(tbl_rec, 'authentication-key-id')
-                if akey_p and akeyid_p :
-                    temp_cmd = cmd_vlink_str + ' authentication message-digest'
-                    temp_cmd += ' message-digest-key {} md5 {}'.format(akeyid_v, akey_v)
+                temp_cmd = cmd_vlink_str + ' authentication message-digest'  
+                cmd_str += temp_cmd + cmd_end
+                sub_cmd_p = True
             elif auth_v == 'NONE' :
                 temp_cmd = cmd_vlink_str + ' authentication null'
+                cmd_str += temp_cmd + cmd_end
+                sub_cmd_p = True
 
-            if temp_cmd != '' :
-                cmd_str += temp_cmd + cmd_end
-                sub_cmd_p = True
-        else :
-            akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-key')
-            if akey_p :
-                temp_cmd = cmd_vlink_str + ' authentication-key {}'.format(akey_v)
-                cmd_str += temp_cmd + cmd_end
-                sub_cmd_p = True
+        akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-key')
+        if akey_p :
+            temp_cmd = cmd_vlink_str + ' authentication-key {} encrypted'.format(akey_v)
+            cmd_str += temp_cmd + cmd_end
+            sub_cmd_p = True
+
+        akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-md5-key')
+        akeyid_p, _, akeyid_v = ospf_get_key_value(tbl_rec, 'authentication-key-id')
+        if akey_p and akeyid_p :
+            temp_cmd = cmd_vlink_str + ' authentication message-digest'
+            temp_cmd += ' message-digest-key {} md5 {} encrypted'.format(akeyid_v, akey_v)
+            cmd_str += temp_cmd + cmd_end
+            sub_cmd_p = True
 
         tmr_p, _, tmr_v = ospf_get_key_value(tbl_rec, 'dead-interval')
         if tmr_p :
@@ -431,10 +446,78 @@ def show_router_ospf_area_vlink_config(render_tables):
             cmd_str += cmd_vlink_str + ' transmit-delay {}'.format(tmr_v) + cmd_end
             sub_cmd_p = True
 
-        if sub_cmd_p == False :
-            cmd_str += cmd_vlink_str + cmd_end
+    status, sub_cmd_str = show_router_ospf_area_vlmd_auth_config(render_tables)
+    if status == 'CB_SUCCESS' :
+        cmd_str += sub_cmd_str
 
     ospf_debug_print("show_router_ospf_area_vlink_config: cmd_str {}".format(cmd_str))
+    return 'CB_SUCCESS', cmd_str
+
+
+def show_router_ospf_area_vlmd_auth_config(render_tables):
+    cmd_str = ''
+    cmd_end = ' ;'
+
+    #ospf_debug_log_enable()
+    #ospf_debug_log_disable()
+
+    ospf_debug_print("show_router_ospf_area_vlmd_auth_config: render_tables {}".format(render_tables))
+
+    present, name, vrf_name = ospf_get_key_value(render_tables, 'vrf-name')
+    if present == False :
+        ospf_debug_print("show_router_ospf_area_vlmd_auth_config: vrf_name not present")
+        return 'CB_SUCCESS', cmd_str
+
+    ospf_debug_print("show_router_ospf_area_vlmd_auth_config: vrf_name {} present".format(vrf_name))
+
+    tbl_path = 'sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_VLMD_AUTHENTICATION/OSPFV2_ROUTER_AREA_VLMD_AUTHENTICATION_LIST'
+    present, tbl_path, tbl_rec_list = ospf_get_key_value(render_tables, tbl_path)
+    if present == False :
+        ospf_debug_print("show_router_ospf_area_vlmd_auth_config: AREA_VIRTUAL_LINK not present")
+        return 'CB_SUCCESS', cmd_str
+
+    ospf_debug_print("show_router_ospf_area_vlmd_auth_config: AREA_VLMD_AUTH {}".format(tbl_rec_list))
+
+    if not isinstance(tbl_rec_list, list) :
+        tbl_rec_list = [ tbl_rec_list ]
+
+    for tbl_rec in tbl_rec_list :
+        vrf_p, _, vrf_v = ospf_get_key_value(tbl_rec, 'vrf_name')
+        if vrf_p == False :
+            ospf_debug_print("show_router_ospf_area_vlmd_auth_config: vrf field not present")
+            continue
+
+        if vrf_v != vrf_name :
+            ospf_debug_print("show_router_ospf_area_vlmd_auth_config: vrf names {} != {}".format(vrf_v, vrf_name))
+            continue
+
+        area_p, _, area_v = ospf_get_key_value(tbl_rec, 'area-id')
+        if area_p == False :
+            continue
+
+        rmtid_p, _, rmtid_v = ospf_get_key_value(tbl_rec, 'remote-router-id')
+        if rmtid_p == False :
+            continue
+
+        akeyid_p, _, akeyid_v = ospf_get_key_value(tbl_rec, 'authentication-key-id')
+        if akeyid_p == False :
+            continue
+
+        sub_cmd_p = False
+        cmd_vlink_str = 'area {} virtual-link {}'.format(area_v, rmtid_v)
+        temp_cmd = ''
+
+        ospf_debug_print("show_router_ospf_area_vlmd_auth_config: {}".format(cmd_vlink_str))
+
+        akey_p, _, akey_v = ospf_get_key_value(tbl_rec, 'authentication-md5-key')
+        if akey_p and akeyid_p :
+            temp_cmd = cmd_vlink_str #+ ' authentication message-digest'
+            temp_cmd += ' message-digest-key {} md5 {} encrypted'.format(akeyid_v, akey_v)
+
+        if temp_cmd != '' :
+            cmd_str += temp_cmd + cmd_end
+
+    ospf_debug_print("show_router_ospf_area_vlmd_auth_config: cmd_str {}".format(cmd_str))
     return 'CB_SUCCESS', cmd_str
 
 
@@ -656,7 +739,7 @@ def show_interface_ip_ospf_config(render_tables):
         cmd_str += ospf_generate_command(tbl_rec, 'authentication-type', cmd_prefix, match_value=match_value, cmd_suffix=cmd_suffix)
 
         cmd_prefix = 'ip ospf authentication-key'
-        cmd_str += ospf_generate_command(tbl_rec, 'authentication-key', cmd_prefix, cmd_suffix=cmd_suffix)
+        cmd_str += ospf_generate_command(tbl_rec, 'authentication-key', cmd_prefix, cmd_suffix='encrypted ;')    
 
         if addr_v == '0.0.0.0' :
             cmd_prefix = 'ip ospf'
@@ -677,11 +760,11 @@ def show_interface_ip_ospf_config(render_tables):
         cmd_prefix = 'ip ospf hello-interval'
         cmd_str += ospf_generate_command(tbl_rec, 'hello-interval', cmd_prefix, cmd_suffix=cmd_suffix)
 
-        mdkeyid_p, _, mdkeyid_v = ospf_get_key_value(tbl_rec, 'authentication-key-id')
-        mdkey_p, _, mdkey_v = ospf_get_key_value(tbl_rec, 'authentication-md5-key')
-        if mdkeyid_p and mdkey_p :
-            temp_cmd = 'ip ospf message-digest-key {} md5 {} '.format(mdkeyid_v, mdkey_v)
-            cmd_str +=  temp_cmd + cmd_suffix
+        #mdkeyid_p, _, mdkeyid_v = ospf_get_key_value(tbl_rec, 'authentication-key-id')
+        #mdkey_p, _, mdkey_v = ospf_get_key_value(tbl_rec, 'authentication-md5-key')
+        #if mdkeyid_p and mdkey_p :
+        #    temp_cmd = 'ip ospf message-digest-key {} md5 {} encrypted'.format(mdkeyid_v, mdkey_v)
+        #    cmd_str +=  temp_cmd + cmd_suffix
 
         cmd_prefix = 'ip ospf'
         match_value = { True : 'mtu-ignore' }
@@ -705,3 +788,59 @@ def show_interface_ip_ospf_config(render_tables):
     return 'CB_SUCCESS', cmd_str
 
 
+def show_interface_ip_ospf_md_auth_config(render_tables):
+    cmd_str = ''
+    cmd_end = ' ;'
+
+    #ospf_debug_log_enable()
+    #ospf_debug_log_disable()
+    ospf_debug_print("show_interface_ip_ospf_md_auth_config: render_tables {}".format(render_tables))
+
+    present, name, intf_name = ospf_get_key_value(render_tables, 'name')
+    if present == False :
+        ospf_debug_print("show_interface_ip_ospf_md_auth_config: intf_name not present")
+        return 'CB_SUCCESS', cmd_str
+
+    ospf_debug_print("show_interface_ip_ospf_md_auth_config: intf_name {} present".format(intf_name))
+
+    tbl_path = 'sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE_MD_AUTHENTICATION/OSPFV2_INTERFACE_MD_AUTHENTICATION_LIST'
+    present, tbl_path, tbl_rec_list = ospf_get_key_value(render_tables, tbl_path)
+    if present == False :
+        ospf_debug_print("show_interface_ip_ospf_md_auth_config: OSPFV2_INTERFACE MD AUTH not present")
+        return 'CB_SUCCESS', cmd_str
+
+    ospf_debug_print("show_interface_ip_ospf_md_auth_config: OSPFV2_INTERFACE {}".format(tbl_rec_list))
+
+    if not isinstance(tbl_rec_list, list) :
+        tbl_rec_list = [ tbl_rec_list ]
+
+    for tbl_rec in tbl_rec_list :
+        name_p, _, name_v = ospf_get_key_value(tbl_rec, 'name')
+        if name_p == False :
+            ospf_debug_print("show_interface_ip_ospf_md_auth_config: name field not present")
+            continue
+
+        if name_v != intf_name :
+            ospf_debug_print("show_interface_ip_ospf_md_auth_config: if names {} != {}".format(name_v, intf_name))
+            continue
+
+        addr_p, _, addr_v = ospf_get_key_value(tbl_rec, 'address')
+        if addr_p == False :
+            continue
+
+        mdkeyid_p, _, mdkeyid_v = ospf_get_key_value(tbl_rec, 'authentication-key-id')
+        if mdkeyid_p == False :
+            continue
+
+        if addr_v == '' or addr_v == '0.0.0.0' :
+            cmd_suffix = cmd_end
+        else :
+            cmd_suffix = '{}'.format(addr_v) + cmd_end
+
+        mdkey_p, _, mdkey_v = ospf_get_key_value(tbl_rec, 'authentication-md5-key')
+        if mdkeyid_p and mdkey_p :
+            temp_cmd = 'ip ospf message-digest-key {} md5 {} encrypted '.format(mdkeyid_v, mdkey_v)
+            cmd_str +=  temp_cmd + cmd_suffix
+
+    ospf_debug_print("show_interface_ip_ospf_md_auth_config: cmd_str {}".format(cmd_str))
+    return 'CB_SUCCESS', cmd_str

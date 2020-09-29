@@ -39,6 +39,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp
+      x-operationIdCamelCase: PutIetfSnmpSnmp
       description: 'OperationId: put_ietf_snmp_snmp
 
         Top-level container for SNMP-related configuration and
@@ -74,6 +75,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp
+      x-operationIdCamelCase: PatchIetfSnmpSnmp
       description: 'OperationId: patch_ietf_snmp_snmp
 
         Top-level container for SNMP-related configuration and
@@ -109,6 +111,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp
+      x-operationIdCamelCase: GetIetfSnmpSnmp
       description: 'OperationId: get_ietf_snmp_snmp
 
         Top-level container for SNMP-related configuration and
@@ -134,6 +137,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp
+      x-operationIdCamelCase: HeadIetfSnmpSnmp
       description: 'OperationId: head_ietf_snmp_snmp
 
         Top-level container for SNMP-related configuration and
@@ -159,6 +163,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp
+      x-operationIdCamelCase: DeleteIetfSnmpSnmp
       description: 'OperationId: delete_ietf_snmp_snmp
 
         Top-level container for SNMP-related configuration and
@@ -188,6 +193,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_list_ietf_snmp_snmp_target
+      x-operationIdCamelCase: PostListIetfSnmpSnmpTarget
       description: 'OperationId: post_list_ietf_snmp_snmp_target
 
         List of targets.'
@@ -234,6 +240,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target
+      x-operationIdCamelCase: PutIetfSnmpSnmpTarget
       description: 'OperationId: put_ietf_snmp_snmp_target
 
         List of targets.'
@@ -277,6 +284,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTarget
       description: 'OperationId: patch_ietf_snmp_snmp_target
 
         List of targets.'
@@ -320,6 +328,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target
+      x-operationIdCamelCase: GetIetfSnmpSnmpTarget
       description: 'OperationId: get_ietf_snmp_snmp_target
 
         List of targets.'
@@ -353,6 +362,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTarget
       description: 'OperationId: head_ietf_snmp_snmp_target
 
         List of targets.'
@@ -386,6 +396,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTarget
       description: 'OperationId: delete_ietf_snmp_snmp_target
 
         List of targets.'
@@ -423,6 +434,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_ietf_snmp_snmp_target_udp
+      x-operationIdCamelCase: PostIetfSnmpSnmpTargetUdp
       description: 'OperationId: post_ietf_snmp_snmp_target_udp
 
         '
@@ -459,6 +471,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_list_ietf_snmp_snmp_target
+      x-operationIdCamelCase: PutListIetfSnmpSnmpTarget
       description: 'OperationId: put_list_ietf_snmp_snmp_target
 
         List of targets.'
@@ -492,6 +505,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_list_ietf_snmp_snmp_target
+      x-operationIdCamelCase: PatchListIetfSnmpSnmpTarget
       description: 'OperationId: patch_list_ietf_snmp_snmp_target
 
         List of targets.'
@@ -525,6 +539,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_list_ietf_snmp_snmp_target
+      x-operationIdCamelCase: GetListIetfSnmpSnmpTarget
       description: 'OperationId: get_list_ietf_snmp_snmp_target
 
         List of targets.'
@@ -548,6 +563,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_list_ietf_snmp_snmp_target
+      x-operationIdCamelCase: HeadListIetfSnmpSnmpTarget
       description: 'OperationId: head_list_ietf_snmp_snmp_target
 
         List of targets.'
@@ -571,6 +587,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_list_ietf_snmp_snmp_target
+      x-operationIdCamelCase: DeleteListIetfSnmpSnmpTarget
       description: 'OperationId: delete_list_ietf_snmp_snmp_target
 
         List of targets.'
@@ -611,6 +628,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_udp
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetUdp
       description: 'OperationId: put_ietf_snmp_snmp_target_udp
 
         '
@@ -654,6 +672,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_udp
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetUdp
       description: 'OperationId: patch_ietf_snmp_snmp_target_udp
 
         '
@@ -697,6 +716,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_udp
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetUdp
       description: 'OperationId: get_ietf_snmp_snmp_target_udp
 
         '
@@ -730,6 +750,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_udp
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetUdp
       description: 'OperationId: head_ietf_snmp_snmp_target_udp
 
         '
@@ -763,6 +784,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_udp
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetUdp
       description: 'OperationId: delete_ietf_snmp_snmp_target_udp
 
         '
@@ -800,6 +822,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_ietf_snmp_snmp_target_udp_ip
+      x-operationIdCamelCase: PostIetfSnmpSnmpTargetUdpIp
       description: 'OperationId: post_ietf_snmp_snmp_target_udp_ip
 
         '
@@ -846,6 +869,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_udp_ip
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetUdpIp
       description: 'OperationId: put_ietf_snmp_snmp_target_udp_ip
 
         '
@@ -889,6 +913,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_udp_ip
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetUdpIp
       description: 'OperationId: patch_ietf_snmp_snmp_target_udp_ip
 
         '
@@ -932,6 +957,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_udp_ip
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetUdpIp
       description: 'OperationId: get_ietf_snmp_snmp_target_udp_ip
 
         '
@@ -965,6 +991,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_udp_ip
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetUdpIp
       description: 'OperationId: head_ietf_snmp_snmp_target_udp_ip
 
         '
@@ -998,6 +1025,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_udp_ip
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetUdpIp
       description: 'OperationId: delete_ietf_snmp_snmp_target_udp_ip
 
         '
@@ -1038,6 +1066,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_udp_port
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetUdpPort
       description: 'OperationId: put_ietf_snmp_snmp_target_udp_port
 
         UDP port number.'
@@ -1081,6 +1110,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_udp_port
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetUdpPort
       description: 'OperationId: patch_ietf_snmp_snmp_target_udp_port
 
         UDP port number.'
@@ -1124,6 +1154,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_udp_port
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetUdpPort
       description: 'OperationId: get_ietf_snmp_snmp_target_udp_port
 
         UDP port number.'
@@ -1157,6 +1188,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_udp_port
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetUdpPort
       description: 'OperationId: head_ietf_snmp_snmp_target_udp_port
 
         UDP port number.'
@@ -1190,6 +1222,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_udp_port
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetUdpPort
       description: 'OperationId: delete_ietf_snmp_snmp_target_udp_port
 
         UDP port number.'
@@ -1230,6 +1263,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_udp_prefix_length
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetUdpPrefixLength
       description: 'OperationId: put_ietf_snmp_snmp_target_udp_prefix_length
 
         The value of this leaf must match the value of
@@ -1292,6 +1326,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_udp_prefix_length
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetUdpPrefixLength
       description: 'OperationId: patch_ietf_snmp_snmp_target_udp_prefix_length
 
         The value of this leaf must match the value of
@@ -1354,6 +1389,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_udp_prefix_length
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetUdpPrefixLength
       description: 'OperationId: get_ietf_snmp_snmp_target_udp_prefix_length
 
         The value of this leaf must match the value of
@@ -1406,6 +1442,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_udp_prefix_length
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetUdpPrefixLength
       description: 'OperationId: head_ietf_snmp_snmp_target_udp_prefix_length
 
         The value of this leaf must match the value of
@@ -1458,6 +1495,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_udp_prefix_length
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetUdpPrefixLength
       description: 'OperationId: delete_ietf_snmp_snmp_target_udp_prefix_length
 
         The value of this leaf must match the value of
@@ -1517,6 +1555,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_tag
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetTag
       description: 'OperationId: put_ietf_snmp_snmp_target_tag
 
         List of tag values used to select target addresses.'
@@ -1560,6 +1599,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_tag
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetTag
       description: 'OperationId: patch_ietf_snmp_snmp_target_tag
 
         List of tag values used to select target addresses.'
@@ -1603,6 +1643,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_tag
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetTag
       description: 'OperationId: get_ietf_snmp_snmp_target_tag
 
         List of tag values used to select target addresses.'
@@ -1636,6 +1677,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_tag
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetTag
       description: 'OperationId: head_ietf_snmp_snmp_target_tag
 
         List of tag values used to select target addresses.'
@@ -1669,6 +1711,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_tag
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetTag
       description: 'OperationId: delete_ietf_snmp_snmp_target_tag
 
         List of tag values used to select target addresses.'
@@ -1717,6 +1760,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_llist_ietf_snmp_snmp_target_tag
+      x-operationIdCamelCase: GetLlistIetfSnmpSnmpTargetTag
       description: 'OperationId: get_llist_ietf_snmp_snmp_target_tag
 
         List of tag values used to select target addresses.'
@@ -1760,6 +1804,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_llist_ietf_snmp_snmp_target_tag
+      x-operationIdCamelCase: HeadLlistIetfSnmpSnmpTargetTag
       description: 'OperationId: head_llist_ietf_snmp_snmp_target_tag
 
         List of tag values used to select target addresses.'
@@ -1803,6 +1848,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: del_llist_ietf_snmp_snmp_target_tag
+      x-operationIdCamelCase: DelLlistIetfSnmpSnmpTargetTag
       description: 'OperationId: del_llist_ietf_snmp_snmp_target_tag
 
         List of tag values used to select target addresses.'
@@ -1843,6 +1889,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_timeout
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetTimeout
       description: 'OperationId: put_ietf_snmp_snmp_target_timeout
 
         Needed only if this target can receive
@@ -1888,6 +1935,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_timeout
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetTimeout
       description: 'OperationId: patch_ietf_snmp_snmp_target_timeout
 
         Needed only if this target can receive
@@ -1933,6 +1981,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_timeout
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetTimeout
       description: 'OperationId: get_ietf_snmp_snmp_target_timeout
 
         Needed only if this target can receive
@@ -1968,6 +2017,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_timeout
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetTimeout
       description: 'OperationId: head_ietf_snmp_snmp_target_timeout
 
         Needed only if this target can receive
@@ -2003,6 +2053,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_timeout
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetTimeout
       description: 'OperationId: delete_ietf_snmp_snmp_target_timeout
 
         Needed only if this target can receive
@@ -2045,6 +2096,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_retries
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetRetries
       description: 'OperationId: put_ietf_snmp_snmp_target_retries
 
         Needed only if this target can receive
@@ -2090,6 +2142,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_retries
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetRetries
       description: 'OperationId: patch_ietf_snmp_snmp_target_retries
 
         Needed only if this target can receive
@@ -2135,6 +2188,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_retries
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetRetries
       description: 'OperationId: get_ietf_snmp_snmp_target_retries
 
         Needed only if this target can receive
@@ -2170,6 +2224,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_retries
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetRetries
       description: 'OperationId: head_ietf_snmp_snmp_target_retries
 
         Needed only if this target can receive
@@ -2205,6 +2260,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_retries
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetRetries
       description: 'OperationId: delete_ietf_snmp_snmp_target_retries
 
         Needed only if this target can receive
@@ -2247,6 +2303,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_target_params
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetTargetParams
       description: 'OperationId: put_ietf_snmp_snmp_target_target_params
 
         '
@@ -2290,6 +2347,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_target_params
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetTargetParams
       description: 'OperationId: patch_ietf_snmp_snmp_target_target_params
 
         '
@@ -2333,6 +2391,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_target_params
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetTargetParams
       description: 'OperationId: get_ietf_snmp_snmp_target_target_params
 
         '
@@ -2366,6 +2425,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_target_params
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetTargetParams
       description: 'OperationId: head_ietf_snmp_snmp_target_target_params
 
         '
@@ -2399,6 +2459,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_target_params
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetTargetParams
       description: 'OperationId: delete_ietf_snmp_snmp_target_target_params
 
         '
@@ -2439,6 +2500,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_mms
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetMms
       description: 'OperationId: put_ietf_snmp_snmp_target_mms
 
         The maximum message size.'
@@ -2482,6 +2544,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_mms
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetMms
       description: 'OperationId: patch_ietf_snmp_snmp_target_mms
 
         The maximum message size.'
@@ -2525,6 +2588,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_mms
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetMms
       description: 'OperationId: get_ietf_snmp_snmp_target_mms
 
         The maximum message size.'
@@ -2558,6 +2622,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_mms
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetMms
       description: 'OperationId: head_ietf_snmp_snmp_target_mms
 
         The maximum message size.'
@@ -2591,6 +2656,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_mms
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetMms
       description: 'OperationId: delete_ietf_snmp_snmp_target_mms
 
         The maximum message size.'
@@ -2631,6 +2697,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetParams
       description: 'OperationId: put_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2674,6 +2741,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetParams
       description: 'OperationId: patch_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2717,6 +2785,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetParams
       description: 'OperationId: get_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2750,6 +2819,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetParams
       description: 'OperationId: head_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2783,6 +2853,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetParams
       description: 'OperationId: delete_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2820,6 +2891,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_ietf_snmp_snmp_target_params_v1
+      x-operationIdCamelCase: PostIetfSnmpSnmpTargetParamsV1
       description: 'OperationId: post_ietf_snmp_snmp_target_params_v1
 
         SNMPv1 parameters type.
@@ -2862,6 +2934,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_list_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: PutListIetfSnmpSnmpTargetParams
       description: 'OperationId: put_list_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2895,6 +2968,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_list_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: PatchListIetfSnmpSnmpTargetParams
       description: 'OperationId: patch_list_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2928,6 +3002,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_list_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: GetListIetfSnmpSnmpTargetParams
       description: 'OperationId: get_list_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2951,6 +3026,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_list_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: HeadListIetfSnmpSnmpTargetParams
       description: 'OperationId: head_list_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -2974,6 +3050,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_list_ietf_snmp_snmp_target_params
+      x-operationIdCamelCase: DeleteListIetfSnmpSnmpTargetParams
       description: 'OperationId: delete_list_ietf_snmp_snmp_target_params
 
         List of target parameters.'
@@ -3014,6 +3091,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_params_v1
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetParamsV1
       description: 'OperationId: put_ietf_snmp_snmp_target_params_v1
 
         SNMPv1 parameters type.
@@ -3063,6 +3141,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_params_v1
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetParamsV1
       description: 'OperationId: patch_ietf_snmp_snmp_target_params_v1
 
         SNMPv1 parameters type.
@@ -3112,6 +3191,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_params_v1
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetParamsV1
       description: 'OperationId: get_ietf_snmp_snmp_target_params_v1
 
         SNMPv1 parameters type.
@@ -3151,6 +3231,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_params_v1
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetParamsV1
       description: 'OperationId: head_ietf_snmp_snmp_target_params_v1
 
         SNMPv1 parameters type.
@@ -3190,6 +3271,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_params_v1
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetParamsV1
       description: 'OperationId: delete_ietf_snmp_snmp_target_params_v1
 
         SNMPv1 parameters type.
@@ -3233,6 +3315,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_ietf_snmp_snmp_target_params_v1_security_name
+      x-operationIdCamelCase: PostIetfSnmpSnmpTargetParamsV1SecurityName
       description: 'OperationId: post_ietf_snmp_snmp_target_params_v1_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3283,6 +3366,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_params_v1_security_name
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetParamsV1SecurityName
       description: 'OperationId: put_ietf_snmp_snmp_target_params_v1_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3330,6 +3414,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_params_v1_security_name
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetParamsV1SecurityName
       description: 'OperationId: patch_ietf_snmp_snmp_target_params_v1_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3377,6 +3462,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_params_v1_security_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetParamsV1SecurityName
       description: 'OperationId: get_ietf_snmp_snmp_target_params_v1_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3414,6 +3500,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_params_v1_security_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetParamsV1SecurityName
       description: 'OperationId: head_ietf_snmp_snmp_target_params_v1_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3451,6 +3538,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_params_v1_security_name
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetParamsV1SecurityName
       description: 'OperationId: delete_ietf_snmp_snmp_target_params_v1_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3495,6 +3583,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_params_v2c
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetParamsV2c
       description: 'OperationId: put_ietf_snmp_snmp_target_params_v2c
 
         SNMPv2 community parameters type.
@@ -3544,6 +3633,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_params_v2c
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetParamsV2c
       description: 'OperationId: patch_ietf_snmp_snmp_target_params_v2c
 
         SNMPv2 community parameters type.
@@ -3593,6 +3683,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_params_v2c
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetParamsV2c
       description: 'OperationId: get_ietf_snmp_snmp_target_params_v2c
 
         SNMPv2 community parameters type.
@@ -3632,6 +3723,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_params_v2c
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetParamsV2c
       description: 'OperationId: head_ietf_snmp_snmp_target_params_v2c
 
         SNMPv2 community parameters type.
@@ -3671,6 +3763,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_params_v2c
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetParamsV2c
       description: 'OperationId: delete_ietf_snmp_snmp_target_params_v2c
 
         SNMPv2 community parameters type.
@@ -3714,6 +3807,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_ietf_snmp_snmp_target_params_v2c_security_name
+      x-operationIdCamelCase: PostIetfSnmpSnmpTargetParamsV2cSecurityName
       description: 'OperationId: post_ietf_snmp_snmp_target_params_v2c_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3764,6 +3858,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_target_params_v2c_security_name
+      x-operationIdCamelCase: PutIetfSnmpSnmpTargetParamsV2cSecurityName
       description: 'OperationId: put_ietf_snmp_snmp_target_params_v2c_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3811,6 +3906,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_target_params_v2c_security_name
+      x-operationIdCamelCase: PatchIetfSnmpSnmpTargetParamsV2cSecurityName
       description: 'OperationId: patch_ietf_snmp_snmp_target_params_v2c_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3858,6 +3954,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_target_params_v2c_security_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetParamsV2cSecurityName
       description: 'OperationId: get_ietf_snmp_snmp_target_params_v2c_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3895,6 +3992,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_target_params_v2c_security_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetParamsV2cSecurityName
       description: 'OperationId: head_ietf_snmp_snmp_target_params_v2c_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3932,6 +4030,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_target_params_v2c_security_name
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpTargetParamsV2cSecurityName
       description: 'OperationId: delete_ietf_snmp_snmp_target_params_v2c_security_name
 
         Implementations MAY restrict the values of this leaf
@@ -3976,6 +4075,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: PutIetfSnmpSnmpProxy
       description: 'OperationId: put_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4019,6 +4119,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: PatchIetfSnmpSnmpProxy
       description: 'OperationId: patch_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4062,6 +4163,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: GetIetfSnmpSnmpProxy
       description: 'OperationId: get_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4095,6 +4197,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: HeadIetfSnmpSnmpProxy
       description: 'OperationId: head_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4128,6 +4231,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpProxy
       description: 'OperationId: delete_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4165,6 +4269,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_ietf_snmp_snmp_proxy_type
+      x-operationIdCamelCase: PostIetfSnmpSnmpProxyType
       description: 'OperationId: post_ietf_snmp_snmp_proxy_type
 
         '
@@ -4201,6 +4306,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_list_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: PutListIetfSnmpSnmpProxy
       description: 'OperationId: put_list_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4234,6 +4340,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_list_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: PatchListIetfSnmpSnmpProxy
       description: 'OperationId: patch_list_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4267,6 +4374,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_list_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: GetListIetfSnmpSnmpProxy
       description: 'OperationId: get_list_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4290,6 +4398,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_list_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: HeadListIetfSnmpSnmpProxy
       description: 'OperationId: head_list_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4313,6 +4422,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_list_ietf_snmp_snmp_proxy
+      x-operationIdCamelCase: DeleteListIetfSnmpSnmpProxy
       description: 'OperationId: delete_list_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
@@ -4353,6 +4463,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_proxy_type
+      x-operationIdCamelCase: PutIetfSnmpSnmpProxyType
       description: 'OperationId: put_ietf_snmp_snmp_proxy_type
 
         '
@@ -4396,6 +4507,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_proxy_type
+      x-operationIdCamelCase: PatchIetfSnmpSnmpProxyType
       description: 'OperationId: patch_ietf_snmp_snmp_proxy_type
 
         '
@@ -4439,6 +4551,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_proxy_type
+      x-operationIdCamelCase: GetIetfSnmpSnmpProxyType
       description: 'OperationId: get_ietf_snmp_snmp_proxy_type
 
         '
@@ -4472,6 +4585,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_proxy_type
+      x-operationIdCamelCase: HeadIetfSnmpSnmpProxyType
       description: 'OperationId: head_ietf_snmp_snmp_proxy_type
 
         '
@@ -4505,6 +4619,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_proxy_type
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpProxyType
       description: 'OperationId: delete_ietf_snmp_snmp_proxy_type
 
         '
@@ -4545,6 +4660,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_proxy_context_engine_id
+      x-operationIdCamelCase: PutIetfSnmpSnmpProxyContextEngineId
       description: 'OperationId: put_ietf_snmp_snmp_proxy_context_engine_id
 
         '
@@ -4588,6 +4704,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_proxy_context_engine_id
+      x-operationIdCamelCase: PatchIetfSnmpSnmpProxyContextEngineId
       description: 'OperationId: patch_ietf_snmp_snmp_proxy_context_engine_id
 
         '
@@ -4631,6 +4748,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_proxy_context_engine_id
+      x-operationIdCamelCase: GetIetfSnmpSnmpProxyContextEngineId
       description: 'OperationId: get_ietf_snmp_snmp_proxy_context_engine_id
 
         '
@@ -4664,6 +4782,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_proxy_context_engine_id
+      x-operationIdCamelCase: HeadIetfSnmpSnmpProxyContextEngineId
       description: 'OperationId: head_ietf_snmp_snmp_proxy_context_engine_id
 
         '
@@ -4697,6 +4816,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_proxy_context_engine_id
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpProxyContextEngineId
       description: 'OperationId: delete_ietf_snmp_snmp_proxy_context_engine_id
 
         '
@@ -4737,6 +4857,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_proxy_context_name
+      x-operationIdCamelCase: PutIetfSnmpSnmpProxyContextName
       description: 'OperationId: put_ietf_snmp_snmp_proxy_context_name
 
         '
@@ -4780,6 +4901,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_proxy_context_name
+      x-operationIdCamelCase: PatchIetfSnmpSnmpProxyContextName
       description: 'OperationId: patch_ietf_snmp_snmp_proxy_context_name
 
         '
@@ -4823,6 +4945,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_proxy_context_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpProxyContextName
       description: 'OperationId: get_ietf_snmp_snmp_proxy_context_name
 
         '
@@ -4856,6 +4979,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_proxy_context_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpProxyContextName
       description: 'OperationId: head_ietf_snmp_snmp_proxy_context_name
 
         '
@@ -4889,6 +5013,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_proxy_context_name
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpProxyContextName
       description: 'OperationId: delete_ietf_snmp_snmp_proxy_context_name
 
         '
@@ -4929,6 +5054,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_proxy_target_params_in
+      x-operationIdCamelCase: PutIetfSnmpSnmpProxyTargetParamsIn
       description: 'OperationId: put_ietf_snmp_snmp_proxy_target_params_in
 
         The name of a target parameters list entry.
@@ -4979,6 +5105,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_proxy_target_params_in
+      x-operationIdCamelCase: PatchIetfSnmpSnmpProxyTargetParamsIn
       description: 'OperationId: patch_ietf_snmp_snmp_proxy_target_params_in
 
         The name of a target parameters list entry.
@@ -5029,6 +5156,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_proxy_target_params_in
+      x-operationIdCamelCase: GetIetfSnmpSnmpProxyTargetParamsIn
       description: 'OperationId: get_ietf_snmp_snmp_proxy_target_params_in
 
         The name of a target parameters list entry.
@@ -5069,6 +5197,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_proxy_target_params_in
+      x-operationIdCamelCase: HeadIetfSnmpSnmpProxyTargetParamsIn
       description: 'OperationId: head_ietf_snmp_snmp_proxy_target_params_in
 
         The name of a target parameters list entry.
@@ -5109,6 +5238,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_proxy_target_params_in
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpProxyTargetParamsIn
       description: 'OperationId: delete_ietf_snmp_snmp_proxy_target_params_in
 
         The name of a target parameters list entry.
@@ -5156,6 +5286,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_proxy_single_target_out
+      x-operationIdCamelCase: PutIetfSnmpSnmpProxySingleTargetOut
       description: 'OperationId: put_ietf_snmp_snmp_proxy_single_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5203,6 +5334,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_proxy_single_target_out
+      x-operationIdCamelCase: PatchIetfSnmpSnmpProxySingleTargetOut
       description: 'OperationId: patch_ietf_snmp_snmp_proxy_single_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5250,6 +5382,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_proxy_single_target_out
+      x-operationIdCamelCase: GetIetfSnmpSnmpProxySingleTargetOut
       description: 'OperationId: get_ietf_snmp_snmp_proxy_single_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5287,6 +5420,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_proxy_single_target_out
+      x-operationIdCamelCase: HeadIetfSnmpSnmpProxySingleTargetOut
       description: 'OperationId: head_ietf_snmp_snmp_proxy_single_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5324,6 +5458,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_proxy_single_target_out
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpProxySingleTargetOut
       description: 'OperationId: delete_ietf_snmp_snmp_proxy_single_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5368,6 +5503,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_proxy_multiple_target_out
+      x-operationIdCamelCase: PutIetfSnmpSnmpProxyMultipleTargetOut
       description: 'OperationId: put_ietf_snmp_snmp_proxy_multiple_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5415,6 +5551,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_proxy_multiple_target_out
+      x-operationIdCamelCase: PatchIetfSnmpSnmpProxyMultipleTargetOut
       description: 'OperationId: patch_ietf_snmp_snmp_proxy_multiple_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5462,6 +5599,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_proxy_multiple_target_out
+      x-operationIdCamelCase: GetIetfSnmpSnmpProxyMultipleTargetOut
       description: 'OperationId: get_ietf_snmp_snmp_proxy_multiple_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5499,6 +5637,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_proxy_multiple_target_out
+      x-operationIdCamelCase: HeadIetfSnmpSnmpProxyMultipleTargetOut
       description: 'OperationId: head_ietf_snmp_snmp_proxy_multiple_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5536,6 +5675,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_proxy_multiple_target_out
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpProxyMultipleTargetOut
       description: 'OperationId: delete_ietf_snmp_snmp_proxy_multiple_target_out
 
         Implementations MAY restrict the values of this leaf
@@ -5580,6 +5720,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_community
+      x-operationIdCamelCase: PutIetfSnmpSnmpCommunity
       description: 'OperationId: put_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5623,6 +5764,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_community
+      x-operationIdCamelCase: PatchIetfSnmpSnmpCommunity
       description: 'OperationId: patch_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5666,6 +5808,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_community
+      x-operationIdCamelCase: GetIetfSnmpSnmpCommunity
       description: 'OperationId: get_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5699,6 +5842,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_community
+      x-operationIdCamelCase: HeadIetfSnmpSnmpCommunity
       description: 'OperationId: head_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5732,6 +5876,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_community
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpCommunity
       description: 'OperationId: delete_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5769,6 +5914,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_ietf_snmp_snmp_community_text_name
+      x-operationIdCamelCase: PostIetfSnmpSnmpCommunityTextName
       description: 'OperationId: post_ietf_snmp_snmp_community_text_name
 
         A community name that can be represented as a
@@ -5807,6 +5953,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_list_ietf_snmp_snmp_community
+      x-operationIdCamelCase: PutListIetfSnmpSnmpCommunity
       description: 'OperationId: put_list_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5840,6 +5987,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_list_ietf_snmp_snmp_community
+      x-operationIdCamelCase: PatchListIetfSnmpSnmpCommunity
       description: 'OperationId: patch_list_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5873,6 +6021,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_list_ietf_snmp_snmp_community
+      x-operationIdCamelCase: GetListIetfSnmpSnmpCommunity
       description: 'OperationId: get_list_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5896,6 +6045,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_list_ietf_snmp_snmp_community
+      x-operationIdCamelCase: HeadListIetfSnmpSnmpCommunity
       description: 'OperationId: head_list_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5919,6 +6069,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_list_ietf_snmp_snmp_community
+      x-operationIdCamelCase: DeleteListIetfSnmpSnmpCommunity
       description: 'OperationId: delete_list_ietf_snmp_snmp_community
 
         List of communities.'
@@ -5959,6 +6110,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_community_text_name
+      x-operationIdCamelCase: PutIetfSnmpSnmpCommunityTextName
       description: 'OperationId: put_ietf_snmp_snmp_community_text_name
 
         A community name that can be represented as a
@@ -6004,6 +6156,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_community_text_name
+      x-operationIdCamelCase: PatchIetfSnmpSnmpCommunityTextName
       description: 'OperationId: patch_ietf_snmp_snmp_community_text_name
 
         A community name that can be represented as a
@@ -6049,6 +6202,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_community_text_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpCommunityTextName
       description: 'OperationId: get_ietf_snmp_snmp_community_text_name
 
         A community name that can be represented as a
@@ -6084,6 +6238,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_community_text_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpCommunityTextName
       description: 'OperationId: head_ietf_snmp_snmp_community_text_name
 
         A community name that can be represented as a
@@ -6119,6 +6274,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_community_text_name
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpCommunityTextName
       description: 'OperationId: delete_ietf_snmp_snmp_community_text_name
 
         A community name that can be represented as a
@@ -6161,6 +6317,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_community_binary_name
+      x-operationIdCamelCase: PutIetfSnmpSnmpCommunityBinaryName
       description: 'OperationId: put_ietf_snmp_snmp_community_binary_name
 
         A community name represented as a binary value.'
@@ -6204,6 +6361,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_community_binary_name
+      x-operationIdCamelCase: PatchIetfSnmpSnmpCommunityBinaryName
       description: 'OperationId: patch_ietf_snmp_snmp_community_binary_name
 
         A community name represented as a binary value.'
@@ -6247,6 +6405,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_community_binary_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpCommunityBinaryName
       description: 'OperationId: get_ietf_snmp_snmp_community_binary_name
 
         A community name represented as a binary value.'
@@ -6280,6 +6439,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_community_binary_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpCommunityBinaryName
       description: 'OperationId: head_ietf_snmp_snmp_community_binary_name
 
         A community name represented as a binary value.'
@@ -6313,6 +6473,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_community_binary_name
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpCommunityBinaryName
       description: 'OperationId: delete_ietf_snmp_snmp_community_binary_name
 
         A community name represented as a binary value.'
@@ -6353,6 +6514,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_community_security_name
+      x-operationIdCamelCase: PutIetfSnmpSnmpCommunitySecurityName
       description: 'OperationId: put_ietf_snmp_snmp_community_security_name
 
         The snmpCommunitySecurityName of this entry.'
@@ -6396,6 +6558,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_community_security_name
+      x-operationIdCamelCase: PatchIetfSnmpSnmpCommunitySecurityName
       description: 'OperationId: patch_ietf_snmp_snmp_community_security_name
 
         The snmpCommunitySecurityName of this entry.'
@@ -6439,6 +6602,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_community_security_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpCommunitySecurityName
       description: 'OperationId: get_ietf_snmp_snmp_community_security_name
 
         The snmpCommunitySecurityName of this entry.'
@@ -6472,6 +6636,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_community_security_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpCommunitySecurityName
       description: 'OperationId: head_ietf_snmp_snmp_community_security_name
 
         The snmpCommunitySecurityName of this entry.'
@@ -6505,6 +6670,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_community_security_name
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpCommunitySecurityName
       description: 'OperationId: delete_ietf_snmp_snmp_community_security_name
 
         The snmpCommunitySecurityName of this entry.'
@@ -6545,6 +6711,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_community_engine_id
+      x-operationIdCamelCase: PutIetfSnmpSnmpCommunityEngineId
       description: 'OperationId: put_ietf_snmp_snmp_community_engine_id
 
         If not set, the value of the local SNMP engine is
@@ -6590,6 +6757,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_community_engine_id
+      x-operationIdCamelCase: PatchIetfSnmpSnmpCommunityEngineId
       description: 'OperationId: patch_ietf_snmp_snmp_community_engine_id
 
         If not set, the value of the local SNMP engine is
@@ -6635,6 +6803,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_community_engine_id
+      x-operationIdCamelCase: GetIetfSnmpSnmpCommunityEngineId
       description: 'OperationId: get_ietf_snmp_snmp_community_engine_id
 
         If not set, the value of the local SNMP engine is
@@ -6670,6 +6839,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_community_engine_id
+      x-operationIdCamelCase: HeadIetfSnmpSnmpCommunityEngineId
       description: 'OperationId: head_ietf_snmp_snmp_community_engine_id
 
         If not set, the value of the local SNMP engine is
@@ -6705,6 +6875,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_community_engine_id
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpCommunityEngineId
       description: 'OperationId: delete_ietf_snmp_snmp_community_engine_id
 
         If not set, the value of the local SNMP engine is
@@ -6747,6 +6918,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_community_context
+      x-operationIdCamelCase: PutIetfSnmpSnmpCommunityContext
       description: 'OperationId: put_ietf_snmp_snmp_community_context
 
         The context in which management information is accessed
@@ -6792,6 +6964,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_community_context
+      x-operationIdCamelCase: PatchIetfSnmpSnmpCommunityContext
       description: 'OperationId: patch_ietf_snmp_snmp_community_context
 
         The context in which management information is accessed
@@ -6837,6 +7010,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_community_context
+      x-operationIdCamelCase: GetIetfSnmpSnmpCommunityContext
       description: 'OperationId: get_ietf_snmp_snmp_community_context
 
         The context in which management information is accessed
@@ -6872,6 +7046,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_community_context
+      x-operationIdCamelCase: HeadIetfSnmpSnmpCommunityContext
       description: 'OperationId: head_ietf_snmp_snmp_community_context
 
         The context in which management information is accessed
@@ -6907,6 +7082,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_community_context
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpCommunityContext
       description: 'OperationId: delete_ietf_snmp_snmp_community_context
 
         The context in which management information is accessed
@@ -6949,6 +7125,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_ietf_snmp_snmp_community_target_tag
+      x-operationIdCamelCase: PutIetfSnmpSnmpCommunityTargetTag
       description: 'OperationId: put_ietf_snmp_snmp_community_target_tag
 
         Used to limit access for this community to the specified
@@ -7001,6 +7178,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_ietf_snmp_snmp_community_target_tag
+      x-operationIdCamelCase: PatchIetfSnmpSnmpCommunityTargetTag
       description: 'OperationId: patch_ietf_snmp_snmp_community_target_tag
 
         Used to limit access for this community to the specified
@@ -7053,6 +7231,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_ietf_snmp_snmp_community_target_tag
+      x-operationIdCamelCase: GetIetfSnmpSnmpCommunityTargetTag
       description: 'OperationId: get_ietf_snmp_snmp_community_target_tag
 
         Used to limit access for this community to the specified
@@ -7095,6 +7274,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_ietf_snmp_snmp_community_target_tag
+      x-operationIdCamelCase: HeadIetfSnmpSnmpCommunityTargetTag
       description: 'OperationId: head_ietf_snmp_snmp_community_target_tag
 
         Used to limit access for this community to the specified
@@ -7137,6 +7317,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_ietf_snmp_snmp_community_target_tag
+      x-operationIdCamelCase: DeleteIetfSnmpSnmpCommunityTargetTag
       description: 'OperationId: delete_ietf_snmp_snmp_community_target_tag
 
         Used to limit access for this community to the specified

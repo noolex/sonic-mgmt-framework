@@ -12,14 +12,14 @@
                  help="Send ICMP ECHO_REQUEST to network hosts"
                  args="ping-option"
                  args_help="Ping options(-h  for help)">
-                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py ${ping-option} 2>/dev/stdout</ACTION>
+                <ACTION builtin="clish_pyobj">sonic_cli_ping ping ${ping-option}</ACTION>
         </COMMAND>
 
         <COMMAND name="ping vrf mgmt"
                  help="Ping using management VRF"
                  args="ping-vrf-option"
                  args_help="Ping options(-h  for help)">
-                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf mgmt ${ping-vrf-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_ping ping vrf mgmt ${ping-vrf-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="ping vrf"
@@ -29,21 +29,21 @@
                  <PARAM name="vrf-name"
                         help="Ping using given VRF name"
                         ptype="VRF_NAME"/>
-                <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping.py vrf ${vrf-name} ${ping-vrf-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_ping ping vrf ${vrf-name} ${ping-vrf-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="ping6"
                  help="Send ICMPv6 ECHO_REQUEST to network hosts"
                  args="ping-option"
                  args_help="Ping6 options(-h  for help)">
-                 <ACTION >python $SONIC_CLI_ROOT/sonic-cli-ping6.py ${ping-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_ping ping6 ${ping-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="ping6 vrf mgmt"
                  help="Ping6 using management VRF"
                  args="ping-vrf-option"
                  args_help="Ping6 options(-h  for help)">
-                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf mgmt ${ping-vrf-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_ping ping6 vrf mgmt ${ping-vrf-option} </ACTION>
         </COMMAND>
 
         <COMMAND name="ping6 vrf"
@@ -53,7 +53,7 @@
                  <PARAM name="vrf-name"
                         help="Ping6 using given VRF name"
                         ptype="VRF_NAME"/>
-                 <ACTION>python $SONIC_CLI_ROOT/sonic-cli-ping6.py vrf ${vrf-name} ${ping-vrf-option} 2>/dev/stdout</ACTION>
+                 <ACTION builtin="clish_pyobj">sonic_cli_ping ping6 vrf ${vrf-name} ${ping-vrf-option} </ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>

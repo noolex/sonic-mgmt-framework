@@ -30,7 +30,7 @@
     {% set rate_config = rate['config'] %}
     {% if rate_config %}
         {% if rate_config['cir'] %}
-            {% if scheduler['sequence'] == 255 %}
+            {% if scheduler['name'] != 'copp-scheduler-policy' %}
                 {% set temp = rate_config['cir']|int//bps_to_kbps %}
                 {{- '              cir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
             {% else %}
@@ -38,14 +38,14 @@
             {% endif %}
         {% endif %}
         {% if rate_config['bc'] %}
-            {% if scheduler['sequence'] == 255 %}
+            {% if scheduler['name'] != 'copp-scheduler-policy' %}
 				{{- '              cbs: '}}{{'%-12s'|format(rate_config['bc'])}}{{ 'Bytes' }}
             {% else %}
 				{{- '              cbs: '}}{{'%-12s'|format(rate_config['bc'])}}{{ 'Packets' }}
             {% endif %}
         {% endif %}
         {% if rate_config['pir'] %}
-            {% if scheduler['sequence'] == 255 %}
+            {% if scheduler['name'] != 'copp-scheduler-policy' %}
                 {% set temp = rate_config['pir']|int//bps_to_kbps %}
                 {{- '              pir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
             {% else %}
@@ -53,7 +53,7 @@
             {% endif %}
         {% endif %}
         {% if rate_config['be'] %}
-            {% if scheduler['sequence'] == 255 %}
+            {% if scheduler['name'] != 'copp-scheduler-policy' %}
                 {{- '              pbs: '}}{{'%-12s'|format(rate_config['be'])}}{{ 'Bytes' }}
             {% else %}
                 {{- '              pbs: '}}{{'%-12s'|format(rate_config['be'])}}{{ 'Packets' }}

@@ -1,0 +1,15 @@
+{% if json_output -%}
+{% if "openconfig-tam:collectors" in json_output %}
+{% set collectors = json_output['openconfig-tam:collectors']['collector'] %}
+{% if collectors|length > 0 %}
+Name                              IP Address                               Port   Protocol
+--------------------------------  ---------------------------------------  -----  --------
+{% for this_collector in collectors|sort(attribute='name') %}
+{% set collector_config = this_collector["state"] %}
+{{'%-34s'|format(collector_config["name"])}}{{'%-41s'|format(collector_config["ip"])}}{{'%-7s'|format(collector_config["port"])}}{{'%-10s'|format(collector_config["protocol"])}}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% else %}
+Collectors are not configured.
+{% endif %}

@@ -45,9 +45,8 @@ def build_body(func, method, argv):
               parameters["skip"] = argv[value_index]
           if 'args' in argv:
               value_index = argv.index('args') + 1
-              if '"' in argv:
-                   value_end_index = argv[value_index+1:].index('"') + value_index + 2
-                   args_list = argv[value_index+1:value_end_index]
+              if '"' in argv[value_index]:
+                   args_list = argv[value_index:]
               else:
                    args_list = argv[value_index]
 
@@ -88,6 +87,9 @@ def run_tpcm_install(func, method, argv):
         if api_response.content is not None:
             response = api_response.content
             show_cli_output(templ, response)
+    else:
+        print api_response.error_message()
+
 
 
 def run_tpcm_upgrade(func, method, argv):
@@ -105,6 +107,8 @@ def run_tpcm_upgrade(func, method, argv):
         if api_response.content is not None:
             response = api_response.content
             show_cli_output(templ, response)
+    else:
+        print api_response.error_message()
 
 def run_tpcm_uninstall(func, method, argv):
     aa = cc.ApiClient()
@@ -121,6 +125,8 @@ def run_tpcm_uninstall(func, method, argv):
         if api_response.content is not None:
             response = api_response.content
             show_cli_output(templ, response)
+    else:
+        print api_response.error_message()
 
 
 def run(func, args):

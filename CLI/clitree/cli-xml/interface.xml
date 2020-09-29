@@ -44,25 +44,24 @@ limitations under the License.
       <ACTION> if test "${lo-id}" != ""; then echo -n "Loopback${lo-id}"; fi</ACTION>
     </VAR>
     <VAR name="ethiflist" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${iface_range_num}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${iface_range_num}</ACTION>
     </VAR>
     <VAR name="ethiflist_nativeNum" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${phy-if-ethernet-name}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${phy-if-ethernet-name}</ACTION>
     </VAR>
     <VAR name="ethiflist_aliasNum" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${phy-if-eth-name}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${phy-if-eth-name}</ACTION>
     </VAR>
-
     <VAR name="vlaniflist" dynamic="true">
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${vlan_range_num}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${vlan_range_num}</ACTION>
     </VAR>
     <VAR name="poiflist" dynamic="true">
-    <!-- po_range_num is of format PortChannel<range> -->
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${po_range_num}</ACTION>
+      <!-- po_range_num is of format PortChannel<range> -->
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${po_range_num}</ACTION>
     </VAR>
     <VAR name="po-id-list" dynamic="true">
-    <!-- po-name is po-id prefixed with PortChannel -->
-    <ACTION>python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_available_iflist_in_range ${po-name}</ACTION>
+      <!-- po-name is po-id prefixed with PortChannel -->
+      <ACTION builtin="clish_pyobj">sonic_cli_if_range get_available_iflist_in_range ${po-name}</ACTION>
     </VAR>
     <VAR name="iflist_from_range" dynamic="true">
     <!-- Expanding given vlan/portchannel range into list of individual interfaces -->
@@ -70,34 +69,62 @@ limitations under the License.
     </VAR>
 
     <VIEW name="enable-view">
-    <!-- show running-configuration interface -->
-    <COMMAND
-           name="show running-configuration interface"
-           help="Show interface info">
-        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-if,configure-lag,configure-vlan,configure-vxlan,configure-lo,configure-if-mgmt</ACTION>
-      </COMMAND>
-    <COMMAND
-           name="show running-configuration interface Eth"
-           help="Show physical interface info">
-            <PARAM
-               name="iface_num"
-               help="Physical Interface"
-               ptype="ETH_PHY_SLOT_PORT_SUBPORT"
-               optional="true">
+   <!-- show running-configuration interface -->
+     <COMMAND
+         name="show running-configuration interface"
+         help="Show interface info"
+         >
+         <PARAM
+             name="if-subcommands"
+             help="Interface subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND"
+             optional="true"
+             >
+             <PARAM
+               name="port"
+               help="Physical interface ID"
+               ptype="PHY_INTERFACE">
             </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${phy-if-eth-name}" </ACTION>
-      </COMMAND>
-    <COMMAND
-           name="show running-configuration interface Ethernet"
-           help="Show physical interface info">
-            <PARAM
-               name="iface_num"
-               help="Physical Interface"
-               ptype="UINT"
-               optional="true">
-            </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-if view_keys="name=${phy-if-ethernet-name}" </ACTION>
-      </COMMAND>
+             <!-- show interface Ethernet [<id>] -->
+             <PARAM
+                 name="Eth"
+                 help="Physical Interface"
+                 test="${SONIC_CLI_IFACE_MODE} = standard"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 hidden="true"
+                 >
+                 <PARAM
+                    name="iface_num"
+                    help="Physical Interface"
+                    ptype="ETH_RANGE_PHY_SLOT_PORT_SUBPORT"
+                    optional="true"
+                    hidden="true"
+                    >
+                 </PARAM>
+             </PARAM>
+             <PARAM
+                 name="Ethernet"
+                 help="Physical Interface"
+                 test="-z ${SONIC_CLI_IFACE_MODE}"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 hidden="true"
+                 >
+                 <PARAM
+                    name="iface_num"
+                    help="Physical Interface"
+                    ptype="ETHER_RANGE"
+                    optional="true"
+                    hidden="true"
+                    >
+                </PARAM>
+             </PARAM>
+          </PARAM>
+         <ACTION builtin="clish_pyobj">sonic_cli_if showrun show runnning-configuration interface ${port}${Ethernet}${Eth}${iface_num}</ACTION>
+    </COMMAND>
+
       <COMMAND
            name="show running-configuration interface Vlan"
            help="Show interface Vlan info">
@@ -293,14 +320,6 @@ limitations under the License.
                     optional="true"
                     >
                  </PARAM>
-                 <PARAM
-                     name="params"
-                     help="Operating parameters"
-                     ptype="SUBCOMMAND"
-                     mode="subcommand"
-                     optional="true"
-                     >
-                  </PARAM>
           </PARAM>
          </PARAM>
    <ACTION>
@@ -339,13 +358,13 @@ limitations under the License.
             fi&#xA;
         elif test "${if-subcommands}" = "Eth"; then&#xA;
             if test "${iface_num}" = ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py get_all_ethernet show_interface_id.j2 ${__full_line}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_if_range "${ethiflist_aliasNum}" show_interface_id.j2 ${__full_line}&#xA;
             fi&#xA;
         elif test "${if-subcommands}" = "Ethernet"; then&#xA;
             if test "${iface_num}" = ""; then&#xA;
-                python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_interfaces_interfaces show_interface.j2 ${__full_line}&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_if.py get_all_ethernet show_interface_id.j2 ${__full_line}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_if_range "${ethiflist_nativeNum}" show_interface_id.j2  ${__full_line}&#xA;
             fi&#xA;
@@ -714,7 +733,7 @@ limitations under the License.
                 ptype="LO_ID"
                 >
         </PARAM>
-        <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=Loopback${lo-id}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_interfaces_interfaces_interface Loopback${lo-id} </ACTION>
     </COMMAND>
     <COMMAND
          name="interface CPU"
@@ -770,13 +789,14 @@ limitations under the License.
 
         <COMMAND
             name="description"
+            escape_chars=""
             help="Textual description">
             <PARAM
                 name="desc"
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-port:sonic-port/PORT/PORT_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+	    <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -857,7 +877,8 @@ limitations under the License.
         </COMMAND>
         <COMMAND
             name="no shutdown"
-            help="Enable the interface">
+            help="Enable the interface"
+            dbpath="sonic-port:sonic-port/PORT/PORT_LIST/admin_status=up">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
         </COMMAND>
 
@@ -1026,7 +1047,7 @@ limitations under the License.
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-loopback:sonic-loopback/LOOPBACK/LOOPBACK_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${lo_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${lo_name} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1082,7 +1103,7 @@ limitations under the License.
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${vlan_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${vlan_name} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1211,7 +1232,7 @@ limitations under the License.
                 help="Textual description of the interface (Max: 240 characters)"
                 dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/description"
                 ptype="STRING_240" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${po_name} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1429,7 +1450,7 @@ limitations under the License.
                 help="Textual description of the interface"
                 ptype="STRING"
                 dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/MGMT_PORT_LIST/description" />
-            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/config/description body={"openconfig-interfaces:description": "${desc}"}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_interfaces_interfaces_interface_config_description ${iface} ${#desc}</ACTION>
         </COMMAND>
         <COMMAND
             name="no description"
@@ -1476,11 +1497,35 @@ limitations under the License.
                 ptype="MGMT_INTF_SPEED"
                 dbpath="sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/MGMT_PORT_LIST/speed" />
             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ethernet_interfaces_interface_ethernet_config_port_speed ${iface} ${speed}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure the speed of a port.
+               </DESCRIPTION>
+               <USAGE>
+                    speed speed-in-Mbps
+               </USAGE>
+               <EXAMPLE summary="speed">
+                    sonic(conf-if-Ethernet0)# speed 10000
+                    sonic(conf-if-Ethernet0)#
+               </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
         <COMMAND
             name="no speed"
             help="Set default speed config">
-        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body = {"openconfig-if-ethernet:port-speed": "SPEED_1GB"}</ACTION>
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface}/openconfig-if-ethernet:ethernet/config/port-speed body={"openconfig-if-ethernet:port-speed": "SPEED_1GB"}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure the speed of a port back to default.
+               </DESCRIPTION>
+               <USAGE>
+                   no speed
+               </USAGE>
+               <EXAMPLE summary="no speed">
+                    sonic(conf-if-Ethernet0)# no speed
+                    sonic(conf-if-Ethernet0)#
+               </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
     </VIEW>
@@ -1543,6 +1588,7 @@ limitations under the License.
             />
 
         <MACRO name="INTF_MTU" arg="${iflist}"></MACRO>
+        <MACRO name="INTF_RANGE_DESCR" arg="${iflist}"></MACRO>
 
     </VIEW>
 
@@ -1565,6 +1611,17 @@ limitations under the License.
         <MACRO name="INTF_MTU" arg="${iflist}"></MACRO>
         <MACRO name="INTF_RANGE_SHUT_DESCR" arg="${iflist}"></MACRO>
 	<MACRO name="INTF_RNG_AGGREGATE_SWITCHPORT" arg="${iflist}"></MACRO>
+
+        <COMMAND
+            name="graceful-shutdown"
+            help="Enable graceful shutdown for the portchannels">
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=${iflist} graceful_shutdown_enabled True</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no graceful-shutdown"
+            help="Disable graceful shutdown for the portchannels">
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=${iflist} graceful_shutdown_enabled False</ACTION>
+        </COMMAND>
 
     </VIEW>
 

@@ -10,6 +10,9 @@ import cli_client as cc
 import socket
 import ipaddress
 import netifaces
+import syslog
+import traceback
+import psutil
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 from swsssdk import ConfigDBConnector
@@ -161,6 +164,52 @@ def entryNotFound(response):
       return True
   return False
 
+def findKeyForAgentEntry(ipAddr, port, interface):
+  """ Search the Agent Table for ipAddr and return the key
+      Keys are of the form agentEntry1, agentEntry2, etc.
+  """
+  keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
+  entry = "None"
+  response = aa.get(keypath)
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
+    listenList = response.content['ietf-snmp:listen']
+    if len(listenList) > 0:
+      for listen in listenList:
+        iface = ""
+        udp = listen['udp']
+        if (ipAddr == udp['ip']) and (int(port) == udp['port']):
+          if udp.has_key('ietf-snmp-ext:interface'):
+            iface = udp['ietf-snmp-ext:interface']
+          if interface == iface:
+            entry = listen['name']
+            break
+
+  return entry
+
+def findNextKeyForAgentEntry():
+  """ Find the next available agentEntry key """
+  index = 1
+  key = "agentEntry{}".format(index)
+  keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
+  response=aa.get(keypath)
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
+    listenList = response.content['ietf-snmp:listen']
+    if len(listenList) > 0:
+      while 1:
+        for listen in listenList:
+          found = False
+          if listen['name'] == key:
+            found = True
+            break;
+
+        if found == True:
+          index += 1
+          key = "agentEntry{}".format(index)
+        else:
+          break
+
+  return key
+
 def findKeyForTargetEntry(ipAddr):
   """ Search the Target Table for ipAddr and return the key
       Keys are of the form targetEntry1, targetEntry2, etc.
@@ -205,11 +254,11 @@ def createYangHexStr(textString):
 def getEngineID():
   """ Construct SNMP engineID from the configured value or from scratch """
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/engine-id')
-  response=aa.get(keypath, None, False)
+  response=aa.get(keypath)
 
   # First, try to get engineID via rest
   engineID = ''
-  if response.ok() and len(response.content) != 0:
+  if response.ok() and response.content is not None and len(response.content) != 0:
     content = response.content
     if content.has_key('ietf-snmp:engine-id'):
       engineID = content['ietf-snmp:engine-id']
@@ -235,7 +284,7 @@ def getEngineID():
   # TEXTUAL-CONVENTION in RFC 3411 using the system MAC address.
   if len(engineID) == 0:
     keypath = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/mac', name="localhost")
-    response = aa.get(keypath)
+    response = aa.get(keypath, None, False)
     if response.ok():
         sysmac = response.content['sonic-device-metadata:mac'].encode('ascii')
     if sysmac == None:
@@ -273,7 +322,7 @@ def getAgentAddresses():
   datam = {}
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
   response = aa.get(keypath)
-  if response.ok() and 'ietf-snmp:listen' in response.content.keys():
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
     listenList = response.content['ietf-snmp:listen']
     if len(listenList) > 0:
       for listen in listenList:
@@ -287,22 +336,91 @@ def getAgentAddresses():
 
   return agentAddresses
 
+# Return the list of interfaces
+#   eg. ['Ethernet0', 'Ethernet1', etc.
+#   or: "
+def interfaces_list():
+    names = []
+    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces')
+    response = aa.get(keypath)
+    if response.ok():
+        content = response.content
+        if content:
+            interfaces = content.get("openconfig-interfaces:interfaces")
+            if interfaces:
+                interface = interfaces.get("interface")
+                if interface:
+                    for c in interface:
+                        config = c.get("config")
+                        if config:
+                            name = config.get("name")
+                            if name:
+                                names.append(str(name))
+    ifaces = netifaces.interfaces()
+    for iface in ifaces:
+        if iface[:8].lower() != "ethernet":
+            names.append(iface)
+    return names
+
+# Are we in native mode (eg: "Ethernet80") or standard mode (eg: "Eth1/21/1")
+def is_in_standard_mode():
+    keypath = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode', name="localhost")
+    response = aa.get(keypath)
+    if response.ok():
+        content = response.content
+        if content == None:
+            return False
+        try:
+            mode = content['sonic-device-metadata:intf_naming_mode']
+            return mode.lower() == "standard"
+        except:
+            return False
+    else:
+        return False
+
+# Construct a list of interfaces [[standard, native], ...]
+#   Eg. [['Ethernet0', 'Eth1/1'], ['Ethernet1', 'Eth1/2'], ...]
+def alias_interfaces_list():
+    names =[]
+    keypath = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE')
+    response = aa.get(keypath)
+    if response.ok():
+        content = response.content
+        if content != None:
+            port_table = content['sonic-port:PORT_TABLE']
+            port_table_list = port_table['PORT_TABLE_LIST']
+            for l in port_table_list:
+                try:
+                    n = [l['alias'], l['ifname']]
+                    names.append(n)
+                except:
+                    pass
+    return names
+
+def convert_to_native(data, standard):
+    if standard in [i[1] for i in data]:
+        for x in data:
+            if standard in x[1]:
+                return x[0]
+    return standard
+
+
 def invoke(func, args):
   if func == 'snmp_get':
     datam = {}
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/contact')
     response = aa.get(keypath)
-    if response.ok() and 'ietf-snmp-ext:contact' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:contact' in response.content.keys():
         datam['sysContact'] = response.content['ietf-snmp-ext:contact']
 
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/location')
     response = aa.get(keypath)
-    if response.ok() and 'ietf-snmp-ext:location' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:location' in response.content.keys():
         datam['sysLocation'] = response.content['ietf-snmp-ext:location']
 
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/trap-enable')
     response = aa.get(keypath)
-    if response.ok() and 'ietf-snmp-ext:trap-enable' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:trap-enable' in response.content.keys():
       trapEnable = response.content['ietf-snmp-ext:trap-enable']
       if trapEnable == True:
         datam['traps'] = 'enable'
@@ -358,9 +476,7 @@ def invoke(func, args):
       body = {"ietf-snmp-ext:trap-enable": True}
       response = aa.patch(keypath, body)
     else:
-      body = {"ietf-snmp-ext:trap-enable": False}
-      response = aa.patch(keypath, body)
-#      response = aa.delete(keypath)                  # delete operation deletes "system"
+      response = aa.delete(keypath)
     return response
 
   elif func == 'snmp_engine':
@@ -390,24 +506,40 @@ def invoke(func, args):
       index = args.index('interface')
       interface = args[index+1]
 
+    response = None
+    # Since the key to the YANG model is the listening address i.e. the listen name
+    # there can exist only a single entry per name.
+    key=findKeyForAgentEntry(ipAddress, port, interface)
+    if not key == 'None':
+      keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen={name}', name=key)
+      response = aa.delete(keypath, True)
+
     if func == 'snmp_agentaddr':    # Need to test parameters before setting
+      if key == 'None':
+        key=findNextKeyForAgentEntry()
+      standard_mode = is_in_standard_mode()
+      if standard_mode:
+          std_nat_interfaces = alias_interfaces_list()
       ipAddrValid = False
-      ifValid = True
-      if not interface == '':
-        ifValid = False
-      ip = ipaddress.ip_address(unicode(ipAddress))
-      for intf in netifaces.interfaces():
-        if intf == interface:
+      ifValid = False
+      net_if_addrs_dict = psutil.net_if_addrs()
+      if interface == '':
+        ifValid = True
+      else:
+        interface = convert_to_native(std_nat_interfaces, interface) if standard_mode else interface
+        if net_if_addrs_dict.get(interface):
           ifValid = True
-        ipaddresses = netifaces.ifaddresses(intf)
-        if ipFamily[ip.version] in ipaddresses:
-          for ipaddr in ipaddresses[ipFamily[ip.version]]:
-            testAddr = ipaddr['addr']
-            if '%' in testAddr:                 # some IPv6 addresses include an interface at the end
-              testAddr = testAddr[0:testAddr.index('%')]
-            if ipAddress == testAddr:
-              ipAddrValid = True
-              break
+      if ifValid:
+        ip = ipaddress.ip_address(unicode(ipAddress))
+        for intf, ipaddrs in net_if_addrs_dict.items():
+          for _ip in ipaddrs:
+            if ipFamily[ip.version] == _ip.family:
+              testAddr = _ip.address
+              if '%' in testAddr:            # some IPv6 addresses include an interface at the end
+                testAddr = testAddr[0:testAddr.index('%')]
+              if ipAddress == testAddr:
+                ipAddrValid = True
+                break
 
       portValid = True
       if ipAddrValid == True and not port == '161':
@@ -457,13 +589,10 @@ def invoke(func, args):
       udp['port'] = int(port, 10)
       if len(interface) > 0:
         udp['ietf-snmp-ext:interface'] = interface
-      listen = {'name' : str(ip),
+      listen = {'name' : key,
                 'udp' : udp }
       body = { 'ietf-snmp:engine' : { 'listen' : [ listen ] }}
       response = aa.patch(keypath, body)
-    else:
-      keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen={index}', index=ipAddress)
-      response = aa.delete(keypath)
 
     return response
 
@@ -1058,10 +1187,10 @@ def invoke(func, args):
     if srcIf == 'mgmt' :
       ifValid = True
     elif not srcIf == None:
-      for intf in netifaces.interfaces():
-        if intf == srcIf:
+      standard_mode = is_in_standard_mode()
+      if_names = interfaces_list() if standard_mode else netifaces.interfaces()
+      if srcIf in if_names:
           ifValid = True
-          break
 
     tag = [ type ]
     if ifValid == True:
@@ -1147,11 +1276,11 @@ def run(func, args):
       if api_response.status_code == 404:               # Resource not found
         return
       else:
-        print(api_response.error_message())
-        sys.exit(-1)
+        print (api_response.error_message())
 
   except:
     # system/network error
+    syslog.syslog(syslog.LOG_ERR, "Exception: " + traceback.format_exc())
     print "%Error: Transaction Failure"
 
 if __name__ == '__main__':

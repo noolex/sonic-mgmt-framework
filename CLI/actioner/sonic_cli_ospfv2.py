@@ -13,6 +13,7 @@ import ast
 from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+from six.moves.urllib.parse import quote
 
 ospf_config_cli_log_enabled = False
 def ospf_cli_log(log_string) :
@@ -27,9 +28,9 @@ def get_ospf_router_nw_instance_uri(vrf_name) :
     return ospf_router_nwinst_uri
 
 def get_ospf_router_uri(vrf_name, instance_id='ospfv2'):
-    ospf_router_global_patch_uri = get_ospf_router_nw_instance_uri(vrf_name)
-    ospf_router_global_patch_uri += '/protocols/protocol=OSPF,ospfv2/ospfv2'
-    return ospf_router_global_patch_uri
+    ospf_router_uri = get_ospf_router_nw_instance_uri(vrf_name)
+    ospf_router_uri += '/protocols/protocol=OSPF,ospfv2/ospfv2'
+    return ospf_router_uri
 
 def add_key_to_config_data(cfg_body, key_data):
     if len(cfg_body) == 0:
@@ -49,7 +50,7 @@ def validate_delete_response(response):
         return response
     elif response.ok() :
         return response
-    elif response.status_code in [ 401, 500 ] :
+    elif response.status_code in [ 401, 1017] : # 500 postxfm err
         ospf_cli_log("validate_delete_response: Error code {}".format(response.status_code))
         ospf_cli_log("validate_delete_response: Ignoring error {}".format( response.error_message()))
         response.status_code = 204
@@ -62,7 +63,7 @@ def validate_delete_response(response):
 def patch_ospf_router_config(api, vrf_name, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_config: {} {}".format(vrf_name, cfg_body))
     ospf_rtr_uri = get_ospf_router_nw_instance_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_uri)
+
     ospf_rtr_uri_body = {
         "openconfig-network-instance:network-instance": [{
             "name": vrf_name,
@@ -71,7 +72,9 @@ def patch_ospf_router_config(api, vrf_name, cfg_body={}) :
                     "identifier":"OSPF", "name":"ospfv2",
                     "ospfv2": cfg_body
                      }] } }] }
+
     ospf_cli_log("patch_ospf_router_config: {} body {}".format(ospf_rtr_uri, ospf_rtr_uri_body))
+    keypath = cc.Path(ospf_rtr_uri)
     response = api.patch(keypath, ospf_rtr_uri_body)
     return response
 
@@ -89,7 +92,6 @@ def delete_ospf_router_config(api, vrf_name, cfg_field='') :
 def patch_ospf_router_global_config(api, vrf_name, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_global_config: {} {}".format(vrf_name, cfg_body))
     ospf_rtr_gbl_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_gbl_uri)
 
     key_data = {"openconfig-ospfv2-ext:enable": True}
     add_key_to_config_data(cfg_body, key_data)
@@ -103,6 +105,7 @@ def patch_ospf_router_global_config(api, vrf_name, cfg_body={}) :
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_global_config: {} body {}".format(ospf_rtr_gbl_uri, ospf_rtr_gbl_uri_body))
+    keypath = cc.Path(ospf_rtr_gbl_uri)
     response = api.patch(keypath, ospf_rtr_gbl_uri_body)
     return response
 
@@ -121,7 +124,6 @@ def delete_ospf_router_global_config(api, vrf_name, cfg_field='') :
 def patch_ospf_router_area_config(api, vrf_name, area_id, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_area_config: {} {} {}".format(vrf_name, area_id, cfg_body))
     ospf_rtr_area_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_area_uri)
 
     key_data = {"identifier": area_id }
     add_key_to_config_data(cfg_body, key_data)
@@ -137,6 +139,7 @@ def patch_ospf_router_area_config(api, vrf_name, area_id, cfg_body={}) :
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_area_config: {} body {}".format(ospf_rtr_area_uri, ospf_rtr_area_uri_body))
+    keypath = cc.Path(ospf_rtr_area_uri)
     response = api.patch(keypath, ospf_rtr_area_uri_body)
     return response
 
@@ -156,7 +159,6 @@ def delete_ospf_router_area_config(api, vrf_name, area_id, cfg_field='') :
 def patch_ospf_router_network_config(api, vrf_name, area_id, network, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_network_config: {} {} {} {}".format(vrf_name, area_id, network, cfg_body))
     ospf_rtr_area_nw_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_area_nw_uri)
 
     key_data = {"openconfig-ospfv2-ext:address-prefix": network }
     add_key_to_config_data(cfg_body, key_data)
@@ -176,6 +178,7 @@ def patch_ospf_router_network_config(api, vrf_name, area_id, network, cfg_body={
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_network_config: {} body {}".format(ospf_rtr_area_nw_uri, ospf_rtr_area_nw_uri_body))
+    keypath = cc.Path(ospf_rtr_area_nw_uri)
     response = api.patch(keypath, ospf_rtr_area_nw_uri_body)
     return response
 
@@ -196,7 +199,6 @@ def delete_ospf_router_network_config(api, vrf_name, area_id, network, cfg_field
 def patch_ospf_router_vlink_config(api, vrf_name, area_id, link_id, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_vlink_config: {} {} {} {}".format(vrf_name, area_id, link_id, cfg_body))
     ospf_rtr_vlink_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_vlink_uri)
 
     key_data = {"remote-router-id": link_id, "openconfig-ospfv2-ext:enable": True}
     add_key_to_config_data(cfg_body, key_data)
@@ -215,6 +217,7 @@ def patch_ospf_router_vlink_config(api, vrf_name, area_id, link_id, cfg_body={})
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_vlink_config: {} body {}".format(ospf_rtr_vlink_uri, ospf_rtr_vlink_uri_body))
+    keypath = cc.Path(ospf_rtr_vlink_uri)
     response = api.patch(keypath, ospf_rtr_vlink_uri_body)
     return response
 
@@ -234,7 +237,6 @@ def delete_ospf_router_vlink_config(api, vrf_name, area_id, link_id, cfg_field='
 def patch_ospf_router_addr_range_config(api, vrf_name, area_id, addr_range, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_addr_range_config: {} {} {} {}".format(vrf_name, area_id, addr_range, cfg_body))
     ospf_rtr_range_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_range_uri)
 
     key_data = {"openconfig-ospfv2-ext:address-prefix": addr_range }
     add_key_to_config_data(cfg_body, key_data)
@@ -256,6 +258,7 @@ def patch_ospf_router_addr_range_config(api, vrf_name, area_id, addr_range, cfg_
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_addr_range_config: {} body {}".format(ospf_rtr_range_uri, ospf_rtr_range_uri_body))
+    keypath = cc.Path(ospf_rtr_range_uri)
     response = api.patch(keypath, ospf_rtr_range_uri_body)
     return response
 
@@ -276,7 +279,6 @@ def delete_ospf_router_addr_range_config(api, vrf_name, area_id, addr_range, cfg
 def patch_ospf_router_area_policy_config(api, vrf_name, area_id, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_area_policy_config: {} {} {}".format(vrf_name, area_id, cfg_body))
     ospf_rtr_apolicy_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_apolicy_uri)
 
     key_data = { "src-area": area_id}
     add_key_to_config_data(cfg_body, key_data)
@@ -294,6 +296,7 @@ def patch_ospf_router_area_policy_config(api, vrf_name, area_id, cfg_body={}) :
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_area_policy_config: {} body {}".format(ospf_rtr_apolicy_uri, ospf_rtr_apolicy_uri_body))
+    keypath = cc.Path(ospf_rtr_apolicy_uri)
     response = api.patch(keypath, ospf_rtr_apolicy_uri_body)
     return response
 
@@ -313,7 +316,6 @@ def delete_ospf_router_area_policy_config(api, vrf_name, area_id, cfg_field='') 
 def patch_ospf_router_resdistribute_config(api, vrf_name, protocol, direction, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_resdistribute_config: {} {} {} {}".format(vrf_name, protocol, direction, cfg_body))
     ospf_rtr_redist_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_redist_uri)
 
     key_data = {"protocol": protocol, "direction": direction }
     add_key_to_config_data(cfg_body, key_data)
@@ -332,6 +334,7 @@ def patch_ospf_router_resdistribute_config(api, vrf_name, protocol, direction, c
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_resdistribute_config: {} body {}".format(ospf_rtr_redist_uri, ospf_rtr_redist_uri_body))
+    keypath = cc.Path(ospf_rtr_redist_uri)
     response = api.patch(keypath, ospf_rtr_redist_uri_body)
     return response
 
@@ -351,7 +354,6 @@ def delete_ospf_router_resdistribute_config(api, vrf_name, protocol, direction, 
 def patch_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_addr, cfg_body={}) :
     ospf_cli_log("patch_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_body))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name)
-    keypath = cc.Path(ospf_rtr_pif_uri)
 
     key_data = {"name": intf_name, "address": if_addr }
     add_key_to_config_data(cfg_body, key_data)
@@ -370,6 +372,7 @@ def patch_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_addr
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_router_passive_interface_config: {} body {}".format(ospf_rtr_pif_uri, ospf_rtr_pif_uri_body))
+    keypath = cc.Path(ospf_rtr_pif_uri)
     response = api.patch(keypath, ospf_rtr_pif_uri_body)
     return response
 
@@ -377,9 +380,10 @@ def delete_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_add
     ospf_cli_log("delete_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_field))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name, 'ospfv2')
     ospf_rtr_pif_uri += '/global/openconfig-ospfv2-ext:passive-interfaces'
-    ospf_rtr_pif_uri += '/passive-interface={},{}'.format(intf_name, if_addr)
-    if cfg_field != '' :
-        ospf_rtr_pif_uri += '/{}'.format(cfg_field)
+    if intf_name != '' and if_addr != '' :
+        ospf_rtr_pif_uri += '/passive-interface={},{}'.format(quote(intf_name, safe=''), if_addr)
+        if cfg_field != '' :
+            ospf_rtr_pif_uri += '/{}'.format(cfg_field)
     ospf_cli_log("delete_ospf_router_passive_interface_config: uri {}".format(ospf_rtr_pif_uri))
     keypath = cc.Path(ospf_rtr_pif_uri)
     response = api.delete(keypath)
@@ -387,45 +391,126 @@ def delete_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_add
 
 ############## OSPF interface config
 def get_ospf_intf_uri(intf_name, sub_intf=0):
-    ospf_intf_patch_uri = '/restconf/data/openconfig-interfaces:interfaces/interface={}'.format(intf_name)
-    ospf_intf_patch_uri += '/subinterfaces/subinterface={}'.format(sub_intf)
-    return ospf_intf_patch_uri
+    ospf_intf_uri = '/restconf/data/openconfig-interfaces:interfaces/interface={}'.format(quote(intf_name, safe=''))
+    if intf_name.startswith("Vlan") :
+        ospf_intf_uri += '/openconfig-vlan:routed-vlan'
+    else :
+        ospf_intf_uri += '/subinterfaces/subinterface={}'.format(sub_intf)
+    return ospf_intf_uri
 
 def patch_ospf_interface_config(api, intf_name, intf_addr, cfg_body={}) :
     ospf_cli_log("patch_ospf_interface_config: {} {} {}".format(intf_name, intf_addr, cfg_body))
-    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
-    keypath = cc.Path(ospf_intf_uri)
+    sub_intf = 0
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     key_data = {"address": intf_addr }
     add_key_to_config_data(cfg_body, key_data)
 
-    ospf_intf_uri_body = {
-        "openconfig-interfaces:subinterface": [{
-            "index": 0,
-            "openconfig-if-ip:ipv4": {
-                 "openconfig-ospfv2-ext:ospfv2": {
-                     "if-addresses": [{
-                         "address": intf_addr
-                      }] } }  }] }
+    if intf_name.startswith("Vlan") :
+        ospf_intf_uri_body = {
+            "openconfig-vlan:routed-vlan": {
+                "openconfig-if-ip:ipv4": {
+                     "openconfig-ospfv2-ext:ospfv2": {
+                         "if-addresses": [{
+                             "address": intf_addr
+                          }] } }  } }
 
-    temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][0]
+        temp_entry = ospf_intf_uri_body["openconfig-vlan:routed-vlan"]
+    else :
+        ospf_intf_uri_body = {
+            "openconfig-interfaces:subinterface": [{
+                "index": sub_intf,
+                "openconfig-if-ip:ipv4": {
+                     "openconfig-ospfv2-ext:ospfv2": {
+                         "if-addresses": [{
+                             "address": intf_addr
+                          }] } }  }] }
+
+        temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][sub_intf]
+
     temp_entry = temp_entry["openconfig-if-ip:ipv4"]["openconfig-ospfv2-ext:ospfv2"]
     uri_cfg_body = temp_entry["if-addresses"][0]
     add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
 
     ospf_cli_log("patch_ospf_interface_config: {} body {}".format(ospf_intf_uri, ospf_intf_uri_body))
+    keypath = cc.Path(ospf_intf_uri)
     response = api.patch(keypath, ospf_intf_uri_body)
     return response
 
 def delete_ospf_interface_config(api, intf_name, intf_addr, cfg_field) :
     ospf_cli_log("delete_ospf_interface_config: {} {} {}".format(intf_name, intf_addr, cfg_field))
     ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
     ospf_intf_uri += '/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2'
     if intf_addr != '' :
         ospf_intf_uri += '/if-addresses={}'.format(intf_addr)
         if cfg_field != '' :
             ospf_intf_uri += '/{}'.format(cfg_field)
     ospf_cli_log("delete_ospf_interface_config: uri {}".format(ospf_intf_uri))
+    keypath = cc.Path(ospf_intf_uri)
+    response = api.delete(keypath)
+    return validate_delete_response(response)
+
+
+############## OSPF interface authentication config
+def patch_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg_body={}) :
+    ospf_cli_log("patch_ospf_interface_md_auth_config: {} {} {}".format(intf_name, intf_addr, cfg_body))
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    key_data = {"authentication-key-id": auth_key }
+    add_key_to_config_data(cfg_body, key_data)
+
+    temp_entry = {}
+    if intf_name.startswith("Vlan") :
+        ospf_intf_uri_body = {
+            "openconfig-vlan:routed-vlan": {
+                 "openconfig-if-ip:ipv4": {
+                      "openconfig-ospfv2-ext:ospfv2": {
+                          "if-addresses": [{
+                              "address": intf_addr,
+                              "md-authentications" : {
+                                   "md-authentication" : [{
+                                       "authentication-key-id" : auth_key
+                         }] } }] } } } }
+
+        temp_entry = ospf_intf_uri_body["openconfig-vlan:routed-vlan"]
+    else :
+        ospf_intf_uri_body = {
+            "openconfig-interfaces:subinterface": [{
+                "index": 0,
+                "openconfig-if-ip:ipv4": {
+                     "openconfig-ospfv2-ext:ospfv2": {
+                         "if-addresses": [{
+                             "address": intf_addr,
+                             "md-authentications" : {
+                                  "md-authentication" : [{
+                                      "authentication-key-id" : auth_key
+                          }] } }] } } }] }
+
+        temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][0]
+
+    temp_entry = temp_entry["openconfig-if-ip:ipv4"]["openconfig-ospfv2-ext:ospfv2"]
+    temp_entry = temp_entry["if-addresses"][0]
+    uri_cfg_body = temp_entry["md-authentications"]["md-authentication"][0]
+    add_cfg_body_to_uri_body(uri_cfg_body, cfg_body)
+
+    ospf_cli_log("patch_ospf_interface_md_auth_config: {} body {}".format(ospf_intf_uri, ospf_intf_uri_body))
+    keypath = cc.Path(ospf_intf_uri)
+    response = api.patch(keypath, ospf_intf_uri_body)
+    return response
+
+def delete_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg_field) :
+    ospf_cli_log("delete_ospf_interface_md_auth_config: {} {} {}".format(intf_name, intf_addr, cfg_field))
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    ospf_intf_uri += '/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2'
+    if intf_addr != '' :
+        ospf_intf_uri += '/if-addresses={}/md-authentications'.format(intf_addr)
+        if auth_key != '' :
+            ospf_intf_uri += '/md-authentication={}'.format(auth_key)
+            if cfg_field != '' :
+                ospf_intf_uri += '/{}'.format(cfg_field)
+    ospf_cli_log("delete_ospf_interface_md_auth_config: uri {}".format(ospf_intf_uri))
     keypath = cc.Path(ospf_intf_uri)
     response = api.delete(keypath)
     return validate_delete_response(response)
@@ -463,6 +548,8 @@ def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
     body = None
+
+    ospf_cli_log("invoke_api: argslen {} args={}".format(len(args), args))
 
     #Ospf router config
     if func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config':
@@ -578,12 +665,16 @@ def invoke_api(func, args=[]):
         for arg in args[1:]:
             if (arg == "default"):
                 cmdtype = "default"
+            if (arg == "non-passive"):
+                cmdtype = "non-passive"
 
-        if (cmdtype != ""):
+        if (cmdtype == "default"):
             body = { "config" : {"openconfig-ospfv2-ext:passive-interface-default": True} }
             return patch_ospf_router_global_config(api, args[0], body)
         else:
-            return patch_ospf_router_passive_interface_config(api, args[0], args[1], args[2])
+            pass_type = True if cmdtype == "non-passive" else False
+            body = { "config" : {"openconfig-ospfv2-ext:non-passive": pass_type } }
+            return patch_ospf_router_passive_interface_config(api, vrf, args[1], args[2], body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface':
         vrf = args[0]
@@ -593,10 +684,20 @@ def invoke_api(func, args=[]):
             if (arg == "default"):
                 cmdtype = "default"
 
-        if (cmdtype != ""):
-            return delete_ospf_router_global_config(api, args[0], 'config/openconfig-ospfv2-ext:passive-interface-default')
+        if (cmdtype == "default") :
+            return delete_ospf_router_global_config(api, vrf, 'config/openconfig-ospfv2-ext:passive-interface-default')
         else:
-            return delete_ospf_router_passive_interface_config(api, args[0], args[1], args[2])
+            return delete_ospf_router_passive_interface_config(api, vrf, args[1], args[2])
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_nonpassive_interface':
+        vrf = args[0]
+        body = { "config" : {"openconfig-ospfv2-ext:non-passive": True } }
+        return patch_ospf_router_passive_interface_config(api, args[0], args[1], args[2], body)
+
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_nonpassive_interface':
+        vrf = args[0]
+        body = { "config" : {"openconfig-ospfv2-ext:non-passive": False } }
+        return patch_ospf_router_passive_interface_config(api, args[0], args[1], args[2], body)
 
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers':
         vrf = args[0]
@@ -976,9 +1077,12 @@ def invoke_api(func, args=[]):
         areaidval = area_to_dotted(args[1])
         vlinkid = ""
 
+        if (len(args) == 4):
+            if args[2] == "area" and args[3] == args[1] :
+                return patch_ospf_router_area_config(api, vrf, areaidval)
+
         i = 0
         for arg in args:
-
             if (arg == "authentication"):
                 if (len(args[i:]) > 1 and args[i + 1] == "message-digest"):
                     body = { "config" : {"openconfig-ospfv2-ext:authentication-type": "MD5HMAC"}}
@@ -1039,9 +1143,10 @@ def invoke_api(func, args=[]):
                     return patch_ospf_router_addr_range_config(api, vrf, areaidval, addr_range, body)
 
             elif (arg == "virtual-link"):
+                next_arg_len = len(args[i:]) -1
                 vlinkid = args[i + 1]
 
-                if (len(args[(i + 1):]) == 1):
+                if (next_arg_len == 1):
                      body = { "config" : {"openconfig-ospfv2-ext:enable": True} }
                      return patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid)
 
@@ -1065,30 +1170,62 @@ def invoke_api(func, args=[]):
                         return patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
 
                     if (vlinkarg == "authentication"):
-                        if (args[j + 1] == "null"):
-                            body = { "config" : {"openconfig-ospfv2-ext:authentication-type": "NONE"}}
-                            response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
-                            if response.ok() == False : return response
-                        elif (args[j + 1] == "message-digest") :
-                            if (len(args[(j + 1):]) > 1):
-                                body = { "config" : {"openconfig-ospfv2-ext:authentication-type": "MD5HMAC",
-                                                     "openconfig-ospfv2-ext:authentication-key-id": int(args[j + 3]),
-                                                     "openconfig-ospfv2-ext:authentication-md5-key": args[j + 5] }}
-                                response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
-                                if response.ok() == False : return response
-                            else :
-                                body = { "config" : {"openconfig-ospfv2-ext:authentication-type": "MD5HMAC"} }
-                                response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
-                                if response.ok() == False : return response
-                        else :
+                        next_arg_len = len(args[j:]) - 1
+                        if next_arg_len == 0 :
                             body = { "config" : {"openconfig-ospfv2-ext:authentication-type": "TEXT"}}
                             response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
                             if response.ok() == False : return response
 
+                        if next_arg_len >= 1 and args[j + 1] == "message-digest" :
+                            body = { "config" : {"openconfig-ospfv2-ext:authentication-type": "MD5HMAC"} }
+                            response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
+                            if response.ok() == False : return response
+
+                        if next_arg_len >= 1 and args[j + 1] == "null" :
+                            body = { "config" : {"openconfig-ospfv2-ext:authentication-type": "NONE"}}
+                            response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
+                            if response.ok() == False : return response
+
                     if (vlinkarg == "authentication-key"):
-                        body = { "config" : {"openconfig-ospfv2-ext:authentication-key": args[j + 1]}}
-                        response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
-                        if response.ok() == False : return response
+                        next_arg_len = len(args[j:]) - 1
+                        encrypted = False
+                        if next_arg_len >= 2:
+                            encrypted = True if (args[j + 2] == "encrypted") else False
+                        if next_arg_len >= 1:
+                            body = { "config" : {"openconfig-ospfv2-ext:authentication-key-encrypted": encrypted,
+                                                 "openconfig-ospfv2-ext:authentication-key": args[j + 1]}}
+                            response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
+                            if response.ok() == False : return response
+
+                    if (vlinkarg == "message-digest-key"):
+                        #message-digest-key 81 md5 passwd encrypted
+                        next_arg_len = len(args[j:]) - 1
+                        if next_arg_len >= 3 and args[j + 2] == "md5" :
+                            key_id = args[j + 1] 
+                            auth_key = args[j + 3] 
+                            encrypted = False
+                            if next_arg_len >= 4 and args[j + 4] == "encrypted" :
+                                encrypted = True
+                            if (key_id != "" and auth_key != "") :
+                                key_id = int(key_id)
+                                body = { "md-authentications" : { "md-authentication" : [{
+                                         "authentication-key-id" : key_id,
+                                         "config" : {"openconfig-ospfv2-ext:authentication-key-id": key_id,
+                                                     "openconfig-ospfv2-ext:authentication-md5-key": auth_key,
+                                                     "openconfig-ospfv2-ext:authentication-key-encrypted": encrypted} }] } }
+                                response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
+                                if response.ok() == False : return response
+
+                    if (vlinkarg == "authentication-key"):
+                        next_arg_len = len(args[j:]) - 1 
+                        encrypted = False
+                        if next_arg_len >= 2:
+                            encrypted = True if (args[j + 2] == "encrypted") else False
+                        if next_arg_len >= 1:
+                            body = { "config" : {"openconfig-ospfv2-ext:authentication-key-encrypted": encrypted, 
+                                                 "openconfig-ospfv2-ext:authentication-key": args[j + 1]}}
+                            response = patch_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, body)
+                            if response.ok() == False : return response
 
                     j = j + 1
 
@@ -1100,6 +1237,10 @@ def invoke_api(func, args=[]):
         areaidval = area_to_dotted(args[1])
         vlinkid = ""
         response = None
+
+        if (len(args) == 5) and areaidval != "" :
+            if args[3] == "area" and args[4] == args[1] :
+                return delete_ospf_router_area_config(api, vrf, areaidval)
 
         i = 0
         for arg in args:
@@ -1148,11 +1289,11 @@ def invoke_api(func, args=[]):
 
             elif (arg == "virtual-link"):
                 vlinkid = args[i +1]
-
-                if (len(args[(i + 1):]) == 1):
+                next_arg_len = len(args[i:]) -1 
+                if (next_arg_len == 1):
                     return delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid)
 
-                j = i + 1
+                j = i 
                 for vlinkarg in args[i:]:
                     if (vlinkarg == "dead-interval"):
                         return delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:dead-interval')
@@ -1163,19 +1304,27 @@ def invoke_api(func, args=[]):
                     if (vlinkarg == "transmit-delay"):
                         return delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:transmit-delay')
                     if (vlinkarg == "authentication"):
-                        if (args[j] == "null"):
+                        next_arg_len = len(args[j:]) - 1
+                        if next_arg_len == 0 :
                             response = delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:authentication-type')
                             if response.ok() == False : return response
-                        elif (args[j] == "message-digest"):
+                        if next_arg_len == 1 and (args[j+1] == "null"):
                             response = delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:authentication-type')
                             if response.ok() == False : return response
-                            response = delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:authentication-key-id')
-                            if response.ok() == False : return response
-                            response = delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:authentication-md5-key')
+                        if next_arg_len == 1 and (args[j+1] == "message-digest"):
+                            response = delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:authentication-type')
                             if response.ok() == False : return response
                     if (vlinkarg == "authentication-key"):
                         response = delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:authentication-key')
                         if response.ok() == False : return response
+                        response = delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, 'config/openconfig-ospfv2-ext:authentication-key-encrypted')
+                        if response.ok() == False : return response
+                    if (vlinkarg == "message-digest-key") :
+                        next_arg_len = len(args[j:]) - 1
+                        if next_arg_len >= 1 :
+                            mdkeyuri = "openconfig-ospfv2-ext:md-authentications/md-authentication={}".format(args[j + 1])        
+                            response = delete_ospf_router_vlink_config(api, vrf, areaidval, vlinkid, mdkeyuri)
+                            if response.ok() == False : return response
                     j = j + 1
 
                 return response
@@ -1252,8 +1401,14 @@ def invoke_api(func, args=[]):
 
     elif func == 'patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key' :
         if_name = args[0]
-        if_address = args[2] if (len(args) >= 3 and args[2] != "") else "0.0.0.0"
-        cfg_body = { "config" : {"authentication-key": args[1]}}
+        auth_key = args[1]
+        encrypted = False
+        if len(args) >= 3 and args[2] == "encrypted" :
+            encrypted = True
+            if_address = args[3] if (len(args) >= 4 and args[3] != "") else "0.0.0.0"
+        else :
+            if_address = args[2] if (len(args) >= 3 and args[2] != "") else "0.0.0.0"
+        cfg_body = { "config" : {"authentication-key-encrypted": encrypted, "authentication-key": auth_key}}
         return patch_ospf_interface_config(api, if_name, if_address, cfg_body)
 
     elif func == 'delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key' :
@@ -1263,16 +1418,21 @@ def invoke_api(func, args=[]):
 
     elif func == 'patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key_id' :
         if_name = args[0]
-        if_address = args[3] if (len(args) >= 4 and args[3] != "") else "0.0.0.0"
-        cfg_body = { "config" : { "authentication-key-id": int(args[1]), "authentication-md5-key": args[2]} }
-        return patch_ospf_interface_config(api, if_name, if_address, cfg_body)
+        key_id = int(args[1])
+        encrypted = False
+        if len(args) >= 4 and args[3] == "encrypted" :
+            encrypted = True
+            if_address = args[4] if (len(args) >= 5 and args[4] != "") else "0.0.0.0"
+        else :
+            if_address = args[3] if (len(args) >= 4 and args[3] != "") else "0.0.0.0"
+        cfg_body = { "config" : { "authentication-key-encrypted": encrypted, "authentication-md5-key": args[2]} }
+        return patch_ospf_interface_md_auth_config(api, if_name, if_address, key_id, cfg_body)
 
     elif func == 'delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key_id' :
         if_name = args[0]
+        auth_key = int(args[1])
         if_address = args[3] if (len(args) >= 4 and args[3] != "") else "0.0.0.0"
-        response = delete_ospf_interface_config(api, if_name, if_address, 'config/authentication-key-id')
-        if response.ok() == False : return response
-        return delete_ospf_interface_config(api, if_name, if_address, 'config/authentication-md5-key')
+        return delete_ospf_interface_md_auth_config(api, if_name, if_address, auth_key, "")
 
     elif func == 'patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_md5_key' :
         if_name = args[0]

@@ -23,7 +23,7 @@ import cli_client as cc
 from scripts.render_cli import show_cli_output
 import traceback
 import cli_log as log
-from sonic_cli_acl import pcp_map, proto_number_map, dscp_map, ethertype_map
+from sonic_cli_acl import pcp_map, proto_number_map, dscp_map, ethertype_map, acl_natsort_intf_prio
 from natsort import natsorted
 import sonic_cli_acl
 import ipaddress
@@ -102,7 +102,7 @@ def create_classifier(args):
 def delete_classifier(args):
     # try to delete fbs entry first by checking if fbs object exists, else delete copp entry
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={classifier_name}', classifier_name=args[0])
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, depth=None, ignore404=False)
     if response.ok():
         keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={classifier_name}', classifier_name=args[0])
         return fbs_client.delete(keypath)
@@ -362,7 +362,7 @@ def __convert_tcp_flags(flags):
 def __update_tcp_flags(classifier, flags, delete=False):
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/transport/config/tcp-flags',
                       class_name=classifier)
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath,None,False)
     data = None
     if response.ok() and bool(response.content):
         data = response.content
@@ -420,7 +420,7 @@ def create_flow_copp(args):
     # inputs: <policy_name> <class_name> [priority]
     keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}',
                       copp_name=args[1])
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, None,False)
     if response.ok() and bool(response.content):
         if len(args) == 3:
             content = response.content
@@ -540,8 +540,8 @@ def set_policer_action(args):
                 value = value.replace('tbps', '000000000000')
             elif value.endswith('bps'):
                 value = value.replace('bps', '')
-        elif args[index] == 'cbs' or args[index] == 'bc':
-            key = 'bc'
+        elif args[index] == 'cbs':
+            key = 'cbs'
             value = args[index + 1]
             if value.endswith('KB'):
                 value = value.replace('KB', '000')
@@ -566,8 +566,8 @@ def set_policer_action(args):
                 value = value.replace('tbps', '000000000000')
             elif value.endswith('bps'):
                 value = value.replace('bps', '')
-        elif args[index] == 'pbs' or args[index] == 'be':
-            key = 'be'
+        elif args[index] == 'pbs':
+            key = 'pbs'
             value = args[index + 1]
             if value.endswith('KB'):
                 value = value.replace('KB', '000')
@@ -595,20 +595,20 @@ def clear_policer_action(args):
     if len(args) == 2:
         return fbs_client.delete(keypath)
 
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, depth=None, ignore404=False)
     if response.ok():
         data = response.content
         if len(args) == 2:
-            delete_params = ['cir', 'bc', 'pir', 'be']
+            delete_params = ['cir', 'cbs', 'pir', 'pbs']
         else:
             delete_params = []
             for feat in args[2:]:
                 if feat == 'cir' or feat == 'pir':
                     delete_params.append(feat)
                 elif feat == 'cbs':
-                    delete_params.append('bc')
+                    delete_params.append('cbs')
                 elif feat == 'pbs':
-                    delete_params.append('be')
+                    delete_params.append('pbs')
 
         for feat in delete_params:
             if feat in data['openconfig-fbs-ext:config'].keys():
@@ -782,7 +782,7 @@ def show_policy_summary(args):
     else:
         keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST')
 
-    return fbs_client.get(keypath)
+    return fbs_client.get(keypath, depth=None, ignore404=False)
 
 
 def show_policy(args):
@@ -875,11 +875,10 @@ def get_copp_trap_id(name):
     trap_id_val = ""
     tmp_keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap={copp_name}/config/trap-ids',
                           copp_name=name)
-    tmp_response = fbs_client.get(tmp_keypath)
+    tmp_response = fbs_client.get(tmp_keypath, depth=None, ignore404=False)
     if tmp_response is None:
         trap_id_val = ""
-
-    if tmp_response.ok():
+    elif tmp_response.ok():
         response = tmp_response.content
         if 'openconfig-copp-ext:trap-ids' in response:
             trap_id_val = response['openconfig-copp-ext:trap-ids']
@@ -1081,7 +1080,7 @@ def clear_copp_policer_action(args):
     keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
                       copp_name=args[0])
 
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, depth=None, ignore404=False)
     if response.ok():
         data = response.content
         if len(args) == 1:
@@ -1179,13 +1178,13 @@ def clear_copp_trap_priority_action(args):
 def show_copp_protocols(args):
     if args[0] == "actions":
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group')
-        return fbs_client.get(keypath)
+        return fbs_client.get(keypath, depth=None, ignore404=False)
     elif args[0] == "classifiers":
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
-        return fbs_client.get(keypath)
+        return fbs_client.get(keypath, depth=None, ignore404=False)
     elif args[0] == "policy":
         keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-traps/copp-trap')
-        return fbs_client.get(keypath)
+        return fbs_client.get(keypath, depth=None, ignore404=False)
     keypath = cc.Path('/restconf/operations/sonic-copp:get-match-protocols')
     return fbs_client.post(keypath, {})
 
@@ -1205,6 +1204,13 @@ def handle_generic_set_response(response, args, op_str):
             if 'error-app-tag' in error_data:
                 if error_data['error-app-tag'] == 'too-many-elements':
                     print('%Error: Configuration limit reached.')
+                elif error_data['error-app-tag'] == 'update-not-allowed':
+                    if op_str.startswith('create_policy_'):
+                        print("%Error: Creating policy-maps with same name and different type not allowed")
+                    elif op_str.startswith('create_classifier_'):
+                        print("%Error: Creating class-maps with same name and different match-types not allowed")
+                    else:
+                        print("%Error: Update not allowed for this configuration")
                 elif error_data['error-app-tag'] != 'same-policy-already-applied':
                     print(response.error_message())
             else:
@@ -1227,19 +1233,6 @@ def handle_generic_delete_response(response, args, op_str):
         return -1
     else:
         return 0
-
-
-def __natsort_intf_prio(ifname):
-    if ifname[0].startswith('Ethernet'):
-        prio = 10000 + int(ifname[0].replace('Ethernet', ''), 0)
-    elif ifname[0].startswith('PortChannel'):
-        prio = 20000 + int(ifname[0].replace('PortChannel', ''), 0)
-    elif ifname[0].startswith('Vlan'):
-        prio = 30000 + int(ifname[0].replace('Vlan', ''), 0)
-    else:
-        prio = 40000
-
-    return prio
 
 
 def handle_show_policy_summary_response(response, args, op_str):
@@ -1276,7 +1269,7 @@ def handle_show_policy_summary_response(response, args, op_str):
             if len(if_data):
                 render_data[binding['INTERFACE_NAME']] = if_data
 
-        sorted_data = OrderedDict(natsorted(render_data.items(), key=__natsort_intf_prio))
+        sorted_data = OrderedDict(natsorted(render_data.items(), key=acl_natsort_intf_prio))
         log.log_debug(str(sorted_data))
         show_cli_output('show_service_policy_summary.j2', sorted_data)
     else:
@@ -1360,7 +1353,7 @@ def handle_show_service_policy_details_response(response, args, op_str):
                 output_dict[entry["INTERFACE_NAME"]] = entry
 
             # sort by intf name
-            sorted_intfs = natsorted(output_dict.keys(), key=__natsort_intf_prio)
+            sorted_intfs = natsorted(output_dict.keys(), key=acl_natsort_intf_prio)
             for intf_name in sorted_intfs:
                 intf_data = output_dict[intf_name]
                 render_data[intf_name] = OrderedDict()
@@ -1427,7 +1420,7 @@ def handle_show_copp_protocols_response(response, args, op_str):
                         if "config" in entry and "trap-group" in entry["config"]:
                             keypath = cc.Path('/restconf/data/openconfig-copp-ext:copp/copp-groups/copp-group={copp_name}',
                                               copp_name=entry["config"]["trap-group"])
-                            resp2 = fbs_client.get(keypath)
+                            resp2 = fbs_client.get(keypath, depth=None, ignore404=False)
                             if resp2.ok():
                                 content2 = resp2.content
                                 if "openconfig-copp-ext:copp-group" in content2:

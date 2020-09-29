@@ -93,161 +93,149 @@ limitations under the License.
      />
      
 <PTYPE
-     name="LDAP_VRF"
-     pattern="(Vrf(([0-9A-Za-z]){1,28}))|(mgmt)"
-     help="Name of VRF (Max size 32, (mgmt, or prefixed by Vrf)"
-/>
-
-<PTYPE
      name="BASE_DN"
      pattern=".*"
-     help="Base distinguished name"
+     help="String Base distinguished name"
 />
 
 <PTYPE
      name="BIND_DN"
      pattern=".*"
-     help="Distinguished name to bind"
+     help="String Distinguished name to bind"
 />
 
 <PTYPE
      name="BIND_PW"
-     pattern=".*"
-     help="Credentials to bind"
+     pattern="([^ ]*)"
+     help="String Credentials to bind (Valid Chars: ASCII printable except SPACE)"
 />
 
 <PTYPE
      name="PAM_FILTER"
      pattern=".*"
-     help="PAM filter name"
+     help="String PAM filter name"
 />
 
 <PTYPE
      name="PAM_LOGIN_ATTR"
      pattern=".*"
-     help="PAM login attribute (Default: uid)"
+     help="String PAM login attribute (Default: uid)"
 />
 
 <PTYPE
      name="PAM_GRP_DN"
      pattern=".*"
-     help="PAM group distinguished name"
+     help="String PAM group distinguished name"
 />
 
 <PTYPE
      name="PAM_MEM_ATTR"
      pattern=".*"
-     help="PAM member attribute value"
+     help="String PAM member attribute value"
 />
 
 <PTYPE
      name="SUDOERS_BASE"
      pattern=".*"
-     help="Sudo base distinguished name"
+     help="String Sudo base distinguished name"
 />
 
 <PTYPE
      name="NSS_BASE_PWD"
      pattern=".*"
-     help="NSS search base for password map"
+     help="String NSS search base for password map"
 />
 
 <PTYPE
      name="NSS_BASE_GRP"
      pattern=".*"
-     help="NSS search base group"
+     help="String NSS search base group"
 />
 
 <PTYPE
      name="NSS_BASE_SHADOW"
      pattern=".*"
-     help="NSS search base for shadow map"
+     help="String NSS search base for shadow map"
 />
 
 <PTYPE
      name="NSS_BASE_NETGRP"
      pattern=".*"
-     help="NSS search base for netgroup map"
+     help="String NSS search base for netgroup map"
 />
 
 <PTYPE
      name="NSS_BASE_SUDOERS"
      pattern=".*"
-     help="NSS search base for sudoers map"
+     help="String NSS search base for sudoers map"
 />
 
 <PTYPE
      name="NSS_INITGRP"
      pattern=".*"
-     help="Init groups ignore users value"
+     help="String Init groups ignore users value"
 />
 
 <PTYPE
      name="ATTR_FROM"
      pattern=".*"
-     help="Attribute map key"
+     help="String Attribute map key"
 />
 
 <PTYPE
      name="ATTR_TO"
      pattern=".*"
-     help="Attribute map value"
+     help="String Attribute map value"
 />
 
 <PTYPE
      name="OBJ_FROM"
      pattern=".*"
-     help="Objectclass map key"
+     help="String Objectclass map key"
 />
 
 <PTYPE
      name="OBJ_TO"
      pattern=".*"
-     help="Objectclass map value"
+     help="String Objectclass map value"
 />
 
 <PTYPE
      name="DEFAULT_FROM"
      pattern=".*"
-     help="Default attribute map key"
+     help="String Default attribute map key"
 />
 
 <PTYPE
      name="DEFAULT_TO"
      pattern=".*"
-     help="Default attribute map value"
+     help="String Default attribute map value"
 />
 
 <PTYPE
      name="OVERRIDE_FROM"
      pattern=".*"
-     help="Override attribute value map key"
+     help="String Override attribute value map key"
 />
 
 <PTYPE
      name="OVERRIDE_TO"
      pattern=".*"
-     help="Override attribute value map value"
-/>
-
-<PTYPE
-    name="LDAP_HOSTNAME_OR_IPADDR"
-    pattern="(^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.?)+[a-zA-Z0-9]{2,6}$)|(^(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))$)|(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$)"
-    help="Hostname or IP address"
+     help="String Override attribute value map value"
 />
 
 <!--=======================================================-->
 
 <!-- Config mode -->
 <VIEW name="configure-view">
-    <COMMAND name = "ldap-server" help="Configures LDAP server" command_keys="ldap_type=global" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server" help="Configures LDAP server" command_keys="ldap_type=global" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
     	<PARAM name="ldap-global-options" help="" ptype="SUBCOMMAND" mode="switch">
 				<PARAM name="timelimit" help="Configures global search time limit" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
 				</PARAM>
 
 				<PARAM name="bind-timelimit" help="Configures global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	    
 				<PARAM name="idle-timelimit" help="Configures global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
@@ -380,7 +368,7 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server nss" help="Configures LDAP server for NSS" command_keys="ldap_type=nss" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server nss" help="Configures LDAP server for NSS" command_keys="ldap_type=nss" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
     	<PARAM name="ldap-nss-options" help="" ptype="SUBCOMMAND" mode="switch">
     	
 				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
@@ -388,7 +376,7 @@ limitations under the License.
 				</PARAM>
 
 				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	    
 				<PARAM name="idle-timelimit" help="Configures idle time limit" ptype="SUBCOMMAND" mode="subcommand">
@@ -490,14 +478,14 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server pam" help="Configures LDAP server for PAM" command_keys="ldap_type=pam" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server pam" help="Configures LDAP server for PAM" command_keys="ldap_type=pam" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
     	<PARAM name="ldap-pam-options" help="" ptype="SUBCOMMAND" mode="switch">
 				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
 				</PARAM>
 
 				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	
 				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
@@ -587,14 +575,14 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
     
-    <COMMAND name = "ldap-server sudo" help="Configures LDAP server for SUDO" command_keys="ldap_type=sudo" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}">
+    <COMMAND name = "ldap-server sudo" help="Configures LDAP server for SUDO" command_keys="ldap_type=sudo" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
     	<PARAM name="ldap-sudo-options" help="" ptype="SUBCOMMAND" mode="switch">
 				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
 					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
 				</PARAM>
 
 				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
-					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
 				</PARAM>
 	
 				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
@@ -685,7 +673,7 @@ limitations under the License.
       command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}"
       command_keys="ldap_type=global"
       >
-        <PARAM name="vrf_name" help="" ptype="LDAP_VRF"
+        <PARAM name="vrf_name" help="Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)" ptype="VRF_OR_MGMT"
           dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/vrf_name"
           >
         </PARAM>
@@ -700,7 +688,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="ldap-server host" help="Configures host name or IP address for a LDAP server" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name={addr}">    
-			<PARAM name="host_val" help="" ptype="LDAP_HOSTNAME_OR_IPADDR" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name"/>
+			<PARAM name="host_val" help="Hostname or IP address of LDAP server" ptype="DOMAIN_NAME_OR_IPADDR" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name"/>
 			<PARAM name="use-type" help="Configures server type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
 				<PARAM name="use_type_val" ptype="LDAP_USE_TYPE" help="Server type (all or nss or sudo or pam or nss_sudo or nss_pam or sudo_pam); Default: all" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/use_type"/>
 			</PARAM>
@@ -723,7 +711,7 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ldap-server map" help="Configures LDAP server for map" command_keys="name=*;from=*" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST/name={name},from={from}" render_command_cb="ldap_map_config">
+    <COMMAND name="ldap-server map" help="Configures LDAP server for map" command_keys="name=*;from=*" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST/name={name},from={from}" render_command_cb="ldap_map_config" escape_chars="">
     	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
         <PARAM name="attribute" help="Configures attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         	<PARAM name="attribute_from_val" ptype="ATTR_FROM" help=""/>
@@ -1116,7 +1104,7 @@ limitations under the License.
 		</COMMAND>
 					
     <COMMAND name="no ldap-server host" help="Unconfigures host name or IP address for a LDAP server">
-        <PARAM name="host_val" help="" ptype="LDAP_HOSTNAME_OR_IPADDR"/>
+        <PARAM name="host_val" help="Hostname or IP address of LDAP server" ptype="DOMAIN_NAME_OR_IPADDR"/>
 	        <PARAM name="ldap-map-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
 						<PARAM name="use-type" help="Unconfigures server type" ptype="SUBCOMMAND" mode="subcommand">
 						</PARAM>
@@ -1136,7 +1124,7 @@ limitations under the License.
 			</DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ldap-server map" help="Unconfigures LDAP server for map">
+    <COMMAND name="no ldap-server map" help="Unconfigures LDAP server for map" escape_chars="">
     	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
         <PARAM name="attribute" help="Unconfigures attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         	<PARAM name="attribute_from_val" ptype="ATTR_FROM" help=""/>

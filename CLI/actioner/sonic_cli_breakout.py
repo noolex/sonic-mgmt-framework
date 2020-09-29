@@ -85,7 +85,7 @@ def invoke(func, args):
     else:
         if len(args)<3:
             start = 1
-            end = 74
+            end = 106
             temp = args[1]
         else:
             start = int(args[0].split("/")[1])
@@ -112,6 +112,7 @@ def invoke(func, args):
                 state_resp.content["openconfig-platform-port:config"]["openconfig-port-breakout-ext:status"]=state.pop('openconfig-port-breakout-ext:status')
                 state_resp.content["openconfig-platform-port:config"]["openconfig-port-breakout-ext:members"]=state.pop('openconfig-port-breakout-ext:members')
                 resp.content[interface] = state_resp.content.pop("openconfig-platform-port:config")
+                resp.status_code = state_resp.status_code
                 continue
             if config_resp.content and "openconfig-platform-port:config" in config_resp.content:
                 resp.content[interface] = config_resp.content.pop("openconfig-platform-port:config")
@@ -119,7 +120,10 @@ def invoke(func, args):
             else:
                 err_count+=1
         if err_count > (end - start):
-            print("No valid breakout configurations")
+            if (end > start) or (config_resp.status_code != 500):
+                print("No valid breakout configurations")
+            else:
+                print("%Error: Invalid port")
         return resp
 
 
@@ -127,6 +131,8 @@ def run(func, args):
     try:
         api_response = invoke(func, args)
         if api_response.ok():
+            if (func.find("openconfig_platform_port_components_component_port_breakout_mode_config") != -1):
+                print("Dynamic Port Breakout in-progress, use \'show interface breakout port {}\' to check status.".format(args[0]))
             if api_response.content is not None:
                 if func == 'dependencies':
                     temp = args[1]

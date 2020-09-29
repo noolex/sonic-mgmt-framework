@@ -22,6 +22,8 @@ import time
 import json
 import ast
 import os
+import syslog
+import traceback
 from rpipe_utils import pipestr
 import cli_client as cc
 from netaddr import *
@@ -137,14 +139,10 @@ def generate_body(func, args=[]):
 
     #Configure description
     elif func == 'patch_description':
-        body = {"name": args[0],"config": {}}
-        full_cmd = os.getenv('USER_COMMAND', None)
-        match = re.search('description (["]?.*["]?)', full_cmd)
-        if match:
-            body["config"].update( {"description": match.group(1) } )
-        else:
-            body["config"].update( {"description": "" } )
-
+        if len(args) == 1:
+            body = {"name": args[0],"config": {"description": ""}}
+        if len(args) == 2:
+            body = {"name": args[0],"config": {"description": args[1]}}
 
     # Enable or diable interface
     elif func == 'patch_enabled':
@@ -207,6 +205,21 @@ def generate_body(func, args=[]):
         }
 
         body["openconfig-if-aggregate:aggregation"]["openconfig-vlan:switched-vlan"].update({"config": {"interface-mode": "TRUNK", "trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}})
+
+    # Graceful-shutdown mode config
+    elif func == 'graceful_shutdown_enabled':
+        body = {
+                 "name": args[0],
+                 "config": {"name": args[0]},
+                 "openconfig-if-aggregate:aggregation" : {"config": {}}
+               }
+
+        if args[1] == 'True':
+            mode = "enable"
+        else:
+            mode = "disable"
+
+        body["openconfig-if-aggregate:aggregation"]["config"].update( {"openconfig-interfaces-ext:graceful-shutdown-mode": mode} )
 
     # Speed config
     elif func == 'patch_port_speed':
@@ -419,8 +432,8 @@ def run(func, args):
                 iftype, ifrangelist = rangetolst(givenifrange)
                 iflist = invoke_api("get_available_interface_names_list", [iftype])
                 iflist = intersection(iflist, ifrangelist)
-            res = ",".join(natsorted(iflist))
-            sys.stdout.write(res)
+            res = ",".join(natsorted(iflist)).encode('ascii', 'ignore')
+            return res
 
         elif func == 'expand_if_range_to_list':
             givenifrange = args[0]
@@ -469,13 +482,18 @@ def run(func, args):
             if args[0] == "":
                 return 1
             iflist = args[0].rstrip().split(',') 
+            get_response = []
+            response = {}
             for intf in iflist:
                 func = "get_openconfig_interfaces_interfaces_interface"
                 intfargs = [intf]+args[1:]
                 response = invoke_api(func, intfargs)
-                if check_response(response, func, intfargs):
-                    print "%Error: Interface: "+intf
-            return
+                if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
+                    get_response.append(response.content['openconfig-interfaces:interface'][0])
+            if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
+                response.content['openconfig-interfaces:interface'] = get_response
+                return check_response(response, func, intfargs)
+            return 0
         elif func == 'default_port_config_range':
             api = cc.ApiClient()
             iflistStr = args[0].split("=")[1]
@@ -500,13 +518,15 @@ def run(func, args):
             if len(fail_list) != 0:
                 print("%Error: Failed to restore the following interfaces to their default configuration:\n" + "\n".join(fail_list))
                 return 1
+            print("%Info: Configuring only existing interfaces in range")
             return 0
         else:
             response = invoke_api(func, args)
             return check_response(response, func, args)
 
     except Exception as e:
-        print("%Error: Transaction Failure ", e)
+        syslog.syslog(syslog.LOG_DEBUG, "Exception: " + traceback.format_exc())
+        print("%Error: Internal error.")
         return 1
 
 if __name__ == '__main__':

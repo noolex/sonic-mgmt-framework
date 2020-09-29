@@ -398,7 +398,7 @@ limitations under the License.
          <PARAM
             name="iface_num"
             help="Physical Interface"
-            ptype="UINT"
+            ptype="UINT16"
              />
 
          <ACTION builtin="clish_pyobj">
@@ -645,7 +645,7 @@ limitations under the License.
           <PARAM
              name="iface_num"
              help="Physical Interface"
-             ptype="UINT"
+             ptype="UINT16"
               />
 
           <ACTION builtin="clish_pyobj">

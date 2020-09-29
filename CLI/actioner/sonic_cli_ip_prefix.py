@@ -31,23 +31,26 @@ urllib3.disable_warnings()
 def generate_ipprefix_uri(args, delete):
     _action = "PERMIT"
     _mode = set_name = ge = le = _maskrange_length = _ip_prefix = ''
-    ge_val = le_val = prefix_exits = le_exits = ge_exits = is_error = i = 0
+    ge_val = le_val = seq_no = seqno_exists = prefix_exists = le_exists = ge_exists = is_error = i = 0
     for arg in args:
         if "permit" == arg:
            _action = "PERMIT"
         elif "deny" == arg:
            _action = "DENY"
+        elif "seq" == arg:
+           seq_no = int(args[i+1])
+           seqno_exists = 1
         elif "prefix-list" == arg:
            set_name = args[i+1]
-           if len(args) > 4:
-              _ip_prefix = args[i+3]
-              prefix_exits = 1
+           if len(args) > 6:
+              _ip_prefix = args[i+5]
+              prefix_exists = 1
         elif "ge" == arg:
-           ge_exits = 1
+           ge_exists = 1
            ge_val = int(args[i+1])
            ge = args[i+1]
         elif "le" == arg:
-           le_exits = 1
+           le_exists = 1
            le_val = int(args[i+1])
            le = args[i+1]
         elif "ip" == arg:
@@ -59,35 +62,35 @@ def generate_ipprefix_uri(args, delete):
         else:
            temp = 1
         i = i + 1
-    if prefix_exits:
+    if seqno_exists and prefix_exists:
        _prefix, _mask = _ip_prefix.split("/")
        mask_val = int(_mask)
-       if (ge_exits == 0 and le_exits == 0):
+       if (ge_exists == 0 and le_exists == 0):
           _maskrange_length = "exact"
-       elif (ge_exits == 1 and le_exits == 0):
-          if (ge_val <= mask_val):
+       elif (ge_exists == 1 and le_exists == 0):
+          if (ge_val < mask_val):
              is_error = 1
           _maskrange_length = ge + ".." + max
-       elif (ge_exits == 0 and le_exits == 1):
+       elif (ge_exists == 0 and le_exists == 1):
           if (mask_val > le_val):
              is_error = 1
           _maskrange_length = _mask+".."+le
        else:
-          if ((ge_val <= mask_val) or (mask_val > le_val) or (ge_val > le_val)):
+          if ((ge_val < mask_val) or (mask_val > le_val) or (ge_val > le_val)):
              is_error = 1
           _maskrange_length = ge+".."+le
 
        if is_error:
-          print ("%Error: Invalid prefix range, make sure: len < ge <= le")
+          print ("%Error: Invalid prefix range, make sure: len <= ge <= le")
           exit(1)
        if delete:
-          keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={prefix_list_name}/prefixes/prefix={prefix}%2F{mask},{masklength_range}', prefix_list_name=set_name, prefix=_prefix, mask=_mask, masklength_range=_maskrange_length)
+          keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={prefix_list_name}/openconfig-routing-policy-ext:prefixes-ext/prefix={sequence_no},{prefix}%2F{mask},{masklength_range}', prefix_list_name=set_name, sequence_no=str(seq_no), prefix=_prefix, mask=_mask, masklength_range=_maskrange_length)
           body = None
        else:
           keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets')
           body = {"openconfig-routing-policy:prefix-sets":{"prefix-set":[{"name": set_name,"config":{"name": set_name,
-                  "mode": _mode},"prefixes":{"prefix":[{"ip-prefix": _ip_prefix,"masklength-range": _maskrange_length,"config": {
-                  "ip-prefix": _ip_prefix,"masklength-range": _maskrange_length,"openconfig-routing-policy-ext:action": _action}}]}}]}}
+                  "mode": _mode},"openconfig-routing-policy-ext:prefixes-ext":{"prefix":[{"sequence-number": seq_no,"ip-prefix": _ip_prefix,"masklength-range": _maskrange_length,"config": {
+                  "sequence-number": seq_no,"ip-prefix": _ip_prefix,"masklength-range": _maskrange_length,"openconfig-routing-policy-ext:action": _action}}]}}]}}
     else:
        keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/defined-sets/prefix-sets/prefix-set={prefix_list_name}',
                 prefix_list_name=set_name)

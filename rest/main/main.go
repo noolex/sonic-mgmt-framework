@@ -115,7 +115,7 @@ func main() {
 	openapi.Load()
 
 	server.GenerateJwtSecretKey()
-	server.JwtRefreshInt = time.Duration(30 * time.Second)
+	server.JwtRefreshInt = time.Duration(900 * time.Second)
 	server.JwtValidInt = time.Duration(3600 * time.Second)
 
 	rtrConfig := server.RouterConfig{

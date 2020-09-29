@@ -29,11 +29,11 @@ def show_igmp_snooping_intf_config(render_tables):
         igmps_intfs = render_tables['sonic-igmp-snooping:sonic-igmp-snooping/CFG_L2MC_TABLE/CFG_L2MC_TABLE_LIST']
         for igmps in igmps_intfs:
             if vlan_key == igmps['vlan-name']:
-                if igmps['enabled'] == True:
+                if 'enabled' in igmps:
                     cmd_str += cmd_prefix + cmd_end
-                if 'querier' in igmps:
+                if 'querier' in igmps and igmps['querier'] == True:
                     cmd_str += cmd_prefix + ' querier' + cmd_end
-                if 'fast-leave' in igmps:
+                if 'fast-leave' in igmps and igmps['fast-leave'] == True:
                     cmd_str += cmd_prefix + ' fast-leave' + cmd_end
                 if 'query-interval' in igmps:
                     cmd_str += cmd_prefix + ' query-interval {}'.format(igmps['query-interval']) + cmd_end

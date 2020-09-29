@@ -90,14 +90,6 @@ limitations under the License.
                      </PARAM>
                  </PARAM>
              </PARAM>
-             <!-- show queue buffer-threshold-breaches -->
-             <PARAM
-                 name="buffer-threshold-breaches"
-                 help="buffer threshold breaches"
-                 ptype="SUBCOMMAND"
-                 mode="subcommand"
-                 >
-             </PARAM>
          </PARAM>
       <ACTION>
          if test "${queue-subcommands}" = "counters"; then&#xA;
@@ -210,8 +202,6 @@ limitations under the License.
                      python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_output_queues CPU show_qos_interface_cpu_persistent_watermark.j2&#xA;
                  fi&#xA;   
               fi&#xA;   
-          elif test "${queue-subcommands}" = "buffer-threshold-breaches"; then&#xA;
-              python $SONIC_CLI_ROOT/sonic_cli_qos.py get_list_openconfig_qos_ext_qos_threshold_breaches_breach &#xA;
           fi&#xA;
       </ACTION>
       <DOCGEN>

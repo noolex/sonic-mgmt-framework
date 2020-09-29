@@ -1,0 +1,14 @@
+{% if json_output -%}
+{% if "openconfig-tam:dropmonitor-session" in json_output %}
+{% set sessions = json_output['openconfig-tam:dropmonitor-session'] %}
+{% if sessions|length > 0 %}
+{% set session = sessions[0]['state'] %}
+Name        : {{session['name']}}    
+Flow Group  : {{'-' if session['flowgroup'] == "" else session['flowgroup']}}
+Collector   : {{'-' if session['collector'] == "" else session['collector']}}
+Sampler     : {{'-' if session['sample-rate'] == "" else session['sample-rate']}}
+{% else %}
+%Error: Session is not configured.
+{% endif %}
+{% endif %}
+{% endif %}

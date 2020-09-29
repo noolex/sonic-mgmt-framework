@@ -1,0 +1,55 @@
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                                  http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+
+    <!-- *********************************************************** -->
+    <!-- *  hostname Options                                           * -->
+    <!-- *********************************************************** -->
+    <VIEW name="configure-view">
+        <COMMAND
+            name="hostname"
+            help="Configure the system hostname"
+            ptype="SUBCOMMAND"
+            mode="subcommand">
+            <PARAM
+                name="hostname-val"
+                help="Host name of the switch"
+                ptype="HOSTNAME_STR_64">
+            </PARAM>
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/config body={"openconfig-system:config": {"hostname": "${hostname-val}"}}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configures hostname of the switch.
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli(config)# hostname &lt;host-name&gt;
+                </USAGE>
+                <EXAMPLE summary="Set hostname to R1">
+                    sonic-cli(config)# hostname R1
+                    sonic-cli(config)#
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND
+            name="no hostname"
+            help="Reset the system hostname to default (sonic)"
+            ptype="SUBCOMMAND"
+            mode="subcommand">
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/config body={"openconfig-system:config": {"hostname": "sonic"}}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Reset the system hostname to default (sonic)
+                </DESCRIPTION>
+                <USAGE>
+                    sonic-cli(config)# no hostname
+                </USAGE>
+                <EXAMPLE summary="Set hostname to default (sonic)">
+                    sonic-cli(config)# no hostname
+                    sonic-cli(config)#
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>

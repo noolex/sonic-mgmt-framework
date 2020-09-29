@@ -7,13 +7,14 @@ import json
 import collections
 import re
 import cli_client as cc
+import time
 from scripts.render_cli import show_cli_output
 
 def stp_mode_get():
     global g_stp_resp
 
     aa = cc.ApiClient()
-    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None)
+    g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config/enabled-protocol', None, False)
     if not g_stp_resp.ok():
         return 0
 
@@ -35,7 +36,11 @@ def run_get_sonic_infra_reboot(func, argv):
        if argv[1] == '-h':
           process_msg = False
 
-    data={"Param":"sudo %s" %cmd}
+    if not os.getenv('KLISH_CLI_USER'):
+       data={"Param":"sudo %s" %cmd}
+    else:
+       user_string = "-u {}".format(os.getenv('KLISH_CLI_USER'))
+       data={"Param":"sudo %s %s" %(cmd, user_string)}
 
     aa = cc.ApiClient()
     keypath = cc.Path('/restconf/operations/openconfig-system-ext:reboot-ops')
@@ -49,6 +54,9 @@ def run_get_sonic_infra_reboot(func, argv):
        print("%s in process ....."%cmd) 
 
     api_response = aa.post(keypath, body)
+
+    if process_msg:
+       time.sleep(1)
 
     try:
         if api_response.ok():
@@ -68,6 +76,8 @@ def run_get_openconfig_infra_state(func, argv):
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/uptime')
     elif argv[0] == "reboot-cause":
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/reboot-cause')
+    elif argv[0] == "user-list":
+       path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/show-user-list')
     else:
        print "%Error: invalid state command"
     api_response = aa.get(path)
@@ -75,6 +85,8 @@ def run_get_openconfig_infra_state(func, argv):
         if api_response.content is not None:
             response = api_response.content
             show_cli_output(templ, response)
+    else:
+        print api_response.error_message()
 
 def run_get_sonic_infra_config(func, argv):
     templ = argv[1]
@@ -101,6 +113,22 @@ def run_get_sonic_infra_config(func, argv):
         print "%Error: Traction Failure"
 
 
+def run_set_openconfig_logger(func, argv):
+    templ = argv[0]
+    messages = (" ".join(argv[2:])).strip('"')
+    data={"Messages":" %s" %messages}
+    aa = cc.ApiClient()
+    keypath = cc.Path('/restconf/operations/openconfig-system-ext:logger')
+    body = { "openconfig-system-ext:input":data}
+    api_response = aa.post(keypath, body)
+    try:
+        if api_response.ok():
+           response = api_response.content
+           show_cli_output(templ, response['openconfig-system-ext:output']['result'])
+    except Exception as e:
+        print "%Error: Traction Failure"
+
+
 
 def invoke(func, argv):
     if func == "get_sonic_infra_reboot":
@@ -109,6 +137,8 @@ def invoke(func, argv):
          run_get_openconfig_infra_state(func, argv) 
     elif func == "get_openconfig_infra_config":
          run_get_sonic_infra_config(func, argv)
+    elif func == "set_openconfig_logger":
+         run_set_openconfig_logger(func, argv)
     else:
          print "%Error: invalid command"
 

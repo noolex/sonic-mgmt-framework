@@ -135,7 +135,7 @@ def invoke_api(func, args):
               "openconfig-system:name": "RADIUS",\
               "openconfig-system:config": {\
                 "openconfig-system:name": "RADIUS",\
-                "openconfig-system-ext:secret-key": args[0]\
+                "openconfig-system-ext:secret-key": (args[0]).replace("\\\\", "\\")\
               }\
             }]\
           }\
@@ -160,7 +160,7 @@ def invoke_api(func, args):
         auth_port = (args[1])[10:]
         timeout = (args[2])[8:]
         retransmit = (args[3])[11:]
-        key = (args[4])[4:]
+        key = ((args[4])[4:]).replace("\\\\", "\\")
         auth_type = (args[5])[10:]
         priority = (args[6])[9:]
         vrf = (args[7])[4:]
@@ -268,7 +268,7 @@ def invoke_api(func, args):
         return api.delete(keypath)
     # Clear RADIUS statistics
     elif func == 'rpc_sonic_clear_radius_statistics':
-        path = cc.Path('/restconf/operations/sonic-system-radius:clear-radius')
+        path = cc.Path('/restconf/operations/sonic-system-radius-clear:clear-radius')
         body = {}
         return api.post(path, body)
     else:
@@ -313,7 +313,8 @@ def get_sonic_radius_servers(globals):
         print("%Error: Get Failure")
         return
 
-    if    (not 'openconfig-system:servers' in response.content)\
+    if    (not response.content)\
+       or (not 'openconfig-system:servers' in response.content)\
        or (not 'server' in response.content['openconfig-system:servers']):
         return
     server_list =  response.content['openconfig-system:servers']['server']

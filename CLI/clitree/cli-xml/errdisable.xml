@@ -36,10 +36,11 @@
                 </USAGE>
                 <EXAMPLE summary="Shows status of error disable recovery for all supported feature">
                     show errdisable recovery
-                    ErrDisable Reason    Timer Status
-                    -----------------    --------------
-                    udld                 Disabled
-                    bpduguard            Disabled
+                    Errdisable Cause    Status
+                    ------------------  --------
+                    udld                enabled
+                    bpduguard           disabled
+                    Timeout for Auto-recovery:  300 seconds
 
                 </EXAMPLE>
                 <FEATURE> ERRDISABLE </FEATURE>

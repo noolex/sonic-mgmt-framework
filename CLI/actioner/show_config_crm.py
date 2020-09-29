@@ -79,10 +79,15 @@ def show_crm_config(render_tables):
     info = {}
     conf = []
 
+    # skip if render_tables is None
+    if render_tables is None:
+        return 'CB_SUCCESS', ''
+
     if 'sonic-system-crm:sonic-system-crm/CRM' in render_tables:
         if 'CRM_LIST' in render_tables['sonic-system-crm:sonic-system-crm/CRM']:
             info = render_tables['sonic-system-crm:sonic-system-crm/CRM']['CRM_LIST'][0]
 
+    # skip if render_tables['sonic-system-crm:sonic-system-crm/CRM']['CRM_LIST'][0] is not available
     if not info:
         return 'CB_SUCCESS', ''
 

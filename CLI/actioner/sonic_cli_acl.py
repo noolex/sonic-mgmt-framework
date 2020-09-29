@@ -16,12 +16,30 @@
 # limitations under the License.
 #
 ###########################################################################
+#
+# Copyright 2019 Broadcom.  The term "Broadcom" refers to Broadcom Inc. and/or
+# its subsidiaries.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+###########################################################################
 
 import sys
 import collections
 from collections import OrderedDict
 import cli_client as cc
 from scripts.render_cli import show_cli_output
+from natsort import natsorted
 import ipaddress
 import traceback
 import json
@@ -98,6 +116,35 @@ class SonicAclCLIError(RuntimeError):
 class SonicACLCLIStopNoError(RuntimeError):
     """Indicates that CLI processing should be stopped. No error will be displayed to user"""
     pass
+
+
+def acl_natsort_intf_prio(ifname):
+    if isinstance(ifname, tuple):
+        ifname = ifname[0]
+
+    if ifname.startswith('Ethernet'):
+        prio = 10000 + int(ifname.replace('Ethernet', ''), 0)
+    elif ifname.startswith('Eth'):
+        portnum = ifname.replace('Eth', '')
+        parts = portnum.split('/')
+        # Ideally slot on Pizzabox is supposed to be 0. Just in case its changed in future
+        slot=int(parts[0])+1
+        port=int(parts[1])
+        try:
+            breakout = int(parts[2])
+        except IndexError:
+            breakout = 1
+        prio = 10000 + slot*(port*16 + breakout)
+    elif ifname.startswith('PortChannel'):
+        prio = 20000 + int(ifname.replace('PortChannel', ''), 0)
+    elif ifname.startswith('Vlan'):
+        prio = 30000 + int(ifname.replace('Vlan', ''), 0)
+    elif ifname == "Switch":
+        prio = 40000
+    else:
+        prio = 50000
+
+    return prio
 
 
 def handle_create_acl_request(args):
@@ -546,7 +593,7 @@ def handle_unbind_acl_request(args):
 
 def handle_get_acl_details_request(args):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/state/counter-capability')
-    resp = acl_client.get(keypath)
+    resp = acl_client.get(keypath, depth=None, ignore404=False)
     if resp.ok():
         counter_mode = resp.content["openconfig-acl:counter-capability"].split(":")[1]
     else:
@@ -555,22 +602,22 @@ def handle_get_acl_details_request(args):
     if len(args) == 1:
         if counter_mode == "AGGREGATE_ONLY":
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets')
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
         else:
             keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
     elif len(args) == 2:
         if counter_mode == "AGGREGATE_ONLY":
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
         else:
             keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname=args[1])
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
     else:
         if counter_mode != "INTERFACE_ONLY":
             raise SonicAclCLIError("Per interface counter mode not set")
         keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST={aclname}', aclname=args[1])
-        response = acl_client.get(keypath)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
 
     response.counter_mode = counter_mode
     return response
@@ -578,7 +625,7 @@ def handle_get_acl_details_request(args):
 
 def handle_get_all_acl_binding_request(args):
     keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST')
-    return acl_client.get(keypath)
+    return acl_client.get(keypath, depth=None, ignore404=False)
 
 
 def set_acl_remark_request(args):
@@ -643,7 +690,7 @@ def set_counter_mode_request(args):
     return acl_client.patch(keypath, body)
 
 
-def handle_generic_set_response(response, args):
+def handle_generic_set_response(response, op_str, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
@@ -653,22 +700,25 @@ def handle_generic_set_response(response, args):
             error_data = response.errors().get('error', list())[0]
             if 'error-app-tag' in error_data:
                 if error_data['error-app-tag'] == 'too-many-elements':
-                    print('Error: Exceeds maximum number of ACL / ACL Rules.')
+                    print('%Error: Exceeds maximum number of ACL / ACL Rules.')
                 elif error_data['error-app-tag'] == 'counters-in-use':
-                    print('Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
+                    print('%Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
+                elif error_data['error-app-tag'] == 'update-not-allowed':
+                    print("%Error: Creating ACLs with same name and different type not allowed")
                 else:
                     print(response.error_message())
             else:
                 print(response.error_message())
-
             return -1
         except Exception as e:
+            log.log_error(str(e))
             print(response.error_message())
+            return -1
 
     return 0
 
 
-def handle_generic_delete_response(response, args):
+def handle_generic_delete_response(response, op_str, args):
     if response.ok():
         resp_content = response.content
         if resp_content is not None:
@@ -980,7 +1030,7 @@ def __deep_copy(dst, src):
     return dst
 
 
-def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, stage, cache=dict()):
+def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, stage, cache, continuation):
     log.log_debug('ACL:{} Type:{} Intf:{} Stage:{}'.format(acl_name, acl_type, intf_name, stage))
     acl_name = acl_name.replace("_" + acl_type, "")
     output = OrderedDict()
@@ -988,7 +1038,7 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
         log.log_debug("No Cache present")
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}',
                           name=acl_name, acl_type=acl_type)
-        response = acl_client.get(keypath)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
         if response.ok():
             log.log_debug(response.content)
             __convert_oc_acl_set_to_user_fmt(response.content['openconfig-acl:acl-set'][0], output)
@@ -1007,7 +1057,7 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
     if intf_name != "CtrlPlane":
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/{stage}-acl-sets/{stage}-acl-set={setname},{acltype}',
                           id=intf_name, stage=stage.lower(), setname=acl_name, acltype=acl_type)
-        response = acl_client.get(keypath)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
         if not response.ok():
             raise SonicAclCLIError("{}".format(response.error_message()))
 
@@ -1025,7 +1075,8 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
     else:
         render_dict[intf_name] = output
 
-    show_cli_output('show_access_list_intf.j2', render_dict)
+    if show_cli_output('show_access_list_intf.j2', render_dict, continuation=continuation):
+        raise SonicACLCLIStopNoError
 
 
 def __process_acl_counters_request_by_name_and_inf(response, args):
@@ -1042,7 +1093,7 @@ def __process_acl_counters_request_by_name_and_inf(response, args):
     ports = acl_data.get("ports", [])
     intf_name = args[2] if len(args) == 3 else "".join(args[3:])
     if intf_name in ports:
-        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], intf_name, stage)
+        __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], intf_name, stage, None, False)
     else:
         raise SonicAclCLIError("ACL {} not applied to {}".format(args[1], intf_name))
 
@@ -1064,13 +1115,17 @@ def __process_acl_counters_request_by_type_and_name(response, args):
     stage = acl_data.get("stage", "INGRESS")
     ports = acl_data.get("ports", [])
     if len(ports) != 0:
+        # Sort and show 
+        ports = natsorted(ports, key=acl_natsort_intf_prio)
         log.log_debug("ACL {} Type {} has ports.".format(acl_data["aclname"], acl_type))
-        for port in acl_data.get("ports", []):
-            __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache)
+        cont = False
+        for port in ports:
+            __get_and_show_acl_counters_by_name_and_intf(acl_data["aclname"], args[0], port, stage, cache, cont)
+            cont = True
     else:
         log.log_debug("ACL {} Type {} has ZERO ports. Show only ACL configuration.".format(acl_data["aclname"], acl_type))
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=args[1], acl_type=args[0])
-        response = acl_client.get(keypath)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
         if response.ok():
             __handle_get_acl_details_aggregate_mode_response(response.content, args)
         else:
@@ -1094,15 +1149,19 @@ def __process_acl_counters_request_by_type(response, args):
         stage = acl.get("stage", "INGRESS")
         ports = acl.get("ports", [])
         if len(ports) != 0:
+            # Sort and show 
+            ports = natsorted(ports, key=acl_natsort_intf_prio)
             log.log_debug("ACL {} Type {} has ports.".format(acl["aclname"], acl_type))
+            cont = False
             for port in ports:
-                __get_and_show_acl_counters_by_name_and_intf(acl["aclname"], args[0], port, stage, cache)
+                __get_and_show_acl_counters_by_name_and_intf(acl["aclname"], args[0], port, stage, cache, cont)
+                cont = True
         else:
             log.log_debug("ACL {} Type {} has ZERO ports. Show only ACL configuration.".format(acl["aclname"], acl_type))
 
             acl_name = acl["aclname"].replace("_" + args[0], "")
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=acl_name, acl_type=args[0])
-            response = acl_client.get(keypath)
+            response = acl_client.get(keypath, depth=None, ignore404=False)
             if response.ok():
                 __handle_get_acl_details_aggregate_mode_response(response.content, [args[0], acl_name])
             else:
@@ -1119,7 +1178,7 @@ def __handle_get_acl_details_interface_mode_response(response, args):
         __process_acl_counters_request_by_name_and_inf(response, args)
 
 
-def handle_get_acl_details_response(response, args):
+def handle_get_acl_details_response(response, op_str, args):
     if response.ok():
         if response.counter_mode == 'AGGREGATE_ONLY':
             __handle_get_acl_details_aggregate_mode_response(response.content, args)
@@ -1135,9 +1194,14 @@ def handle_get_acl_details_response(response, args):
             raise SonicAclCLIError('ACL {} not found'.format(args[1]))
 
 
-def handle_get_all_acl_binding_response(response, args):
-    render_data = OrderedDict()
+def handle_get_all_acl_binding_response(response, op_str, args):
+    acl_typemap = {'L2': 'MAC', 'L3': 'IP', 'L3V6': 'IPV6'}
     log.log_debug(json.dumps(response.content, indent=4))
+    render_data = OrderedDict()
+    filter_acl_type = None
+    if len(args) == 1:
+        filter_acl_type = __convert_oc_acl_type_to_sonic_fmt(args[0])
+
     if response.ok():
         resp_content = response.content
         if bool(resp_content):
@@ -1147,35 +1211,26 @@ def handle_get_all_acl_binding_response(response, args):
                 else:
                     if_bind_list = render_data[intf_data["intfname"]]
 
-                if "L2" in intf_data.keys():
-                    aclname = intf_data["L2"]
-                    if aclname.endswith("ACL_L2"):
-                        aclname = aclname[:-7]
-                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "MAC", aclname]))
+                for acl_type in acl_typemap.keys():
+                    if filter_acl_type is not None and filter_acl_type != acl_type:
+                        continue
+                    if acl_type in intf_data.keys():
+                        aclname = intf_data[acl_type]
+                        if_bind_list.append(tuple([intf_data["stage"].capitalize(), acl_typemap[acl_type], aclname]))
 
-                if "L3" in intf_data.keys():
-                    aclname = intf_data["L3"]
-                    if aclname.endswith("ACL_IPV4"):
-                        aclname = aclname[:-9]
-                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "IP", aclname]))
-
-                if "L3V6" in intf_data.keys():
-                    aclname = intf_data["L3V6"]
-                    if aclname.endswith("ACL_IPV6"):
-                        aclname = aclname[:-9]
-                    if_bind_list.append(tuple([intf_data["stage"].capitalize(), "IPV6", aclname]))
-
+                if_bind_list.sort(key=lambda x: (x[0].replace('ress', '').replace('Ing', 'A'), x[1]))
                 render_data[intf_data["intfname"]] = if_bind_list
 
-            # TODO Sort the data in the order Eth->Po->Vlan->Switch
-            log.log_debug(str(render_data))
-            show_cli_output('show_access_group.j2', render_data)
+            # Sort the data in the order Eth->Po->Vlan->Switch
+            sorted_data = OrderedDict(natsorted(render_data.items(), key=acl_natsort_intf_prio))
+            log.log_debug(str(sorted_data))
+            show_cli_output('show_access_group.j2', sorted_data)
     else:
         if response.status_code != 404:
             print(response.error_message())
 
 
-def clear_acl_counters_response(response, args):
+def clear_acl_counters_response(response, op_str, args):
     if not response.ok():
         print(response.error_message())
     else:
@@ -1215,10 +1270,12 @@ response_handlers = {
 }
 
 
-def run(op_str, args):
+def run(op_str, args=None):
     try:
         log.log_debug(str(args))
         correct_args = list()
+        if args is None:
+            args = list()
         for arg in args:
             if arg == "|" or arg == "\\|":
                 break
@@ -1227,10 +1284,12 @@ def run(op_str, args):
         log.log_debug(str(correct_args))
         resp = request_handlers[op_str](correct_args)
         if resp:
-            return response_handlers[op_str](resp, correct_args)
+            return response_handlers[op_str](resp, op_str, correct_args)
     except SonicAclCLIError as e:
         print("%Error: {}".format(e.message))
         return -1
+    except SonicACLCLIStopNoError:
+        pass
     except Exception as e:
         log.log_error(traceback.format_exc())
         print('%Error: Encountered exception "{}"'.format(str(e)))

@@ -27,13 +27,15 @@ import cli_log as log
 import traceback
 
 
+lst_client = cc.ApiClient()
+
+
 class SonicLinkStateTrackingCLIError(RuntimeError):
     """Indicates CLI processing errors that needs to be displayed to user"""
     pass
 
 
 def create_link_state_tracking_group(args):
-    aa = cc.ApiClient()
     body = {
         "openconfig-lst-ext:lst-group": [
         {
@@ -45,17 +47,15 @@ def create_link_state_tracking_group(args):
       ]
     }
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group')
-    return aa.patch(uri, body)
+    return lst_client.patch(uri, body)
 
 
 def delete_link_state_tracking_group(args):
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}', name=args[0])
-    return aa.delete(uri)
+    return lst_client.delete(uri)
 
 
 def set_link_state_tracking_group_description(args):
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}/config/description', name=args[0])
 
     descr = args[1]
@@ -69,13 +69,12 @@ def set_link_state_tracking_group_description(args):
     body = {
         "openconfig-lst-ext:description": descr
     }
-    return aa.patch(uri, body)
+    return lst_client.patch(uri, body)
 
 
 def delete_link_state_tracking_group_description(args):
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}/config/description', name=args[0])
-    return aa.delete(uri)
+    return lst_client.delete(uri)
 
 
 def set_link_state_tracking_group_timeout(args):
@@ -83,22 +82,19 @@ def set_link_state_tracking_group_timeout(args):
     if timeout > 1800:
         raise RuntimeError("Timeout not in range 1-1800")
 
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}/config/timeout', name=args[0])
     body = {
         "openconfig-lst-ext:timeout": timeout
     }
-    return aa.patch(uri, body)
+    return lst_client.patch(uri, body)
 
 
 def delete_link_state_tracking_group_timeout(args):
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={name}/config/timeout', name=args[0])
-    return aa.delete(uri)
+    return lst_client.delete(uri)
 
 
 def set_link_state_tracking_group_downstream(args):
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface')
     body = {
         "openconfig-lst-ext:interface": [
@@ -120,20 +116,18 @@ def set_link_state_tracking_group_downstream(args):
         }
       ]
     }
-    return aa.patch(uri, body)
+    return lst_client.patch(uri, body)
 
 
 def delete_link_state_tracking_group_downstream(args):
-    aa = cc.ApiClient()
     if len(args) == 2:
         uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={downstr}/downstream-group', downstr=args[1])
     else:
         uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={downstr}/downstream-group', downstr=args[0])
-    return aa.delete(uri)
+    return lst_client.delete(uri)
 
 
 def set_link_state_tracking_group_upstream(args):
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface')
     body = {
        "openconfig-lst-ext:interface": [
@@ -161,16 +155,15 @@ def set_link_state_tracking_group_upstream(args):
       ]
     }
 
-    return aa.patch(uri, body)
+    return lst_client.patch(uri, body)
 
 
 def delete_link_state_tracking_group_upstream(args):
-    aa = cc.ApiClient()
     if len(args) == 2:
         uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups/upstream-group={grp_name}', grp_name=args[0], upstr=args[1])
     else:
         uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups', upstr=args[0])
-    return aa.delete(uri)
+    return lst_client.delete(uri)
 
 def delete_link_state_tracking_group_binding(args):
     if args[0] == 'upstream':
@@ -179,25 +172,22 @@ def delete_link_state_tracking_group_binding(args):
         return delete_link_state_tracking_group_downstream(args[1:])
 
 def set_link_state_tracking_group_all_mclag_downstream(args):
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream', grp_name=args[0])
     body = {
         "openconfig-lst-ext:all-mclags-downstream": True
     }
-    return aa.patch(uri, body)
+    return lst_client.patch(uri, body)
 
 def delete_link_state_tracking_group_all_mclag_downstream(args):
-    aa = cc.ApiClient()
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream', grp_name=args[0])
-    return aa.delete(uri)
+    return lst_client.delete(uri)
 
 def show_link_state_tracking_group_info(args):
-    aa = cc.ApiClient()
     if len(args):
         uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST={grp_name}', grp_name=args[0])
     else:
         uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST')
-    return aa.get(uri, None, False)
+    return lst_client.get(uri, depth=None, ignore404=False)
 
 
 def generic_set_response_handler(response, args):
@@ -325,9 +315,8 @@ def show_running_lst_group(render_tables):
     status = 'CB_FAIL'
     output = list()
 
-    aa = cc.ApiClient()
     if 'group' in render_tables:
-        response = aa.get('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={}'.format(render_tables['group']))
+        response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={group}', group=render_tables['group']), depth=None, ignore404=False)
         if response.ok():
             status = 'CB_SUCCESS'
             if bool(response.content):
@@ -335,7 +324,7 @@ def show_running_lst_group(render_tables):
                 __show_running_config_group(output, group)
 
     else:
-        response = aa.get('/restconf/data/openconfig-lst-ext:lst/lst-groups')
+        response = lst_client.get('/restconf/data/openconfig-lst-ext:lst/lst-groups', depth=None, ignore404=False)
         if response.ok():
             status = 'CB_SUCCESS'
             if bool(response.content):
@@ -363,8 +352,7 @@ def __show_running_config_group(output, grp_data):
 def show_running_lst_interface(render_tables):
     status = 'CB_FAIL'
     output = []
-    aa = cc.ApiClient()
-    response = aa.get('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}'.format(id=render_tables['name']))
+    response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}', id=render_tables['name']), depth=None, ignore404=False)
     if response.ok():
         status = 'CB_SUCCESS'
         data = response.content['openconfig-lst-ext:interface'][0]

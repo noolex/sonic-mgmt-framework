@@ -59,7 +59,7 @@ def get_port_num(aa, interface):
         tmp_response = aa.get(path)
         if tmp_response.ok():
             response = tmp_response.content
-            if 'sonic-device-metadata:intf_naming_mode' in response and response['sonic-device-metadata:intf_naming_mode'] == 'standard':
+            if response and 'sonic-device-metadata:intf_naming_mode' in response and response['sonic-device-metadata:intf_naming_mode'] == 'standard':
                 path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=interface)
                 tmp_response = aa.get(path)
                 if tmp_response.ok():
@@ -297,6 +297,12 @@ def run(func, args):
                         errDict[k] = v
 
                         if "error-message" in errDict:
+                            # intercept error message and return more user friendly error message to user
+                            if (errDict["error-message"] == "Resource not found" or
+                               errDict["error-message"] == "This object is not supported in this build" or
+                               errDict["error-message"] == "This object is not supported in this platform"):
+                                print("PTP feature not supported")
+                                return
                             print("%Error: " + errDict["error-message"])
                             sys.exit(-1)
                 print("%Error: Transaction Failure")

@@ -49,6 +49,24 @@ limitations under the License.
           </EXAMPLE>
         </DOCGEN>
       </COMMAND>
+      <COMMAND name="advertise-svi-ip" help="Advertise svi mac-ip routes in EVPN" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/advertise-svi-ip=true">
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_vni_advertise_svi_ip ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command enables svi mac-ip routes advertisement into EVPN for a particular VNI
+          </DESCRIPTION>
+          <USAGE>
+            [no] advertise-svi-ip
+          </USAGE>
+          <EXAMPLE summary="Enable VNI 100 gateway to advertise SVI MACIP route in EVPN">
+            sonic# configure terminal
+            sonic(config)# router bgp 100
+            sonic(config-router-bgp)# address-family l2vpn evpn
+            sonic(config-router-bgp-af)# vni 100
+            sonic(config-router-bgp-af-vni)# advertise-svi-ip
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
 
       <COMMAND name="rd" help="Route distinguisher" >
         <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/route-distinguisher"/>
@@ -102,6 +120,9 @@ limitations under the License.
       <COMMAND name="no advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN">
         <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_vni_advertise_default_gw ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
       </COMMAND>
+      <COMMAND name="no advertise-svi-ip" help="Advertise svi mac-ip routes in EVPN">
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_vni_advertise_svi_ip ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
+      </COMMAND>
       
       <COMMAND name="no rd" help="Route distinguisher" >
         <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD"/>
@@ -145,6 +166,21 @@ limitations under the License.
                 22:23
               Export Route Target:
                 100:268435556
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+      <COMMAND name="show bgp l2vpn evpn route vni" help="VxLAN Network Identifier">
+        <PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE"></PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command displays BGP EVPN routes for a specified VNI
+          </DESCRIPTION>
+          <USAGE>
+            show bgp l2vpn evpn route vni &lt;vni-num&gt;
+          </USAGE>
+          <EXAMPLE summary="Route display">
+            Refer example from show bgp l2vpn evpn route
           </EXAMPLE>
         </DOCGEN>
       </COMMAND>

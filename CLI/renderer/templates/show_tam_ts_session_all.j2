@@ -1,0 +1,20 @@
+{% if json_output -%}
+{% if "openconfig-tam:tailstamping-sessions" in json_output %}
+{% set sessions = json_output['openconfig-tam:tailstamping-sessions']['tailstamping-session'] %}
+{% if sessions|length > 0 %}
+Name                              Flow Group                        Node Type
+--------------------------------  --------------------------------  ---------
+{% for session in sessions|sort(attribute='name') %}
+{% set session_config = session["state"] %}
+{% if session_config["node-type"] == "NORMAL" %}
+{% set node_type = "Normal" %}
+{% else %}
+{% set node_type = "IFA" %}
+{% endif %}
+{{'%-34s'|format(session_config["name"])}}{{'%-34s'|format(session_config["flowgroup"])}}{{'%-10s'|format(node_type)}}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% else %}
+Sessions are not configured.
+{% endif %}

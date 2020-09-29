@@ -2,7 +2,7 @@ import cli_client as cc
 from collections import OrderedDict
 from natsort import natsorted
 import sonic_cli_acl
-from sonic_cli_fbs import ethertype_to_user_fmt, __natsort_intf_prio
+from sonic_cli_fbs import ethertype_to_user_fmt
 
 def show_running_fbs_classifier(render_tables):
     fbs_client = cc.ApiClient()
@@ -33,7 +33,7 @@ def show_running_fbs_classifier(render_tables):
                 fields_str = ""
                 if match_type == 'fields':
                     fields_str = 'match-all'
-                cmd_str += 'classifier {} match-type {} {} ;'.format(class_name, match_type, fields_str)
+                cmd_str += 'class-map {} match-type {} {} ;'.format(class_name, match_type, fields_str)
                 if match_type == 'copp':
                     if 'TRAP_IDS' in class_data.keys():
                         trap_id_list = class_data['TRAP_IDS'].split(',')
@@ -143,8 +143,8 @@ def show_running_fbs_policy(render_tables):
                 cmd_str += '' if index == 0 else "!;" 
                 index += 1
                 match_type = render_data[policy_name]['TYPE'].lower()
-                cmd_str += 'policy {} type {};'.format(policy_name, match_type)
-                if 'DESCRIPTION' in render_data:
+                cmd_str += 'policy-map {} type {};'.format(policy_name, match_type)
+                if 'DESCRIPTION' in render_data and render_data['DESCRIPTION'] != "":
                     cmd_str += ' description {} ;'.format(render_data['DESCRIPTION'])
                 for flow in render_data[policy_name]['FLOWS']:
                     flow_data = render_data[policy_name]['FLOWS'][flow]
@@ -152,7 +152,7 @@ def show_running_fbs_policy(render_tables):
                     if 'PRIORITY' in flow_data:
                         priority = "priority " + str(flow_data['PRIORITY']) 
                     cmd_str += ' class {} {} ;'.format(flow_data['CLASS_NAME'], priority)
-                    if 'DESCRIPTION' in flow_data:
+                    if 'DESCRIPTION' in flow_data and flow_data['DESCRIPTION'] != "":
                         cmd_str += ' description {} ;'.format(flow_data['DESCRIPTION'])
                     if match_type == 'copp':
                         if 'TRAP_GROUP' in flow_data:
@@ -169,16 +169,16 @@ def show_running_fbs_policy(render_tables):
 
                         pstr = ""
                         if 'SET_POLICER_CIR' in flow_data:
-                            pstr += ' cir {}'.format(flow_data['SET_POLICER_CIR'])
+                            pstr += 'cir {} '.format(flow_data['SET_POLICER_CIR'])
                         if 'SET_POLICER_CBS' in flow_data:
-                            pstr += ' cbs {}'.format(flow_data['SET_POLICER_CBS'])
+                            pstr += 'cbs {} '.format(flow_data['SET_POLICER_CBS'])
                         if 'SET_POLICER_PIR' in flow_data:
-                            pstr += ' pir {}'.format(flow_data['SET_POLICER_PIR'])
+                            pstr += 'pir {} '.format(flow_data['SET_POLICER_PIR'])
                         if 'SET_POLICER_PBS' in flow_data:
-                            pstr += ' pbs {}'.format(flow_data['SET_POLICER_PBS'])
+                            pstr += 'pbs {} '.format(flow_data['SET_POLICER_PBS'])
                         if pstr != "":
                             cmd_str += '  police {} ;'.format(pstr)
-
+                        cmd_str += ' !;'
                     elif match_type == 'forwarding':
                         if 'DEFAULT_PACKET_ACTION' in flow_data:
                             cmd_str += ' set interface null ;'
@@ -206,10 +206,11 @@ def show_running_fbs_policy(render_tables):
                                 if "PRIORITY" in nhop:
                                     prio_str = "priority " + str(nhop["PRIORITY"])
                                 cmd_str += '  set ipv6 next-hop {} {} {} ;'.format(nhop["IP_ADDRESS"], vrf_str, prio_str)
+                        cmd_str += ' !;'
                     elif match_type == 'monitoring':
                         if 'SET_MIRROR_SESSION' in flow_data:
                             cmd_str += '  set mirror-session {} ;'.format(flow_data['SET_MIRROR_SESSION'])
-                    pass
+                        cmd_str += ' !;'
 
     return 'CB_SUCCESS', cmd_str, True
 
@@ -224,11 +225,12 @@ def show_running_fbs_service_policy(render_tables):
        ifname = render_tables['name'].replace(" ", "")
        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}', interface_name=ifname)
 
-    response = fbs_client.get(keypath)
+    response = fbs_client.get(keypath, None, False)
     render_data = OrderedDict()
     cmd_str = ''
     policy_types = ['qos', 'monitoring', 'forwarding']
     directions = ['ingress', 'egress']
+    cfg_pdir_map = { directions[0]:"in",directions[1]:"out"}
     if response.ok():
         for binding in response.content.get('sonic-flow-based-services:POLICY_BINDING_TABLE_LIST', []):
             if_data = []
@@ -236,10 +238,10 @@ def show_running_fbs_service_policy(render_tables):
                 for policy_type in policy_types:
                     key = '{}_{}_POLICY'.format(pdir.upper(), policy_type.upper())
                     if key in binding:
-                        if_data.append(tuple([policy_type, pdir, binding[key]]))
+                        if_data.append(tuple([policy_type, cfg_pdir_map[pdir], binding[key]]))
             if len(if_data):
                 render_data[binding['INTERFACE_NAME']] = if_data
-        sorted_data = OrderedDict(natsorted(render_data.items(), key=__natsort_intf_prio))
+        sorted_data = OrderedDict(natsorted(render_data.items(), key=sonic_cli_acl.acl_natsort_intf_prio))
         for  intf_name in sorted_data:
             if_bind_list = sorted_data[intf_name]
             for bind_entry in if_bind_list:

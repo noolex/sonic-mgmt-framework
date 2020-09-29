@@ -94,7 +94,7 @@ limitations under the License.
     </COMMAND>
     
     <COMMAND name="no match ipv6 address prefix-list" help="Delete matched IPv6 address prefix">
-      <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_ipv6_prefix_set ${name} ${seq_num}</ACTION>
     </COMMAND>
  
     <COMMAND name="no match source-vrf" help="Source VRF">
@@ -119,6 +119,85 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_as_path_set_config_as_path_set ${name} ${seq_num} ${as-path-name}</ACTION>
     </COMMAND>
 
+    <COMMAND
+        name="match evpn"
+        help="Set routing policy match criteria to BGP Ethernet Virtual Private Network"
+        render_command_cb="routemap_match_evpn">
+        <PARAM name = "match-evpn-cmd-type" help = "" ptype = "SUBCOMMAND" mode="switch" >
+            <PARAM name="default-route"
+                         help="default EVPN type-5 route"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand" />
+            <PARAM name="route-type"
+                         help="Match route-type"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand" >
+                <PARAM name = "evpn-route-type" help = "" ptype = "SUBCOMMAND" mode="switch" >
+                    <PARAM name="macip"
+                           help="mac-ip route"
+                           ptype="SUBCOMMAND"
+                           mode="subcommand" />
+                    <PARAM name="multicast"
+                           help="IMET route"
+                           ptype="SUBCOMMAND"
+                           mode="subcommand" />
+                    <PARAM name="prefix"
+                           help="prefix route"
+                           ptype="SUBCOMMAND"
+                           mode="subcommand" />
+                </PARAM>
+            </PARAM>
+            <PARAM name="vni"
+                         help="Match VNI"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand" >
+                <PARAM name="vni-number" 
+                       help="VNI ID" 
+                       ptype="RANGE_1_16777215" />
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_evpn ${name} ${seq_num} match_evpn_cmd_type ${match-evpn-cmd-type} evpn_route_type ${evpn-route-type} vni_number ${vni-number}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no match evpn"
+        help="Delete matched criteria for BGP Ethernet Virtual Private Network"
+        >
+        <PARAM name = "match-evpn-cmd-type" help = "" ptype = "SUBCOMMAND" mode="switch" >
+            <PARAM name="default-route"
+                         help="default EVPN type-5 route"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand" />
+            <PARAM name="route-type"
+                         help="Match route-type"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand" >
+                <PARAM name = "evpn-route-type" help = "" ptype = "SUBCOMMAND" mode="switch" >
+                    <PARAM name="macip"
+                           help="mac-ip route"
+                           ptype="SUBCOMMAND"
+                           mode="subcommand" />
+                    <PARAM name="multicast"
+                           help="IMET route"
+                           ptype="SUBCOMMAND"
+                           mode="subcommand" />
+                    <PARAM name="prefix"
+                           help="prefix route"
+                           ptype="SUBCOMMAND"
+                           mode="subcommand" />
+                </PARAM>
+            </PARAM>
+            <PARAM name="vni"
+                         help="Match VNI"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand" >
+                <PARAM name="vni-number" 
+                       help="VNI ID" 
+                       ptype="RANGE_1_16777215" /> 
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_route_match delete_openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_bgp_conditions_match_evpn ${name} ${seq_num} match_evpn_cmd_type ${match-evpn-cmd-type} evpn_route_type ${evpn-route-type} vni_number ${vni-number}</ACTION>
+    </COMMAND>
 
     <COMMAND
         name="match ip"
@@ -159,9 +238,9 @@ limitations under the License.
         <PARAM name="prefix-list-name"
                      help="Name of prefix-list"
                      ptype="STRING_63"
-                     dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_prefix_set"
+                     dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/match_ipv6_prefix_set"
         />
-       <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_prefix_set ${name} ${seq_num} ${prefix-list-name}</ACTION>
+       <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_prefix_set_config_ipv6_prefix_set ${name} ${seq_num} ${prefix-list-name}</ACTION>
     </COMMAND>
 
     
