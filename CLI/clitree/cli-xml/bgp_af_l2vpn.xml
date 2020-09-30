@@ -1019,7 +1019,8 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="show bgp l2vpn evpn summary" help="Summary of BGP neighbor status">
     <!--ACTION builtin="clish_pyobj">sonic_cli_bgp get_ip_bgp_summary show_ip_bgp_summary.j2 default evpn</ACTION-->
-    <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow default ${__cmd} &#xA; summary ${__full_line}</ACTION>
+    <!--ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION-->
     <DOCGEN>
     <DESCRIPTION>
       This command displays BGP summarized information for BGP L2VPN EVPN address family including neghbors 
