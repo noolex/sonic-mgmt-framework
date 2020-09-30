@@ -130,13 +130,12 @@ def get_keypath(func,args):
         if intf is None:
             return None, None
 
-        if func.startswith('del'):
-            intf_uri = inputDict.get('intf_uri')
-            if intf_uri is None:
-                return None, None
+        intf_uri = inputDict.get('intf_uri')
+        if intf_uri is None:
+            return None, None
 
         #get vrf, needed for keypath
-        vrf=get_vrf(intf)
+        vrf=get_vrf(intf_uri)
         if vrf is None:
             return None, None
 

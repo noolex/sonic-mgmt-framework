@@ -33,7 +33,7 @@ limitations under the License.
             dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/mode=sm"
             help="Enable PIM sparse-mode">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_mode intf:arg1
+                sonic_cli_pim patch_pim_interface_config_mode intf:arg1 intf_uri:arg2
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -83,7 +83,7 @@ limitations under the License.
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/dr-priority"
                 ptype="RANGE_1_4294967295"></PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_drprio intf:arg1 drprio:${drprio}
+                sonic_cli_pim patch_pim_interface_config_drprio intf:arg1 intf_uri:arg2 drprio:${drprio}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -139,7 +139,7 @@ limitations under the License.
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/hello-interval"
                 ptype="RANGE_1_255"></PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_hello intf:arg1 hello:${hello}
+                sonic_cli_pim patch_pim_interface_config_hello intf:arg1 intf_uri:arg2 hello:${hello}
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -189,7 +189,7 @@ limitations under the License.
             dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/bfd-enabled=true"
             help="Enable BFD">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_bfd intf:arg1
+                sonic_cli_pim patch_pim_interface_config_bfd intf:arg1 intf_uri:arg2
             </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
