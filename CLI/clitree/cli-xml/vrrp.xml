@@ -56,6 +56,46 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state ipv4 show_vrrp.j2 ${ifname} ${id}
         </ACTION>
+
+        <DOCGEN>
+          <DESCRIPTION>
+            Displays IPv4 VRRP information
+          </DESCRIPTION>
+          <USAGE>
+            Use this command to display VRRP summary information of all instances on a system or
+            to display VRRP detailed information of a particular instance.
+          </USAGE>
+          <EXAMPLE summary="Display IPv4 VRRP information" >
+            sonic-cli(config)# show vrrp
+                       or
+            sonic-cli(config)# show vrrp interface Ethernet4 vrid 1
+          </EXAMPLE>
+
+          <EXAMPLE summary="Display IPv4 VRRP summary information" >
+            sonic# show vrrp
+                Interface_Name  VRID   State        VIP            Cfg_Prio   Curr_Prio
+                Ethernet4       1      Master       40.0.0.5       120        120
+                Ethernet8       2      Backup       80.0.0.5       100        100
+          </EXAMPLE>
+
+          <EXAMPLE summary="Display IPv4 VRRP detailed information" >
+            sonic# show vrrp interface Ethernet4 vrid 1
+                Ethernet4, VRID 1
+                Version is 2
+                State is Master
+                Virtual IP address:
+                    40.0.0.5
+                Virtual MAC address is 0000.5e00.0101
+                Track interface:
+                    None
+                Configured Priority is 100, Current Priority is 100
+                Advertisement interval is 1 sec
+                Preemption is enabled
+          </EXAMPLE>
+
+          <FEATURE> VRRP </FEATURE>
+        </DOCGEN>
+
     </COMMAND>
 
 <!--show vrrp6 -->
@@ -90,6 +130,46 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_state ipv6 show_vrrp.j2 ${ifname} ${id}
         </ACTION>
+
+        <DOCGEN>
+          <DESCRIPTION>
+            Displays IPv6 VRRP information,
+          </DESCRIPTION>
+          <USAGE>
+            Use this command to display VRRP summary information of all instances on a system or
+            to display VRRP detailed information of a particular instance.
+          </USAGE>
+          <EXAMPLE summary="Display IPv6 VRRP information" >
+            sonic-cli(config)# show vrrp6
+                       or
+            sonic-cli(config)# show vrrp6 interface Ethernet4 vrid 1
+          </EXAMPLE>
+
+          <EXAMPLE summary="Display IPv6 VRRP summary information" >
+            sonic# show vrrp
+                Interface_Name  VRID   State        VIP            Cfg_Prio   Curr_Prio
+                Ethernet4       1      Master       40::5          120        120
+                Ethernet8       2      Backup       80::5          100        100
+          </EXAMPLE>
+
+          <EXAMPLE summary="Display IPv6 VRRP detailed information" >
+            sonic# show vrrp interface Ethernet4 vrid 1
+                Ethernet4, VRID 1
+                Version is 3
+                State is Master
+                Virtual IP address:
+                  40::5
+                Virtual MAC address is 0000.5e00.0201
+                Track interface:
+                  None
+                Configured Priority is 100, Current Priority is 100
+                Advertisement interval is 1 sec
+                Preemption is enabled
+          </EXAMPLE>
+
+          <FEATURE> VRRP </FEATURE>
+        </DOCGEN>
+
     </COMMAND>
 </VIEW>
 
@@ -152,6 +232,23 @@ limitations under the License.
             sonic_cli_vrrp post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config ${iface} ${vrrp-id} ${vrrp-afi-sub-cmds}
         </ACTION>
 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure Virtual Router Redundancy Protocol(VRRP) on Ethernet interface
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure VRRP for IPv4 on Ethernet interface">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#
+            </EXAMPLE>
+            <EXAMPLE summary="Configure VRRP for IPv6 on Ethernet interface">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+            </EXAMPLE>
+        </DOCGEN>
+
     </COMMAND>
 
 <!-- no vrrp -->
@@ -197,6 +294,22 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${iface} ${vrrp-id} ${vrrp-afi-sub-cmds}
         </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure Virtual Router Redundancy Protocol(VRRP) on Ethernet interface
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure VRRP for IPv4 on Ethernet interface">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)#no vrrp 1 address-family ipv4
+            </EXAMPLE>
+            <EXAMPLE summary="Unconfigure VRRP for IPv6 on Ethernet interface">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)#no vrrp 1 address-family ipv6
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
 </VIEW>
@@ -230,6 +343,17 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} false ipv4
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure preempt for IPv4 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure preempt for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#no preempt
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -239,6 +363,17 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} true ipv4
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure preempt for IPv4 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure preempt for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#preempt
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -254,6 +389,17 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority ${iface} ${vrrp-id} ${priority-value} ipv4
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configure priority for IPv4 VRRP instance
+                </DESCRIPTION>
+                <EXAMPLE summary="Configure priority for IPv4 VRRP instance">
+                    sonic(config)# interface Ethernet4
+                    sonic(conf-if-Ethernet4)#
+                    sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                    sonic(conf-if-Ethernet4-vrrp-ipv4-1)#priority 120
+                </EXAMPLE>
+            </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -263,6 +409,20 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority ${iface} ${vrrp-id} ipv4
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Unconfigure priority for IPv4 VRRP instance
+                </DESCRIPTION>
+                <USAGE>
+                  Default value is 100
+                </USAGE>
+                <EXAMPLE summary="Unconfigure priority for IPv4 VRRP instance">
+                    sonic(config)# interface Ethernet4
+                    sonic(conf-if-Ethernet4)#
+                    sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                    sonic(conf-if-Ethernet4-vrrp-ipv4-1)#no priority
+                </EXAMPLE>
+            </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -277,6 +437,17 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval ${iface} ${vrrp-id} ${adv_interval} ipv4
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configure advertisment-interval for IPv4 VRRP instance
+                </DESCRIPTION>
+                <EXAMPLE summary="Configure advertisment-interval for IPv4 VRRP instance">
+                    sonic(config)# interface Ethernet4
+                    sonic(conf-if-Ethernet4)#
+                    sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                    sonic(conf-if-Ethernet4-vrrp-ipv4-1)#advertisement-interval 5
+                </EXAMPLE>
+            </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -286,6 +457,20 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval ${iface} ${vrrp-id} ipv4
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Unconfigure advertisment-interval for IPv4 VRRP instance
+                </DESCRIPTION>
+                <USAGE>
+                  Default value is 1
+                </USAGE>
+                <EXAMPLE summary="Unconfigure advertisment-interval for IPv4 VRRP instance">
+                    sonic(config)# interface Ethernet4
+                    sonic(conf-if-Ethernet4)#
+                    sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                    sonic(conf-if-Ethernet4-vrrp-ipv4-1)#no advertisment-interval
+                </EXAMPLE>
+            </DOCGEN>
 
     </COMMAND>
 
@@ -301,6 +486,20 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_version ${iface} ${vrrp-id} ${ver} ipv4
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure version for IPv4 VRRP instance
+            </DESCRIPTION>
+            <USAGE>
+              Default value is version 2
+            </USAGE>
+            <EXAMPLE summary="Configure version for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#version 3
+            </EXAMPLE>
+        </DOCGEN>
 
     </COMMAND>
 
@@ -311,7 +510,20 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp delete_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_version ${iface} ${vrrp-id} ipv4
         </ACTION>
-
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure version for VRRP instance
+            </DESCRIPTION>
+            <USAGE>
+              Default value is version 2
+            </USAGE>
+            <EXAMPLE summary="Unconfigure version for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#no version
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
     <COMMAND
         name="vip"
@@ -326,6 +538,17 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_virtual_address ${iface} ${vrrp-id} ${vip_addr} ipv4
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure virtual IP address for IPv4 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure virtual IP address for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#vip 40.0.0.5
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -340,6 +563,17 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp del_llist_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_virtual_address ${iface} ${vrrp-id} ${vip_addr} ipv4
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure virtual IP address for IPv4 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure virtual IP address for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#no vip 40.0.0.5
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -370,6 +604,22 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_interfaces_ext ${iface} ${vrrp-id} ${interface-name} ${wt_value} ipv4
         </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure track interface for changing priority of IPv4 VRRP instance
+            </DESCRIPTION>
+            <USAGE>
+                Increases the effective priority by weight value if track interface is up
+            </USAGE>
+            <EXAMPLE summary="Configure track interface for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#track-interface Ethernet12 weight 10
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#track-interface Ethernet13 weight 10
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -385,6 +635,18 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp delete_openconfig_interfaces_ext ${iface} ${vrrp-id} ${interface-name} ipv4
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure track interface for changing priority of IPv4 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure track interface for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#no track-interface Ethernet12
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#no track-interface Ethernet13
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 </VIEW>
 
@@ -418,6 +680,17 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} false ipv6
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure preempt for IPv6 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure preempt VRRP for IPv6 VRRP instance">
+              sonic(config)# interface Ethernet4
+              sonic(conf-if-Ethernet4)#
+              sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+              sonic(conf-if-Ethernet4-vrrp-ipv6-1)#no preempt
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -427,6 +700,17 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} true ipv6
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure preempt for IPv6 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure preempt for IPv6 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                sonic(conf-if-Ethernet4-vrrp-ipv6-1)#preempt
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -441,6 +725,17 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority ${iface} ${vrrp-id} ${priority-value} ipv6
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configure priority for IPv6 VRRP instance
+                </DESCRIPTION>
+                <EXAMPLE summary="Configure priority for IPv6 VRRP instance">
+                    sonic(config)# interface Ethernet4
+                    sonic(conf-if-Ethernet4)#
+                    sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                    sonic(conf-if-Ethernet4-vrrp-ipv6-1)#priority 120
+                </EXAMPLE>
+            </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -450,6 +745,20 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority ${iface} ${vrrp-id} ipv6
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Unconfigure priority for IPv6 VRRP instance
+                </DESCRIPTION>
+                <USAGE>
+                  Default value is 100
+                </USAGE>
+                <EXAMPLE summary="Unconfigure priority for IPv6 VRRP instance">
+                    sonic(config)# interface Ethernet4
+                    sonic(conf-if-Ethernet4)#
+                    sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                    sonic(conf-if-Ethernet4-vrrp-ipv6-1)#no priority
+                </EXAMPLE>
+            </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -464,6 +773,17 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval ${iface} ${vrrp-id} ${adv_interval} ipv6
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configure advertisment-interval for IPv6 VRRP instance
+                </DESCRIPTION>
+                <EXAMPLE summary="Configure advertisment-interval for IPv6 VRRP instance">
+                    sonic(config)# interface Ethernet4
+                    sonic(conf-if-Ethernet4)#
+                    sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                    sonic(conf-if-Ethernet4-vrrp-ipv6-1)#advertisement-interval 2
+                </EXAMPLE>
+            </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -473,6 +793,20 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval ${iface} ${vrrp-id} ipv6
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Unconfigure advertisment-interval for IPv6 VRRP instance
+                </DESCRIPTION>
+                <USAGE>
+                  Default value is 1
+                </USAGE>
+                <EXAMPLE summary="Unconfigure advertisment-interval for IPv6 VRRP instance">
+                    sonic(config)# interface Ethernet4
+                    sonic(conf-if-Ethernet4)#
+                    sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                    sonic(conf-if-Ethernet4-vrrp-ipv6-1)#no advertisment-interval
+                </EXAMPLE>
+            </DOCGEN>
 
     </COMMAND>
 
@@ -489,6 +823,17 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_virtual_address ${iface} ${vrrp-id} ${vip_addr} ipv6
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure virtual IP address for IPv6 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure virtual IP address for IPv6 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                sonic(conf-if-Ethernet4-vrrp-ipv6-1)#vip 40::5
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -503,6 +848,17 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp del_llist_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_virtual_address ${iface} ${vrrp-id} ${vip_addr} ipv6
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure virtual IP address for IPv6 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure virtual IP address for IPv6 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                sonic(conf-if-Ethernet4-vrrp-ipv6-1)#no vip 40::5
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -533,6 +889,22 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_interfaces_ext ${iface} ${vrrp-id} ${interface-name} ${wt_value} ipv6
         </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure track interface for changing priority of IPv6 VRRP instance
+            </DESCRIPTION>
+            <USAGE>
+                Increases the effective priority by weight value if track interface is up
+            </USAGE>
+            <EXAMPLE summary="Configure track interface for IPv6 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                sonic(conf-if-Ethernet4-vrrp-ipv6-1)#track-interface Ethernet24 weight 10
+                sonic(conf-if-Ethernet4-vrrp-ipv6-1)#track-interface Ethernet25 weight 20
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
     <COMMAND
@@ -548,6 +920,18 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp delete_openconfig_interfaces_ext ${iface} ${vrrp-id} ${interface-name} ipv6
         </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure track interface for changing priority of IPv6 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure track interface for IPv6 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv6
+                sonic(conf-if-Ethernet4-vrrp-ipv6-1)#no track-interface Ethernet24
+                sonic(conf-if-Ethernet4-vrrp-ipv6-1)#no track-interface Ethernet25
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 </VIEW>
 
@@ -609,6 +993,23 @@ limitations under the License.
             sonic_cli_vrrp post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config ${po_name} ${vrrp-id} ${vrrp-afi-sub-cmds}
         </ACTION>
 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure Virtual Router Redundancy Protocol(VRRP) on PortChannel interface
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure VRRP for IPv4 on PortChannel interface">
+                sonic(config)# interface PortChannel 10
+                sonic(conf-if-po10)#
+                sonic(conf-if-po10)# vrrp 1 address-family ipv4
+                sonic(conf-if-po10-vrrp-ipv4-1)#
+            </EXAMPLE>
+            <EXAMPLE summary="Configure VRRP for IPv6 on PortChannel interface">
+                sonic(config)# interface PortChannel 10
+                sonic(conf-if-po10)#
+                sonic(conf-if-po10)# vrrp 1 address-family ipv6
+            </EXAMPLE>
+        </DOCGEN>
+
     </COMMAND>
 
 <!-- no vrrp -->
@@ -653,6 +1054,22 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${po_name} ${vrrp-id} ${vrrp-afi-sub-cmds}
         </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure Virtual Router Redundancy Protocol(VRRP) on Ethernet interface
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure VRRP for IPv4 on PortChannel interface">
+                sonic(config)# interface PortChannel 10
+                sonic(conf-if-po10)#
+                sonic(conf-if-po10)#no vrrp 1 address-family ipv4
+            </EXAMPLE>
+            <EXAMPLE summary="Unconfigure VRRP for IPv6 on PortChannel interface">
+                sonic(config)# interface PortChannel 10
+                sonic(conf-if-po10)#
+                sonic(conf-if-po10)#no vrrp 1 address-family ipv6
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
 </VIEW>
@@ -716,6 +1133,23 @@ limitations under the License.
             sonic_cli_vrrp post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config ${vlan_name} ${vrrp-id} ${vrrp-afi-sub-cmds}
         </ACTION>
 
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure Virtual Router Redundancy Protocol(VRRP) on Vlan interface
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure VRRP for IPv4 on Vlan interface">
+                sonic(config)# interface Vlan 10
+                sonic(conf-if-Vlan10)#
+                sonic(conf-if-Vlan10)# vrrp 1 address-family ipv4
+                sonic(conf-if-Vlan10-vrrp-ipv4-1)#
+            </EXAMPLE>
+            <EXAMPLE summary="Configure VRRP for IPv6 on Vlan interface">
+                sonic(config)# interface Vlan 10
+                sonic(conf-if-Vlan10)#
+                sonic(conf-if-Vlan10)# vrrp 1 address-family ipv6
+            </EXAMPLE>
+        </DOCGEN>
+
     </COMMAND>
 
 <!-- no vrrp -->
@@ -760,6 +1194,22 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${vlan_name} ${vrrp-id} ${vrrp-afi-sub-cmds}
         </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure Virtual Router Redundancy Protocol(VRRP) on Vlan interface
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure VRRP for IPv4 on Vlan interface">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Vlan10)#
+                sonic(conf-if-Vlan10)#no vrrp 1 address-family ipv4
+            </EXAMPLE>
+            <EXAMPLE summary="Unconfigure VRRP for IPv6 on Vlan interface">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Vlan10)#
+                sonic(conf-if-Vlan10)#no vrrp 1 address-family ipv6
+            </EXAMPLE>
+        </DOCGEN>
     </COMMAND>
 
 </VIEW>
