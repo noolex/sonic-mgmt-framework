@@ -262,6 +262,12 @@ limitations under the License.
         fi
     </ACTION>
     </COMMAND>
+    <COMMAND name="show mac dampening-threshold" help="Show MAC dampening-threshold value" >
+    <ACTION>
+        python $SONIC_CLI_ROOT/sonic-cli-mac.py get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list show_mac_dampening.j2 ${__full_line__}
+    </ACTION>
+    </COMMAND>
+
 
 <!--====================clear mac address-table dynamic <all | vlan | address>======================-->
 
@@ -402,6 +408,14 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-mac.py add_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan} ${phy-if-name}&#xA;
         fi&#xA;
     </ACTION>
+    </COMMAND>
+    <COMMAND
+        name="mac-address dampening-threshold" help="MAC move dampening threshold" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="threshold-value" help="MAC move dampening threshold count" ptype="RANGE_5_100">
+            </PARAM>
+            <ACTION>
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py patch_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list "config" ${threshold-value} &#xA;-->
+            </ACTION>
     </COMMAND>
     <COMMAND
         name="no mac-address"

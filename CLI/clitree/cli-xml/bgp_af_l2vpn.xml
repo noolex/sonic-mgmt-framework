@@ -67,6 +67,23 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
+  <COMMAND name="advertise-svi-ip" help="Advertise SVI MAC-IP routes in EVPN" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-svi-ip=true">
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_advertise_svi_ip ${vrf-name} L2VPN_EVPN True</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command enables svi mac-ip routes advertisement into EVPN
+      </DESCRIPTION>
+      <USAGE>
+        [no] advertise-svi-ip
+      </USAGE>
+      <EXAMPLE summary="Enable to advertise SVI MACIP routes in EVPN">
+        sonic# configure terminal
+        sonic(config)# router bgp 100
+        sonic(config-router-bgp)# address-family l2vpn evpn
+        sonic(config-router-bgp-af)# advertise-svi-ip
+      </EXAMPLE>
+    </DOCGEN>
+  </COMMAND>
 
   <COMMAND name="advertise" help="Advertise prefix routes"/>
   <COMMAND name="advertise ipv4" help="Address family IPv4"/>
@@ -288,6 +305,9 @@ limitations under the License.
   </COMMAND>
   <COMMAND name="no advertise-default-gw" help="Advertise all default gw MAC-IP routes in EVPN">
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise_default_gw ${vrf-name} L2VPN_EVPN True</ACTION>
+  </COMMAND>
+  <COMMAND name="no advertise-svi-ip" help="Advertise SVI MAC-IP routes in EVPN">
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_advertise_svi_ip ${vrf-name} L2VPN_EVPN True</ACTION>
   </COMMAND>
 
   <COMMAND name="no advertise" help="Advertise prefix routes"/>
@@ -998,7 +1018,9 @@ limitations under the License.
   </DOCGEN>
   </COMMAND>
   <COMMAND name="show bgp l2vpn evpn summary" help="Summary of BGP neighbor status">
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp get_ip_bgp_summary show_ip_bgp_summary.j2 default evpn</ACTION>
+    <!--ACTION builtin="clish_pyobj">sonic_cli_bgp get_ip_bgp_summary show_ip_bgp_summary.j2 default evpn</ACTION-->
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblShow default ${__cmd} &#xA; summary ${__full_line}</ACTION>
+    <!--ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION-->
     <DOCGEN>
     <DESCRIPTION>
       This command displays BGP summarized information for BGP L2VPN EVPN address family including neghbors 

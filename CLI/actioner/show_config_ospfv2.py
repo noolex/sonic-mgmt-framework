@@ -189,12 +189,17 @@ def show_router_ospf_passive_interface_config(render_tables):
 
         intf_p, _, intf_v = ospf_get_key_value(tbl_rec, 'name')
         addr_p, _, addr_v = ospf_get_key_value(tbl_rec, 'address')
+        nonp_p, _, nonp_v = ospf_get_key_value(tbl_rec, 'non-passive')
 
+        temp_cmd = ''
         if intf_p :
-           cmd_str += 'passive-interface {}'.format(intf_v)
+           temp_cmd += 'passive-interface {}'.format(intf_v)
            if addr_p and addr_v != '' and addr_v != '0.0.0.0' :
-               cmd_str += ' {}'.format(addr_v)
-           cmd_str += cmd_end
+               temp_cmd += ' {}'.format(addr_v)
+           if nonp_p and nonp_v == True :
+               temp_cmd += ' non-passive'
+
+           cmd_str += temp_cmd + cmd_end
 
 
     ospf_debug_print("show_router_ospf_passive_interface_config: cmd_str {}".format(cmd_str))

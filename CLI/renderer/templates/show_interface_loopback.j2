@@ -23,25 +23,28 @@
             {% if vars.update({'ipv4':"IPV4"}) %}{% endif %}
             {% if vars.update({'ipv6':"IPV6"}) %}{% endif %}
             {% if subif["openconfig-if-ip:ipv4"] %}
-              {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
-              {% set ip_all = [] %}
-              {% for ip in ip_list %}
-		{%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
-                {%- if "openconfig-interfaces-ext:secondary" in ip["state"] -%}
-                  {%- if vars.update({'secondary':ip["state"]["openconfig-interfaces-ext:secondary"]}) %}{% endif -%}
-                  {%- if vars.secondary == true -%}
-                    {{ ip_sec_list.append(ipfx)|default("", True)}}
-                  {% else %}
-                    {% if vars.update({'ip_prim':ipfx}) %}{% endif %}
+              {% if "addresses" in subif["openconfig-if-ip:ipv4"] and "address" in subif["openconfig-if-ip:ipv4"]["addresses"] 
+                 and subif["openconfig-if-ip:ipv4"]["addresses"]["address"] is not none %}
+                {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
+                {% set ip_all = [] %}
+                {% for ip in ip_list %}
+		  {%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
+                  {%- if "openconfig-interfaces-ext:secondary" in ip["state"] -%}
+                    {%- if vars.update({'secondary':ip["state"]["openconfig-interfaces-ext:secondary"]}) %}{% endif -%}
+                    {%- if vars.secondary == true -%}
+                      {{ ip_sec_list.append(ipfx)|default("", True)}}
+                    {% else %}
+                      {% if vars.update({'ip_prim':ipfx}) %}{% endif %}
+                    {% endif %}
                   {% endif %}
-                {% endif %}
-                {% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
-              {% endfor %}
+                  {% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
+                {% endfor %}
+              {% endif %}
             {% else %}
               {% if vars.update({'mode4':"not-set"}) %}{% endif %}
             {% endif %}
             {% if subif["openconfig-if-ip:ipv6"] %}
-              {% if subif["openconfig-if-ip:ipv6"]["addresses"] and "address" in subif["openconfig-if-ip:ipv6"]["addresses"]
+              {% if "addresses" in subif["openconfig-if-ip:ipv6"] and "address" in subif["openconfig-if-ip:ipv6"]["addresses"]
                  and subif["openconfig-if-ip:ipv6"]["addresses"]["address"] is not none %}
                 {% set ip_list = subif["openconfig-if-ip:ipv6"]["addresses"]["address"] %}
                 {% set ipv6_all = [] %}

@@ -85,7 +85,7 @@ BFD Peers:
                 {% if "detection-multiplier" in peer['state'] %}
                     {% if vars.update({'localMult':peer['state']['detection-multiplier']}) %}{% endif %}
                 {% endif %}
-                {% if "remote-multiplier" in peer %}
+                {% if "remote-multiplier" in peer['state'] %}
                     {% if vars.update({'remoteMult':peer['state']['remote-multiplier']}) %}{% endif %}
                 {% endif %}
 

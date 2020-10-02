@@ -69,14 +69,6 @@ limitations under the License.
                      <MACRO name="QOS_QUEUE_WATERMARK_CMDS" />
                  </PARAM>
              </PARAM>
-             <!-- clear queue buffer-threshold-breaches -->
-             <PARAM
-                 name="buffer-threshold-breaches"
-                 help="buffer threshold breaches"
-                 ptype="SUBCOMMAND"
-                 mode="subcommand"
-                 >
-             </PARAM>
          </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_clear_qos clear_qos ${__full_line}</ACTION>
       <DOCGEN>

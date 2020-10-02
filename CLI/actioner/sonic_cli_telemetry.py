@@ -24,6 +24,8 @@ from rpipe_utils import pipestr
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 import random
+from natsort import natsorted
+from collections import OrderedDict
 
 api = cc.ApiClient()
 
@@ -40,9 +42,33 @@ dropmonitor_aginginterval_url = tam_rest+'/dropmonitor/global'
 features_status_url = tam_rest+'/features-state'
 feature_config_url = tam_rest+'/features'
 flowgroups_url = tam_rest+'/flowgroups'
-inports_get_url = '/restconf/data/sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST='
 flowgroup_ids_url = '/restconf/data/sonic-tam-flowgroups:sonic-tam-flowgroups/TAM_FLOWGROUP_TABLE/TAM_FLOWGROUP_TABLE_LIST'
-attach_flowgroup_url = '/restconf/data/sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST'
+detach_flowgroup_url = '/restconf/data/openconfig-tam:tam/flowgroups/flowgroup={name}/config/interfaces={interfaces}'
+intf_naming_mode_url = '/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode'
+intf_alias_url = '/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST'
+clear_flowgroup_counters_url = '/restconf/operations/openconfig-tam:clear-flowgroup-counters'
+get_acl_rule_url = '/restconf/data/sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST'
+
+def get_intf_alias():
+    intfList = {}
+    path = cc.Path(intf_naming_mode_url, name="localhost")
+    tmp_response = api.get(path)
+    if tmp_response.ok():
+        response = tmp_response.content
+        if response and 'sonic-device-metadata:intf_naming_mode' in response and response['sonic-device-metadata:intf_naming_mode'] == 'standard':
+            path = cc.Path(intf_alias_url)
+            tmp_response = api.get(path)
+            if tmp_response.ok():
+                response = tmp_response.content
+                if response is None:
+                    return intfList
+                if 'sonic-port:PORT_TABLE_LIST' in response:
+                    for entry in response['sonic-port:PORT_TABLE_LIST']:
+                        if 'alias' in entry:
+                            intfList[entry['alias']] = {}
+                            intfList[entry['alias']] = entry['ifname']
+    return intfList
+
 
 def do_get(url):
     result = {}
@@ -193,26 +219,34 @@ def getFlowGroups(flowgroups):
             transport = flowgroup['transport']['state']
             if 'source-port' in transport: response[name]['src_port'] = transport['source-port']
             if 'destination-port' in transport: response[name]['dst_port'] = transport['destination-port']
-
-        # get inports
-        url = inports_get_url+"TAM,"+name
-        inportsData = do_get(url)
-        if (inportsData['ok']):
-            if (inportsData['content'] is not None):
-                if 'sonic-acl:ACL_RULE_LIST' in inportsData['content']:
-                    inports = inportsData['content']['sonic-acl:ACL_RULE_LIST'][0]
-                    if 'IN_PORTS' in inports:
-                        response[name]['ports'] = ','.join(inports['IN_PORTS'])
-
+        # inports
+        if 'interfaces' in data:
+            interfaces = data['interfaces']
+            t = {}
+            getIntfList = get_intf_alias()
+            for i in interfaces:
+                n = i.split('Ethernet')[1]
+                if (len(getIntfList) > 0):
+                    t[int(n)] = getIntfList[i]
+                else:
+                    t[int(n)] = i
+            response[name]['ports'] = ','.join(str(t[x]) for x in sorted(t))
         response[name]['packets'] = data['statistics']['packets']
+    return OrderedDict(natsorted(response.items()))
 
-    return response
+def getNatSortData(data):
+    natSorted = {}
+    for r in data:
+        k = r['name']
+        natSorted[k] = r['state']
+    return OrderedDict(natsorted(natSorted.items()))
 
 helper_functions = {
     'getFeatureDescription': getFeatureDescription,
     'getStatusDescription': getStatusDescription,
     'printFeatureDetails': printFeatureDetails,
     'getFlowGroups': getFlowGroups,
+    'getNatSortData': getNatSortData,
 }
 
 def getBody(fn):
@@ -222,15 +256,16 @@ def getBody(fn):
         'patch_switch_id': """{"openconfig-tam:switch-id":%d}""",
         'patch_enterprise_id': """{"openconfig-tam:enterprise-id":%d}""",
         'patch_ifa_session': """{"openconfig-tam:ifa-sessions":{"ifa-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","collector":"%s","sample-rate":"%s","node-type":"%s"}}]}}""",
-        'patch_ts_session': """{"openconfig-tam:tailstamping-sessions":{"tailstamping-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s"}}]}}""",
+        'patch_ts_session': """{"openconfig-tam:tailstamping-sessions":{"tailstamping-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","node-type":"%s"}}]}}""",
         'patch_dm_session': """{"openconfig-tam:dropmonitor-sessions":{"dropmonitor-session":[{"name":"%s","config":{"name":"%s","flowgroup":"%s","collector":"%s","sample-rate":"%s"}}]}}""",
         'patch_aginginterval': """{"openconfig-tam:global":{"config":{"aging-interval":%d}}}""",
         'patch_feature': """{"openconfig-tam:features":{"feature":[{"feature-ref":"%s","config":{"feature-ref":"%s","status":"%s"}}]}}""",
-        'associate_flowgroup': """{"sonic-acl:IN_PORTS": ["%s"]}"""
+        'associate_flowgroup': """{"openconfig-tam:flowgroups":{"flowgroup":[{"name":"%s","config":{"name":"%s","id":%d,"interfaces":["%s"]}}]}}""",
+        'clear_flowgroup_counters': """{"openconfig-tam:input":{}}"""
     }
     return body[fn]
 
-def getFlowGroupDate(data, currentid):
+def getFlowGroupDate(data, currentid, priority):
     flowGroupData = {}
     flowGroupData["openconfig-tam:flowgroups"] = {}
     flowGroupData["openconfig-tam:flowgroups"]["flowgroup"] = []
@@ -239,19 +274,9 @@ def getFlowGroupDate(data, currentid):
     flowData["config"] = {}
     flowData["config"]["name"] = data["name"]
     flowData["config"]["id"] = int(currentid)
-    if (data['priority'] != ""):
-        flowData["config"]["priority"] = int(data['priority'])
-    if ((data['smac'] != "") or (data['dmac'] != "") or (data['ethertype'] != "")):
-        flowData["l2"] = {}
-        flowData["l2"]["config"] = {}
-        if (data['smac'] != ""):
-            flowData["l2"]["config"]["source-mac"] = data['smac']
-        if (data['dmac'] != ""):
-            flowData["l2"]["config"]["destination-mac"] = data['dmac']
-        if (data['ethertype'] != ""):
-            flowData["l2"]["config"]["ethertype"] = int(data['ethertype'], 0)
+    flowData["config"]["priority"] = int(priority)
     if ((data['sip'] != "") or (data['dip'] != "") or (data['protocol'] != "")):
-        if (("." in data['sip']) or ("." in data['sip']) or (data['protocol'] != "")):
+        if (("." in data['sip']) or ("." in data['dip']) or (data['protocol'] != "")):
             flowData["ipv4"] = {}
             flowData["ipv4"]["config"] = {}
             if ("." in data['sip']):
@@ -326,6 +351,8 @@ def getDetails(fn, args):
         details['url'] = switch_id_config_url
         body = getBody(fn)%(data['id'])
         details['body'] = json.loads(body)
+        details['description'] = "%Info: Any changes to the switch-wide global attributes are not immediately effective, if any of the TAM features are currently active."
+        details['name'] = ""
     elif fn == "delete_switch_id":
         details['url'] = switch_id_config_url
         #details['description'] = "Switch Id"
@@ -334,6 +361,8 @@ def getDetails(fn, args):
         details['url'] = enterprise_id_config_url
         body = getBody(fn)%(data['id'])
         details['body'] = json.loads(body)
+        details['description'] = "%Info: Any changes to the switch-wide global attributes are not immediately effective, if any of the TAM features are currently active."
+        details['name'] = ""
     elif fn == "delete_enterprise_id":
         details['url'] = enterprise_id_config_url
         #details['description'] = "Enterprise Id"
@@ -400,7 +429,7 @@ def getDetails(fn, args):
             details['name'] = data['name']
     elif fn == "patch_ts_session":
         details['url'] = tailstamping_sessions_url
-        body = getBody(fn)%(data['session'],data['session'],data['flowgroup'])
+        body = getBody(fn)%(data['session'],data['session'],data['flowgroup'],data['node_type'])
         details['body'] = json.loads(body)
     elif fn == "delete_ts_session":
         details['url'] = tailstamping_sessions_url+'/tailstamping-session={}'.format(data['session'])
@@ -447,6 +476,8 @@ def getDetails(fn, args):
         details['url'] = dropmonitor_aginginterval_url
         body = getBody(fn)%(data['aging-interval'])
         details['body'] = json.loads(body)
+        details['description'] = "%Info: Any changes to aging-interval are effective for newly created sessions only."
+        details['name'] = ""
     elif fn == "delete_aginginterval":
         details['url'] = dropmonitor_aginginterval_url+'/config/aging-interval'
         details['description'] = "Aging Interval"
@@ -477,28 +508,94 @@ def getDetails(fn, args):
         details['url'] = flowgroups_url
         flowGroupsIds = do_get(flowgroup_ids_url)
         idsSet = set()
-        maxSet = set(range(1000))
-        currentid = 1
+        maxSet = set(range(2, 255, 1))
+        flowGroupsMap = {}
+        thisPriority = data['priority']
+        configuredPriority = ""
+        currentid = 2
         if (flowGroupsIds['ok']):
             if (flowGroupsIds['content'] is not None):
                 if 'sonic-tam-flowgroups:TAM_FLOWGROUP_TABLE_LIST' in flowGroupsIds['content']:
                     ids = flowGroupsIds['content']['sonic-tam-flowgroups:TAM_FLOWGROUP_TABLE_LIST']
                     for i in ids:
                         idsSet.add(i['id'])
-        if (len(idsSet) != 0):
+                        flowGroupsMap[i['name']] = i['id']
+        if data['name'] in flowGroupsMap:
+            currentid = flowGroupsMap[data['name']]
+            rule_url = get_acl_rule_url+'=TAM,'+data['name']
+            currentRule = do_get(rule_url)
+            if currentRule['ok']:
+                if (currentRule['content'] is not None):
+                    if 'sonic-acl:ACL_RULE_LIST' in currentRule['content']:
+                        thisRule = currentRule['content']['sonic-acl:ACL_RULE_LIST'][0]
+                        if 'PRIORITY' in thisRule:
+                            configuredPriority = str(thisRule['PRIORITY'])
+        elif (len(idsSet) != 0):
             diff = maxSet.difference(idsSet)
-            currentid = list(random.sample(diff, 1))[0]
-        details['body'] = getFlowGroupDate(data, currentid)
+            if (len(diff) != 0):
+                currentid = list(random.sample(diff, 1))[0]
+            else:
+                details['do_request'] = False
+                details['ok'] = True
+                details['description'] = "%Error: Maximum number (253) of flowgroups are already created."
+                details['name'] = ""
+                details['status_code'] = 400
+        currentPriority = "100"
+        if (configuredPriority != ""):
+            currentPriority = configuredPriority
+        if (thisPriority != ""):
+            currentPriority = thisPriority
+        details['body'] = getFlowGroupDate(data, currentid, currentPriority)
     elif fn == "delete_flowgroup":
         details['url'] = flowgroups_url+'/flowgroup={}'.format(data['name'])
         details['description'] = "Flowgroup"
         details['name'] = data['name']
     elif fn == "associate_flowgroup":
-        details['url'] = attach_flowgroup_url+"=TAM,"+data['name']+"/IN_PORTS"
-        body = getBody(fn)%(data['interface'])
-        details['body'] = json.loads(body)
+        flowGroupsIds = do_get(flowgroup_ids_url)
+        flowGroupsMap = {}
+        if (flowGroupsIds['ok']):
+            if (flowGroupsIds['content'] is not None):
+                if 'sonic-tam-flowgroups:TAM_FLOWGROUP_TABLE_LIST' in flowGroupsIds['content']:
+                    ids = flowGroupsIds['content']['sonic-tam-flowgroups:TAM_FLOWGROUP_TABLE_LIST']
+                    for i in ids:
+                        flowGroupsMap[i['name']] = i['id']
+        if data['name'] in flowGroupsMap:
+            currentid = flowGroupsMap[data['name']]
+            details['url'] = flowgroups_url
+            body = getBody(fn)%(data['name'],data['name'],currentid,data['interface'])
+            details['body'] = json.loads(body)
+        else:
+            details['do_request'] = False
+            details['ok'] = True
+            details['description'] = "Flowgroup"
+            details['name'] = data['name']
+            details['status_code'] = 404
     elif fn == "disassociate_flowgroup":
-        details['url'] = attach_flowgroup_url+"=TAM,"+data['name']+"/IN_PORTS"
+        flowGroupsIds = do_get(flowgroup_ids_url)
+        flowGroupsMap = {}
+        if (flowGroupsIds['ok']):
+            if (flowGroupsIds['content'] is not None):
+                if 'sonic-tam-flowgroups:TAM_FLOWGROUP_TABLE_LIST' in flowGroupsIds['content']:
+                    ids = flowGroupsIds['content']['sonic-tam-flowgroups:TAM_FLOWGROUP_TABLE_LIST']
+                    for i in ids:
+                        flowGroupsMap[i['name']] = i['id']
+        if data['name'] in flowGroupsMap:
+            details['url'] = detach_flowgroup_url.format(name=data['name'], interfaces=data['interface'])
+        else:
+            details['do_request'] = False
+            details['ok'] = True
+            details['description'] = "Flowgroup"
+            details['name'] = data['name']
+            details['status_code'] = 404
+    elif fn == "clear_flowgroup_counters":
+        details['url'] = clear_flowgroup_counters_url
+        body = getBody(fn)
+        if (data['name'] == ""):
+            details['body'] = json.loads(body)
+        else:
+            details['body'] = json.loads(body)
+            details['body']['openconfig-tam:input']['name'] = {}
+            details['body']['openconfig-tam:input']['name'] = data['name']
     else:
         details = None
     return details
@@ -510,6 +607,8 @@ def getResponse(details):
         return api.patch(details['url'], details['body'])
     elif details['method'] == 'PUT':
         return api.put(details['url'], details['body'])
+    elif details['method'] == 'POST':
+        return api.post(details['url'], details['body'])
     else:
         return api.delete(details['url'])
 
@@ -540,13 +639,25 @@ def run(fn, args):
                         description = "%Error: " + description
                     message = "{} '{}' not found.".format(description, result['name'])
                     print message
+            elif (result['status_code'] == 400):
+                if 'description' in result:
+                    description = result['description']
+                    if ("%Error:" not in description):
+                        description = "%Error: " + description
+                    print description
+            elif (result['status_code'] == 204):
+                if 'description' in result:
+                    if '%Info' in result['description']:
+                        print result['description']
     else:
-        message = result['error_message']
-        if ("%Error:" not in message):
-            message = "%Error: " + message
-        if "does not match" in message:
-            message = "%Error: Invalid input in the command."
-        print message
+        if not(result is None):
+            if 'error_message' in result:
+                message = result['error_message']
+                if ("%Error:" not in message):
+                    message = "%Error: " + message
+                if "does not match" in message:
+                    message = "%Error: Invalid input in the command."
+                print message
     return 0
 
 if __name__ == '__main__':

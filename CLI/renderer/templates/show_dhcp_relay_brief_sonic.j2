@@ -1,0 +1,13 @@
+------------------------------------------------
+{{'%-18s'|format("Interface Name")}}{{'%-28s'|format("DHCP Helper Address")}}
+------------------------------------------------
+{% for key in json_output %}
+{% set servers = json_output[key] %}
+{% for server in servers %}
+{% if loop.index == 1 %}
+{{'%-18s'|format(key)}}{{'%-28s'|format(server)}}
+{% else %}
+{{'%-18s'|format(' ')}}{{'%-28s'|format(server)}}
+{% endif %}
+{% endfor %}
+{% endfor %}

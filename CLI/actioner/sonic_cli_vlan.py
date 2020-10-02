@@ -157,6 +157,10 @@ def run(func, args):
         if response.content is not None:
             # Get Command Output
             api_response = response.content
+            if api_response is None:
+                print("Failed")
+                return
+
             if 'sonic-vlan:sonic-vlan' in api_response:
                 vlanId = '' if args[0] == 'Vlan' else args[0]
                 value = api_response['sonic-vlan:sonic-vlan']
@@ -204,23 +208,20 @@ def run(func, args):
                 vxlanTuple = vxlanCont['VXLAN_TUNNEL_MAP_LIST']
                 updateVlanNeighSuppressMap(suppTuple,vxlanTuple, args[0])
 
-            if api_response is None:
-                print("Failed")
+            vDict = {}
+            for key, val in vlanDict.iteritems():
+                vDict[key] = vlanDict[key].asdict()
+            for key, val in vDict.iteritems():
+                sortMembers = collections.OrderedDict(sorted(val['vlanMembers'].items(), key=lambda t: (t[1],ifutils.name_to_int_val(t[0]))))
+                val['vlanMembers'] = sortMembers
+            vDictSorted = collections.OrderedDict(sorted(vDict.items(), key = lambda t: getVlanId(t[0])))
+            vlanDict.clear()
+            if func == 'get_sonic_vlan_sonic_vlan':
+                 show_cli_output(args[1], vDictSorted)
+            elif func == 'get_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh':
+                 show_cli_output(args[1], suppressVlanList)
             else:
-                vDict = {}
-                for key, val in vlanDict.iteritems():
-                    vDict[key] = vlanDict[key].asdict()
-                for key, val in vDict.iteritems():
-                    sortMembers = collections.OrderedDict(sorted(val['vlanMembers'].items(), key=lambda t: (t[1],ifutils.name_to_int_val(t[0]))))
-                    val['vlanMembers'] = sortMembers
-                vDictSorted = collections.OrderedDict(sorted(vDict.items(), key = lambda t: getVlanId(t[0])))
-                vlanDict.clear()
-                if func == 'get_sonic_vlan_sonic_vlan':
-                     show_cli_output(args[1], vDictSorted)
-                elif func == 'get_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh':
-                     show_cli_output(args[1], suppressVlanList)
-                else:
-                     return
+                 return
 
     else:
         print response.error_message()

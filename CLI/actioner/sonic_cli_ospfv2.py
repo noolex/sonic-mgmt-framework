@@ -380,9 +380,10 @@ def delete_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_add
     ospf_cli_log("delete_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_field))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name, 'ospfv2')
     ospf_rtr_pif_uri += '/global/openconfig-ospfv2-ext:passive-interfaces'
-    ospf_rtr_pif_uri += '/passive-interface={},{}'.format(quote(intf_name, safe=''), if_addr)
-    if cfg_field != '' :
-        ospf_rtr_pif_uri += '/{}'.format(cfg_field)
+    if intf_name != '' and if_addr != '' :
+        ospf_rtr_pif_uri += '/passive-interface={},{}'.format(quote(intf_name, safe=''), if_addr)
+        if cfg_field != '' :
+            ospf_rtr_pif_uri += '/{}'.format(cfg_field)
     ospf_cli_log("delete_ospf_router_passive_interface_config: uri {}".format(ospf_rtr_pif_uri))
     keypath = cc.Path(ospf_rtr_pif_uri)
     response = api.delete(keypath)
@@ -664,12 +665,16 @@ def invoke_api(func, args=[]):
         for arg in args[1:]:
             if (arg == "default"):
                 cmdtype = "default"
+            if (arg == "non-passive"):
+                cmdtype = "non-passive"
 
-        if (cmdtype != ""):
+        if (cmdtype == "default"):
             body = { "config" : {"openconfig-ospfv2-ext:passive-interface-default": True} }
             return patch_ospf_router_global_config(api, args[0], body)
         else:
-            return patch_ospf_router_passive_interface_config(api, args[0], args[1], args[2])
+            pass_type = True if cmdtype == "non-passive" else False
+            body = { "config" : {"openconfig-ospfv2-ext:non-passive": pass_type } }
+            return patch_ospf_router_passive_interface_config(api, vrf, args[1], args[2], body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface':
         vrf = args[0]
@@ -679,10 +684,20 @@ def invoke_api(func, args=[]):
             if (arg == "default"):
                 cmdtype = "default"
 
-        if (cmdtype != ""):
-            return delete_ospf_router_global_config(api, args[0], 'config/openconfig-ospfv2-ext:passive-interface-default')
+        if (cmdtype == "default") :
+            return delete_ospf_router_global_config(api, vrf, 'config/openconfig-ospfv2-ext:passive-interface-default')
         else:
-            return delete_ospf_router_passive_interface_config(api, args[0], args[1], args[2])
+            return delete_ospf_router_passive_interface_config(api, vrf, args[1], args[2])
+
+    elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_nonpassive_interface':
+        vrf = args[0]
+        body = { "config" : {"openconfig-ospfv2-ext:non-passive": True } }
+        return patch_ospf_router_passive_interface_config(api, args[0], args[1], args[2], body)
+
+    elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_nonpassive_interface':
+        vrf = args[0]
+        body = { "config" : {"openconfig-ospfv2-ext:non-passive": False } }
+        return patch_ospf_router_passive_interface_config(api, args[0], args[1], args[2], body)
 
     elif func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers':
         vrf = args[0]

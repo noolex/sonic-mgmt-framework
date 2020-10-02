@@ -5,6 +5,11 @@
 {% set tailstamp = tailstamps[0]['config'] %}
 Name        : {{tailstamp['name']}}    
 Flow Group  : {{tailstamp['flowgroup']}}
+{% if tailstamp['node-type'] == "NORMAL" %}
+Node Type   : Normal
+{% else %}
+Node Type   : IFA
+{% endif %}
 {% else %}
 %Error: Session is not configured.
 {% endif %}

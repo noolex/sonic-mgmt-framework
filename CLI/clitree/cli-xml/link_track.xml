@@ -31,6 +31,20 @@ limitations under the License.
         <COMMAND name="link state track" help="Create link state tracking group" mode="subcommand" ptype="SUBCOMMAND" view="configure-link-state-track-view" viewid="group=${grp-name}" data_and_render_cb="show_running_lst_group">
             <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME"/>
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking create_link_state_tracking_group ${grp-name}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Create a link state tracking group.
+                </DESCRIPTION>
+                <USAGE>
+                    Link state tracking group name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character.
+                </USAGE>
+                <EXAMPLE summary="Create a link state tracking group with name as 'FooBar'">
+                    sonic(config)# link state track FooBar
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ sudo config linktrack add &lt;name&gt;
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no link" help="Delete link state tracking group" />
@@ -38,6 +52,20 @@ limitations under the License.
         <COMMAND name="no link state track" help="Delete link state tracking group">
             <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME"/>
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group ${grp-name}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete a link state tracking group.
+                </DESCRIPTION>
+                <USAGE>
+                    Link state tracking group name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character.
+                </USAGE>
+                <EXAMPLE summary="Delete a link state tracking group with name as 'FooBar'">
+                    sonic(config)# no link state track FooBar
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ sudo config linktrack del &lt;name&gt;
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
     </VIEW>
 
@@ -50,30 +78,93 @@ limitations under the License.
         <COMMAND name="description" help="Description of the group (Max size 255)">
             <PARAM name="grp-descr" help="Description" ptype="STRING" />
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_description ${group} ${grp-descr}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Set description to a link state tracking group.
+                </DESCRIPTION>
+                <EXAMPLE summary="Set description">
+                    sonic(config-link-track)# description "Example description"
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ sudo config linktrack update &lt;name&gt; --description &lt;description&gt;
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="no description" help="Clear the description">
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_description ${group}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete description set to a link state tracking group.
+                </DESCRIPTION>
+                <EXAMPLE summary="Delete description">
+                    sonic(config-link-track)# no description
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND name="timeout" help="Timeout value (1-1800)">
             <PARAM name="grp-tmout" help="Timeout" ptype="LST_TIMEOUT" />
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_timeout ${group} ${grp-tmout}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Set timeout to bring up downstream interfaces when atleast one upstream interface comes online.
+                </DESCRIPTION>
+                <EXAMPLE summary="Set timeout configuration">
+                    sonic(config-link-track)# timeout 120
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ sudo config linktrack update &lt;name&gt; --timeout &lt;value&gt;
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="no timeout" help="Rest timeout value">
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_timeout ${group}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Reset timeout to bring up downstream interfaces to default value (60 seconds).
+                </DESCRIPTION>
+                <EXAMPLE summary="Delete timeout configuration">
+                    sonic(config-link-track)# no timeout
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ sudo config linktrack update &lt;name&gt; --no-timeout &lt;value&gt;
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
-        
+
         <COMMAND name="downstream" help="Set downstream ports">
             <PARAM name="grp-downstream" help="Downstream ports" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="all-mclag" help="All MCLAGs" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_all_mclag_downstream ${group}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configure all mclags as downstream interfaces.
+                </DESCRIPTION>
+                <EXAMPLE summary="Configure all-mclags as downstream interfaces">
+                    sonic(config-link-track)# downstream all-mclag
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ sudo config linktrack update &lt;name&gt; --downstream all-mclag
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="no downstream" help="Remove downstream ports">
             <PARAM name="grp-downstream" help="Downstream ports" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="all-mclag" help="All MCLAGs" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_all_mclag_downstream ${group}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Deletes all mclags as downstream interfaces.
+                </DESCRIPTION>
+                <EXAMPLE summary="Delete all mclags as downstream interfaces">
+                    sonic(config-link-track)# no downstream all-mclag
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ sudo config linktrack update &lt;name&gt; --no-downstream all-mclag
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
     </VIEW>
 
@@ -95,6 +186,32 @@ limitations under the License.
         <COMMAND name="show link state tracking" help="Show link state tracking information">
             <PARAM name="grp-name" help="Group name (Max size 63)" ptype="LST_GROUP_NAME" optional = "true"/>
             <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking show_link_state_tracking_group_info ${grp-name}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show the link state tracking group operational state information.
+                </DESCRIPTION>
+                <USAGE>
+                    Link state tracking group name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character.
+                    If the group name is not specified then a summary of all configured groups will be displayed.
+                </USAGE>
+                <EXAMPLE summary="Display link state tracking group summary/details">
+                    sonic# show link state tracking FooBar
+                    Name: FooBar
+                    Description: Example description
+                    Timeout: 120 seconds
+                    Upstream Interfaces:
+                        Ethernet0 (Up)
+                        Ethernet4 (Up)
+                        Vlan100 (Up)
+                    Downstream Interfaces:
+                        PortChannel1 (Up)
+                        PortChannel2 (Up)
+                        Ethernet4 (Up)
+                </EXAMPLE>
+                <ALTCMD type="click">
+                    admin@sonic:~$ show linktrack group &lt;name&gt;
+                </ALTCMD>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND name="show running-configuration link" help="Show current link state tracking configuration"/>
@@ -104,6 +221,5 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-link-state-track view_keys="group=${show-runn-grp-name}" </ACTION>
         </COMMAND>
     </VIEW>
-
 </CLISH_MODULE>
 

@@ -326,6 +326,8 @@ def generate_show_bgp_neighbors(args):
            afisafi = "IPV4_UNICAST"
         elif "ipv6" == arg:
            afisafi = "IPV6_UNICAST"
+        elif "l2vpn" == arg:
+           afisafi = "L2VPN_EVPN"
         elif "summary" == arg:
            querytype = 'SUMMARY'
         i = i + 1
@@ -354,11 +356,7 @@ def generate_show_bgp_neighbors(args):
             if (not len(d)):
                 print("% No BGP neighbors found")
                 return 1
-            if afisafi == "IPV4_UNICAST":
-                unicast_type = 'ipv4Unicast'
-            elif afisafi == "IPV6_UNICAST":
-                unicast_type = 'ipv6Unicast'
-            d['max_nbr_col_len'] = len(max(d[unicast_type]['peers'].keys(), key=len))
+            d['max_nbr_col_len'] = len(max(d['peers'].keys(), key=len))
             d['addr_family'] = afisafi
             show_cli_output('show_ip_bgp_summary_rpc.j2', d)
             return 0
@@ -1986,6 +1984,58 @@ def preprocess_bgp_nbrs(afisafiname, nbrs):
     un_enbrs.extend(new_nbrs)
     return un_enbrs
 
+def generate_show_bgp_dampening(args=[]):
+    damp_option = ""
+    i=2
+    for arg in args[2:]:
+        if "dampening" == arg:
+             damp_option = args[i+1]
+        i = i + 1
+
+    keypath = []
+    body = None
+    vrf = args[0]
+    afisafi = "IPV4_UNICAST"
+    api = cc.ApiClient()
+
+    keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp')
+    inputs = {"vrf-name":vrf, "address-family":afisafi}
+    inputs['query-type'] = "DAMPENING"
+
+    if damp_option == "dampened-paths" :
+        inputs['dampening'] = "DAMPENED-PATHS"
+    elif damp_option == "flap-statistics" :
+        inputs['dampening'] = "FLAP-STATISTICS"
+    elif damp_option == "parameters" :
+        inputs['dampening'] = "PARAMETERS"
+
+    d = {}
+    body = {"sonic-bgp-show:input": inputs}
+    response = api.post(keypath, body)
+    if not response:
+        return 1
+    if(response.ok()):
+        d = response.content['sonic-bgp-show:output']['response']
+        if len(d) != 0 and "warning" not in d and "Unknown command:" not in d:
+            try:
+                if damp_option == "dampened-paths" :
+                    d = json.loads(d, object_pairs_hook=OrderedDict)
+                    show_cli_output("show_ip_bgp_damp_path.j2", d)
+                elif damp_option == "flap-statistics" :
+                    d = json.loads(d, object_pairs_hook=OrderedDict)
+                    show_cli_output("show_ip_bgp_damp_stats.j2",d)
+                elif damp_option == "parameters" :
+                    show_cli_output("show_ip_bgp_damp_param.j2", d)
+            except:
+                return 1
+        else:
+          d = json.loads(d)
+          print(d['warning'])
+    else:
+        print response.error_message()
+        return 1
+
+
 def invoke_show_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
@@ -2033,7 +2083,7 @@ def invoke_show_api(func, args=[]):
             afisafiname = args[2]
         else:
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/state', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
         if response.ok() and response.content is not None:
             d.update(response.content)
@@ -2060,7 +2110,7 @@ def invoke_show_api(func, args=[]):
             afisafiname = args[2]
         else:
             afisafiname = 'openconfig-bgp-types:IPV4_UNICAST'
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global', name=args[1], identifier=IDENTIFIER, name1=NAME1)
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/state', name=args[1], identifier=IDENTIFIER, name1=NAME1)
         response = api.get(keypath)
         if response.ok() and response.content is not None:
             d.update(response.content)
@@ -2984,14 +3034,17 @@ def parsePeergEvpn(vrf_name, template_name, cmd, args=[]):
     return rc
 
 def parseGloblShow(vrf_name, cmd, args=[]):
-    if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
-        try:
-            pipe_idx = args.index('\|')
-            args = args[:pipe_idx]
-        except:
-            # no pipe
-            pass
+    try:
+        pipe_idx = args.index('\|')
+        args = args[:pipe_idx]
+    except:
+        # no pipe
+        pass
 
+    if cmd == 'show bgp l2vpn evpn summary':
+      return generate_show_bgp_neighbors(args)
+
+    if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
         if vrf_name == 'all':
             generate_show_bgp_vrf_all(args)
             return 0
@@ -3018,22 +3071,27 @@ def parseGloblShow(vrf_name, cmd, args=[]):
             return 0
         elif args[0] == 'summary':
             return generate_show_bgp_neighbors(args)
+        elif args[0] == 'dampening':
+            return generate_show_bgp_dampening([ vrf_name, 'ipv6' if cmd == 'show bgp ipv6' else 'ipv4' ] + args[4:])
         else:
             return generate_show_bgp_routes(args)
 
     elif cmd == 'show bgp all':
         vrf_arg = [ 'vrf' , vrf_name ]
         if args[0] == 'peer-group':
-            if len(args) == 1:
+            if len(args) == 5 or args[4] == 'vrf' and len(args) == 7:
                 response = invoke_show_api('get_show_bgp_peer_group_all', vrf_arg + args)
             else:
                 response = invoke_show_api('get_show_bgp_peer_group', vrf_arg + args)
         elif args[0] == 'neighbors':
-            if len(args) == 1:
-                response = invoke_show_api('get_ip_bgp_neighbors', [ None, vrf_name, 'ipAll' ])
+            if args[1] == 'neighbor-ip':
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip', [ None, vrf_name, 'ipAll', args[-1] ])
+                show_cli_output('show_ip_bgp_neighbors.j2', response)
+            elif args[1] == 'interface':
+                response = invoke_show_api('get_ip_bgp_neighbors_neighborip', [ None, vrf_name, 'ipAll', args[-1] ])
                 show_cli_output('show_ip_bgp_neighbors.j2', response)
             else:
-                response = invoke_show_api('get_ip_bgp_neighbors_neighborip',  [ None, vrf_name, 'ipAll' ] + args[1:])
+                response = invoke_show_api('get_ip_bgp_neighbors', [ None, vrf_name, 'ipAll' ])
                 show_cli_output('show_ip_bgp_neighbors.j2', response)
         return 0
 

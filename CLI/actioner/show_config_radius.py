@@ -21,6 +21,7 @@ from show_config_if_cmd import show_render_if_cmd
 
 # show_radius_statistics_config renders running config for 'radius-server statistics'
 def show_radius_statistics_config(render_tables):
+    cmd = ''
     entry = get_radius_entry(render_tables)
     if ( 'statistics' in entry ) and entry['statistics']:
         cmd = 'radius-server statistics enable'
