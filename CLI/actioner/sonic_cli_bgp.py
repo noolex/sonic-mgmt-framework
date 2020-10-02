@@ -326,6 +326,8 @@ def generate_show_bgp_neighbors(args):
            afisafi = "IPV4_UNICAST"
         elif "ipv6" == arg:
            afisafi = "IPV6_UNICAST"
+        elif "l2vpn" == arg:
+           afisafi = "L2VPN_EVPN"
         elif "summary" == arg:
            querytype = 'SUMMARY'
         i = i + 1
@@ -354,11 +356,7 @@ def generate_show_bgp_neighbors(args):
             if (not len(d)):
                 print("% No BGP neighbors found")
                 return 1
-            if afisafi == "IPV4_UNICAST":
-                unicast_type = 'ipv4Unicast'
-            elif afisafi == "IPV6_UNICAST":
-                unicast_type = 'ipv6Unicast'
-            d['max_nbr_col_len'] = len(max(d[unicast_type]['peers'].keys(), key=len))
+            d['max_nbr_col_len'] = len(max(d['peers'].keys(), key=len))
             d['addr_family'] = afisafi
             show_cli_output('show_ip_bgp_summary_rpc.j2', d)
             return 0
@@ -3042,6 +3040,9 @@ def parseGloblShow(vrf_name, cmd, args=[]):
     except:
         # no pipe
         pass
+
+    if cmd == 'show bgp l2vpn evpn summary':
+      return generate_show_bgp_neighbors(args)
 
     if cmd == 'show bgp ipv4' or cmd == 'show bgp ipv6':
         if vrf_name == 'all':

@@ -398,7 +398,7 @@ limitations under the License.
   <!-- =================== CONFIG TAM ===================  -->
   <VIEW name="configure-view">
     <COMMAND name="tam" help="Telemetry and monitoring configuration" mode="subcommand" ptype="SUBCOMMAND" view="configure-tam-view"
-             command_tables="sonic-tam-collectors:sonic-tam-collectors/TAM_COLLECTORS_TABLE/TAM_COLLECTORS_TABLE_LIST/name={name};sonic-tam-dropmonitor:sonic-tam-dropmonitor/TAM_DROPMONITOR_SESSIONS_TABLE/TAM_DROPMONITOR_SESSIONS_TABLE_LIST/name={name};sonic-tam-dropmonitor:sonic-tam-dropmonitor/TAM_DROPMONITOR_TABLE/TAM_DROPMONITOR_TABLE_LIST/name=global;sonic-tam-features:sonic-tam-features/TAM_STATE_FEATURES_TABLE/TAM_STATE_FEATURES_TABLE_LIST/name={name};sonic-tam-flowgroups:sonic-tam-flowgroups/TAM_FLOWGROUP_TABLE/TAM_FLOWGROUP_TABLE_LIST/name={name};sonic-tam-ifa:sonic-tam-ifa/TAM_IFA_SESSIONS_TABLE/TAM_IFA_SESSIONS_TABLE_LIST/name={name};sonic-tam-samplers:sonic-tam-samplers/TAM_SAMPLINGRATE_TABLE/TAM_SAMPLINGRATE_TABLE_LIST/name={name};sonic-tam-switch:sonic-tam-switch/TAM_SWITCH_TABLE/TAM_SWITCH_TABLE_LIST/name=global;sonic-tam-tailstamping:sonic-tam-tailstamping/TAM_TAILSTAMPING_SESSIONS_TABLE/TAM_TAILSTAMPING_SESSIONS_TABLE_LIST/name={name};sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST" render_command_cb="tam_config"/>
+             command_tables="sonic-tam-collectors:sonic-tam-collectors/TAM_COLLECTORS_TABLE/TAM_COLLECTORS_TABLE_LIST/name={name};sonic-tam-dropmonitor:sonic-tam-dropmonitor/TAM_DROPMONITOR_SESSIONS_TABLE/TAM_DROPMONITOR_SESSIONS_TABLE_LIST/name={name};sonic-tam-dropmonitor:sonic-tam-dropmonitor/TAM_DROPMONITOR_TABLE/TAM_DROPMONITOR_TABLE_LIST/name=global;sonic-tam-features:sonic-tam-features/TAM_STATE_FEATURES_TABLE/TAM_STATE_FEATURES_TABLE_LIST/feature-ref={feature-ref};sonic-tam-flowgroups:sonic-tam-flowgroups/TAM_FLOWGROUP_TABLE/TAM_FLOWGROUP_TABLE_LIST/name={name};sonic-tam-ifa:sonic-tam-ifa/TAM_IFA_SESSIONS_TABLE/TAM_IFA_SESSIONS_TABLE_LIST/name={name};sonic-tam-samplers:sonic-tam-samplers/TAM_SAMPLINGRATE_TABLE/TAM_SAMPLINGRATE_TABLE_LIST/name={name};sonic-tam-switch:sonic-tam-switch/TAM_SWITCH_TABLE/TAM_SWITCH_TABLE_LIST/name=global;sonic-tam-tailstamping:sonic-tam-tailstamping/TAM_TAILSTAMPING_SESSIONS_TABLE/TAM_TAILSTAMPING_SESSIONS_TABLE_LIST/name={name};sonic-acl:sonic-acl/ACL_RULE/ACL_RULE_LIST" render_command_cb="tam_config"/>
   </VIEW>
   <VIEW name="configure-tam-view" prompt="${SYSTEM_NAME}(config-tam)# " depth="2">
       <NAMESPACE ref="configure-view" help="false" completion="false" />
@@ -616,7 +616,7 @@ limitations under the License.
         <PARAM name="l4_dst_port" help="Destination port number (0 to 65535)" ptype="RANGE_0_65535" default=""/>
       </PARAM>
       <PARAM name="priority" help="Priority of the flow-group among the other flow-groups created" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="priority_value" help="Priority value (1 to 1024)" ptype="RANGE_1_1024" default="100"/>
+        <PARAM name="priority_value" help="Priority value (1 to 1024)" ptype="RANGE_1_1024" default=""/>
       </PARAM>
       <PARAM name="protocol" help="Protocol field of the IP header of the packets belonging to the flow-group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="protocol_value" help="Protocol value UDP/TCP" ptype="IP_PROTOCOL" default=""/>
