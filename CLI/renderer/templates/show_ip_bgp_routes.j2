@@ -1,0 +1,109 @@
+{% set vars = {'routerId': ""} %}
+{% set vars = {'asNum': ""} %}
+{% set vars = {'prefix': ""} %}
+{% set vars = {'nxtHop': ""} %}
+{% set vars = {'pathId': ""} %}
+{% set vars = {'med': ""} %}
+{% set vars = {'locPref': ""} %}
+{% set vars = {'origin': "IGP"} %}
+{% set vars = {'weight': ""} %}
+{% set vars = {'validRoute': False} %}
+{% set vars = {'bestRoute': False} %}
+{% set vars = {'members': ""} %}
+{% set count = namespace(value=0) %}
+{% if json_output -%}
+{% for key in json_output %}
+{% if "openconfig-network-instance:global" in key %}
+{% set bgpGlobal = json_output["openconfig-network-instance:global"] %}
+{% set globalConfig = bgpGlobal['config'] %}
+{% set globalState = bgpGlobal['state'] %}
+{% if 'router-id' in globalState %}
+{% if vars.update({'routerId':globalState["router-id"]}) %}{% endif %}
+{% else %}
+{% if vars.update({'routerId':'0.0.0.0'}) %}{% endif %}
+{% endif %}
+{% if vars.update({'asNum':globalConfig["as"]}) %}{% endif %}
+{% endif %}
+{% endfor %}
+BGP routing table information for VRF default
+Router identifier {{ vars.routerId }}, local AS number {{ vars.asNum }} 
+Route status codes: * - valid, > - best
+Origin codes: i - IGP, e - EGP, ? - incomplete
+     {{'%-20s'|format("Network")}}{{'%-20s'|format("Next Hop")}}{{'%-12s'|format("Metric")}}{{'%-12s'|format("LocPref")}}{{'%-7s'|format("Weight")}}{{'%s'|format("Path")}}
+{% for key in json_output %}
+{% if "openconfig-network-instance:adj-rib-in-pre" in key %}
+{% set routeList = json_output["openconfig-network-instance:adj-rib-in-pre"]["routes"]["route"] %}
+{% elif "openconfig-network-instance:adj-rib-out-pre" in key %}
+{% set routeList = json_output["openconfig-network-instance:adj-rib-out-pre"]["routes"]["route"] %}
+{% elif "openconfig-network-instance:adj-rib-out-post" in key %}
+{% set routeList = json_output["openconfig-network-instance:adj-rib-out-post"]["routes"]["route"] %}
+{% elif "openconfig-network-instance:adj-rib-in-post" in key %}
+{% set routeList = json_output["openconfig-network-instance:adj-rib-in-post"]["routes"]["route"] %}
+{% elif "openconfig-network-instance:loc-rib" in key %}
+{% set routeList = json_output["openconfig-network-instance:loc-rib"]["routes"]["route"] %}
+{% else %}
+{% endif %}
+{% if routeList %}
+{% for route in routeList %}
+{% set count.value = count.value + 1 %}
+{% for key in route %}
+  {% if vars.update({'prefix':route["prefix"]}) %}{% endif %}
+  {% if "state" in key %}
+    {% if route["state"]["valid-route"] %}
+        {% set temp = route["state"]["valid-route"] %}
+        {% if temp %}
+            {% if vars.update({'validRoute':"*"}) %}{% endif %}
+        {% else %}
+            {% if vars.update({'validRoute':""}) %}{% endif %}
+        {% endif %}
+    {% endif %}
+    {% if route["state"]["best-path"] %}
+        {% set temp = route["state"]["best-path"] %}
+        {% if temp %}
+            {% if vars.update({'bestRoute':">"}) %}{% endif %}
+        {% else %}
+            {% if vars.update({'bestRoute':""}) %}{% endif %}
+        {% endif %}
+    {% endif %}
+  {% endif %}
+  {% if "openconfig-bgp-ext:attr-sets" in key %}
+    {% set attr_sets = route[key] %}
+    {% if attr_sets["origin"] %}
+        {% if attr_sets["origin"] == 'IGP' %}
+            {% if vars.update({'origin':"i"}) %}{% endif %}
+        {% elif attr_sets["origin"] == 'EGP' %}
+            {% if vars.update({'origin':"e"}) %}{% endif %}
+        {% else %}
+            {% if vars.update({'origin':"?"}) %}{% endif %}
+        {% endif %}
+    {% endif %}
+    {% if vars.update({'nxtHop':attr_sets["next-hop"]}) %}{% endif %}
+    {% if vars.update({'med':attr_sets["med"]}) %}{% endif %}
+    {% if vars.update({'locPref':attr_sets["local-pref"]}) %}{% endif %}
+    {% if vars.update({'weight':attr_sets["weight"]}) %}{% endif %}
+    {% if "as-path" in attr_sets %}
+      {% set as_path = attr_sets['as-path'] %}
+      {% if "as-segment" in as_path %}
+         {% set segements = as_path['as-segment'] %}
+         {% set temp = [] %}
+         {% for segment in segements %}
+              {% if "state" in segment %}
+                {% set mems = segment['state']['member'] %}
+                {% for mem in mems %}
+                {%  do temp.append(mem) %}
+                {% endfor %}
+              {% endif %}
+         {% endfor %}
+         {% if vars.update({'members': temp|join(" ")}) %} {% endif %}
+       {% endif %}
+     {% else %}
+       {% if vars.update({'members': ("   ")}) %} {% endif %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+{{'%-1s'|format(vars.validRoute)}}{{'%-4s'|format(vars.bestRoute)}}{{'%-20s'|format(vars.prefix)}}{{'%-20s'|format(vars.nxtHop)}}{{'%-12s'|format(vars.med)}}{{'%-12s'|format(vars.locPref)}}{{'%-7s'|format(vars.weight)}}{{'%s'|format(vars.members)}} {{vars.origin}}
+{% endfor %}
+{{'\nTotal number of prefixes %s\n'|format(count.value)}}
+{% endif %}
+{% endfor %}
+{% endif %}

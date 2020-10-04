@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2019 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+<!--=========================================================================-->
+
+<PTYPE
+     name="RADIUS_AUTH_PORT"
+     method="integer"
+     pattern="1..65535"
+     help="port"
+     />
+<!--=======================================================-->
+<PTYPE
+     name="RADIUS_TIMEOUT"
+     method="integer"
+     pattern="1..60"
+     help="seconds"
+     />
+<!--=======================================================-->
+<PTYPE
+     name="RADIUS_RETRANSMIT"
+     method="integer"
+     pattern="0..10"
+     help="attempts"
+/>
+<!--=======================================================-->
+<PTYPE
+     name="RADIUS_KEY"
+     pattern="(^(([^ #,]){1,65})$)"
+     help="WORD"
+/>
+<!--=======================================================-->
+<PTYPE
+     name="RADIUS_AUTH_TYPE"
+     method="select"
+     pattern="pap(pap) chap(chap) mschapv2(mschapv2)"
+     help="authentication type"
+/>
+<!--=======================================================-->
+<PTYPE
+     name="RADIUS_PRIORITY"
+     method="integer"
+     pattern="1..64"
+     help="(1..64)"
+/>
+<!--=======================================================-->
+
+<VIEW name="enable-view">
+    <COMMAND
+        name="show radius-server"
+        help="Show RADIUS information"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius get_sonic_radius</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="clear radius-server"
+        help="Clear RADIUS commands" />
+    <COMMAND
+        name="clear radius-server statistics"
+        help="Clear RADIUS statistics">
+    <ACTION builtin="clish_pyobj">sonic_cli_radius rpc_sonic_clear_radius_statistics</ACTION>
+    </COMMAND>
+</VIEW>
+
+<!-- Config mode -->
+<VIEW name="configure-view">
+    <COMMAND
+        name="radius-server"
+        help="Configures RADIUS client"
+        >
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server source-ip"
+        help="Configure global source ip for RADIUS"
+        hidden="true"
+        command_keys="type=global"
+        command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        >
+        <PARAM
+            name="source_ip"
+            help="Source IP Addr (default: Routing Stack assigned)"
+            ptype="IPV4V6_ADDR"
+            dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/src_ip"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_source_address ${source_ip}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server nas-ip"
+        help="Configures global NAS-IP|IPV6-Address for RADIUS"
+        command_keys="type=global"
+        command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        >
+        <PARAM
+            name="nas_ip"
+            help="NAS-IP|IPV6-Addr (default: MGMT_INTERFACE IP addr.)"
+            ptype="IPV4V6_ADDR"
+            dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/nas_ip"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_nas_ip_address ${nas_ip}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Configures global NAS-IP|IPV6-Address (Type 4|95) attribute for RADIUS PDU.</DESCRIPTION>
+          <EXAMPLE>
+            sonic(config)# radius-server nas-ip 10.59.100.2
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server statistics"
+        help="Configures global enable statistics collection for RADIUS"
+        command_keys="type=global"
+        command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        render_command_cb="radius_statistics_config"
+        >
+        <PARAM
+            name="enable"
+            help="enable/disable RADIUS statistics collection"
+            ptype="ENA_DISA"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_statistics ${enable}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Configures global statistics collection for RADIUS.</DESCRIPTION>
+          <EXAMPLE>
+            sonic(config)# radius-server statistics enable
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server timeout"
+        help="Configures global timeout for RADIUS"
+        command_keys="type=global"
+        command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        >
+        <PARAM
+            name="timeout"
+            help="(default: 5)"
+            ptype="RADIUS_TIMEOUT"
+            dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/timeout"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_timeout ${timeout}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Configures global timeout for RADIUS.</DESCRIPTION>
+          <EXAMPLE>
+            sonic(config)# radius-server timeout 3
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server retransmit"
+        help="Configures global retransmit attempts for RADIUS"
+        command_keys="type=global"
+        command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        >
+        <PARAM
+            name="retransmit"
+            help="(default: 3)"
+            ptype="RADIUS_RETRANSMIT"
+            dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/retransmit"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_retransmit ${retransmit}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Configures global timeout for RADIUS.</DESCRIPTION>
+          <EXAMPLE>
+            sonic(config)# radius-server timeout 3
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server key"
+        help="Configures global shared secret for RADIUS"
+        command_keys="type=global"
+        command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        escape_chars=""
+        >
+        <PARAM
+            name="key"
+            help="shared secret (ASCII printable except SPACE, #, and COMMA, Max Len: 65)"
+            ptype="RADIUS_KEY"
+            dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/passkey"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_key ${#key}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Configures global shared secret for RADIUS.</DESCRIPTION>
+          <EXAMPLE>
+            sonic(config)# radius-server key testing123
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server auth-type"
+        help="Configures global authentication type for RADIUS"
+        command_keys="type=global"
+        command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        >
+        <PARAM
+            name="auth_type"
+            help="(default: pap)"
+            ptype="RADIUS_AUTH_TYPE"
+            dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/auth_type"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_auth_type ${auth_type}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Configures global auth-type for RADIUS.</DESCRIPTION>
+          <EXAMPLE>
+            sonic(config)# radius-server auth-type chap
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="radius-server host"
+        help="Configures a server for RADIUS"
+        command_tables="sonic-system-radius:sonic-system-radius/RADIUS_SERVER/RADIUS_SERVER_LIST/ipaddress={addr}"
+        render_command_cb="radius_host_config"
+        escape_chars=""
+        >
+        <PARAM
+            name="host"
+            help="Hostname or IP address of RADIUS server"
+            ptype="DOMAIN_NAME_OR_IPADDR"
+            >
+        </PARAM>
+
+        <PARAM
+            name="auth-port"
+            help="RADIUS server's authentication port"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM
+                name="vauth_port"
+                help="(default: 1812)"
+                ptype="RADIUS_AUTH_PORT"
+            >
+            </PARAM>
+        </PARAM>
+
+        <PARAM
+            name="auth-type"
+            help="RADIUS server's authentication type"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM
+                name="vauth_type"
+                help="(default: global setting)"
+                ptype="RADIUS_AUTH_TYPE"
+            >
+            </PARAM>
+        </PARAM>
+
+        <PARAM
+            name="key"
+            help="RADIUS server's shared secret"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM
+                name="vkey"
+            help="shared secret (ASCII printable except SPACE, #, and COMMA, Max Len: 65)(default: global setting)"
+                ptype="RADIUS_KEY"
+            >
+            </PARAM>
+        </PARAM>
+
+        <PARAM
+            name="priority"
+            help="RADIUS server's priority"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM
+                name="vpriority"
+                help="greater value means higher priority"
+                ptype="RADIUS_PRIORITY"
+            >
+            </PARAM>
+        </PARAM>
+
+        <PARAM
+            name="retransmit"
+            help="RADIUS server's retransmit attempts"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM
+                name="vretransmit"
+                help="(default: global setting)"
+                ptype="RADIUS_RETRANSMIT"
+            >
+            </PARAM>
+        </PARAM>
+
+        <PARAM
+            name="source-interface"
+            help="RADIUS server's source-interface"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+                <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+                <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
+                <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
+                <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+                <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+            </PARAM>
+        </PARAM>
+
+        <PARAM
+            name="timeout"
+            help="RADIUS server's timeout"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM
+                name="vtimeout"
+                help="(default: global setting)"
+                ptype="RADIUS_TIMEOUT"
+            >
+            </PARAM>
+        </PARAM>
+
+        <PARAM
+            name="vrf"
+            help="RADIUS server's vrf"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            optional="true"
+            >
+            <PARAM name="vrf-switch" help="" ptype="SUBCOMMAND" mode="switch">
+              <PARAM
+                name="mgmt"
+                help="Management VRF"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                />
+              <PARAM
+                name="vrf-name"
+                help="Name of VRF (Max: 15 characters, prefixed with Vrf)"
+                ptype = "VRF"
+                />
+            </PARAM>
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${#vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${mgmt}${vrf-name} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Configures a server for RADIUS.</DESCRIPTION>
+          <EXAMPLE>
+            sonic(config)# radius-server host 10.59.100.2 key testing123
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server"
+        help="Unconfigures RADIUS"
+        >
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server auth-type"
+        help="Unconfigures global authentication type for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_auth_type</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server host"
+        help="Unconfigures a server for RADIUS"
+        >
+
+        <PARAM
+            name="host"
+            help="Hostname or IP address of RADIUS server"
+            ptype="DOMAIN_NAME_OR_IPADDR"
+            >
+        </PARAM>
+
+        <PARAM
+            name="attribute"
+            help=""
+            ptype="STRING"
+            mode="switch"
+            optional="true"
+            >
+
+        <PARAM
+            name="auth-port"
+            help="Unconfigures RADIUS server's authentication port"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="auth-type"
+            help="Unconfigures RADIUS server's authentication type"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="key"
+            help="Unconfigures RADIUS server's shared secret"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="priority"
+            help="Unconfigures RADIUS server's priority"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="retransmit"
+            help="Unconfigures RADIUS server's retransmit attempts"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="source-interface"
+            help="Unconfigures RADIUS server's source-interface"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="timeout"
+            help="Unconfigures RADIUS server's timeout"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        <PARAM
+            name="vrf"
+            help="Unconfigures RADIUS server's vrf"
+            mode="subcommand"
+            ptype="SUBCOMMAND"
+            >
+        </PARAM>
+
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_host ${host} ${attribute}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>Unconfigures a server for RADIUS.</DESCRIPTION>
+          <EXAMPLE>
+            sonic(config)# no radius-server host 10.59.100.2
+          </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server key"
+        help="Unconfigures global shared secret for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_key</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server nas-ip"
+        help="Unconfigures global NAS-IP|IPV6-Address for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_nas_ip_address</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server retransmit"
+        help="Unconfigures global retransmit attempts for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_retransmit</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server source-ip"
+        help="Unconfigures global source ip for RADIUS"
+        hidden="true"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_source_address</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no radius-server timeout"
+        help="Unconfigures global timeout for RADIUS"
+        >
+    <ACTION builtin="clish_pyobj">sonic_cli_radius delete_openconfig_radius_global_config_timeout</ACTION>
+    </COMMAND>
+
+</VIEW>
+
+</CLISH_MODULE>

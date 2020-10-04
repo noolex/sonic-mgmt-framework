@@ -1,0 +1,9 @@
+{% if json_output %}
+-----------------------------------------------------
+{{'%-20s'|format("Interface Name")}}{{'%-20s'|format("Storm-type")}}{{'%-15s'|format("Rate (kbps)")}}
+-----------------------------------------------------
+{% for storm_list in json_output['sonic-storm-control:PORT_STORM_CONTROL_LIST']%}
+{{'%-20s'|format(storm_list['ifname'])}}{{'%-20s'|format(storm_list['storm_type'])}}{{'%-15s'|format(storm_list['kbps'])}}
+{% endfor %}
+{% endif %}
+

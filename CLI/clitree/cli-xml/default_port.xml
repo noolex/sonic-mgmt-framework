@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<CLISH_MODULE
+	xmlns="http://www.dellemc.com/sonic/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xi="http://www.w3.org/2001/XInclude"
+	xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+
+	<VIEW name="configure-view">
+		<COMMAND name="default" help="Apply default configuration"/>
+        <COMMAND name="default interface" help="Apply default interface configuration">
+		    <PARAM name="iface" help="Ethernet interface" ptype="PHY_INTERFACE"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_if default_port_config ${iface}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Use this command to restore a selected port to its factory default configuration.
+                </DESCRIPTION>
+                <USAGE>
+                   default interface if-name
+                </USAGE>
+                <EXAMPLE>
+                    sonic# configure terminal
+                    sonic(config)# default interface Ethernet 8
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND
+            name="default interface range"
+            help="Apply default configuration on an interface range"
+            mode="subcommand"
+            ptype="STRING"
+            >
+            <PARAM
+                name="range_option"
+                help=""
+                mode="switch"
+                ptype="SUBCOMMAND"
+            >
+            <PARAM
+                name="iface_range_num"
+                help="Physical interface range"
+                ptype="ETHER_INTERFACE_RANGE"
+                mode="subcommand"
+                />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range default_port_config_range iflist=${ethiflist}</ACTION>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>

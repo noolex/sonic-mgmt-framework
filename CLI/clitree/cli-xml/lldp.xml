@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2020 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+<VIEW name="enable-view">
+   <COMMAND name="show lldp" help="Show lldp information"/>
+   <COMMAND name="show lldp table" help="Show lldp table information">
+        <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_show.j2 </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Shows LLPD neigbhor information in brief
+            </DESCRIPTION>
+            <USAGE>
+                This command is useful to view the LLDP neighbor information in brief
+            </USAGE>
+            <EXAMPLE summary="Shows LLDP neigbhor information in brief">
+                sonic-cli# show lldp table
+                ------------------------------------------------------------------------------------------------------
+                LocalPort           RemoteDevice        RemotePortID        Capability           RemotePortDescr
+                -------------------------------------------------------------------------------------------------------
+                Ethernet64          Leaf9               hundredGigE53       BR                  Ethernet64
+            </EXAMPLE>
+        </DOCGEN>
+   </COMMAND>
+   <COMMAND name="show lldp neighbor" help="Show lldp neighbor information">
+	 <PARAM
+            name="ifname"
+            help="Interface name"
+	        ptype="PHY_INTERFACE"
+	        optional="true"
+           >
+        </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_neighbor_show.j2 ${ifname}</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Shows LLPD neigbhor information in detail
+        </DESCRIPTION>
+        <USAGE>
+            This command is useful to view the LLDP neighbor information in detail
+        </USAGE>
+        <EXAMPLE summary="Shows LLDP neigbhor information in detail">
+        sonic-cli# show lldp neighbor
+        -----------------------------------------------------------
+        LLDP Neighbors
+        -----------------------------------------------------------
+        Interface:   Ethernet64,via: LLDP
+        Chassis:
+            ChassisID:    80:a2:35:26:48:5e
+            SysName:      Leaf9
+            SysDescr:     Debian GNU/Linux 9 (stretch) Linux 4.9.0-11-2-amd64 #1 SMP Debian 4.9.189-3+deb9u2 (2019-11-11) x86_64
+            MgmtIP:       10.59.132.165
+            MgmtIP:       10.59.132.165
+            Capability:   MAC_BRIDGE, ON
+            Capability:   ROUTER, ON
+        Port
+            PortID:       hundredGigE53
+            PortDescr:    Ethernet64
+        -----------------------------------------------------------
+        </EXAMPLE>
+    </DOCGEN>
+   </COMMAND>
+</VIEW>
+
+<!--MODE : Global LLDP config commands-->
+<PTYPE
+	name = "LLDP_HELLO_TIME_TYPE"
+	method = "integer"
+	pattern = "5..254"
+	help = ""
+/>
+
+<PTYPE
+	name = "LLDP_MULTIPLIER_TYPE"
+	method = "integer"
+	pattern = "1..10"
+	help = ""
+/>
+
+<PTYPE
+	name="LLDP_MODE_TYPE"
+	method="select"
+	pattern="receive transmit"
+	help="Mode type"
+/>
+
+<PTYPE
+	name="LLDP_TLV_TYPE"
+	method="select"
+	pattern="management-address system-capabilities"
+	help="TLV type"
+/>
+
+<VIEW name="configure-view">
+	<COMMAND name = "lldp enable"
+		help = "Enable LLDP at global level">
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp enable_lldp_global</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Enable LLDP at global level
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to enable LLDP globally
+			</USAGE>
+			<EXAMPLE summary="Enable LLDP at global level">
+				sonic-cli(config)# lldp enable
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp enable"
+		help = "Disable LLDP at global level"
+		command_keys="global_key=GLOBAL"
+		command_tables="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/id={global_key}"
+		dbpath="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/enabled=false">
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp disable_lldp_global false</ACTION>
+		
+		<DOCGEN>
+			<DESCRIPTION>
+				Disable LLDP at global level.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to disable LLDP globally.
+			</USAGE>
+			<EXAMPLE summary="Disable LLDP at global level">
+				sonic-cli(config)# no lldp enable
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name="lldp" help="LLDP configuration subcommands"
+			 command_keys="global_key=GLOBAL"
+			 command_tables="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/id={global_key}"
+	         render_command_cb="lldp_mode">
+		<PARAM
+			name="mode"
+			help="Configure mode"
+			ptype="LLDP_MODE_TYPE">
+		</PARAM>
+    	<ACTION builtin="clish_pyobj"> sonic_cli_lldp set_mode ${mode}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP frame Receiption and Transmission mode.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP frame Receiption and Transmission mode.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP mode">
+				sonic-cli(config)# lldp receive
+						or
+				sonic-cli(config)# lldp transmit
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name="no lldp" help="LLDP configuration subcommands">
+		<PARAM
+			name="mode"
+			help="Configure mode"
+			ptype="LLDP_MODE_TYPE">
+		</PARAM>
+    	<ACTION builtin="clish_pyobj"> sonic_cli_lldp del_mode</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP mode.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP mode.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP mode">
+				sonic-cli(config)# no lldp receive
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp timer"
+		help = "Configure LLDP hello time value in seconds (5 to 254 sec)"
+		command_keys="global_key=GLOBAL"
+		command_tables="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/id={global_key}">
+		<PARAM
+			name="hello-time"
+			help="Hello time value (5 to 254 sec)"
+			ptype="LLDP_HELLO_TIME_TYPE"
+			dbpath="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/hello_time">
+		</PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp set_hello_time ${hello-time}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP hello time. It is the time interval at which periodic hellos are exchanged.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to set LLDP hello time. Default hello time is 30 seconds.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP hello time">
+				sonic-cli(config)# lldp timer 10
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp timer" help = "Unconfigure LLDP hello time value ">
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp del_hello_time</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP hello time.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to set LLDP hello time to Default value.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP hello time">
+				sonic-cli(config)# no lldp timer
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp multiplier"
+		help = "Configure LLDP multiplier value (1 to 10)"
+		command_keys="global_key=GLOBAL"
+		command_tables="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/id={global_key}">
+		<PARAM
+			name="multiplier"
+			help="Multiplier value (1 to 10)"
+			ptype="LLDP_MULTIPLIER_TYPE"
+			dbpath="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/multiplier">
+		</PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp set_multiplier ${multiplier}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP multiplier value that is used to determine the
+				timeout interval (i.e. hello-time x multiplier value) after
+				which LLDP neighbor entry is deleted
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to set LLDP multiplier value. Default value is 4.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP multiplier">
+				sonic-cli(config)# lldp multiplier 6
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp multiplier" help = "Unconfigure LLDP multiplier value ">
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp del_multiplier</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP multiplier value.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to set LLDP multiplier value to Default value.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP multiplier value">
+				sonic-cli(config)# no lldp multiplier
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp system-name"
+		help = "Configure LLDP system name"
+		command_keys="global_key=GLOBAL"
+		command_tables="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/id={global_key}">
+		<PARAM
+			name="system_name"
+			help="System name"
+			ptype="STRING"
+			dbpath="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/system_name">
+		</PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp set_system_name ${system_name}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP System name.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP system name.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP system name">
+				sonic-cli(config)# lldp system-name "BroadcomSonic"
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp system-name" help = "Unconfigure LLDP system name">
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp del_system_name</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP system name.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP system name.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP system name">
+				sonic-cli(config)# no lldp system-name
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+
+	<COMMAND name = "lldp system-description"
+		help = "Configure LLDP system description"
+		command_keys="global_key=GLOBAL"
+		command_tables="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/id={global_key}">
+		<PARAM
+			name="system_description"
+			help="System description"
+			ptype="LINE"
+			dbpath="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/system_description">
+		</PARAM>
+		<ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-lldp:lldp/config/system-description body={"openconfig-lldp:system-description":"${system_description}"}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP System description.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP system description.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP system description">
+				sonic-cli(config)# lldp system-description "Broadcom Sonic"
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp system-description" help = "Unconfigure LLDP system description">
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp del_system_description</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP system description.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP system description.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP system description">
+				sonic-cli(config)# no lldp system-description
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp tlv-select"
+		help = "Enable LLDP TLVs to be advertised">
+		<PARAM
+			name="tlv"
+			help="TLV to be advertised"
+			ptype="LLDP_TLV_TYPE">
+		</PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp del_tlv ${tlv}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Enable sending of TLVs in LLDP frames.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP TLVs to be advertised
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP TLV">
+				sonic-cli(config)# lldp tlv-select system-capabilities
+				sonic-cli(config)# lldp tlv-select management-address
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp tlv-select" help = "Disable LLDP TLVs to be advertised"
+		command_keys="global_key=GLOBAL"
+		command_tables="sonic-lldp:sonic-lldp/LLDP/LLDP_LIST/id={global_key}"
+		render_command_cb="lldp_tlv_select">
+		<PARAM
+			name="tlv"
+			help="TLV to be advertised"
+			ptype="LLDP_TLV_TYPE">
+		</PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp set_tlv ${tlv}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Disable sending of TLVs in LLDP frames.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP TLVs to be advertised
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP TLV">
+				sonic-cli(config)# no lldp tlv-select system-capabilities
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+	</VIEW>
+
+	<!--MODE : interface -->
+	<VIEW name="configure-if-view">
+	<COMMAND name="lldp" help="LLDP interface configuration subcommands"
+		command_tables="sonic-lldp:sonic-lldp/LLDP_PORT/LLDP_PORT_LIST/ifname={name}"
+		render_command_cb="lldp_intf_mode">
+		<PARAM
+			name="mode"
+			help="Configure mode"
+			ptype="LLDP_MODE_TYPE">
+		</PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp set_lldp_intf_mode ${iface} ${mode}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Configure LLDP frame Receiption and Transmission mode at interface level.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to configure LLDP frame Receiption and Transmission mode at interface level.
+			</USAGE>
+			<EXAMPLE summary="Configure LLDP mode">
+				sonic-cli(config)# interface Ethernet 0
+				sonic-cli(conf-if-Ethernet0)# lldp receive
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name="no lldp" help="LLDP interface configuration subcommands">
+		<PARAM
+			name="mode"
+			help="Configure mode"
+			ptype="LLDP_MODE_TYPE">
+		</PARAM>
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp del_lldp_intf_mode ${iface}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Unconfigure LLDP mode at interface level.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to unconfigure LLDP mode at interface level.
+			</USAGE>
+			<EXAMPLE summary="Unconfigure LLDP mode">
+				sonic-cli(config)# interface Ethernet 0
+				sonic-cli(conf-if-Ethernet0)# no lldp receive
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "lldp enable"
+		help = "Enable LLDP at interface level">
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp enable_lldp_intf ${iface}</ACTION>
+
+		<DOCGEN>
+			<DESCRIPTION>
+				Enable LLDP at interface level
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to enable LLDP at interface level
+			</USAGE>
+			<EXAMPLE summary="Enable LLDP at interface level">
+				sonic-cli(config)# interface Ethernet 0
+				sonic-cli(conf-if-Ethernet0)# lldp enable
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	<COMMAND name = "no lldp enable"
+		help = "Disable LLDP at interface level"
+		command_tables="sonic-lldp:sonic-lldp/LLDP_PORT/LLDP_PORT_LIST/ifname={name}"
+		dbpath="sonic-lldp:sonic-lldp/LLDP_PORT/LLDP_PORT_LIST/enabled=false">
+		<ACTION builtin="clish_pyobj">sonic_cli_lldp disable_lldp_intf ${iface} false</ACTION>
+		<DOCGEN>
+			<DESCRIPTION>
+				Disable LLDP at interface level.
+			</DESCRIPTION>
+			<USAGE>
+				Use this command to disable LLDP at interface level.
+			</USAGE>
+			<EXAMPLE summary="Disable LLDP at interface level">
+				sonic-cli(config)# interface Ethernet 0
+				sonic-cli(conf-if-Ethernet0)# no lldp enable
+			</EXAMPLE>
+			<FEATURE> LLDP </FEATURE>
+		</DOCGEN>
+	</COMMAND>
+
+	</VIEW>
+
+</CLISH_MODULE>

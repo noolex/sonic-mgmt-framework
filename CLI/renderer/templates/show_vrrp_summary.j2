@@ -1,0 +1,20 @@
+{% if json_output %}
+
+{% set vrrpoutput = json_output['sonic-vrrp:output'] %}
+{% set vrrpsummary = json_output['sonic-vrrp:output']['Vrrp'] %}
+
+{% if 'Vrrp' in vrrpoutput %}
+{{'%14s  %4s  %6s %15s  %8s  %9s'|format("Interface_Name", "VRID", "State", "VIP", "Cfg_Prio", "Curr_Prio") }}
+{% for vrrpsummary in vrrpoutput['Vrrp'] | sort(attribute="Ifname") | sort(attribute="Vrid") %}
+{% if vrrpsummary['State'] == 2 %}
+{{ '%14s  %4s  %6s %15s  %8s  %9s'|format(vrrpsummary['Ifname'], vrrpsummary['Vrid'], "Master", vrrpsummary['Vip'], vrrpsummary['ConfPrio'], vrrpsummary['CurrPrio']) }}
+{% elif vrrpsummary['State'] == 1 %}
+{{ '%14s  %4s  %6s %15s  %8s  %9s'|format(vrrpsummary['Ifname'], vrrpsummary['Vrid'], "Backup", vrrpsummary['Vip'], vrrpsummary['ConfPrio'], vrrpsummary['CurrPrio']) }}
+{% else %}
+{{ '%14s  %4s  %6s %15s  %8s  %9s'|format(vrrpsummary['Ifname'], vrrpsummary['Vrid'], "Down", vrrpsummary['Vip'], vrrpsummary['ConfPrio'], vrrpsummary['CurrPrio']) }}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% endif %}

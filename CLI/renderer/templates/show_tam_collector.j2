@@ -1,0 +1,10 @@
+{% if json_output %}
+{% if "openconfig-tam:collector" in json_output %}
+{% set collectors = json_output['openconfig-tam:collector'] %}
+{% set collector = collectors[0]['state'] %}
+Name          : {{collector['name']}}
+Port          : {{collector['port']}}
+Protocol      : {{collector['protocol']}}
+IP Address    : {{collector['ip']}}
+{% endif %}
+{% endif %}

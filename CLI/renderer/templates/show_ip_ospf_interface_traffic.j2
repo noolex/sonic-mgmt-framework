@@ -1,0 +1,54 @@
+{{' '}}
+Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack        
+                Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx        
+--------------------------------------------------------------------------------------------
+{% set vars = {'interface_name': ""} %}
+{% set ospf_global_list = json_output  %}
+{% for list_elem in ospf_global_list %}
+{% if 'vrfName' in list_elem and list_elem['vrfName'] != "default" %}
+VRF Name: {{list_elem['vrfName']}}
+{% endif -%}
+{% if 'interfacename' in list_elem %}
+{% if vars.update({'interface_name':list_elem['interfacename']}) %}{% endif -%}
+{% endif -%}
+{% if 'openconfig-network-instance:areas' in list_elem and 'area' in list_elem['openconfig-network-instance:areas'] %}
+{% set area_list =list_elem['openconfig-network-instance:areas']['area'] %}
+{% endif -%}
+{% for areainfo in area_list %}
+{% if 'interfaces' in areainfo and 'interface' in areainfo['interfaces'] %}
+{% set interface_list = areainfo['interfaces']['interface'] %}
+{% for interfaceinfo in interface_list %}
+{% if 'openconfig-ospfv2-ext:message-statistics' in interfaceinfo %}
+{% set stats = interfaceinfo['openconfig-ospfv2-ext:message-statistics'] %}
+{% endif -%}
+{% if 'state' in interfaceinfo %}
+{% set interface_state = interfaceinfo['state'] %}
+{% endif -%}
+{% if vars.interface_name == "" or vars.interface_name == interface_state['id'] %}
+{{'%-10s'|format(interface_state['id'])}} {{'%8u'|format(stats['hello-receive'])}}/{{'%-8u'|format(stats['hello-transmit'])}} {{'%7u'|format(stats['db-description-receive'])}}/{{'%-7u'|format(stats['db-description-transmit'])}} {{'%7u'|format(stats['ls-request-receive'])}}/{{'%-7u'|format(stats['ls-request-transmit'])}} {{'%7u'|format(stats['ls-update-receive'])}}/{{'%-7u'|format(stats['ls-update-transmit'])}} {{'%7u'|format(stats['ls-acknowledge-receive'])}}/{{'%-7u'|format(stats['ls-acknowledge-transmit'])}}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+
+
+
+{% if 'virtual-links' in areainfo and 'virtual-link' in areainfo['virtual-links'] %}
+{% set vlink_list = areainfo['virtual-links']['virtual-link'] %}
+{% for vlinkinfo in vlink_list %}
+{% if 'state' in vlinkinfo and 'openconfig-ospfv2-ext:message-statistics' in vlinkinfo['state'] %}
+{% set vlink_state = vlinkinfo['state'] %}
+{% set vstats = vlinkinfo['state']['openconfig-ospfv2-ext:message-statistics'] %}
+{% if vars.interface_name == "" or vars.interface_name == vlink_state['openconfig-ospfv2-ext:name'] %}
+{{'%-10s'|format(vlink_state['openconfig-ospfv2-ext:name'])}} {{'%8u'|format(vstats['hello-receive'])}}/{{'%-8u'|format(vstats['hello-transmit'])}} {{'%7u'|format(vstats['db-description-receive'])}}/{{'%-7u'|format(vstats['db-description-transmit'])}} {{'%7u'|format(vstats['ls-request-receive'])}}/{{'%-7u'|format(vstats['ls-request-transmit'])}} {{'%7u'|format(vstats['ls-update-receive'])}}/{{'%-7u'|format(vstats['ls-update-transmit'])}} {{'%7u'|format(vstats['ls-acknowledge-receive'])}}/{{'%-7u'|format(vstats['ls-acknowledge-transmit'])}}
+{% endif -%}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
+
+
+
+
+{% endfor -%}
+{% endfor -%}
+{{' '}}
+

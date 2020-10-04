@@ -1,0 +1,35 @@
+{% if 'openconfig-relay-agent:state' in json_output %}
+    {% set data = json_output['openconfig-relay-agent:state'] %}
+        {% if 'counters' in  data%}
+         {% set counter = data['counters'] %}
+{{ "BOOTREQUEST messages received by the relay agent        :" }} {{ counter['bootrequest-received'] }}
+{{ "BOOTREQUEST messages forwarded by the relay agent       :" }} {{ counter['bootrequest-sent'] }}
+{{ "BOOTREPLY messages forwarded by the relay agent         :" }} {{ counter['bootreply-sent'] }}
+{{ "DHCP DISCOVER messages received by the relay agent      :" }} {{ counter['dhcp-discover-received'] }}
+{{ "DHCP OFFER messages sent by the relay agent             :" }} {{ counter['dhcp-offer-sent'] }}
+{{ "DHCP REQUEST messages received by the relay agent       :" }} {{ counter['dhcp-request-received'] }}
+{{ "DHCP ACK messages sent by the relay agent               :" }} {{ counter['dhcp-ack-sent'] }}
+{{ "DHCP RELEASE messages received by the relay agent       :" }} {{ counter['dhcp-release-received'] }}
+{{ "DHCP DECLINE messages received by the relay agent       :" }} {{ counter['dhcp-decline-received'] }}
+{{ "DHCP INFORM messages received by the relay agent        :" }} {{ counter['dhcp-inform-received'] }}
+{{ "DHCP NACK messages sent by the relay agent              :" }} {{ counter['dhcp-nack-sent'] }}
+{{ "Total number of DHCP packets dropped by the relay agent :" }} {{ counter['total-dropped'] }}
+{{ "Number of DHCP packets dropped due to an invalid opcode :" }} {{ counter['invalid-opcode'] }}
+{{ "Number of DHCP packets dropped due to an invalid option :" }} {{ counter['invalid-options'] }}
+       {% else %}
+{{ "BOOTREQUEST messages received by the relay agent        : 0" }}
+{{ "BOOTREQUEST messages forwarded by the relay agent       : 0" }}
+{{ "BOOTREPLY messages forwarded by the relay agent         : 0" }}
+{{ "DHCP DISCOVER messages received by the relay agent      : 0" }}
+{{ "DHCP OFFER messages sent by the relay agent             : 0" }}
+{{ "DHCP REQUEST messages received by the relay agent       : 0" }}
+{{ "DHCP ACK messages sent by the relay agent               : 0" }}
+{{ "DHCP RELEASE messages received by the relay agent       : 0" }}
+{{ "DHCP DECLINE messages received by the relay agent       : 0" }}
+{{ "DHCP INFORM messages received by the relay agent        : 0" }}
+{{ "DHCP NACK messages sent by the relay agent              : 0" }}
+{{ "Total number of DHCP packets dropped by the relay agent : 0" }}
+{{ "Number of DHCP packets dropped due to an invalid opcode : 0" }}
+{{ "Number of DHCP packets dropped due to an invalid option : 0" }}
+       {% endif %}
+{% endif %}

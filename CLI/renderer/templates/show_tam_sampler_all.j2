@@ -1,0 +1,15 @@
+{% if json_output -%}
+{% if "openconfig-tam:samplers" in json_output %}
+{% set samplers = json_output['openconfig-tam:samplers']['sampler'] %}
+{% if samplers|length > 0 %}
+Name                              Sample Rate
+--------------------------------  -----------
+{% for sampler in samplers|sort(attribute='name') %}
+{% set sampler_state = sampler["state"] %}
+{{'%-34s'|format(sampler_state["name"])}}{{'%-30s'|format(sampler_state["sampling-rate"])}}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% else %}
+Samplers are not configured.
+{% endif %}

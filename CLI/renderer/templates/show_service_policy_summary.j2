@@ -1,0 +1,6 @@
+{% for intf_name in json_output %}
+    {{- intf_name }}
+    {% for binding_data in json_output[intf_name] %}
+        {{- "   " }} {{ binding_data[0] }} policy {{ binding_data[1] }} at {{ binding_data[2] }}
+    {% endfor %}
+{% endfor %}

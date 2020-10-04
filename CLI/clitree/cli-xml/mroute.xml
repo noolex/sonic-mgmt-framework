@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+    <VIEW name="enable-view">
+        <!-- show ip mroute -->
+        <COMMAND hidden="true"
+            name="show ip mroute"
+            help="Show IP multicast routes"
+            ptype="SUBCOMMAND"
+            mode="subcommand">
+            <PARAM hidden="true"
+                name="vrf"
+                help="Show IP multicast routes of the given VRF"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM hidden="true"
+                  name="vrf-name"
+                  help="Show IP multicast routes of the given VRF"
+                  mode="switch"
+                  ptype="SUBCOMMAND">
+                  <PARAM hidden="true"
+                      name="vrf-name"
+                      help="Name of VRF"
+                      ptype="VRF_OR_DEFAULT">
+                  </PARAM>
+                  <PARAM hidden="true"
+                      name="all"
+                      help="All VRFs"
+                      mode="subcommand"
+                      ptype="SUBCOMMAND">
+                  </PARAM>
+                </PARAM>
+             </PARAM>
+             <PARAM hidden="true"
+                name="filter"
+                help="options: grp-addr, summary"
+                mode="switch"
+                optional="true"
+                order="true"
+                ptype="SUBCOMMAND">
+                <PARAM hidden="true"
+                    name="grp-addr"
+                    help="IPv4 address of the group"
+                    optional="true"
+                    ptype="IP_ADDR">
+                    <PARAM hidden="true"
+                        name="src-addr"
+                        help="IPv4 address of the source"
+                        optional="true"
+                        ptype="IP_ADDR">
+                    </PARAM>
+                </PARAM>
+                <PARAM hidden="true"
+                    name="summary"
+                    help="Show IP multicast routes summary"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true">
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_mroute show_mroute vrf:${vrf-name} mroute:${mroute} summary:${summary} grpAddr:${grp-addr} srcAddr:${src-addr}</ACTION>
+        </COMMAND>
+
+        <!-- ============== -->
+        <!-- Clear commands -->
+        <!-- ============== -->
+        <COMMAND hidden="true"
+            name="clear ip mroute"
+            help="Clear IP Multicast routes">
+            <PARAM hidden="true"
+                name="vrf"
+                help="Clear IP multicast routes of the given VRF"
+                mode="subcommand"
+                optional="true"
+                ptype="SUBCOMMAND">
+                <PARAM hidden="true"
+                    name="vrf-name"
+                    help="Name of VRF"
+                    ptype="VRF_OR_DEFAULT">
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_mroute clear_mroute vrf:${vrf-name} </ACTION>
+        </COMMAND>
+    </VIEW>
+</CLISH_MODULE>

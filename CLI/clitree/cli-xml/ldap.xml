@@ -1,0 +1,1183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2020 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+<!--=========================================================================-->
+
+<PTYPE
+     name="LDAP_SEARCH_TIME_LIMIT"
+     method="integer"
+     pattern="0..65535"
+     />
+     
+<PTYPE
+     name="LDAP_BIND_TIME_LIMIT"
+     method="integer"
+     pattern="0..65535"
+     />
+
+<PTYPE
+     name="LDAP_IDLE_TIME_LIMIT"
+     method="integer"
+     pattern="0..65535"
+     />
+
+<PTYPE
+     name="RETRY_ATTEMPTS"
+     method="integer"
+     pattern="0..10"
+     />
+
+<PTYPE
+     name="LDAP_PORT"
+     method="integer"
+     pattern="1..65535"
+     />
+
+<PTYPE
+     name="LDAP_SCOPE"
+     method="select"
+     pattern="sub(sub) one(one) base(base)"
+     />
+
+<PTYPE
+     name="LDAP_VERSION"
+     method="integer"
+     pattern="2..3"
+     />
+
+<PTYPE
+     name="LDAP_SSL"
+     method="select"
+     pattern="on(on) off(off) start_tls(start_tls)"
+     />
+
+<PTYPE
+     name="LDAP_USE_TYPE"
+     method="select"
+     pattern="all(all) nss(nss) sudo(sudo) pam(pam) nss_sudo(nss_sudo) nss_pam(nss_pam) sudo_pam(sudo_pam)"
+     />
+    
+<PTYPE
+     name="LDAP_SERVER_PORT"
+     method="integer"
+     pattern="1..65535"
+     />
+
+<PTYPE
+     name="LDAP_SERVER_PRIORITY"
+     method="integer"
+     pattern="1..99"
+     />
+     
+<PTYPE
+     name="BASE_DN"
+     pattern=".*"
+     help="String Base distinguished name"
+/>
+
+<PTYPE
+     name="BIND_DN"
+     pattern=".*"
+     help="String Distinguished name to bind"
+/>
+
+<PTYPE
+     name="BIND_PW"
+     pattern="([^ ]*)"
+     help="String Credentials to bind (Valid Chars: ASCII printable except SPACE)"
+/>
+
+<PTYPE
+     name="PAM_FILTER"
+     pattern=".*"
+     help="String PAM filter name"
+/>
+
+<PTYPE
+     name="PAM_LOGIN_ATTR"
+     pattern=".*"
+     help="String PAM login attribute (Default: uid)"
+/>
+
+<PTYPE
+     name="PAM_GRP_DN"
+     pattern=".*"
+     help="String PAM group distinguished name"
+/>
+
+<PTYPE
+     name="PAM_MEM_ATTR"
+     pattern=".*"
+     help="String PAM member attribute value"
+/>
+
+<PTYPE
+     name="SUDOERS_BASE"
+     pattern=".*"
+     help="String Sudo base distinguished name"
+/>
+
+<PTYPE
+     name="NSS_BASE_PWD"
+     pattern=".*"
+     help="String NSS search base for password map"
+/>
+
+<PTYPE
+     name="NSS_BASE_GRP"
+     pattern=".*"
+     help="String NSS search base group"
+/>
+
+<PTYPE
+     name="NSS_BASE_SHADOW"
+     pattern=".*"
+     help="String NSS search base for shadow map"
+/>
+
+<PTYPE
+     name="NSS_BASE_NETGRP"
+     pattern=".*"
+     help="String NSS search base for netgroup map"
+/>
+
+<PTYPE
+     name="NSS_BASE_SUDOERS"
+     pattern=".*"
+     help="String NSS search base for sudoers map"
+/>
+
+<PTYPE
+     name="NSS_INITGRP"
+     pattern=".*"
+     help="String Init groups ignore users value"
+/>
+
+<PTYPE
+     name="ATTR_FROM"
+     pattern=".*"
+     help="String Attribute map key"
+/>
+
+<PTYPE
+     name="ATTR_TO"
+     pattern=".*"
+     help="String Attribute map value"
+/>
+
+<PTYPE
+     name="OBJ_FROM"
+     pattern=".*"
+     help="String Objectclass map key"
+/>
+
+<PTYPE
+     name="OBJ_TO"
+     pattern=".*"
+     help="String Objectclass map value"
+/>
+
+<PTYPE
+     name="DEFAULT_FROM"
+     pattern=".*"
+     help="String Default attribute map key"
+/>
+
+<PTYPE
+     name="DEFAULT_TO"
+     pattern=".*"
+     help="String Default attribute map value"
+/>
+
+<PTYPE
+     name="OVERRIDE_FROM"
+     pattern=".*"
+     help="String Override attribute value map key"
+/>
+
+<PTYPE
+     name="OVERRIDE_TO"
+     pattern=".*"
+     help="String Override attribute value map value"
+/>
+
+<!--=======================================================-->
+
+<!-- Config mode -->
+<VIEW name="configure-view">
+    <COMMAND name = "ldap-server" help="Configures LDAP server" command_keys="ldap_type=global" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
+    	<PARAM name="ldap-global-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Configures global search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Configures global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Configures global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/idle_timelimit"/>
+				</PARAM>
+	
+				<PARAM name="retry" help="Configures global retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
+				</PARAM>
+	
+				<PARAM name="port" help="Configures global server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (1 to 65535); Default: 389" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
+				</PARAM>
+				
+				<PARAM name="scope" help="Configures global search scope" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (sub or one or base); Default: sub" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
+				</PARAM>
+
+				<PARAM name="version" help="Configures global LDAP version" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (2 to 3); Default: 3" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
+				</PARAM>
+
+				<PARAM name="base" help="Configures global base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_base_val" ptype="BASE_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
+				</PARAM>
+
+				<PARAM name="ssl" help="Configures global TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
+				</PARAM>
+
+				<PARAM name="binddn" help="Configures global distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="binddn_val" ptype="BIND_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
+				</PARAM>
+
+				<PARAM name="bindpw" help="Configures global credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="bindpw_val" ptype="BIND_PW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
+				</PARAM>
+
+				<PARAM name="pam-filter" help="Configures global PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_filter_val" ptype="PAM_FILTER" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_filter"/>
+				</PARAM>
+
+				<PARAM name="pam-login-attribute" help="Configures global PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_login_val" ptype="PAM_LOGIN_ATTR" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_login_attribute"/>
+				</PARAM>
+
+				<PARAM name="pam-group-dn" help="Configures global PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_group_val" ptype="PAM_GRP_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_group_dn"/>
+				</PARAM>
+
+				<PARAM name="pam-member-attribute" help="Configures global PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_member_val" ptype="PAM_MEM_ATTR" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_member_attribute"/>
+				</PARAM>
+
+				<PARAM name="sudoers-base" help="Configures global sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="sudoers_val" ptype="SUDOERS_BASE" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/sudoers_base"/>
+				</PARAM>
+
+				<PARAM name="nss-base-passwd" help="Configures global NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_passwd_val" ptype="NSS_BASE_PWD" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
+				</PARAM>
+
+				<PARAM name="nss-base-group" help="Configures global NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_group_val" ptype="NSS_BASE_GRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_group"/>
+				</PARAM>
+
+				<PARAM name="nss-base-shadow" help="Configures global NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_shadow_val" ptype="NSS_BASE_SHADOW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_shadow"/>
+				</PARAM>
+
+				<PARAM name="nss-base-netgroup" help="Configures global NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_netgroup_val" ptype="NSS_BASE_NETGRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_netgroup"/>
+				</PARAM>
+
+				<PARAM name="nss-base-sudoers" help="Configures global NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_sudoers_val" ptype="NSS_BASE_SUDOERS" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_sudoers"/>
+				</PARAM>
+
+				<PARAM name="nss-initgroups-ignoreusers" help="Configures global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss-initgroups_val" ptype="NSS_INITGRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_initgroups_ignoreusers"/>
+				</PARAM>
+
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_global_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server timelimit 13</EXAMPLE>
+				<DESCRIPTION>Configure bind time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server bind-timelimit 10</EXAMPLE>
+				<DESCRIPTION>Configure idle time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server idle-timelimit 12</EXAMPLE>
+				<DESCRIPTION>Configure retry attempt for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server retry 8</EXAMPLE>
+				<DESCRIPTION>Configure port for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server port 81</EXAMPLE>
+				<DESCRIPTION>Configure scope for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server scope sub</EXAMPLE>
+				<DESCRIPTION>Configure version for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server version 2</EXAMPLE>
+				<DESCRIPTION>Configure base distinguished name for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server base basetest</EXAMPLE>
+				<DESCRIPTION>Configure TLS configuration for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server ssl on</EXAMPLE>
+				<DESCRIPTION>Configure distinguished name to bind for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server binddn dnname</EXAMPLE>
+				<DESCRIPTION>Configure credentials to bind for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server bindpw testpasswd</EXAMPLE>
+				<DESCRIPTION>Configure PAM filter for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam-filter testfilter</EXAMPLE>
+				<DESCRIPTION>Configure PAM Login attribute for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam-login-attribute loginattrstring</EXAMPLE>
+				<DESCRIPTION>Configure PAM Group Distinguished name for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam-group-dn grpdn</EXAMPLE>
+				<DESCRIPTION>Configure PAM Member attribute for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam-member-attribute attrstring</EXAMPLE>
+				<DESCRIPTION>Configure sudo base distinguished name for queries for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudoers-base dnqrystr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for passwd map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-passwd dnsearchstr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for group map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-group grpmap</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for shadow map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-shadow grpmap</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for netgroup map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-netgroup netgrpstr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for sudoers map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-base-sudoers sudomap</EXAMPLE>
+				<DESCRIPTION>Configure NSS init groups ignore users for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss-initgroups-ignoreusers grpstr</EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+    
+    <COMMAND name = "ldap-server nss" help="Configures LDAP server for NSS" command_keys="ldap_type=nss" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
+    	<PARAM name="ldap-nss-options" help="" ptype="SUBCOMMAND" mode="switch">
+    	
+				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Configures idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="idle_timelimit_val" ptype="LDAP_IDLE_TIME_LIMIT" help="NSS idle time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/idle_timelimit"/>
+				</PARAM>
+	
+				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
+				</PARAM>
+	
+				<PARAM name="port" help="Configures server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (1 to 65535); Default: 389" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
+				</PARAM>
+				
+				<PARAM name="scope" help="Configures search scope" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (sub or one or base); Default: sub" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
+				</PARAM>
+
+				<PARAM name="version" help="Configures LDAP version" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (2 to 3); Default: 3" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
+				</PARAM>
+
+				<PARAM name="base" help="Configures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_base_val" ptype="BASE_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
+				</PARAM>
+
+				<PARAM name="ssl" help="Configures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
+				</PARAM>
+
+				<PARAM name="binddn" help="Configures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="binddn_val" ptype="BIND_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
+				</PARAM>
+
+				<PARAM name="bindpw" help="Configures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="bindpw_val" ptype="BIND_PW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
+				</PARAM>
+
+				<PARAM name="nss-base-passwd" help="Configures NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_passwd_val" ptype="NSS_BASE_PWD" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
+				</PARAM>
+
+				<PARAM name="nss-base-group" help="Configures NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_group_val" ptype="NSS_BASE_GRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_group"/>
+				</PARAM>
+
+				<PARAM name="nss-base-shadow" help="Configures NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_shadow_val" ptype="NSS_BASE_SHADOW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_shadow"/>
+				</PARAM>
+
+				<PARAM name="nss-base-netgroup" help="Configures NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_netgroup_val" ptype="NSS_BASE_NETGRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_netgroup"/>
+				</PARAM>
+
+				<PARAM name="nss-base-sudoers" help="Configures NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_sudoers_val" ptype="NSS_BASE_SUDOERS" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_sudoers"/>
+				</PARAM>
+
+				<PARAM name="nss-initgroups-ignoreusers" help="Configures NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss-initgroups_val" ptype="NSS_INITGRP" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_initgroups_ignoreusers"/>
+				</PARAM>
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_nss_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss timelimit 13</EXAMPLE>
+				<DESCRIPTION>Configure bind time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss bind-timelimit 10</EXAMPLE>
+				<DESCRIPTION>Configure idle time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss idle-timelimit 12</EXAMPLE>
+				<DESCRIPTION>Configure retry attempt for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss retry 8</EXAMPLE>
+				<DESCRIPTION>Configure port for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss port 81</EXAMPLE>
+				<DESCRIPTION>Configure scope for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss scope sub</EXAMPLE>
+				<DESCRIPTION>Configure version for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss version 2</EXAMPLE>
+				<DESCRIPTION>Configure base distinguished name for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss base basetest</EXAMPLE>
+				<DESCRIPTION>Configure TLS configuration for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss ssl on</EXAMPLE>
+				<DESCRIPTION>Configure distinguished name to bind for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss binddn dnname</EXAMPLE>
+				<DESCRIPTION>Configure credentials to bind for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss bindpw testpasswd</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for passwd map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-passwd dnsearchstr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for group map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-group grpmap</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for shadow map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-shadow grpmap</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for netgroup map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-netgroup netgrpstr</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for sudoers map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-base-sudoers sudomap</EXAMPLE>
+				<DESCRIPTION>Configure NSS init groups ignore users for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server nss nss-initgroups-ignoreusers grpstr</EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+    
+    <COMMAND name = "ldap-server pam" help="Configures LDAP server for PAM" command_keys="ldap_type=pam" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
+    	<PARAM name="ldap-pam-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+				</PARAM>
+	
+				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
+				</PARAM>
+	
+				<PARAM name="port" help="Configures server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (1 to 65535); Default: 389" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
+				</PARAM>
+				
+				<PARAM name="scope" help="Configures search scope" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="scope_val" ptype="LDAP_SCOPE" help="Search scope (sub or one or base); Default: sub" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/scope"/>
+				</PARAM>
+
+				<PARAM name="version" help="Configures LDAP version" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (2 to 3); Default: 3" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
+				</PARAM>
+
+				<PARAM name="base" help="Configures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_base_val" ptype="BASE_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
+				</PARAM>
+
+				<PARAM name="ssl" help="Configures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
+				</PARAM>
+
+				<PARAM name="binddn" help="Configures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="binddn_val" ptype="BIND_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
+				</PARAM>
+
+				<PARAM name="bindpw" help="Configures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="bindpw_val" ptype="BIND_PW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
+				</PARAM>
+
+				<PARAM name="pam-filter" help="Configures PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_filter_val" ptype="PAM_FILTER" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_filter"/>
+				</PARAM>
+
+				<PARAM name="pam-login-attribute" help="Configures PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_login_val" ptype="PAM_LOGIN_ATTR" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_login_attribute"/>
+				</PARAM>
+
+				<PARAM name="pam-group-dn" help="Configures PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_group_val" ptype="PAM_GRP_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_group_dn"/>
+				</PARAM>
+
+				<PARAM name="pam-member-attribute" help="Configures PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="pam_member_val" ptype="PAM_MEM_ATTR" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/pam_member_attribute"/>
+				</PARAM>
+
+				<PARAM name="nss-base-passwd" help="Configures NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="nss_base_passwd_val" ptype="NSS_BASE_PWD" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/nss_base_passwd"/>
+				</PARAM>
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_pam_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure time limit for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam timelimit 13</EXAMPLE>
+				<DESCRIPTION>Configure bind time limit for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam bind-timelimit 10</EXAMPLE>
+				<DESCRIPTION>Configure retry attempt for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam retry 8</EXAMPLE>
+				<DESCRIPTION>Configure port for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam port 81</EXAMPLE>
+				<DESCRIPTION>Configure scope for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam scope sub</EXAMPLE>
+				<DESCRIPTION>Configure version for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam version 2</EXAMPLE>
+				<DESCRIPTION>Configure base distinguished name for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam base basetest</EXAMPLE>
+				<DESCRIPTION>Configure TLS configuration for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam ssl on</EXAMPLE>
+				<DESCRIPTION>Configure distinguished name to bind for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam binddn dnname</EXAMPLE>
+				<DESCRIPTION>Configure credentials to bind for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam bindpw testpasswd</EXAMPLE>
+				<DESCRIPTION>Configure PAM filter for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam pam-filter testfilter</EXAMPLE>
+				<DESCRIPTION>Configure PAM Login attribute for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam pam-login-attribute loginattrstring</EXAMPLE>
+				<DESCRIPTION>Configure PAM Group Distinguished name for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam pam-group-dn grpdn</EXAMPLE>
+				<DESCRIPTION>Configure PAM Member attribute for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam pam-member-attribute attrstring</EXAMPLE>
+				<DESCRIPTION>Configure NSS search base for passwd map for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server pam nss-base-passwd dnsearchstr</EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+    
+    <COMMAND name = "ldap-server sudo" help="Configures LDAP server for SUDO" command_keys="ldap_type=sudo" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}" escape_chars="">
+    	<PARAM name="ldap-sudo-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Configures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="timelimit_val" ptype="LDAP_SEARCH_TIME_LIMIT" help="Search time limit (0 to 65535 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/timelimit"/>
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Configures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="bind_timelimit_val" ptype="LDAP_BIND_TIME_LIMIT" help="Connect time limit (0 to 65535 sec); Default: 10 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bind_timelimit"/>
+				</PARAM>
+	
+				<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/retry"/>
+				</PARAM>
+	
+				<PARAM name="port" help="Configures server port" ptype="SUBCOMMAND" mode="subcommand">
+					<PARAM name="port_val" ptype="LDAP_PORT" help="Server port number (1 to 65535); Default: 389" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/port"/>
+				</PARAM>
+
+				<PARAM name="version" help="Configures LDAP version" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_version_val" ptype="LDAP_VERSION" help="Version (2 to 3); Default: 3" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_version"/>
+				</PARAM>
+
+				<PARAM name="base" help="Configures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ldap_base_val" ptype="BASE_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/base"/>
+				</PARAM>
+
+				<PARAM name="ssl" help="Configures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ssl"/>
+				</PARAM>
+				
+				<PARAM name="binddn" help="Configures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="binddn_val" ptype="BIND_DN" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/binddn"/>
+				</PARAM>
+
+				<PARAM name="bindpw" help="Configures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="bindpw_val" ptype="BIND_PW" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/bindpw"/>
+				</PARAM>
+				
+				<PARAM name="sudoers-base" help="Configures sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+				   <PARAM name="sudoers_val" ptype="SUDOERS_BASE" help="" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/sudoers_base"/>
+				</PARAM>
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_sudo_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure time limit for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo timelimit 13</EXAMPLE>
+				<DESCRIPTION>Configure bind time limit for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo bind-timelimit 10</EXAMPLE>
+				<DESCRIPTION>Configure retry attempt for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo retry 8</EXAMPLE>
+				<DESCRIPTION>Configure port for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo port 81</EXAMPLE>
+				<DESCRIPTION>Configure scope for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo scope sub</EXAMPLE>
+				<DESCRIPTION>Configure version for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo version 2</EXAMPLE>
+				<DESCRIPTION>Configure base distinguished name for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo base basetest</EXAMPLE>
+				<DESCRIPTION>Configure TLS configuration for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo ssl on</EXAMPLE>
+				<DESCRIPTION>Configure distinguished name to bind for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo binddn dnname</EXAMPLE>
+				<DESCRIPTION>Configure credentials to bind for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo bindpw testpasswd</EXAMPLE>
+				<DESCRIPTION>Configure sudo base distinguished name for queries for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server sudo sudoers-base dnqrystr</EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ldap-server source-interface"
+             help="Configures source interface to be used as source IP for the LDAP packets"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}"
+             command_keys="ldap_type=global"
+             render_command_cb="ldap_server_src_intf"
+             >
+        <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
+          <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+        </PARAM>
+		  <ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_src_if_config ${__params}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configure source-interface to be used for LDAP packets </DESCRIPTION>
+		<EXAMPLE>
+			   sonic(config)# ldap-server source-interface Loopback 3
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ldap-server vrf" help="Configures VRF to be used for LDAP server connection"
+      command_tables="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/ldap_type={ldap_type}"
+      command_keys="ldap_type=global"
+      >
+        <PARAM name="vrf_name" help="Name of VRF (Max: 15 characters, mgmt or prefixed with Vrf)" ptype="VRF_OR_MGMT"
+          dbpath="sonic-system-ldap:sonic-system-ldap/LDAP/LDAP_LIST/vrf_name"
+          >
+        </PARAM>
+		  <ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_vrf_config ${__params}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configure VRF tp be used for LDAP server connection </DESCRIPTION>
+		<EXAMPLE>
+               sonic(config)# ldap-server vrf Vrf1
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ldap-server host" help="Configures host name or IP address for a LDAP server" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name={addr}">    
+			<PARAM name="host_val" help="Hostname or IP address of LDAP server" ptype="DOMAIN_NAME_OR_IPADDR" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/name"/>
+			<PARAM name="use-type" help="Configures server type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				<PARAM name="use_type_val" ptype="LDAP_USE_TYPE" help="Server type (all or nss or sudo or pam or nss_sudo or nss_pam or sudo_pam); Default: all" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/use_type"/>
+			</PARAM>
+			<PARAM name="port" help="Configures server port number" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				<PARAM name="server_port_val" ptype="LDAP_SERVER_PORT" help="Server Port number (1 to 65535)" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/port"/>
+			</PARAM>
+			<PARAM name="priority" help="Configures priority" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				<PARAM name="priority_val" ptype="LDAP_SERVER_PRIORITY" help="Priority (1 to 99); Default: 1" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/priority"/>
+			</PARAM>
+			<PARAM name="ssl" help="Configures TLS" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				   <PARAM name="ssl_val" ptype="LDAP_SSL" help="TLS configuration; (on or off or start_tls); Default: off" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/ssl"/>
+			</PARAM>					
+			<PARAM name="retry" help="Configures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+				<PARAM name="retry_val" ptype="RETRY_ATTEMPTS" help="Number of retransmit attempt (0 to 10 sec); Default: 0 sec" dbpath="sonic-system-ldap:sonic-system-ldap/LDAP_SERVER/LDAP_SERVER_LIST/retry"/>
+			</PARAM>
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure host for LDAP server </DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server host 4.5.6.7 use-type nss port 300 priority 12 ssl on retry 5</EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ldap-server map" help="Configures LDAP server for map" command_keys="name=*;from=*" command_tables="sonic-system-ldap:sonic-system-ldap/LDAP_MAP/LDAP_MAP_LIST/name={name},from={from}" render_command_cb="ldap_map_config" escape_chars="">
+    	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
+        <PARAM name="attribute" help="Configures attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="attribute_from_val" ptype="ATTR_FROM" help=""/>
+        	<PARAM name="to" help="Configures attribute map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="attribute_to_val" ptype="ATTR_TO" help=""/>
+        	</PARAM>
+        </PARAM>
+    	
+        <PARAM name="objectclass" help="Configures objectclass map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="objectclass_from_val" ptype="OBJ_FROM" help=""/>
+        	<PARAM name="to" help="Configures objectclass map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="objectclass_to_val" ptype="OBJ_TO" help=""/>
+        	</PARAM>
+        </PARAM>
+        
+        <PARAM name="default-attribute-value" help="Configures default attribute value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="default_from_val" ptype="DEFAULT_FROM" help=""/>
+        	<PARAM name="to" help="Configures default attribute value map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="default_to_val" ptype="DEFAULT_TO" help=""/>
+        	</PARAM>
+        </PARAM>
+        
+        <PARAM name="override-attribute-value" help="Configures override attribute value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="override_from_val" ptype="OVERRIDE_FROM" help=""/>
+        	<PARAM name="to" help="Configures override attribute value map value" ptype="SUBCOMMAND" mode="subcommand">
+        		<PARAM name="override_to_val" ptype="OVERRIDE_TO" help=""/>
+        	</PARAM>
+        </PARAM>
+                
+			</PARAM>
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_map_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Configure LDAP server map</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# ldap-server map objectclass objkey to objectVal</EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+
+		<!--  Unconfigure commands -->
+		
+    <COMMAND name = "no ldap-server"  help="Unconfigures LDAP server">
+    	<PARAM name="ldap-global-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Unconfigures global search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Unconfigures global connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Unconfigures global NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="retry" help="Unconfigures global retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="port" help="Unconfigures global server port" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="scope" help="Unconfigures global search scope" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="version" help="Unconfigures global version" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="base" help="Unconfigures global base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="ssl" help="Unconfigures global TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="binddn" help="Unconfigures global distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="bindpw" help="Unconfigures global credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-filter" help="Unconfigures global PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-login-attribute" help="Unconfigures global PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-group-dn" help="Unconfigures global PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-member-attribute" help="Unconfigures global PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="sudoers-base" help="Unconfigures global sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-passwd" help="Unconfigures global NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-group" help="Unconfigures global NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-shadow" help="Unconfigures global NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-netgroup" help="Unconfigures global NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-sudoers" help="Unconfigures global NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-initgroups-ignoreusers" help="Unconfigures global NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_global_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server timelimit</EXAMPLE>
+				<DESCRIPTION>Unconfigure bind time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server bind-timelimit</EXAMPLE>
+				<DESCRIPTION>Unconfigure idle time limit for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server idle-timelimit</EXAMPLE>
+				<DESCRIPTION>Unconfigure retry attempt for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server retry</EXAMPLE>
+				<DESCRIPTION>Unconfigure port for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server port</EXAMPLE>
+				<DESCRIPTION>Unconfigure scope for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server scope</EXAMPLE>
+				<DESCRIPTION>Unconfigure version for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server version</EXAMPLE>
+				<DESCRIPTION>Unconfigure base distinguished name for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server base </EXAMPLE>
+				<DESCRIPTION>Unconfigure TLS configuration for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server ssl </EXAMPLE>
+				<DESCRIPTION>Unconfigure distinguished name to bind for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server binddn </EXAMPLE>
+				<DESCRIPTION>Unconfigure credentials to bind for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server bindpw </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM filter for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam-filter </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Login attribute for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam-login-attribute </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Group Distinguished name for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam-group-dn </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Member attribute for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam-member-attribute </EXAMPLE>
+				<DESCRIPTION>Unconfigure sudo base distinguished name for queries for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudoers-base </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for passwd map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-passwd </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for group map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-group </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for shadow map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-shadow </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for netgroup map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-netgroup </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for sudoers map for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-base-sudoers </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS init groups ignore users for LDAP global server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss-initgroups-ignoreusers </EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+    
+    <COMMAND name = "no ldap-server nss"  help="Unconfigures LDAP server for NSS">
+    	<PARAM name="ldap-nss-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Unconfigures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Unconfigures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	    
+				<PARAM name="idle-timelimit" help="Unconfigures NSS idle time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="retry" help="Unconfigures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="port" help="Unconfigures server port" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="scope" help="Unconfigures search scope" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="version" help="Unconfigures version" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="base" help="Unconfigures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="ssl" help="Unconfigures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="binddn" help="Unconfigures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="bindpw" help="Unconfigures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="nss-base-passwd" help="Unconfigures NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-group" help="Unconfigures NSS search base for group map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-shadow" help="Unconfigures NSS search base for shadow map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-netgroup" help="Unconfigures NSS search base for netgroup map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-base-sudoers" help="Unconfigures NSS search base for sudoers map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="nss-initgroups-ignoreusers" help="Unconfigures NSS init groups ignore users" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_nss_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure bind time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss bind-timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure idle time limit for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss idle-timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure retry attempt for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss retry </EXAMPLE>
+				<DESCRIPTION>Unconfigure port for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss port </EXAMPLE>
+				<DESCRIPTION>Unconfigure scope for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss scope </EXAMPLE>
+				<DESCRIPTION>Unconfigure version for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss version </EXAMPLE>
+				<DESCRIPTION>Unconfigure base distinguished name for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss base </EXAMPLE>
+				<DESCRIPTION>Unconfigure TLS configuration for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss ssl </EXAMPLE>
+				<DESCRIPTION>Unconfigure distinguished name to bind for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss binddn </EXAMPLE>
+				<DESCRIPTION>Unconfigure credentials to bind for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss bindpw </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for passwd map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-passwd </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for group map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-group </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for shadow map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-shadow </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for netgroup map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-netgroup </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for sudoers map for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-base-sudoers </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS init groups ignore users for LDAP NSS server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server nss nss-initgroups-ignoreusers </EXAMPLE>
+			</DOCGEN>
+		</COMMAND>
+			
+		<COMMAND name = "no ldap-server pam"  help="Unconfigures LDAP server for PAM">
+    	<PARAM name="ldap-pam-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Unconfigures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Unconfigures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="retry" help="Unconfigures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="port" help="Unconfigures server port" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="scope" help="Unconfigures search scope" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="version" help="Unconfigures version" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="base" help="Unconfigures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="ssl" help="Unconfigures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="binddn" help="Unconfigures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="bindpw" help="Unconfigures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-filter" help="Unconfigures PAM filter" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-login-attribute" help="Unconfigures PAM Login attribute" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-group-dn" help="Unconfigures PAM Group Distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="pam-member-attribute" help="Unconfigures PAM Member attribute" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="nss-base-passwd" help="Unconfigures NSS search base for passwd map" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_pam_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure time limit for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure bind time limit for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam bind-timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure retry attempt for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam retry </EXAMPLE>
+				<DESCRIPTION>Unconfigure port for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam port </EXAMPLE>
+				<DESCRIPTION>Unconfigure scope for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam scope </EXAMPLE>
+				<DESCRIPTION>Unconfigure version for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam version </EXAMPLE>
+				<DESCRIPTION>Unconfigure base distinguished name for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam base </EXAMPLE>
+				<DESCRIPTION>Unconfigure TLS configuration for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam ssl </EXAMPLE>
+				<DESCRIPTION>Unconfigure distinguished name to bind for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam binddn </EXAMPLE>
+				<DESCRIPTION>Unconfigure credentials to bind for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam bindpw </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM filter for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam pam-filter </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Login attribute for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam pam-login-attribute </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Group Distinguished name for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam pam-group-dn </EXAMPLE>
+				<DESCRIPTION>Unconfigure PAM Member attribute for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam pam-member-attribute </EXAMPLE>
+				<DESCRIPTION>Unconfigure NSS search base for passwd map for LDAP PAM server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server pam nss-base-passwd </EXAMPLE>
+			</DOCGEN>
+		</COMMAND>
+		
+		<COMMAND name = "no ldap-server sudo"  help="Unconfigures LDAP server for SUDO">
+    	<PARAM name="ldap-sudo-options" help="" ptype="SUBCOMMAND" mode="switch">
+				<PARAM name="timelimit" help="Unconfigures search time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+				<PARAM name="bind-timelimit" help="Unconfigures connect time limit" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="retry" help="Unconfigures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+	
+				<PARAM name="port" help="Unconfigures server port" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="version" help="Unconfigures version" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="base" help="Unconfigures base distinguished name" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="ssl" help="Unconfigures TLS configuration" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="binddn" help="Unconfigures distinguished name to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+
+        <PARAM name="bindpw" help="Unconfigures credentials to bind" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+        <PARAM name="sudoers-base" help="Unconfigures sudo base distinguished name for queries" ptype="SUBCOMMAND" mode="subcommand">
+				</PARAM>
+				
+			</PARAM>				
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_sudo_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure time limit for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure bind time limit for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo bind-timelimit </EXAMPLE>
+				<DESCRIPTION>Unconfigure retry attempt for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo retry </EXAMPLE>
+				<DESCRIPTION>Unconfigure port for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo port </EXAMPLE>
+				<DESCRIPTION>Unconfigure scope for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo scope </EXAMPLE>
+				<DESCRIPTION>Unconfigure version for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo version </EXAMPLE>
+				<DESCRIPTION>Unconfigure base distinguished name for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo base </EXAMPLE>
+				<DESCRIPTION>Unconfigure TLS configuration for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo ssl </EXAMPLE>
+				<DESCRIPTION>Unconfigure distinguished name to bind for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo binddn </EXAMPLE>
+				<DESCRIPTION>Unconfigure credentials to bind for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo bindpw </EXAMPLE>
+				<DESCRIPTION>Unconfigure sudo base distinguished name for queries for LDAP sudo server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server sudo sudoers-base </EXAMPLE>
+			</DOCGEN>
+		</COMMAND>
+					
+    <COMMAND name="no ldap-server host" help="Unconfigures host name or IP address for a LDAP server">
+        <PARAM name="host_val" help="Hostname or IP address of LDAP server" ptype="DOMAIN_NAME_OR_IPADDR"/>
+	        <PARAM name="ldap-map-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
+						<PARAM name="use-type" help="Unconfigures server type" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+						<PARAM name="port" help="Unconfigures server port number" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+						<PARAM name="priority" help="Unconfigures priority" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+						<PARAM name="ssl" help="Unconfigures TLS" ptype="SUBCOMMAND" mode="subcommand">
+						</PARAM>
+						<PARAM name="retry" help="Unconfigures retransmit attempt" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+						</PARAM>
+				</PARAM>					
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_server_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure host for LDAP server</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server host 4.5.6.7 </EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no ldap-server map" help="Unconfigures LDAP server for map" escape_chars="">
+    	<PARAM name="ldap-server_map_options" help="" ptype="SUBCOMMAND" mode="switch">
+        <PARAM name="attribute" help="Unconfigures attribute map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="attribute_from_val" ptype="ATTR_FROM" help=""/>
+        </PARAM>
+    	
+        <PARAM name="objectclass" help="Unconfigures objectclass map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="objectclass_from_val" ptype="OBJ_FROM" help=""/>
+        </PARAM>
+        
+        <PARAM name="default-attribute-value" help="Unconfigures default attribute value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="default_from_val" ptype="DEFAULT_FROM" help=""/>
+        </PARAM>
+        
+        <PARAM name="override-attribute-value" help="Unconfigures override attribute value map" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        	<PARAM name="override_from_val" ptype="OVERRIDE_FROM" help=""/>
+        </PARAM>
+                
+			</PARAM>
+			<ACTION builtin="clish_pyobj">sonic_cli_ldap del_ldap_map_config ${__params}</ACTION>
+			<DOCGEN>
+				<DESCRIPTION>Unconfigure LDAP server map</DESCRIPTION>
+				<EXAMPLE>sonic-cli(config)# no ldap-server map objectclass objkey</EXAMPLE>
+			</DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no ldap-server source-interface"
+             help="Unconfigures global source interface for LDAP">
+      <ACTION
+		  builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/source-interface
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigure global source interface for LDAP</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# no ldap-server source-interface
+               sonic(config)# 
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no ldap-server vrf"
+             help="Unconfigures global vrf for LDAP">
+      <ACTION
+		  builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/server-groups/server-group=LDAP/openconfig-aaa-ldap-ext:ldap/config/vrf-name
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Unconfigure global vrf for LDAP</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# no ldap-server vrf
+               sonic(config)# 
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+			    
+</VIEW>
+
+</CLISH_MODULE>

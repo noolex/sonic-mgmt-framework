@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.  
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+<!--=========================================================================-->
+<!--=======================================================-->
+<!--              show ip forward-protocol .......         -->
+<!--=======================================================-->
+
+  <VIEW name="enable-view">
+    <COMMAND
+        help="Show IP helper global configuration"
+        name="show ip forward-protocol"
+        >
+      <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper global_config show_ip_helper_global.j2</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Displays IP helper global information.
+        </DESCRIPTION>
+        <USAGE>
+          show ip forward-protocol
+        </USAGE>
+        <EXAMPLE summary="Sample output">
+          sonic# show ip forward-protocol 
+          UDP forwarding  : Enabled
+          UDP rate limit  : 2000 pps
+          UDP forwarding enabled on the ports: TFTP, DNS, NTP, TACACS, 12200, 12202
+          UDP forwarding disabled on the ports: NetBios-Name-Server, NetBios-Datagram-Server
+          sonic# 
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>
+        <ALTCMD type="click">
+          show ip forward_protocol config
+        </ALTCMD>
+      </DOCGEN> 
+    </COMMAND>
+
+    <COMMAND help="Show IP helper server addresses on interfaces" name="show ip helper-address">
+      <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
+      <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper iface_config show_ip_helper_interface_config.j2 ${iface}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Displays IP helper server addresses configured on interface.
+        </DESCRIPTION>
+        <USAGE>
+          show ip helper-address [ &lt;interface-name&gt; ]
+        </USAGE>
+        <EXAMPLE summary="Sample output displaying all helper address configuration">
+          sonic# show ip helper-address
+          Interface    Vrf    Relay Address
+          -----------  -----  ---------------
+            Vlan200             4.4.4.4
+            Ethernet0           1.1.1.1
+                         Vrf1   2.2.2.2
+            Vlan100             3.3.3.3
+            Ethernet4           5.5.5.5
+                                7.7.7.7
+          sonic# 
+        </EXAMPLE>
+        <EXAMPLE summary="Sample output displaying helper address configuration on specific interface">
+          sonic# show ip helper-address Ethernet0
+          Interface    Vrf    Relay Address
+          -----------  -----  ---------------
+            Ethernet0    Vrf1   2.2.2.2
+                                1.1.1.1
+          sonic# 
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                        
+        <ALTCMD type="click">
+          show ip helper_address config
+        </ALTCMD>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND help="Show IP helper statistics on interfaces" name="show ip helper-address statistics">
+      <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
+      <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper iface_stats show_ip_helper_interface_statistics.j2 ${iface}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Displays IP helper packet counters and statistics on interface.
+        </DESCRIPTION>
+        <USAGE>
+          show ip helper-address statistics [ &lt;interface-name&gt; ]
+        </USAGE>
+        <EXAMPLE summary="Sample output displaying all helper statistics">
+          sonic# show ip helper-address statistics 
+          Ethernet0
+          -----------
+            Packets received                         : 0
+            Packets relayed                          : 24
+            Packets dropped                          : 0
+            Invalid TTL packets                      : 0
+            All ones broadcast packets received      : 0
+            Net directed broadcast packets received  : 0
+          Vlan100
+          -----------
+            Packets received                         : 45678
+            Packets relayed                          : 0
+            Packets dropped                          : 0
+            Invalid TTL packets                      : 0
+            All ones broadcast packets received      : 0
+            Net directed broadcast packets received  : 0
+          Ethernet4
+          -----------
+            Packets received                         : 0
+            Packets relayed                          : 0
+            Packets dropped                          : 24444
+            Invalid TTL packets                      : 0
+            All ones broadcast packets received      : 0
+            Net directed broadcast packets received  : 0
+          sonic# 
+        </EXAMPLE>
+        <EXAMPLE summary="Sample output displaying helper statistics on specific interface">
+          sonic# show ip helper-address statistics Vlan100
+            Packets received                         : 45678
+            Packets relayed                          : 0
+            Packets dropped                          : 0
+            Invalid TTL packets                      : 0
+            All ones broadcast packets received      : 0
+            Net directed broadcast packets received  : 0
+          sonic# 
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                       
+        <ALTCMD type="click">
+          show ip helper_address statistics
+        </ALTCMD>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND help="Clear IP helper options" name="clear ip helper-address" />
+    <COMMAND help="Clear IP helper statistics on interfaces" name="clear ip helper-address statistics">
+      <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
+      <ACTION builtin="clish_restcl">
+        oper=POST 
+        url=/restconf/operations/openconfig-ip-helper:clear-ip-helper-statistics 
+        body={"openconfig-ip-helper:input":{"interface":"${iface}"}} 
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Clears IP helper statistics on interface.
+        </DESCRIPTION>
+        <USAGE>
+          clear ip helper-address statistics [ &lt;interface-name&gt; ]
+        </USAGE>
+        <EXAMPLE summary="Example for clearing statistics on all interfaces">
+          clear ip helper-address statistics
+        </EXAMPLE>
+        <EXAMPLE summary="Example for clearing statistics on specific interface">
+          clear ip helper-address statistics Ethernet0
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                       
+        <ALTCMD type="click">
+          clear ip helper_address statistics
+        </ALTCMD>
+      </DOCGEN>
+    </COMMAND>
+
+  </VIEW>
+
+  <VIEW name="configure-view">
+
+    <COMMAND name="ip forward-protocol" help="Configure IP helper global parameters"/>
+    <COMMAND name="ip forward-protocol udp" help="Configure IP helper global parameters for UDP"/>
+    <COMMAND name="ip forward-protocol udp enable" help="Enable IP helper feature globally"
+        command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/admin_mode=enable">     
+      <ACTION builtin="clish_restcl">
+          oper=PATCH
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/enable
+          body={"openconfig-ip-helper:enable": true}
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Enables IP helper relay functionality for specified UDP packets
+        </DESCRIPTION>
+        <USAGE>
+          [no] ip forward-protocol udp enable
+        </USAGE>
+        <EXAMPLE summary="Enabling IP forwarding">
+          sonic-cli# configure terminal
+          sonic-cli(config)# ip forward-protocol udp enable 
+          sonic-cli(config)#
+        </EXAMPLE>
+        <EXAMPLE summary="Disabling IP forwarding">
+          sonic-cli# configure terminal
+          sonic-cli(config)# no ip forward-protocol udp enable 
+          sonic-cli(config)#
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                        
+        <ALTCMD type="click">
+          config ip forward_protocol udp enable
+          config ip forward_protocol udp disable
+        </ALTCMD>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no ip forward-protocol" help="Unconfigure IP helper global parameters"/>
+    <COMMAND name="no ip forward-protocol udp" help="Unconfigure IP helper global parameters"/>
+    <COMMAND name="no ip forward-protocol udp enable" help="Disable IP helper feature globally">     
+      <ACTION builtin="clish_restcl">
+          oper=DELETE
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/enable
+      </ACTION>
+    </COMMAND>
+
+    <COMMAND name="ip forward-protocol udp include" help="Include UDP ports to forward"
+        command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
+        render_command_cb="ip_helper_include_ports">  
+      <PARAM name="portoption" mode="switch" ptype="SUBCOMMAND" help="UDP ports input options">
+      <PARAM name="port" help="UDP port" ptype="UDP_FORWARDING_PORT"
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/include_ports"/> 
+      <PARAM name="port" help="UDP port" ptype="RANGE_0_65535"
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/include_ports"/>
+      </PARAM>   
+      <ACTION builtin="clish_restcl">
+          oper=PATCH
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/ports
+          body={"openconfig-ip-helper:ports": [ ${port} ]}
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Include UDP Port for which IP packets have to be relayed
+        </DESCRIPTION>
+        <USAGE>
+          ip forward-protocol udp include { tftp|dns|ntp|netbios-name-server|netbios-datagram-server|tacacs|&lt;custom-port&gt; }
+        </USAGE>
+        <EXAMPLE summary="Include a custom UDP port">
+          sonic-cli# configure terminal 
+          sonic-cli(config)# ip forward-protocol udp include 12200
+          sonic-cli(config)#
+        </EXAMPLE>
+        <EXAMPLE summary="Include a well known supported-by-default port">
+          sonic-cli# configure terminal 
+          sonic-cli(config)# ip forward-protocol udp include tftp
+          sonic-cli(config)#
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                        
+        <ALTCMD type="click">
+          config ip forward_protocol udp add {[tftp/dns/ntp/netbios-name-server/netbios-datagram-server/tacacs] | &lt;port&gt; }
+        </ALTCMD>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ip forward-protocol udp exclude" help="Exclude UDP ports to forward"
+        command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"
+        render_command_cb="ip_helper_exclude_ports">
+      <PARAM name="portoption" mode="switch" ptype="SUBCOMMAND" help="UDP ports input options">
+      <PARAM name="port" help="UDP port" ptype="UDP_FORWARDING_PORT" 
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/exclude_ports"/> 
+      <PARAM name="port" help="UDP port" ptype="RANGE_0_65535" 
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/exclude_ports"/>
+      </PARAM>   
+      <ACTION builtin="clish_restcl">
+          oper=DELETE
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/ports=${port}
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Exclude UDP Port from list of IP packets that have to be relayed
+        </DESCRIPTION>
+        <USAGE>
+          ip forward-protocol udp exclude { tftp|dns|ntp|netbios-name-server|netbios-datagram-server|tacacs|&lt;custom-port&gt; }
+        </USAGE>
+        <EXAMPLE summary="Exclude a custom UDP port">
+          sonic-cli# configure terminal 
+          sonic-cli(config)# ip forward-protocol udp exclude 12200
+          sonic-cli(config)#
+        </EXAMPLE>
+        <EXAMPLE summary="Exclude a well known supported-by-default port">
+          sonic-cli# configure terminal 
+          sonic-cli(config)# ip forward-protocol udp exclude tftp
+          sonic-cli(config)#
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                        
+        <ALTCMD type="click">
+          config ip forward_protocol udp remove {[tftp/dns/ntp/netbios-name-server/netbios-datagram-server/tacacs] | &lt;port&gt; }
+        </ALTCMD>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="ip forward-protocol udp rate-limit" help="Configure incoming rate limit"
+        command_tables="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/id=Ports"> 
+      <PARAM name="rate" help="Incoming rate limit (600 to 10,000 pps) default 600 pps" ptype="IP_HELPER_RATE_LIMIT" 
+        dbpath="sonic-ip-helper:sonic-ip-helper/UDP_BROADCAST_FORWARDING/UDP_BROADCAST_FORWARDING_LIST/rate_limit_pps"/>     
+      <ACTION builtin="clish_restcl">
+          oper=PATCH
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/incoming-rate-limit
+          body={"openconfig-ip-helper:incoming-rate-limit": ${rate} }
+      </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          Rate limit CPU bound packets
+        </DESCRIPTION>
+        <USAGE>
+          [no] ip forward-protocol udp rate-limit &lt;rate&gt;
+        </USAGE>
+        <EXAMPLE summary="Configure rate limit">
+          sonic-cli# configure terminal
+          sonic-cli(config)# ip forward-protocol udp rate-limit 1000
+          sonic-cli(config)# 
+        </EXAMPLE>
+        <EXAMPLE summary="Unconfigure rate limit">
+          sonic-cli# configure terminal
+          sonic-cli(config)# no ip forward-protocol udp rate-limit 
+          sonic-cli(config)# 
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                        
+        <ALTCMD type="click">
+          config ip forward_protocol udp rate_limit &lt;value-in-pps&gt;
+        </ALTCMD>
+      </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="no ip forward-protocol udp rate-limit" help="Unconfigure incoming rate limit">      
+      <ACTION builtin="clish_restcl">
+          oper=DELETE
+          url=/restconf/data/openconfig-ip-helper:ip-helper/config/incoming-rate-limit
+      </ACTION>
+    </COMMAND>
+
+  </VIEW>
+
+</CLISH_MODULE>

@@ -1,0 +1,15 @@
+{% if json_output -%}
+{% if "openconfig-tam:dropmonitor-sessions" in json_output %}
+{% set sessions = json_output['openconfig-tam:dropmonitor-sessions']['dropmonitor-session'] %}
+{% if sessions|length > 0 %}
+Name                              Flow Group                        Collector                         Sampler
+--------------------------------  --------------------------------  --------------------------------  --------------------------------
+{% for session in sessions|sort(attribute='name') %}
+{% set session_state = session["state"] %}
+{{'%-34s'|format(session_state["name"])}}{{'%-34s'|format(session_state["flowgroup"])}}{{'%-34s'|format(session_state["collector"])}}{{'%-34s'|format(session_state["sample-rate"])}}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% else %}
+Sessions are not configured.
+{% endif %}

@@ -1,0 +1,1349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+
+    <PTYPE
+         name="RANGE_28_1472"
+         method="integer"
+         pattern="28..1472"
+         help=""
+         />
+    <PTYPE
+         name="RANGE_1_1000"
+         method="integer"
+         pattern="1..1000"
+         help=""
+         />
+    <PTYPE
+         name="RANGE_1_300"
+         method="integer"
+         pattern="1..300"
+         help=""
+         />
+    <PTYPE
+         name="RANGE_0_65535"
+         method="integer"
+         pattern="0..65535"
+         help=""
+         />
+
+<!--=========================================================================-->
+<VIEW name="enable-view">
+<!--show ipsla [id] [history] -->
+    <COMMAND name = "show ip sla"
+        help = "Shows IP SLA instance information"
+        >
+        <PARAM
+            name="id"
+            help="IP SLA ID (1 to 255)"
+            ptype="RANGE_1_255" optional="true"
+            >
+            <PARAM
+                name="history"
+                help="History of IP SLA"
+                ptype="SUBCOMMAND" mode="subcommand" optional="true" default="x"
+                >
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla get_ipsla ${id} ${history}
+        </ACTION>
+
+        <DOCGEN>
+          <DESCRIPTION>
+            Displays IP SLA information
+          </DESCRIPTION>
+          <USAGE>
+            Use this command to display IP SLA summary information of all instances on a system,
+            to display IP SLA detailed information of a particular instance or history information
+            of a particular instance
+          </USAGE>
+          <EXAMPLE summary="Display IP SLA(Internet protocol service level agreement) information" >
+            sonic-cli(config)# show ip sla
+                       or
+            sonic-cli(config)# show ip sla 10
+                       or
+            sonic-cli(config)# show ip sla 10 history
+
+          </EXAMPLE>
+
+          <EXAMPLE summary="Display IP SLA summary information" >
+            sonic# show ip sla
+            SLA#    Type         State Target                    VRF          Transitions  Last change
+            ----    ----         ----- ------------------------  -----------  -----------  -----------
+            10      ICMP-echo    Up    30.30.1.2                 default      1            00:06:41 ago
+            20      TCP-connect  Up    40.40.1.2(100)            default      1            00:05:40 ago
+          </EXAMPLE>
+
+          <EXAMPLE summary="Display IP SLA instance with operation type ICMP detailed information" >
+            sonic# show ip sla 10
+            IP SLA Operation Number: 10
+            Type of Operation: ICMP-echo
+            ICMP destination IP address: 30.30.1.2
+            ICMP source IP address: 30.30.1.1
+            ICMP source interface:
+            ICMP request data size: 32
+            ICMP Time-To-Live(TTL): 0
+            ICMP Type-of-Service(ToS): 0
+            Source VRF: default
+            Operation frequency (sec): 30
+            Operation timeout (sec): 5
+            Operation threshold: 3
+            Operation state: Up
+            Operation state transitions: 1
+            Operation last state change: 00:08:39 ago
+            ICMP Echo Request counter: 107
+            ICMP Echo Reply counter: 107
+            ICMP Error counter: 0
+            ICMP Invalid responses: 0
+          </EXAMPLE>
+
+          <EXAMPLE summary="Display IP SLA instance with operation type TCP detailed information" >
+            sonic# show ip sla 20
+            Type of Operation: TCP-connect
+            TCP destination IP address: 40.40.1.2
+            TCP destination port: 100
+            TCP source IP address: 40.40.1.1
+            TCP source port: 200
+            TCP source interface:
+            TCP Time-To-Live(TTL): 0
+            TCP Type-of-Service(ToS): 0
+            Source VRF: default
+            Operation frequency (sec): 30
+            Operation timeout (sec): 3
+            Operation threshold: 3
+            Operation state: Up
+            Operation state transitions: 1
+            Operation last state change: 00:28:59 ago
+            TCP connect request counter: 58
+            TCP connect success counter: 58
+            TCP connect error counter: 0
+          </EXAMPLE>
+
+          <EXAMPLE summary="Display IP SLA summary information" >
+            sonic# show ip sla 10 history
+            Timestamp                 Event
+            ---------                 -----
+            Fri Sep 25 22:54:36 2020  State changed to: Up
+            Fri Sep 25 22:54:21 2020  Started
+          </EXAMPLE>
+
+          <FEATURE> IPSLA </FEATURE>
+        </DOCGEN>
+    </COMMAND>
+</VIEW>
+
+<!--MODE : interface -->
+
+<VIEW name="configure-view">
+
+<!-- ip sla -->
+   <COMMAND
+         name="ip sla"
+         view_keys="ip_sla_id=*"
+         view_tables="sonic-ip-sla:sonic-ip-sla/IP_SLA/IP_SLA_LIST/ip_sla_id={sla-id}"        
+         render_command_cb="ip_sla_config"
+         help="Configures IP SLA"
+         view="configure-ipsla-view"
+         viewid="sla-id=${sla-id}"
+         >
+         <PARAM
+             name="sla-id"
+             help="IP SLA ID (1 to 255)"
+             ptype="RANGE_1_255"
+             dbpath="sonic-ip-sla:sonic-ip-sla/IP_SLA/IP_SLA_LIST/ip_sla_id"
+             >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla post_ipsla ${sla-id}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure IP SLA instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure IP SLA instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)#
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+<!-- no ip sla -->
+   <COMMAND name="no ip sla"
+         help="Unconfigures IP SLA"
+     >
+         <PARAM name="sla-id"
+             help="IP SLA ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_ipsla ${sla-id}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure IP SLA instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure IP SLA instance">
+                sonic(config)# no ip sla 10
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+</VIEW>
+
+<VIEW name="configure-ipsla-view"
+        prompt="${SYSTEM_NAME}(conf-ipsla-${sla-id})# "
+        depth="2">
+
+<!-- Inheritance -->
+
+     <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+     <!-- show configuration -->
+     <COMMAND
+         name="show configuration"
+         help="Current configuration"
+     >
+     <ACTION builtin="clish_nop"> </ACTION>
+     </COMMAND>
+
+     <COMMAND name="no"
+              help="Negate a command or set its defaults">
+     </COMMAND>
+
+     <COMMAND
+         name="no frequency"
+         help="Resets frequency"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_freq ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure frequency of probe for an IP SLA instance
+             </DESCRIPTION>
+             <USAGE>
+               Default value is 30
+             </USAGE>
+             <EXAMPLE summary="Unconfigure frequency of probe for an IP SLA instance">
+               sonic(config)# ip sla 10
+               sonic(conf-ipsla-10)# no frequency
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="frequency"
+         help="Sets frequency"
+         >
+
+         <PARAM
+             name="freq-value"
+             help="Frequency value (1 to 300)"
+             ptype="RANGE_1_300"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_freq ${sla-id} ${freq-value}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure frequency of probe for an IP SLA instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure frequency of probe for an IP SLA instance">
+               sonic(config)# ip sla 10
+               sonic(conf-ipsla-10)# frequency 45
+             </EXAMPLE>
+         </DOCGEN>
+     </COMMAND>
+
+    <COMMAND
+        name="no threshold"
+        help="Resets threshold"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_threshold ${sla-id}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure threshold count for an IP SLA instance
+            </DESCRIPTION>
+            <USAGE>
+              Default value is 3
+            </USAGE>
+            <EXAMPLE summary="Unconfigure threshold count for an IP SLA instance">
+              sonic(config)# ip sla 10
+              sonic(conf-ipsla-10)# no threshold
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+    <COMMAND
+        name="threshold"
+        help="Sets threshold"
+        >
+
+        <PARAM
+            name="threshold-value"
+            help="Threshold value (1 to 300)"
+            ptype="RANGE_1_300"
+            />
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla patch_threshold ${sla-id} ${threshold-value}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure threshold count for an IP SLA instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure threshold count for an IP SLA instance">
+              sonic(config)# ip sla 10
+              sonic(conf-ipsla-10)# threshold 5
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no timeout"
+        help="Resets timeout"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_timeout ${sla-id}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure timeout interval for an IP SLA instance
+            </DESCRIPTION>
+            <USAGE>
+              Default value is 3
+            </USAGE>
+            <EXAMPLE summary="Unconfigure timeout interval for an IP SLA instance">
+              sonic(config)# ip sla 10
+              sonic(conf-ipsla-10)# no timeout
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+    <COMMAND
+        name="timeout"
+        help="Sets timeout"
+        >
+
+        <PARAM
+            name="timeout-value"
+            help="Timeout value (1 to 300)"
+            ptype="RANGE_1_300"
+            />
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla patch_timeout ${sla-id} ${timeout-value}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure timeout interval for an IP SLA instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure timeout interval for an IP SLA instance">
+              sonic(config)# ip sla 10
+              sonic(conf-ipsla-10)# timeout 30
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+    <COMMAND
+        name="no icmp-echo"
+        help="Removes ICMP echo"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_icmp ${sla-id}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure operation type ICMP from an IP SLA instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure operation type ICMP from an IP SLA instance">
+              sonic(config)# ip sla 10
+              sonic(conf-ipsla-10)# no icmp-echo
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="icmp-echo"
+        help="Sets source address"
+        view="configure-ipsla-icmp-view"
+        viewid="sla-id=${sla-id}"
+        >
+
+        <PARAM
+            name="addr"
+            help="ICMP Destination IPaddress"
+            ptype="STRING"
+            />
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla patch_icmp ${sla-id} ${addr}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure operation type as ICMP and destination IP for an IP SLA instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure operation type ICMP from an IP SLA instance">
+              sonic(config)# ip sla 10
+              sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+    <COMMAND
+        name="no tcp-connect"
+        help="Removes TCP connect"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla del_tcp ${sla-id}
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure operation type TCP from an IP SLA instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure operation type TCP from an IP SLA instance">
+              sonic(config)# ip sla 20
+              sonic(conf-ipsla-20)# no tcp-connect
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="tcp-connect"
+        help="Sets destination address"
+        view="configure-ipsla-tcp-view"
+        viewid="sla-id=${sla-id}"
+        >
+
+        <PARAM
+            name="addr"
+            help="Sets TCP Destination IPaddress"
+            ptype="STRING"
+            />
+
+            <PARAM
+                name="port"
+                help="Sets TCP Destination Port"
+                ptype="SUBCOMMAND" mode="subcommand" optional="false"
+                >
+
+                <PARAM
+                    name="portno"
+                    help="TCP Destination port value (1 to 65535)"
+                    ptype="RANGE_1_65535"
+                    >
+                </PARAM>
+            </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla patch_tcp ${sla-id} ${addr} ${portno}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure operation type as TCP, destination IP and destination port for an IP SLA instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure operation type as TCP, destination IP and destination port for an IP SLA instance">
+              sonic(config)# ip sla 10
+              sonic(conf-ipsla-10)# tcp-connect 40.40.1.2 port 100
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+</VIEW>
+
+
+<VIEW name="configure-ipsla-icmp-view"
+        prompt="${SYSTEM_NAME}(conf-ipsla-${sla-id}-icmp)# "
+        depth="3">
+
+<!-- Inheritance -->
+
+     <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+     <!-- show configuration -->
+     <COMMAND
+         name="show configuration"
+         help="Current configuration"
+     >
+     <ACTION builtin="clish_nop"> </ACTION>
+     </COMMAND>
+
+     <COMMAND name="no"
+              help="Negate a command or set its defaults">
+     </COMMAND>
+
+     <COMMAND
+         name="no source-address"
+         help="Removes source address"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_src_ip ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure source IP address for an IP SLA ICMP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Unconfigure source IP address for an IP SLA ICMP instance">
+               sonic(config)# ip sla 10
+               sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+               sonic(conf-ipsla-10-icmp)# no source-address
+             </EXAMPLE>
+         </DOCGEN>
+     </COMMAND>
+
+     <COMMAND
+         name="source-address"
+         help="Sets source address"
+         >
+
+         <PARAM
+             name="addr"
+             help="ICMP Source IPaddress"
+             ptype="STRING"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_ip ${sla-id} ${addr}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure source IP address for an IP SLA ICMP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure source IP address for an IP SLA ICMP instance">
+               sonic(config)# ip sla 10
+               sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+               sonic(conf-ipsla-10-icmp)# source-address 30.30.1.1
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="no source-interface"
+         help="Removes source interface"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_src_if ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure source interface for an IP SLA ICMP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Unconfigure source interface for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# no source-interface
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="source-interface"
+         help="Sets source address"
+         >
+
+         <PARAM
+             name="intf"
+             help="ICMP Source interface"
+             ptype="STRING"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_if ${sla-id} ${intf}
+         </ACTION>
+
+     </COMMAND>
+
+     <COMMAND
+         name="source-interface Vlan"
+         help="Set source interface"
+         >
+
+         <PARAM
+            name="vlan-id"
+            help="Vlan Interface"
+            ptype="VLAN_ID"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_if_vlan ${sla-id} ${vlan-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure source interface as Ethernet for an IP SLA ICMP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure source interface as Vlan for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# source-interface Vlan50
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="source-interface PortChannel"
+         help="Set source interface"
+         >
+
+         <PARAM
+           name="po-id"
+           help="PortChannel Interface"
+           ptype="LAG_ID"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_if_po ${sla-id} ${po-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure source interface as PortChannel for an IP SLA ICMP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure source interface as PortChannel for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# source-interface PortChannel50
+             </EXAMPLE>
+         </DOCGEN>
+     </COMMAND>
+
+     <COMMAND
+         name="source-interface Ethernet"
+         help="Set source interface"
+         >
+
+         <PARAM
+            name="iface_num"
+            help="Physical Interface"
+            ptype="UINT16"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_src_if_eth ${sla-id} ${iface_num}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure source interface as Ethernet for an IP SLA ICMP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure source interface as Ethernet for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# source-interface Ethernet10
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="no request-data-size"
+         help="ICMP probe data size"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_data_size ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure ICMP request data size
+             </DESCRIPTION>
+             <USAGE>
+               Default value is 32
+             </USAGE>
+             <EXAMPLE summary="Unconfigure request-data-size for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# no request-data-size
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="request-data-size"
+         help="Sets ICMP probe data size"
+         >
+
+         <PARAM
+             name="size"
+             help="ICMP data size (28 to 1472)"
+             ptype="RANGE_28_1472"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_data_size ${sla-id} ${size}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure ICMP request data size
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure request-data-size for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# request-data-size 128
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="no ttl"
+         help="Removes ICMP TTL"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_ttl ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure ICMP TTL
+             </DESCRIPTION>
+             <USAGE>
+               Default value is 0
+             </USAGE>
+             <EXAMPLE summary="Unconfigure Time-To-Live for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# no ttl
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="ttl"
+         help="Sets ICMP TTL"
+         >
+
+         <PARAM
+             name="size"
+             help="ICMP TTL value (1 to 255)"
+             ptype="RANGE_1_255"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_ttl ${sla-id} ${size}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure ICMP TTL
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure Time-To-Live for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# ttl 16
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="no tos"
+         help="Removes ICMP TOS"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_tos ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure ICMP TOS
+             </DESCRIPTION>
+             <USAGE>
+               Default value is 0
+             </USAGE>
+             <EXAMPLE summary="Unconfigure Type-Of-Service for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# no tos
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="tos"
+         help="Sets ICMP TOS"
+         >
+
+         <PARAM
+             name="size"
+             help="ICMP TOS value (1 to 255)"
+             ptype="RANGE_1_255"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_tos ${sla-id} ${size}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure ICMP TOS
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure Type-Of-Service for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# tos 4
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="no source-vrf"
+         help="Removes ICMP source VRF"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_icmp_vrf ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure ICMP source VRF
+             </DESCRIPTION>
+             <EXAMPLE summary="Unconfigure source VRF for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# no source-vrf
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="source-vrf"
+         help="Sets ICMP source VRF"
+         >
+
+         <PARAM
+             name="vrf-name"
+             help="VRF name"
+             ptype="STRING"
+             >
+         </PARAM>
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_icmp_vrf ${sla-id} ${vrf-name}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure ICMP source VRF
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure source VRF for an IP SLA ICMP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+                sonic(conf-ipsla-10-icmp)# source-vrf VrfRed
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+</VIEW>
+
+<VIEW name="configure-ipsla-tcp-view"
+        prompt="${SYSTEM_NAME}(conf-ipsla-${sla-id}-tcp)# "
+        depth="3">
+
+<!-- Inheritance -->
+
+     <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+     <!-- show configuration -->
+     <COMMAND
+         name="show configuration"
+         help="Current configuration"
+     >
+     <ACTION builtin="clish_nop"> </ACTION>
+     </COMMAND>
+
+     <COMMAND name="no"
+              help="Negate a command or set its defaults">
+     </COMMAND>
+
+     <COMMAND
+         name="no source-address"
+         help="Removes TCP source address"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_src_ip ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure source IP address for an IP SLA TCP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Unconfigure source IP address for an IP SLA TCP instance">
+               sonic(config)# ip sla 10
+               sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+               sonic(conf-ipsla-20-tcp)# no source-address
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="source-address"
+         help="Sets source address"
+         >
+
+         <PARAM
+             name="addr"
+             help="Sets TCP Source IPaddress"
+             ptype="STRING"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_src_ip ${sla-id} ${addr}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure source IP address for an IP SLA TCP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure source IP address for an IP SLA TCP instance">
+               sonic(config)# ip sla 10
+               sonic(conf-ipsla-10)# tcp-connect 40.40.1.2
+               sonic(conf-ipsla-10-tcp)# source-address 40.40.1.1
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="no source-port"
+         help="Removes TCP source port"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_src_port ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure source port for an IP SLA TCP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Unconfigure source port for an IP SLA TCP instance">
+               sonic(config)# ip sla 10
+               sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+               sonic(conf-ipsla-20-tcp)# no source-port
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="source-port"
+         help="Sets TCP source port"
+         >
+
+         <PARAM
+             name="port"
+             help="Set TCP Source port (1 to 65535)"
+             ptype="RANGE_1_65535"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_src_port ${sla-id} ${port}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure source port for an IP SLA TCP instance
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure source port for an IP SLA TCP instance">
+               sonic(config)# ip sla 10
+               sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+               sonic(conf-ipsla-20-tcp)# source-port 200
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+      <COMMAND
+          name="no source-interface"
+          help="Removes source interface"
+          >
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla del_tcp_src_if ${sla-id}
+          </ACTION>
+
+          <DOCGEN>
+              <DESCRIPTION>
+                  Unconfigure TCP source interface for an IP SLA instance
+              </DESCRIPTION>
+              <EXAMPLE summary="Unconfigure source interface for an IP SLA TCP instance">
+                 sonic(config)# ip sla 10
+                 sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                 sonic(conf-ipsla-20-tcp)# no source-interface
+              </EXAMPLE>
+          </DOCGEN>
+
+      </COMMAND>
+
+      <COMMAND
+          name="source-interface"
+          help="Sets source address"
+          >
+
+          <PARAM
+              name="intf"
+              help="TCP Source interface"
+              ptype="STRING"
+              />
+
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla patch_tcp_src_if ${sla-id} ${intf}
+          </ACTION>
+      </COMMAND>
+
+      <COMMAND
+          name="source-interface Vlan"
+          help="Set source interface"
+          >
+
+          <PARAM
+             name="vlan-id"
+             help="Vlan Interface"
+             ptype="VLAN_ID"
+              />
+
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla patch_tcp_src_if_vlan ${sla-id} ${vlan-id}
+          </ACTION>
+
+          <DOCGEN>
+              <DESCRIPTION>
+                  Configure source interface as Ethernet for an IP SLA TCP instance
+              </DESCRIPTION>
+              <EXAMPLE summary="Configure source interface as Vlan for an IP SLA TCP instance">
+                 sonic(config)# ip sla 10
+                 sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                 sonic(conf-ipsla-20-tcp)# source-interface Vlan50
+              </EXAMPLE>
+          </DOCGEN>
+
+      </COMMAND>
+
+      <COMMAND
+          name="source-interface PortChannel"
+          help="Set source interface"
+          >
+
+          <PARAM
+            name="po-id"
+            help="PortChannel Interface"
+            ptype="LAG_ID"
+              />
+
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla patch_tcp_src_if_po ${sla-id} ${po-id}
+          </ACTION>
+
+          <DOCGEN>
+              <DESCRIPTION>
+                  Configure source interface as PortChannel for an IP SLA TCP instance
+              </DESCRIPTION>
+              <EXAMPLE summary="Configure source interface as PortChannel for an IP SLA TCP instance">
+                 sonic(config)# ip sla 10
+                 sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                 sonic(conf-ipsla-20-tcp)# source-interface PortChannel50
+              </EXAMPLE>
+          </DOCGEN>
+
+      </COMMAND>
+
+      <COMMAND
+          name="source-interface Ethernet"
+          help="Set source interface"
+          >
+
+          <PARAM
+             name="iface_num"
+             help="Physical Interface"
+             ptype="UINT16"
+              />
+
+          <ACTION builtin="clish_pyobj">
+              sonic_cli_ipsla patch_tcp_src_if_eth ${sla-id} ${iface_num}
+          </ACTION>
+
+          <DOCGEN>
+              <DESCRIPTION>
+                  Configure source interface as Ethernet for an IP SLA TCP instance
+              </DESCRIPTION>
+              <EXAMPLE summary="Configure source interface as Vlan for an IP SLA TCP instance">
+                 sonic(config)# ip sla 10
+                 sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                 sonic(conf-ipsla-20-tcp)# source-interface Ethernet50
+              </EXAMPLE>
+          </DOCGEN>
+
+      </COMMAND>
+
+     <COMMAND
+         name="no ttl"
+         help="Removes TCP TTL"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_ttl ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure TCP TTL
+             </DESCRIPTION>
+             <USAGE>
+                 Default value is 0
+             </USAGE>
+             <EXAMPLE summary="Unconfigure Time-To-Live for an IP SLA TCP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                sonic(conf-ipsla-20-tcp)# no ttl
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="ttl"
+         help="Sets TCP TTL"
+         >
+
+         <PARAM
+             name="size"
+             help="Sets TCP TTL value (1 to 255)"
+             ptype="RANGE_1_255"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_ttl ${sla-id} ${size}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure TCP TTL
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure Time-To-Live for an IP SLA TCP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                sonic(conf-ipsla-20-tcp)# ttl 16
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="no tos"
+         help="Removes TCP TOS"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_tos ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure TCP TOS
+             </DESCRIPTION>
+             <USAGE>
+               Default value is 0
+             </USAGE>
+             <EXAMPLE summary="Unconfigure Type-Of-Service for an IP SLA TCP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                sonic(conf-ipsla-20-tcp)# no tos
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="tos"
+         help="Sets TCP TOS"
+         >
+
+         <PARAM
+             name="size"
+             help="Sets TCP TOS value (1 to 300)"
+             ptype="RANGE_1_255"
+             />
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_tos ${sla-id} ${size}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure TCP TOS
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure Type-Of-Service for an IP SLA TCP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                sonic(conf-ipsla-20-tcp)# tos 4
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="no source-vrf"
+         help="Removes TCP source VRF"
+         >
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla del_tcp_vrf ${sla-id}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Unconfigure TCP VRF
+             </DESCRIPTION>
+             <USAGE>
+               Default value is 0
+             </USAGE>
+             <EXAMPLE summary="Unconfigure VRF for an IP SLA TCP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                sonic(conf-ipsla-20-tcp)# no source-vrf
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+
+     <COMMAND
+         name="source-vrf"
+         help="Sets TCP source VRF"
+         >
+
+         <PARAM
+             name="vrf-name"
+             help="VRF name"
+             ptype="STRING"
+             >
+         </PARAM>
+
+         <ACTION builtin="clish_pyobj">
+             sonic_cli_ipsla patch_tcp_vrf ${sla-id} ${vrf-name}
+         </ACTION>
+
+         <DOCGEN>
+             <DESCRIPTION>
+                 Configure TCP VRF
+             </DESCRIPTION>
+             <EXAMPLE summary="Configure source VRF for an IP SLA TCP instance">
+                sonic(config)# ip sla 10
+                sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+                sonic(conf-ipsla-20-tcp)# source-vrf VrfBlue
+             </EXAMPLE>
+         </DOCGEN>
+
+     </COMMAND>
+</VIEW>
+
+
+<VIEW name="enable-view">
+<!--clear ipsla all -->
+    <COMMAND name = "clear ip sla"
+        help = "Resets IP SLA counter information"
+        >
+        <PARAM
+            name="id"
+            help="IP SLA ID (1 to 255)"
+            ptype="RANGE_1_255"
+            >
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla clear_ipsla ${id}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Clears counters for an IP SLA instances
+            </DESCRIPTION>
+            <EXAMPLE summary="Clears counters for an IP SLA instances">
+               sonic(config)# no clear ip sla 10
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+    <COMMAND name = "clear ip sla all"
+        help = "Resets IP SLA counter information for all instances"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ipsla clear_ipsla_all
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Clears counters for all IP SLA instances
+            </DESCRIPTION>
+            <EXAMPLE summary="Clears counters for all IP SLA instances">
+               sonic(config)# no clear ip sla all
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+</VIEW>
+
+</CLISH_MODULE>

@@ -1,0 +1,37 @@
+{{'TH - Threshold'}}
+{{'-------------------------------------------------------------------------------------------------------------------------------------------------------------'}}
+{{'Name'.ljust(25)}}{{'Temperature'.ljust(15)}}{{'High TH'.ljust(15)}}{{'Low TH'.ljust(15)}}{{'Critical High TH'.ljust(25)}}{{'Critical Low TH'.ljust(25)}}{{'Warning'.ljust(20)}}{{'Timestamp'}}
+{{'-------------------------------------------------------------------------------------------------------------------------------------------------------------'}}
+{% for temp_name, temp_info in json_output.items() %}
+{% set temperature = "N/A" %}
+{% set ht = "N/A" %}
+{% set lt = "N/A" %}
+{% set cht = "N/A" %}
+{% set clt = "N/A" %}
+{% set timestamp = "" %}
+{% set warning = "false" %}
+
+{% if 'openconfig-platform-ext:current' in temp_info %}
+{% set temperature = temp_info['openconfig-platform-ext:current'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:high-threshold' in temp_info %}
+{% set ht = temp_info['openconfig-platform-ext:high-threshold'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:low-threshold' in temp_info %}
+{% set lt = temp_info['openconfig-platform-ext:low-threshold']  | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:critical-high-threshold' in temp_info %}
+{% set cht =  temp_info['openconfig-platform-ext:critical-high-threshold'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:critical-low-threshold' in temp_info %}
+{% set clt = temp_info['openconfig-platform-ext:critical-low-threshold'] | string %}
+{% endif %}
+{% if 'openconfig-platform-ext:timestamp' in temp_info %}
+{% set time = temp_info['openconfig-platform-ext:timestamp'] %}
+{% set timestamp = time[:4] + time[5:7] + time[8:10] + " " + time[11:-1]  %}
+{% endif %}
+{% if 'openconfig-platform-ext:warning-status' in temp_info and temp_info['openconfig-platform-ext:warning-status'] %}
+{% set warning = "true" %}
+{% endif %}
+{{(temp_name | truncate(24)).ljust(25)}}{{temperature.ljust(15)}}{{ht.ljust(15)}}{{lt.ljust(15)}}{{cht.ljust(25)}}{{clt.ljust(25)}}{{warning.ljust(20)}}{{timestamp}}
+{% endfor %}

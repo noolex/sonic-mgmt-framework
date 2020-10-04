@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2020 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<ROOT>
+   <MACRODEF name="DHCP-RELAY-CONFIG-OPTIONS">
+       <COMMAND
+           name="ip dhcp-relay"
+           help="Configures DHCP relay on an interface"
+           command_tables="arg2"
+           render_command_cb="arg3" >
+           <PARAM help="IP address" name="ipaddr1" optional="false" ptype="IP_ADDR">
+               <PARAM help="Configures the VRF in which the server resides" name="vrf-name" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+                   <PARAM help="Vrf name" name="vrfName" optional="false" ptype="STRING_32"/>
+               </PARAM>
+               <PARAM help="IP address" name="ipaddr2" optional="true" ptype="IP_ADDR">
+               <PARAM help="IP address" name="ipaddr3" optional="true" ptype="IP_ADDR">
+               <PARAM help="IP address" name="ipaddr4" optional="true" ptype="IP_ADDR">
+               </PARAM>
+               </PARAM>
+               </PARAM>
+           </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${vrfName} ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configures DHCPv4 relay on an interface.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure a DHCPv4 relay on an interface.
+               </USAGE>
+               <EXAMPLE summary="Configure ip DHCPv4 relay">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ip dhcp-relay 9.0.0.9
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="ip dhcp-relay source-interface"
+           help="Configures DHCP relay source interface"
+           command_tables="arg2" >
+           <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING" dbpath="arg4/dhcp_relay_src_intf">  </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configures the source IP address to be used for relaying the DHCP packets.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure the source-interface.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcp relay source interface">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ip dhcp-relay source-interface Ethernet36
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="ip dhcp-relay link-select"
+           help="Enables link selection suboption" 
+           command_tables="arg2"
+           dbpath="arg4/dhcp_relay_link_select=enable" >
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
+           <DOCGEN>
+           <DESCRIPTION>
+                   Configure the link-selection suboption on an interface.
+           </DESCRIPTION>
+           <USAGE>
+                   Use this command to configure the link-selection suboption on an interface.
+           </USAGE>
+          <EXAMPLE summary="Configure dhcp relay link selection">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ip dhcp-relay link-select
+          </EXAMPLE>
+        </DOCGEN>
+        </COMMAND>
+         <COMMAND
+             name="ip dhcp-relay max-hop-count"
+             help="Set max hop count for DHCP Relay packets"
+             command_tables="arg2" >
+              <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="RANGE_16" dbpath="arg4/dhcp_relay_max_hop_count"> </PARAM>
+              <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${hop-count} ${__full_line}</ACTION>
+              <DOCGEN>
+               <DESCRIPTION>
+                   Configures the maximum hop count for the DHCP packet.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure the maximum hop count for the DHCP packet.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcp relay max hop count">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ip dhcp-relay max-hop-count 9
+               </EXAMPLE>
+             </DOCGEN>
+          </COMMAND>
+          <COMMAND
+              name="ip dhcp-relay vrf-select"
+              help="Enables VRF selection suboption"
+              command_tables="arg2"
+              dbpath="arg4/dhcp_relay_vrf_select=enable" >
+             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
+               <DOCGEN>
+               <DESCRIPTION>
+                   Configure the VRF selection option.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure the VRF selection option.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcp relay vrf selection">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ip dhcp-relay vrf-select 
+               </EXAMPLE>
+               </DOCGEN>
+           </COMMAND>
+           <COMMAND
+               name="ip dhcp-relay policy-action"
+               help="Configures the policy for handling of DHCPv4 relay options"
+               command_tables="arg2" >
+                <PARAM help="Policy action [discard|append|replace]" name="policyAction" optional="false" ptype="STRING_8" dbpath="arg4/dhcp_relay_policy_action">  </PARAM>
+                <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${policy-action} ${__full_line}</ACTION>
+               <DOCGEN>
+               <DESCRIPTION>
+                   Configure the policy for handling of DHCPv4 relay options.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure the policy for handling of DHCPv4 relay options.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcp relay policy action">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ip dhcp-relay policy-action REPLACE 
+               </EXAMPLE>
+               </DOCGEN>
+            </COMMAND>
+   </MACRODEF>
+
+   <MACRODEF name="DHCPV6-RELAY-CONFIG-OPTIONS">
+       <COMMAND
+           name="ipv6 dhcp-relay"
+           help="Configures DHCP relay on an interface"
+           command_tables="arg2"
+           render_command_cb="arg3" >
+           <PARAM help="IP address" name="ipaddr1" optional="false" ptype="IPV6_ADDR">
+               <PARAM help="Configure the VRF in which the server resides" name="vrf-name" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+                 <PARAM help="Vrf name" name="vrfName" optional="false" ptype="STRING_32"/>
+               </PARAM>
+             <PARAM help="IP address" name="ipaddr2" optional="true" ptype="IPV6_ADDR">
+               <PARAM help="IP address" name="ipaddr3" optional="true" ptype="IPV6_ADDR">
+                 <PARAM help="IP address" name="ipaddr4" optional="true" ptype="IPV6_ADDR"/>
+               </PARAM>
+             </PARAM>
+           </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name} ${vrfName} ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure DHCPv6 relay on an interface.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure a DHCPv6 relay on an interface.
+               </USAGE>
+               <EXAMPLE summary="Configure IP DHCPv6 relay">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ipv6 dhcp-relay 9000::1
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="ipv6 dhcp-relay source-interface"
+           help="Configures DHCPv6 relay source interface"
+           command_tables="arg2" >
+           
+           <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING" dbpath="arg4/dhcpv6_relay_src_intf">  </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure the source IPv6 address to be used for relaying the DHCPv6 packets.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure the source-interface.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcp relay source interface">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ipv6 dhcp-relay source-interface Ethernet36
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="ipv6 dhcp-relay max-hop-count"
+           help="Set max hop count for DHCPv6 Relay packets" 
+           command_tables="arg2">
+           <PARAM help="Number of max hops" name="hop-count" optional="false" ptype="RANGE_16" dbpath="arg4/dhcpv6_relay_max_hop_count"> </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${hop-count} ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure the maximum hop count for the DHCPv6 packet.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure the maximum hop count for the DHCPv6 packet.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcpv6 relay max hop count">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ipv6 dhcp-relay max-hop-count 9
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="ipv6 dhcp-relay vrf-select"
+           help="Enables VRF selection suboption"
+           command_tables="arg2"
+           dbpath="arg4/dhcpv6_relay_vrf_select=enable" >
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure the VRF selection option.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to configure the VRF selection option.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcp relay vrf selection">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# ipv6 dhcp-relay vrf-select 
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+   </MACRODEF>
+
+   <MACRODEF name="DHCP-RELAY-NO-CONFIG-OPTIONS">
+       <COMMAND
+           name="no ip dhcp-relay"
+           help="Unconfigures DHCP relay on an interface" >
+           <PARAM  help="IP address"  name="ipaddr1" optional = "true" ptype="IP_ADDR" >
+                <PARAM  help="IP address"  name="ipaddr2"  optional = "true"  ptype="IP_ADDR" >
+                <PARAM  help="IP address"  name="ipaddr3"  optional = "true"  ptype="IP_ADDR" >
+                <PARAM  help="IP address"  name="ipaddr4"  optional = "true"  ptype="IP_ADDR" />
+                </PARAM>
+                </PARAM>
+           </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure DHCPv4 relay on an interface.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to Unconfigure a DHCPv4 relay on an interface.
+               </USAGE>
+               <EXAMPLE summary="Unconfigure IP DHCPv4 relay">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ip dhcp-relay 9.0.0.9
+                   sonic-cli(conf-if-Ethernet0)# no ip dhcp-relay
+               </EXAMPLE>
+           </DOCGEN>
+      </COMMAND>
+
+      <COMMAND
+           name="no ip dhcp-relay source-interface"
+           help="Unconfigures DHCP relay source interface" >
+           <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure the source IP address to be used for relaying the DHCP packets.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to unconfigure the source-interface.
+               </USAGE>
+               <EXAMPLE summary="Unconfigure dhcp relay source interface">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ip dhcp-relay source-interface
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="no ip dhcp-relay link-select"
+           help="Disables link selection suboption" >
+           <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure the link-selection suboption on an interface.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to Unconfigure the link-selection suboption on an interface.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcp relay link selection">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ip dhcp-relay link-select
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="no ip dhcp-relay max-hop-count"
+           help="Set default max hop count for DHCP Relay packets" >
+           <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure the maximum hop count for the DHCP packet.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to unconfigure the maximum hop count for the DHCP packet.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcp relay max hop count">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ip dhcp-relay max-hop-count 
+               </EXAMPLE>
+             </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="no ip dhcp-relay vrf-select"
+           help="Disables VRF selection suboption" >
+           <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure the VRF selection option.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to unconfigure the VRF selection option.
+               </USAGE>
+               <EXAMPLE summary="Unconfigure dhcp relay vrf selection">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ip dhcp-relay vrf-select 
+               </EXAMPLE>
+             </DOCGEN>
+       </COMMAND>
+       <COMMAND
+           name="no ip dhcp-relay policy-action"
+           help="Set default policy action for DHCP relay packets" >
+           <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure the policy for handling of DHCPv4 relay options.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to unconfigure the policy for handling of DHCPv4 relay options.
+               </USAGE>
+               <EXAMPLE summary="Unconfigure dhcp relay policy action">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ip dhcp-relay policy-action  
+               </EXAMPLE>
+           </DOCGEN>
+           </COMMAND>
+    </MACRODEF>
+
+    <MACRODEF name="DHCPV6-RELAY-NO-CONFIG-OPTIONS">
+       <COMMAND
+           name="no ipv6 dhcp-relay"
+           help="Unconfigures DHCPv6 relay on an interface" >
+           <PARAM  help="IP address"  name="ipaddr1" optional = "true" ptype="IPV6_ADDR" >
+           <PARAM  help="IP address"  name="ipaddr2"  optional = "true"  ptype="IPV6_ADDR" >
+           <PARAM  help="IP address"  name="ipaddr3"  optional = "true"  ptype="IPV6_ADDR" >
+           <PARAM  help="IP address"  name="ipaddr4"  optional = "true"  ptype="IPV6_ADDR" />
+           </PARAM>
+           </PARAM>
+           </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
+       <DOCGEN>
+           <DESCRIPTION>
+               Unconfigure DHCPv6 relay on an interface.
+           </DESCRIPTION>
+           <USAGE>
+               Use this command to unconfigure a DHCPv6 relay on an interface.
+           </USAGE>
+           <EXAMPLE summary="Unconfigure IP DHCPv6 relay">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ipv6 dhcp-relay 9000::1
+                   sonic-cli(conf-if-Ethernet0)# no ipv6 dhcp-relay 
+           </EXAMPLE>
+       </DOCGEN>
+       </COMMAND>
+       <COMMAND
+          name="no ipv6 dhcp-relay source-interface"
+          help="Unconfigures DHCPv6 relay source interface" >
+           <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure the source IPv6 address to be used for relaying the DHCPv6 packets.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to Unconfigure the source-interface.
+               </USAGE>
+               <EXAMPLE summary="Configure dhcpv6 relay source interface">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ipv6 dhcp-relay source-interface
+               </EXAMPLE>
+           </DOCGEN>
+       </COMMAND>
+        <COMMAND
+            name="no ipv6 dhcp-relay max-hop-count"
+            help="Set default max hop count for DHCPv6 Relay packets" >
+            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${__full_line}</ACTION>
+            <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure the maximum hop count for the DHCPv6 packet.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to Unconfigure the maximum hop count for the DHCPv6 packet.
+               </USAGE>
+               <EXAMPLE summary="Unconfigure dhcpv6 relay max hop count">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ipv6 dhcp-relay max-hop-count
+               </EXAMPLE>
+           </DOCGEN>
+         </COMMAND>
+         <COMMAND
+             name="no ipv6 dhcp-relay vrf-select"
+             help="Disables VRF selection suboption" >
+            <ACTION builtin="clish_pyobj">sonic_cli_if del_llist_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}   ${__full_line}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure the VRF selection option.
+               </DESCRIPTION>
+               <USAGE>
+                   Use this command to Unconfigure the VRF selection option.
+               </USAGE>
+               <EXAMPLE summary="Unconfigure dhcp relay vrf selection">
+                   sonic-cli(config)# interface Ethernet 12
+                   sonic-cli(conf-if-Ethernet0)# no ipv6 dhcp-relay vrf-select
+               </EXAMPLE>
+           </DOCGEN>
+          </COMMAND>
+    </MACRODEF>
+
+    <MACRODEF name="DHCP-RELAY-SHOW-OPTIONS">
+       <PARAM   help="Show IP DHCP relay information" name="relay-cmd"  mode="switch"  ptype="SUBCOMMAND"  optional="false">
+           <PARAM help="Show IP DHCP relay information in brief" name="brief" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
+           <PARAM help="Show IP DHCP relay information in detail" name="detailed" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+               <PARAM help="Interface Name" optional="true" name="ifName1"  ptype="STRING"/>
+           </PARAM>
+           <PARAM help="Show IP DHCP relay statistics" name="statistics" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+               <PARAM help="Interface Name" optional="false" name="ifName" ptype="STRING"/>
+           </PARAM>
+        </PARAM>
+    </MACRODEF>
+</ROOT>

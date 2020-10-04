@@ -1,0 +1,5 @@
+{% for intf_name in json_output %}
+    {% for binding_data in json_output[intf_name] %}
+        {{- binding_data[0] }} {{ binding_data[1] }} access-list {{ binding_data[2] }} on {{ intf_name }}
+    {% endfor %}
+{% endfor %}

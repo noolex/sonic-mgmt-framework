@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+<!ENTITY START_PORT_ID "1">
+<!ENTITY MAX_PORT_ID "32">
+<!ENTITY START_SUB_PORT_ID "1">
+<!ENTITY MAX_SUB_PORT_ID "4">
+<!ENTITY MAX_MTU "9216">
+]>
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+  <VIEW name="enable-view">
+    <COMMAND name="show port-group" help="Show port-group information">
+      <ACTION builtin="clish_pyobj">sonic_cli_port_group get_openconfig_port_group_port_groups_openconfig_port_group_port_groups_state show_port_group.j2</ACTION>
+      <xi:include href="include/pipe.xml"/>
+      <DOCGEN>
+          <DESCRIPTION>
+              Display the list of port groups, it's member ports and valid speeds.
+              The port-group is not supported in all the hardware plaforms.
+          </DESCRIPTION>
+          <USAGE>
+              Use this command to know port group members, valid speeds and default speed.
+                show port-group
+          </USAGE>
+          <EXAMPLE>
+            show sonic# show port-group
+            -----------------------------------------------------------------------
+            Port-group  Interface range            Valid speeds      Default Speed
+            -----------------------------------------------------------------------
+            1           Ethernet0 - Ethernet11     10G, 25G          25G
+            2           Ethernet12 - Ethernet23    10G, 25G          25G
+            3           Ethernet24 - Ethernet35    10G, 25G          25G
+            4           Ethernet36 - Ethernet47    10G, 25G          25G
+            sonic#
+
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+  <VIEW name="configure-view">
+    <COMMAND name="port-group" help="Port group configurations"
+        command_tables="sonic-port-group:sonic-port-group/PORT_GROUP/PORT_GROUP_LIST/id={pg_id}"
+        command_keys="pg_id=*">
+       <PARAM name="pg" help="Port-group index" ptype="PORT_GROUP_ID"
+              dbpath="sonic-port-group:sonic-port-group/PORT_GROUP/PORT_GROUP_LIST/id">
+            <PARAM name="speed" help="Speed for the ports in port-group" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM
+                    name="port_speed"
+                    help="Port speed"
+                    dbpath="sonic-port-group:sonic-port-group/PORT_GROUP/PORT_GROUP_LIST/speed"
+                    ptype="INTF_SPEED" />
+            </PARAM>
+       </PARAM>
+       <ACTION builtin="clish_pyobj">sonic_cli_port_group patch_openconfig_port_group_port_groups_port_group_config_speed ${pg} ${port_speed}</ACTION>
+       <DOCGEN>
+            <DESCRIPTION>
+              This command configure port speed for the member ports of a port-group.
+              The port-group is not supported in all the hardware plaforms.
+            </DESCRIPTION>
+            <USAGE>
+               Use this command to change the speed of the ports for the platform which supports port-group.
+                port-group id speed speed-in-Mbps
+            </USAGE>
+            <EXAMPLE>
+                sonic# configure terminal
+                sonic(config)# port-group 1 speed 10000
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no port-group" help="Change the port group configurations to default">
+       <PARAM name="pg" help="Port-group index" ptype="PORT_GROUP_ID">
+            <PARAM name="speed" help="Speed for the ports in port-group" ptype="SUBCOMMAND" mode="subcommand"/>
+       </PARAM>
+       <ACTION builtin="clish_pyobj">sonic_cli_port_group delete_openconfig_port_group_port_groups_port_group_config_speed ${pg}</ACTION>
+       <DOCGEN>
+          <DESCRIPTION>
+              This command configure port speed for the member ports of a port-group to default value.
+              The port-group is not supported in all the hardware plaforms.
+          </DESCRIPTION>
+          <USAGE>
+               Use this command to revert the speed of the member ports to default, for the platform which supports port-group.
+                no port-group id speed
+          </USAGE>
+          <EXAMPLE>
+            sonic# configure terminal
+            sonic(config)# no port-group 1 speed
+          </EXAMPLE>
+       </DOCGEN>
+    </COMMAND>
+  </VIEW>
+</CLISH_MODULE>

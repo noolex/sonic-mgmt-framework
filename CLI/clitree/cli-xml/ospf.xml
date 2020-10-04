@@ -1,0 +1,2031 @@
+<?xml version="1.0"?>
+<!--
+
+ Copyright 2020 Broadcom.
+ The term Broadcom refers to Broadcom Inc. and/or its subsidiaries.
+
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+<!--=======================================================-->
+<!--            OSPFv2 router mode config commands         -->
+<!--=======================================================-->
+
+<VIEW name="configure-view">
+  <COMMAND name="router ospf" help="Configures OSPFv2 router" view="configure-router-ospf-view" viewid="vrf-name=${vrf-name}" view_keys="vrf_name=*,protocol=*,direction=*" view_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER/OSPFV2_ROUTER_LIST/vrf_name={vrf-name};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_DISTRIBUTE_ROUTE/OSPFV2_ROUTER_DISTRIBUTE_ROUTE_LIST/vrf_name={vrf-name},protocol={protocol},direction={direction}" render_command_cb='router_ospf'>
+    <PARAM name="vrf" help="VRF name" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING_15" default="default"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config ${vrf-name} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 router within a VRF
+      </DESCRIPTION>
+      <USAGE>
+        Use this command configure an OSPFv2 router. User can optionally specify VRF
+        on which the router have to be configured. If VRF name is not specified then
+        the command is considered for VRF default. Upon successful configuration CLI
+        mode will be changed to config-router-ospf.
+        Technical details on OSPFv2 support is also available at
+        http://docs.frrouting.org/en/latest/
+      </USAGE>
+      <EXAMPLE summary="" >
+        sonic-cli(config)# router ospf
+        sonic-cli(config-router-ospf)#
+                   or
+        sonic-cli(config)# router ospf vrf Vrf-blue
+        sonic-cli(config-router-ospf)#
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+  <COMMAND name="no router ospf" help="Unconfigures OSPFv2 router">
+    <PARAM name="vrf" help="VRF name" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING_15" default="default"/>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global ${vrf-name} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures OSPFv2 router within a VRF
+      </DESCRIPTION>
+      <USAGE>
+        Use this command unconfigure an OSPFv2 router. User can optionally specify VRF
+        on which the router have to be configured. If VRF name is not specified then the
+        command is considered for VRF default.
+      </USAGE>
+      <EXAMPLE summary="" >
+        sonic-cli(config)# no router ospf
+                   or
+        sonic-cli(config)# no router ospf vrf Vrf-blue
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+</VIEW>
+
+<VIEW name="configure-router-ospf-view" prompt="${SYSTEM_NAME}(config-router-ospf)# " depth="2">
+  <NAMESPACE ref="configure-view" help="false" completion="false" />
+
+  <COMMAND name="show configuration" help="Displays current OSPFv2 router configuration">
+    <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-ospf view_keys="vrf-name=${vrf-name}"</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Displays current OSPFv2 router configuration
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to display running configurations within current OSPFv2 router.
+      </USAGE>
+      <EXAMPLE summary="" >
+        sonic-cli(config-router-ospf)# show configuration
+        !
+        router ospf
+         ospf router-id 10.1.1.1
+         network 10.10.3.0/24 area 0.0.0.1
+         network 10.10.4.0/24 area 0.0.0.1
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="area" help="Configures OSPFv2 area parameters" command_keys="vrf_name=*,area-id=*,prefix=*,remote-router-id=*,authentication-key-id=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA/OSPFV2_ROUTER_AREA_LIST/vrf_name={vrf-name},area-id={area-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_VIRTUAL_LINK/OSPFV2_ROUTER_AREA_VIRTUAL_LINK_LIST/vrf_name={vrf-name},area-id={area-id},remote-router-id={remote-router-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_VLMD_AUTHENTICATION/OSPFV2_ROUTER_AREA_VLMD_AUTHENTICATION_LIST/vrf_name={vrf-name},area-id={area-id},remote-router-id={remote-router-id},${,authentication-key-id};sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE/OSPFV2_ROUTER_AREA_POLICY_ADDRESS_RANGE_LIST/vrf_name={vrf-name},area-id={area-id},prefix={prefix}" render_command_cb='router_ospf_area' escape_chars="">
+      <PARAM name = "areaid" help = "OSPFv2 area identifier" ptype = "AREA_NUM_DOT" />
+      <PARAM name = "areacmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+        <PARAM name="authentication" help="Enables area level authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="message-digest" help="Enables area level message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+        <PARAM name="default-cost" help="Configures NSSA or stub area summary default cost" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="defaultcost" help="Default cost" ptype="RANGE_0_16777215" />
+        </PARAM>
+<!--
+        <PARAM name="export-list" help="Configures inter area export policy access list" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="exportlistname" help="Access list name" ptype="STRING" />
+        </PARAM>
+-->
+        <PARAM name="filter-list" help="Configures inter area prefix filter lists" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="prefix" help="Inter area prefix list" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name="prefixlistname" help="Prefix list name" ptype="STRING" >
+              <PARAM name = "filterdirection" help = "" ptype = "SUBCOMMAND" mode="switch" >
+                <PARAM name="in" help="Filters incoming prefixes into the area" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="out" help="Filters outgoing prefixes from the area" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+          </PARAM>
+        </PARAM>
+<!--
+        <PARAM name="import-list" help="Configures inter area export policy access list" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="importlistname" help="Access list name" ptype="STRING" />
+        </PARAM>
+-->
+<!--
+        <PARAM name="nssa" help="Configures OSPFv2 area as NSSA" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="no-summary" help="Disables inter-area route injection into NSSA" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-always" help="Enables always translate on NSSA-ABR" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-candidate" help="Enables translate election on NSSA-ABR" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-never" help="Disables translate election on NSSA-ABR" type="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+-->
+        <PARAM name="range" help="Configures address range summarization on border routers" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name = "rangeprefix" help = "Summary route address range prefix" ptype = "IP_ADDR_MASK" >
+            <PARAM name = "rangecmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
+              <PARAM name="advertise" help="Enable address range advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="cost" help="Configures cost for the advertising address range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                  <PARAM name = "metriccost" help = "Cost value" ptype = "RANGE_0_16777215" />
+                </PARAM>
+              </PARAM>
+              <PARAM name="cost" help="Configures cost for the advertising address range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "metriccost" help = "Cost value" ptype = "RANGE_0_16777215" />
+              </PARAM>
+              <PARAM name="not-advertise" help="Disables address range advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="substitute" help="Configures substitute prefix for the address range" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "rangenetworkprefix" help = "Address prefix" ptype = "IP_ADDR_MASK" />
+              </PARAM>
+            </PARAM>
+          </PARAM>
+        </PARAM>
+
+        <PARAM name="stub" help="Configures area as stub area" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="no-summary" help="Disables inter-area route injection into the stub" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+
+        <PARAM name="virtual-link" help="Configures a OSPFv2 virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name = "vlinkip" help = "Router ID of the remote ABR" ptype = "IP_ADDR" >
+            <PARAM name = "vlinkcmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
+              <PARAM name="authentication" help="Enables authentication on the virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                  <PARAM name="null" help="Enables null authentication type" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+                  <PARAM name="message-digest" help="Enables message-digest authentication type" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                  </PARAM>
+                </PARAM>
+              </PARAM>
+              <PARAM name="authentication-key" help="Simple text authentication password" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="auth-key" help="Authentication password" ptype="STRING">
+                   <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true" hidden="true"/>
+                </PARAM>
+              </PARAM>
+              <PARAM name="message-digest-key" help="Message-digest authentication key identifier" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="keyid" help="Key identifier" ptype="RANGE_1_255" >
+                  <PARAM name="md5" help="Message-digest authentication password" ptype="SUBCOMMAND" mode="subcommand" >
+                    <PARAM name="md5key" help="Authentication password" ptype="STRING" >
+                      <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true" hidden="true"/>
+                    </PARAM>
+                  </PARAM>
+                </PARAM>
+              </PARAM>
+              <PARAM name="dead-interval" help="Configures adjacency dead interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "deadinterval" help = "Dead interval value in seconds" ptype = "RANGE_1_65535" />
+              </PARAM>
+              <PARAM name="hello-interval" help="Configures neighbour hello interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "hellointerval" help = "Hello interval value in seconds" ptype = "RANGE_1_65535" />
+              </PARAM>
+              <PARAM name="retransmit-interval" help="Configures LSA retransmit interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "retransmitinterval" help = "Retransmit interval value in seconds" ptype = "RANGE_1_65535" />
+              </PARAM>
+              <PARAM name="transmit-delay" help="Configures LSA transmit delay" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "transmitinterval" help = "Transmit delay value in seconds" ptype = "RANGE_1_65535" />
+              </PARAM>
+            </PARAM>
+          </PARAM>
+        </PARAM>
+
+        <PARAM name="shortcut" help="Configures area shortcut mode" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name = "shortcuttype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+            <PARAM name="default" help="Enables shortcut mode as default" ptype="SUBCOMMAND" mode="subcommand" />
+            <PARAM name="disable" help="Disables shortcut mode" ptype="SUBCOMMAND" mode="subcommand" />
+            <PARAM name="enable" help="Enables shortcut mode" ptype="SUBCOMMAND" mode="subcommand" />
+          </PARAM>
+        </PARAM>
+
+      </PARAM>
+      <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_area ${vrf-name} ${areaid} ${__full_line}</ACTION>
+
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures area parameters within an OSPFv2 router
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure area related parameters within an OSPFv2 router.
+        Below command options can be used
+          area &lt;area-id&gt;
+            Configures an area within a router by specifying an area-id in positive
+            integer or dotted format.
+
+          area &lt;area-id&gt; authentication [message-digest]
+            Configures area level authentication mode. Authentocation mode can be clear
+            text authentication or message-digest authentication.
+
+          area &lt;area-id&gt; default-cost &lt;cost-value&gt;
+            Configures NSSA or stub-area summary default cost.
+
+          area &lt;area-id>&gt; filter-list prefix &lt;prefix-list-name&gt; in|out
+            Configures prefix list for inter area prefix filtering. Inter area prefix
+            propagation policies are configured using this command. Option &apos;in&apos;
+            is used for filetring incoming prefixes from the area and &apos;out&apos; is used
+            for filtering outgoing prefixes from the area.
+
+          area &lt;area-id&gt; range &lt;ip-prefix&gt; [ cost &lt;cost-value&gt; | advertise cost &lt;cost-value&gt; | not-advertise | substitute &lt;ip-prefix&gt; ]
+            Configures address ranges for inter area address propagation. Inter area
+            prefix propagation policies can also be configured using this command.
+            This command enables to configure prefix advertising rules directly without
+            using andy prefix list. Cost of an advertized prefix can be modified using
+            this command. Similarly a advertized prefix can be substituted by another prefix.
+
+          area &lt;area-id&gt; stub [ no-summary ]
+            Configures area to be stub area with stub options.
+
+          area &lt;area-id&gt; shortcut enable|disable|default
+            Configures area shortcut options.
+
+          area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt;
+          area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; authentication [ null | message-digest ]
+          area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; authentication-key &lt;key&gt; [ encrpted ]
+          area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; message-digest-key &lt;key-id&gt; md5 &lt;key&gt; [ encrpted ]
+          area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; dead-interval &lt;time-value&gt;
+          area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; hello-interval &lt;time-value&gt;
+          area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; retransmit-interval &lt;time-value&gt;
+          area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; transmit-delay &lt;time-value&gt;
+            Configures virtual link and its parameters in an area. Virtual link configurations
+            are allowed on non-backbone area. Virtual links can have clear text password,
+            message-digest based passwords or no password configured at all. When clear text
+            and message digest passsword is configured, corresponding authentication-key or
+            message-digest-key parameters must be configured. Timer parameters can also be
+            configured for any Virtual links. Authentication key or password will be saved
+            in encrypted form in configuration. User shall always provide actual password
+            while configuring authentication keys. It is not recomended to use encrypted
+            option of authentication key.
+
+      </USAGE>
+      <EXAMPLE summary="Area command examples" >
+        sonic-cli(config-router-ospf)# area 19
+        sonic-cli(config-router-ospf)# area 19.1.1.19
+
+        sonic-cli(config-router-ospf)# area 19 authentication
+        sonic-cli(config-router-ospf)# area 19 authentication message-digest
+
+        sonic-cli(config-router-ospf)# area 19 filter-list prefix plist-area10_in  in
+        sonic-cli(config-router-ospf)# area 19 filter-list prefix plist-area10_out out
+
+        sonic-cli(config-router-ospf)# area 19 range 10.1.1.2/24
+        sonic-cli(config-router-ospf)# area 19 range 10.1.1.0/24 cost 48
+        sonic-cli(config-router-ospf)# area 19 range 10.2.2.0/24 not-advertise
+        sonic-cli(config-router-ospf)# area 19 range 10.3.3.0/24 substitute 192.3.3.0/24
+
+        sonic-cli(config-router-ospf)# area 19 stub
+        sonic-cli(config-router-ospf)# area 19 stub no summary
+
+        sonic-cli(config-router-ospf)# area 19 shortcut enable
+
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 authentication
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 authentication null
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 authentication message-digest
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 authentication-key password
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 message-digest-key 19 md5 md5password
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 dead-interval 60
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 hello-interval 20
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 retransmit-interval 15
+        sonic-cli(config-router-ospf)# area 19 virtual-link 1.1.1.9 transmit-delay 10
+
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+
+  <COMMAND name="no area" help="Unconfigures OSPFv2 area parameters" >
+      <PARAM name = "areaid" help = "OSPFv2 area identifier" ptype = "AREA_NUM_DOT" />
+      <PARAM name = "areacmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+        <PARAM name="authentication" help="Disables area level authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="message-digest" help="Unconfigures area level message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+        <PARAM name="default-cost" help="Unconfigures NSSA or stub area summary default cost" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
+        <PARAM name="export-list" help="Unconfigures inter area export policy access list" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
+        <PARAM name="filter-list" help="Unconfigures inter area prefix filter lists" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="prefix" help="Inter area prefix list" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name = "filterdirection" help = "" ptype = "SUBCOMMAND" mode="switch" >
+              <PARAM name="in" help="In prefix filter" ptype="SUBCOMMAND" mode="subcommand" />
+              <PARAM name="out" help="Out prefix filter" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
+<!--
+        <PARAM name="import-list" help="Unconfigures inter area export policy access list" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
+<!--
+        <PARAM name="nssa" help="Unconfigures OSPFv2 area as NSSA" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="no-summary" help="Enables inter-area route injection into NSSA" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-always" help="Unconfigures always translate on NSSA-ABR" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-candidate" help="Unconfigures translate election on NSSA-ABR" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="translate-never" help="Unconfigures translate election on NSSA-ABR" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+-->
+        <PARAM name="range" help="Unconfigures address range or its parameters" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name = "rangeprefix" help = "Summary route address range prefix" ptype = "IP_ADDR_MASK" >
+            <PARAM name = "rangecmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
+              <PARAM name="advertise" help="Unconfigures address range advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="cost" help="Unconfigures cost for the advertising address range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              </PARAM>
+              <PARAM name="cost" help="Unconfigures cost for the advertising address range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="not-advertise" help="Enables address range advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="substitute" help="Unconfigures substitute prefix for the address range" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
+
+        <PARAM name="stub" help="Unconfigures area as stub or its parameters" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="no-summary" help="Enables inter-area route injection into the stub" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+
+        <PARAM name="virtual-link" help="Unconfigures Virtual link or its parameters" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name = "vlinkip" help = "Router ID of the remote ABR" ptype = "IP_ADDR" >
+            <PARAM name = "vlinkcmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true" >
+              <PARAM name="authentication" help="Disables authentication on the virtual link" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name = "vlinkauthtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                  <PARAM name="null" help="Unconfigures null authentication type" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+                  <PARAM name="message-digest" help="Unconfigures message-digest authentication parameters" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                  </PARAM>
+                </PARAM>
+              </PARAM>
+              <PARAM name="message-digest-key" help="Message-digest authentication key identifier" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="keyid" help="Key identifier" ptype="RANGE_1_255" >
+                  <PARAM name="md5" help="Message-digest authentication" ptype="SUBCOMMAND" mode="subcommand" />
+                </PARAM>
+              </PARAM>
+              <PARAM name="authentication-key" help="Unconfigures authentication password" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="dead-interval" help="Unconfigures adjacency dead interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="hello-interval" help="Unconfigures neighbour hello interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="retransmit-interval" help="Unconfigures LSA retransmit interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="transmit-delay" help="Unconfigures LSA transmit delay" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
+
+        <PARAM name="shortcut" help="Unconfigures area shortcut mode" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+      <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_area ${vrf-name} ${areaid} ${__full_line}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures area parameters within an OSPFv2 router
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure area related parameters within an OSPFv2 router.
+        Below command options can be used
+          no area &lt;area-id&gt;
+            Unconfigures an area within a router by specifying an area-id in positive integer or dotted format.
+
+          no area &lt;area-id&gt; authentication [message-digest]
+            Unconfigures area level authentication mode.
+
+          no area &lt;area-id&gt; default-cost &lt;cost-value&gt;
+            Unconfigures NSSA or stub-area summary default cost.
+
+          no area &lt;area-id>&gt; filter-list prefix in|out
+            Unconfigures prefix list for inter area prefix filtering. Unconfigures in prefixlist or out prefixlist.
+
+          no area &lt;area-id&gt; range &lt;ip-prefix&gt; [ cost  | advertise cost | not-advertise | substitute ]
+            Unconfigures address ranges for inter area address propagation.
+
+          no area &lt;area-id&gt; stub [ no-summary ]
+            Unconfigures area being stub area with stub options.
+
+          no area &lt;area-id&gt; shortcut
+            Unconfigures area shortcut.
+
+          no area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt;
+          no area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; authentication [ null | message-digest ]
+          no area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; authentication-key
+          no area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; message-digest-key &lt;key-id&gt; md5
+          no area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; dead-interval
+          no area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; hello-interval
+          no area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; retransmit-interval
+          no area &lt;area-id&gt; virtual-link &lt;remote-router-id&gt; transmit-delay
+            Unconfigures virtual link and its parameters in an area.
+
+      </USAGE>
+      <EXAMPLE summary="Area command unconfiguration examples" >
+        sonic-cli(config-router-ospf)# no area 19
+        sonic-cli(config-router-ospf)# no area 19.1.1.19
+
+        sonic-cli(config-router-ospf)# no area 19 authentication
+        sonic-cli(config-router-ospf)# no area 19 authentication message-digest
+
+        sonic-cli(config-router-ospf)# no area 19 filter-list prefix in
+        sonic-cli(config-router-ospf)# no area 19 filter-list prefix out
+
+        sonic-cli(config-router-ospf)# no area 19 range 10.1.1.2/24
+        sonic-cli(config-router-ospf)# no area 19 range 10.1.1.0/24 cost
+        sonic-cli(config-router-ospf)# no area 19 range 10.2.2.0/24 not-advertise
+        sonic-cli(config-router-ospf)# no area 19 range 10.3.3.0/24 substitute
+
+        sonic-cli(config-router-ospf)# no area 19 stub
+        sonic-cli(config-router-ospf)# no area 19 stub no summary
+
+        sonic-cli(config-router-ospf)# no area 19 shortcut
+
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 authentication
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 authentication null
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 authentication message-digest
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 authentication-key
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 message-digest-key 19 md5
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 dead-interval
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 hello-interval
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 retransmit-interval
+        sonic-cli(config-router-ospf)# no area 19 virtual-link 1.1.1.9 transmit-delay
+
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="auto-cost" help="Configures interface auto cost reference bandwidth" >
+    <PARAM name="reference-bandwidth" help="Reference bandwidth" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="ref-bandwidth" help="Bandwidth in Megabits per second" ptype="RANGE_1_4294967" />
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_auto_cost_reference_bandwidth ${vrf-name} ${ref-bandwidth}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures interface auto cost reference bandwidth
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure interface auto cost reference bandwidth. Whenever
+        interface cost is not configured explicitely, refrence bandwidth value will be
+        used to calculate the interface cost.
+      </USAGE>
+      <EXAMPLE summary="configuring auto cost reference bandwidth" >
+        sonic-cli(config-router-ospf)# auto-cost reference-bandwidth 10000
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no auto-cost" help="Unconfigures interface auto cost reference bandwidth" >
+    <PARAM name="reference-bandwidth" help="Reference bandwidth" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_auto_cost_reference_bandwidth ${vrf-name}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures interface auto cost reference bandwidth
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure interface auto cost reference bandwidth.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures auto cost reference bandwidth" >
+        sonic-cli(config-router-ospf)# no auto-cost reference-bandwidth
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+<!--
+  <COMMAND name="capability" help="Configures OSPFv2 LSA processing capabilities" >
+    <PARAM name="opaque" help="Enables opaque LSA capability" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no capability" help="Unconfigures OSPFv2 LSA processing capabilities" >
+    <PARAM name="opaque" help="Unconfigures opaque LSA capability" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+-->
+  <COMMAND name="compatible" help="Configures OSPFv2 RFC compatibility" >
+    <PARAM name="rfc1583" help="RFC1583 compatible" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2  patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_ospf_rfc1583_compatible ${vrf-name}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 RFC1583 compatibility
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure RFC1583 compatibility.
+      </USAGE>
+      <EXAMPLE summary="Configures RFC1583 compatibility" >
+        sonic-cli(config-router-ospf)# compatible rfc1583
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no compatible" help="Unconfigures OSPFv2 RFC compatibility" >
+    <PARAM name="rfc1583" help="RFC1583 compatible" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_ospf_rfc1583_compatible ${vrf-name}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures OSPFv2 RFC1583 compatibility
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure RFC1583 compatibility.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures RFC1583 compatibility" >
+        sonic-cli(config-router-ospf)# no compatible rfc1583
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="default-information" help="Configures default information origination parameters" >
+    <PARAM name="originate" help="Enable default route redistribution" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="always" help="Enable default route redistribution" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+      <PARAM name="metric" help="Configures metric for the default route" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="metricval" help="Metric value" ptype="RANGE_0_16777214" />
+      </PARAM>
+      <PARAM name="metric-type" help="Configures metric type for the default route" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="mertrictype" help="Metric type" ptype="RANGE_1_2" />
+      </PARAM>
+      <PARAM name="route-map" help="Configures route map for the default routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="routemapname" help="Route map name" ptype="STRING_15" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_import ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures default information origination policy rules.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configures default route information origination parameters. Metric
+        value and metric type can be explicitely specified for default routes. Route map rules
+        can also be applied on default routes.
+      </USAGE>
+      <EXAMPLE summary="Configures default route origination parameters" >
+        sonic-cli(config-router-ospf)# default-information originate always
+        sonic-cli(config-router-ospf)# default-information originate metric 80
+        sonic-cli(config-router-ospf)# default-information originate metric-type 1
+        sonic-cli(config-router-ospf)# default-information originate route-map rmap_droute
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no default-information" help="Unconfigures default information origination parameters" >
+    <PARAM name="originate" help="Unconfigures default route redistribution" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="always" help="Disable always advertise of default route" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+      <PARAM name="metric" help="Unconfigures metric for the default route" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      <PARAM name="metric-type" help="Unconfigures metric type for the default route" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+      <PARAM name="route-map" help="Unconfigures route map for the default routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_import ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures default information origination parameters.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigures default route information origination parameters.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures default route origination parameters" >
+        sonic-cli(config-router-ospf)# no default-information originate always
+        sonic-cli(config-router-ospf)# no default-information originate metric
+        sonic-cli(config-router-ospf)# no default-information originate metric-type
+        sonic-cli(config-router-ospf)# no default-information originate route-map
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="default-metric" help="Configures metric for redistributed routes" >
+    <PARAM name="defaultmetric" help="Default metric" ptype="RANGE_0_16777214" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_config_default_metric ${vrf-name} ${defaultmetric} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures default metric for redistributed routes.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configures metric for redistributed routes.
+      </USAGE>
+      <EXAMPLE summary="Configures default metric for redistributed routes." >
+        sonic-cli(config-router-ospf)# default-metric 28
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no default-metric" help="Unconfigures metric for redistributed routes" >
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_config_default_metric ${vrf-name} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures default metric for redistributed routes.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigures metric for redistributed routes.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures default metric for redistributed routes." >
+        sonic-cli(config-router-ospf)# no default-metric
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="distance" help="Configures route administrative distance" >
+    <PARAM name = "distancetype" help = "" ptype="SUBCOMMAND" mode="switch" >
+      <PARAM name="admindistance" help="Distance value for all type of routes" ptype="RANGE_1_255" optional="true" />
+      <PARAM name="ospf" help="" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name="external" help="External routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="extdistance" help="Distance value" ptype="RANGE_1_255" />
+        </PARAM>
+        <PARAM name="inter-area" help="Inter-area routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="interdistance" help="Distance value" ptype="RANGE_1_255" />
+        </PARAM>
+        <PARAM name="intra-area" help="Intra-area routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="intradistance" help="Distance value" ptype="RANGE_1_255" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config ${vrf-name} ${__full_line} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures distance value to OSPFv2 routes.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure route distance value to OSPFv2 routes. Distance value
+        can also be configured based on route types link inter-area routes, intra-area routes
+        and external routes.
+      </USAGE>
+      <EXAMPLE summary="Configures distance value to OSPFv2 routes." >
+        sonic-cli(config-router-ospf)# distance ospf 40
+        sonic-cli(config-router-ospf)# distance intra-area 10 inter-area 20 external 30
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no distance" help="Unconfigures route administrative distance" >
+    <PARAM name="ospf" help="Unconfigures distance value for all type of routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+      <PARAM name = "distancetype" help = "" ptype="SUBCOMMAND" mode="switch" >
+        <PARAM name="external" help="External routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="inter-area" help="Inter-area routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="intra-area" help="Intra-area routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distance_config ${vrf-name} ${__full_line} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures distance value for OSPFv2 routes.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure route distance value.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures distance value to OSPFv2 routes." >
+        sonic-cli(config-router-ospf)# no distance ospf
+        sonic-cli(config-router-ospf)# no distance intra-area
+        sonic-cli(config-router-ospf)# no distance inter-area
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+<!--
+  <COMMAND name="distribute-list" help="Configures route distribution using access list" >
+    <PARAM name="aclname" help="Access list name" ptype="STRING_15"  >
+      <PARAM name="out" help="Protocol name" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="bgp" help="Border Gateway Protocol" ptype="SUBCOMMAND" mode="subcommand" />
+          <PARAM name="connected" help="Directly connected or attached subnets and hosts" ptype="SUBCOMMAND" mode="subcommand" />
+          <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" />
+          <PARAM name="kernel" help="Kernel routes other than FRR installed routes" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_access_list ${vrf-name} ${protocol} ${aclname} &#xA;</ACTION>
+  </COMMAND>
+
+  <COMMAND name="no distribute-list" help="Unconfigures route distribution using access list" >
+    <PARAM name="out" help="Protocol name" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="bgp" help="Border Gateway Protocol" ptype="SUBCOMMAND" mode="subcommand" />
+        <PARAM name="connected" help="Directly connected or attached subnets and hosts" ptype="SUBCOMMAND" mode="subcommand" />
+        <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" />
+        <PARAM name="kernel" help="Kernel routes other than FRR installed routes" ptype="SUBCOMMAND" mode="subcommand" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_distribute_list_config_access_list ${vrf-name} ${protocol} &#xA;</ACTION>
+  </COMMAND>
+-->
+
+  <COMMAND name="log-adjacency-changes" help="Enables OSPFv2 adjacency state logs" >
+    <PARAM name="detail" help="Enables detailed logs" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Enables OSPFv2 adjacency state logs.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to enable OSPFv2 adjacency state logs.
+      </USAGE>
+      <EXAMPLE summary="Enables OSPFv2 adjacency state logs." >
+        sonic-cli(config-router-ospf)# log-adjacency-changes
+        sonic-cli(config-router-ospf)# log-adjacency-changes detail
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no log-adjacency-changes" help="Disables OSPFv2 adjacency state logs" >
+    <PARAM name="detail" help="Log all state changes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config_log_adjacency_changes ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Disables OSPFv2 adjacency state logs.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to disable OSPFv2 adjacency state logs.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures distance value to OSPFv2 routes." >
+        sonic-cli(config-router-ospf)# no log-adjacency-changes detail
+        sonic-cli(config-router-ospf)# no log-adjacency-changes
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="max-metric" help="Enables infinite metric advertising in OSPFv2 LSAs" >
+    <PARAM name="router-lsa" help="Enables infinite metric on router LSAs" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="administrative" help="Enables administrative type infinite metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
+        <PARAM name="on-shutdown" help="Enables infinite metric advertising before OSPFv2 router shutdown" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="interdistance" help="Time in seconds to wait till full shutdown" ptype="RANGE_5_100" />
+        </PARAM>
+-->
+        <PARAM name="on-startup" help="Enables infinite metric advertising at OSPFv2 router startup" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="interdistance" help="Duration in seconds to advertise max metric" ptype="RANGE_5_86400" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Enables infinite metric advertising in OSPFv2 LSAs.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to enable infinite metric advertising in OSPFv2 LSAs. Max-metric can
+        be enabled administratively or during OSPFv2 startup time. When enabled administratively,
+        max-metric advertizing will be effective till it is unconfigures explicitely. When
+        enabled for restrt time, max-metric will be advertised for a period of time specified
+        in the config.
+      </USAGE>
+      <EXAMPLE summary="Enables infinite metric advertising in OSPFv2 LSAs." >
+        sonic-cli(config-router-ospf)# max-metric router-lsa administrative
+        sonic-cli(config-router-ospf)# max-metric router-lsa on-startup 90
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no max-metric" help="Disables infinite metric advertising in OSPFv2 LSAs" >
+    <PARAM name="router-lsa" help="Disables infinite metric on router LSAs" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+        <PARAM name="administrative" help="Disables administrative type infinite metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+<!--
+        <PARAM name="on-shutdown" help="Disables infinite metric advertising before OSPFv2 router shutdown" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+-->
+        <PARAM name="on-startup" help="Disables infinite metric advertising at OSPFv2 router startup" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Disables infinite metric advertising in OSPFv2 LSAs.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to disable max-metric advertising in OSPFv2 LSAs.
+      </USAGE>
+      <EXAMPLE summary="Disables infinite metric advertising in OSPFv2 LSAs" >
+        sonic-cli(config-router-ospf)# no max-metric router-lsa administrative
+        sonic-cli(config-router-ospf)# no max-metric router-lsa on-startup
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+<!--
+  <COMMAND name="neighbour" help="Configures neighbour router" >
+    <PARAM name="ipaddr" help="Neighbour router IP address" ptype="IP_ADDR" mode="subcommand" >
+      <PARAM name="poll-interval" help="Neighbour polling interval" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name="pollinterval" help="Time value in seconds" ptype="RANGE_1_65535" />
+      </PARAM>
+      <PARAM name="priority" help="Neighbour priority" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+        <PARAM name="priorityval" help="Priority value" ptype="RANGE_0_255" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+  <COMMAND name="no neighbour" help="Unconfigures neighbour router" >
+    <PARAM name="ipaddr" help="Neighbour router IP address" ptype="IP_ADDR" mode="subcommand" >
+      <PARAM name="poll-interval" help="Neighbour polling interval" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+      <PARAM name="priority" help="Neighbour priority" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+-->
+
+  <COMMAND name="network" help="Configures networks in an area" command_keys="vrf_name=*,area-id=*,prefix=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_AREA_NETWORK/OSPFV2_ROUTER_AREA_NETWORK_LIST/vrf_name={vrf-name},area-id={area-id},prefix={prefix}" render_command_cb='router_ospf_area_network'>
+    <PARAM name="ipaddrmask" help="Network address prefix" ptype="IP_ADDR_MASK" >
+      <PARAM name="area" help="Area ID of the network" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name = "areaid" help = "Area identifier" ptype = "AREA_NUM_DOT" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_networks_network_config ${vrf-name} ${areaid} ${ipaddrmask} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures networks in an area.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure or associate network addresses into specific areas.
+        Interfaces belonging to these network addresses will be condidere as part of the area
+        specified. This config command is mutually exclusive with interface mode area command
+        within a VRF. When network command is used in a VRF, area command cannot be used at
+        interface mode configuration.
+      </USAGE>
+      <EXAMPLE summary="Configures networks in an area." >
+        sonic-cli(config-router-ospf)# network 10.1.1.0/24 area 0
+        sonic-cli(config-router-ospf)# network 19.1.1.0/16 area 19
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no network" help="Unconfigures networks in an area" >
+    <PARAM name="ipaddrmask" help="Network address prefix" ptype="IP_ADDR_MASK" >
+      <PARAM name="area" help="Area ID of the network" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "areaid" help = "Area identifier" ptype = "AREA_NUM_DOT" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_areas_area_networks_network ${vrf-name} ${areaid} ${ipaddrmask} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures networks in an area.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to snconfigure or dissassociate network addresses into specific areas.
+      </USAGE>
+      <EXAMPLE summary="unconfigures networks in an area." >
+        sonic-cli(config-router-ospf)# no network 10.1.1.0/24 area 0
+        sonic-cli(config-router-ospf)# no network 19.1.1.0/16 area 19
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="ospf"  help="Configures OSPFv2 router parameters">
+    <ACTION> </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 router parameters.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure OSPFv2 router parameters like router-id and ABR type.
+      </USAGE>
+      <EXAMPLE summary="Configures OSPFv2 router parameters." >
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+  <COMMAND name="no ospf"  help="Unconfigures OSPFv2 router parameters">
+    <ACTION> </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unonfigures OSPFv2 router parameters.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure OSPFv2 router parameters like router-id and ABR type.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures router ID and ABR type." >
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+
+  <COMMAND name="ospf abr-type" help="Configures router ABR type" >
+    <PARAM name = "abrtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="cisco" help="Cisco implementation type ABR" ptype="SUBCOMMAND" mode="subcommand" />
+      <PARAM name="ibm" help="IBM implementation type ABR" ptype="SUBCOMMAND" mode="subcommand" />
+      <PARAM name="shortcut" help="Shortcut ABR" ptype="SUBCOMMAND" mode="subcommand" />
+      <PARAM name="standard" help="RFC2328 Standard implementation ABR" ptype="SUBCOMMAND" mode="subcommand" />
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 router ABR type.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure OSPFv2 router ABR type.
+      </USAGE>
+      <EXAMPLE summary="Configures router ABR type." >
+        sonic-cli(config-router-ospf)# ospf abr-type shortcut
+        sonic-cli(config-router-ospf)# ospf abr-type cisco
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no ospf abr-type" help="Unconfigures router specific parameters" >
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures OSPFv2 ABR type.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure OSPFv2 ABR type.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures router ABR type." >
+        sonic-cli(config-router-ospf)# no ospf abr-type
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="ospf router-id" help="Configures OSPFv2 router identifier" >
+    <PARAM name = "routerid" help = "OSPFv2 router ID" ptype = "IP_ADDR" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 router ID.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure OSPFv2 router ID. At the time of OSPFv2 router startup or
+        new configuration, if the router-id configuration is not present then the highest IPv4
+        address among the available IPv4 interfaces will be considered as router-id. Upon
+        configuring a specific router-id, newly configured router-id will be used. Upon
+        unconfiguring a router-id, same router-id will continue to be used till next router-id
+        config or system restart or OSPFv2 router unconfigure.
+      </USAGE>
+      <EXAMPLE summary="Configures OSPFv2 router ID." >
+        sonic-cli(config-router-ospf)# ospf router-id 19.1.1.1
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no ospf router-id" help="Unconfigures OSPFv2 router identifier" >
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures OSPFv2 router ID.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure OSPFv2 router ID.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures OSPFv2 router ID." >
+        sonic-cli(config-router-ospf)# no ospf router-id
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="passive-interface" help="Configures passive interface types" command_keys="vrf_name=*,name=*,address=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_ROUTER_PASSIVE_INTERFACE/OSPFV2_ROUTER_PASSIVE_INTERFACE_LIST/vrf_name={vrf-name},name={name},address={address}" render_command_cb='router_ospf_passive_interface'>
+    <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="default" help="Suppresses OSPFv2 routing updates on all interfaces" ptype="SUBCOMMAND" mode="subcommand"/>
+      <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" >
+        <PARAM name = "interfacesubtype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true">
+          <PARAM name = "ipaddr" help = "Interface IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" >
+            <PARAM name="non-passive"  help = "Interface shall be non passive" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+          </PARAM>
+          <PARAM name="non-passive"  help = "Interface shall be non passive" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface ${vrf-name} ${interfacename} ${ipaddr} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 passive interfaces.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure OSPFv2 passive interfaces. Default mode makes all
+        interfaces as passive interface. When default mode is enabled, user will be able
+        to activate chosen interaces by enabling non-passive mode of passive interface
+        configuration.
+      </USAGE>
+      <EXAMPLE summary="Configures OSPFv2 passive interfaces." >
+        sonic-cli(config-router-ospf)# passive-interface Ethernet0
+           or
+        sonic-cli(config-router-ospf)# passive-interface default
+        sonic-cli(config-router-ospf)# passive-interface Ethernet0 non-passive
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no passive-interface" help="Unconfigures passive interface types" >
+    <PARAM name = "interfacetype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="default" help="Suppresses routing updates on interfaces by default" ptype="SUBCOMMAND" mode="subcommand" />
+      <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" >
+        <PARAM name = "interfacesubtype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true">
+          <PARAM name = "ipaddr" help = "Interface IPv4 address" ptype = "IP_ADDR" default="0.0.0.0" optional="true" >
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_passive_interface ${vrf-name} ${interfacename} ${ipaddr} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures OSPFv2 passive interfaces.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure OSPFv2 passive interfaces.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures OSPFv2 passive interfaces." >
+        sonic-cli(config-router-ospf)# no passive-interface Ethernet0
+        sonic-cli(config-router-ospf)# no passive-interface default
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="redistribute" help="Configures route redistribution into OSPFv2 router" >
+    <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="bgp" help="Border Gateway Protocol" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="bgpmetricval" help="Metric value" ptype="RANGE_0_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="bgpmertrictype" help="Metric type" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map to filter redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="bgproutemapname" help="Route map name" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="connected" help="Directly connected or attached subnets and hosts" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="connmetricval" help="Metric value" ptype="RANGE_0_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="connmertrictype" help="Metric type" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map to filter redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="connroutemapname" help="Route map name" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="staticmetricval" help="Metric value" ptype="RANGE_0_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="staticmertrictype" help="Metric type" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map to filter redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="staticroutemapname" help="Route map name" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+<!--
+      <PARAM name="ospf" help="OSPFv2 router on another VRF" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="ospfmetricval" help="Metric value" ptype="RANGE_0_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="ospfmertrictype" help="Metric type" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map to filter redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="ospfroutemapname" help="Route map name" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+-->
+      <PARAM name="kernel" help="Kernel routes other than FRR installed routes" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="kernelmetricval" help="Metric value" ptype="RANGE_0_16777214" />
+        </PARAM>
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="kernelmertrictype" help="Metric type" ptype="RANGE_1_2" />
+        </PARAM>
+        <PARAM name="route-map" help="Route map to filter redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="kernelroutemapname" help="Route map name" ptype="STRING_15" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import ${vrf-name} ${protocol} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures route redistribution into OSPFv2 router.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure route redistribution into OSPFv2 router. Redistributed
+        route&apos;s metric and metric-type can be modified using this commands. Route map can
+        also be aslo be applied to redistributed route. Unconfiguring any of the redistribute
+        attribute for a protocol will unconfigure all attributes.
+      </USAGE>
+      <EXAMPLE summary="Configures route redistribution into OSPFv2 router." >
+        sonic-cli(config-router-ospf)# redistribute bgp
+        sonic-cli(config-router-ospf)# redistribute bgp route-map bgpospfrmap
+        sonic-cli(config-router-ospf)# redistribute static metric 10 metrict-type 1 routemap redist_rmap
+        sonic-cli(config-router-ospf)# redistribute connected metric 10 metrict-type 1
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no redistribute" help="Unconfigures route redistribution into OSPFv2 router" >
+    <PARAM name = "protocol" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="bgp" help="Border Gateway Protocol" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="route-map" help="Route map name" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+      <PARAM name="connected" help="Directly connected or attached subnets and hosts" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="route-map" help="Route map name" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+      <PARAM name="static" help="Statically configured routes" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="route-map" help="Route map name" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+<!--
+      <PARAM name="ospf" help=" Open Shortest Path First" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="route-map" help="Route map name" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+-->
+      <PARAM name="kernel" help="Kernel routes other than FRR installed routes" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="metric" help="Metric for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="metric-type" help="Metric type for redistributed routes" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="route-map" help="Route map name" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_route_distribution_policies_redistribute_list_config_import ${vrf-name} ${protocol} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures route redistribution into OSPFv2 router.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure route redistribution into OSPFv2 router. Unconfiguring any
+        of the redistribute attribute for a protocol will unconfigure all attributes.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures route redistribution into OSPFv2 router." >
+        sonic-cli(config-router-ospf)# no redistribute bgp
+        sonic-cli(config-router-ospf)# no redistribute bgp route-map
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="refresh" help="Configures LSA refresh interval" >
+    <PARAM name="timer" help="Refresh timer" ptype="SUBCOMMAND" mode="subcommand" >
+      <PARAM name="refreshtimer" help="Timer value in seconds" ptype="RANGE_10_1800" />
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_refresh_timer ${vrf-name} ${refreshtimer} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 LSA refresh interval.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure OSPFv2 LSA refresh interval.
+      </USAGE>
+      <EXAMPLE summary="Configures OSPFv2 LSA refresh interval" >
+        sonic-cli(config-router-ospf)# refresh timer 20
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no refresh" help="Unconfigures LSA refresh interval" >
+    <PARAM name="timer" help="Refresh timer" ptype="SUBCOMMAND" mode="subcommand" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_refresh_timer ${vrf-name} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures OSPFv2 LSA refresh interval.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure OSPFv2 LSA refresh interval.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures OSPFv2 LSA refresh interval" >
+        sonic-cli(config-router-ospf)# no refresh timer
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+<!--
+  <COMMAND name="router-info" help="Configures router information specific commands" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+    <PARAM name = "floodingscope" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="area" help="Enables the Router Information functionality with Area flooding scope" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="floodingscopeareaid" help="OSPFv2 area ID" ptype="IP_ADDR" optional="true" optional="true"/>
+      </PARAM>
+      <PARAM name="as" help="Enables Router Information functionality with AS flooding scope" ptype="SUBCOMMAND" mode="subcommand"/>
+    </PARAM>
+    <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+-->
+
+  <COMMAND name="timers" help="Configures router timers" >
+    <PARAM name = "timertype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="lsa" help="OSPFv2 LSA timers" ptype="SUBCOMMAND" mode="subcommand"  >
+        <PARAM name="min-arrival" help="LSA minimum arrival timer" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name="minarrivaltimer" help="Timer value in milliseconds" ptype="RANGE_0_600000" />
+        </PARAM>
+      </PARAM>
+      <PARAM name="throttle" help="Throttling adaptive timer" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "throttletype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="lsa" help="LSA delay between transmissions" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name="all" help="All LSA types" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name="lsadelaytimer" help="Timer value in milliseconds" ptype="RANGE_0_5000" />
+            </PARAM>
+          </PARAM>
+          <PARAM name="spf" help="OSPFv2 SPF timers" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name="spfdelaytime" help="SPF delay time in milliseconds" ptype="RANGE_0_600000" />
+            <PARAM name="spfinitialholdtime" help="SPF initial hold time in milliseconds" ptype="RANGE_0_600000" />
+            <PARAM name="spfmaxholdtime" help="SPF maximum hold time in milliseconds" ptype="RANGE_0_600000" />
+          </PARAM>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 LSA and SPF intervals.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure OSPFv2 LSA and SPF intervals.
+      </USAGE>
+      <EXAMPLE summary="Configures OSPFv2 LSA and SPF intervals" >
+        sonic-cli(config-router-ospf)# timers lsa min-arrival
+        sonic-cli(config-router-ospf)# timers throttle lsa all
+        sonic-cli(config-router-ospf)# timers throttle spf 10 20 30
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no timers" help="Unconfigures router timers" >
+    <PARAM name = "timertype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="lsa" help="OSPFv2 LSA timers" ptype="SUBCOMMAND" mode="subcommand"  >
+        <PARAM name="min-arrival" help="LSA minimum arrival timer" ptype="SUBCOMMAND" mode="subcommand" />
+      </PARAM>
+      <PARAM name="throttle" help="Throttling adaptive timer" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "throttletype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="lsa" help="LSA delay between transmissions" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name="all" help="All LSA types" ptype="SUBCOMMAND" mode="subcommand" />
+          </PARAM>
+          <PARAM name="spf" help="OSPFv2 SPF timers" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_timers ${vrf-name} ${__full_line} </ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures OSPFv2 LSA and SPF intervals.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure OSPFv2 LSA and SPF intervals.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures OSPFv2 LSA and SPF intervals" >
+        sonic-cli(config-router-ospf)# no timers lsa min-arrival
+        sonic-cli(config-router-ospf)# no timers throttle lsa all
+        sonic-cli(config-router-ospf)# no timers throttle spf
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="write-multiplier" help="Configures write multiplier" >
+      <PARAM name="maxinterfacewrite" help="Maximum number of interfaces serviced per write" ptype="RANGE_1_100" />
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} ${maxinterfacewrite}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Configures OSPFv2 write multiplier.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to configure OSPFv2 write multiplier.
+      </USAGE>
+      <EXAMPLE summary="Configures OSPFv2 write multiplier" >
+        sonic-cli(config-router-ospf)# write-multiplier 20
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+  <COMMAND name="no write-multiplier" help="Unconfigures write multiplier" >
+    <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_config_write_multiplier ${vrf-name} &#xA;</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Unconfigures OSPFv2 write multiplier.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to unconfigure OSPFv2 write multiplier.
+      </USAGE>
+      <EXAMPLE summary="Unconfigures OSPFv2 write multiplier" >
+        sonic-cli(config-router-ospf)# no write-multiplier
+      </EXAMPLE>
+      <FEATURE> OSPFv2 </FEATURE>
+    </DOCGEN>
+  </COMMAND>
+
+</VIEW>
+
+<!--=======================================================-->
+<!--            OSPFv2 Interface mode configs              -->
+<!--=======================================================-->
+
+<VIEW name="configure-if-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${iface}"></MACRO>
+</VIEW>
+
+<VIEW name="configure-lag-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${po_name}"></MACRO>
+</VIEW>
+
+<VIEW name="configure-vlan-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${vlan_name}"></MACRO>
+</VIEW>
+
+<VIEW name="configure-lo-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${lo_name}"></MACRO>
+</VIEW>
+
+
+<!--=======================================================-->
+<!--            OSPFv2 show and clear commands             -->
+<!--=======================================================-->
+
+<VIEW name="enable-view">
+
+  <COMMAND name="clear ip ospf" help="Clear OSPFv2 sessions">
+    <PARAM name="clear_ospf_subcommands" help="Clear OSPFv2 sessions" ptype="SUBCOMMAND" mode="switch">
+      <PARAM name="interface" help="One or all interfaces in within a VRF" ptype="SUBCOMMAND" mode="subcommand">
+         <PARAM name="interface-name" help="Interface name" ptype="PHY_VL_PO_LB_INTERFACE" optional="true"/>
+      </PARAM>
+      <PARAM name="vrf" help="OSPFv2 VRF name" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING" optional="false" >
+           <PARAM name="interface" help="One or all interfaces in within a VRF" ptype="SUBCOMMAND" mode="subcommand">
+               <PARAM name="interface-name" help="Interface name" ptype="PHY_VL_PO_LB_INTERFACE" optional="true"/>
+           </PARAM>
+        </PARAM>
+      </PARAM>
+    </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_clear_ospfv2 clear_ospfv2 intf=${interface-name} vrf=${vrf-name} ${__full_line}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command clears/resets OSPFv2 sessions on an OSPFv2 interface.
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to clear OSPFv2 sessions. Following is a partial list of
+        information with command syntax that can be cleared.
+        - clear ip ospf interface IF-NAME
+          This command clears all OSPFv2 sessions on an OSPFv2 interface
+        - clear ip ospf vrf VRF-NAME interface IF-NAME
+          This command clears all OSPFv2 sessions on interface in VRF VRF-NAME
+      </USAGE>
+      <EXAMPLE summary="Below commands clear sessions on Ethernt64">
+        sonic# clear ip ospf interface  Ethernet64
+        sonic# clear ip ospf vrf default interface Ethernet64
+      </EXAMPLE>
+    </DOCGEN>
+  </COMMAND>
+
+
+  <COMMAND name="show running-configuration ospf" help="Displays all OSPFv2 router configurations">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-router-ospf</ACTION>
+  </COMMAND>
+
+<!--
+  <COMMAND name="show running-configuration ospf all" help="Displays all OSPFv2 configurations including OSPFv2 interfaces">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-lo,configure-if,configure-lag,configure-vlan,configure-router-ospf</ACTION>
+  </COMMAND>
+
+  <COMMAND name="show running-configuration interface ospf" help="Displays all OSPFv2 interface configurations">
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-lo,configure-if,configure-lag,configure-vlan</ACTION>
+  </COMMAND>
+-->
+
+    <COMMAND name = "show ip ospf" help = "Displays OSPFv2 router information" >
+      <PARAM name="vrf" help="Displays VRF specific OSPFv2 information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING_15" default="default"/>
+          <PARAM name = "all" help = "All VRF router information" ptype="SUBCOMMAND" mode="subcommand" />
+        </PARAM>
+      </PARAM>
+
+      <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+        <PARAM name="border-routers" help="Displays all OSPFv2 ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
+        </PARAM>
+
+        <PARAM name="route" help="Displays OSPFv2 routing table" ptype="SUBCOMMAND" mode="subcommand">
+        </PARAM>
+
+        <PARAM name="database" help="Displays OSPFv2 Database summary" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true" >
+            <PARAM name="asbr-summary" help="ASBR summary link states" ptype="SUBCOMMAND" mode="subcommand">
+              <PARAM name = "lsid" help = "Link State ID" ptype = "IP_ADDR" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="external" help="External link states" ptype="SUBCOMMAND" mode="subcommand">
+              <PARAM name = "lsid" help = "Link State ID" ptype = "IP_ADDR" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR"  />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="max-age" help="LSAs in max age list" ptype="SUBCOMMAND" mode="subcommand" >
+            </PARAM>
+
+            <PARAM name="network" help="Network link states" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID" ptype = "IP_ADDR" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR"  />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="nssa-external" help="NSSA external link state" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID" ptype = "IP_ADDR"  optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="opaque-area" help="Link area opaque LSA" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID" ptype = "IP_ADDR" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR"  />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="opaque-as" help="Link AS Opaque LSA" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID" ptype = "IP_ADDR"  optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="opaque-link" help="Link local opaque LSA" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID" ptype = "IP_ADDR" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="router" help="Router link states" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR"  />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+
+            <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" >
+            </PARAM>
+
+            <PARAM name="summary" help="Network summary link states" ptype="SUBCOMMAND" mode="subcommand" >
+              <PARAM name = "lsid" help = "Link State ID (as an IP address)" ptype = "IP_ADDR" optional="true" />
+              <PARAM name = "lstype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="adv-router" help="Advertising router link states" ptype="SUBCOMMAND" mode="subcommand">
+                  <PARAM name = "advrouter" help = "Advertising router link states" ptype = "IP_ADDR" />
+                </PARAM>
+                <PARAM name="self-originate" help="Self-originated link states" ptype="SUBCOMMAND" mode="subcommand" />
+              </PARAM>
+            </PARAM>
+          </PARAM>
+        </PARAM>
+
+        <PARAM name="interface" help="Displays OSPFv2 interface information" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name="traffic" help="Displays OSPFv2 protocol packet counters" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+          <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" optional="true"/>
+        </PARAM>
+
+        <PARAM name="neighbor" help="Displays OSPFv2 neighbour list" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name = "neighborshowtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
+            <PARAM name = "neighip" help = "Neighbour ID" ptype = "IP_ADDR" optional="true" />
+            <PARAM name="all" help="All neighbours" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+            <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" optional="true"/>
+          </PARAM>
+          <PARAM name="detail" help="Detailed neigbour information" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        </PARAM>
+      </PARAM>
+      <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds ${vrf-name} ${__full_line} </ACTION>
+        <DOCGEN>
+    <DESCRIPTION>
+      Display show related ospf information for a specific vrf
+    </DESCRIPTION>
+    <USAGE>
+      Use this command to display global, neighbors, interfaces etc information 
+      related to an OSPFv2 router. User can optionally specify VRF
+      on which the router have to be configured. If VRF name is not specified then
+      the command is considered for VRF default.
+      Technical details on OSPFv2 support is also available at
+      http://docs.frrouting.org/en/latest/
+    </USAGE>
+    <EXAMPLE summary="Display global ospf information for default vrf">
+device# show ip ospf
+ OSPF Routing Process, Router ID: 1.1.1.1
+ Supports only single TOS (TOS0) routes
+ This implementation conforms to RFC2328
+ RFC1583Compatibility flag is enabled
+ OpaqueCapability flag is disabled
+ Initial SPF scheduling delay 0 millisec(s)
+ Minimum hold time between consecutive SPFs 50 millisec(s)
+ Maximum hold time between consecutive SPFs 5000 millisec(s)
+ Hold time multiplier is currently 1
+ time is 92031756
+ SPF algorithm last executed 1065d4h22m ago
+ Last SPF duration 0.0s
+ SPF timer is inactive
+ LSA minimum interval 5000 msecs
+ LSA minimum arrival 1000 msecs
+ Write Multiplier set to 20
+ Refresh timer 10 secs
+ Number of external LSA 0. Checksum Sum 0x0
+ Number of opaque AS LSA 0. Checksum Sum 0x0
+ Number of areas attached to this router: 2
+ Area ID: 0.0.0.0 (Backbone)
+   Number of interfaces in this area: Total: 1 , Active: 1
+   Number of fully adjacent neighbors in this area: 1
+   Area has no authentication
+   SPF algorithm executed 8 times
+   Number of LSA 3
+   Number of router LSA 2. Checksum Sum 0x40f64b4000000000
+   Number of network LSA 1. Checksum Sum 0x40d5adc000000000
+   Number of summary LSA 0. Checksum Sum 0x0
+   Number of ASBR summary LSA 0. Checksum Sum 0x0
+   Number of NSSA LSA 0. Checksum Sum 0x0
+   Number of opaque link LSA . Checksum Sum 0x
+   Number of opaque area LSA 0. Checksum Sum 0x0
+ Area ID: 0.0.0.1
+   Number of interfaces in this area: Total: 1 , Active: 1
+   Number of fully adjacent neighbors in this area: 0
+   Area has no authentication
+   SPF algorithm executed 1 times
+   Number of LSA 2
+   Number of router LSA 0. Checksum Sum 0x0
+   Number of network LSA 0. Checksum Sum 0x0
+   Number of summary LSA 2. Checksum Sum 0x40f1f61000000000
+   Number of ASBR summary LSA 0. Checksum Sum 0x0
+   Number of NSSA LSA 0. Checksum Sum 0x0
+   Number of opaque link LSA . Checksum Sum 0x
+   Number of opaque area LSA 0. Checksum Sum 0x0
+    </EXAMPLE>
+    <EXAMPLE summary="Display neighbor information for ospf on default vrf">
+sonic# show ip ospf neighbor | no-more
+
+Neighbor ID     Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
+10.59.142.247     1 Full/Backup       37.343s 64.1.1.2        Ethernet64:64.1.1.1      0     0     0
+
+Leaf1# show ip ospf neighbor Ethernet66 | no-more
+ 
+Neighbor ID     Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
+2.2.2.2           1 Full/Backup       38.245s 64.1.1.2        Ethernet66:64.1.1.1      0     0     0
+ 
+    </EXAMPLE>
+    <EXAMPLE summary="Display neighbor detailed information for ospf on default vrf">
+sonic# show ip ospf neighbor detail | no-more
+Neighbor 10.59.142.247, interface address 64.1.1.2
+    In the area 0.0.0.0 via interface Ethernet64
+    Neighbor priority is 1, State is Full, 6 state changes
+    Most recent state change statistics:
+      Progressive change 7h3m25s ago
+    DR is 64.1.1.1, BDR is 64.1.1.2
+    Options 2 *|-|-|-|-|-|E|-
+    Dead timer due in 30.687s
+    Database Summary List 0
+    Link State Request List 0
+    Link State Retransmission List 0
+    Thread Inactivity Timer on
+    Thread Database Description Retransmision off
+    Thread Link State Request Retransmission on
+    Thread Link State Update Retransmission on
+
+Leaf1# show ip ospf neighbor 2.2.2.2 | no-more
+Neighbor 2.2.2.2, interface address 64.1.1.2
+    In the area 0.0.0.0 via interface Ethernet66
+    Neighbor priority is 1, State is Full, 5 state changes
+    Most recent state change statistics:
+      Progressive change 0h1m11s ago
+    DR is 64.1.1.1, BDR is 64.1.1.2
+    Options 2 *|-|-|-|-|-|E|-
+    Dead timer due in 33.203s
+    Database Summary List 0
+    Link State Request List 0
+    Link State Retransmission List 0
+    Thread Inactivity Timer on
+    Thread Database Description Retransmision off
+    Thread Link State Request Retransmission on
+    Thread Link State Update Retransmission on
+ 
+Neighbor 2.2.2.2, interface address 65.1.1.2
+    In the area 0.0.0.1 via interface Ethernet67
+    Neighbor priority is 1, State is Full, 5 state changes
+    Most recent state change statistics:
+      Progressive change 0h1m10s ago
+    DR is 65.1.1.1, BDR is 65.1.1.2
+    Options 2 *|-|-|-|-|-|E|-
+    Dead timer due in 34.590s
+    Database Summary List 0
+    Link State Request List 0
+    Link State Retransmission List 0
+    Thread Inactivity Timer on
+    Thread Database Description Retransmision off
+    Thread Link State Request Retransmission on
+    Thread Link State Update Retransmission on
+ 
+    </EXAMPLE>
+    <EXAMPLE summary="Display interface information for ospf on default vrf">
+sonic# show ip ospf interface | no-more
+VRF Name: default
+Ethernet64 is up
+  ifindex 128, MTU 9100 bytes, BW 25000 Mbit UP,BROADCAST,RUNNING,MULTICAST
+  Internet Address 64.1.1.1/24, Broadcast 64.1.1.255, Area 0.0.0.0
+  MTU mismatch detection: enabled
+  Router ID 10.59.143.131, Network Type BROADCAST, Cost: 4
+  Transmit Delay is 1 sec, State DR, Priority 1
+  Backup Designated Router (ID) 10.59.142.247, Interface Address 64.1.1.2
+  Saved Network-LSA sequence number 0x8000000f
+  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
+  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
+    Hello due in 9.023s
+  Neighbor Count is 1, Adjacent neighbor count is 1
+
+Leaf1# show ip ospf interface Ethernet67 | no-more
+VRF Name: default
+Ethernet67 is up
+  ifindex 926, MTU 9100 bytes, BW 25000 Mbit UP,BROADCAST,RUNNING,MULTICAST
+  Internet Address 65.1.1.1/24, Broadcast 65.1.1.255, Area 0.0.0.1
+  MTU mismatch detection: enabled 
+  Router ID 1.1.1.1, Network Type BROADCAST, Cost: 4
+  Transmit Delay is 1 sec, State DR, Priority 1
+  Backup Designated Router (ID) 2.2.2.2, Interface Address 65.1.1.2
+  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
+  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
+    Hello due in 7.957s
+  Neighbor Count is 1, Adjacent neighbor count is 1
+ 
+    </EXAMPLE>
+    <EXAMPLE summary="Display interface traffic information for ospf on default vrf">
+sonic# show ip ospf interface traffic | no-more
+
+Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack
+                Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx
+--------------------------------------------------------------------------------------------
+Ethernet64     2563/2563           3/3             1/1            17/30           29/16
+
+Leaf1# show ip ospf interface traffic Ethernet67 | no-more
+
+Interface       HELLO            DB-Desc         LS-Req           LS-Update        LS-Ack        
+                Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx            Rx/Tx        
+--------------------------------------------------------------------------------------------
+Ethernet67       19/22             2/3             1/1             3/3             2/2     
+
+    </EXAMPLE>
+    <EXAMPLE summary="Display database information for ospf on default vrf">
+sonic# show ip ospf database | no-more
+VRF Name: default
+
+       OSPF Router with ID (10.59.143.131)
+
+                Router Link States (Area 0.0.0.0)
+
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+10.59.142.247   10.59.142       1682 0x80000011 0xb56b 1
+10.59.143.131   10.59.143       1498 0x80000011 0xdc2c 1
+
+                Net Link States (Area 0.0.0.0)
+
+Link ID         ADV Router      Age  Seq#       CkSum
+64.1.1.1        10.59.143.131   1538 0x8000000f 0x1c70
+    </EXAMPLE>
+    <EXAMPLE summary="Display database router information for ospf on default vrf">
+sonic# show ip ospf database router | no-more
+VRF Name: default
+
+       OSPF Router with ID (10.59.143.131)
+
+
+                Router Link States (Area 0.0.0.0)
+
+  LS age: 1709
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  Flags: 0x0  :
+  LS Type: router-LSA
+  Link State ID: 10.59.142.247
+  Advertising Router: 10.59.142
+  LS Seq Number: 80000011
+  Checksum: 0xb56b
+  Length: 36
+
+   Number of Links: 1
+
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 64.1.1.1
+     (Link Data) Router Interface address: 64.1.1.2
+      Number of TOS metrics: 0
+       TOS 0 Metric: 4
+
+
+  LS age: 1525
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  Flags: 0x0  :
+  LS Type: router-LSA
+  Link State ID: 10.59.143.131
+  Advertising Router: 10.59.143
+  LS Seq Number: 80000011
+  Checksum: 0xdc2c
+  Length: 36
+
+   Number of Links: 1
+
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 64.1.1.1
+     (Link Data) Router Interface address: 64.1.1.1
+      Number of TOS metrics: 0
+       TOS 0 Metric: 4
+    </EXAMPLE>
+    <EXAMPLE summary="Display database network information for ospf on default vrf">
+sonic# show ip ospf database network | no-more
+VRF Name: default
+
+       OSPF Router with ID (10.59.143.131)
+
+
+                Net Link States (Area 0.0.0.0)
+
+  LS age: 1602
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  LS Type: network-LSA
+  Link State ID: 64.1.1.1 (address of Designated Router)
+  Advertising Router: 10.59.143.131
+  LS Seq Number: 8000000f
+  Checksum: 0x1c70
+  Length: 32
+
+  Network Mask: /24
+        Attached Router: 10.59.142.247
+
+        Attached Router: 10.59.143.131
+    </EXAMPLE>
+    <EXAMPLE summary="Display database summary information for ospf on default vrf">
+Leaf1# show ip ospf database summary | no-more
+VRF Name: default
+     
+       OSPF Router with ID (1.1.1.1)
+     
+     
+                Summary Link States (Area 0.0.0.0)
+                 
+  LS age: 468
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x11
+  LS Type: summary-LSA
+  Link State ID: 65.1.1.0 (summary Network Number)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x0e04
+  Length: 28
+   
+  Network Mask: /24
+        TOS: 0  Metric: 4
+                   
+                             
+  LS age: 429
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  LS Type: summary-LSA
+  Link State ID: 65.1.1.0 (summary Network Number)
+  Advertising Router: 2.2.2.2
+  LS Seq Number: 80000002
+  Checksum: 0xed1f
+  Length: 28
+   
+  Network Mask: /24
+        TOS: 0  Metric: 4
+                   
+                             
+                Summary Link States (Area 0.0.0.1)
+                 
+  LS age: 468
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x11
+  LS Type: summary-LSA
+  Link State ID: 64.1.1.0 (summary Network Number)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x1bf7
+  Length: 28
+   
+  Network Mask: /24
+        TOS: 0  Metric: 4
+                   
+                             
+  LS age: 429
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  LS Type: summary-LSA
+  Link State ID: 64.1.1.0 (summary Network Number)
+  Advertising Router: 2.2.2.2
+  LS Seq Number: 80000002
+  Checksum: 0xfa13
+  Length: 28
+   
+  Network Mask: /24
+        TOS: 0  Metric: 4
+    </EXAMPLE>
+    <EXAMPLE summary="Display database asbr-summary information for ospf on default vrf">
+Leaf1# show ip ospf database asbr-summary | no-more
+VRF Name: default
+     
+       OSPF Router with ID (1.1.1.1)
+     
+                 
+                ASBR-Summary Link States (Area 0.0.0.0)
+                 
+  LS age: 38
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Type: summary-LSA
+  Link State ID: 2.2.2.2 (AS Boundary Router address)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x0b41
+  Length: 28
+   
+  Network Mask: /0
+        TOS: 0  Metric: 4
+    </EXAMPLE>
+    <EXAMPLE summary="Display database external information for ospf on default vrf">
+Leaf1# show ip ospf database external | no-more
+VRF Name: default
+     
+       OSPF Router with ID (1.1.1.1)
+     
+                AS External Link States
+                 
+  LS age: 52
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x6
+  LS Type: AS-external-LSA
+  Link State ID: 25.1.1.1 (External Network Number)
+  Advertising Router: 2.2.2.2
+  LS Seq Number: 80000001
+  Checksum: 0x0892
+  Length: 36
+       
+  Network Mask: /32
+        Metric Type: 2 (Larger than any link state path)                                
+        TOS: 0  
+        Metric: 20
+        Forward Address: 0.0.0.0
+        External Route Tag: 0
+    </EXAMPLE>
+    <EXAMPLE summary="Display database max-age LSA information for ospf on default vrf">
+Leaf1# show ip ospf database max-age 
+       OSPF Router with ID (1.1.1.1)
+                MaxAge Link States:
+    </EXAMPLE>
+    <EXAMPLE summary="Display self originated database information for ospf on default vrf">
+Leaf1# show ip ospf database self-originate | no-more
+VRF Name: default
+         
+       OSPF Router with ID (1.1.1.1)
+ 
+                Router Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+1.1.1.1         1.1.1.1          777 0x80000004 0x7b42 1
+ 
+                Net Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+64.1.1.1        1.1.1.1          777 0x80000001 0x8581
+ 
+                Summary Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Route
+65.1.1.0        1.1.1.1          816 0x80000001 0x0e04 65.1.1.0/24
+ 
+                ASBR-Summary Link States (Area 0.0.0.0)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+2.2.2.2         1.1.1.1          360 0x80000001 0x0b41
+ 
+                Router Link States (Area 0.0.0.1)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+1.1.1.1         1.1.1.1          776 0x80000004 0x8d2e 1
+ 
+                Net Link States (Area 0.0.0.1)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum
+65.1.1.1        1.1.1.1          776 0x80000001 0x788d
+ 
+                Summary Link States (Area 0.0.0.1)
+                     
+Link ID         ADV Router      Age  Seq#       CkSum  Route
+64.1.1.0        1.1.1.1          816 0x80000001 0x1bf7 64.1.1.0/24
+    </EXAMPLE>
+    <EXAMPLE summary="Display database network information with advertising-router option for ospf on default vrf">
+Leaf1# show ip ospf database network adv-router 1.1.1.1 | no-more
+VRF Name: default
+     
+       OSPF Router with ID (1.1.1.1)
+     
+     
+                Net Link States (Area 0.0.0.0)
+                 
+  LS age: 886
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  LS Type: network-LSA
+  Link State ID: 64.1.1.1 (address of Designated Router)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x8581
+  Length: 32
+   
+  Network Mask: /24
+        Attached Router: 1.1.1.1
+                   
+        Attached Router: 2.2.2.2
+                   
+                             
+                Net Link States (Area 0.0.0.1)
+                 
+  LS age: 886
+  Options: 0x2  : *|-|-|-|-|-|E|-
+  LS Flags: 0x3
+  LS Type: network-LSA
+  Link State ID: 65.1.1.1 (address of Designated Router)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x788d
+  Length: 32
+   
+  Network Mask: /24
+        Attached Router: 1.1.1.1
+                   
+        Attached Router: 2.2.2.2
+                   
+    </EXAMPLE>
+    <FEATURE> OSPFv2 </FEATURE>
+  </DOCGEN>
+     </COMMAND>
+
+     <COMMAND name="show ip ospf route" help="Displays OSPFv2 routing table" >
+        <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds default ${__full_line}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                Display ospf route information for a user-vrf
+                </DESCRIPTION>
+                <USAGE>
+                Use this command to display ospf routes in an OSPFv2 router. User can
+                optionally specify VRF on which the router have to be configured. 
+                If VRF name is not specified then the command is considered for VRF 
+                default. Technical details on OSPFv2 support is also available at
+                http://docs.frrouting.org/en/latest/
+                </USAGE>
+                <EXAMPLE summary="Display ospf route information for user vrf">
+sonic# show ip ospf vrf Vrf1 route | no-more
+VRF Name: Vrf1
+============ OSPF network routing table ============
+N    101.1.1.0/24          [10] area: 0.0.0.0
+                           directly attached to Vlan101
+
+============ OSPF router routing table =============
+
+============ OSPF external routing table ===========
+                </EXAMPLE>
+            <FEATURE> OSPFv2 </FEATURE>
+            </DOCGEN>
+     </COMMAND>
+
+     <COMMAND name="show ip ospf vrfs" help="Displays OSPFv2 VRFs" >
+        <ACTION builtin="clish_nop"></ACTION>
+     </COMMAND>
+
+     <COMMAND name="show ip ospf router-info" help="Displays OSPFv2 Router information" >
+        <ACTION builtin="clish_nop"></ACTION>
+  </COMMAND>
+
+</VIEW>
+
+
+</CLISH_MODULE>

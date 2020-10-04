@@ -1,0 +1,6 @@
+{{'---------------------------------------------------------'}}
+{{'AAA Authorization Information'.ljust(20)}}
+{{'---------------------------------------------------------'}}
+{% set authmethod = json_output['authorization-method'] %}
+{{'login        : '}}{{authmethod|join(', ') }}
+

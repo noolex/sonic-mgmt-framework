@@ -1,0 +1,83 @@
+################################################################################
+#                                                                              #
+#  Copyright 2019 Broadcom. The term Broadcom refers to Broadcom Inc. and/or   #
+#  its subsidiaries.                                                           #
+#                                                                              #
+#  Licensed under the Apache License, Version 2.0 (the "License");             #
+#  you may not use this file except in compliance with the License.            #
+#  You may obtain a copy of the License at                                     #
+#                                                                              #
+#     http://www.apache.org/licenses/LICENSE-2.0                               #
+#                                                                              #
+#  Unless required by applicable law or agreed to in writing, software         #
+#  distributed under the License is distributed on an "AS IS" BASIS,           #
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    #
+#  See the License for the specific language governing permissions and         #
+#  limitations under the License.                                              #
+#                                                                              #
+################################################################################
+
+TOPDIR     := ..
+BUILD_DIR  ?= $(TOPDIR)/build
+MGMT_COMMON_DIR ?= $(TOPDIR)/../sonic-mgmt-common
+
+GO     ?= go
+GOROOT ?= $(shell $(GO) env GOROOT)
+
+REST_BUILD_DIR := $(BUILD_DIR)/rest_server
+REST_BIN := $(REST_BUILD_DIR)/main
+REST_TEST_BIN := $(BUILD_DIR)/tests/rest/server.test
+STATIC_CHECK  := $(REST_BUILD_DIR)/.staticcheck
+
+REST_GO_SRCS   = $(shell find . -name '*.go' -not -name '*_test.go')
+REST_TEST_SRCS = $(shell find . -name '*_test.go')
+GENERATED_SRCS = $(shell find $(REST_BUILD_DIR)/dist -name '*.go')
+MGMT_COMM_SRCS = $(shell find $(TOPDIR)/vendor/github.com/Azure/sonic-mgmt-common -name '*.go')
+OPENAPI_SPECS  = $(shell find $(TOPDIR)/models/openapi -name '*.yaml')
+
+# Source files affecting REST server
+REST_SRCS := $(REST_GO_SRCS) $(GENERATED_SRCS) $(MGMT_COMM_SRCS) $(OPENAPI_SPECS)
+
+# Certificate generator tool for generating temp certificates.
+# Compiled from standard crypto/tls/generate_cert.go
+CERTGEN_BIN := $(REST_BUILD_DIR)/generate_cert
+
+
+DEFAULT_TARGETS = $(REST_BIN) $(CERTGEN_BIN) $(STATIC_CHECK)
+ifeq ($(NO_TEST_BINS),)
+DEFAULT_TARGETS += $(REST_TEST_BIN)
+endif
+
+all: $(DEFAULT_TARGETS)
+
+.PRECIOUS: %/.
+%/.:
+	mkdir -p $@
+
+.SECONDEXPANSION:
+
+# REST Server binary
+$(REST_BIN): $(REST_SRCS)
+ifeq ($(SONIC_COVERAGE_ON),y)
+	$(GO) test -mod=vendor -tags glog_defaults -coverpkg="./..." -c -o $@ ../rest/main/main.go ../rest/main/main_test.go
+else
+	GOBIN=$(abspath $(@D)) $(GO) install -mod=vendor -tags glog_defaults -gcflags="all=-N -l" -v ../rest/main/main.go
+endif
+
+# Gotest binary for REST Server
+$(REST_TEST_BIN): $(REST_TEST_SRCS) $(REST_GO_SRCS)
+	$(GO) test -mod=vendor -cover -c ../rest/server -o $@
+
+# Compile certificate generator from standard crypto/tls/generate_cert.go.
+# Source file will be available in GOROOT/src.
+$(CERTGEN_BIN):
+	$(GO) build -o $@ $(GOROOT)/src/crypto/tls/generate_cert.go
+
+$(STATIC_CHECK): $(REST_GO_SRCS) | $$(@D)/.
+	$(MGMT_COMMON_DIR)/tools/test/static-check.sh
+	touch $@
+
+clean:
+	$(RM) $(DEFAULT_TARGETS)
+	$(RM) $(REST_TEST_BIN)
+

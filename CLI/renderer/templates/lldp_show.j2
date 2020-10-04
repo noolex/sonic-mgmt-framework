@@ -1,0 +1,40 @@
+{{'------------------------------------------------------------------------------------------------------'}}
+{{'LocalPort'.ljust(20)}}{{'RemoteDevice'.ljust(20)}}{{'RemotePortID'.ljust(20)}}{{'Capability'.ljust(20)}}{{'RemotePortDescr'}}
+{{'-------------------------------------------------------------------------------------------------------'}}
+{% set cap_dict = {'openconfig-lldp-types:REPEATER' : 'O','openconfig-lldp-types:MAC_BRIDGE' : 'B' , 'openconfig-lldp-types:ROUTER' : 'R'} %}
+{% for neigh in json_output %}
+{% if 'neighbors' in neigh %}
+{% if 'capabilities' in neigh['neighbors']['neighbor'][0].keys() %}
+{% set capabilities = neigh['neighbors']['neighbor'][0]['capabilities']['capability'] %}
+{% set cap_list = [] %}
+{% for cap in capabilities %}
+{% if cap['state']['name'] in cap_dict %}
+{% if cap['state']['enabled'] == true %}
+{% do cap_list.append(cap_dict[cap['state']['name']]) %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% set value =  neigh['neighbors']['neighbor'][0] %}
+{% set id = '' %}
+{% set sys_name = '' %}
+{% set port_id = '' %}
+{% set port_desc = '' %}
+{% if 'id' in value %}
+{% set id = (value['id'].strip() | truncate(19)) %}
+{% endif %}
+{% if 'state' in value %}
+{% if 'system-name' in value['state'] %}
+{% set sys_name = (value['state']['system-name'].strip() | truncate(19)) %}
+{% endif %}
+{% if 'port-id' in value['state'] %}
+{% set port_id = (value['state']['port-id'].strip() | truncate(19)) %}
+{% endif %}
+{% if 'port-description' in value['state'] %}
+{% set port_desc = (value['state']['port-description'].strip() | truncate(19)) %}
+{% endif %}
+{% endif %}
+{{id.ljust(20)}}{{sys_name.ljust(20)}}{{port_id.ljust(20)}}{{(cap_list | join() | string).ljust(20)}}{{port_desc.ljust(20)}}
+{% endif %}
+{% endfor %}
+

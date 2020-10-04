@@ -1,0 +1,28 @@
+{% set vars = {'id': ""} %}
+{% set vars = {'cnt_free': ""} %}
+{% set vars = {'cnt_used': ""} %}
+{% set vars = {'ent_free': ""} %}
+{% set vars = {'ent_used': ""} %}
+
+{% if json_output -%}
+{% if 'openconfig-system-crm:acl-table-statistics' in json_output %}
+{% if 'acl-table-statistics-list' in json_output['openconfig-system-crm:acl-table-statistics'] %}
+
+Table ID          Resource Name      Used Count    Available Count
+----------------  ---------------  ------------  -----------------
+{% for row in json_output['openconfig-system-crm:acl-table-statistics']['acl-table-statistics-list'] %}
+
+{% if vars.update({'id':row['id']}) %}{% endif %}
+{% if vars.update({'cnt_free':row['counter']['available']}) %}{% endif %}
+{% if vars.update({'cnt_used':row['counter']['used']}) %}{% endif %}
+{% if vars.update({'ent_free':row['entry']['available']}) %}{% endif %}
+{% if vars.update({'ent_used':row['entry']['used']}) %}{% endif %}
+
+{{'%-18s'|format(vars.id)}}{{'%-17s'|format('acl_entry')}}{{'%12s'|format(vars.ent_used)}}{{'%19s'|format(vars.ent_free)}}
+{{'%-18s'|format(vars.id)}}{{'%-17s'|format('acl_counter')}}{{'%12s'|format(vars.cnt_used)}}{{'%19s'|format(vars.cnt_free)}}
+
+{% endfor %}
+
+{% endif %}
+{% endif %}
+{% endif %}

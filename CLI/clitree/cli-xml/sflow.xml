@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+  <VIEW name="enable-view">
+    <COMMAND name="show sflow" help="Show sFlow information">
+      <ACTION builtin="clish_pyobj">sonic_cli_sflow get_sonic_sflow_sonic_sflow show_sflow.j2 ${__full_line} </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Show global sFlow configuration</DESCRIPTION>
+          <EXAMPLE>
+              sonic# show sflow
+              ---------------------------------------------------------
+              Global sFlow Information
+              ---------------------------------------------------------
+              admin state:       up
+              polling-interval:  20
+              agent-id:          default
+              sonic#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="show sflow interface" help="Show sFlow interface information">
+      <ACTION builtin="clish_pyobj">sonic_cli_sflow get_sonic_sflow_sonic_sflow_sflow_session_table show_sflow_intf.j2 ${__full_line} </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Show sFlow interface configuration</DESCRIPTION>
+          <EXAMPLE>
+              sonic# show sflow interface
+              -----------------------------------------------------------
+              sFlow interface configurations
+              Interface            Admin State             Sampling Rate
+              Ethernet0            up                      4000
+              Ethernet1            up                      4000
+              Ethernet2            up                      4000
+              Ethernet3            up                      4000
+              Ethernet4            up                      4000
+              Ethernet5            up                      4000
+              Ethernet6            up                      4000
+              Ethernet7            up                      4000
+              Ethernet8            up                      4000
+              Ethernet9            up                      4000
+              Ethernet10           up                      4000
+              Ethernet11           up                      4000
+              Ethernet12           up                      4000
+              Ethernet13           up                      4000
+              Ethernet14           up                      4000
+              Ethernet15           up                      4000
+              Ethernet16           up                      4000
+              Ethernet17           up                      4000
+              Ethernet18           up                      4000
+              Ethernet19           up                      4000
+              Ethernet20           up                      4000
+              Ethernet21           up                      4000
+              --more--
+              Ethernet22           up                      4000
+              Ethernet23           up                      4000
+              Ethernet24           up                      4000
+              Ethernet25           up                      4000
+              Ethernet26           up                      4000
+              Ethernet27           up                      4000
+              Ethernet28           up                      4000
+              Ethernet29           up                      4000
+              sonic#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+  <VIEW name="configure-view">
+    <COMMAND name="sflow" help="Configure sFlow"/>
+    <COMMAND name="sflow collector" help="sFlow Collector" ptype="SUBCOMMAND" mode="subcommand" command_tables="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_name={ip}_{port}_{vrf_name}">
+       <PARAM name="ip" help="Collector IP address" ptype="IPV4_OR_IPV6_ADDR" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_ip"/>
+       <PARAM name="port" help="Collector port number (default: 6343)" ptype="RANGE_0_65535" optional="true" default="6343" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_port"/>
+
+       <PARAM name="vrf" help="sFlow Collector VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name="vrf_name" help="Collector VRF name (default or mgmt)" ptype="STRING_16" default="default" dbpath="sonic-sflow:sonic-sflow/SFLOW_COLLECTOR/SFLOW_COLLECTOR_LIST/collector_vrf"/>
+       </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_sflow put_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list ${ip} ${port} ${vrf_name}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Add an sFLow Collector</DESCRIPTION>
+        <EXAMPLE summary="Add an sFlow collector using default port 6343">
+               sonic(config)# sflow collector 1.1.1.1
+               sonic(config)#
+           </EXAMPLE>
+        <EXAMPLE summary="Add an sFlow collector with port number">
+               sonic(config)# sflow collector 1.1.1.2 port 4451
+               sonic(config)#
+        </EXAMPLE>
+        <EXAMPLE summary="Add an sFlow collector with port number and mgmt VRF">
+               sonic(config)# sflow collector 1.1.1.2 port 4451 vrf mgmt
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="sflow enable" help="Enable sFlow" ptype="SUBCOMMAND" mode="subcommand" command_keys="sflow_key=global" command_tables="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/sflow_key={sflow_key}" dbpath="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/admin_state=up">
+      <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state up </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Enable sFlow</DESCRIPTION>
+          <EXAMPLE>
+              sonic(config)# sflow enable
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="sflow agent-id" help="Collector agent interface" ptype="SUBCOMMAND" mode="subcommand" command_keys="sflow_key=global" command_tables="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/sflow_key={sflow_key}" render_command_cb="sflow_source_if">
+      <PARAM name="if-switch" help="agent interface" mode="switch" ptype="STRING">
+        <PARAM name="phy-if-name" help="Physical interface" ptype="PHY_INTERFACE"/>
+        <PARAM name="vlan-if-name" help="Vlan indentifer" ptype="VLAN_INTERFACE"/>
+        <PARAM name="loop-if-name" help="Loopback identifier" ptype="LOOPBACK_INTERFACE"/>
+      </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id ${phy-if-name}${vlan-if-name}${loop-if-name}</ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Configure sFlow agent interface</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# sflow agent-id Ethernet0
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="sflow polling-interval" help="Collector polling interval" ptype="SUBCOMMAND" mode="subcommand" command_keys="sflow_key=global" command_tables="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/sflow_key={sflow_key}">
+      <PARAM name="interval" help="Interval (default: 20)" ptype="SFLOW_POLL_INTERVAL" dbpath="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/polling_interval"/>
+      <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_polling_interval ${interval} </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Configure sFlow polling interval</DESCRIPTION>
+          <EXAMPLE>
+              sonic(config)# sflow polling-interval 44
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no sflow" help="Remove sFlow configurations"/>
+    <COMMAND name="no sflow enable" help="Disable sFlow">
+        <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_admin_state down </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Disable sFlow</DESCRIPTION>
+          <EXAMPLE>
+              sonic(config)# no sflow enable
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no sflow collector" help="Remove a collector" ptype="SUBCOMMAND" mode="subcommand">
+       <PARAM name="ip" help="Collector IP address" ptype="IPV4_OR_IPV6_ADDR"/>
+       <PARAM name="port" help="Collector port number (default: 6343)" ptype="RANGE_0_65535" optional="true" default="6343"/>
+       <PARAM name="vrf" help="sFlow Collector VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+              <PARAM name="vrf_name" help="Collector VRF name (default or mgmt)" ptype="STRING_16" default="default"/>
+       </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_sflow delete_sonic_sflow_sonic_sflow_sflow_collector_sflow_collector_list ${ip} ${port} ${vrf_name} </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>Remove an sFlow collector</DESCRIPTION>
+        <EXAMPLE>
+               sonic(config)# no sflow collector 1.1.1.1
+               sonic(config)#
+        </EXAMPLE>
+        <EXAMPLE>
+               sonic(config)# no sflow collector 1.1.1.1 4551
+               sonic(config)#
+        </EXAMPLE>
+        <EXAMPLE>
+               sonic(config)# no sflow collector 1.1.1.1 4551 vrf mgmt
+               sonic(config)#
+        </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no sflow agent-id" help="Set default agent-id" ptype="SUBCOMMAND" mode="subcommand">
+        <ACTION builtin="clish_pyobj">sonic_cli_sflow delete_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Reset sFlow agent to default interface</DESCRIPTION>
+          <EXAMPLE>
+              sonic(config)# no sflow agent-id
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+    <COMMAND name="no sflow polling-interval" help="Set default polling interval" ptype="SUBCOMMAND" mode="subcommand">
+        <ACTION builtin="clish_pyobj">sonic_cli_sflow delete_sonic_sflow_sonic_sflow_sflow_sflow_list_polling_interval </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Reset sFlow polling-interval to default</DESCRIPTION>
+          <EXAMPLE>
+              sonic(config)# no sflow polling-interval
+              sonic(config)#
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+</CLISH_MODULE>

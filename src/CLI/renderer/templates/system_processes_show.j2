@@ -1,9 +1,0 @@
-{% set just_var = 10 %}
-{{'--------------------------------------------------------------------------'}}
-{{'PID'.ljust(just_var)}}{{'%CPU'.ljust(just_var)}}{#{{'CPU-TICKS-USER'.ljust(just_var)}}{{'CPU-TICKS-SYSTEM'.ljust(just_var)}}#}{{'%MEMORY'.ljust(just_var)}}{{'MEM-USAGE(Bytes)'.ljust(just_var)}}{#{{'START-TIME'.ljust(just_var)}}{{'UP-TIME'.ljust(just_var)}}#}{{'NAME'.rjust(just_var)}}
-{{'--------------------------------------------------------------------------'}}
-{% for process in json_output %}
-{%set name = (process['state']['name'] | string).split(' ')%}
-{{(process['pid'] | string).ljust(just_var)}} {{(process['state']['cpu-utilization'] | string).ljust(just_var)}}  {{(process['state']['memory-utilization'] | string).ljust(just_var)}} {{(process['state']['memory-usage'] | string).ljust(just_var)}} {{name[0]}}
-{% endfor %}
-

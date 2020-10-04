@@ -1,0 +1,14 @@
+{% if json_output %}
+
+{{ ' ' }}
+PFC Watchdog Statistics
+                                  Storms            Transmitted          Received             TX Last             RX Last
+Interface   Queue   Status  Detected  Restored     OK       Drop       OK       Drop       OK       Drop       OK       Drop
+----------- ----- --------  --------  --------  --------  --------  --------  --------  --------  --------  --------  --------
+{% for ifname in json_output %}
+{% for queue in json_output[ifname] %}
+{{'%-12s'|format(ifname)}}{{'%5s'|format(queue)}}      N/A{{'%10s'|format(json_output[ifname][queue][0])}}{{'%10s'|format(json_output[ifname][queue][1])}}{{'%10s'|format(json_output[ifname][queue][2])}}{{'%10s'|format(json_output[ifname][queue][3])}}{{'%10s'|format(json_output[ifname][queue][4])}}{{'%10s'|format(json_output[ifname][queue][5])}}{{'%10s'|format(json_output[ifname][queue][6])}}{{'%10s'|format(json_output[ifname][queue][7])}}{{'%10s'|format(json_output[ifname][queue][8])}}{{'%10s'|format(json_output[ifname][queue][9])}}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{{ ' ' }}

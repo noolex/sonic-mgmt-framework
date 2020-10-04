@@ -1,0 +1,56 @@
+{% if json_output %}
+
+{% set ipslaoutput = json_output['openconfig-ip-sla:ip-slas'] %}
+
+{% if 'ip-sla' in ipslaoutput %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format("SLA#", "Type", "State", "Target", "VRF", "Transitions", "Last change") }}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format("----", "----", "-----", "------------------------", "-----------", "-----------", "-----------") }}
+{% endif %}
+
+{% set ip_sla_entry = ipslaoutput['ip-sla'] %}
+
+{% for ip_sla_instance in ip_sla_entry | sort(attribute="ip-sla-id") %}
+
+{% set sla_config = ip_sla_instance['config'] %}
+{% set sla_state = ip_sla_instance['state'] %}
+{% set sla_id = ip_sla_instance['ip-sla-id']%}
+
+{% set gvec = namespace(transition = "0") %}
+{% if 'transition-count' in sla_state %}
+{% set gvec.transition = sla_state['transition-count'] %}
+{% endif %}
+
+{% if 'tcp-dst-ip' in sla_config %}
+
+{% set vec = namespace(vrf = "default") %}
+{% if 'tcp-vrf' in sla_config %}
+{% set vec.vrf = sla_config['tcp-vrf'] %}
+{% endif %}
+
+{% if sla_state['tcp-operation-state'] == 'OPER_UP' %}
+{% set dst = sla_config['tcp-dst-ip'] ~"(" ~sla_config['tcp-dst-port'] ~")"  %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "TCP-connect", "Up", dst, vec.vrf, gvec.transition, sla_state['timestamp']) }}
+{% else %}
+{% set dst = sla_config['tcp-dst-ip'] ~"(" ~sla_config['tcp-dst-port'] ~")"  %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "TCP-connect", "Down", dst, vec.vrf, gvec.transition, sla_state['timestamp']) }}
+{% endif %}
+
+{% elif 'icmp-dst-ip' in sla_config %}
+
+{% set vec = namespace(vrf = "default") %}
+{% if 'icmp-vrf' in sla_config %}
+{% set vec.vrf = sla_config['icmp-vrf'] %}
+{% endif %}
+
+{% if sla_state['icmp-operation-state'] == 'OPER_UP' %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "ICMP-echo", "Up", sla_config['icmp-dst-ip'], vec.vrf, gvec.transition, sla_state['timestamp']) }}
+{% else %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "ICMP-echo", "Down", sla_config['icmp-dst-ip'], vec.vrf, gvec.transition, sla_state['timestamp']) }}
+{% endif %}
+
+{% else %}
+{{ '%-7s %-12s %-5s %-25s %-12s %-12s %s'|format(sla_id, "None", "None", "(none)", "default", gvec.transition, sla_state['timestamp']) }}
+{% endif %}
+
+{% endfor %}
+{% endif %}

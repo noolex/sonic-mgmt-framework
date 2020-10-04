@@ -25,17 +25,35 @@ TOPDIR=$PWD
 BUILD_DIR=$TOPDIR/build
 SERVER_DIR=$BUILD_DIR/rest_server
 
+MGMT_COMMON_DIR=$(realpath $TOPDIR/../sonic-mgmt-common)
+
+if [[ ! -f $SERVER_DIR/main ]]; then
+    echo "error: REST server not compiled"
+    echo "Please run 'make rest-server' and try again"
+    exit 1
+fi
+
+# Setup database config file path
+if [ -z $DB_CONFIG_PATH ]; then
+    export DB_CONFIG_PATH=$MGMT_COMMON_DIR/tools/test/database_config.json
+fi
+
 # LD_LIBRARY_PATH for CVL
 [ -z $LD_LIBRARY_PATH ] && export LD_LIBRARY_PATH=/usr/local/lib
 
 # Setup CVL schema directory
-[ -z $CVL_SCHEMA_PATH ] && export CVL_SCHEMA_PATH=$BUILD_DIR/cvl/schema
-[ -z $CVL_CFG_FILE ] && export CVL_CFG_FILE=$TOPDIR/src/cvl/conf/cvl_cfg.json
-
+[ -z $CVL_SCHEMA_PATH ] && export CVL_SCHEMA_PATH=$MGMT_COMMON_DIR/build/cvl/schema
 echo "CVL schema directory is $CVL_SCHEMA_PATH"
 if [ $(find $CVL_SCHEMA_PATH -name *.yin | wc -l) == 0 ]; then
     echo "WARNING: no yin files at $CVL_SCHEMA_PATH"
     echo ""
+fi
+
+# Prepare CVL config file with all traces enabled
+if [[ -z $CVL_CFG_FILE ]]; then
+    sed -E 's/((TRACE|LOG).*)\"false\"/\1\"true\"/' \
+        $MGMT_COMMON_DIR/cvl/conf/cvl_cfg.json > $SERVER_DIR/cvl_cfg.json
+    export CVL_CFG_FILE=$SERVER_DIR/cvl_cfg.json
 fi
 
 # Prepare yang files directiry for transformer
@@ -43,14 +61,16 @@ if [ -z $YANG_MODELS_PATH ]; then
     export YANG_MODELS_PATH=$BUILD_DIR/all_yangs
     mkdir -p $YANG_MODELS_PATH
     pushd $YANG_MODELS_PATH > /dev/null
+    MGMT_COMN=$(realpath --relative-to=$PWD $MGMT_COMMON_DIR)
     rm -f *
-    find $TOPDIR/models/yang -name "*.yang" -not -path "*/testdata/*" -exec ln -sf {} \;
-    ln -sf $TOPDIR/config/transformer/models_list
-    ln -sf $BUILD_DIR/yaml/api_ignore
+    find $MGMT_COMN/models/yang -name "*.yang" -not -path "*/testdata/*" -exec ln -sf {} \;
+    ln -sf $MGMT_COMN/models/yang/version.xml
+    ln -sf $MGMT_COMN/config/transformer/models_list
+    ln -sf $MGMT_COMN/build/yang/api_ignore
     popd > /dev/null
 fi
 
-EXTRA_ARGS="-ui $SERVER_DIR/dist/ui -logtostderr"
+EXTRA_ARGS="-ui $SERVER_DIR/dist/ui -logtostdout -no-sock -internal"
 
 for V in $@; do
     case $V in

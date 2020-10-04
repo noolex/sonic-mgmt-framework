@@ -1,0 +1,65 @@
+{% if json_output %}
+{{ ' ' }}
+            |          |                                                               |               Priority-Flow-Control
+            | Scheduler|                          Interface Maps                       |asym               --------- WATCHDOG ------------
+Interface   |    Policy|  dscp-fg dot1p-fg fg-queue    fg-pg  fg-dscp fg-dot1p  pfc-p2q|mode      priority     action    detect    restore
+------------+----------+--------- -------- -------- --------  ------- --------  -------+---- ------------- ---------- --------- ----------
+{% for ifname in json_output %}
+
+{% set vars = {'policy':""} %}
+{% set vars = {'map0':""} %}
+{% set vars = {'map1':""} %}
+{% set vars = {'map2':""} %}
+{% set vars = {'map3':""} %}
+{% set vars = {'map4':""} %}
+{% set vars = {'map5':""} %}
+{% set vars = {'map6':""} %}
+{% set vars = {'asymmetric':"off"} %}
+{% set vars = {'priorities':""} %}
+{% set vars = {'wd_action':""} %}
+{% set vars = {'wd_detect':""} %}
+{% set vars = {'wd_restore':""} %}
+
+{% set info = json_output[ifname] %}
+{% if vars.update({'policy':info['policy']}) %}{% endif %}
+{% if vars.update({'map0':info['interface-maps']['dscp-to-forwarding-group']}) %}{% endif %}
+{% if vars.update({'map1':info['interface-maps']['dot1p-to-forwarding-group']}) %}{% endif %}
+{% if vars.update({'map2':info['interface-maps']['forwarding-group-to-queue']}) %}{% endif %}
+{% if vars.update({'map3':info['interface-maps']['forwarding-group-to-priority-group']}) %}{% endif %}
+{% if vars.update({'map4':info['interface-maps']['forwarding-group-to-dscp']}) %}{% endif %}
+{% if vars.update({'map5':info['interface-maps']['forwarding-group-to-dot1p']}) %}{% endif %}
+{% if vars.update({'map6':info['interface-maps']['pfc-priority-to-queue']}) %}{% endif %}
+
+{% if 'pfc' in info %}
+  {% if vars.update({'asymmetric': 'off'}) %}{% endif %}
+  {% if ('state' in info['pfc']) and ('asymmetric' in info['pfc']['state']) %}
+    {% if vars.update({'asymmetric': 'on' if info['pfc']['state']['asymmetric'] else 'off'}) %}{% endif %}
+  {% endif %}
+
+  {% if ('pfc-priorities' in info['pfc']) and ('pfc-priority' in info['pfc']['pfc-priorities']) %}
+    {% set temp = [ ] %}
+    {% set prio_list = info['pfc']['pfc-priorities']['pfc-priority'] %}
+    {% if prio_list %}
+    {% for prio_info in prio_list %}
+      {% set prio_state_info = prio_info['state'] %}
+      {% if prio_state_info['enable'] == true %}
+        {% set pfc_enable = prio_state_info['dot1p']|string %}
+        {% do temp.append(pfc_enable) %}
+      {% endif %}
+    {% endfor %}
+    {% endif %}
+  {% endif %}
+
+  {% if 'watchdog' in info['pfc'] %}
+    {% if vars.update({'priorities':','.join(temp)}) %}{% endif %}
+    {% if vars.update({'wd_action':info['pfc']['watchdog']['state']['action']}) %}{% endif %}
+    {% if vars.update({'wd_detect':info['pfc']['watchdog']['state']['detection-time']}) %}{% endif %}
+    {% if vars.update({'wd_restore':info['pfc']['watchdog']['state']['restoration-time']}) %}{% endif %}
+  {% endif %}
+{% endif %}
+
+{{'%-12s'|format(ifname)}}|{{'%10s'|format(vars.policy)}}|{{'%9s'|format(vars.map0)}}{{'%9s'|format(vars.map1)}}{{'%9s'|format(vars.map2)}}{{'%9s'|format(vars.map3)}}{{'%9s'|format(vars.map4)}}{{'%9s'|format(vars.map5)}}{{'%9s'|format(vars.map6)}}|{{'%4s'|format(vars.asymmetric)}}{{'%14s'|format(vars.priorities)}}{{'%11s'|format(vars.wd_action)}}{{'%10s'|format(vars.wd_detect)}}{{'%11s'|format(vars.wd_restore)}}
+
+{% endfor %}
+{{ ' ' }}
+{% endif %}

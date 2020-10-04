@@ -1,0 +1,75 @@
+{% if json_output %}
+    {% for intf_name, intf_data in json_output.items() %}
+        {{- intf_name }}
+        {% for stage, stage_data in intf_data.items() %}
+            {% for policy_name, policy_data in stage_data.items() %}
+                {{- '  Policy' }} {{ policy_name }} {{ 'type' }} {{ policy_data["TYPE"]|lower }} {{ 'at' }} {{ stage|lower }}{{ "\n" }}
+                {{- '  Description:'}} {{ policy_data["DESCRIPTION"] }}
+                {% for flow_prio, flow_data in policy_data["FLOWS"].items() %}
+                    {{- '    Flow' }} {{ flow_data["CLASS_NAME"] }} {{ 'at priority' }} {{ flow_data["PRIORITY"] }} ({{ flow_data["STATE"]["STATUS"] }}){{ "\n" }}
+                    {{- '      Description:' }} {{ flow_data.get("DESCRIPTION", "") }}
+                    {% if "SET_PCP" in flow_data %}
+                        {{- '      set-pcp' }} {{ flow_data["SET_PCP"] }}
+                    {% endif %}
+                    {% if "SET_DSCP" in flow_data %}
+                        {{- '      set-dscp' }} {{ flow_data["SET_DSCP"] }}
+                    {% endif %}
+                    {% if "SET_TC" in flow_data %}
+                        {{- '      set-traffic-class' }} {{ flow_data["SET_TC"] }}
+                    {% endif %}
+                    {% if ( ("SET_POLICER_CIR" in flow_data) or ("SET_POLICER_CBS" in flow_data) or ("SET_POLICER_PIR" in flow_data) or ("SET_POLICER_PBS" in flow_data) ) %}
+                        {% set policer_state = flow_data["STATE"]["POLICER"] %}
+                        {{- '      police: cir' }} {{ flow_data.get("SET_POLICER_CIR", 0) }} cbs {{ flow_data.get("SET_POLICER_CBS", 0)  }} pir {{ flow_data.get("SET_POLICER_PIR", 0)  }} pbs {{ flow_data.get("SET_POLICER_PBS", 0) }} ({{ policer_state["STATUS"] }}){{"\n"}}
+                        {{- '        type' }} {{ policer_state["UNITS"] }} {{ 'mode' }} color-{{ policer_state["COLOR_SOURCE"] }}{{"\n"}}
+                        {{- '        operational cir' }} {{ policer_state.get("OPERATIONAL_CIR", 0) }} cbs {{ policer_state.get("OPERATIONAL_CBS", 0)  }} pir {{ policer_state.get("OPERATIONAL_PIR", 0)  }} pbs {{ policer_state.get("OPERATIONAL_PBS", 0) }}{{"\n"}}
+                        {{- '        green' }} {{ policer_state["CONFORMED_PACKETS"] }} packets {{ policer_state["CONFORMED_BYTES"] }} {{ 'bytes action' }} {{ policer_state["CONFORMED_PACKET_ACTION"] }}{{"\n"}}
+                        {{- '        yellow' }} {{ policer_state["EXCEED_PACKETS"] }} packets {{ policer_state["EXCEED_BYTES"] }} {{ 'bytes action' }} {{ policer_state["EXCEED_PACKET_ACTION"] }}{{"\n"}}
+                        {{- '        red' }} {{ policer_state["VIOLATED_PACKETS"] }} packets {{ policer_state["VIOLATED_BYTES"] }} {{ 'bytes action' }} {{ policer_state["VIOLATED_PACKET_ACTION"] }}{{"\n"}}
+                    {% endif %}
+                    {% if "SET_MIRROR_SESSION" in flow_data %}
+                        {{- '      set mirror-session' }} {{ flow_data["SET_MIRROR_SESSION"] }}
+                    {% endif %}
+                    {% if "SET_IP_NEXTHOP" in flow_data %}
+                        {% for nhop in flow_data["SET_IP_NEXTHOP"] %}
+                            {% set is_selected = "" %}
+                            {% set selected = flow_data["STATE"]["FORWARDING_SELECTED"] %}
+                            {% if (selected["IP_ADDRESS"] == nhop["IP_ADDRESS"]) and (selected.get("VRF", "") == nhop.get("VRF", "")) and (selected.get("PRIORITY", "") == nhop.get("PRIORITY", "")) %}
+                                {% set is_selected=" (Selected)" %}
+                            {% endif %}
+                            {{- '      set ip nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{is_selected}}{{"\n"}}
+                        {% endfor %}
+                    {% endif %}
+                    {% if "SET_IPV6_NEXTHOP" in flow_data %}
+                        {% for nhop in flow_data["SET_IPV6_NEXTHOP"] %}
+                            {% set is_selected = "" %}
+                            {% set selected = flow_data["STATE"]["FORWARDING_SELECTED"] %}
+                            {% if (selected["IP_ADDRESS"] == nhop["IP_ADDRESS"]) and (selected.get("VRF", "") == nhop.get("VRF", "")) and (selected.get("PRIORITY", "") == nhop.get("PRIORITY", "")) %}
+                                {% set is_selected=" (Selected)" %}
+                            {% endif %}
+                            {{- '      set ipv6 nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{is_selected}}{{"\n"}}
+                        {% endfor %}
+                    {% endif %}
+                    {% if "SET_INTERFACE" in flow_data %}
+                        {% for intf in flow_data["SET_INTERFACE"] %}
+                            {% set is_selected = "" %}
+                            {% set selected = flow_data["STATE"]["FORWARDING_SELECTED"] %}
+                            {% if (selected["INTERFACE"] == intf["IP_ADDRESS"]) and (selected.get("PRIORITY", "") == intf.get("PRIORITY", "")) %}
+                                {% set is_selected=" (Selected)" %}
+                            {% endif %}
+                            {{- '      set interface'}} {{ intf["INTERFACE"] }}{% if "PRIORITY" in intf %} {{ 'priority'}} {{ intf["PRIORITY"] }}{% endif %}{{is_selected}}{{"\n"}}
+                        {% endfor %}
+                    {% endif %}
+                    {% if "DEFAULT_PACKET_ACTION" in flow_data %}
+                        {% set is_selected = "" %}
+                        {% set selected = flow_data["STATE"]["FORWARDING_SELECTED"] %}
+                        {% if selected.get("PACKET_ACTION", "") == flow_data["DEFAULT_PACKET_ACTION"] %}
+                            {% set is_selected="(Selected)" %}
+                        {% endif %}
+                        {{- '      set interface null'}} {{ is_selected }}
+                    {% endif %}
+                    {{- '      Packet matches:' }} {{ flow_data["STATE"].get("MATCHED_PACKETS", "-") }} frames {{ flow_data["STATE"].get("MATCHED_BYTES", "-") }} bytes
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+{% endif %}

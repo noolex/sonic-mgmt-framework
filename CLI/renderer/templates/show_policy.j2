@@ -1,0 +1,103 @@
+{% if json_output %}
+    {% for policy_name in json_output %}
+        {% if json_output[policy_name]["TYPE"].lower() == "copp" %}
+            {{- 'Policy copp-system-policy Type copp'}}
+            {% for flow_prio in json_output[policy_name]["FLOWS"] %}
+                {% set flow_data = json_output[policy_name]["FLOWS"][flow_prio] %}
+                {{- '  Flow' }} {{ flow_data["CLASS_NAME"]}}
+                {% if 'TRAP_GROUP' in flow_data %}
+                    {% if flow_data['TRAP_GROUP']|lower != 'null' %}
+                        {{- '    Action' }} {{ flow_data['TRAP_GROUP']|lower}}
+                    {% endif %}
+                {% endif %}
+                {% if 'TRAP_ACTION' in flow_data %}
+                    {{- '      trap-action' }} {{ flow_data['TRAP_ACTION']|lower}}
+                {% endif %}
+                {% if 'TRAP_PRIORITY' in flow_data %}
+                    {{- '      trap-priority' }} {{ flow_data['TRAP_PRIORITY']}}
+                {% endif %}
+                {% if 'QUEUE' in flow_data %}
+                    {{- '      trap-queue' }} {{ flow_data['QUEUE']}}
+                {% endif %}
+                {% if 'SET_POLICER_CIR' in flow_data %}
+                    {% set str = '      police cir ' + flow_data['SET_POLICER_CIR']|string %}
+                    {% if 'SET_POLICER_CBS' in flow_data %}
+                        {% set str = str + ' cbs ' + flow_data['SET_POLICER_CBS']|string %}
+                    {% endif %}
+                    {% if 'SET_POLICER_PIR' in flow_data %}
+                        {% set str = str + ' pir ' + flow_data['SET_POLICER_PIR']|string %}
+                    {% endif %}
+                    {% if 'SET_POLICER_PBS' in flow_data %}
+                        {% set str = str + ' pbs ' + flow_data['SET_POLICER_PBS']|string %}
+                    {% endif %}
+                    {{- str }}
+                    {% if 'METER_TYPE' in flow_data %}
+                        {{- '        meter-type' }} {{ flow_data['METER_TYPE']|lower}}
+                    {% endif %}
+                    {% if 'MODE' in flow_data %}
+                        {{- '        mode' }} {{ flow_data['MODE']|lower}}
+                    {% endif %}
+                    {% if 'RED_ACTION' in flow_data %}
+                        {{- '        red-action' }} {{ flow_data['RED_ACTION']|lower}}
+                    {% endif %}
+                    {% if 'YELLOW_ACTION' in flow_data %}
+                        {{- '        yellow-action' }} {{ flow_data['YELLOW_ACTION']|lower}}
+                    {% endif %}
+                    {% if 'GREEN_ACTION' in flow_data %}
+                        {{- '        green-action' }} {{ flow_data['GREEN_ACTION']|lower}}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+        {{- 'Policy' }} {{ policy_name }} {{ 'Type' }} {{  json_output[policy_name]["TYPE"] }}{{ "\n" }}
+        {{- '  Description:'}} {{ json_output[policy_name]["DESCRIPTION"] }}
+        {% for flow_prio in json_output[policy_name]["FLOWS"] %}
+            {% set flow_data = json_output[policy_name]["FLOWS"][flow_prio] %}
+            {{- '  Flow' }} {{ flow_data["CLASS_NAME"] }} {{ 'at priority' }} {{ flow_data["PRIORITY"] }}{{ "\n" }}
+            {{- '    Description:' }} {{ flow_data.get("DESCRIPTION", "") }}
+            {% if "SET_PCP" in flow_data %}
+                {{- '    set-pcp' }} {{ flow_data["SET_PCP"] }}
+            {% endif %}
+            {% if "SET_DSCP" in flow_data %}
+                {{- '    set-dscp' }} {{ flow_data["SET_DSCP"] }}
+            {% endif %}
+            {% if "SET_TC" in flow_data %}
+                {{- '    set-traffic-class' }} {{ flow_data["SET_TC"] }}
+            {% endif %}
+            {% if ( ("SET_POLICER_CIR" in flow_data) or ("SET_POLICER_CBS" in flow_data) or ("SET_POLICER_PIR" in flow_data) or ("SET_POLICER_PBS" in flow_data) ) %}
+                {{- '   ' }} police cir {{ flow_data.get("SET_POLICER_CIR", 0) }} cbs {{ flow_data.get("SET_POLICER_CBS", 0)  }} pir {{ flow_data.get("SET_POLICER_PIR", 0)  }} pbs {{ flow_data.get("SET_POLICER_PBS", 0)  }}
+            {% endif %}
+            {% if "SET_MIRROR_SESSION" in flow_data %}
+                {{- '    set mirror-session' }} {{ flow_data["SET_MIRROR_SESSION"] }}
+            {% endif %}
+            {% if "SET_IP_NEXTHOP" in flow_data %}
+                {% for nhop in flow_data["SET_IP_NEXTHOP"] %}
+                    {{- '    set ip nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{"\n"}}
+                {% endfor %}
+            {% endif %}
+            {% if "SET_IPV6_NEXTHOP" in flow_data %}
+                {% for nhop in flow_data["SET_IPV6_NEXTHOP"] %}
+                    {{- '    set ipv6 nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{"\n"}}
+                {% endfor %}
+            {% endif %}
+            {% if "SET_INTERFACE" in flow_data %}
+                {% for intf in flow_data["SET_INTERFACE"] %}
+                    {{- '    set interface'}} {{ intf["INTERFACE"] }}{% if "PRIORITY" in intf %} {{ 'priority'}} {{ intf["PRIORITY"] }}{% endif %}{{"\n"}}
+                {% endfor %}
+            {% endif %}
+            {% if "DEFAULT_PACKET_ACTION" in flow_data %}
+                {{- '    set interface null'}}
+            {% endif %}
+        {% endfor %}
+        {% if "APPLIED_INTERFACES" in json_output[policy_name] %}
+            {{- '  Applied to:' }}
+            {% for port_data in json_output[policy_name]["APPLIED_INTERFACES"] %}
+                {{- "   " }} {{ port_data["INTERFACE_NAME"] }} at {{ port_data["STAGE"].capitalize() }}
+            {% endfor %}
+        {% endif %}
+        {% if policy_name != json_output.keys()|last %}
+            {{ "\n" }}
+        {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endif %}

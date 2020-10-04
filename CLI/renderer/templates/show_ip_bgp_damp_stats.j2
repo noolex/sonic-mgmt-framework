@@ -1,0 +1,60 @@
+{% set vars = {'routerId': ""} %}
+{% set vars = {'routerIds': ""} %}
+{% set vars = {'peerHost': ""} %}
+{% set vars = {'bdiFlap': ""} %}
+{% set vars = {'peerUptime': ""} %}
+{% set vars = {'asPath': ""} %}
+{% set vars = {'': ""} %}
+{% set vars = {'asPath': ""} %}
+{% set vars = {'vrfname': ""} %}
+{% if json_output -%}
+  {% if vars.update({'routerId':json_output["routerId"]}) %}{% endif %}
+  {% if vars.update({'defaultLocPrf':json_output["defaultLocPrf"]}) %}{% endif %}
+BGP local router ID is {{vars.routerId}}
+Default local pref {{json_output["defaultLocPrf"]}}, local AS {{json_output["localAS"]}}
+Status codes: s suppressed, S stale, d dampened, h history, * valid, > best
+Origin codes: i - IGP, e - EGP, ? - incomplete
+   {{('Network'|string).ljust(15)}}{{('From'|string ).ljust(11)}}{{('Flaps'|string ).ljust(6)}}{{('Duration'| string ).ljust(10)}}{{('Path'| string ).ljust(5)}} 
+{% for ids, paths in json_output['routes'].items() -%} 
+  {% if vars.update({'routerIds':ids}) %}{% endif %}
+  {% for path in  paths %}
+  {% if vars.update({'peerHost':path["peerHost"]}) %}{% endif %}
+  {% if vars.update({'bdiFlap':path["bdiFlap"]}) %}{% endif %}
+  {% if vars.update({'peerUptime':path["peerUptime"]}) %}{% endif %}
+  {% if vars.update({'asPath':path["asPath"]}) %}{% endif %}
+  {% if path["valid"] %}
+  {% if vars.update({'valid':"*"}) %}{% endif %}
+  {% else %}
+  {% if vars.update({'valid':""}) %}{% endif %}
+  {% endif %}
+  {% if path["bestpath"] %}
+  {% if vars.update({'bestpath':">"}) %}{% endif %}
+  {% else %}
+  {% if vars.update({'bestpath':""}) %}{% endif %}
+  {% endif %}
+  {% if path["damped"] %}
+  {% if vars.update({'damped':"d"}) %}{% endif %}
+  {% else %}
+  {% if vars.update({'damped':""}) %}{% endif %}
+  {% endif %}
+  {% if path["suppressed"] %}
+  {% if vars.update({'suppressed':"s"}) %}{% endif %}
+  {% else %}
+  {% if vars.update({'suppressed':""}) %}{% endif %}
+  {% endif %}
+  {% if path["stale"] %}
+  {% if vars.update({'stale':"S"}) %}{% endif %}
+  {% else %}
+  {% if vars.update({'stale':""}) %}{% endif %}
+  {% endif %}
+  {% if path["history"] %}
+  {% if vars.update({'history':"h"}) %}{% endif %}
+  {% else %}
+  {% if vars.update({'history':""}) %}{% endif %}
+  {% endif %}
+  {% if vars.update({'origin':path["origin"]}) %}{% endif %}
+{{'%s'|format(vars.valid)}}{{'%s'|format(vars.damped)}}{{'%s'|format(vars.history)}}{{'%1s'|format(vars.bestpath)}}{{(vars.routerIds|string).ljust(15)}}{{(vars.peerHost|string ).ljust(12)}}{{(vars.bdiFlap|string ).ljust(6)}}{{(vars.peerUptime|string ).ljust(10)}}{{(vars.asPath|string ).ljust(5)}}{{(vars.origin|string ).ljust(5)}} 
+  {% if vars.update({'routerIds':""}) %}{% endif %}
+  {% endfor%}
+ {% endfor%}
+{% endif %}

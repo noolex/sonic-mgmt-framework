@@ -1,0 +1,14 @@
+{{'VRF-NAME'.ljust(20)}}{{'INTERFACES'}}
+{{'----------------------------------------------------------------'}}
+{% if json_output %}
+    {% for key, value in json_output.iteritems() %}
+        {% set ns = namespace(v_name=key) %}
+        {% for intf in value  %}
+            {{-ns.v_name.ljust(20)}}{{intf}}
+            {% set ns.v_name = ' ' %}
+        {% endfor %}
+        {% if ns.v_name != ' ' %}
+            {{-ns.v_name.ljust(20)}}
+        {% endif %}
+    {% endfor %}
+{% endif %}

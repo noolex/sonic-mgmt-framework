@@ -1,0 +1,10 @@
+{% set mode = "native" %}
+
+{% if 'sonic-device-metadata:intf_naming_mode' in json_output %}
+{% if json_output['sonic-device-metadata:intf_naming_mode'] == "standard" %}
+{% set mode = "standard" %}
+{% endif %}
+{% endif %}
+
+Interface naming mode is {{mode}}
+

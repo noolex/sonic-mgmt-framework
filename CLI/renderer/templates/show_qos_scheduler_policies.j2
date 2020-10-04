@@ -1,0 +1,75 @@
+{% if json_output %}
+{% set s_policies = json_output['openconfig-qos:scheduler-policies'] %}
+{% if s_policies %}
+{% set sp_list = s_policies['scheduler-policy'] %}
+
+{% set bps_to_kbps = 1000 %}
+{% for sp in sp_list %}
+{{' Scheduler Policy: '}}{{sp['config']['name']}}
+
+{% set schedulers = sp['schedulers'] %}
+{% if schedulers %}
+{% set scheduler_list = schedulers['scheduler'] %}
+{% for scheduler in scheduler_list %}
+  {% if scheduler['sequence'] != 255 %}
+  {{- '   Queue: '}}{{scheduler['sequence']}}
+  {% endif %}
+  {% if scheduler['sequence'] == 255 %}
+  {{- '   Port: '}}{{'port'}}
+  {% endif %}
+
+  {% set config = scheduler['config'] %}
+  {% if config %}
+    {% if config['priority'] %}
+        {{- '              type: '}}{{config['priority']|lower}}
+    {% endif %}
+
+    {% if config['openconfig-qos-ext:weight'] %}
+        {{- '              weight: '}}{{config['openconfig-qos-ext:weight']}}
+    {% endif %}
+    {% if config['openconfig-qos-ext:meter-type'] %}
+        {{- '              meter-type: '}}{{config['openconfig-qos-ext:meter-type']|lower}}
+    {% endif %}
+  {% endif %}
+
+  {% set rate = scheduler['two-rate-three-color'] %}
+  {% if rate %}
+    {% set rate_config = rate['config'] %}
+    {% if rate_config %}
+        {% if rate_config['cir'] %}
+            {% if sp['config']['name'] != 'copp-scheduler-policy' %}
+                {% set temp = rate_config['cir']|int//bps_to_kbps %}
+                {{- '              cir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
+            {% else %}
+                {{- '              cir: '}}{{'%-12s'|format(rate_config['cir'])}}{{ 'Pps' }}
+            {% endif %}
+        {% endif %}
+        {% if rate_config['bc'] %}
+            {% if sp['config']['name'] != 'copp-scheduler-policy' %}
+                {{- '              cbs: '}}{{'%-12s'|format(rate_config['bc'])}}{{ 'Bytes' }}
+            {% else %}
+                {{- '              cbs: '}}{{'%-12s'|format(rate_config['bc'])}}{{ 'Packets' }}
+            {% endif %}
+        {% endif %}
+        {% if rate_config['pir'] %}
+            {% if sp['config']['name'] != 'copp-scheduler-policy' %}
+                {% set temp = rate_config['pir']|int//bps_to_kbps %}
+                {{- '              pir: '}}{{'%-12s'|format(temp)}}{{ 'Kbps' }}
+            {% else %}
+                {{- '              pir: '}}{{'%-12s'|format(rate_config['pir'])}}{{ 'Pps' }}
+            {% endif %}
+        {% endif %}
+        {% if rate_config['be'] %}
+            {% if sp['config']['name'] != 'copp-scheduler-policy' %}
+                {{- '              pbs: '}}{{'%-12s'|format(rate_config['be'])}}{{ 'Bytes' }}
+            {% else %}
+                {{- '              pbs: '}}{{'%-12s'|format(rate_config['be'])}}{{ 'Packets' }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endif %}

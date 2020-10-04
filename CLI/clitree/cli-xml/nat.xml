@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+    <PTYPE
+    name="TYPE"
+    method="select"
+    pattern="snat dnat"
+    help="NAT type"/>
+
+    <PTYPE
+    name="PORT_TYPE"
+    method="select"
+    pattern="tcp udp"
+    help="NAT port type"/>
+
+   <VIEW
+       name="configure-view"
+       >
+    <!-- nat commands -->
+    <COMMAND
+        name="nat"
+        view="configure-nat-view"
+        help="Enter NAT configuration"
+        view_keys="name=Values"
+        view_tables="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/name={name}"
+        dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/name=Values"
+        />
+
+   </VIEW>
+
+   <VIEW
+        name="configure-nat-view"
+        prompt="${SYSTEM_NAME}(config-nat)# "
+        depth="2"
+        >
+        <NAMESPACE
+            ref="configure-view"
+            help="false"
+            completion="false"
+            />
+        <COMMAND
+            name="no"
+            help="Negate a command or set its defaults"
+        />
+        <COMMAND
+            name="enable"
+            help="Enables NAT feature"
+            dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/admin_mode=enabled"
+        >
+        <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_config_enable True</ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="no enable"
+            help="Disables NAT feature"
+            >
+        <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_config_enable False</ACTION>
+       </COMMAND>
+
+       <COMMAND
+         name="timeout"
+         help="Configures NAT entry aging timeout in seconds"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         >
+         <PARAM
+             name="timeout-value"
+             help="NAT timeout"
+             ptype="NAT_TIMEOUT"
+             dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_timeout"
+             >
+         </PARAM>
+         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/timeout body={"openconfig-nat:timeout": ${timeout-value}}</ACTION>
+       </COMMAND>
+
+
+       <COMMAND
+         name="no timeout"
+         help="Set default NAT entry aging timeout in seconds"
+       >
+         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/timeout body={"openconfig-nat:timeout": 600}</ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="tcp-timeout"
+         help="Configures TCP NAT entry aging timeout in seconds"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         >
+         <PARAM
+             name="tcp-timeout-value"
+             help="TCP NAT timeout"
+             ptype="NAT_TCP_TIMEOUT"
+             dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_tcp_timeout"
+             >
+         </PARAM>
+         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/tcp-timeout body={"openconfig-nat:tcp-timeout": ${tcp-timeout-value}}</ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no tcp-timeout"
+         help="Set default TCP NAT entry aging timeout in seconds"
+         >
+         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/tcp-timeout body={"openconfig-nat:tcp-timeout": 86400}</ACTION>
+     </COMMAND>
+
+      <COMMAND
+         name="udp-timeout"
+         help="Configures UDP NAT entry aging timeout in seconds"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         >
+         <PARAM
+             name="udp-timeout-value"
+             help="UDP NAT timeout"
+             ptype="NAT_UDP_TIMEOUT"
+            dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/nat_udp_timeout"
+             >
+         </PARAM>
+         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/udp-timeout body={"openconfig-nat:udp-timeout": ${udp-timeout-value}}</ACTION>
+     </COMMAND>
+
+      <COMMAND
+         name="no udp-timeout"
+         help="Set default UDP NAT entry aging timeout in seconds"
+         >
+         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-nat:nat/instances/instance=0/config/udp-timeout body={"openconfig-nat:udp-timeout": 300}</ACTION>
+     </COMMAND>
+
+      <COMMAND
+         name="pool"
+         help="Create NAT pool"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         command_tables="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/pool_name={pool-name}"
+         >
+         <PARAM
+             name="pool-name"
+             help="NAT pool name"
+             ptype="STRING"
+             dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/pool_name"
+             >
+         </PARAM>
+         <PARAM
+             name="global-ip-range"
+             help="Global IP range"
+             ptype="STRING"
+             dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/nat_ip"
+             >
+         </PARAM>
+         <PARAM
+             name="global-port-range"
+             help="Global port range"
+             ptype="NAT_PORT_RANGE"
+             optional="true"
+             dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/nat_port"
+             >
+         </PARAM>
+
+     <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_nat_pool_nat_pool_entry_config ${pool-name} ${global-ip-range} ${global-port-range}</ACTION>
+     </COMMAND>
+
+
+     <COMMAND
+         name="no pool"
+         help="Removes NAT pool"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         >
+         <PARAM
+             name="pool-name"
+             help="NAT pool name"
+             ptype="STRING"
+             >
+         </PARAM>
+         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-pool/nat-pool-entry=${pool-name}</ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no pools"
+         help="Removes all NAT pools"
+     >
+     <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-pool</ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="binding"
+         help="Create binding between an ACL and a NAT pool"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         command_tables="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/name={binding-name}"
+         >
+         <PARAM
+             name="binding-name"
+             help="NAT binding name"
+             ptype="STRING"
+             dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/name"
+             >
+         </PARAM>
+         <PARAM
+             name="pool-name"
+             help="NAT pool name"
+             ptype="STRING"
+             dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/nat_pool"
+             >
+         </PARAM>
+         <PARAM
+             name="acl-name"
+             help="ACL name"
+             ptype="STRING"
+             optional="true"
+             dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/access_list"
+             >
+         </PARAM>
+         <PARAM
+             name="natType"
+             help=""
+             ptype="TYPE"
+             optional="true"
+             dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/nat_type"
+             >
+         </PARAM>
+         <PARAM
+             name="twice-nat-id"
+             help="Twice NAT id"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             optional="true"
+             >
+             <PARAM
+                 name="twice-nat-id-value"
+                 help="Twice NAT id value"
+                 ptype="TWICE_NAT_ID"
+                 dbpath="sonic-nat:sonic-nat/NAT_BINDINGS/NAT_BINDINGS_LIST/twice_nat_id"
+                 >
+             </PARAM>
+         </PARAM>
+
+         <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_nat_acl_pool_binding_nat_acl_pool_binding_entry_config ${binding-name} ${pool-name} acl-name=${acl-name} nat-type=${natType} twice-nat-id=${twice-nat-id-value}</ACTION>
+     </COMMAND>
+
+      <COMMAND
+         name="no binding"
+         help="Removes NAT binding"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         >
+         <PARAM
+             name="bind-name"
+             help="NAT binding name"
+             ptype="STRING"
+             >
+         </PARAM>
+         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-acl-pool-binding/nat-acl-pool-binding-entry=${bind-name}</ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="no bindings"
+         help="Removes all NAT bindings"
+     >
+     <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-acl-pool-binding</ACTION>
+     </COMMAND>
+
+     <COMMAND
+         name="static"
+         help="Configures static NAT entry"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         command_tables="sonic-nat:sonic-nat/STATIC_NAPT/STATIC_NAPT_LIST/global_ip={global_ip},ip_pro tocol={ip_protocol}, global_l4_port=${global-port};sonic-nat:sonic-nat/STATIC_NAT/STATIC_NAT_LIST/global_ip={global_ip}"
+         render_command_cb="nat_napt_entry"
+         >
+         <PARAM
+             name="static-subcommands"
+             help="Static NAT subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND"
+             >
+         <PARAM
+             name="basic"
+             help="Static NAT"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             >
+
+             <PARAM
+                 name="global-ip"
+                 help="Global IP"
+                 ptype="IP_ADDR"
+                 dbpath="sonic-nat:sonic-nat/STATIC_NAT/STATIC_NAT_LIST/global_ip"
+                 >
+             </PARAM>
+
+             <PARAM
+                 name="local-ip"
+                 help="Local IP"
+                 ptype="IP_ADDR"
+                 >
+             </PARAM>
+
+             <PARAM
+                 name="natType"
+                 help=""
+                 ptype="TYPE"
+                 optional="true"
+                 >
+             </PARAM>
+
+             <PARAM
+                 name="twice-nat-id"
+                 help="Twice NAT id"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 optional="true"
+                 >
+                 <PARAM
+                     name="twice-nat-id-value"
+                     help="Twice NAT id value"
+                     ptype="TWICE_NAT_ID"
+                     >
+                 </PARAM>
+             </PARAM>
+         </PARAM>
+
+
+         <PARAM
+             name="natPortType"
+             help=""
+             ptype="PORT_TYPE"
+             >
+            <PARAM
+                 name="global-ip"
+                 help="Global IP"
+                 ptype="IP_ADDR"
+                 >
+             </PARAM>
+
+             <PARAM
+                 name="global-port"
+                 help="Global port"
+                 ptype="RANGE_1_65535"
+                 >
+             </PARAM>
+
+             <PARAM
+                 name="local-ip"
+                 help="Local IP"
+                 ptype="IP_ADDR"
+                 >
+             </PARAM>
+
+             <PARAM
+                 name="local-port"
+                 help="Local port"
+                 ptype="RANGE_1_65535"
+                 >
+             </PARAM>
+
+             <PARAM
+                 name="natType"
+                 help=""
+                 ptype="TYPE"
+                 optional="true"
+                 >
+             </PARAM>
+
+             <PARAM
+                 name="twice-nat-id"
+                 help="Twice NAT id"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 optional="true"
+                 >
+                 <PARAM
+                     name="twice-nat-id-value"
+                     help="Twice NAT id value"
+                     ptype="TWICE_NAT_ID"
+                     >
+                 </PARAM>
+             </PARAM>
+         </PARAM>
+     </PARAM>
+     <ACTION builtin="clish_pyobj">sonic_cli_nat patch_nat_napt_mapping_table global-ip=${global-ip} port-type=${natPortType} global-port=${global-port} local-ip=${local-ip} local-port=${local-port} type=${natType} twice-nat-id=${twice-nat-id-value}</ACTION>
+    </COMMAND>
+
+     <COMMAND
+         name="no static"
+         help="Removes static NAT entry"
+         mode="subcommand"
+         ptype="SUBCOMMAND"
+         >
+         <PARAM
+             name="no-static-subcommands"
+             help="Removes static NAT subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND"
+             >
+             <PARAM
+                 name="all"
+                 help="Removes all static configurations"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+             </PARAM>
+             <PARAM
+                 name="basic"
+                 help="Static NAT"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+
+                 <PARAM
+                     name="global-ip"
+                     help="Global IP"
+                     ptype="IP_ADDR"
+                 >
+                 </PARAM>
+
+             </PARAM>
+             
+             <PARAM
+                 name="natPortType"
+                 help=""
+                 ptype="PORT_TYPE"
+                 >
+                <PARAM
+                     name="global-ip"
+                     help="Global IP"
+                     ptype="IP_ADDR"
+                     >
+                 </PARAM>
+
+                 <PARAM
+                     name="global-port"
+                     help="Global port"
+                     ptype="RANGE_1_65535"
+                     >
+                 </PARAM>
+
+             </PARAM>
+         </PARAM>
+
+   <ACTION builtin="clish_pyobj">sonic_cli_nat delete_nat_napt_mapping_table global-ip=${global-ip} port-type=${natPortType} global-port=${global-port}</ACTION>
+
+     </COMMAND>
+
+   </VIEW>
+
+
+     <VIEW name="enable-view">
+
+     <!--====================clear <translations | statistics>======================-->
+
+    <COMMAND
+        name="clear nat"
+        help="Clear NAT">
+        <PARAM
+            name="clear-subcommands"
+            help="Clear subcommands"
+            mode="switch"
+            ptype="SUBCOMMAND"
+            >
+            <PARAM
+                name="translations"
+                help="Clearing dynamic NAT translations"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+            </PARAM>
+            <PARAM
+                name="statistics"
+                help="Clearing NAT statistics"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+            </PARAM>
+        </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_nat rpc_nat_clear ${clear-subcommands}</ACTION>
+    </COMMAND>
+
+
+    <!--show nat -->
+    <COMMAND
+         name="show nat"
+         help="Show NAT info"
+         >
+         <PARAM
+             name="nat-subcommands"
+             help="NAT subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND"
+             >
+             <!-- show nat translations -->
+             <PARAM
+                 name="translations"
+                 help="NAT translations"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+                 <PARAM
+                     name="count"
+                     help="NAT translations count"
+                     ptype="SUBCOMMAND"
+                     mode="subcommand"
+                     optional="true"
+                     >
+                 </PARAM>
+             </PARAM>
+
+             <!-- show nat statistics -->
+             <PARAM
+                 name="statistics"
+                 help="NAT statistics"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+             </PARAM>
+
+              <!-- show nat config -->
+             <PARAM
+                 name="config"
+                 help="NAT configurations"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 >
+                 <PARAM
+                     name="config-subcommands"
+                     help="NAT config subcommands"
+                     mode="switch"
+                     ptype="SUBCOMMAND"
+                     optional="true"
+                     >
+                     <PARAM
+                         name="static"
+                         help="NAT static config"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                     </PARAM>
+                     <PARAM
+                         name="pool"
+                         help="NAT pool config"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                     </PARAM>
+                     <PARAM
+                         name="bindings"
+                         help="NAT static bindings"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                     </PARAM>
+                     <PARAM
+                         name="globalvalues"
+                         help="NAT static globals"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                     </PARAM>
+                     <PARAM
+                         name="zones"
+                         help="NAT zones"
+                         ptype="SUBCOMMAND"
+                         mode="subcommand"
+                         >
+                     </PARAM>
+                 </PARAM>
+             </PARAM>
+         </PARAM>
+          <ACTION builtin="clish_pyobj">sonic_cli_nat show_nat_commands nat-sub=${nat-subcommands} config-sub=${config-subcommands} count=${count} </ACTION>
+     </COMMAND>
+
+   </VIEW>
+</CLISH_MODULE>
+

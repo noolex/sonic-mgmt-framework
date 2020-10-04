@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="https://raw.githubusercontent.com/project-arlo/sonic-mgmt-framework/master/src/CLI/clitree/scripts/sonic-clish.xsd">
+
+    <!--============================== CONFIG MODE COMMANDS ======================-->
+    <VIEW name="configure-view">
+        <!-- Global binding options -->
+        <COMMAND name="line" help="Session configuration" />
+        <COMMAND name="line vty" help="Terminal type" view="configure-line-vty-view" />
+    </VIEW>
+
+    <VIEW name="configure-line-vty-view" prompt="${SYSTEM_NAME}(config-line-vty)# " depth="2">
+        <COMMAND name="ip" help="Configure Internet Protocol (IP)"/>
+        <COMMAND name="ipv6" help="Configure Internet Protocol v6 (IPv6)"/>
+
+        <COMMAND name="ip access-group" help="Configure IPv4 ACL">
+            <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV4 ControlPlane ${direction-switch}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="ipv6 access-group" help="Configure Internet Protocol v6 (IPv6)">
+            <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV6 ControlPlane ${direction-switch}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="no ip" help="Configure Internet Protocol (IP)"/>
+        <COMMAND name="no ipv6" help="Configure Internet Protocol v6 (IPv6)"/>
+
+        <COMMAND name="no ip access-group" help="Configure IPv4 ACL">
+            <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV4 ControlPlane ${direction-switch}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no ipv6 access-group" help="Configure Internet Protocol v6 (IPv6)">
+            <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV6 ControlPlane ${direction-switch}</ACTION>
+        </COMMAND>
+    </VIEW>
+
+    <!--============================== EXEC MODE COMMANDS =======================-->
+    <!--<VIEW name="enable-view">
+    </VIEW>-->
+</CLISH_MODULE>

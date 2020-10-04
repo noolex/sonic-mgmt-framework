@@ -1,0 +1,112 @@
+{% set bgp_global = json_output['openconfig-network-instance:global'] %}
+{% if 'config' in bgp_global and 'state' in bgp_global %}
+    {% set config = bgp_global['config'] %}
+    {% set state = bgp_global['state'] %}
+    {% if 'router-id' in state %}
+        {{-'BGP router identifier '}}{{state['router-id']}}{{', local AS number '}}{{config['as']}}
+    {% else %}    
+        {{-'BGP router identifier '}}{{'0.0.0.0'}}{{', local AS number '}}{{config['as']}}
+    {% endif %}
+    {{-'\n' }}
+    {{-'Neighbor        V   AS      MsgRcvd   MsgSent   InQ     OutQ    Up/Down                 State/PfxRcd'}}
+    {% set neighbor_list = json_output['openconfig-network-instance:neighbors'] %}
+    {% if 'neighbor' in neighbor_list %}
+        {% set neighbors = neighbor_list['neighbor'] %}
+        {% for neighbor in neighbors %}
+            {% set ns = namespace(print = False) %}
+            {% if 'afi-safis' in neighbor %}
+                {% set afi_safis = neighbor['afi-safis']['afi-safi'] %}
+                {% for afi_safi in afi_safis %}
+                    {% if 'state' in afi_safi %}
+                        {% if 'afi-safi-name' in afi_safi['state'] %}
+                            {% if afi_safi['state']['afi-safi-name'] == json_output['afisafiname'] and 'enabled' in afi_safi['state'] and afi_safi['state']['enabled'] == True %}
+                                {% set ns.print = True %}
+                            {% endif %}
+                        {% endif %}
+                     {% endif %}
+                 {% endfor %}
+            {% endif %}
+            {% if ns.print == False %}
+               {% continue %}
+            {% endif %}
+            {% set n_state = neighbor['state'] %}
+            {{-neighbor['neighbor-address'].ljust(15)~" "-}}
+            {{-'4'.ljust(4)-}}
+            {% if 'peer-as' in n_state %}
+                {{-(n_state['peer-as']|string).ljust(7)~" "-}}
+            {% else %}
+                {{-' '.ljust(8)-}}
+            {% endif %}
+            {% if 'messages' in n_state %}
+                {% set n_sent = 0 %}
+                {% set n_rcvd = 0 %}
+                {% set n_messages = n_state['messages'] %}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:open']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:open']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['NOTIFICATION']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['NOTIFICATION']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['UPDATE']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['UPDATE']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:keepalive']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:keepalive']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:route-refresh']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:route-refresh']|int %}
+                {% set n_sent = n_sent + n_messages['sent']['openconfig-bgp-ext:capability']|int %}
+                {% set n_rcvd = n_rcvd + n_messages['received']['openconfig-bgp-ext:capability']|int %}
+                {{-(n_rcvd|string).ljust(9)~" "-}}
+                {{-(n_sent|string).ljust(9)~" "-}}
+            {% else %}
+                {{-'0'.ljust(10)-}}
+                {{-'0'.ljust(10)-}}
+            {% endif %}
+            {% if 'queues' in n_state %}
+                {% set n_queues = n_state['queues'] %}
+                {{-(n_queues['input']|string).ljust(8)-}}
+                {{-(n_queues['output']|string).ljust(8)-}}
+            {% else %}
+                {{-'0'.ljust(8)-}}
+                {{-'0'.ljust(8)-}}
+            {% endif %}
+            {% if 'last-established' in n_state %}
+                {% set le_timestamp = n_state['last-established'] %}
+                {{-le_timestamp.ljust(24)-}}
+            {% else %}
+                {{-'never'.ljust(24)-}}
+            {% endif %}
+            {% if 'session-state' in n_state %}
+                {% set state = n_state['session-state'] %}
+                {% if state == 'ESTABLISHED' %}
+                    {% set ns = namespace(rcvd_prfx = 0) %}
+                    {% if 'afi-safis' in neighbor %}
+                        {% set afi_safis = neighbor['afi-safis']['afi-safi'] %}
+                        {% for afi_safi in afi_safis %}
+                           {% if 'state' in afi_safi and 'prefixes' in afi_safi['state'] and afi_safi['state']['afi-safi-name'] == json_output['afisafiname']%}
+                               {% set ns.rcvd_prfx = ns.rcvd_prfx + afi_safi['state']['prefixes']['received'] %}
+                           {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {{-(ns.rcvd_prfx|string).ljust(8)}}
+                {% else %}
+                    {% if 'enabled' in n_state and n_state['enabled'] == False %}
+                        {{-'Idle(Admin)'.ljust(8)}}
+                    {% elif state == 'IDLE' %}
+                        {{-'Idle'.ljust(8)}}
+                    {% elif state == 'ACTIVE' %}
+                        {{-'Active'.ljust(8)}}
+                    {% elif state == 'CONNECT' %}
+                        {{-'Connect'.ljust(8)}}
+                    {% elif state == 'OPENSENT' %}
+                        {{-'OpenSent'.ljust(8)}}
+                    {% elif state == 'OPENCONFIRM' %}
+                        {{-'OpenConfirm'.ljust(8)}}
+                    {% else %}
+                        {{-'Unknown'.ljust(8)}}
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {{-'0'.ljust(8)}}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+

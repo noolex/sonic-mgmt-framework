@@ -1,0 +1,41 @@
+{{'-----------------------------------------------------------------------'}}
+{{'Fan'.ljust(15)}}{{'Status'.ljust(15)}}{{'Speed (RPM)'.ljust(20)}}{{'Direction'.ljust(20)}}
+{{'-----------------------------------------------------------------------'}}
+
+{% for fan_name, fan_info in json_output.items() %}
+{% set direction = 'N/A' %}
+{% set speed = 'N/A' %}
+{% set oper_status = 'NOT PRESENT' %}
+
+{% if 'state' in fan_info %}
+{% if 'oper-status' in fan_info['state'] %}
+{% if fan_info['state']['oper-status'] == 'openconfig-platform-types:ACTIVE' %}
+{% set oper_status = 'OK' %}
+{% elif fan_info['state']['oper-status'] == 'openconfig-platform-types:INACTIVE' %}
+{% set oper_status = 'NOT OK' %}
+{% endif %}
+{% endif %}
+{% endif %}
+
+{% if 'oper_status' != 'NOT OK' %}
+{% if 'fan' in fan_info %}
+{% if 'state' in fan_info['fan'] %}
+{% if 'openconfig-platform-ext:direction' in fan_info['fan']['state'] %}
+{% set direction = fan_info['fan']['state']['openconfig-platform-ext:direction'] %}
+{% endif %}
+
+{% if 'openconfig-platform-fan:speed' in fan_info['fan']['state'] %}
+{% set speed = fan_info['fan']['state']['openconfig-platform-fan:speed'] %}
+{% endif %}
+
+{% endif %}
+{% endif %}
+{% endif %}
+
+{% if speed == 'N/A' %}
+{{fan_name.ljust(15)}}{{oper_status.ljust(15)}}{{'N/A'.ljust(20)}}{{direction.ljust(20)}}
+{% else %}
+{{fan_name.ljust(15)}}{{oper_status.ljust(15)}}{{'%d'.ljust(17) | format(speed|int)}}{{direction.ljust(20)}}
+{% endif %}
+{% endfor %}
+

@@ -1,0 +1,23 @@
+{{'Ingress headroom persistent watermark per PG:'}}
+{{'-----------------------------------------------------------------------------------------'}}
+{{'%-12s'|format("Port")}}{{'%-10s'|format("PG0")}}{{'%-10s'|format("PG1")}}{{'%-10s'|format("PG2")}}{{'%-10s'|format("PG3")}}{{'%-10s'|format("PG4")}}{{'%-10s'|format("PG5")}}{{'%-10s'|format("PG6")}}{{'%-10s'|format("PG7")}}
+{{'-----------------------------------------------------------------------------------------'}}
+{% if json_output %}
+{% set watermark = {}%}
+{% set intf_info_list = json_output['interface'] %}
+{% for intf_info in intf_info_list %}
+  {% set intfName = intf_info['interface-id'] %}
+  {% if 'input' in intf_info %}
+  {% set input = intf_info['input'] %}
+  {% set pgs = input['openconfig-qos-ext:priority-groups'] %}
+  {% set pg_info_list = pgs['priority-group'] %}
+  {% for pg_info in pg_info_list %}
+    {% set pg_stats_info = pg_info['state'] %}
+    {% set pg = pg_stats_info['name'] %}
+    {% set pgname = pg.split(':') %}
+    {% if watermark.update({pgname[1] :  pg_stats_info['headroom-persistent-watermark']}) %} {% endif %}
+  {% endfor %}
+{{'%-12s'|format(intfName)}}{{'%-10s'|format(watermark['0'])}}{{'%-10s'|format(watermark['1'])}}{{'%-10s'|format(watermark['2'])}}{{'%-10s'|format(watermark['3'])}}{{'%-10s'|format(watermark['4'])}}{{'%-10s'|format(watermark['5'])}}{{'%-10s'|format(watermark['6'])}}{{'%-10s'|format(watermark['7'])}}
+{% endif %}
+{% endfor %}
+{% endif %}

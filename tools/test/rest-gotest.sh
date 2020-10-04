@@ -38,6 +38,7 @@ case "$1" in
         echo " -sudo      Run as 'sudo -E go test ...'. Usually required for auth tests"
         echo " -json      Prints output in json format"
         echo " -tparse    Render output through tparse; implicitly enables -json"
+        echo " -deps      Rebuild go dependencies"
         echo " ARGS...    Arguments to test program (log level, auth test arguments etc)"
         exit 0 ;;
     -auth)
@@ -57,23 +58,36 @@ case "$1" in
     -sudo)
         GO="sudo -E $(which go)"
         shift ;;
+    -deps|-go-deps)
+        REBUILD_DEPS=yes
+        shift ;;
     *)
         REST_ARGS+=("$1")
         shift;;
 esac
 done
 
-export GOPATH=$TOPDIR:$TOPDIR/build/gopkgs:$TOPDIR/build/rest_server/dist
+MGMT_COMMON_DIR=$(realpath $TOPDIR/../sonic-mgmt-common)
 
-export CVL_SCHEMA_PATH=$TOPDIR/build/cvl/schema
+export GOPATH=/tmp/go
+
+export CVL_SCHEMA_PATH=$MGMT_COMMON_DIR/build/cvl/schema
+
+export DB_CONFIG_PATH=$MGMT_COMMON_DIR/tools/test/database_config.json
+
+if [ "$REBUILD_DEPS" == "yes" ]; then
+    NO_TEST_BINS=1 make -s -C $MGMT_COMMON_DIR
+    make -s go-deps-clean
+    make -s go-deps
+fi
 
 if [ -z $YANG_MODELS_PATH ]; then
     export YANG_MODELS_PATH=$TOPDIR/build/all_test_yangs
     mkdir -p $YANG_MODELS_PATH
     pushd $YANG_MODELS_PATH > /dev/null
     rm -f *
-    find $TOPDIR/models/yang -name "ietf-*.yang" -not -path "*/annotations/*" -exec ln -sf {} \;
+    find $MGMT_COMMON_DIR/models/yang -name "ietf-*.yang" -not -path "*/annotations/*" -exec ln -sf {} \;
     popd > /dev/null
 fi
 
-${GO} test rest/server -v -cover "${TEST_ARGS[@]}" -args -logtostderr "${REST_ARGS[@]}" | ${PIPE}
+${GO} test -mod=vendor ./rest/server -v -cover "${TEST_ARGS[@]}" -args -logtostderr "${REST_ARGS[@]}" | ${PIPE}

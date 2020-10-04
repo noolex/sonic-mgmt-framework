@@ -1,0 +1,30 @@
+{% if json_output %}
+{% for key_json in json_output %}
+    {% if key_json == "openconfig-qos-maps-ext:forwarding-group-dscp-maps" %}
+        {% set map_list = json_output[key_json]["forwarding-group-dscp-map"] %}
+    {% else %}
+      {% if key_json == "openconfig-qos-maps-ext:forwarding-group-dscp-map" %}
+        {% set map_list = json_output[key_json] %}
+      {% endif %}
+    {% endif %}
+{% for map in map_list %}
+
+{{'Traffic-Class-DSCP-MAP: '}}{{map['name']}}
+
+{{'----------------------------'}}
+    {{'%-5s'|format("TC")}}{{'%-5s'|format("DSCP")}}
+{{'----------------------------'}}
+  {% set map_info = map['forwarding-group-dscp-map-entries'] %}
+  {% if map_info %}
+      {% set entries = map_info['forwarding-group-dscp-map-entry'] %}
+      {% for entry in entries %}
+        {% if entry['fwd-group'] != 'NULL' %}
+    {{'%-5s'|format(entry['fwd-group'])}}{{'%-5s'|format(entry['config']['dscp'])}}
+        {% endif %}
+      {% endfor %}
+  {% endif %}
+{{'----------------------------'}}
+
+{% endfor %}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,28 @@
+{% if json_output -%}
+   {% set gbl_cfg = json_output['openconfig-system:dns']['config'] %}
+   {% if gbl_cfg -%}
+      {% set src_intf = gbl_cfg['openconfig-system-ext:source-interface'] %}
+Source Interface: {{src_intf}}
+   {% endif %}
+   {% set servers = json_output['openconfig-system:dns']['servers'] %}
+   {% if servers -%}
+     {% set server_list = servers['server'] %}
+     {% if server_list -%}
+       {% set server_ip = [] %}
+       {% set server_ip_vrf = "" %}
+       {%for server in server_list %}
+         {% set config = server['config']%}
+         {% if 'address' in config %}
+           {% if 'openconfig-system-ext:vrf-name' in config %}
+            {% set server_ip_vrf = config['address'] + "(vrf: "+config['openconfig-system-ext:vrf-name']+")" %}
+            {% do server_ip.append(server_ip_vrf) %}
+           {% else %}
+            {% do server_ip.append(config['address']) %}
+           {% endif %}
+         {% endif %}
+       {% endfor %}
+Name servers are: {{server_ip|join(', ')}}
+    {% endif %}
+   {% endif %}
+{% endif %}
+

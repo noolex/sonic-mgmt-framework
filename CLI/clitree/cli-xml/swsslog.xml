@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+]>
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+
+  <PTYPE name="BOOL_SELECT" method="select" pattern="yes(yes) no(no)" help="" />
+
+  <VIEW name="enable-view">
+    <COMMAND help="Display components registered in DB for loglevel severity" name="show swsslog-configuration">
+        <ACTION builtin="clish_pyobj">sonic_cli_swsslog get_openconfig_loglevel_from_db tpcm.j2</ACTION>
+    </COMMAND>
+  </VIEW>
+
+  <VIEW name="configure-view">
+    <COMMAND name="swsslog"
+             help="SONiC logging severity level setting"
+             mode="subcommand"
+             ptype="SUBCOMMAND">
+             <PARAM name="loglevel" help="loglvel value" ptype="SUBCOMMAND" mode="subcommand" >
+                   <PARAM name="loglevel_value" help="for loglevel value" ptype="STRING">
+                   </PARAM>
+                    <PARAM name="component" help="component name in DB for which loglevel is applied" ptype="SUBCOMMAND" mode="subcommand" >
+                         <PARAM name="component_name" help="for component name in DB" ptype="STRING">
+                         </PARAM>
+                         <PARAM name="sai_component" help="for SAI api component" ptype="SUBCOMMAND" mode="subcommand" optional = "true" >
+                              <PARAM name="is_sai" help="for SAI api component" default="no" ptype="BOOL_SELECT">
+                              </PARAM>
+                         </PARAM>
+                    </PARAM>
+             </PARAM>
+       <ACTION builtin="clish_pyobj">sonic_cli_swsslog set_openconfig_loglevel_severity tpcm.j2 ${loglevel_value} ${component_name} ${is_sai} 
+       </ACTION>
+    </COMMAND>
+  </VIEW>
+</CLISH_MODULE>

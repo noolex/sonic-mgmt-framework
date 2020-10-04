@@ -1,0 +1,21 @@
+{{'--------------------------------'}}
+{{'PSU'.ljust(20)}} {{'Status'}}
+{{'--------------------------------'}}
+
+{% for psu_name, psu_info in json_output.items() %}
+{% if 'state' in psu_info %}
+{% if 'oper-status' in psu_info['state'] %}
+{% set oper_status = 'NOT PRESENT' %}
+{% if 'empty' in psu_info['state'] and not psu_info['state']['empty'] %}
+{% set oper_status = psu_info['state']['oper-status'] %}
+{% endif %}
+{% if oper_status == 'openconfig-platform-types:ACTIVE' %}
+{% set oper_status = 'OK' %}
+{% elif oper_status == 'openconfig-platform-types:INACTIVE' %}
+{% set oper_status = 'NOT OK' %}
+{% endif %}
+{{psu_name.ljust(20)}} {{oper_status}}
+{% endif %}
+{% endif %}
+{% endfor %}
+

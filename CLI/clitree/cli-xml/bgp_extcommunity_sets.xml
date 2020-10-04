@@ -1,0 +1,362 @@
+<?xml version="1.0"?>
+<!--copyright 2019 Dell, Inc.  
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE CLISH_MODULE [
+]>
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+
+   <VIEW
+       name="configure-view"
+       >
+
+    <COMMAND
+        name="bgp extcommunity-list"
+        help="Add BGP extended community-list entry" escape_chars=""
+        command_keys="name=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/EXTENDED_COMMUNITY_SET/EXTENDED_COMMUNITY_SET_LIST/name={name}"
+        render_command_cb="bgp_extcom_list">
+        <PARAM
+            name="bgp-subcommands"
+            help="BGP subcommands"
+            mode="switch"
+            ptype="SUBCOMMAND"
+            >
+            <PARAM
+                name="standard"
+                help="Add a standard extended community-list entry"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="extcommunity-list-name"
+                    help="Name of extended community-list (Max: 63 characters)"
+                    ptype="STRING_63"
+                    >
+                    <PARAM
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            > 
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                    </PARAM>
+                    <PARAM
+                        name="standard-subcommands"
+                        help="Standard extcommand"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="rt"
+                            help="Route-target"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM name="rt-subcommands"
+                                help="RT extcommand"
+                                ptype="SUBCOMMAND"
+                                mode="switch"
+                                >
+                                <PARAM
+                                    name="aa"
+                                    help="Extended community number aa:nn format 0..65535:0..65535"
+                                    ptype="AA_NN"
+                                    >
+                                </PARAM>
+                                <PARAM
+                                    name="ipaddrnn"
+                                    help="Extended community number ip-addr"
+                                    ptype="IPADDR_NN"
+                                    >
+                                </PARAM>
+                            </PARAM>
+                            <PARAM
+                                name="rt-any-all subcommands"
+                                help="Any/all command"
+                                ptype="SUBCOMMAND"
+                                mode="switch"
+                                optional="true"
+                                >
+                                <PARAM
+                                    name="any"
+                                    help="Any command"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    >
+                                </PARAM>
+                                <PARAM
+                                    name="all"
+                                    help="All command"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    >
+                                </PARAM>
+                            </PARAM>
+                        </PARAM>
+                        <PARAM
+                            name="soo"
+                            help="Route-origin"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM name="soo-subcommands"
+                                help="Route origin subcommand"
+                                ptype="SUBCOMMAND"
+                                mode="switch"
+                                >
+                                <PARAM
+                                    name="aa"
+                                    help="Extended community number aa:nn format 0..65535:0..65535"
+                                    ptype="AA_NN"
+                                    >
+                                </PARAM>
+                                <PARAM
+                                    name="ipaddrnn"
+                                    help="Extended community number ip-addr"
+                                    ptype="IPADDR_NN"
+                                    >
+                                </PARAM>
+                            </PARAM>
+                            <PARAM
+                                name="rt-any-all subcommands"
+                                help="Any/all command"
+                                ptype="SUBCOMMAND"
+                                mode="switch"
+                                optional="true"
+                                >
+                                <PARAM
+                                    name="any"
+                                    help="Any command"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    >
+                                </PARAM>
+                                <PARAM
+                                    name="all"
+                                    help="All command"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    >
+                                </PARAM>
+                            </PARAM>
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="expanded"
+                help="Add an expanded extended community-list entry"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="extcommunity-list-name"
+                    help="Name of extended community-list (Max: 63 characters)"
+                    ptype="STRING_63"
+                    >
+                    <PARAM
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                        </PARAM>
+                    </PARAM>
+                    <PARAM
+                        name="line"
+                        help="An ordered list as a regular-expression"
+                        ptype="LINE"
+                        >
+                        <PARAM
+                            name="rt-any-all subcommands"
+                            help="Any/all command"
+                            ptype="SUBCOMMAND"
+                            mode="switch"
+                            optional="true"
+                            >
+                            <PARAM
+                                name="any"
+                                help="Any command"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                            </PARAM>
+                            <PARAM
+                                name="all"
+                                help="All command"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                            </PARAM>
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+        </PARAM>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_extcommunity_${bgp-subcommands} ${extcommunity-list-name} ${__full_line}</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        This command creates BGP extended community list entries
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to create BGP extended community list entries. The command provides
+        options to create expanded or standard extended community list entries.
+        For standard extended community, user can create rt or soo type of
+        communities and command will accept communities in AA:NN or IP:NN
+        formats. For expanded extended community, the command will accept a
+        regular expression of communities, which is very flexible and powerful
+        for matching communities in routes. This command also provides option
+        for matching all or any extended communities.
+      </USAGE>
+      <EXAMPLE summary="The following command creates netries in a extended community list named
+        ExtComm_AllowInt">
+        sonic# configure terminal
+        sonic(config)# bgp extcommunity-list standard ExtComm_AllowInt rt 19.32.56.167:65011 all
+        sonic(config)# bgp extcommunity-list standard ExtComm_AllowInt rt 31.67.182.214:3001 all
+        sonic(config)# bgp extcommunity-list standard ExtComm_AllowInt soo 4001:65010 all
+        sonic(config)# bgp extcommunity-list standard ExtComm_AllowInt soo 98.13.175.21:65101 all
+      </EXAMPLE>
+     </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no bgp extcommunity-list"
+        help="Delete a extended community-list entry" escape_chars="">
+        <PARAM
+            name="bgp-subcommands"
+            help="BGP subcommands"
+            mode="switch"
+            ptype="SUBCOMMAND"
+            >
+            <PARAM
+                name="standard"
+                help="Delete standard extended community-list entry"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="extcommunity-list-name"
+                    help="Name of extended community-list"
+                    ptype="STRING_63"
+                    >
+                    <PARAM
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        optional="true"
+                        >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                              <MACRO name="BGP_EXTCOMMUNITY_STD_SUBCOMMANDS" arg=""></MACRO>  
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                              <MACRO name="BGP_EXTCOMMUNITY_STD_SUBCOMMANDS" arg=""></MACRO>  
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <PARAM
+                name="expanded"
+                help="Delete an expanded extended community-list entry"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="extcommunity-list-name"
+                    help="Name of extended community-list"
+                    ptype="STRING_63"
+                    >
+                    <PARAM
+                        name="community-action"
+                        help="BGP community sub commands action"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        optional="true"
+                        >
+                        <PARAM
+                            name="deny"
+                            help="Specify community to reject"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                            <PARAM
+                                name="line"
+                                help="An ordered list as a regular-expression"
+                                ptype="LINE"
+                                >
+                            </PARAM>
+                        </PARAM>
+                        <PARAM
+                            name="permit"
+                            help="Specify community to accept"
+                            mode="subcommand"
+                            ptype="SUBCOMMAND"
+                            >
+                            <PARAM
+                                name="line"
+                                help="An ordered list as a regular-expression"
+                                ptype="LINE"
+                                >
+                            </PARAM>
+                        </PARAM>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+        </PARAM>
+
+      <ACTION builtin="clish_pyobj">sonic_cli_bgp_community bgp_extcommunity_${bgp-subcommands}_delete ${extcommunity-list-name} ${__full_line}</ACTION>
+    </COMMAND>
+
+</VIEW>
+</CLISH_MODULE> 

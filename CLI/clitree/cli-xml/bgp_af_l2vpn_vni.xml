@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2019 Dell, Inc.  
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+--> 
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+    <!--=======================================================-->
+
+    <VIEW name="configure-router-bgp-l2vpn-vni-view" prompt="${SYSTEM_NAME}(config-router-bgp-af-vni)# " depth="4">
+      <NAMESPACE ref="configure-view" help="false" completion="false" />
+      <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
+      <NAMESPACE ref="configure-router-bgp-l2vpn-view" help="false" completion="false" />
+      <COMMAND name="show configuration" help="show bgp configuration">
+          <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-l2vpn-vni view_keys="vrf-name=${vrf-name},afi-safi-name=L2VPN_EVPN,vni-number=${vninum}" </ACTION>
+      </COMMAND>
+      <COMMAND name="advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/advertise-default-gw=true">
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_vni_advertise_default_gw ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command enables gateway advertisement for a particular VNI
+          </DESCRIPTION>
+          <USAGE>
+            [no] advertise-default-gw
+          </USAGE>
+          <EXAMPLE summary="Enable VNI 100 gateway to advertise theie IP/MAC addresses">
+            sonic# configure terminal
+            sonic(config)# router bgp 100
+            sonic(config-router-bgp)# address-family l2vpn evpn
+            sonic(config-router-bgp-af)# vni 100
+            sonic(config-router-bgp-af-vni)# advertise-default-gw
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+      <COMMAND name="advertise-svi-ip" help="Advertise svi mac-ip routes in EVPN" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/advertise-svi-ip=true">
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_vni_advertise_svi_ip ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command enables svi mac-ip routes advertisement into EVPN for a particular VNI
+          </DESCRIPTION>
+          <USAGE>
+            [no] advertise-svi-ip
+          </USAGE>
+          <EXAMPLE summary="Enable VNI 100 gateway to advertise SVI MACIP route in EVPN">
+            sonic# configure terminal
+            sonic(config)# router bgp 100
+            sonic(config-router-bgp)# address-family l2vpn evpn
+            sonic(config-router-bgp-af)# vni 100
+            sonic(config-router-bgp-af-vni)# advertise-svi-ip
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+
+      <COMMAND name="rd" help="Route distinguisher" >
+        <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST/route-distinguisher"/>
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_vni_rd ${vrf-name} L2VPN_EVPN ${vninum} ${rdvalue}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command specifies the route-distinguisher to be attached to routes exported from current VRF into EVPN
+          </DESCRIPTION>
+          <USAGE>
+            [no] rd {route-distinguisher}
+          </USAGE>
+          <EXAMPLE summary="Following command attaches route-distinguisher 11:11 to routes exported fron vrf Vrf1">
+            sonic# configure terminal
+            sonic(config)# router bgp 100 vrf Vrf1
+            sonic(config-router-bgp)# address-family l2vpn evpn
+            sonic(config-router-bgp-af)# vni 100
+            sonic(config-router-bgp-af-vni)# rd 11:11
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+
+      <COMMAND name="route-target" help="Route target" render_command_cb="bgp_af_l2vpn_vni_rt">
+        <PARAM name="rttype" help="advertise options" ptype="ADVERTISE_OPTIONS">
+          <PARAM name="rt" help="Route target value" ptype="RT"/>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn patch_bgp_evpn_vni_rt ${vrf-name} L2VPN_EVPN ${vninum} ${rt} ${rttype}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command specifies the route-target or a community to be attached while exporting routes from current vrf for a specific VNI. 
+            This command also allows to specific route-target to be matched when importing routes into current vrf for a specific VNI
+          </DESCRIPTION>
+          <USAGE>
+            [no] route-target import|export|both {route-target-value}
+          </USAGE>
+          <EXAMPLE summary="Following command specifies matching route-target 11:11 while importing route, 
+            attaching route-target 22:22 while exporting routes and
+            specifying route-target 33:33 to be attached/matched while exporting/importing routes respectively
+            in vrf Vrf1 for VNI 100">
+            sonic# configure terminal
+            sonic(config)# router bgp 100 vrf Vrf1
+            sonic(config-router-bgp)# address-family l2vpn evpn
+            sonic(config-router-bgp-af)# vni 100
+            sonic(config-router-bgp-af-vni)# route-target import 11:11
+            sonic(config-router-bgp-af-vni)# route-target export 22:22
+            sonic(config-router-bgp-af-vni)# route-target both 33:33
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+
+      <COMMAND name="no" help="no commands"/>
+      <COMMAND name="no advertise-default-gw" help="Advertise all default gw mac-ip routes in EVPN">
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_vni_advertise_default_gw ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
+      </COMMAND>
+      <COMMAND name="no advertise-svi-ip" help="Advertise svi mac-ip routes in EVPN">
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_vni_advertise_svi_ip ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
+      </COMMAND>
+      
+      <COMMAND name="no rd" help="Route distinguisher" >
+        <PARAM name="rdvalue" help="Route Distinguisher value" ptype="RD"/>
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_vni_rd ${vrf-name} L2VPN_EVPN ${vninum} ${rdvalue}</ACTION>
+      </COMMAND>
+
+      <COMMAND name="no route-target" help="Route target">
+        <PARAM name="rttype" help="advertise options" ptype="ADVERTISE_OPTIONS">
+          <PARAM name="rt" help="Route target value" ptype="RT"/>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_vni_rt ${vrf-name} L2VPN_EVPN ${vninum} ${rt} ${rttype}</ACTION>
+      </COMMAND>
+
+    </VIEW>
+
+    <VIEW name="enable-view">
+      <COMMAND name="show bgp l2vpn evpn vni" help="Show VNI">
+        <PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE">
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_vni show_evpn_vni.j2 default L2VPN_EVPN ${vninum}</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command displays VNI information including RD, Route-targets etc.
+          </DESCRIPTION>
+          <USAGE>
+            show bgp l2vpn evpn vni {vni-number}
+          </USAGE>
+          <EXAMPLE summary="Below are some of the sample outputs of show bgp l2vpn evpn vni 
+            command for VNI 100">
+            sonic# show bgp l2vpn evpn vni 100
+            VNI: 100 (known to the kernel)
+              Type: L2
+              Tenant-Vrf: default
+              RD: 22:22
+              Originator IP: 1.1.1.1
+              Mcast group: 0.0.0.0
+              Advertise-gw-macip : Yes
+              Advertise-svi-macip : No
+              Import Route Target:
+                22:22
+                22:23
+              Export Route Target:
+                100:268435556
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+      <COMMAND name="show bgp l2vpn evpn route vni" help="VxLAN Network Identifier">
+        <PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE"></PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
+        <DOCGEN>
+          <DESCRIPTION>
+            This command displays BGP EVPN routes for a specified VNI
+          </DESCRIPTION>
+          <USAGE>
+            show bgp l2vpn evpn route vni &lt;vni-num&gt;
+          </USAGE>
+          <EXAMPLE summary="Route display">
+            Refer example from show bgp l2vpn evpn route
+          </EXAMPLE>
+        </DOCGEN>
+      </COMMAND>
+    </VIEW>
+
+</CLISH_MODULE>
+

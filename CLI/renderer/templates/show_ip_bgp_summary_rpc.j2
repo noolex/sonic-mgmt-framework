@@ -1,0 +1,43 @@
+{% set vars = {'routerId': ""} %}
+{% set vars = {'asNum': ""} %}
+{% set vars = {'nbrAddr': ""} %}
+{% set vars = {'remoteAs': ""} %}
+{% set vars = {'version': ""} %}
+{% set vars = {'msgRcvd': "0"} %}
+{% set vars = {'msgSent': "0"} %}
+{% set vars = {'outQ': "0"} %}
+{% set vars = {'inQ': "0"} %}
+{% set vars = {'peerUptime': ""} %}
+{% set vars = {'state': ""} %}
+{% set vars = {'totalPeers': "0"} %}
+{% set vars = {'totalPeersUp': "0"} %}
+
+{% if json_output %}
+{% set bgpData = json_output %}
+{% if vars.update({'routerId':bgpData["routerId"]}) %}{% endif %}
+{% if vars.update({'asNum':bgpData["as"]}) %}{% endif %}
+BGP router identifier {{vars.routerId}}, local AS number {{vars.asNum}} 
+{{'Neighbor'.ljust(json_output['max_nbr_col_len']+4)}} {{'V'.ljust(3)}} {{'AS'.ljust(7)}} {{'MsgRcvd'.ljust(9)}} {{'MsgSent'.ljust(9)}} {{'InQ'.ljust(7)}} {{'OutQ'.ljust(7)}} {{'Up/Down'.ljust(15)}} {{'State/PfxRcd'.ljust(15)}}
+
+{% for peerIp, value in bgpData['peers'].items() %}
+    {% if vars.update({'nbrAddr':peerIp}) %}{% endif %}
+    {% if vars.update({'remoteAs':value["remoteAs"]}) %}{% endif %}
+    {% if vars.update({'version':value["version"]}) %}{% endif %}
+    {% if vars.update({'msgRcvd':value["msgRcvd"]}) %}{% endif %}
+    {% if vars.update({'msgSent':value["msgSent"]}) %}{% endif %}
+    {% if vars.update({'outQ':value["outq"]}) %}{% endif %}
+    {% if vars.update({'inQ':value["inq"]}) %}{% endif %}
+    {% if vars.update({'peerUptime':value["peerUptime"]}) %}{% endif %}
+    {% if vars.update({'state':value["state"]}) %}{% endif %}
+    {% if vars.state == 'Established' %}
+      {% if vars.update({'state':value["pfxRcd"]}) %}{% endif %}
+    {% endif %}
+{{(vars.nbrAddr).ljust(json_output['max_nbr_col_len']+4)}} {{'%-3s'|format(vars.version)}} {{'%-7s'|format(vars.remoteAs)}} {{'%-9s'|format(vars.msgRcvd)}} {{'%-9s'|format(vars.msgSent)}} {{'%-7s'|format(vars.inQ)}} {{'%-7s'|format(vars.outQ)}} {{'%-15s'|format(vars.peerUptime)}} {{'%-15s'|format(vars.state)}}
+{% endfor %}
+{% if vars.update({'totalPeers':bgpData["totalPeers"]}) %}{% endif %}
+{% if vars.update({'totalPeersUp':bgpData["totalPeersUp"]}) %}{% endif %}
+{{" "}}
+Total number of neighbors {{vars.totalPeers}}
+Total number of neighbors established {{vars.totalPeersUp}}
+{% endif %}
+

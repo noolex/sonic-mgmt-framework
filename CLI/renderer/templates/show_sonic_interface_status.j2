@@ -1,0 +1,32 @@
+{% set vars = {'name': ""} %}
+{% set vars = {'admin_state': ""} %}
+{% set vars = {'oper_state': ""} %}
+{% set vars = {'description': ""} %}
+{% set vars = {'mtu': ""} %}
+{% set vars = {'speed': ""} %}
+{% set vars = {'alternateName': ""} %}
+{% if json_output -%}
+-----------------------------------------------------------------------------------------------------------------------------
+{{'%-20s'|format("Name")}}{{'%-30s'|format("Description")}}{{'%-15s'|format("Admin")}}{{'%-15s'|format("Oper")}}{{'%-15s'|format("Speed")}}{{'%-15s'|format("MTU")}}{{'%-20s'|format("Alternate Name")}}
+-----------------------------------------------------------------------------------------------------------------------------
+{% for key_json in json_output %}
+{% set interface_list = json_output[key_json]['PORT_TABLE_LIST'] %}
+{% for interface in interface_list %}
+      {% if vars.update({'name':interface["ifname"]}) %}{% endif %}
+      {% if vars.update({'admin_state':interface["admin_status"]}) %}{% endif %}
+      {% if vars.update({'oper_state':interface["oper_status"]}) %}{% endif %}
+      {% if vars.update({'mtu':interface["mtu"]}) %}{% endif %}
+      {% if vars.update({'speed':interface["speed"]}) %}{% endif %}
+      {% if 'description' in interface and interface["description"] != "" %}
+        {% if vars.update({'description':interface["description"]}) %}{% endif %}
+      {%else %}
+        {% if vars.update({'description':"-"}) %}{% endif %}
+      {% endif %}
+      {% if vars.update({'alternateName':interface["alias"]}) %}{% endif %}
+{% if 'Eth' in vars.name %}
+{{'%-20s'|format(vars.name)}}{{(vars.description|truncate(29)).ljust(30)}}{{'%-15s'|format(vars.admin_state|lower())}}{{'%-15s'|format(vars.oper_state|lower())}}{{'%-15s'|format(vars.speed)}}{{'%-15s'|format(vars.mtu)}}{{'%-20s'|format(vars.alternateName)}}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
