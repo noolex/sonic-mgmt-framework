@@ -22,24 +22,24 @@ limitations under the License.
 </MACRODEF>
 
 <MACRODEF name="STATIC_ROUTE_TAG_DIST_CFG">
-     <PARAM name="tag" help="Select an tag value" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-          <PARAM name="tag-val" help="tag value (1-4294967295)" ptype="RANGE_1_4294967295">
+     <PARAM name="tag" help="Set tag for this route" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="tag-val" help="Tag value (1-4294967295)" ptype="RANGE_1_4294967295">
               <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/> 
           </PARAM> 
      </PARAM>
 </MACRODEF>
 
 <MACRODEF name ="STATIC_ROUTE_TRACK_DIST_CFG">
-     <PARAM name="track" help="track id for sla" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-           <PARAM name="trackid" help="trackid" ptype="RANGE_1_255">
+     <PARAM name="track" help="Track gateway with SLA" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+           <PARAM name="trackid" help="Track ID for SLA" ptype="RANGE_1_255">
               <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
            </PARAM>
      </PARAM>
 </MACRODEF>
 
 <MACRODEF name="STATIC_ROUTE_TAG_TRACK_DIST_CFG">
-     <PARAM name="tag" help="Select an tag value" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-          <PARAM name="tag-val" help="tag value (1-4294967295)" ptype="RANGE_1_4294967295">
+     <PARAM name="tag" help="Set tag for this route" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+          <PARAM name="tag-val" help="Tag value (1-4294967295)" ptype="RANGE_1_4294967295">
             <MACRO name="STATIC_ROUTE_TRACK_DIST_CFG" arg=""/>
             <MACRO name="STATIC_ROUTE_DIST_CFG" arg=""/>
           </PARAM>

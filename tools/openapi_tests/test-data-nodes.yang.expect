@@ -39,6 +39,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_test_data_nodes_interfaces
+      x-operationIdCamelCase: PutTestDataNodesInterfaces
       description: 'OperationId: put_test_data_nodes_interfaces
 
         Interface parameters.'
@@ -72,6 +73,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_test_data_nodes_interfaces
+      x-operationIdCamelCase: PatchTestDataNodesInterfaces
       description: 'OperationId: patch_test_data_nodes_interfaces
 
         Interface parameters.'
@@ -105,6 +107,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_test_data_nodes_interfaces
+      x-operationIdCamelCase: GetTestDataNodesInterfaces
       description: 'OperationId: get_test_data_nodes_interfaces
 
         Interface parameters.'
@@ -128,6 +131,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_test_data_nodes_interfaces
+      x-operationIdCamelCase: HeadTestDataNodesInterfaces
       description: 'OperationId: head_test_data_nodes_interfaces
 
         Interface parameters.'
@@ -151,6 +155,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_test_data_nodes_interfaces
+      x-operationIdCamelCase: DeleteTestDataNodesInterfaces
       description: 'OperationId: delete_test_data_nodes_interfaces
 
         Interface parameters.'
@@ -178,6 +183,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_list_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: PostListTestDataNodesInterfacesInterface
       description: 'OperationId: post_list_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -304,6 +310,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: PutTestDataNodesInterfacesInterface
       description: 'OperationId: put_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -427,6 +434,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: PatchTestDataNodesInterfacesInterface
       description: 'OperationId: patch_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -550,6 +558,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterface
       description: 'OperationId: get_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -663,6 +672,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterface
       description: 'OperationId: head_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -776,6 +786,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: DeleteTestDataNodesInterfacesInterface
       description: 'OperationId: delete_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -893,6 +904,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: post_test_data_nodes_interfaces_interface_description
+      x-operationIdCamelCase: PostTestDataNodesInterfacesInterfaceDescription
       description: 'OperationId: post_test_data_nodes_interfaces_interface_description
 
         A textual description of the interface.
@@ -949,6 +961,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_list_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: PutListTestDataNodesInterfacesInterface
       description: 'OperationId: put_list_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -1008,6 +1021,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_list_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: PatchListTestDataNodesInterfacesInterface
       description: 'OperationId: patch_list_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -1067,6 +1081,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_list_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: GetListTestDataNodesInterfacesInterface
       description: 'OperationId: get_list_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -1116,6 +1131,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_list_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: HeadListTestDataNodesInterfacesInterface
       description: 'OperationId: head_list_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -1165,6 +1181,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_list_test_data_nodes_interfaces_interface
+      x-operationIdCamelCase: DeleteListTestDataNodesInterfacesInterface
       description: 'OperationId: delete_list_test_data_nodes_interfaces_interface
 
         The list of interfaces on the device.
@@ -1285,6 +1302,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_test_data_nodes_interfaces_interface_description
+      x-operationIdCamelCase: PutTestDataNodesInterfacesInterfaceDescription
       description: 'OperationId: put_test_data_nodes_interfaces_interface_description
 
         A textual description of the interface.
@@ -1402,6 +1420,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_test_data_nodes_interfaces_interface_description
+      x-operationIdCamelCase: PatchTestDataNodesInterfacesInterfaceDescription
       description: 'OperationId: patch_test_data_nodes_interfaces_interface_description
 
         A textual description of the interface.
@@ -1519,6 +1538,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_test_data_nodes_interfaces_interface_description
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceDescription
       description: 'OperationId: get_test_data_nodes_interfaces_interface_description
 
         A textual description of the interface.
@@ -1626,6 +1646,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_test_data_nodes_interfaces_interface_description
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceDescription
       description: 'OperationId: head_test_data_nodes_interfaces_interface_description
 
         A textual description of the interface.
@@ -1733,6 +1754,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_test_data_nodes_interfaces_interface_description
+      x-operationIdCamelCase: DeleteTestDataNodesInterfacesInterfaceDescription
       description: 'OperationId: delete_test_data_nodes_interfaces_interface_description
 
         A textual description of the interface.
@@ -1847,6 +1869,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_test_data_nodes_interfaces_interface_type
+      x-operationIdCamelCase: PutTestDataNodesInterfacesInterfaceType
       description: 'OperationId: put_test_data_nodes_interfaces_interface_type
 
         The type of the interface.
@@ -1966,6 +1989,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_test_data_nodes_interfaces_interface_type
+      x-operationIdCamelCase: PatchTestDataNodesInterfacesInterfaceType
       description: 'OperationId: patch_test_data_nodes_interfaces_interface_type
 
         The type of the interface.
@@ -2085,6 +2109,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_test_data_nodes_interfaces_interface_type
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceType
       description: 'OperationId: get_test_data_nodes_interfaces_interface_type
 
         The type of the interface.
@@ -2194,6 +2219,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_test_data_nodes_interfaces_interface_type
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceType
       description: 'OperationId: head_test_data_nodes_interfaces_interface_type
 
         The type of the interface.
@@ -2303,6 +2329,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_test_data_nodes_interfaces_interface_type
+      x-operationIdCamelCase: DeleteTestDataNodesInterfacesInterfaceType
       description: 'OperationId: delete_test_data_nodes_interfaces_interface_type
 
         The type of the interface.
@@ -2419,6 +2446,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_test_data_nodes_interfaces_interface_enabled
+      x-operationIdCamelCase: PutTestDataNodesInterfacesInterfaceEnabled
       description: 'OperationId: put_test_data_nodes_interfaces_interface_enabled
 
         This leaf contains the configured, desired state of the
@@ -2532,6 +2560,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_test_data_nodes_interfaces_interface_enabled
+      x-operationIdCamelCase: PatchTestDataNodesInterfacesInterfaceEnabled
       description: 'OperationId: patch_test_data_nodes_interfaces_interface_enabled
 
         This leaf contains the configured, desired state of the
@@ -2645,6 +2674,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_test_data_nodes_interfaces_interface_enabled
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceEnabled
       description: 'OperationId: get_test_data_nodes_interfaces_interface_enabled
 
         This leaf contains the configured, desired state of the
@@ -2748,6 +2778,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_test_data_nodes_interfaces_interface_enabled
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceEnabled
       description: 'OperationId: head_test_data_nodes_interfaces_interface_enabled
 
         This leaf contains the configured, desired state of the
@@ -2851,6 +2882,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_test_data_nodes_interfaces_interface_enabled
+      x-operationIdCamelCase: DeleteTestDataNodesInterfacesInterfaceEnabled
       description: 'OperationId: delete_test_data_nodes_interfaces_interface_enabled
 
         This leaf contains the configured, desired state of the
@@ -2961,6 +2993,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: put_test_data_nodes_interfaces_interface_link_up_down_trap_enable
+      x-operationIdCamelCase: PutTestDataNodesInterfacesInterfaceLinkUpDownTrapEnable
       description: 'OperationId: put_test_data_nodes_interfaces_interface_link_up_down_trap_enable
 
         Controls whether linkUp/linkDown SNMP notifications
@@ -3069,6 +3102,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: patch_test_data_nodes_interfaces_interface_link_up_down_trap_enable
+      x-operationIdCamelCase: PatchTestDataNodesInterfacesInterfaceLinkUpDownTrapEnable
       description: 'OperationId: patch_test_data_nodes_interfaces_interface_link_up_down_trap_enable
 
         Controls whether linkUp/linkDown SNMP notifications
@@ -3177,6 +3211,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: get_test_data_nodes_interfaces_interface_link_up_down_trap_enable
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceLinkUpDownTrapEnable
       description: 'OperationId: get_test_data_nodes_interfaces_interface_link_up_down_trap_enable
 
         Controls whether linkUp/linkDown SNMP notifications
@@ -3275,6 +3310,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: head_test_data_nodes_interfaces_interface_link_up_down_trap_enable
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceLinkUpDownTrapEnable
       description: 'OperationId: head_test_data_nodes_interfaces_interface_link_up_down_trap_enable
 
         Controls whether linkUp/linkDown SNMP notifications
@@ -3373,6 +3409,7 @@ paths:
         '500':
           description: Internal Server Error
       operationId: delete_test_data_nodes_interfaces_interface_link_up_down_trap_enable
+      x-operationIdCamelCase: DeleteTestDataNodesInterfacesInterfaceLinkUpDownTrapEnable
       description: 'OperationId: delete_test_data_nodes_interfaces_interface_link_up_down_trap_enable
 
         Controls whether linkUp/linkDown SNMP notifications
@@ -3477,6 +3514,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_admin_status
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceAdminStatus
       description: 'OperationId: get_test_data_nodes_interfaces_interface_admin_status
 
         The desired state of the interface.
@@ -3568,6 +3606,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_admin_status
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceAdminStatus
       description: 'OperationId: head_test_data_nodes_interfaces_interface_admin_status
 
         The desired state of the interface.
@@ -3664,6 +3703,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_oper_status
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceOperStatus
       description: 'OperationId: get_test_data_nodes_interfaces_interface_oper_status
 
         The current operational state of the interface.
@@ -3755,6 +3795,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_oper_status
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceOperStatus
       description: 'OperationId: head_test_data_nodes_interfaces_interface_oper_status
 
         The current operational state of the interface.
@@ -3851,6 +3892,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_last_change
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceLastChange
       description: 'OperationId: get_test_data_nodes_interfaces_interface_last_change
 
         The time the interface entered its current operational
@@ -3945,6 +3987,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_last_change
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceLastChange
       description: 'OperationId: head_test_data_nodes_interfaces_interface_last_change
 
         The time the interface entered its current operational
@@ -4044,6 +4087,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_if_index
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceIfIndex
       description: 'OperationId: get_test_data_nodes_interfaces_interface_if_index
 
         The ifIndex value for the ifEntry represented by this
@@ -4134,6 +4178,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_if_index
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceIfIndex
       description: 'OperationId: head_test_data_nodes_interfaces_interface_if_index
 
         The ifIndex value for the ifEntry represented by this
@@ -4229,6 +4274,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_phys_address
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfacePhysAddress
       description: 'OperationId: get_test_data_nodes_interfaces_interface_phys_address
 
         The interface''s address at its protocol sub-layer.  For
@@ -4329,6 +4375,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_phys_address
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfacePhysAddress
       description: 'OperationId: head_test_data_nodes_interfaces_interface_phys_address
 
         The interface''s address at its protocol sub-layer.  For
@@ -4434,6 +4481,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_higher_layer_if
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceHigherLayerIf
       description: 'OperationId: get_test_data_nodes_interfaces_interface_higher_layer_if
 
         A list of references to interfaces layered on top of this
@@ -4524,6 +4572,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_higher_layer_if
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceHigherLayerIf
       description: 'OperationId: head_test_data_nodes_interfaces_interface_higher_layer_if
 
         A list of references to interfaces layered on top of this
@@ -4619,6 +4668,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_lower_layer_if
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceLowerLayerIf
       description: 'OperationId: get_test_data_nodes_interfaces_interface_lower_layer_if
 
         A list of references to interfaces layered underneath this
@@ -4709,6 +4759,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_lower_layer_if
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceLowerLayerIf
       description: 'OperationId: head_test_data_nodes_interfaces_interface_lower_layer_if
 
         A list of references to interfaces layered underneath this
@@ -4804,6 +4855,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_speed
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceSpeed
       description: 'OperationId: get_test_data_nodes_interfaces_interface_speed
 
         An estimate of the interface''s current bandwidth in bits
@@ -4902,6 +4954,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_speed
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceSpeed
       description: 'OperationId: head_test_data_nodes_interfaces_interface_speed
 
         An estimate of the interface''s current bandwidth in bits
@@ -5005,6 +5058,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatistics
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics
 
         A collection of interface-related statistics objects.'
@@ -5093,6 +5147,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatistics
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics
 
         A collection of interface-related statistics objects.'
@@ -5186,6 +5241,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_discontinuity_time
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsDiscontinuityTime
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_discontinuity_time
 
         The time on the most recent occasion at which any one or
@@ -5284,6 +5340,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_discontinuity_time
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsDiscontinuityTime
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_discontinuity_time
 
         The time on the most recent occasion at which any one or
@@ -5387,6 +5444,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_in_octets
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsInOctets
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_in_octets
 
         The total number of octets received on the interface,
@@ -5486,6 +5544,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_in_octets
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsInOctets
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_in_octets
 
         The total number of octets received on the interface,
@@ -5590,6 +5649,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_in_unicast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsInUnicastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_in_unicast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -5691,6 +5751,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_in_unicast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsInUnicastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_in_unicast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -5797,6 +5858,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_in_broadcast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsInBroadcastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_in_broadcast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -5898,6 +5960,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_in_broadcast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsInBroadcastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_in_broadcast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -6004,6 +6067,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_in_multicast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsInMulticastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_in_multicast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -6108,6 +6172,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_in_multicast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsInMulticastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_in_multicast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -6217,6 +6282,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_in_discards
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsInDiscards
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_in_discards
 
         The number of inbound packets that were chosen to be
@@ -6322,6 +6388,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_in_discards
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsInDiscards
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_in_discards
 
         The number of inbound packets that were chosen to be
@@ -6432,6 +6499,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_in_errors
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsInErrors
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_in_errors
 
         For packet-oriented interfaces, the number of inbound
@@ -6541,6 +6609,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_in_errors
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsInErrors
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_in_errors
 
         For packet-oriented interfaces, the number of inbound
@@ -6655,6 +6724,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_in_unknown_protos
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsInUnknownProtos
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_in_unknown_protos
 
         For packet-oriented interfaces, the number of packets
@@ -6768,6 +6838,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_in_unknown_protos
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsInUnknownProtos
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_in_unknown_protos
 
         For packet-oriented interfaces, the number of packets
@@ -6886,6 +6957,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_out_octets
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsOutOctets
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_out_octets
 
         The total number of octets transmitted out of the
@@ -6985,6 +7057,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_out_octets
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsOutOctets
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_out_octets
 
         The total number of octets transmitted out of the
@@ -7089,6 +7162,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_out_unicast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsOutUnicastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_out_unicast_pkts
 
         The total number of packets that higher-level protocols
@@ -7192,6 +7266,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_out_unicast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsOutUnicastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_out_unicast_pkts
 
         The total number of packets that higher-level protocols
@@ -7300,6 +7375,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_out_broadcast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsOutBroadcastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_out_broadcast_pkts
 
         The total number of packets that higher-level protocols
@@ -7403,6 +7479,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_out_broadcast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsOutBroadcastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_out_broadcast_pkts
 
         The total number of packets that higher-level protocols
@@ -7511,6 +7588,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_out_multicast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsOutMulticastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_out_multicast_pkts
 
         The total number of packets that higher-level protocols
@@ -7618,6 +7696,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_out_multicast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsOutMulticastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_out_multicast_pkts
 
         The total number of packets that higher-level protocols
@@ -7730,6 +7809,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_out_discards
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsOutDiscards
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_out_discards
 
         The number of outbound packets that were chosen to be
@@ -7836,6 +7916,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_out_discards
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsOutDiscards
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_out_discards
 
         The number of outbound packets that were chosen to be
@@ -7947,6 +8028,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_interface_statistics_out_errors
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceStatisticsOutErrors
       description: 'OperationId: get_test_data_nodes_interfaces_interface_statistics_out_errors
 
         For packet-oriented interfaces, the number of outbound
@@ -8052,6 +8134,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_interface_statistics_out_errors
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceStatisticsOutErrors
       description: 'OperationId: head_test_data_nodes_interfaces_interface_statistics_out_errors
 
         For packet-oriented interfaces, the number of outbound
@@ -8098,6 +8181,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state
+      x-operationIdCamelCase: GetTestDataNodesInterfacesState
       description: 'OperationId: get_test_data_nodes_interfaces_state
 
         Data nodes for the operational state of interfaces.'
@@ -8122,6 +8206,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesState
       description: 'OperationId: head_test_data_nodes_interfaces_state
 
         Data nodes for the operational state of interfaces.'
@@ -8171,6 +8256,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterface
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface
 
         The list of interfaces on the device.
@@ -8222,6 +8308,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterface
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface
 
         The list of interfaces on the device.
@@ -8258,6 +8345,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_list_test_data_nodes_interfaces_state_interface
+      x-operationIdCamelCase: GetListTestDataNodesInterfacesStateInterface
       description: 'OperationId: get_list_test_data_nodes_interfaces_state_interface
 
         The list of interfaces on the device.
@@ -8289,6 +8377,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_list_test_data_nodes_interfaces_state_interface
+      x-operationIdCamelCase: HeadListTestDataNodesInterfacesStateInterface
       description: 'OperationId: head_list_test_data_nodes_interfaces_state_interface
 
         The list of interfaces on the device.
@@ -8345,6 +8434,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_type
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceType
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_type
 
         The type of the interface.'
@@ -8389,6 +8479,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_type
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceType
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_type
 
         The type of the interface.'
@@ -8438,6 +8529,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_admin_status
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceAdminStatus
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_admin_status
 
         The desired state of the interface.
@@ -8485,6 +8577,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_admin_status
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceAdminStatus
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_admin_status
 
         The desired state of the interface.
@@ -8537,6 +8630,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_oper_status
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceOperStatus
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_oper_status
 
         The current operational state of the interface.
@@ -8584,6 +8678,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_oper_status
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceOperStatus
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_oper_status
 
         The current operational state of the interface.
@@ -8636,6 +8731,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_last_change
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceLastChange
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_last_change
 
         The time the interface entered its current operational
@@ -8686,6 +8782,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_last_change
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceLastChange
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_last_change
 
         The time the interface entered its current operational
@@ -8741,6 +8838,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_if_index
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceIfIndex
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_if_index
 
         The ifIndex value for the ifEntry represented by this
@@ -8787,6 +8885,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_if_index
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceIfIndex
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_if_index
 
         The ifIndex value for the ifEntry represented by this
@@ -8838,6 +8937,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_phys_address
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfacePhysAddress
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_phys_address
 
         The interface''s address at its protocol sub-layer.  For
@@ -8894,6 +8994,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_phys_address
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfacePhysAddress
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_phys_address
 
         The interface''s address at its protocol sub-layer.  For
@@ -8955,6 +9056,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_higher_layer_if
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceHigherLayerIf
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_higher_layer_if
 
         A list of references to interfaces layered on top of this
@@ -9001,6 +9103,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_higher_layer_if
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceHigherLayerIf
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_higher_layer_if
 
         A list of references to interfaces layered on top of this
@@ -9052,6 +9155,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_lower_layer_if
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceLowerLayerIf
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_lower_layer_if
 
         A list of references to interfaces layered underneath this
@@ -9098,6 +9202,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_lower_layer_if
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceLowerLayerIf
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_lower_layer_if
 
         A list of references to interfaces layered underneath this
@@ -9149,6 +9254,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_speed
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceSpeed
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_speed
 
         An estimate of the interface''s current bandwidth in bits
@@ -9204,6 +9310,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_speed
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceSpeed
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_speed
 
         An estimate of the interface''s current bandwidth in bits
@@ -9264,6 +9371,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatistics
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics
 
         A collection of interface-related statistics objects.'
@@ -9308,6 +9416,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatistics
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics
 
         A collection of interface-related statistics objects.'
@@ -9357,6 +9466,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_discontinuity_time
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsDiscontinuityTime
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_discontinuity_time
 
         The time on the most recent occasion at which any one or
@@ -9411,6 +9521,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_discontinuity_time
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsDiscontinuityTime
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_discontinuity_time
 
         The time on the most recent occasion at which any one or
@@ -9470,6 +9581,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_in_octets
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsInOctets
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_in_octets
 
         The total number of octets received on the interface,
@@ -9525,6 +9637,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_in_octets
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsInOctets
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_in_octets
 
         The total number of octets received on the interface,
@@ -9585,6 +9698,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_in_unicast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsInUnicastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_in_unicast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -9641,6 +9755,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_in_unicast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsInUnicastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_in_unicast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -9702,6 +9817,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_in_broadcast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsInBroadcastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_in_broadcast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -9759,6 +9875,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_in_broadcast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsInBroadcastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_in_broadcast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -9821,6 +9938,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_in_multicast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsInMulticastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_in_multicast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -9880,6 +9998,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_in_multicast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsInMulticastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_in_multicast_pkts
 
         The number of packets, delivered by this sub-layer to a
@@ -9944,6 +10063,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_in_discards
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsInDiscards
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_in_discards
 
         The number of inbound packets that were chosen to be
@@ -10005,6 +10125,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_in_discards
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsInDiscards
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_in_discards
 
         The number of inbound packets that were chosen to be
@@ -10071,6 +10192,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_in_errors
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsInErrors
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_in_errors
 
         For packet-oriented interfaces, the number of inbound
@@ -10136,6 +10258,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_in_errors
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsInErrors
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_in_errors
 
         For packet-oriented interfaces, the number of inbound
@@ -10206,6 +10329,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_in_unknown_protos
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsInUnknownProtos
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_in_unknown_protos
 
         For packet-oriented interfaces, the number of packets
@@ -10274,6 +10398,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_in_unknown_protos
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsInUnknownProtos
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_in_unknown_protos
 
         For packet-oriented interfaces, the number of packets
@@ -10347,6 +10472,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_out_octets
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsOutOctets
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_out_octets
 
         The total number of octets transmitted out of the
@@ -10402,6 +10528,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_out_octets
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsOutOctets
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_out_octets
 
         The total number of octets transmitted out of the
@@ -10462,6 +10589,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_out_unicast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsOutUnicastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_out_unicast_pkts
 
         The total number of packets that higher-level protocols
@@ -10521,6 +10649,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_out_unicast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsOutUnicastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_out_unicast_pkts
 
         The total number of packets that higher-level protocols
@@ -10585,6 +10714,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_out_broadcast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsOutBroadcastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_out_broadcast_pkts
 
         The total number of packets that higher-level protocols
@@ -10644,6 +10774,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_out_broadcast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsOutBroadcastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_out_broadcast_pkts
 
         The total number of packets that higher-level protocols
@@ -10708,6 +10839,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_out_multicast_pkts
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsOutMulticastPkts
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_out_multicast_pkts
 
         The total number of packets that higher-level protocols
@@ -10771,6 +10903,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_out_multicast_pkts
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsOutMulticastPkts
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_out_multicast_pkts
 
         The total number of packets that higher-level protocols
@@ -10839,6 +10972,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_out_discards
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsOutDiscards
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_out_discards
 
         The number of outbound packets that were chosen to be
@@ -10900,6 +11034,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_out_discards
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsOutDiscards
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_out_discards
 
         The number of outbound packets that were chosen to be
@@ -10966,6 +11101,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: get_test_data_nodes_interfaces_state_interface_statistics_out_errors
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceStatisticsOutErrors
       description: 'OperationId: get_test_data_nodes_interfaces_state_interface_statistics_out_errors
 
         For packet-oriented interfaces, the number of outbound
@@ -11027,6 +11163,7 @@ paths:
           description: Internal Server Error
       x-config: 'false'
       operationId: head_test_data_nodes_interfaces_state_interface_statistics_out_errors
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceStatisticsOutErrors
       description: 'OperationId: head_test_data_nodes_interfaces_state_interface_statistics_out_errors
 
         For packet-oriented interfaces, the number of outbound

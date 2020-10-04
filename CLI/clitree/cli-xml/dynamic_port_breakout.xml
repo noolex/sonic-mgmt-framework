@@ -32,21 +32,70 @@
       <xi:include href="include/pipe.xml"/>
       <DOCGEN>
           <DESCRIPTION>
-              Show the dependent configurations on interfaces.
+              Show information related to dynamic port breakout.
           </DESCRIPTION>
           <USAGE>
-              Use this command to show the dependent configurations on an interface.
-
+              Use this command to show,
+                  1. the dependent configurations on a port.
+                    show interface breakout dependencies port front-panel-port
+                  2. breakout modes supported by the device.
+                    show interface breakout modes
+                  3. the current breakout configuration, member ports and status.
+                    show interface breakout port front-panel-port
+                    show interface breakout port
           </USAGE>
           <EXAMPLE>
+
+              sonic# show interface breakout modes
+              -------------------------------------------------------------------------
+              Port  Interface   Supported Modes                           Default Mode
+              -------------------------------------------------------------------------
+              1/1   Ethernet0   1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/3   Ethernet8   1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/5   Ethernet16  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/7   Ethernet24  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/9   Ethernet32  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/11  Ethernet40  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/13  Ethernet48  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/15  Ethernet56  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/17  Ethernet64  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/19  Ethernet72  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/21  Ethernet80  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/23  Ethernet88  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/25  Ethernet96  1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/27  Ethernet104 1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/29  Ethernet112 1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              1/31  Ethernet120 1x100G, 1x40G, 4x25G, 4x10G               1x100G
+              sonic#
+              sonic# show interface breakout dependencies port 1/1
+              ----------------------------------
+              Dependent Configurations
+              ----------------------------------
+              VLAN|Vlan100
+              VLAN_MEMBER|Vlan100|Ethernet2
+              sonic#
               sonic# show interface breakout port 1/1
-              ========================================
-              Interface     Breakout mode   Status
-              ========================================
-              Ethernet0     4x25G           Completed
-              Ethernet1
-              Ethernet2
-              Ethernet3
+              -----------------------------------------------
+              Port  Breakout Mode  Status        Interfaces
+              -----------------------------------------------
+              1/1   4x25G          Completed     Ethernet0
+                                                 Ethernet1
+                                                 Ethernet2
+                                                 Ethernet3
+              sonic#
+              sonic# show interface breakout
+              -----------------------------------------------
+              Port  Breakout Mode  Status        Interfaces
+              -----------------------------------------------
+              1/1   4x25G          Completed     Ethernet0
+                                                 Ethernet1
+                                                 Ethernet2
+                                                 Ethernet3
+              1/3   4x10G          Completed     Ethernet8
+                                                 Ethernet9
+                                                 Ethernet10
+                                                 Ethernet11
+              sonic#
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
@@ -73,12 +122,16 @@
               Breakout a port
           </DESCRIPTION>
           <USAGE>
-              Use this command breakout a port.
+              Use this command breakout a port or undo a breakout configuration.
+                interface breakout port front-panel-port mode breakout-mode
+                no interface breakout port front-panel-port
           </USAGE>
           <EXAMPLE>
               sonic# configure terminal
               sonic(config)# interface breakout port 1/1 mode 4x25
+              Dynamic Port Breakout in-progress, use 'show interface breakout port 1/1' to check status.
               sonic(config)# no interface breakout port 1/1
+              Dynamic Port Breakout in-progress, use 'show interface breakout port 1/1' to check status.
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>

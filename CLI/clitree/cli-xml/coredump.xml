@@ -36,6 +36,10 @@
                     sonic# configure terminal
                     sonic(config)# no core
                 </EXAMPLE>
+                <FEATURE> COREDUMP </FEATURE>
+                <ALTCMD type="click">
+                  config core disable
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND
@@ -59,6 +63,10 @@
                     sonic# configure terminal
                     sonic(config)# core enable
                 </EXAMPLE>
+                <FEATURE> COREDUMP </FEATURE>
+                <ALTCMD type="click">
+                  config core enable
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
    </VIEW>
@@ -97,6 +105,10 @@
                     2020-05-13 01:10:56      17844  11 missing  crashme
                     2020-05-13 01:10:55      17728  11 present  crashme
                 </EXAMPLE>
+                <FEATURE> COREDUMP </FEATURE>
+                <ALTCMD type="click">
+                  show cores list
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND
@@ -116,6 +128,10 @@
                     sonic# show core config
                     Coredump : Enabled
                 </EXAMPLE>
+                <FEATURE> COREDUMP </FEATURE>
+                <ALTCMD type="click">
+                  show cores config
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND
@@ -171,6 +187,10 @@
                     #4  0x00007f30f52cb6c7 PyEval_CallObjectWithKeywords (libpython2.7.so.1.0)
                     #5  0x00007f30ebb2f43a n/a (/usr/sbin/cli/.libs/clish_plugin_clish.so)
                 </EXAMPLE>
+                <FEATURE> COREDUMP </FEATURE>
+                <ALTCMD type="click">
+                  show cores info
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
     </VIEW>

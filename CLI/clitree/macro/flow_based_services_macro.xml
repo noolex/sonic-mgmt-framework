@@ -62,13 +62,33 @@
     </MACRODEF>
 
     <MACRODEF name="CLASSIFIER-DESCRIPTION">
-        <COMMAND name="description" help="Configure classifier description">
+        <COMMAND name="description" help="Configure class-map description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_description ${fbs-class-name} ${description-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures Class-map description 
+              </DESCRIPTION>
+              <USAGE>
+              </USAGE>
+              <EXAMPLE summary="add description for class-map">
+                sonic(config-class-map)# description "ip match type class-map"
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="no description" help="Clear classifier description">
+        <COMMAND name="no description" help="Clear class-map description">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_description ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes class-map description 
+              </DESCRIPTION>
+              <USAGE>
+              </USAGE>
+              <EXAMPLE summary="removes description for class-map">
+              sonic(config-class-map)# no description
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
     </MACRODEF>
 
@@ -85,12 +105,28 @@
             <MACRO name="FBS-DIRECTION-TYPES"/>
             <PARAM name="fbs-policy-name" help="Name of the policy (Max: 63 characters)" ptype="STRING_63"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs bind_policy ${fbs-policy-name} ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Applies ingress/egress service policy on given interface 
+              </DESCRIPTION>
+              <EXAMPLE summary="Applies ingress/egress service policy">
+                 sonic(conf-if-Vlan100)# service-policy type forwarding in policy_vrf
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="no service-policy" help="Remove ingress or egress policy">
+        <COMMAND name="no service-policy" help="Removes ingress or egress policy">
             <MACRO name="FBS-POLICY-TYPES" arg="false" />
             <MACRO name="FBS-DIRECTION-TYPES"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs unbind_policy ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name}</ACTION>
+             <ACTION builtin="clish_pyobj">sonic_cli_fbs unbind_policy ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name}</ACTION>
+             <DOCGEN>
+              <DESCRIPTION>
+                 Removes ingress/egress service policy on given interface 
+              </DESCRIPTION>
+              <EXAMPLE summary="Unbinds ingress/egress service policy">
+                 sonic(conf-if-Vlan100)# no service-policy type forwarding in
+              </EXAMPLE>
+           </DOCGEN>
         </COMMAND>
     </MACRODEF>
 

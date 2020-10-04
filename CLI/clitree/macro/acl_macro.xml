@@ -136,15 +136,42 @@ limitations under the License.
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535"/>
             <PARAM name="remark" help="Clear remark or description for rule" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl delete_acl_rule ${name} arg1 ${seq-no} ${remark}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete ACL rule or remark associated with the rule.
+                </DESCRIPTION>
+                <EXAMPLE summary="Delete Rule">
+                    sonic(config-mac-acl)# no seq 100
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND name="remark" help="Set remark or description for ACL">
             <PARAM name="remark-val" help="Remark or description for ACL" ptype="ACL_REMARK"/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl set_acl_remark ${name} arg1 ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Set an ACL remark or description.
+                </DESCRIPTION>
+                <USAGE>
+                    Remark with spaces should be mentioned in double quotes.
+                </USAGE>
+                <EXAMPLE summary="Set ACL remark">
+                    sonic(config-mac-acl)# remark "Example ACL remark"
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND name="no remark" help="Clear remark or description for ACL">
             <ACTION builtin="clish_pyobj">sonic_cli_acl clear_acl_remark ${name} arg1</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete ACL remark or description.
+                </DESCRIPTION>
+                <EXAMPLE summary="Set ACL remark">
+                    sonic(config-mac-acl)# no remark
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     </MACRODEF>
 
@@ -175,28 +202,85 @@ limitations under the License.
         <COMMAND name="mac access-group" help="Specify MAC access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_L2 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Apply MAC ACL to an interface.
+                </DESCRIPTION>
+                <USAGE>
+                    ACL must be created first and must be of type MAC to be applied. Only 1 ACL of a given type can be applied per interface and per direction. 
+                </USAGE>
+                <EXAMPLE summary="Apply MAC ACL to an interface">
+                    sonic(conf-if-Vlan100)# mac access-group macacl-example in
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="ip access-group" help="Specify IP access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV4 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Apply IPv4 ACL to an interface.
+                </DESCRIPTION>
+                <USAGE>
+                    ACL must be created first and must be of type IPv4 to be applied. Only 1 ACL of a given type can be applied per interface and per direction. 
+                </USAGE>
+                <EXAMPLE summary="Apply IPv4 ACL to an interface">
+                    sonic(conf-if-po1)# ip access-group ipacl-example out
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="ipv6 access-group" help="Specify IPv6 access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV6 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Apply IPv6 ACL to an interface.
+                </DESCRIPTION>
+                <USAGE>
+                    ACL must be created first and must be of type IPv6 to be applied. Only 1 ACL of a given type can be applied per interface and per direction. 
+                </USAGE>
+                <EXAMPLE summary="Apply IPv6 ACL to an interface">
+                    sonic(conf-if-Eth1/1)# ipv6 access-group ipv6acl-example in
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     
         <!-- no mac|ip|ipv6 access-group NAME in|out -->
         <COMMAND name="no mac access-group" help="Specify MAC access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_L2 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Remove MAC ACL application to an interface.
+                </DESCRIPTION>
+                <EXAMPLE summary="Remove MAC ACL application">
+                    sonic(conf-if-Vlan100)# no mac access-group macacl-example in
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="no ip access-group" help="Specify IP access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV4 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Remove IPv4 ACL application to an interface.
+                </DESCRIPTION>
+                <EXAMPLE summary="Remove IPv4 ACL application">
+                    sonic(conf-if-po1)# no ip access-group ipacl-example out
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND name="no ipv6 access-group" help="Specify IPv6 access control for packets">
             <MACRO name="ACL-BINDING-OPTIONS-BOTH" arg=""/>
             <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV6 ${iface} ${vlan_name} ${po_name} arg1 ${direction-switch}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Remove IPv6 ACL application to an interface.
+                </DESCRIPTION>
+                <EXAMPLE summary="Remove IPv6 ACL application">
+                    sonic(conf-if-Eth1/1)# no ipv6 access-group ipv6acl-example out
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     </MACRODEF>
 

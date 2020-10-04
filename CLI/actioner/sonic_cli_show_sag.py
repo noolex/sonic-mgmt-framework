@@ -28,12 +28,11 @@ import cli_client as cc
 from scripts.render_cli import show_cli_output
 import saghelper as sh
 
-output = {}
-
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
     body = None
+    output = {}
     
     keypath = cc.Path('/restconf/data/sonic-sag:sonic-sag/SAG/SAG_LIST')
     res = api.get(keypath)

@@ -26,9 +26,6 @@ def invoke(func, args=[]):
     if func == 'get_openconfig_qos_qos_interfaces_interface_maps':
         path = cc.Path('/restconf/data/openconfig-qos:qos/interfaces/interface={interface_id}/openconfig-qos-maps-ext:interface-maps/config', interface_id=args[0])
         return api.get(path)
-    if func == 'get_list_openconfig_qos_ext_qos_threshold_breaches_breach':
-        path = cc.Path('/restconf/data/openconfig-qos:qos/openconfig-qos-ext:threshold-breaches/breach')
-        return api.get(path)
     if func == 'patch_openconfig_qos_ext_qos_queues_queue_wred_config_wred_profile':
         path = cc.Path('/restconf/data/openconfig-qos:qos/queues/')
         body = {"openconfig-qos:queues": {"queue": [{"name": args[0], "wred": {"config": {"openconfig-qos-ext:wred-profile" : args[1]}}}]}}
@@ -171,8 +168,6 @@ def run(func, args):
                         tup = value['priority-group']
                         value['priority-group'] = sorted(tup, key=getQId)
                     show_cli_output(sys.argv[3], response['openconfig-qos-ext:priority-groups'])
-             elif func == 'get_list_openconfig_qos_ext_qos_threshold_breaches_breach':
-                show_cli_output('show_qos_queue_threshold_breaches.j2', response)
              elif func == 'get_openconfig_qos_qos_queues_queue':
                 show_cli_output('show_qos_queue_config.j2', response)
              elif func == 'get_openconfig_qos_qos_interface_scheduler_policy_config':

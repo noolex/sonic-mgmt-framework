@@ -11,7 +11,7 @@ And respective tables for different if-types for fetching admin/oper status like
 {% set vars = {'vrf': ""} %}
 {% set vars = {'flags': ""} %}
 {% set vars = {'ipv4_src_pfx': ""} %}
-{% if (("sonic-interface:INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in json_output)) %}
+{% if (("sonic-interface:INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-sag:SAG_INTF_LIST" in json_output)) %}
 Flags: U-Unnumbered interface, A-Anycast IP
 -----------------------------------------------------------------------------------------------
 {{'%-20s'|format("Interface")}}{{'%-35s'|format("IP address/mask")}}{{'%-15s'|format("VRF")}}{{'%-15s'|format("Admin/Oper")}}{{'%-15s'|format("Flags")}}
@@ -38,6 +38,20 @@ Flags: U-Unnumbered interface, A-Anycast IP
          {% if "isMgmtVrfEnabled" in json_output and json_output["isMgmtVrfEnabled"] == True%}
             {% if vars.update({'vrf': "mgmt"}) %}{% endif %}
          {% endif %}
+         {% if 'sonic-mgmt-port:MGMT_PORT_LIST' in json_output %}
+            {% set mgmtPortList = json_output["sonic-mgmt-port:MGMT_PORT_LIST"] %}
+            {% for port in mgmtPortList -%}
+                {% if vars.name == port["ifname"] -%}
+                    {% if "admin_status" in port %}
+                        {% if vars.update({'admin_state':port["admin_status"]}) %}{% endif %}
+                    {% endif %}
+                    {% if "oper_status" in port %}
+                        {% if vars.update({'oper_state':port["oper_status"]}) %}{% endif %}
+                    {% endif %}
+                    {% break %}
+                {% endif -%}
+            {% endfor -%}
+         {% endif %}
         {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
         {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
 {{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
@@ -59,6 +73,9 @@ Flags: U-Unnumbered interface, A-Anycast IP
                 {% endif -%}
                 {% if "oper" in sagIntf -%}
                     {% if sagvars.update({'oper_state':sagIntf["oper"]}) -%}{% endif -%}
+                {% endif -%}
+                {% if "vrf" in sagIntf and sagIntf["vrf"] != 'default' -%}
+                    {% if sagvars.update({'vrf':sagIntf["vrf"]}) -%}{% endif -%}
                 {% endif -%}
                 {% set admin_op = sagvars.admin_state|string() + "/" + sagvars.oper_state|string() -%}
                 {% if sagvars.update({'admin_oper':admin_op}) -%}{% endif -%}     

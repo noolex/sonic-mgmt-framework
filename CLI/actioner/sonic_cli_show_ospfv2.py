@@ -380,6 +380,9 @@ def build_area_id_list (vrf_name):
 def invoke_show_api(func, args=[]):
     vrf = args[0]
     i = 3
+    if 'do' in args and args[1] == 'do':
+        # By default, the leftmost entry is removed
+        args.remove('do')
     if (len(args[i:]) == 1):
         return generate_show_ip_ospf(vrf)
     else:

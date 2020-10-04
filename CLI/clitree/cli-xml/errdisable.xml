@@ -36,10 +36,11 @@
                 </USAGE>
                 <EXAMPLE summary="Shows status of error disable recovery for all supported feature">
                     show errdisable recovery
-                    ErrDisable Reason    Timer Status
-                    -----------------    --------------
-                    udld                 Disabled
-                    bpduguard            Disabled
+                    Errdisable Cause    Status
+                    ------------------  --------
+                    udld                enabled
+                    bpduguard           disabled
+                    Timeout for Auto-recovery:  300 seconds
 
                 </EXAMPLE>
                 <FEATURE> ERRDISABLE </FEATURE>
@@ -54,7 +55,7 @@
         <COMMAND name="errdisable recovery" help="Error disable recovery configuration"/>
         <COMMAND name="no errdisable recovery" help="Error disable recovery configuration"/>
         <COMMAND name="errdisable recovery cause" help="Error disable recovery cause configuration"
-            command_tables="sonic-errdisable:sonic-errdisable/ERRDISABLE/id={id}"
+            command_tables="sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST/id={id}"
             command_keys="id=RECOVERY"
             render_command_cb="errdisable_cause">
             <PARAM

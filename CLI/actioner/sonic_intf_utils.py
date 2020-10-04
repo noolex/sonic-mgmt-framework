@@ -19,6 +19,7 @@
 
 import re
 import syslog
+import cli_client as cc
 
 def name_to_int_val(ifName):
     val = 0
@@ -56,6 +57,32 @@ def isMgmtVrfEnabled(cc):
             return False
         else:
             return True
+    except Exception as e:
+        syslog.syslog(syslog.LOG_ERR, str(e))
+        return False
+
+def is_intf_naming_mode_std():
+    api = cc.ApiClient()
+    try:
+        path = cc.Path('/restconf/data/sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST={name}/intf_naming_mode', name="localhost")
+        response = api.get(path)
+        if response is None:
+            return False
+
+        if response.ok():
+            response = response.content
+            if response is None:
+                return False
+
+        response = response.get('sonic-device-metadata:intf_naming_mode')
+        if response is None:
+            return False
+
+        if "standard" in response.lower():
+            return True
+
+        return False
+
     except Exception as e:
         syslog.syslog(syslog.LOG_ERR, str(e))
         return False

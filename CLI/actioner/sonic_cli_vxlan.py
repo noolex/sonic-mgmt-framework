@@ -25,9 +25,26 @@ import re
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-
 vxlan_global_info = []
 
+def is_vlan_vni_mapping_exists():
+    aa = cc.ApiClient()
+    keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL_MAP/VXLAN_TUNNEL_MAP_LIST')
+    api_response = aa.get(keypath)
+    if api_response.ok():
+        response = api_response.content
+        if response is not None and 'sonic-vxlan:VXLAN_TUNNEL_MAP_LIST' in response:
+           vlan_vni_map_list = response['sonic-vxlan:VXLAN_TUNNEL_MAP_LIST']
+           vlan_vni_map_list_len = len(vlan_vni_map_list)
+           if (vlan_vni_map_list_len > 0) :
+              return True
+           else:
+              return False
+        else:
+           return False
+    else:
+        return False
+   
 def config_response_handler(api_response, func, args):
     if api_response.ok():
         resp_content = api_response.content
@@ -82,6 +99,8 @@ def config_response_handler(api_response, func, args):
                     vidstr = args[0]
                     vnid = args[1]
                     print("Error: Please check VLAN {}, VNI {} mapping is configured".format(vidstr, vnid))
+                elif err_msg is not 'NOERROR': 
+                    print("{}".format(err_msg))
                 else:
                     print("Error: {}".format(err_tag))
             else:
@@ -94,7 +113,6 @@ def config_response_handler(api_response, func, args):
 def invoke(func, args):
     body = None
     aa = cc.ApiClient()
-
 
     #[un]configure VTEP 
     if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list' or
@@ -111,11 +129,14 @@ def invoke(func, args):
             }
             return aa.patch(keypath, body)
         else:
+            if is_vlan_vni_mapping_exists() is True:
+               return aa._make_error_response("Error: Please delete all VLAN VNI mappings.");
+             
             keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0])
             keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
             api_response = aa.get(keypath_nvo)
             response = api_response.content
-            if len(response) != 0:
+            if response is not None and len(response) != 0:
                 response = aa.delete(keypath_nvo)
                 if response.ok():
                     return aa.delete(keypath)
@@ -131,6 +152,15 @@ def invoke(func, args):
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}/src_ip', name=args[0][6:])
 
         if (func.startswith("patch") is True):
+            sip_response = aa.get(keypath)
+            if sip_response.ok():
+               sip_content = sip_response.content
+               if sip_content is not None and 'sonic-vxlan:src_ip' in sip_content:
+                  return aa._make_error_response("Error: Source IP already set");
+
+            if is_vlan_vni_mapping_exists() is True:
+               return aa._make_error_response("Error: Please delete all VLAN VNI mappings.");
+
             body = {
                     "sonic-vxlan:src_ip": args[1]
                   }
@@ -149,10 +179,12 @@ def invoke(func, args):
             else:
                 return response
         else:
+            if is_vlan_vni_mapping_exists() is True:
+               return aa._make_error_response("Error: Please delete all VLAN VNI mappings.");
             keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
             api_response = aa.get(keypath_nvo)
             response = api_response.content
-            if len(response) != 0:
+            if response is not None and len(response) != 0:
                 response = aa.delete(keypath_nvo)
                 if response.ok():
                     return aa.delete(keypath)
@@ -551,5 +583,4 @@ def run(func, args):
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
-    #pdb.set_trace()
     run(sys.argv[1], sys.argv[2:])

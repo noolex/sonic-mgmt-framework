@@ -184,7 +184,7 @@ def get_sonic_logging(args):
            if response is not None and 'openconfig-system-ext:output' in response:
                 show_cli_output(templ, response)
     except Exception as e:
-        print "%Error: Traction Failure: " + e
+        raise e
 
 def clear_sonic_logging(args):
     aa = cc.ApiClient()
@@ -199,7 +199,7 @@ def clear_sonic_logging(args):
            if response is not None and 'sonic-system-infra:output' in response:
                 show_cli_output(templ, response['openconfig-system-ext:output']['result'])
     except Exception as e:
-        print "%Error: Traction Failure: " + e
+        raise e
 
 def get_openconfig_system_logging_count(args):
     aa = cc.ApiClient()
@@ -214,7 +214,7 @@ def get_openconfig_system_logging_count(args):
            if response is not None and 'openconfig-system-ext:output' in response:
               show_cli_output(templ, response['openconfig-system-ext:output']['result'])
     except Exception as e:
-        print "%Error: Traction Failure: " + e
+        raise e
 
 
 def run(func, args):

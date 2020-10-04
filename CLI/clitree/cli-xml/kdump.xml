@@ -69,6 +69,10 @@
                     ALERT! A system reboot is highly recommended.
                     Kdump configuration changes will be applied after the system reboots
                 </EXAMPLE>
+                <FEATURE> KDUMP </FEATURE>
+                <ALTCMD type="click">
+                  config kdump enable
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND
@@ -93,6 +97,10 @@
                     kdump updated memory will be only operational after the system reboots
                     sonic(config)# no kdump memory 
                 </EXAMPLE>
+                <FEATURE> KDUMP </FEATURE>
+                <ALTCMD type="click">
+                  config kdump memory
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND
@@ -116,6 +124,10 @@
                     sonic(config)# kdump num-dumps 5
                     sonic(config)# no kdump num-dumps
                 </EXAMPLE>
+                <FEATURE> KDUMP </FEATURE>
+                <ALTCMD type="click">
+                  config kdump num_dumps
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND 
@@ -164,6 +176,10 @@
                          1 202002101809 /var/crash/202002101809/dmesg.202002101809
                                         /var/crash/202002101809/kdump.202002101809
                 </EXAMPLE>
+                <FEATURE> KDUMP </FEATURE>
+                <ALTCMD type="click">
+                  show kdump status
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND
@@ -183,6 +199,10 @@
                     sonic# show kdump memory
                     Memory Reserved: 0M-2G:256M,2G-4G:320M,4G-8G:384M,8G-:448M
                 </EXAMPLE>
+                <FEATURE> KDUMP </FEATURE>
+                <ALTCMD type="click">
+                  show kdump memory
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND
@@ -203,6 +223,10 @@
                     sonic# show kdump num-dumps
                     Maximum number of Kernel Core files Stored: 3
                 </EXAMPLE>
+                <FEATURE> KDUMP </FEATURE>
+                <ALTCMD type="click">
+                  show kdump num_dumps
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
        <COMMAND
@@ -226,6 +250,10 @@
                          1 202002101809 /var/crash/202002101809/dmesg.202002101809
                                         /var/crash/202002101809/kdump.202002101809
                 </EXAMPLE>
+                <FEATURE> KDUMP </FEATURE>
+                <ALTCMD type="click">
+                  show kdump files
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
         <COMMAND
@@ -258,6 +286,10 @@
                     In this example, we show the kernel log for the first kernel core dump file
                     stored locally. We display only the first 5 lines of the log.
                 </EXAMPLE>
+                <FEATURE> KDUMP </FEATURE>
+                <ALTCMD type="click">
+                  show kdump log
+                </ALTCMD>
             </DOCGEN>
         </COMMAND>
     </VIEW>

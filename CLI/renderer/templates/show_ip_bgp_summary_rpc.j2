@@ -13,12 +13,7 @@
 {% set vars = {'totalPeersUp': "0"} %}
 
 {% if json_output %}
-{% set bgp_summary = json_output %}
-{% if bgp_summary["addr_family"] == 'IPV4_UNICAST' %}
-{% set bgpData = bgp_summary['ipv4Unicast'] %}
-{% else %}
-{% set bgpData = bgp_summary['ipv6Unicast'] %}
-{% endif %}
+{% set bgpData = json_output %}
 {% if vars.update({'routerId':bgpData["routerId"]}) %}{% endif %}
 {% if vars.update({'asNum':bgpData["as"]}) %}{% endif %}
 BGP router identifier {{vars.routerId}}, local AS number {{vars.asNum}} 

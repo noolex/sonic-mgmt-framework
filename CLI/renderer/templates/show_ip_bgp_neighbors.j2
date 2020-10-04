@@ -1,8 +1,6 @@
-{% if 'openconfig-network-instance:neighbors' in json_output and 'openconfig-network-instance:global' in json_output %}
+{% if 'openconfig-network-instance:neighbors' in json_output and 'openconfig-network-instance:state' in json_output %}
     {% set neighbor_list = json_output['openconfig-network-instance:neighbors'] %}
-    {% set bgp_global = json_output['openconfig-network-instance:global'] %}
-    {% set g_config = bgp_global['config'] %}
-    {% set g_state = bgp_global['state'] %}
+    {% set g_state = json_output['openconfig-network-instance:state'] %}
     {% if 'neighbor' in neighbor_list %}
         {{ '\n' }}
         {% set neighbors = neighbor_list['neighbor'] %}
@@ -171,8 +169,12 @@
                         {% if 'afi-safi-name' in afi_safi['state'] %}
                             {% if afi_safi['state']['afi-safi-name'] == 'openconfig-bgp-types:IPV4_UNICAST' %}
                                 {{-'  For address family: IPv4 Unicast\n'}}
-                            {% else %}
+                            {% elif afi_safi['state']['afi-safi-name'] == 'openconfig-bgp-types:IPV6_UNICAST' %}
                                 {{-'  For address family: IPv6 Unicast\n'}}
+                            {% elif afi_safi['state']['afi-safi-name'] == 'openconfig-bgp-types:L2VPN_EVPN' %}
+                                {{-'  For address family: L2VPN EVPN\n'}}
+                            {% else%}
+                                {{-'  For address family: Unknown\n'}}
                             {% endif %}
                         {% endif %}
 
