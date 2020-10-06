@@ -14,8 +14,6 @@
     {% endif %}
     {% if watermark.update({traffic_type + qname[1] :  q_stats_info['openconfig-qos-ext:watermark-percent']}) %} {% endif %}
 {% endfor %}
-{# Hack to limit queue show to 8 #}
-{% set uccount.value =  8 %}
 {{'Egress queue watermark percent per unicast queue:'}}
 {{ '\n' -}}
 {%- for n in range(0, uccount.value) %}

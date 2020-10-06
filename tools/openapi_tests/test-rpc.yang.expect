@@ -17,6 +17,8 @@ paths:
       tags:
       - test-rpc
       operationId: rpc_test_rpc_reboot
+      x-operationIdCamelCase: RpcTestRpcReboot
+      x-rpc: true
       description: 'OperationId: rpc_test_rpc_reboot
 
         Reboot operation.'
@@ -52,6 +54,8 @@ paths:
       tags:
       - test-rpc
       operationId: rpc_test_rpc_get_reboot_info
+      x-operationIdCamelCase: RpcTestRpcGetRebootInfo
+      x-rpc: true
       description: 'OperationId: rpc_test_rpc_get_reboot_info
 
         Retrieve parameters used in the last reboot operation.'
@@ -87,6 +91,8 @@ paths:
       tags:
       - test-rpc
       operationId: rpc_test_rpc_activate_software_image
+      x-operationIdCamelCase: RpcTestRpcActivateSoftwareImage
+      x-rpc: true
       description: 'OperationId: rpc_test_rpc_activate_software_image
 
         '

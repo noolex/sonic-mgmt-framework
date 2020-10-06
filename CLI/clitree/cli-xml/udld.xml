@@ -262,7 +262,6 @@
                     Use this command to change UDLD mode to aggressive. Default UDLD mode is normal.
                 </USAGE>
                 <EXAMPLE summary="Configure UDLD mode to aggressive">
-                    sonic-cli(config)# udld enable
                     sonic-cli(config)# udld aggressive
                 </EXAMPLE>
             </DOCGEN>
@@ -278,8 +277,6 @@
                     Use this command to disable aggessive mode of UDLD. UDLD mode is restored back to default normal mode.
                 </USAGE>
                 <EXAMPLE summary="Disable aggressive mode of UDLD">
-                    sonic-cli(config)# udld enable
-                    sonic-cli(config)# udld aggressive
                     sonic-cli(config)# no udld aggressive
                 </EXAMPLE>
             </DOCGEN>
@@ -303,7 +300,6 @@
                     Use this command to set UDLD message time. Default message time is 1 second.
                 </USAGE>
                 <EXAMPLE summary="Configure UDLD message time">
-                    sonic-cli(config)# udld enable
                     sonic-cli(config)# udld message-time 3
                 </EXAMPLE>
             </DOCGEN>
@@ -318,8 +314,6 @@
                     Use this command to reset UDLD message time to default 1 second.
                 </USAGE>
                 <EXAMPLE summary="Reset UDLD message time to default 1 second">
-                    sonic-cli(config)# udld enable
-                    sonic-cli(config)# udld message-time 3
                     sonic-cli(config)# no udld message-time
                 </EXAMPLE>
             </DOCGEN>
@@ -344,7 +338,6 @@
                     Use this command to set UDLD multiplier value. Default multiplier value is 3.
                 </USAGE>
                 <EXAMPLE summary="Configure UDLD multiplier value">
-                    sonic-cli(config)# udld enable
                     sonic-cli(config)# udld multiplier 8
                 </EXAMPLE>
             </DOCGEN>
@@ -359,8 +352,6 @@
                     Use this command to reset UDLD multiplier value to default value 3.
                 </USAGE>
                 <EXAMPLE summary="Reset UDLD multiplier value to default 3">
-                    sonic-cli(config)# udld enable
-                    sonic-cli(config)# udld multiplier 8
                     sonic-cli(config)# no udld multiplier
                 </EXAMPLE>
             </DOCGEN>
@@ -402,7 +393,6 @@
                 </USAGE>
                 <EXAMPLE summary="Disable UDLD at interface level">
                     sonic-cli(config)# interface Ethernet 0
-                    sonic-cli(conf-if-Ethernet0)# udld enable
                     sonic-cli(conf-if-Ethernet0)# no udld enable
                 </EXAMPLE>
             </DOCGEN>
@@ -421,7 +411,6 @@
                 </USAGE>
                 <EXAMPLE summary="Enable aggressive mode of UDLD at interface level">
                     sonic-cli(config)# interface Ethernet 0
-                    sonic-cli(conf-if-Ethernet0)# udld enable
                     sonic-cli(conf-if-Ethernet0)# udld aggressive
                 </EXAMPLE>
             </DOCGEN>
@@ -438,8 +427,6 @@
                 </USAGE>
                 <EXAMPLE summary="Disable aggressive mode of UDLD at interface level">
                     sonic-cli(config)# interface Ethernet 0
-                    sonic-cli(conf-if-Ethernet0)# udld enable
-                    sonic-cli(conf-if-Ethernet0)# udld aggressive
                     sonic-cli(conf-if-Ethernet0)# no udld aggressive
                 </EXAMPLE>
             </DOCGEN>

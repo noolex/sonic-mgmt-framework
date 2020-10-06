@@ -21,6 +21,7 @@ import sys
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
+from ipaddress import ip_interface
 
 import urllib3
 urllib3.disable_warnings()
@@ -64,9 +65,25 @@ def invoke_api(func, args=[]):
     if func == 'get_sonic_portchannel_sonic_portchannel_portchannel_global_portchannel_global_list':
         path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL')
         return api.get(path)
-
+    if func == 'get_sonic_portchannel_sonic_portchannel_ip_addr_list':
+        path = cc.Path('/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST')
+        return api.get(path)
+ 
     return api.cli_not_implemented(func)
     
+def filter_address(api_response,lagName):
+    output ={}
+    ipv4_addr =[]
+    ipv6_addr =[]
+    ipList = api_response['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST']
+    for ip in ipList:
+        if ip_interface(ip['ip_prefix']).ip.version == 6:
+            ipv6_addr.append(ip)
+        else:
+            ipv4_addr.append(ip)
+    output['ipv4'] = ipv4_addr
+    output['ipv6'] = ipv6_addr
+    return output
 
 def get_lag_data(lagName):
 
@@ -78,10 +95,11 @@ def get_lag_data(lagName):
         if lagName == "all": #get_all_portchannels
             portchannel_func = 'get_sonic_portchannel_sonic_portchannel_lag_table'
             portchannel_conf_func = 'get_sonic_portchannel_sonic_portchannel_portchannel'
+	    portchannel_ip = 'get_sonic_portchannel_sonic_portchannel_ip_addr_list'
         else :
             portchannel_func = 'get_sonic_portchannel_sonic_portchannel_lag_table_lag_table_list'
             portchannel_conf_func = 'get_sonic_portchannel_sonic_portchannel_portchannel_portchannel_list'
-
+    	    portchannel_ip = 'get_sonic_portchannel_sonic_portchannel_ip_addr_list'
         output = {}
         response = invoke_api(portchannel_func, args)
         if response.ok():
@@ -95,6 +113,15 @@ def get_lag_data(lagName):
                 else:
                     output = api_response        
 
+        responseIp = invoke_api(portchannel_ip,args)
+        if responseIp.ok():
+            if responseIp.content is not None:
+                api_response = responseIp.content
+                if 'sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST' in api_response.keys():
+                    output_filter = filter_address(api_response,lagName)
+                    output['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv4'] = output_filter['ipv4']
+                    output['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv6'] = output_filter['ipv6']
+					
         # GET Config params
         resp = invoke_api(portchannel_conf_func, args)
         if resp.ok():
@@ -208,22 +235,41 @@ def run():
         template_file = sys.argv[3]
 
     global_config_response = get_global_config_data()
+    lag_list =[]
+    pc_list =[]
+    lacp_list = []
+    lacp_tbl = {}
+    api_response = {}
+    api_response1 = {}
+    checkAll = True
 
     for intf in iflist:
         api_response = get_lag_data(intf)
         api_response1 = get_lacp_data(intf)
         get_counters(api_response)
+        if intf is not 'all':
+            checkAll = False
+            lag_list.append(api_response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0])
+            pc_list.append(api_response['sonic-portchannel:PORTCHANNEL']['PORTCHANNEL_LIST'][0])
+	    if 'openconfig-lacp:interfaces' in api_response1.keys() and api_response1['openconfig-lacp:interfaces']['interface']:
+                lacp_list.append(api_response1['openconfig-lacp:interfaces']['interface'][0])
 
-        # Combine Outputs
-        response = {"portchannel": api_response, "lacp": api_response1, "global": global_config_response}
+    if checkAll is False:
+        api_response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] = lag_list
+        api_response['sonic-portchannel:PORTCHANNEL']['PORTCHANNEL_LIST'] = pc_list
+	if lacp_list:
+            if 'openconfig-lacp:interfaces' not in api_response1.keys():
+                lacp_tbl['interface'] = lacp_list
+                api_response1['openconfig-lacp:interfaces']= lacp_tbl
+            else:
+                api_response1['openconfig-lacp:interfaces']['interface'] = lacp_list
 
-        # Check for PortChannel existence
-        if 'LAG_TABLE_LIST' not in response['portchannel']['sonic-portchannel:LAG_TABLE'] or \
-            'admin_status' not in response['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0].keys():
-            response = {}
+    response = {"portchannel": api_response, "lacp":api_response1 , "global": global_config_response}
+    if 'LAG_TABLE_LIST' not in response['portchannel']['sonic-portchannel:LAG_TABLE'] or \
+        'admin_status' not in response['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0].keys():
+        response = {}
 
-        show_cli_output(template_file, response)
-
+    show_cli_output(template_file, response)
 
 if __name__ == '__main__':
 

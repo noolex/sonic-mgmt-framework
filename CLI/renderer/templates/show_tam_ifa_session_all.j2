@@ -1,32 +1,32 @@
 {% if json_output -%}
 {% if "openconfig-tam:ifa-sessions" in json_output %}
-{% set sessions = json_output['openconfig-tam:ifa-sessions']['ifa-session'] %}
-{% if sessions|length > 0 %}
-Name           Flow Group          Collector          Sampler           Node Type
------------    ----------------    --------------     -------------     ----------
-{% for session in sessions|sort(attribute='name') %}
-{% set session_state = session["state"] %}
-{% if session_state["node-type"] == "INGRESS" %}
+{% set tmpSessions = json_output['openconfig-tam:ifa-sessions']['ifa-session'] %}
+{% if tmpSessions|length > 0 %}
+Name                              Flow Group                        Collector                         Sampler                           Node Type
+--------------------------------  --------------------------------  --------------------------------  --------------------------------  ----------
+{% set sessions = getNatSortData(tmpSessions) %}
+{% for k in sessions %}
+{% if sessions[k]["node-type"] == "INGRESS" %}
 {% set node_type = "Ingress" %}
-{% elif session_state["node-type"] == "EGRESS" %}
+{% elif sessions[k]["node-type"] == "EGRESS" %}
 {% set node_type = "Egress" %}
 {% else %}
 {% set node_type = "Intermediate" %}
 {% endif %}
-{% if "collector" in session_state %}
-{% set collector = session_state["collector"] %}
+{% if "collector" in sessions[k] %}
+{% set collector = sessions[k]["collector"] %}
 {% else %}
 {% set collector = "-" %}
 {% endif %}
-{% if "sample-rate" in session_state %}
-{% set sampler = session_state["sample-rate"] %}
+{% if "sample-rate" in sessions[k] %}
+{% set sampler = sessions[k]["sample-rate"] %}
 {% else %}
 {% set sampler = "-" %}
 {% endif %}
-{{'%-15s'|format(session_state["name"])}}{{'%-20s'|format(session_state["flowgroup"])}}{{'%-19s'|format(collector)}}{{'%-18s'|format(sampler)}}{{'%-20s'|format(node_type)}}
+{{'%-34s'|format(sessions[k]["name"])}}{{'%-34s'|format(sessions[k]["flowgroup"])}}{{'%-34s'|format(collector)}}{{'%-34s'|format(sampler)}}{{'%-20s'|format(node_type)}}
 {% endfor %}
 {% endif %}
 {% endif %}
 {% else %}
-%Error: Sessions are not configured.
+Sessions are not configured.
 {% endif %}

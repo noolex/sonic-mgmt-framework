@@ -38,8 +38,8 @@ limitations under the License.
     <COMMAND
         name="ip prefix-list"
         help="Build a prefix list"
-        command_keys="name=*,prefix=*,mask=*"
-        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
+        command_keys="name=*,seqno=*,prefix=*,mask=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},sequence_number={seqno},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
         render_command_cb="v4prefix_lists_cmd"
         >
         <PARAM
@@ -48,89 +48,102 @@ limitations under the License.
             ptype="STRING_63"
             >
             <PARAM
-                name="ip-prefix-subcommands"
-                help="Prefix list sub commands"
+                name="seq"
+                help="Sequence number"
+                mode="subcommand"
                 ptype="SUBCOMMAND"
-                mode="switch"
                 >
                 <PARAM
-                    name="permit"
-                    help="Allow action for the prefixes"
-                    mode="subcommand"
-                    ptype="SUBCOMMAND"
+                    name="seq-no"
+                    help="Sequence number"
+                    ptype="RANGE_1_4294967295"
                     >
                     <PARAM
-                        name="ipv4-prefix"
-                        help="IP prefix network/length,  e.g.,  35.0.0.0/8"
-                        ptype="IP_ADDR_MASK"
-                        >
-		        <PARAM
-		            name="ge"
-                            help="Minimum prefix length to be matched"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                            <PARAM
-                                name="ge-min-prefix-length"
-                                help="Minimum prefix length"
-                                ptype="RANGE_1_32"
-                                >
-                            </PARAM>
-                        </PARAM>
-                        <PARAM
-                            name="le"
-                            help="Maximum prefix length to be matched"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                            <PARAM
-                                name="le-max-prefix-length"
-                                help="Maximum prefix length"
-                                ptype="RANGE_1_32"
-                                >
-                            </PARAM>
-                        </PARAM>
-                    </PARAM>
-                </PARAM>
-                <PARAM
-                    name="deny"
-                    help="Deny action for the prefixes"
-                    mode="subcommand"
-                    ptype="SUBCOMMAND"
-                    >
-                    <PARAM
-                        name="ipv4-prefix"
-                        help="IP prefix network/length,  e.g.,  35.0.0.0/8"
-                        ptype="IP_ADDR_MASK"
+                        name="ip-prefix-subcommands"
+                        help="Prefix list sub commands"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
                         >
                         <PARAM
-                            name="ge"
-                            help="Minimum prefix length to be matched"
-                            ptype="SUBCOMMAND"
+                            name="permit"
+                            help="Allow action for the prefixes"
                             mode="subcommand"
-                            optional="true"
+                            ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="ge-min-prefix-length"
-                                help="Minimum prefix length"
-                                ptype="RANGE_1_32"
+                                name="ipv4-prefix"
+                                help="IP prefix network/length,  e.g.,  35.0.0.0/8"
+                                ptype="IP_ADDR_MASK"
                                 >
+                                <PARAM
+                                    name="ge"
+                                    help="Minimum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="ge-min-prefix-length"
+                                        help="Minimum prefix length"
+                                        ptype="RANGE_1_32"
+                                        >
+                                    </PARAM>
+                                </PARAM>
+                                <PARAM
+                                    name="le"
+                                    help="Maximum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="le-max-prefix-length"
+                                        help="Maximum prefix length"
+                                        ptype="RANGE_1_32"
+                                        >
+                                    </PARAM>
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                         <PARAM
-                            name="le"
-                            help="Maximum prefix length to be matched"
-                            ptype="SUBCOMMAND"
+                            name="deny"
+                            help="Deny action for the prefixes"
                             mode="subcommand"
-                            optional="true"
+                            ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="le-max-prefix-length"
-                                help="Maximum prefix length"
-                                ptype="RANGE_1_32"
+                                name="ipv4-prefix"
+                                help="IP prefix network/length,  e.g.,  35.0.0.0/8"
+                                ptype="IP_ADDR_MASK"
                                 >
+                                <PARAM
+                                    name="ge"
+                                    help="Minimum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="ge-min-prefix-length"
+                                        help="Minimum prefix length"
+                                        ptype="RANGE_1_32"
+                                        >
+                                    </PARAM>
+                                </PARAM>
+                                <PARAM
+                                    name="le"
+                                    help="Maximum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="le-max-prefix-length"
+                                        help="Maximum prefix length"
+                                        ptype="RANGE_1_32"
+                                        >
+                                    </PARAM>
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                     </PARAM>
@@ -143,8 +156,8 @@ limitations under the License.
     <COMMAND
         name="ipv6 prefix-list"
         help="Build a prefix list"
-        command_keys="name=*,prefix=*,mask=*"
-        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
+        command_keys="name=*,seqno=*,prefix=*,mask=*"
+        command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},sequence_number={seqno},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
         render_command_cb="v6prefix_lists_cmd"
         >
         <PARAM
@@ -153,89 +166,102 @@ limitations under the License.
             ptype="STRING_63"
             >
             <PARAM
-                name="ipv6-prefix-subcommands"
-                help="Prefix list sub commands"
+                name="seq"
+                help="Sequence number"
+                mode="subcommand"
                 ptype="SUBCOMMAND"
-                mode="switch"
                 >
                 <PARAM
-                    name="permit"
-                    help="Allow action for the prefixes"
-                    mode="subcommand"
-                    ptype="SUBCOMMAND"
+                    name="seq-no"
+                    help="Sequence number"
+                    ptype="RANGE_1_4294967295"
                     >
                     <PARAM
-                        name="ipv6-prefix"
-                        help="IPv6 prefix network/length, e.g., 3ffe::/16"
-                        ptype="IPV6_ADDR_MASK"
-                        >
-		        <PARAM
-		            name="ge"
-                            help="Minimum prefix length to be matched"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                            <PARAM
-                                name="ge-min-prefix-length"
-                                help="Minimum prefix length"
-                                ptype="RANGE_1_128"
-                                >
-                            </PARAM>
-                        </PARAM>
-                        <PARAM
-                            name="le"
-                            help="Maximum prefix length to be matched"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                            <PARAM
-                                name="le-max-prefix-length"
-                                help="Maximum prefix length"
-                                ptype="RANGE_1_128"
-                                >
-                            </PARAM>
-                        </PARAM>
-                    </PARAM>
-                </PARAM>
-                <PARAM
-                    name="deny"
-                    help="Deny action for the prefixes"
-                    mode="subcommand"
-                    ptype="SUBCOMMAND"
-                    >
-                    <PARAM
-                        name="ipv6-prefix"
-                        help="IPv6 prefix network/length, e.g., 3ffe::/16"
-                        ptype="IPV6_ADDR_MASK"
+                        name="ipv6-prefix-subcommands"
+                        help="Prefix list sub commands"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
                         >
                         <PARAM
-                            name="ge"
-                            help="Minimum prefix length to be matched"
-                            ptype="SUBCOMMAND"
+                            name="permit"
+                            help="Allow action for the prefixes"
                             mode="subcommand"
-                            optional="true"
+                            ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="ge-min-prefix-length"
-                                help="Minimum prefix length"
-                                ptype="RANGE_1_128"
+                                name="ipv6-prefix"
+                                help="IPv6 prefix network/length, e.g., 3ffe::/16"
+                                ptype="IPV6_ADDR_MASK"
                                 >
+                                <PARAM
+                                    name="ge"
+                                    help="Minimum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="ge-min-prefix-length"
+                                        help="Minimum prefix length"
+                                        ptype="RANGE_1_128"
+                                        >
+                                    </PARAM>
+                                </PARAM>
+                                <PARAM
+                                    name="le"
+                                    help="Maximum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="le-max-prefix-length"
+                                        help="Maximum prefix length"
+                                        ptype="RANGE_1_128"
+                                        >
+                                    </PARAM>
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                         <PARAM
-                            name="le"
-                            help="Maximum prefix length to be matched"
-                            ptype="SUBCOMMAND"
+                            name="deny"
+                            help="Deny action for the prefixes"
                             mode="subcommand"
-                            optional="true"
+                            ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="le-max-prefix-length"
-                                help="Maximum prefix length"
-                                ptype="RANGE_1_128"
+                                name="ipv6-prefix"
+                                help="IPv6 prefix network/length, e.g., 3ffe::/16"
+                                ptype="IPV6_ADDR_MASK"
                                 >
+                                <PARAM
+                                    name="ge"
+                                    help="Minimum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="ge-min-prefix-length"
+                                        help="Minimum prefix length"
+                                        ptype="RANGE_1_128"
+                                        >
+                                    </PARAM>
+                                </PARAM>
+                                <PARAM
+                                    name="le"
+                                    help="Maximum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="le-max-prefix-length"
+                                        help="Maximum prefix length"
+                                        ptype="RANGE_1_128"
+                                        >
+                                    </PARAM>
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                     </PARAM>
@@ -254,90 +280,103 @@ limitations under the License.
             ptype="STRING_63"
             >
             <PARAM
-                name="ip-prefix-subcommands"
-                help="Prefix list sub commands"
+                name="seq"
+                help="Sequence number"
+                mode="subcommand"
                 ptype="SUBCOMMAND"
-                mode="switch"
                 optional="true"
                 >
                 <PARAM
-                    name="permit"
-                    help="Allow action for the prefixes"
-                    mode="subcommand"
-                    ptype="SUBCOMMAND"
+                    name="seq-no"
+                    help="Sequence number"
+                    ptype="RANGE_1_4294967295"
                     >
                     <PARAM
-                        name="ipv4-prefix"
-                        help="IP prefix network/length,  e.g.,  35.0.0.0/8"
-                        ptype="IP_ADDR_MASK"
-                        >
-		        <PARAM
-		            name="ge"
-                            help="Minimum prefix length to be matched"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                            <PARAM
-                                name="ge-min-prefix-length"
-                                help="Minimum prefix length"
-                                ptype="RANGE_1_32"
-                                >
-                            </PARAM>
-                        </PARAM>
-                        <PARAM
-                            name="le"
-                            help="Maximum prefix length to be matched"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                            <PARAM
-                                name="le-max-prefix-length"
-                                help="Maximum prefix length"
-                                ptype="RANGE_1_32"
-                                >
-                            </PARAM>
-                        </PARAM>
-                    </PARAM>
-                </PARAM>
-                <PARAM
-                    name="deny"
-                    help="Deny action for the prefixes"
-                    mode="subcommand"
-                    ptype="SUBCOMMAND"
-                    >
-                    <PARAM
-                        name="ipv4-prefix"
-                        help="IP prefix network/length,  e.g.,  35.0.0.0/8"
-                        ptype="IP_ADDR_MASK"
+                        name="ip-prefix-subcommands"
+                        help="Prefix list sub commands"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
                         >
                         <PARAM
-                            name="ge"
-                            help="Minimum prefix length to be matched"
-                            ptype="SUBCOMMAND"
+                            name="permit"
+                            help="Allow action for the prefixes"
                             mode="subcommand"
-                            optional="true"
+                            ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="ge-min-prefix-length"
-                                help="Minimum prefix length"
-                                ptype="RANGE_1_32"
+                                name="ipv4-prefix"
+                                help="IP prefix network/length,  e.g.,  35.0.0.0/8"
+                                ptype="IP_ADDR_MASK"
                                 >
+                                <PARAM
+                                    name="ge"
+                                    help="Minimum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="ge-min-prefix-length"
+                                        help="Minimum prefix length"
+                                        ptype="RANGE_1_32"
+                                        >
+                                    </PARAM>
+                                </PARAM>
+                                <PARAM
+                                    name="le"
+                                    help="Maximum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="le-max-prefix-length"
+                                        help="Maximum prefix length"
+                                        ptype="RANGE_1_32"
+                                        >
+                                    </PARAM>
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                         <PARAM
-                            name="le"
-                            help="Maximum prefix length to be matched"
-                            ptype="SUBCOMMAND"
+                            name="deny"
+                            help="Deny action for the prefixes"
                             mode="subcommand"
-                            optional="true"
+                            ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="le-max-prefix-length"
-                                help="Maximum prefix length"
-                                ptype="RANGE_1_32"
+                                name="ipv4-prefix"
+                                help="IP prefix network/length,  e.g.,  35.0.0.0/8"
+                                ptype="IP_ADDR_MASK"
                                 >
+                                <PARAM
+                                    name="ge"
+                                    help="Minimum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="ge-min-prefix-length"
+                                        help="Minimum prefix length"
+                                        ptype="RANGE_1_32"
+                                        >
+                                    </PARAM>
+                                </PARAM>
+                                <PARAM
+                                    name="le"
+                                    help="Maximum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="le-max-prefix-length"
+                                        help="Maximum prefix length"
+                                        ptype="RANGE_1_32"
+                                        >
+                                    </PARAM>
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                     </PARAM>
@@ -357,90 +396,103 @@ limitations under the License.
             ptype="STRING_63"
             >
             <PARAM
-                name="ipv6-prefix-subcommands"
-                help="Prefix list sub commands"
+                name="seq"
+                help="Sequence number"
+                mode="subcommand"
                 ptype="SUBCOMMAND"
-                mode="switch"
                 optional="true"
                 >
                 <PARAM
-                    name="permit"
-                    help="Allow action for the prefixes"
-                    mode="subcommand"
-                    ptype="SUBCOMMAND"
+                    name="seq-no"
+                    help="Sequence number"
+                    ptype="RANGE_1_4294967295"
                     >
                     <PARAM
-                        name="ipv6-prefix"
-                        help="IPv6 prefix network/length, e.g., 3ffe::/16"
-                        ptype="IPV6_ADDR_MASK"
-                        >
-		        <PARAM
-		            name="ge"
-                            help="Minimum prefix length to be matched"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                            <PARAM
-                                name="ge-min-prefix-length"
-                                help="Minimum prefix length"
-                                ptype="RANGE_1_128"
-                                >
-                            </PARAM>
-                        </PARAM>
-                        <PARAM
-                            name="le"
-                            help="Maximum prefix length to be matched"
-                            ptype="SUBCOMMAND"
-                            mode="subcommand"
-                            optional="true"
-                            >
-                            <PARAM
-                                name="le-max-prefix-length"
-                                help="Maximum prefix length"
-                                ptype="RANGE_1_128"
-                                >
-                            </PARAM>
-                        </PARAM>
-                    </PARAM>
-                </PARAM>
-                <PARAM
-                    name="deny"
-                    help="Deny action for the prefixes"
-                    mode="subcommand"
-                    ptype="SUBCOMMAND"
-                    >
-                    <PARAM
-                        name="ipv6-prefix"
-                        help="IPv6 prefix network/length, e.g., 3ffe::/16"
-                        ptype="IPV6_ADDR_MASK"
+                        name="ipv6-prefix-subcommands"
+                        help="Prefix list sub commands"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
                         >
                         <PARAM
-                            name="ge"
-                            help="Minimum prefix length to be matched"
-                            ptype="SUBCOMMAND"
+                            name="permit"
+                            help="Allow action for the prefixes"
                             mode="subcommand"
-                            optional="true"
+                            ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="ge-min-prefix-length"
-                                help="Minimum prefix length"
-                                ptype="UINT"
+                                name="ipv6-prefix"
+                                help="IPv6 prefix network/length, e.g., 3ffe::/16"
+                                ptype="IPV6_ADDR_MASK"
                                 >
+                                <PARAM
+                                    name="ge"
+                                    help="Minimum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="ge-min-prefix-length"
+                                        help="Minimum prefix length"
+                                        ptype="RANGE_1_128"
+                                        >
+                                    </PARAM>
+                                </PARAM>
+                                <PARAM
+                                    name="le"
+                                    help="Maximum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="le-max-prefix-length"
+                                        help="Maximum prefix length"
+                                        ptype="RANGE_1_128"
+                                        >
+                                    </PARAM>
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                         <PARAM
-                            name="le"
-                            help="Maximum prefix length to be matched"
-                            ptype="SUBCOMMAND"
+                            name="deny"
+                            help="Deny action for the prefixes"
                             mode="subcommand"
-                            optional="true"
+                            ptype="SUBCOMMAND"
                             >
                             <PARAM
-                                name="le-max-prefix-length"
-                                help="Maximum prefix length"
-                                ptype="UINT"
+                                name="ipv6-prefix"
+                                help="IPv6 prefix network/length, e.g., 3ffe::/16"
+                                ptype="IPV6_ADDR_MASK"
                                 >
+                                <PARAM
+                                    name="ge"
+                                    help="Minimum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="ge-min-prefix-length"
+                                        help="Minimum prefix length"
+                                        ptype="RANGE_1_128"
+                                        >
+                                    </PARAM>
+                                </PARAM>
+                                <PARAM
+                                    name="le"
+                                    help="Maximum prefix length to be matched"
+                                    ptype="SUBCOMMAND"
+                                    mode="subcommand"
+                                    optional="true"
+                                    >
+                                    <PARAM
+                                        name="le-max-prefix-length"
+                                        help="Maximum prefix length"
+                                        ptype="RANGE_1_128"
+                                        >
+                                    </PARAM>
+                                </PARAM>
                             </PARAM>
                         </PARAM>
                     </PARAM>
@@ -451,4 +503,3 @@ limitations under the License.
     </COMMAND>
 </VIEW>
 </CLISH_MODULE>
-

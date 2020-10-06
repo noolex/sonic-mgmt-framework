@@ -216,6 +216,15 @@ def invoke_api(func, args=[]):
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/interfaces/interface={intf}', name=args[1],intf=args[0])
         return api.delete(keypath)
 
+    elif func == 'set_openconfig_vrf':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances')
+        body = {"openconfig-network-instance:network-instances":{"network-instance":[{"config":{"name":args[0], "type":"L3VRF", "enabled":True}, "name":args[0]}]}}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_openconfig_vrf':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}', name=args[0])
+        return api.delete(keypath)
+
     else:
         body = {}
 

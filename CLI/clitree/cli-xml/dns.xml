@@ -41,8 +41,26 @@ limitations under the License.
              help="Domain name server"
              ptype="IPV4V6_ADDR"
              dbpath="sonic-system-dns:sonic-system-dns/DNS_SERVER/DNS_SERVER_LIST/ipaddress">
+         <PARAM name="vrf"
+             help="VRF name"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             optional="true">
+            <PARAM
+                name="vrf-switch"
+                help="VRF commands"
+                mode="switch"
+                ptype="SUBCOMMAND">
+               <PARAM name="mgmt"
+                 help="Management VRF name"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 dbpath="sonic-system-dns:sonic-system-dns/DNS_SERVER/DNS_SERVER_LIST/vrf_name=mgmt">
+               </PARAM>
+            </PARAM>
+         </PARAM>
       </PARAM>
-      <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_server_address ${nameserver}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_server_address ${nameserver} ${mgmt}</ACTION>
     </COMMAND>
 
     <COMMAND name="ip name-server source-interface"

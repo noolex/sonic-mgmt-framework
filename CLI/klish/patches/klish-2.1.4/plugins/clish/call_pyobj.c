@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <Python.h>
 #include <stdarg.h>
+#include <malloc.h>
 
 void pyobj_init() {
     Py_Initialize();
@@ -40,6 +41,10 @@ static void pyobj_handle_error() {
 
     PyErr_Fetch(&type, &value, &traceback);
     PyErr_NormalizeException(&type, &value, &traceback);
+
+    if (!PyErr_GivenExceptionMatches(type, PyExc_SystemExit)) {
+       lub_dump_printf("%%Error: Internal error.\n");
+    }
 
     py_module = PyImport_ImportModule("traceback");
     if (py_module) {
@@ -136,11 +141,49 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
         syslog(LOG_WARNING, "clish_pyobj: Failed to allocate memory");
         return -1;
     }
-    char *p = strtok(buf, " ");
+
+    // trim leading and trailing whtespace
+    char *p = buf;
+    int len = strlen(buf);
+    while (isspace(p[len-1])) p[--len] = '\0';
+    while (*p && isspace(*p)) ++p, --len;
+
+    char *saved_ptr = '\0';
     size_t idx = 0;
-    while (p) {
-        token[idx++] = p;
-        p = strtok(NULL, " "); 
+    bool quoted = false;
+
+    while (*p) {
+	if (!saved_ptr) saved_ptr = p;
+	if (*p == ' ' && quoted == false) {
+	   while (*(p+1) && *(p+1)==' ') {
+	      memmove(p, p+1, strlen(p)-1);
+	      *(p+strlen(p)-1) = '\0';
+	   }
+	   *p = '\0';
+           token[idx++] = saved_ptr;
+	   saved_ptr = '\0';
+	} else if (*p == '\"') {
+	   if (!quoted && strchr((p+1), '\"')) {
+	      // open quote
+	      if (*saved_ptr == '\"') {
+		 saved_ptr++;
+	         quoted = true;
+	      }
+	   } else if (quoted) {
+	      // close quote
+	      quoted = false;
+	      *p = '\0';
+	   }
+	}
+	// escape chars
+	if (*p == '\\') {
+	   if (*(p+1) == '\\' || *(p+1) == '\"') {
+	      memmove(p, p+1, strlen(p)-1);
+	      *(p+strlen(p)-1) = '\0';
+	   }
+	}
+	if (*++p == '\0' && saved_ptr)
+           token[idx++] = saved_ptr;
     }
 
     PyObject *module, *name, *func, *args, *value;
@@ -148,7 +191,6 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
     name = PyBytes_FromString(token[0]);
     module = PyImport_Import(name);
     if (module == NULL) {
-        lub_dump_printf("%%Error: Internal error.\n");
         syslog(LOG_WARNING, "clish_pyobj: Failed to load module %s", token[0]);
         pyobj_handle_error();
         free(buf);
@@ -180,10 +222,9 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
 
     value = PyObject_CallObject(func, args);
     if (value == NULL) {
-        lub_dump_printf("%%Error: Internal error.\n");
-        pyobj_handle_error();
-        syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", cmd, arg);
-        ret_code = 1;
+       pyobj_handle_error();
+       syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", cmd, arg);
+       ret_code = 1;
     } else {
         if (PyInt_Check(value)) {
             ret_code = PyInt_AsLong(value);
@@ -208,9 +249,12 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
     Py_XDECREF(func);
     Py_XDECREF(args);
     Py_XDECREF(value);
-    Py_XDECREF(args_list);
 
     free(buf);
+
+    PyGC_Collect();
+    malloc_trim(0);
+
     PyGILState_Release(gstate);
     return ret_code;
 }

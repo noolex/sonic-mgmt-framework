@@ -172,7 +172,7 @@ limitations under the License.
          <PARAM
              name="global-port-range"
              help="Global port range"
-             ptype="STRING"
+             ptype="NAT_PORT_RANGE"
              optional="true"
              dbpath="sonic-nat:sonic-nat/NAT_POOL/NAT_POOL_LIST/nat_port"
              >
@@ -358,7 +358,7 @@ limitations under the License.
              <PARAM
                  name="global-port"
                  help="Global port"
-                 ptype="UINT"
+                 ptype="RANGE_1_65535"
                  >
              </PARAM>
 
@@ -372,7 +372,7 @@ limitations under the License.
              <PARAM
                  name="local-port"
                  help="Local port"
-                 ptype="UINT"
+                 ptype="RANGE_1_65535"
                  >
              </PARAM>
 
@@ -453,7 +453,7 @@ limitations under the License.
                  <PARAM
                      name="global-port"
                      help="Global port"
-                     ptype="UINT"
+                     ptype="RANGE_1_65535"
                      >
                  </PARAM>
 

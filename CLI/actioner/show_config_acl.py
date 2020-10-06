@@ -1,237 +1,78 @@
 #!/usr/bin/python
-
 import cli_client as cc
 from collections import OrderedDict
-#from natsort import natsorted
 import sonic_cli_acl
+import cli_log as log
+
+
+acl_client = cc.ApiClient()
+
+
+def __show_running_acl(render_tables, acl_type):
+    snc_acl_type = sonic_cli_acl.__convert_oc_acl_type_to_sonic_fmt(acl_type)
+    log.log_debug("Tables to render are {} for type {}/{}".format(str(render_tables), acl_type, snc_acl_type))
+    data = OrderedDict()
+    cmd_str = ''
+    acl_names = list()
+
+    if 'access-list-name' in render_tables:
+        #Retrieve the acl_name from request
+        acl_names.append(render_tables['access-list-name'])
+    else:
+        keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
+        response = acl_client.get(keypath, depth=None, ignore404=False)
+        if not response.ok() or not bool(response.content):
+            log.log_debug("No ACLs configured")
+            return cmd_str
+
+        content = response.content
+        for keys in content['sonic-acl:ACL_TABLE_LIST']:
+            if keys['type'] == snc_acl_type:
+                acl_names.append(keys['aclname'])
+
+    add_ex = False
+    for acl_name in acl_names:
+        keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=acl_name, acl_type=acl_type)
+        response = acl_client.get(keypath, depth=None, ignore404=False)
+        if response.ok():
+            user_acl_type = sonic_cli_acl.__convert_oc_acl_type_to_user_fmt(acl_type)
+            if add_ex:
+                cmd_str += "\n!\n"
+            cmd_str += '{} access-list {}'.format(user_acl_type, acl_name)
+            add_ex = True
+            for acl_set in response.content['openconfig-acl:acl-set']:
+                #Convert the OCYANG format 'acl-set' to user format 'data'
+                sonic_cli_acl.__convert_oc_acl_set_to_user_fmt(acl_set, data)
+                acl_data = data[user_acl_type][acl_name]
+                if 'description' in acl_data:
+                    cmd_str+="\n remark {}".format(acl_data['description'])
+
+                #Loop for number of rules
+                for seq_num, rule in acl_data['rules'].items():
+                    cmd_str += "\n"
+                    rule_data = rule['rule_data']
+                    #rule_data can contain integers. Convert all to list of strings
+                    rule_data_str_list = [str(i) for i in rule_data]
+                    cmd_str += " seq {} {}".format(seq_num, ' '.join(rule_data_str_list))
+                    if 'description' in rule:
+                        cmd_str += " remark {}".format(rule['description'])
+    return cmd_str
 
 def mac_acl_table_cb(render_tables):
-    acl_client = cc.ApiClient()
-    data = OrderedDict()
-    cmd_str = ''
-    keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
-    response = acl_client.get(keypath, None, False)
-
-    if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
-
-    content = response.content
-    acl_type='ACL_L2'
-    acl_exists = 0
-
-    #Retrieve the acl_name from request
-    input_str = render_tables['access-list-name']
-
-    if 'access-list-name' in render_tables:
-        for keys in content['sonic-acl:ACL_TABLE_LIST']:
-            if 'type' in keys:
-                if keys['type'] == 'L2' and keys['aclname'] == render_tables['access-list-name']:
-                    cmd_str+='mac access-list {}'.format(keys['aclname'])
-                    acl_exists=1
-
-    #Proceed only for the access-list received in render_tables
-    if not acl_exists:
-        return 'CB_SUCCESS', cmd_str, True
-
-    #Retrieve the complete ACL SET 
-    #keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/')
-    #Retrieve acl-set corresponding to the ACL name and type
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=input_str, acl_type=acl_type)
-    response = acl_client.get(keypath, None, False)
-
-    if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
-
-    content = response.content
-    #for acl_set in content['openconfig-acl:acl-sets']['acl-set']:
-    for acl_set in content['openconfig-acl:acl-set']:
-        if acl_set['type'] != 'openconfig-acl:ACL_L2':
-            continue
-        #Convert the OCYANG format 'acl-set' to user format 'data'
-        sonic_cli_acl.__convert_oc_acl_set_to_user_fmt(acl_set, data)
-
-    #Proceed for L2 data
-    if 'mac' in data:
-        for acl_name_data in data['mac']:
-            #Proceed for the acl_name in request
-            if acl_name_data == input_str:
-                rules = data['mac'][str(acl_name_data)]
-                if 'description' in rules:
-                    cmd_str+="\n remark {}".format(rules['description'])
-                num_rules = len(rules['rules'])
-                seq_num_list=[]
-                #Store sequence numbers in a list
-                for rule in rules['rules']:
-                    seq_num_list.append(rule)
-                #Loop for number of rules    
-                for rule_iter in range(num_rules):
-                    cmd_str+="\n"
-                    seq_num = seq_num_list[rule_iter]
-                    rule = rules['rules'][seq_num]
-                    rule_data = rule['rule_data']
-                    #rule_data can contain integers. Convert all to list of strings
-                    rule_data_str_list = [str(i) for i in rule_data]
-                    cmd_str+=" seq {} ".format(seq_num)
-                    cmd_str+=' '.join(rule_data_str_list)
-                    if 'description' in rule:
-                        cmd_str+=" remark {}".format(rule['description'])
-
-    return 'CB_SUCCESS', cmd_str, True
+    return 'CB_SUCCESS', __show_running_acl(render_tables, 'ACL_L2'), True
 
 def ipv4_acl_table_cb(render_tables):
-    acl_client = cc.ApiClient()
-    data = OrderedDict()
-    cmd_str = ''
-    keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
-    response = acl_client.get(keypath, None, False)
-
-    if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
-
-    content = response.content
-    acl_type='ACL_IPV4'
-    acl_exists = 0
-
-    #Retrieve the acl_name from request
-    input_str = render_tables['access-list-name']
-
-    if 'access-list-name' in render_tables:
-        for keys in content['sonic-acl:ACL_TABLE_LIST']:
-            if 'type' in keys:
-                if keys['type'] == 'L3' and keys['aclname'] == render_tables['access-list-name']:
-                    cmd_str+='ip access-list {}'.format(keys['aclname'])
-                    acl_exists=1
-
-    #Proceed only for the access-list received in render_tables
-    if not acl_exists:
-        return 'CB_SUCCESS', cmd_str, True
-
-    #Retrieve the complete ACL SET 
-    #keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/')
-    #Retrieve acl-set corresponding to the ACL name and type
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=input_str, acl_type=acl_type)
-    response = acl_client.get(keypath, None, False)
-
-    if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
-
-    content = response.content
-    #for acl_set in content['openconfig-acl:acl-sets']['acl-set']:
-    for acl_set in content['openconfig-acl:acl-set']:
-        if acl_set['type'] != 'openconfig-acl:ACL_IPV4':
-            continue
-        #Convert the OCYANG format 'acl-set' to user format 'data'
-        sonic_cli_acl.__convert_oc_acl_set_to_user_fmt(acl_set, data)
-
-    #Proceed for IPV4 data
-    if 'ip' in data:
-        for acl_name_data in data['ip']:
-            #Proceed for the acl_name in request
-            if acl_name_data == input_str:
-                rules = data['ip'][str(acl_name_data)]
-                if 'description' in rules:
-                    cmd_str+="\n remark {}".format(rules['description'])
-                num_rules = len(rules['rules'])
-                seq_num_list=[]
-                #Store sequence numbers in a list
-                for rule in rules['rules']:
-                    seq_num_list.append(rule)
-                #Loop for number of rules    
-                for rule_iter in range(num_rules):
-                    cmd_str+="\n"
-                    seq_num = seq_num_list[rule_iter]
-                    rule = rules['rules'][seq_num]
-                    rule_data = rule['rule_data']
-                    #rule_data can contain integers. Convert all to list of strings
-                    rule_data_str_list = [str(i) for i in rule_data]
-                    cmd_str+=" seq {} ".format(seq_num)
-                    cmd_str+=' '.join(rule_data_str_list)
-                    if 'description' in rule:
-                        cmd_str+=" remark {}".format(rule['description'])
-
-    return 'CB_SUCCESS', cmd_str, True
+    return 'CB_SUCCESS', __show_running_acl(render_tables, 'ACL_IPV4'), True
 
 def ipv6_acl_table_cb(render_tables):
-    acl_client = cc.ApiClient()
-    data = OrderedDict()
-    cmd_str = ''
-    keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_TABLE/ACL_TABLE_LIST')
-    response = acl_client.get(keypath, None, False)
-
-    if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
-
-    content = response.content
-    acl_type='ACL_IPV6'
-    acl_exists = 0
-
-    #Retrieve the acl_name from request
-    input_str = render_tables['access-list-name']
-
-    if 'access-list-name' in render_tables:
-        for keys in content['sonic-acl:ACL_TABLE_LIST']:
-            if 'type' in keys:
-                if keys['type'] == 'L3V6' and keys['aclname'] == render_tables['access-list-name']:
-                    cmd_str+='ipv6 access-list {}'.format(keys['aclname'])
-                    acl_exists=1
-
-    #Proceed only for the access-list received in render_tables
-    if not acl_exists:
-        return 'CB_SUCCESS', cmd_str, True
-
-    #Retrieve the complete ACL SET 
-    #keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/')
-    #Retrieve acl-set corresponding to the ACL name and type
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}', name=input_str, acl_type=acl_type)
-    response = acl_client.get(keypath, None, False)
-
-    if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
-
-    content = response.content
-    #for acl_set in content['openconfig-acl:acl-sets']['acl-set']:
-    for acl_set in content['openconfig-acl:acl-set']:
-        if acl_set['type'] != 'openconfig-acl:ACL_IPV6':
-            continue
-        #Convert the OCYANG format 'acl-set' to user format 'data'
-        sonic_cli_acl.__convert_oc_acl_set_to_user_fmt(acl_set, data)
-
-    #Proceed for IPV6 data
-    if 'ipv6' in data:
-        for acl_name_data in data['ipv6']:
-            #Proceed for the acl_name in request
-            if acl_name_data == input_str:
-                rules = data['ipv6'][str(acl_name_data)]
-                if 'description' in rules:
-                    cmd_str+="\n remark {}".format(rules['description'])
-                num_rules = len(rules['rules'])
-                seq_num_list=[]
-                #Store sequence numbers in a list
-                for rule in rules['rules']:
-                    seq_num_list.append(rule)
-                #Loop for number of rules    
-                for rule_iter in range(num_rules):
-                    cmd_str+="\n"
-                    seq_num = seq_num_list[rule_iter]
-                    rule = rules['rules'][seq_num]
-                    rule_data = rule['rule_data']
-                    #rule_data can contain integers. Convert all to list of strings
-                    rule_data_str_list = [str(i) for i in rule_data]
-                    cmd_str+=" seq {} ".format(seq_num)
-                    cmd_str+=' '.join(rule_data_str_list)
-                    if 'description' in rule:
-                        cmd_str+=" remark {}".format(rule['description'])
-
-    return 'CB_SUCCESS', cmd_str, True
+    return 'CB_SUCCESS', __show_running_acl(render_tables, 'ACL_IPV6'), True
 
 def acl_bind_cb(render_tables):
     acl_client = cc.ApiClient()
     cmd_str = ''
     input_string =str(render_tables['name'])
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={intfname}',intfname=input_string)
-    #keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST')
-    #keypath = cc.Path('/restconf/data/sonic-acl:sonic-acl/ACL_BINDING_TABLE/ACL_BINDING_TABLE_LIST={intfname},{stage}',intfname=input_string,stage='INGRESS')
-    response = acl_client.get(keypath, None, False)
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={intfname}', intfname=input_string)
+    response = acl_client.get(keypath, depth=None, ignore404=False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True
@@ -289,7 +130,7 @@ def acl_global_bind_cb(render_tables):
     cmd_str = ''
     config_present = 0
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/ingress-acl-sets')
-    response = acl_client.get(keypath, None, False)
+    response = acl_client.get(keypath, depth=10, ignore404=False)
 
     if response.ok() is False:
         return 'CB_SUCCESS', cmd_str, True

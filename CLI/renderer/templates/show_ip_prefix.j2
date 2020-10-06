@@ -14,8 +14,8 @@
 {% set mems = "" %}
 {% if vars.update({'list_name':list ['name']}) %} {% endif %}
 IP prefix list {{'%s'| format(vars.list_name)}}:
-   {% if "prefixes" in list %}
-   {% set mems = list['prefixes']['prefix'] %}
+   {% if "openconfig-routing-policy-ext:prefixes-ext" in list %}
+   {% set mems = list['openconfig-routing-policy-ext:prefixes-ext']['prefix'] %}
    {%endif %}
    {% for mem in mems %}
      {% if mem['masklength-range'] != "exact" %}
@@ -24,10 +24,10 @@ IP prefix list {{'%s'| format(vars.list_name)}}:
      {% else %}
       {% set rangestr = "" %}
      {% endif %}
-     {% if mem['config']['openconfig-routing-policy-ext:action'] == "PERMIT" %}
-     permit {{'%s'| format(mem['ip-prefix'])}} {{'%s'| format(rangestr)}}
-     {% elif mem['config']['openconfig-routing-policy-ext:action'] == "DENY" %}
-     deny {{'%s'| format(mem['ip-prefix'])}} {{'%s'| format(rangestr)}}
+     {% if mem['config']['action'] == "PERMIT" %}
+     seq {{'%s'| format(mem['sequence-number'])}} permit {{'%s'| format(mem['ip-prefix'])}} {{'%s'| format(rangestr)}}
+     {% elif mem['config']['action'] == "DENY" %}
+     seq {{'%s'| format(mem['sequence-number'])}} deny {{'%s'| format(mem['ip-prefix'])}} {{'%s'| format(rangestr)}}
      {% endif %}
    {% endfor %}
 {% endif %}

@@ -32,9 +32,9 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'state' in single_route %}
 {% if vars.update({'last_area_id':' '}) %}{% endif -%}
 {% for nexthop  in single_route['state']['next-hops-list']['next-hops'] %}
-{% if vars.last_area_id != nexthop['state']['area-id'] %}
-N    {{'%-18s'|format(single_route['prefix'])}}    [{{single_route['state']['cost']}}] area: {{nexthop['state']['area-id']}}
-{% if vars.update({'last_area_id':nexthop['state']['area-id']}) %}{% endif -%}
+{% if vars.last_area_id != nexthop['area-id'] %}
+N    {{'%-18s'|format(single_route['prefix'])}}    [{{single_route['state']['cost']}}] area: {{nexthop['area-id']}}
+{% if vars.update({'last_area_id':nexthop['area-id']}) %}{% endif -%}
 {% endif -%}
 {% if nexthop['next-hop'] == '0.0.0.0' %}
                            {{'%s %s'|format('directly attached to', nexthop['out-interface'])}}
@@ -70,7 +70,7 @@ N    {{'%-18s'|format(single_route['prefix'])}}    [{{single_route['state']['cos
 {% endif -%}
 {% endif -%}
 {% for nexthop  in single_route['state']['next-hops-list']['next-hops'] %}
-{% set area_id_list = area_id_list.append(nexthop['state']['area-id']) %}
+{% set area_id_list = area_id_list.append(nexthop['area-id']) %}
 {% endfor -%}
 {% set area_id_list1 =  area_id_list | unique %}
 {% for id in area_id_list1 %}
@@ -81,7 +81,7 @@ R    {{'%-18s'|format(single_route['prefix'])}} {{'%2s'|format(vars.inter_area_i
                         {{'%2s'|format(vars.inter_area_info)}} [{{single_route['state']['cost']}}] area: {{id}}{{vars.router_type}}
 {% endif -%}
 {% for nexthop  in single_route['state']['next-hops-list']['next-hops'] %}
-{% if id == nexthop['state']['area-id'] %}
+{% if id == nexthop['area-id'] %}
 {% if nexthop['next-hop'] == '0.0.0.0' %}
                            {{'%s %s'|format('directly attached to', nexthop['out-interface'])}}
 {% else %}

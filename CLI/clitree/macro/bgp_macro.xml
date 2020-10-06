@@ -52,6 +52,13 @@ limitations under the License.
         <PARAM name="statistics" help="Stats" ptype="SUBCOMMAND" mode="subcommand"/>
         <MACRO name="IP_BGP_NBR_SUB_CMDS">
         <PARAM name="summary" help="Summary of BGP neighbor status" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="dampening" help="Display detailed information about dampening" ptype="SUBCOMMAND" mode="subcommand" test='"4" = "arg1"'>
+            <PARAM name="dampenopt" help="Display detailed information about dampening" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="dampened-paths" help="Display paths suppressed due to dampening" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="flap-statistics" help="Display flap statistics of routes" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="parameters" help="Display detail of configured dampening parameters" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+        </PARAM>
       </PARAM>
     </MACRODEF>
 
@@ -60,13 +67,14 @@ limitations under the License.
       <PARAM name="vrf" help="BGP VRF" ptype="SUBCOMMAND" mode="subcommand" order="true" optional="true">
         <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
       </PARAM>
-      <PARAM name="cleartype" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch" order="true" optional="true">
+      <PARAM name="cleartype" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch" order="true">
         <PARAM name="*" help="Clear all peers" ptype="SUBCOMMAND" mode="subcommand"/>
         <PARAM name="as-num-dot" help="Clear BGP by Autonomous system number" ptype="RANGE_1_4294967295"/>
         <PARAM name="external" help="Clear all external peers" ptype="SUBCOMMAND" mode="subcommand"/>
-        <PARAM name="ip-addr" help="IPvarg1 Neighbor address to clear BGP" ptype="arg3"/>
-        <PARAM name="ip-prefix" help="IPvarg1 Prefix to clear BGP" ptype="IParg2_ADDR_MASK"/>
-        <PARAM name="interface" help="Inferface to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="ipv4-addr" help="IPv4 Neighbor address to clear BGP" ptype="IPV4_ADDR_ABC"/>
+        <PARAM name="ipv6-addr" help="IPv6 Neighbor address to clear BGP" ptype="IPV6_ADDR"/>
+        <PARAM name="ip-prefix" help="IPv4 Prefix to clear BGP" ptype="IP_ADDR_MASK" test='"4" = "arg1"'/>
+        <PARAM name="interface" help="Interface to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name="interface_type" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="Ethernet" help="Ethernet Interface to clear BGP" ptype="PHY_INTERFACE" mode="subcommand"/>
             <PARAM name="PortChannel" help="PortChannel to clear BGP" ptype="PO_INTERFACE" mode="subcommand"/>
@@ -76,18 +84,10 @@ limitations under the License.
         <PARAM name="peer-group" help="Peer group to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name="peer-group-name" help="Name of peer-group" ptype="STRING_63" optional="true"/>
         </PARAM>
-        <PARAM name="dampening" help="Clear BGP dampening" ptype="SUBCOMMAND" mode="subcommand" test='4 = arg1'>
+        <PARAM name="dampening" help="Clear BGP dampening" ptype="SUBCOMMAND" mode="subcommand" test='"4" = "arg1"'>
           <PARAM name="damptype" help="dampening option" ptype="SUBCOMMAND" mode="switch" optional="true">
-             <PARAM name="ip-addr" help="IPvarg1 address route to clear" ptype="arg3"/>
-             <PARAM name="ip-prefix" help="IPvarg1 Prefix to clear" ptype="IParg2_ADDR_MASK"/>
-             <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
-             <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
-             <PARAM name="soft" help="Soft reconfig inbound and outbound updates" ptype="SUBCOMMAND" mode="subcommand">
-               <PARAM name="soft-opt" help="soft-reconfiguration options" ptype="SUBCOMMAND" mode="switch" optional="true">
-                 <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
-                 <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
-               </PARAM>
-             </PARAM>
+             <PARAM name="ip-addr" help="IPv4 address route to clear" ptype="IPV4_ADDR_ABC"/>
+             <PARAM name="ip-prefix" help="IPv4 Prefix to clear" ptype="IP_ADDR_MASK"/>
           </PARAM>
         </PARAM>
       </PARAM>
@@ -100,6 +100,46 @@ limitations under the License.
              <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
            </PARAM>
          </PARAM>
+      </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="NEW_BGP_CLR_ALL_OPTIONS">
+      <PARAM name="vrf" help="BGP VRF" ptype="SUBCOMMAND" mode="subcommand" order="true" optional="true">
+        <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
+      </PARAM>
+      <PARAM name="cleartype" help="BGP Subcommands" ptype="SUBCOMMAND" mode="switch" order="true">
+        <PARAM name="*" help="Clear all peers" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+           <MACRO name="CLEAR_BGP_INOUT_SUB_CMDS" arg=""></MACRO>
+        </PARAM>
+        <PARAM name="as-num-dot" help="Clear BGP by Autonomous system number" ptype="RANGE_1_4294967295" optional="true">
+           <MACRO name="CLEAR_BGP_INOUT_SUB_CMDS" arg=""></MACRO>
+        </PARAM>
+        <PARAM name="ipv4" help="BGP IPv4 neighbor address to clear" ptype="IPV4_ADDR_ABC" optional="true">
+           <MACRO name="CLEAR_BGP_INOUT_SUB_CMDS" arg=""></MACRO>
+        </PARAM>
+        <PARAM name="ipv6" help="BGP IPv6 neighbor address to clear" ptype="IPV6_ADDR" optional="true">
+           <MACRO name="CLEAR_BGP_INOUT_SUB_CMDS" arg=""></MACRO>
+        </PARAM>
+        <PARAM name="dampening" help="Clear BGP dampening" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="damptype" help="dampening option" ptype="SUBCOMMAND" mode="switch" optional="true">
+             <PARAM name="ip-addr" help="IPv4 address route to clear" ptype="IPV4_ADDR_ABC"/>
+             <PARAM name="ip-prefix" help="IPv4 Prefix to clear" ptype="IP_ADDR_MASK"/>
+          </PARAM>
+        </PARAM>
+        <PARAM name="external" help="Clear all external peers" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+           <MACRO name="CLEAR_BGP_INOUT_SUB_CMDS" arg=""></MACRO>
+        </PARAM>
+        <PARAM name="interface" help="Interface to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="interface_type" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="Ethernet" help="Ethernet Interface to clear BGP" ptype="PHY_INTERFACE" mode="subcommand"/>
+            <PARAM name="PortChannel" help="PortChannel to clear BGP" ptype="PO_INTERFACE" mode="subcommand"/>
+            <PARAM name="Vlan" help="Vlan to clear BGP" ptype="VLAN_INTERFACE" mode="subcommand"/>
+          </PARAM>
+        </PARAM>
+        <PARAM name="peer-group" help="Peer group to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
+          <PARAM name="peer-group-name" help="Name of peer-group" ptype="STRING_63"/>
+          <MACRO name="CLEAR_BGP_INOUT_SUB_CMDS" arg=""></MACRO>
+        </PARAM>
       </PARAM>
     </MACRODEF>
 
@@ -116,7 +156,7 @@ limitations under the License.
             <PARAM name="neighbor-ip" help="Display one particular BGP Neighbor" ptype="IPV4V6_ADDR">
               <MACRO name="IP_BGP_NBR_SHW_RTE_OPTIONS" arg=""/>
             </PARAM>
-            <PARAM name="interface" help="Inferface to display Neighbor information about" ptype="SUBCOMMAND" mode="subcommand">
+            <PARAM name="interface" help="Interface to display Neighbor information about" ptype="SUBCOMMAND" mode="subcommand">
               <PARAM name="neighbor-interface" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="Ethernet" help="Ethernet Interface to display BGP Neighbor information" ptype="PHY_INTERFACE" mode="subcommand">
                   <MACRO name="IP_BGP_NBR_SHW_RTE_OPTIONS" arg=""/>
@@ -167,15 +207,14 @@ limitations under the License.
       
       <MACRODEF name="CLEAR_BGP_INOUT_SUB_CMDS">
         <PARAM name="inout_subcommands" help="Clear inout subcommands" ptype="SUBCOMMAND" mode="switch" optional="true">
-           <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+           <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
+           <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
+           <PARAM name="soft" help="Soft reconfig inbound and outbound updates" ptype="SUBCOMMAND" mode="subcommand">
+             <PARAM name="soft-opt" help="soft-reconfiguration options" ptype="SUBCOMMAND" mode="switch" optional="true">
+               <PARAM name="in" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand"/>
+               <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand"/>
+             </PARAM>
            </PARAM>
-           <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-           </PARAM>
-           <PARAM name="soft" help="Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-               <PARAM name="in" help=" Send route-refresh unless using 'soft-reconfiguration inbound" ptype="SUBCOMMAND" mode="subcommand" optional="true"></PARAM>
-               <PARAM name="out" help="Resend all outbound updates" ptype="SUBCOMMAND" mode="subcommand" optional="true"></PARAM>
-           </PARAM>
-
         </PARAM>
     </MACRODEF>
 

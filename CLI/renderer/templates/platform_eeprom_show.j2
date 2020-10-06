@@ -1,20 +1,23 @@
-{{'-----------------------------------------------------------'}}
-{{'Attribute'.ljust(20)}} {{'Value/State'}}
-{{'-----------------------------------------------------------'}}
+{{'--------------------------------------------------------'}}
+{{'Attribute'.ljust(25)}}{{'Value/State'}}
+{{'--------------------------------------------------------'}}
 {% if 'openconfig-platform:component' in json_output %}
 {% for component in json_output['openconfig-platform:component'] %}
 {% if 'state' in component %}
 {% for key, key_val in component['state'].items() %}
-{% if key == 'oper-status' %}
-{% set temp = key_val.split(':') %}
-{% if temp[temp|length - 1] is not none %}
-{% set  key_val = temp[temp|length - 1] %}
+{% if key == 'oper-status' or key == 'name' or key == 'empty' or key == 'removable' or key == 'software-version' %}
+{% continue %}
 {% endif %}
+{% if key == 'description' %}
+{% set key = 'Platform' %}
+{% endif %}
+{% if key == 'id' %}
+{% set key = 'Product Name' %}
 {% endif %}
 {% if 'openconfig-platform-ext:' in key %}
 {% set key = key.split(':')[1] %}
 {% endif %}
-{{key.ljust(20)}}:{{key_val}}
+{{(((key | replace('-', ' ')) | replace('no', 'number')).title()).ljust(25)}}:{{key_val}}
 {% endfor %}
 {% endif %}
 {% endfor %}

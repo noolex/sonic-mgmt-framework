@@ -268,7 +268,7 @@ def invoke_api(func, args):
         return api.delete(keypath)
     # Clear RADIUS statistics
     elif func == 'rpc_sonic_clear_radius_statistics':
-        path = cc.Path('/restconf/operations/sonic-system-radius:clear-radius')
+        path = cc.Path('/restconf/operations/sonic-system-radius-clear:clear-radius')
         body = {}
         return api.post(path, body)
     else:

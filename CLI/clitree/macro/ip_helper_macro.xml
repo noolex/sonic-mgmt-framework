@@ -33,6 +33,25 @@ limitations under the License.
         <DESCRIPTION>
           Configures IP helper server address for an interface.
         </DESCRIPTION>
+        <USAGE>
+          [no] ip helper-address &lt;ip-address&gt;
+        </USAGE>
+        <EXAMPLE summary="Configure IP helper server address">
+          sonic-cli# configure terminal
+          sonic-cli(config)# interface arg5
+          sonic-cli(conf-if-arg5)# ip helper-address 3.3.3.3
+          sonic-cli(conf-if-arg5)#
+        </EXAMPLE>
+        <EXAMPLE summary="Unconfigure IP Helper server address">
+          sonic-cli# configure terminal
+          sonic-cli(config)# interface arg5
+          sonic-cli(conf-if-arg5)# no ip helper-address 3.3.3.3
+          sonic-cli(conf-if-arg5)#
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                        
+        <ALTCMD type="click">
+          config interface ip helper_address add &lt;interface-name&gt; &lt;ip-address&gt;
+        </ALTCMD>
       </DOCGEN>
     </COMMAND>
 
@@ -50,6 +69,25 @@ limitations under the License.
         <DESCRIPTION>
           Configures IP helper server address in non-default vrf for an interface.
         </DESCRIPTION>
+        <USAGE>
+          [no] ip helper-address vrf &lt;vrf-name&gt; &lt;ip-address&gt;
+        </USAGE>
+        <EXAMPLE summary="Configure IP Helper server address">
+          sonic-cli# configure terminal
+          sonic-cli(config)# interface arg5
+          sonic-cli(conf-if-arg5)# ip helper-address vrf Vrf1 4.4.4.4
+          sonic-cli(conf-if-arg5)#
+        </EXAMPLE>
+        <EXAMPLE summary="Unconfigure IP Helper server address">
+          sonic-cli# configure terminal
+          sonic-cli(config)# interface arg5
+          sonic-cli(conf-if-arg5)# no ip helper-address vrf Vrf1 4.4.4.4
+          sonic-cli(conf-if-arg5)#
+        </EXAMPLE>
+        <FEATURE> IP Helper </FEATURE>                        
+        <ALTCMD type="click">
+          config interface ip helper_address add &lt;interface-name&gt; &lt;ip-address&gt; [-vrf &lt;vrf-name&gt;]
+        </ALTCMD>
       </DOCGEN>
     </COMMAND>
 
