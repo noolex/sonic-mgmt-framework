@@ -32,8 +32,10 @@
 
     <COMMAND
            name="mclag gateway-mac"
-           help="Configures gateway mac for router ports over MCLAG" >
-           <PARAM name="gw_mac" help="MCLAG Gateway MAC address" ptype="MAC_ADDR"> </PARAM>
+           help="Configures gateway mac for router ports over MCLAG" 
+           command_tables="sonic-mclag:sonic-mclag/MCLAG_GW_MAC/MCLAG_GW_MAC_LIST/gw_mac=${gw_mac}"
+    >
+           <PARAM name="gw_mac" help="MCLAG Gateway MAC address" ptype="MAC_ADDR"  dbpath="sonic-mclag:sonic-mclag/MCLAG_GW_MAC/MCLAG_GW_MAC_LIST/gw_mac" ></PARAM>
            <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_gw_mac_list ${gw_mac} </ACTION>
      <DOCGEN>
         <DESCRIPTION>
