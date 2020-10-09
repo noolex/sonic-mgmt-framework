@@ -33,7 +33,7 @@ def run(func, args):
         if response.ok():
             if response.content is not None:
                 content = response.content
-                content = content[39:-3].replace('\u003e', '>')
+                content = content[38:-3].replace('\u003e', '>')
                 show_cli_output("dump.j2", content)
         else:
             print response.error_message()

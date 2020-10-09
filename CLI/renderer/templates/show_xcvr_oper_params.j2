@@ -1,9 +1,14 @@
-{% set if_name = json_output[1][0] %}
-{{if_name}}
+{% if json_output -%}
+{% for ifName in json_output %}
+{% if 'openconfig-platform-transceiver:transceiver' in json_output[ifName] -%}
+{% if 'state' in json_output[ifName]['openconfig-platform-transceiver:transceiver'] -%}
+
+{{' '}}
+{{ifName}}
 {{'---------------------------------------------------------------------'}}
 {{'Attribute'.ljust(25)}}:  {{'Value/State'}}
 {{'---------------------------------------------------------------------'}}
-{% for key, val in json_output[1][1].items() %}
+{% for key, val in json_output[ifName]['openconfig-platform-transceiver:transceiver']['state'].items() %}
 {% if 'los' in key %}
 {% set param_description = 'Unknown lane' %}
 {% if 'los-lane-1' in key %}
@@ -196,3 +201,8 @@
 
 
 {% endfor %}
+
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
