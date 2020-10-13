@@ -23,26 +23,26 @@ limitations under the License.
     >
     <VIEW name="enable-view">
         <!-- show ip pim -->
-        <COMMAND
+        <COMMAND hidden="true"
             name="show ip pim"
             help="Show PIM commands">
-            <PARAM
+            <PARAM hidden="true"
                 name="vrf"
                 help="Show PIM information of the given VRF"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                   name="vrf-name"
                   help="Show PIM information of the given VRF"
                   mode="switch"
                   ptype="SUBCOMMAND">
-                  <PARAM
+                  <PARAM hidden="true"
                       name="vrf-name"
                       help="Name of VRF"
                       ptype="VRF_OR_DEFAULT">
                   </PARAM>
-                  <PARAM
+                  <PARAM hidden="true"
                       name="all"
                       help="All VRFs"
                       mode="subcommand"
@@ -50,47 +50,47 @@ limitations under the License.
                   </PARAM>
                 </PARAM>
             </PARAM>
-            <PARAM
+            <PARAM hidden="true"
                 name="filter"
                 help="options: rpf, interface, neighbor, ssm, topology"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
 
-                <PARAM
+                <PARAM hidden="true"
                     name="interface"
                     help="Show interface details"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
-                    <PARAM
+                    <PARAM hidden="true"
                         name="iftype"
                         help="interface type"
                         mode="switch"
                         optional="true"
                         ptype="SUBCOMMAND">
-                        <PARAM
+                        <PARAM hidden="true"
                              name="port-id"
                              help="Physical interface"
                              ptype="PHY_INTERFACE">
                         </PARAM>
-                        <PARAM
+                        <PARAM hidden="true"
                             name="PortChannel"
                             help="PortChannel interface"
                             mode="subcommand"
                             ptype="SUBCOMMAND">
-                            <PARAM
+                            <PARAM hidden="true"
                                 name="port-id"
                                 help="PortChannel ID"
                                 ptype="LAG_ID">
                             </PARAM>
                         </PARAM>
-                        <PARAM
+                        <PARAM hidden="true"
                             name="Vlan"
                             help="VLAN interface"
                             mode="subcommand"
                             ptype="SUBCOMMAND">
-                            <PARAM
+                            <PARAM hidden="true"
                                 name="port-id"
                                 help="VLAN ID"
                                 ptype="VLAN_ID">
@@ -98,46 +98,46 @@ limitations under the License.
                         </PARAM>
                     </PARAM>
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     value="neighbor"
                     name="nbr"
                     help="Show PIM neighbor details"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
-                    <PARAM
+                    <PARAM hidden="true"
                         name="nbr-addr"
                         help="IPv4 address of the PIM neighbor"
                         optional="true"
                         ptype="IP_ADDR">
                     </PARAM>
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="rpf"
                     help="Show RPF details"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="ssm"
                     help="Show SSM details"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="topology"
                     help="Show topology information"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
-                    <PARAM
+                    <PARAM hidden="true"
                         name="grp-addr"
                         help="IPv4 address of the group"
                         optional="true"
                         ptype="IP_ADDR">
-                        <PARAM
+                        <PARAM hidden="true"
                             name="src-addr"
                             help="IPv4 address of the source"
                             optional="true"
@@ -279,35 +279,35 @@ limitations under the License.
   <!-- ============== -->
   <!-- Clear commands -->
   <!-- ============== -->
-        <COMMAND
+        <COMMAND hidden="true"
             name="clear ip pim"
             help="Clear PIM protocol information">
-            <PARAM
+            <PARAM hidden="true"
                 name="vrf"
                 help="VRF instance information"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                     name="vrf-name"
                     help="Name of VRF"
                     ptype="VRF_OR_DEFAULT">
                 </PARAM>
             </PARAM>
-            <PARAM
+            <PARAM hidden="true"
                 name="filter"
                 help="options: interfaces, oil"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                     name="interfaces"
                     help="Clear all PIM interfaces of a particular VRF"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="oil"
                     help="Clear PIM OIL (Outgoing Interfaces List) of all multicast entries of a particular VRF"
                     ptype="SUBCOMMAND"
@@ -349,72 +349,72 @@ limitations under the License.
     <!-- Global Config -->
     <!-- ============= -->
     <VIEW name="configure-view">
-        <COMMAND
+        <COMMAND hidden="true"
             name="ip pim"
             command_tables="sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST/vrf-name={vrf_name},address-family={address-family}"
             command_keys="address-family=ipv4"
             render_command_cb="pim_ipv4_gbl"
             help="Configure PIM">
-            <PARAM
+            <PARAM hidden="true"
                 name="vrf"
                 help="VRF Instance"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                     name="vrf-name"
                     help="Name of VRF"
                     ptype="VRF_OR_DEFAULT"></PARAM>
             </PARAM>
-            <PARAM
+            <PARAM hidden="true"
                 name="filter"
                 help="Pick one command among following options"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                     name="ecmp"
                     help="Enable ECMP"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
-                    <PARAM
+                    <PARAM hidden="true"
                         name="rebalance"
                         help="Enable ECMP rebalance"
                         ptype="SUBCOMMAND"
                         optional="true"
                         mode="subcommand"></PARAM>
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="join-prune-interval"
                     help="Join Prune interval"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
-                    <PARAM
+                    <PARAM hidden="true"
                         help="Join Prune interval in seconds"
                         name="jpi"
                         ptype="RANGE_60_600"></PARAM>
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="keep-alive-timer"
                     help="Keep Alive timer"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
-                    <PARAM
+                    <PARAM hidden="true"
                         help="Keep Alive timer in seconds"
                         name="kat"
                         ptype="RANGE_31_60000"></PARAM>
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="ssm"
                     help="Configure SSM"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
-                    <PARAM
+                    <PARAM hidden="true"
                         name="prefix-list"
                         help="Configure SSM prefix list"
                         ptype="SUBCOMMAND"
                         mode="subcommand">
-                        <PARAM
+                        <PARAM hidden="true"
                             help="Name of a prefix list"
                             name="pln"
                             ptype="STRING"></PARAM>
@@ -549,58 +549,58 @@ limitations under the License.
         </COMMAND>
 
         <!-- no ip pim -->
-        <COMMAND
+        <COMMAND hidden="true"
             name="no ip pim"
             help="Delete PIM configuration">
-            <PARAM
+            <PARAM hidden="true"
                 name="vrf"
                 help="VRF Instance"
                 mode="subcommand"
                 ptype="SUBCOMMAND"
                 optional="true">
-                <PARAM
+                <PARAM hidden="true"
                     name="vrf-name"
                     help="Name of VRF"
                     ptype="VRF_OR_DEFAULT"></PARAM>
             </PARAM>
-            <PARAM
+            <PARAM hidden="true"
                 name="filter"
                 help="Pick one command among following options"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                     name="ecmp"
                     help="Disable ECMP"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
-                    <PARAM
+                    <PARAM hidden="true"
                         name="rebalance"
                         help="Disable ECMP rebalance"
                         ptype="SUBCOMMAND"
                         optional="true"
                         mode="subcommand"></PARAM>
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="jpi"
                     value="join-prune-interval"
                     help="Clear Join Prune interval"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="kat"
                     value="keep-alive-timer"
                     help="Clear Keep Alive timer"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="ssm"
                     help="Remove SSM configuration"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
-                    <PARAM
+                    <PARAM hidden="true"
                         name="pln"
                         value="prefix-list"
                         help="Remove SSM prefix list"

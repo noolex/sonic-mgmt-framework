@@ -23,28 +23,28 @@ limitations under the License.
     >
     <VIEW name="enable-view">
         <!-- show ip mroute -->
-        <COMMAND
+        <COMMAND hidden="true"
             name="show ip mroute"
             help="Show IP multicast routes"
             ptype="SUBCOMMAND"
             mode="subcommand">
-            <PARAM
+            <PARAM hidden="true"
                 name="vrf"
                 help="Show IP multicast routes of the given VRF"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                   name="vrf-name"
                   help="Show IP multicast routes of the given VRF"
                   mode="switch"
                   ptype="SUBCOMMAND">
-                  <PARAM
+                  <PARAM hidden="true"
                       name="vrf-name"
                       help="Name of VRF"
                       ptype="VRF_OR_DEFAULT">
                   </PARAM>
-                  <PARAM
+                  <PARAM hidden="true"
                       name="all"
                       help="All VRFs"
                       mode="subcommand"
@@ -52,26 +52,26 @@ limitations under the License.
                   </PARAM>
                 </PARAM>
              </PARAM>
-             <PARAM
+             <PARAM hidden="true"
                 name="filter"
                 help="options: grp-addr, summary"
                 mode="switch"
                 optional="true"
                 order="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                     name="grp-addr"
                     help="IPv4 address of the group"
                     optional="true"
                     ptype="IP_ADDR">
-                    <PARAM
+                    <PARAM hidden="true"
                         name="src-addr"
                         help="IPv4 address of the source"
                         optional="true"
                         ptype="IP_ADDR">
                     </PARAM>
                 </PARAM>
-                <PARAM
+                <PARAM hidden="true"
                     name="summary"
                     help="Show IP multicast routes summary"
                     ptype="SUBCOMMAND"
@@ -119,16 +119,16 @@ limitations under the License.
         <!-- ============== -->
         <!-- Clear commands -->
         <!-- ============== -->
-        <COMMAND
+        <COMMAND hidden="true"
             name="clear ip mroute"
             help="Clear IP Multicast routes">
-            <PARAM
+            <PARAM hidden="true"
                 name="vrf"
                 help="Clear IP multicast routes of the given VRF"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
-                <PARAM
+                <PARAM hidden="true"
                     name="vrf-name"
                     help="Name of VRF"
                     ptype="VRF_OR_DEFAULT">

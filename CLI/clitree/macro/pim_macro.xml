@@ -17,16 +17,16 @@ limitations under the License.
 
 <ROOT>
     <MACRODEF name="BIND-INTF-TO-PIM">
-        <COMMAND
+        <COMMAND hidden="true"
             name="ip pim"
             help="Add PIM configurations on interface">
         </COMMAND>
-        <COMMAND
+        <COMMAND hidden="true"
             name="no ip pim"
             help="Remove PIM configurations from interface">
         </COMMAND>
 
-        <COMMAND
+        <COMMAND hidden="true"
             name="ip pim sparse-mode"
             command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
             command_keys="vrf_name=*,address_family=ipv4"
@@ -50,7 +50,7 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND
+        <COMMAND hidden="true"
             name="no ip pim sparse-mode"
             help="Disable PIM sparse-mode">
             <ACTION builtin="clish_pyobj">
@@ -72,12 +72,12 @@ limitations under the License.
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND
+        <COMMAND hidden="true"
             name="ip pim drpriority"
             command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
             command_keys="vrf_name=*,address_family=ipv4"
             help="Set the Designated Router (DR) priority">
-            <PARAM
+            <PARAM hidden="true"
                 help="Designated Router (DR) Priority"
                 name="drprio"
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/dr-priority"
@@ -106,7 +106,7 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND
+        <COMMAND hidden="true"
             name="no ip pim drpriority"
             help="Clear the Designated Router (DR) priority">
             <ACTION builtin="clish_pyobj">
@@ -128,12 +128,12 @@ limitations under the License.
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND
+        <COMMAND hidden="true"
             name="ip pim hello"
             command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
             command_keys="vrf_name=*,address_family=ipv4"
             help="Set the Hello interval">
-            <PARAM
+            <PARAM hidden="true"
                 help="Hello interval in seconds"
                 name="hello"
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/hello-interval"
@@ -161,7 +161,7 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND
+        <COMMAND hidden="true"
             name="no ip pim hello"
             help="Clear the Hello interval">
             <ACTION builtin="clish_pyobj">
@@ -182,7 +182,7 @@ limitations under the License.
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND
+        <COMMAND hidden="true"
             name="ip pim bfd"
             command_tables="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/vrf-name={vrf_name},address-family={address_family},interface={name}"
             command_keys="vrf_name=*,address_family=ipv4"
@@ -206,7 +206,7 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND
+        <COMMAND hidden="true"
             name="no ip pim bfd"
             help="Disable BFD">
             <ACTION builtin="clish_pyobj">
