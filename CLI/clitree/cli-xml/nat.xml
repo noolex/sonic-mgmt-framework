@@ -59,6 +59,21 @@ limitations under the License.
             help="false"
             completion="false"
             />
+
+        <!-- show configuration -->
+        <COMMAND name="show configuration" help="Displays current nat configuration">
+          <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-nat</ACTION>
+          <DOCGEN>
+            <DESCRIPTION>
+              Displays current NAT configuration
+            </DESCRIPTION>
+            <USAGE>
+              Use this command to display running configurations.
+            </USAGE>
+            <FEATURE> NAT </FEATURE>
+          </DOCGEN>
+        </COMMAND>
+
         <COMMAND
             name="no"
             help="Negate a command or set its defaults"
@@ -498,6 +513,10 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_nat rpc_nat_clear ${clear-subcommands}</ACTION>
     </COMMAND>
 
+    <!-- show running-configuration nat -->
+    <COMMAND name="show running-configuration nat" help="Displays all NAT configurations">
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-nat</ACTION>
+    </COMMAND>
 
     <!--show nat -->
     <COMMAND
