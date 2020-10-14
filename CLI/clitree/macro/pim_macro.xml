@@ -93,7 +93,7 @@ limitations under the License.
                     elected.
                 </DESCRIPTION>
                 <USAGE>
-                    ip pim dr-priority &lt;value&gt;
+                    ip pim drpriority &lt;value&gt;
                 </USAGE>
                 <EXAMPLE summary="Set DR priority value of interface Vlan100 to 10">
                     sonic# configure terminal
@@ -108,7 +108,7 @@ limitations under the License.
         </COMMAND>
         <COMMAND hidden="true"
             name="no ip pim drpriority"
-            help="Clear the Designated Router (DR) priority">
+            help="Set the Designated Router (DR) priority to default">
             <ACTION builtin="clish_pyobj">
                 sonic_cli_pim del_pim_interface_config_drprio intf:arg1 intf_uri:arg2
             </ACTION>
@@ -117,7 +117,7 @@ limitations under the License.
                     Set the DR Priority for the PIM interface to the default value.
                 </DESCRIPTION>
                 <USAGE>
-                    no ip pim dr-priority
+                    no ip pim drpriority
                 </USAGE>
                 <EXAMPLE summary="Set the DR priority value of interface Vlan100 to default">
                     sonic# configure terminal
@@ -163,7 +163,7 @@ limitations under the License.
         </COMMAND>
         <COMMAND hidden="true"
             name="no ip pim hello"
-            help="Clear the Hello interval">
+            help="Set the Hello interval to default">
             <ACTION builtin="clish_pyobj">
                 sonic_cli_pim del_pim_interface_config_hello intf:arg1 intf_uri:arg2
             </ACTION>
@@ -172,7 +172,7 @@ limitations under the License.
                     Sets the Hello interval to the default value.
                 </DESCRIPTION>
                 <USAGE>
-                    ip pim hello &lt;value&gt;
+                    no ip pim hello &lt;value&gt;
                 </USAGE>
                 <EXAMPLE summary="Set the Hello interval of interface Vlan100 to default">
                     sonic# configure terminal
@@ -217,7 +217,7 @@ limitations under the License.
                     This command disables BFD processing for PIM on the given interface.
                 </DESCRIPTION>
                 <USAGE>
-                    no ip pim sparse-mode
+                    no ip pim bfd
                 </USAGE>
                 <EXAMPLE summary="Disable BFD on interface Vlan100">
                     sonic# configure terminal

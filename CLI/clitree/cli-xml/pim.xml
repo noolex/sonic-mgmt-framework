@@ -364,11 +364,12 @@ limitations under the License.
                 <PARAM hidden="true"
                     name="vrf-name"
                     help="Name of VRF"
-                    ptype="VRF_OR_DEFAULT"></PARAM>
+                    ptype="VRF_OR_DEFAULT">
+                </PARAM>
             </PARAM>
             <PARAM hidden="true"
                 name="filter"
-                help="Pick one command among following options"
+                help="Pick one command from the following options"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
@@ -382,27 +383,30 @@ limitations under the License.
                         help="Enable ECMP rebalance"
                         ptype="SUBCOMMAND"
                         optional="true"
-                        mode="subcommand"></PARAM>
+                        mode="subcommand">
+                    </PARAM>
                 </PARAM>
                 <PARAM hidden="true"
                     name="join-prune-interval"
-                    help="Join Prune interval"
+                    help="Configure Join Prune Interval"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM hidden="true"
-                        help="Join Prune interval in seconds"
+                        help="Join Prune Interval in seconds"
                         name="jpi"
-                        ptype="RANGE_60_600"></PARAM>
+                        ptype="RANGE_60_600">
+                    </PARAM>
                 </PARAM>
                 <PARAM hidden="true"
                     name="keep-alive-timer"
-                    help="Keep Alive timer"
+                    help="Configure Keep Alive timer"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                     <PARAM hidden="true"
                         help="Keep Alive timer in seconds"
                         name="kat"
-                        ptype="RANGE_31_60000"></PARAM>
+                        ptype="RANGE_31_60000">
+                    </PARAM>
                 </PARAM>
                 <PARAM hidden="true"
                     name="ssm"
@@ -417,7 +421,8 @@ limitations under the License.
                         <PARAM hidden="true"
                             help="Name of a prefix list"
                             name="pln"
-                            ptype="STRING"></PARAM>
+                            ptype="STRING">
+                        </PARAM>
                     </PARAM>
                 </PARAM>
             </PARAM>
@@ -437,12 +442,10 @@ limitations under the License.
                     --------------------
                     Configure the frequency of join/prune messages on the specified interface.
 
-
                     -----------------
                     Keep Alive Timer:
                     -----------------
                     Period after last (S,G) data packet during which (S,G) Join state will be even in the absence of (S,G) Join messages.
-
 
                     ------------------------------
                     SSM Prefix-list configuration:
@@ -469,35 +472,35 @@ limitations under the License.
                     * ip pim [vrf &lt;vrf-name&gt;] ssm prefix-list &lt;prefix-list-name&gt;
                     * ip pim [vrf &lt;vrf-name&gt;] ecmp [rebalance]
                 </USAGE>
-                <EXAMPLE summary="List of PIM global and interface level commands">
+                <EXAMPLE summary="List of PIM global level commands">
                 sonic# configure terminal
                 sonic(config)#
 
                 sonic(config)# ip pim
                   vrf                  VRF name
-                  join-prune-interval  Join prune interval in seconds
-                  keep-alive-timer     Keep alive timer in seconds
-                  ssm                  Configure SSM mode
-                  ecmp                 Configure ECMP
+                  join-prune-interval  Configure Join Prune Interval
+                  keep-alive-timer     Configure Keep Alive timer
+                  ssm                  Configure SSM
+                  ecmp                 Enable ECMP
 
                 sonic(config)# ip pim vrf Vrf1
-                  join-prune-interval  Join prune interval in seconds
-                  keep-alive-timer     Keep alive timer in seconds
-                  ssm                  Configure SSM mode
-                  ecmp                 Configure ECMP
+                  join-prune-interval  Configure Join Prune Interval
+                  keep-alive-timer     Configure Keep Alive timer
+                  ssm                  Configure SSM
+                  ecmp                 Enable ECMP
 
                 sonic(config)# no ip pim
                   vrf                  VRF name
-                  join-prune-interval  Join prune interval in seconds
-                  keep-alive-timer     Keep alive timer in seconds
-                  ssm                  Configure SSM mode
-                  ecmp                 Configure ECMP mode
+                  join-prune-interval  Set Join Prune Interval to default
+                  keep-alive-timer     Set Keep Alive timer to default
+                  ssm                  Remove SSM configuration
+                  ecmp                 Disable ECMP
 
                 sonic(config)# no ip pim vrf Vrf1
-                  join-prune-interval  Join prune interval in seconds
-                  keep-alive-timer     Keep alive timer in seconds
-                  ssm                  Configure SSM mode
-                  ecmp                 Configure ECMP mode
+                  join-prune-interval  Set Join Prune Interval to default
+                  keep-alive-timer     Set Keep Alive timer to default
+                  ssm                  Remove SSM configuration
+                  ecmp                 Disable ECMP
                 </EXAMPLE>
 
 
@@ -584,14 +587,14 @@ limitations under the License.
                 <PARAM hidden="true"
                     name="jpi"
                     value="join-prune-interval"
-                    help="Clear Join Prune interval"
+                    help="Set Join Prune Interval to default"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
                 <PARAM hidden="true"
                     name="kat"
                     value="keep-alive-timer"
-                    help="Clear Keep Alive timer"
+                    help="Set Keep Alive timer to default"
                     ptype="SUBCOMMAND"
                     mode="subcommand">
                 </PARAM>
