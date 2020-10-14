@@ -33,15 +33,43 @@ limitations under the License.
             dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/mode=sm"
             help="Enable PIM sparse-mode">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_mode intf:arg1 2>/dev/stdout
+                sonic_cli_pim patch_pim_interface_config_mode intf:arg1 intf_uri:arg2
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Enable PIM sparse-mode on the given interface
+                </DESCRIPTION>
+                <USAGE>
+                    ip pim sparse-mode
+                </USAGE>
+                <EXAMPLE summary="Enable PIM sparse-mode on interface Vlan100">
+                    sonic# configure terminal
+                    sonic(config)# interface Vlan 100
+                    sonic(conf-if-Vlan100)# ip pim sparse-mode
+                    sonic(conf-if-Vlan100)#
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND hidden="true"
             name="no ip pim sparse-mode"
             help="Disable PIM sparse-mode">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_mode intf:arg1 2>/dev/stdout
+                sonic_cli_pim del_pim_interface_config_mode intf:arg1 intf_uri:arg2
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Disable PIM sparse-mode on the given interface
+                </DESCRIPTION>
+                <USAGE>
+                    no ip pim sparse-mode
+                </USAGE>
+                <EXAMPLE summary="Disable PIM sparse-mode on interface Vlan100">
+                    sonic# configure terminal
+                    sonic(config)# interface Vlan 100
+                    sonic(conf-if-Vlan100)# no ip pim sparse-mode
+                    sonic(conf-if-Vlan100)#
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND hidden="true"
@@ -55,15 +83,49 @@ limitations under the License.
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/dr-priority"
                 ptype="RANGE_1_4294967295"></PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_drprio intf:arg1 drprio:${drprio} 2>/dev/stdout
+                sonic_cli_pim patch_pim_interface_config_drprio intf:arg1 intf_uri:arg2 drprio:${drprio}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Set the DR Priority for the PIM interface. This command a
+                    allows user to set the priority of a node for becoming the DR on a network to
+                    which the interface is attached. A higher value means a higher chances of being
+                    elected.
+                </DESCRIPTION>
+                <USAGE>
+                    ip pim drpriority &lt;value&gt;
+                </USAGE>
+                <EXAMPLE summary="Set DR priority value of interface Vlan100 to 10">
+                    sonic# configure terminal
+                    sonic(config)# interface Vlan 100
+                    sonic(conf-if-Vlan100)# ip pim drpriority
+                      &lt;1..4294967295&gt;  Range 1_4294967295
+
+                    sonic(conf-if-Vlan100)# ip pim drpriority 10
+                    sonic(conf-if-Vlan100)#
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND hidden="true"
             name="no ip pim drpriority"
-            help="Clear the Designated Router (DR) priority">
+            help="Set the Designated Router (DR) priority to default">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_drprio intf:arg1 2>/dev/stdout
+                sonic_cli_pim del_pim_interface_config_drprio intf:arg1 intf_uri:arg2
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Set the DR Priority for the PIM interface to the default value.
+                </DESCRIPTION>
+                <USAGE>
+                    no ip pim drpriority
+                </USAGE>
+                <EXAMPLE summary="Set the DR priority value of interface Vlan100 to default">
+                    sonic# configure terminal
+                    sonic(config)# interface Vlan 100
+                    sonic(conf-if-Vlan100)# no ip pim drpriority
+                    sonic(conf-if-Vlan100)#
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND hidden="true"
@@ -77,15 +139,47 @@ limitations under the License.
                 dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/hello-interval"
                 ptype="RANGE_1_255"></PARAM>
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_hello intf:arg1 hello:${hello} 2>/dev/stdout
+                sonic_cli_pim patch_pim_interface_config_hello intf:arg1 intf_uri:arg2 hello:${hello}
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Periodic interval for Hello messages to keep the PIM neighbor session alive.
+                    This configuration internally configures the default hold-time (3.5 *
+                    Hello-interval); the period to keep the PIM neighbor session alive
+                    without receiving hello messages from that particular neighbor.
+                </DESCRIPTION>
+                <USAGE>
+                    ip pim hello &lt;value&gt;
+                </USAGE>
+                <EXAMPLE summary="Set the Hello interval of interface Vlan100 to 30">
+                    sonic# configure terminal
+                    sonic(conf-if-Vlan100)# ip pim hello
+                      &lt;1..180&gt;  Range 1 to 180 in seconds
+
+                    sonic(conf-if-Vlan100)# ip pim hello 30
+                    sonic(conf-if-Vlan100)#
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND hidden="true"
             name="no ip pim hello"
-            help="Clear the Hello interval">
+            help="Set the Hello interval to default">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_hello intf:arg1 2>/dev/stdout
+                sonic_cli_pim del_pim_interface_config_hello intf:arg1 intf_uri:arg2
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Sets the Hello interval to the default value.
+                </DESCRIPTION>
+                <USAGE>
+                    no ip pim hello &lt;value&gt;
+                </USAGE>
+                <EXAMPLE summary="Set the Hello interval of interface Vlan100 to default">
+                    sonic# configure terminal
+                    sonic(conf-if-Vlan100)# no ip pim hello
+                    sonic(conf-if-Vlan100)#
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
 
         <COMMAND hidden="true"
@@ -95,15 +189,43 @@ limitations under the License.
             dbpath="sonic-pim:sonic-pim/PIM_INTERFACE/PIM_INTERFACE_LIST/bfd-enabled=true"
             help="Enable BFD">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim patch_pim_interface_config_bfd intf:arg1 2>/dev/stdout
+                sonic_cli_pim patch_pim_interface_config_bfd intf:arg1 intf_uri:arg2
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    This command enables BFD processing for PIM on the given interface.
+                </DESCRIPTION>
+                <USAGE>
+                    ip pim bfd
+                </USAGE>
+                <EXAMPLE summary="Enable BFD on interface Vlan100">
+                    sonic# configure terminal
+                    sonic(config)# interface Vlan 100
+                    sonic(conf-if-Vlan100)# ip pim bfd
+                    sonic(conf-if-Vlan100)#
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
         <COMMAND hidden="true"
             name="no ip pim bfd"
             help="Disable BFD">
             <ACTION builtin="clish_pyobj">
-                sonic_cli_pim del_pim_interface_config_bfd intf:arg1 2>/dev/stdout
+                sonic_cli_pim del_pim_interface_config_bfd intf:arg1 intf_uri:arg2
             </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    This command disables BFD processing for PIM on the given interface.
+                </DESCRIPTION>
+                <USAGE>
+                    no ip pim bfd
+                </USAGE>
+                <EXAMPLE summary="Disable BFD on interface Vlan100">
+                    sonic# configure terminal
+                    sonic(config)# interface Vlan 100
+                    sonic(conf-if-Vlan100)# no ip pim bfd
+                    sonic(conf-if-Vlan100)#
+                </EXAMPLE>
+            </DOCGEN>
         </COMMAND>
     </MACRODEF>
 </ROOT>
