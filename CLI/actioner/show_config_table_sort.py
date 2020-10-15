@@ -17,23 +17,9 @@
 ###########################################################################
 
 from natsort import natsorted, ns
-from collections import OrderedDict
-import re
-from show_config_utils import log
-
-#  parse table path, returns dict of table key, value
-def get_view_table_keys(table_path):
-
-    table_keys_map = OrderedDict()
-    for path in table_path.split('/'):
-        for sub_path in path.split(','):
-            match = re.search(r"(.+)={(.+)}", sub_path)
-            if match is not None:
-                table_keys_map.update({match.group(1):match.group(2)})
-
-    return table_keys_map
-
-
+import logging
+from show_config_utils import showrun_log
+from show_config_utils import get_view_table_keys
 
 def natsort_list(sonic_table_lst , table_path):
 
@@ -42,9 +28,9 @@ def natsort_list(sonic_table_lst , table_path):
 
     if table_keys:
         try:
-            sonic_table_lst = natsorted(sonic_table_lst,key=lambda t: t[table_keys.keys()[0]])
+            sonic_table_lst = natsorted(sonic_table_lst,key=lambda t: t[table_keys[0][0]])
         except:
-            log.error("Table {} sorting failure " .format(table_path))
+            showrun_log(logging.ERROR, "Table {} sorting failure ", table_path)
             pass
                 
     return sonic_table_lst
