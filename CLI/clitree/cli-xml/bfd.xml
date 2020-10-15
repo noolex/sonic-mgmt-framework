@@ -47,7 +47,7 @@ limitations under the License.
             <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
                 <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING" default="null"> </PARAM>
             </PARAM>
-        <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_peer.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_peers.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
 		<DESCRIPTION>
 			Display specific Bidirectional Forwarding detection(BFD) peer with the specificed filters..
@@ -121,7 +121,7 @@ limitations under the License.
             <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
                 <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING" default="null"> </PARAM>
             </PARAM>
-        <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_counter.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
+        <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_counters.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
     <DOCGEN>
         <DESCRIPTION>
             Displays counters for the specified Bidirectional Forwarding detection(BFD) peer with the input filters.
