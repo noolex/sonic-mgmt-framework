@@ -73,6 +73,16 @@ def invoke(func, args):
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', 
                 name='default', macaddress=args[0], vlan=args[1].lower().strip("vlan"))
         return aa.delete(keypath)
+    elif func == 'add_openconfig_network_instance_network_instances_network_instance_fdb_config_mac_aging_time':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/config/mac-aging-time',name='default')
+        body = {"openconfig-network-instance:mac-aging-time":int(args[0])}
+        return aa.patch(keypath, body)
+    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_fdb_config_mac_aging_time':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/config/mac-aging-time',name='default')
+        return aa.delete(keypath)
+    elif func == 'get_openconfig_network_instance_network_instances_network_instance_fdb_config_mac_aging_time':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/config/mac-aging-time', name='default')
+        return aa.get(keypath)
     elif func == 'rpc_sonic_fdb_clear_fdb':
         keypath = cc.Path('/restconf/operations/sonic-fdb:clear_fdb')
         body = {"sonic-fdb:input": { args[0]: args[1]}}
@@ -115,6 +125,9 @@ def run(func, args):
                     mac_entries = response['openconfig-network-instance:entries']['entry']
                 elif 'openconfig-network-instance:state' in response:
                     mac_entries = response['openconfig-network-instance:state']
+                elif 'openconfig-network-instance:mac-aging-time' in response:
+                    show_cli_output(args[0], response)
+                    return
                 else:
                     return
             else:
