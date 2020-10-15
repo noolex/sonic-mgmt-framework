@@ -51,7 +51,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND name="maximum-paths ibgp" help="IBGP-multipath">
        <PARAM name="ipaths" help="Number of paths" ptype="RANGE_1_256"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/max_ibgp_paths" >
-         <PARAM name="equal-cluster-length" help="Match the cluster length" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/ibgp_equal_cluster_length" />
+         <PARAM name="equal-cluster-length" help="Match the cluster length" mode="subcommand" ptype="SUBCOMMAND" optional="true" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/ibgp_equal_cluster_length=true" />
        </PARAM>
        <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV6 ${vrf-name} ${__cmd} &#xA; ipaths:${ipaths} equal-cluster-length:${equal-cluster-length}</ACTION>
     </COMMAND>

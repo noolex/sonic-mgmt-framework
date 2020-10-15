@@ -913,7 +913,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="bestpath compare-routerid" help="Compare router-id for identical EBGP paths" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/external_compare_router_id">
+  <COMMAND name="bestpath compare-routerid" help="Compare router-id for identical EBGP paths" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS/BGP_GLOBALS_LIST/external_compare_router_id=true">
       <ACTION builtin="clish_pyobj">sonic_cli_bgp patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_external_compare_router_id ${vrf-name} True</ACTION>
     <DOCGEN>
       <DESCRIPTION>
