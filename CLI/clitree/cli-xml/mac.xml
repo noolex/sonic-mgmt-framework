@@ -267,7 +267,11 @@ limitations under the License.
         python $SONIC_CLI_ROOT/sonic-cli-mac.py get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list show_mac_dampening.j2 ${__full_line__}
     </ACTION>
     </COMMAND>
-
+    <COMMAND name="show mac dampening-disabled-ports" help="Show MAC dampening-disabled-ports" >
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_ext_network_instances_network_instance_mac_dampening_state show_mac_dampening.j2 ${__full_line__}
+        </ACTION>
+    </COMMAND>
 
 <!--====================clear mac address-table dynamic <all | vlan | address>======================-->
 
@@ -411,11 +415,11 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="mac-address dampening-threshold" help="MAC move dampening threshold" mode="subcommand" ptype="SUBCOMMAND">
-            <PARAM name="threshold-value" help="MAC move dampening threshold count" ptype="RANGE_5_100">
-            </PARAM>
-            <ACTION>
-                python $SONIC_CLI_ROOT/sonic-cli-mac.py patch_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list "config" ${threshold-value} &#xA;-->
-            </ACTION>
+        <PARAM name="threshold-value" help="MAC move dampening threshold count" ptype="RANGE_5_100">
+        </PARAM>
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py patch_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list "config" ${threshold-value} &#xA;-->
+        </ACTION>
     </COMMAND>
     <COMMAND
         name="no mac-address"
@@ -427,6 +431,11 @@ limitations under the License.
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-mac.py del_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries ${mac-address} ${vlan}&#xA;
     </ACTION>
+    </COMMAND>
+    <COMMAND name="no mac-address dampening-threshold" help="Disable MAC move dampening threshold" mode="subcommand" ptype="SUBCOMMAND">
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening "config" ${threshold-value} &#xA;-->
+        </ACTION>
     </COMMAND>
 </VIEW>
 </CLISH_MODULE>
