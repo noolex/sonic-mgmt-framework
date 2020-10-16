@@ -67,7 +67,7 @@ def show_wred_policy_red(render_tables):
 def convert_db_to_config_format(name, prefix):
     prefix = '[' + prefix + '|'
     name = name.rstrip(']')
-    name = name.lstrip(prefix)
+    name = name[name.startswith(prefix) and len(prefix):]
     return name
 
 
