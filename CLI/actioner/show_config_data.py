@@ -58,7 +58,8 @@ view_dependency= \
                          'configure-router-bgp-template', 'configure-router-bgp-nbr'],
 'configure-router-bgp-template':['configure-router-bgp-template-ipv4', 'configure-router-bgp-template-ipv6', 'configure-router-bgp-template-l2vpn'],
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn'],
-'configure-router-bgp-l2vpn':['configure-router-bgp-l2vpn-vni']}
+'configure-router-bgp-l2vpn':['configure-router-bgp-l2vpn-vni'],
+'configure-hardware': ['configure-hardware-acl']}
 
 
 config_view_hierarchy= \
@@ -75,9 +76,11 @@ config_view_hierarchy= \
        'configure-tc-dot1p-map',
        'configure-tc-dscp-map',
        'configure-link-state-track',
+       'configure-hardware',
        'configure-mac-acl',
        'configure-ipv4-acl',
        'configure-ipv6-acl',
+       'configure-line-vty',
        'config-if-CPU',
        'configure-vlan',
        'configure-lo',
@@ -160,7 +163,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'mac_source_if'           : show_mac_source_if,
                   'fbs_classifier_render'   : show_running_fbs_classifier,
                   'fbs_policy_render'       : show_running_fbs_policy,
-                  'fbs_service_policy_render' : show_running_fbs_service_policy,
+                  'fbs_service_policy_render_switch' : show_running_fbs_service_policy_global,
+                  'fbs_service_policy_render_ctrlplane' : show_running_fbs_service_policy_ctrlplane,
+                  'fbs_service_policy_render_interface' : show_running_fbs_service_policy_interface,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
                   'snmp_agentaddress'       : show_snmp_agentaddress,
@@ -272,8 +277,12 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ipv6_acl_table_cb'       : ipv6_acl_table_cb,
                   'acl_bind_cb'             : acl_bind_cb,
                   'acl_global_bind_cb'      : acl_global_bind_cb,
+                  'acl_ctrl_plane_bind_cb'  : acl_ctrl_plane_bind_cb,
                   'username_config'         : show_username_config,
                   'if_vrf_binding'          : show_if_vrf_binding,
+                  'show_runn_hardware_cb'   : show_running_config_hardware,
+                  'show_runn_hardware_acl_cb' : show_running_config_hardware_acl,
+                  'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

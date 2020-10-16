@@ -8,18 +8,16 @@
         </PARAM>
     </MACRODEF>
 
+    <!-- Case 0: All types for show commands etc. Case 1: All FBS types. Case 2: Only QoS for CtrlPlane-->
     <MACRODEF name="FBS-POLICY-TYPES">
         <PARAM name="type" help="Policy type" ptype="SUBCOMMAND" mode="subcommand" optional="arg1" order="true">
             <PARAM name="fbs-policy-type" help="Policy type" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="qos" help="QoS Policy" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="monitoring" help="Monitoring Policy" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="forwarding" help="Forwarding Policy" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Forwarding Policy" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="qos" help="QoS Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "1" ) -o ( "arg2" = "2" )'/>
+                <PARAM name="monitoring" help="Monitoring Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "1" )'/>
+                <PARAM name="forwarding" help="Forwarding Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "1" )'/>
+                <PARAM name="copp" help="CoPP Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" )'/>
             </PARAM>
         </PARAM>
-    </MACRODEF>
-
-    <MACRODEF name="FBS-CLASSIFIER-TYPES">
     </MACRODEF>
 
     <MACRODEF name="MATCH-ADDRESS-TYPES-ADD">
@@ -95,16 +93,16 @@
     <MACRODEF name="FBS-DIRECTION-TYPES">
         <PARAM name="fbs-direction-type" help="Policy type" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="in" help="Ingress direction" ptype="SUBCOMMAND" mode="subcommand"/>
-            <PARAM name="out" help="Egress direction" ptype="SUBCOMMAND" mode="subcommand" test='"${fbs-policy-type}" = "qos"'/>
+            <PARAM name="out" help="Egress direction" ptype="SUBCOMMAND" mode="subcommand" test='( "${fbs-policy-type}" = "qos" ) -a ( "arg1" != "CtrlPlane" )'/>
         </PARAM>
     </MACRODEF>
 
     <MACRODEF name="FBS-POLICY-BINDING-OPTIONS">
-        <COMMAND name="service-policy" help="Apply ingress or egress policy"  data_and_render_cb="fbs_service_policy_render"> 
-            <MACRO name="FBS-POLICY-TYPES" arg="false" />
-            <MACRO name="FBS-DIRECTION-TYPES"/>
+        <COMMAND name="service-policy" help="Apply ingress or egress policy" data_and_render_cb="fbs_service_policy_render_arg3"> 
+            <MACRO name="FBS-POLICY-TYPES" arg="false,arg1" />
+            <MACRO name="FBS-DIRECTION-TYPES" arg="arg2"/>
             <PARAM name="fbs-policy-name" help="Name of the policy (Max: 63 characters)" ptype="STRING_63"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs bind_policy ${fbs-policy-name} ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs bind_policy ${fbs-policy-name} ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name} arg2</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                  Applies ingress/egress service policy on given interface 
@@ -116,9 +114,9 @@
         </COMMAND>
 
         <COMMAND name="no service-policy" help="Removes ingress or egress policy">
-            <MACRO name="FBS-POLICY-TYPES" arg="false" />
-            <MACRO name="FBS-DIRECTION-TYPES"/>
-             <ACTION builtin="clish_pyobj">sonic_cli_fbs unbind_policy ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name}</ACTION>
+            <MACRO name="FBS-POLICY-TYPES" arg="false,arg1" />
+            <MACRO name="FBS-DIRECTION-TYPES" arg="arg2"/>
+             <ACTION builtin="clish_pyobj">sonic_cli_fbs unbind_policy ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name} arg2</ACTION>
              <DOCGEN>
               <DESCRIPTION>
                  Removes ingress/egress service policy on given interface 

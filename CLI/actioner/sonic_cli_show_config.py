@@ -285,7 +285,10 @@ class cli_xml_view:
                             view_key_values.update({key.lstrip():keypath_list[0]})
 
                 showrun_log(logging.INFO,"Preparing for child view {}, child view keys {} ",cli_view.name, view_key_values)
-                cmd_status = cli_view.process_view_commands(view_key_values, indent+1)
+                if cli_view.table_list:
+                    cmd_status = cli_view.process_cli_view(view_key_values, indent+1)
+                else:
+                    cmd_status = cli_view.process_view_commands_no_table(view_key_values, indent)
 
         showrun_log(logging.DEBUG,' Exit.view {}, status {}',self.name, CMD_SUCCESS)
         return CMD_SUCCESS
