@@ -737,7 +737,7 @@ def clear_egress_interface_action(args):
 
 
 def bind_policy(args):
-    ifname = args[3] if len(args) == 4 else "Switch"
+    ifname = args[3]
     body = {
         "openconfig-fbs-ext:config": {
             "id": ifname
@@ -761,7 +761,7 @@ def bind_policy(args):
 
 
 def unbind_policy(args):
-    ifname = args[2] if len(args) == 3 else "Switch"
+    ifname = args[2]
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={interface_name}/{direction}-policies/{policy_type}', 
             interface_name=ifname, direction='ingress' if args[1] =='in' else 'egress', policy_type=args[0])
     return fbs_client.delete(keypath)
@@ -773,7 +773,7 @@ def show_policy_summary(args):
             interface_name = args[1]
             keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
                               interface_name=interface_name)
-        elif args[0] == "Switch":
+        elif args[0] == "Switch" or args[0] == "CtrlPlane":
             interface_name = args[0]
             keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}',
                               interface_name=interface_name)
@@ -824,7 +824,7 @@ def show_details_by_policy(args):
 
 def show_details_by_interface(args):
     body = {"sonic-flow-based-services:input": dict()}
-    if args[0] == "Switch":
+    if args[0] == "Switch" or args[0] == "CtrlPlane":
         body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
         if len(args) == 3:
             body["sonic-flow-based-services:input"]["TYPE"] = args[2]
@@ -858,7 +858,7 @@ def clear_details_by_policy(args):
 
 def clear_details_by_interface(args):
     body = {"sonic-flow-based-services:input": dict()}
-    if args[0] == "Switch":
+    if args[0] == "Switch" or args[0] == "CtrlPlane":
         body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
         if len(args) == 3:
             body["sonic-flow-based-services:input"]["TYPE"] = args[2]
@@ -1213,6 +1213,8 @@ def handle_generic_set_response(response, args, op_str):
                         print("%Error: Update not allowed for this configuration")
                 elif error_data['error-app-tag'] != 'same-policy-already-applied':
                     print(response.error_message())
+                else:
+                    return 0
             else:
                 print(response.error_message())
         except Exception as e:
@@ -1250,6 +1252,9 @@ def handle_show_policy_summary_response(response, args, op_str):
                 if_filter = args[next + 1]
                 next = next + 2
             elif args[next] == 'Switch':
+                if_filter = args[next + 1]
+                next = next + 1
+            elif args[next] == 'CtrlPlane':
                 if_filter = args[next + 1]
                 next = next + 1
 

@@ -215,22 +215,15 @@ def show_running_fbs_policy(render_tables):
     return 'CB_SUCCESS', cmd_str, True
 
 
-
-def show_running_fbs_service_policy(render_tables):
+def __show_runn_fbs_service_policy_for_intf(ifname):
     fbs_client = cc.ApiClient()
-
-    if len(render_tables) == 0:
-       keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST=Switch')
-    else:
-       ifname = render_tables['name'].replace(" ", "")
-       keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}', interface_name=ifname)
-
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}', interface_name=ifname)
     response = fbs_client.get(keypath, None, False)
     render_data = OrderedDict()
     cmd_str = ''
     policy_types = ['qos', 'monitoring', 'forwarding']
     directions = ['ingress', 'egress']
-    cfg_pdir_map = { directions[0]:"in",directions[1]:"out"}
+    cfg_pdir_map = { directions[0]:"in", directions[1]:"out"}
     if response.ok():
         for binding in response.content.get('sonic-flow-based-services:POLICY_BINDING_TABLE_LIST', []):
             if_data = []
@@ -248,6 +241,20 @@ def show_running_fbs_service_policy(render_tables):
                 cmd_str += 'service-policy type {} {} {} ;'.format(bind_entry[0], bind_entry[1], bind_entry[2])
             
     return 'CB_SUCCESS', cmd_str, True
+
+
+def show_running_fbs_service_policy_global(render_tables):
+    return __show_runn_fbs_service_policy_for_intf('Switch')
+
+
+def show_running_fbs_service_policy_ctrlplane(render_tables):
+    return __show_runn_fbs_service_policy_for_intf('CtrlPlane')
+
+
+def show_running_fbs_service_policy_interface(render_tables):
+    ifname = render_tables['name'].replace(" ", "")
+    return __show_runn_fbs_service_policy_for_intf(ifname)
+
 
 def run(opstr, args):
     if opstr == "show_running_class_map":
