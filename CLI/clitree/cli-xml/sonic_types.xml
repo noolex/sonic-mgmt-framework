@@ -17,6 +17,7 @@ limitations under the License.
 
 <!DOCTYPE CLISH_MODULE [
 <!ENTITY MAX_MTU         "9216">
+<!ENTITY MAC_AGE_TIMER_DEF_VALUE "600">
 <!ENTITY SLOT_PORT       "([1]/([1-9]|[1-9][0-9]|[1-2][0-9][0-9]))">
 <!ENTITY ETH_PHY_NUM     "([0-9]|[1-9]([0-9])*)">
 <!ENTITY ETH_ALL_INTF    "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM;$)))">
@@ -1583,4 +1584,10 @@ limitations under the License.
         help="(0-4294967295) +(0-4294967295) -(0-4294967295)"
         />
     <!--=======================================================-->
+    <PTYPE
+        name="MAC_AGE_TIMER"
+        method="integer"
+        pattern="0..1000000"
+        ext_help="MAC aging time in seconds. Enter 0 to disable MAC aging (default = &MAC_AGE_TIMER_DEF_VALUE;)"
+        />
 </CLISH_MODULE>

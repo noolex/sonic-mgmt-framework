@@ -99,6 +99,16 @@ config_view_hierarchy= \
 
 render_filelst  = {}
 
+module_cleanup_cb = []
+
+
+#
+# eg.
+# module_startup_cb = {'config-if':[acl_startup_callback, fbs_startup_callback],
+#                     'config-vlan':[acl_startup_callback, fbs_startup_callback]}
+
+module_startup_cb = {}
+
 render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'router_bgp_neighbor'     : show_router_bgp_neighbor_cmd,
                    'router_bgp_confed'      : show_router_bgp_confed_cmd,
