@@ -67,121 +67,84 @@ def ipv4_acl_table_cb(render_tables):
 def ipv6_acl_table_cb(render_tables):
     return 'CB_SUCCESS', __show_running_acl(render_tables, 'ACL_IPV6'), True
 
-def acl_bind_cb(render_tables):
-    acl_client = cc.ApiClient()
+def __display_acl_bindings(data, direction, prefix):
     cmd_str = ''
-    input_string =str(render_tables['name'])
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={intfname}', intfname=input_string)
+
+    for acl_entry in data:
+        config = acl_entry['config']
+        acl_name = config['set-name']
+        acl_type = config['type']
+        if acl_type == 'openconfig-acl:ACL_L2':
+            cmd_str += "{}mac access-group {} {};".format(prefix, acl_name, direction)
+        elif acl_type == 'openconfig-acl:ACL_IPV4':
+            cmd_str += "{}ip access-group {} {};".format(prefix, acl_name, direction)
+        elif acl_type == 'openconfig-acl:ACL_IPV6':
+            cmd_str += "{}ipv6 access-group {} {};".format(prefix, acl_name, direction)
+
+    return cmd_str
+
+def __show_running_acl_binding(keypath, root, is_list, prefix):
     response = acl_client.get(keypath, depth=None, ignore404=False)
 
     if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
+        log.log_debug("Resp not success")
+        return ''
+    if root not in response.content:
+        log.log_debug("Root not found in response {}".format(str(response.content)))
+        return ''
 
+    cmd_str = ''
     content = response.content
+    data = content[root]
+    if is_list:
+        data = data[0]
 
-    if 'openconfig-acl:interface' not in content:
-        return 'CB_SUCCESS', cmd_str, True
+    for key in ['ingress-acl-sets', 'egress-acl-sets']:
+        try:
+            acl_sets = data[key][key[:-1]]
+            direction = 'in'
+            if key.startswith('egress'):
+                direction = 'out'
+            cmd_str += __display_acl_bindings(acl_sets, direction, prefix)
+        except KeyError:
+            pass
+    return cmd_str
 
-    for keys in content['openconfig-acl:interface']:
-        #Ingress bindings
-        if 'ingress-acl-sets' in keys:
-            ingress_sets = content['openconfig-acl:interface'][0]['ingress-acl-sets']
-            #Retrieve the number of bindings
-            acl_entries = ingress_sets['ingress-acl-set']
-            length = len(acl_entries)
-            for type_iter in range(length):
-                acl_entry = acl_entries[type_iter]
-                config = acl_entry['config']
-                acl_name = config['set-name']
-                acl_type = config['type']
-                if acl_type == 'openconfig-acl:ACL_L2':
-                    cmd_str+=" mac access-group {} in".format(acl_name)
-                    cmd_str+="\n"
-                elif acl_type == 'openconfig-acl:ACL_IPV4':
-                    cmd_str+=" ip access-group {} in".format(acl_name)
-                    cmd_str+="\n"
-                elif acl_type == 'openconfig-acl:ACL_IPV6':
-                    cmd_str+=" ipv6 access-group {} in".format(acl_name)
-                    cmd_str+="\n"
-        #Egress bindings
-        if 'egress-acl-sets' in keys:
-            egress_sets = content['openconfig-acl:interface'][0]['egress-acl-sets']
-            acl_entries = egress_sets['egress-acl-set']
-            length = len(acl_entries)
-            for type_iter in range(length):
-                acl_entry = acl_entries[type_iter]
-                config = acl_entry['config']
-                acl_name = config['set-name']
-                acl_type = config['type']
-                if acl_type == 'openconfig-acl:ACL_L2':
-                    cmd_str+=" mac access-group {} out".format(acl_name)
-                    cmd_str+="\n"
-                elif acl_type == 'openconfig-acl:ACL_IPV4':
-                    cmd_str+=" ip access-group {} out".format(acl_name)
-                    cmd_str+="\n"
-                elif acl_type == 'openconfig-acl:ACL_IPV6':
-                    cmd_str+=" ipv6 access-group {} out".format(acl_name)
-                    cmd_str+="\n"
 
+def acl_bind_cb(render_tables):
+    log.log_debug("Show ACL bindings for {}".format(str(render_tables)))
+    input_string = str(render_tables['name'])
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={intfname}', intfname=input_string)
+    cmd_str = __show_running_acl_binding(keypath, 'openconfig-acl:interface', True, '')
     return 'CB_SUCCESS', cmd_str, True
 
 def acl_global_bind_cb(render_tables):
-    acl_client = cc.ApiClient()
+    log.log_debug("Show Global ACL bindings for {}".format(str(render_tables)))
     cmd_str = ''
-    config_present = 0
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/ingress-acl-sets')
-    response = acl_client.get(keypath, depth=10, ignore404=False)
-
-    if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
-
-    content = response.content
-
-    if 'openconfig-acl-ext:ingress-acl-sets' in content:
-        acl_entries = content['openconfig-acl-ext:ingress-acl-sets']['ingress-acl-set']
-        length = len(acl_entries)
-        for type_iter in range(length):
-            acl_entry = acl_entries[type_iter]
-            config = acl_entry['config']
-            acl_name = config['set-name']
-            acl_type = config['type']
-            config_present = 1
-            if acl_type == 'openconfig-acl:ACL_L2':
-                cmd_str+="mac access-group {} in".format(acl_name)
-                cmd_str+="\n"
-            elif acl_type == 'openconfig-acl:ACL_IPV4':
-                cmd_str+="ip access-group {} in".format(acl_name)
-                cmd_str+="\n"
-            elif acl_type == 'openconfig-acl:ACL_IPV6':
-                cmd_str+="ipv6 access-group {} in".format(acl_name)
-                cmd_str+="\n"
-
-    keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global/egress-acl-sets')
-    response = acl_client.get(keypath, None, False)
-
-    if response.ok() is False:
-        return 'CB_SUCCESS', cmd_str, True
-
-    content = response.content
-    if 'openconfig-acl-ext:egress-acl-sets' in content:
-        acl_entries = content['openconfig-acl-ext:egress-acl-sets']['egress-acl-set']
-        length = len(acl_entries)
-        for type_iter in range(length):
-            acl_entry = acl_entries[type_iter]
-            config = acl_entry['config']
-            acl_name = config['set-name']
-            acl_type = config['type']
-            config_present = 1
-            if acl_type == 'openconfig-acl:ACL_L2':
-                cmd_str+="mac access-group {} out".format(acl_name)
-                cmd_str+="\n"
-            elif acl_type == 'openconfig-acl:ACL_IPV4':
-                cmd_str+="ip access-group {} out".format(acl_name)
-                cmd_str+="\n"
-            elif acl_type == 'openconfig-acl:ACL_IPV6':
-                cmd_str+="ipv6 access-group {} out".format(acl_name)
-                cmd_str+="\n"
-
-    if config_present:
-        cmd_str+="\n!\n"
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:global')
+    cmd_str = __show_running_acl_binding(keypath, 'openconfig-acl-ext:global', False, '')
     return 'CB_SUCCESS', cmd_str, True
+
+def acl_ctrl_plane_bind_cb(render_tables):
+    log.log_debug("Show CtrlPlane ACL bindings for {}".format(str(render_tables)))
+    cmd_str = 'line vty;'
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:control-plane')
+    cmd_str += __show_running_acl_binding(keypath, 'openconfig-acl-ext:control-plane', False, ' ')
+    return 'CB_SUCCESS', cmd_str, True
+
+def show_running_config_hardware(render_tables):
+    return 'CB_SUCCESS', 'hardware', True
+
+def show_running_config_hardware_acl(render_tables):
+    return 'CB_SUCCESS', 'access-list', True
+
+def show_running_config_hardware_acl_counter_mode(render_tables):
+    keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:control-plane')
+    response = acl_client.get(keypath, depth=None, ignore404=False)
+    if not response.ok() or not bool(response.content):
+        return 'CB_SUCCESS', 'counters per-entry', False
+    if response.content["openconfig-acl-ext:counter-capability"] == "openconfig-acl:AGGREGATE_ONLY":
+        return 'CB_SUCCESS', 'counters per-entry', False
+    else:
+        return 'CB_SUCCESS', 'counters per-interface-entry', False
+
