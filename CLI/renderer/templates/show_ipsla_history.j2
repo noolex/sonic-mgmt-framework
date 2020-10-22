@@ -5,7 +5,7 @@
 {{ '%-25s %-25s'|format("Timestamp", "Event") }}
 {{ '%-25s %-25s'|format("---------", "-----") }}
 
-{% for ip_sla_item in ip_sla_history %}
+{% for ip_sla_item in ip_sla_history | sort(attribute="Index") %}
 
 {% set sla_timestamp = ip_sla_item['timestamp'] %}
 {% set sla_event = ip_sla_item['event'] %}
