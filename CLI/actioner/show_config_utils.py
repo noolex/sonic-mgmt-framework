@@ -1,44 +1,66 @@
 
 import logging
-import logging.handlers
 import collections
 import re
+import syslog
+import inspect
 
 
-log_format = "%(filename)s:%(funcName)s:%(message)s"
-log = logging.getLogger('clish_showrun')
-formatter = logging.Formatter(log_format)
-
-#stream_handler = logging.StreamHandler()
-#stream_handler.setFormatter(formatter)
-#log.addHandler(stream_handler)
-
-sh  = logging.handlers.SysLogHandler()
-sh.setFormatter(formatter)
-log.addHandler(sh)
-log.setLevel('ERROR')
-
+syslog.openlog('sonic-cli')
+__log_lvl = logging.ERROR
+__enable_print = False
 
 cmdlist = []
 f2ecmdlst = []
 DUMMYSTR = 'dummystr'
 
-def showrun_log(lvl, msg, *args):
-   if log.isEnabledFor(lvl):
-      log.log(lvl, msg .format(*args))
 
 
+
+
+
+def getsysloglevel(lvl):
+    if lvl == logging.DEBUG:
+        return syslog.LOG_DEBUG
+    elif lvl == logging.ERROR:
+        return syslog.LOG_ERR
+    elif lvl == logging.INFO:
+        return syslog.LOG_INFO
+    elif lvl == logging.WARNING:
+        return syslog.LOG_WARNING
+    else:
+        return syslog.LOG_DEBUG    
+
+
+def showrun_log(log_lvl, msg, *args):
+    logmsg = "" 
+    if __log_lvl <= log_lvl:
+        logmsg = msg .format(*args)
+        syslog.syslog(getsysloglevel(log_lvl), logmsg)
+
+    if __enable_print:
+        caller_frame = inspect.stack()[1][0]
+        frame_info = inspect.getframeinfo(caller_frame)
+        if __log_lvl > log_lvl:
+           logmsg = msg .format(*args)
+        for line in logmsg.split('\n'):
+            print('[{}:{}] {}:: {}'.format(frame_info.function, frame_info.lineno, logging.getLevelName(log_lvl), line))
+
+
+table_keys_dict= {}
+def clear_key_table():
+    table_keys_dict.clear()
+    
 #  parse table path, returns dict of table key, value
 def get_view_table_keys(table_path):
-
-    table_keys_map = {}
-    for path in table_path.split('/'):
-        for sub_path in path.split(','):
+    
+    table_keys_map = table_keys_dict.get(table_path, [])
+    if not table_keys_map:
+        for sub_path in table_path.rpartition('/')[-1].split(','):
             match = re.search(r"(.+)={(.+)}", sub_path)
             if match is not None:
-                showrun_log(logging.DEBUG,"subpath {}, group1 {}, group2 {}", sub_path, match.group(1), match.group(2))
-                table_keys_map.update({match.group(1):match.group(2)})
-
+                table_keys_map.append((match.group(1),match.group(2)))
+                table_keys_dict.update({table_path: table_keys_map})
     return table_keys_map
 
 
@@ -60,8 +82,6 @@ def parammatch(xmlval, dbparamval):
 def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
     global cmdlist
 
-    showrun_log(logging.DEBUG,'dbpathstr {} nodestr {} table_keys {} ', dbpathstr, nodestr, tables.keys())
-
     key_val = (nodestr.split('|', 1)[0]).split('##')
     present_n   = key_val[5] # P or NP
     mode_n      = 'M'
@@ -71,8 +91,8 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
     name_n      = key_val[0] # %s or namest
     valid_n     = False
 
-    showrun_log(logging.DEBUG,'present_n {} mode_n {} key_n {} dbpath_n {}, name_n {}',
-        present_n, mode_n, key_n, dbpath_n, name_n)
+    showrun_log(logging.DEBUG,'dbpathstr {} nodestr {} table_keys {} present_n {} mode_n {} key_n {} dbpath_n {}, name_n {}',
+        dbpathstr, nodestr, tables.keys(), present_n, mode_n, key_n, dbpath_n, name_n)
 
     if dbpath_n == '':
         if present_n == 'NP':
@@ -106,7 +126,7 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
                     paramval = dbpath_n.replace(dbpathstr, '')[1:]
                     showrun_log(logging.DEBUG,"table_path_keys {}",table_path_keys)
 
-                    for table_path_key, table_path_key_value in table_path_keys.iteritems():
+                    for table_path_key, table_path_key_value in table_path_keys:
                         view_key_val = view_keys.get(table_path_key_value)
                         if view_key_val:
                             if view_key_val != "*":
@@ -126,7 +146,7 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
                         if table[key] != value:
                             match = False
                             break
-                    if match == True:
+                    if match:
                         showrun_log(logging.DEBUG,"found rec with keys {}",filter_keys)
                         view_member = table
                     else:
@@ -161,7 +181,7 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
                         value_str = "\"" + value_str + "\""
 
                 if len(xml_paramval) > 1:
-                    if parammatch(value_str, xml_paramval[1]) == False:
+                    if not parammatch(value_str, xml_paramval[1]):
                         showrun_log(logging.DEBUG,"Param match failed db val {}, xml val {}", value_str, xml_paramval[1])
                         return False
                 if name_n != '%s':
@@ -194,7 +214,7 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
                     value_str = str(value)
 
             if len(xml_paramval) > 1:
-                if parammatch(value_str, xml_paramval[1]) == False:
+                if not parammatch(value_str, xml_paramval[1]):
                     cmdlist.append(DUMMYSTR)
                     return True
 
@@ -204,8 +224,6 @@ def formatcmdstr(view_member, dbpathstr, nodestr, tables, view_keys):
 
 
 def process_node(view_member, dbpathstr, nodestr, tables, view_keys):
-
-    showrun_log(logging.DEBUG,'dbpathstr {} nodestr {} viewkey{} ' ,dbpathstr, nodestr, view_keys)
 
     nodestr_parts = nodestr.split('|', 1)
     key_val = (nodestr_parts[0]).split('##')
@@ -217,11 +235,11 @@ def process_node(view_member, dbpathstr, nodestr, tables, view_keys):
     dbpath_n = key_val[2]  # '' or valid dbpath
     name_n  = key_val[0]  # %s or namestr 
 
-    showrun_log(logging.DEBUG,'present_n {} mode_n {} key_n {} dbpath_n {}, name_n {}',
-        present_n, mode_n, key_n, dbpath_n, name_n)
+    showrun_log(logging.DEBUG,'dbpathstr {} nodestr {} viewkey {} present_n {} mode_n {} key_n {} dbpath_n {}, name_n {}',
+        dbpathstr, nodestr, view_keys, present_n, mode_n, key_n, dbpath_n, name_n)
 
     ret = formatcmdstr(view_member, dbpathstr, nodestr_parts[0], tables, view_keys)
-    if ret is False:
+    if not ret:
         showrun_log(logging.DEBUG,"Failed to process nodestr {}", nodestr_parts[0])
         return False
 
@@ -280,7 +298,7 @@ def process_cmd(view_member, dbpathstr, table_list, tables, view_keys, cmd_line)
         for k in fcmdlst[i+1:]:
            if k.startswith(j + ' '):
               match = True
-        if match == False:
+        if not match:
            printlst_tmp.append(j)
            
     return printlst_tmp, cmdfound
