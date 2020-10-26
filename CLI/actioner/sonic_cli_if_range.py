@@ -284,6 +284,16 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
 
+      #Remove all vlans
+    elif func == 'delete_all_vlan':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config', name=args[0])
+        return api.delete(path)
+		
+      #Remove aggregate all vlans
+    elif func == 'delete_aggregate_all_vlan':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
+        return api.delete(path)
+
     # Remove IP addresses from interface
     elif func == 'delete_if_ip':
 	if args[0].startswith("Vlan"):
@@ -441,7 +451,25 @@ def run(func, args):
             res = ",".join(natsorted(ifrangelist))
             return res
 
-        elif func == 'delete_if_range':
+	elif func == 'vlan_trunk_if_range':
+	    if args[3] == 'add':
+		func = 'config_if_range'
+		response = invoke_api(func, args)
+		return check_response(response, func, args)
+	    else:
+		func = 'delete_if_range'
+		args[1] = 'delete_trunk_vlan'
+
+	elif func == 'vlan_trunk_if_range_pc':
+	    if args[3] == 'add':
+	        func = 'config_if_range'
+               	response = invoke_api(func, args)
+                return check_response(response, func, args)
+	    else:
+		func = 'delete_if_range'
+		args[1] = 'delete_aggregate_trunk_vlan'
+
+        if func == 'delete_if_range':
             """
                 - Delete/Remove config for given number, range, or comma-delimited list of numbers and range of interfaces.
                 - Transaction is per interface.
