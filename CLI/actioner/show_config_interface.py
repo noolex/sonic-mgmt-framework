@@ -110,7 +110,7 @@ def show_if_switchport_trunk(render_tables):
     if vlan_lst:
        vstr = find_ranges(vlan_lst)
        if vstr:
-          cmd_str = 'switchport trunk allowed Vlan ' + vstr
+          cmd_str = 'switchport trunk allowed Vlan add ' + vstr
 
     return 'CB_SUCCESS', cmd_str
 
