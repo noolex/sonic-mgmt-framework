@@ -33,6 +33,8 @@ intfList = []
 egressPortDict = {}
 isMacDictAvailable = False
 apiClient = cc.ApiClient()
+PREFIX = 0
+PREFIXIP = 1
 
 def get_keypath(func,args):
     keypath = None
@@ -230,7 +232,7 @@ def build_vrf_list():
     else:
         vrfDict["eth0"] = None
 
-def process_nbrs(response, rcvdIntfName, outputList):
+def process_nbrs(response, rcvdIntfName, outputList, msgType):
     if rcvdIntfName is None:
         return
 
@@ -241,11 +243,13 @@ def process_nbrs(response, rcvdIntfName, outputList):
     rcvdMacAddr = inputDict.get('mac')
     rcvdFamily  = inputDict.get('family')
 
-    nbrsContainer = response.get('openconfig-if-ip:neighbors')
-    if nbrsContainer is None:
-        return
+    if msgType is PREFIX:
+        nbrsContainer = response.get('openconfig-if-ip:neighbors')
+        if nbrsContainer:
+            nbrsList = nbrsContainer.get('neighbor')
+    elif msgType is PREFIXIP:
+        nbrsList = response.get('openconfig-if-ip:neighbor')
 
-    nbrsList = nbrsContainer.get('neighbor')
     if nbrsList is None:
         return
 
@@ -282,7 +286,7 @@ def process_nbrs(response, rcvdIntfName, outputList):
         elif (rcvdIpAddr is None and rcvdMacAddr is None):
             outputList.append(nbrEntry)
 
-    return sorted(outputList, key=lambda k: k['ipAddr'])
+    return outputList
 
 def process_oc_nbrs(response):
     outputList = []
@@ -325,7 +329,7 @@ def process_oc_nbrs(response):
                     }
         outputList.append(nbrEntry)
 
-    return sorted(outputList, key=lambda k: k['ipAddr'])
+    return outputList
 
 def clear_neighbors(keypath, body):
     status = ""
@@ -406,16 +410,23 @@ def show_neighbors_using_intfs(keypath, args):
         else:
             return
 
-        show_cli_output(rendererScript, outputList)
+        if len(outputList) > 0 :
+            outputList =  sorted(outputList, key=lambda k: k['ipAddr'])
+            show_cli_output(rendererScript, outputList)
+
     except Exception as e:
         # system/network error
         print "% Error: Internal error"
 
 def show_neighbors():
     global inputDict
+    msgType = PREFIX
     keypath = ""
     outputList = []
     rcvdVrfName = inputDict.get('vrf')
+    rcvdIp = inputDict.get('ip')
+    if rcvdIp is not None:
+        rcvdIp = rcvdIp.lower()
 
     rendererScript = "arp_show.j2"
     rcvdFamily = inputDict.get('family')
@@ -433,9 +444,17 @@ def show_neighbors():
             (vrf == rcvdVrfName) or
             rcvdVrfName == "all"):
             if (inputDict.get('family').lower() == "ipv4"):
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=intf, index="0")
+                if rcvdIp is not None:
+                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors/neighbor={ip}', name=intf, index="0", ip=rcvdIp)
+                    msgType = PREFIXIP
+                else:
+                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=intf, index="0")
             elif (inputDict.get('family').lower() == "ipv6"):
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors', name=intf, index="0")
+                if rcvdIp is not None:
+                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors/neighbor={ip}', name=intf, index="0", ip=rcvdIp)
+                    msgType = PREFIXIP
+                else:
+                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors', name=intf, index="0")
         else:
             continue
 
@@ -455,9 +474,10 @@ def show_neighbors():
         if (response is None) or (len(response) == 0):
             continue
 
-        outputList = process_nbrs(response, intf, outputList)
+        outputList = process_nbrs(response, intf, outputList, msgType)
 
     if len(outputList) > 0 :
+        outputList =  sorted(outputList, key=lambda k: k['ipAddr'])
         show_cli_output(rendererScript, outputList)
 
 def process_args(args):
