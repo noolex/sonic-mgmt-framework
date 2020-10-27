@@ -384,6 +384,21 @@ limitations under the License.
         fi
     </ACTION>
     </COMMAND>
+  <COMMAND name="clear mac dampening-disabled-ports" help="Clear MAC dampening disabled ports">
+   <PARAM  name="damp-subcommands" help="subcommands" mode="switch" ptype="SUBCOMMAND">
+      <PARAM name="all" help="clearing all mac dampening disabled ports" ptype="SUBCOMMAND" mode="subcommand">
+      </PARAM>
+      <PARAM name="PORT_ID" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand">
+      </PARAM>
+   </PARAM>
+    <ACTION>
+        if test "${damp-subcommands}" = "all"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_clear_mac_damp_disabled_ports  &#xA;
+        elif test "${damp-subcommands}" = "PORT_ID"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_clear_mac_damp_disabled_ports ${PORT_ID}&#xA;
+        fi
+    </ACTION>
+  </COMMAND>
 </VIEW>
 
 <VIEW name="configure-view">
