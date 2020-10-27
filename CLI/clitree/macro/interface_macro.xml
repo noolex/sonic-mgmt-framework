@@ -94,7 +94,7 @@ limitations under the License.
     <COMMAND
         name="no speed"
         help="Set default speed config">
-        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_port_speed SPEED_UNKNOWN</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_port_speed</ACTION>
     </COMMAND>
 </MACRODEF>
 
