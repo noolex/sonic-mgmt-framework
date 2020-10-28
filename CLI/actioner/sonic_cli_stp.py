@@ -27,9 +27,11 @@ aa = cc.ApiClient()
 
 g_stp_mode = None
 g_stp_resp = None
+g_stp_data = {}
 
 def stp_mode_get(aa):
     global g_stp_mode
+    global g_stp_data
     global g_stp_resp
 
     g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config', None, False)
@@ -50,6 +52,31 @@ def stp_mode_get(aa):
     else:
         print ("%Error: Invalid STP mode")
 
+
+    if "loop-guard" in g_stp_resp['openconfig-spanning-tree:config']:
+        g_stp_data['loop-guard'] = g_stp_resp['openconfig-spanning-tree:config']["loop-guard"]
+
+    if "bpdu-filter" in g_stp_resp['openconfig-spanning-tree:config']:
+        g_stp_data['bpdu-filter'] = g_stp_resp['openconfig-spanning-tree:config']["bpdu-filter"]
+
+    if "openconfig-spanning-tree-ext:rootguard-timeout" in g_stp_resp['openconfig-spanning-tree:config']:
+        g_stp_data['rootguard-timeout'] = g_stp_resp['openconfig-spanning-tree:config']["openconfig-spanning-tree-ext:rootguard-timeout"]
+
+    if "openconfig-spanning-tree-ext:portfast" in g_stp_resp['openconfig-spanning-tree:config']:
+        g_stp_data['portfast'] = g_stp_resp['openconfig-spanning-tree:config']["openconfig-spanning-tree-ext:portfast"]
+
+    if "openconfig-spanning-tree-ext:hello-time" in g_stp_resp['openconfig-spanning-tree:config']:
+        g_stp_data['hello-time'] = g_stp_resp['openconfig-spanning-tree:config']["openconfig-spanning-tree-ext:hello-time"]
+
+    if "openconfig-spanning-tree-ext:max-age" in g_stp_resp['openconfig-spanning-tree:config']:
+        g_stp_data['max-age'] = g_stp_resp['openconfig-spanning-tree:config']["openconfig-spanning-tree-ext:max-age"]
+
+    if "openconfig-spanning-tree-ext:forwarding-delay" in g_stp_resp['openconfig-spanning-tree:config']:
+        g_stp_data['forwarding-delay'] = g_stp_resp['openconfig-spanning-tree:config']["openconfig-spanning-tree-ext:forwarding-delay"]
+
+    if "openconfig-spanning-tree-ext:bridge-priority" in g_stp_resp['openconfig-spanning-tree:config']:
+        g_stp_data['bridge-priority'] = g_stp_resp['openconfig-spanning-tree:config']["openconfig-spanning-tree-ext:bridge-priority"]
+
     return g_stp_resp,g_stp_mode
 
 def getId(item):
@@ -62,7 +89,7 @@ def generic_set_response_handler(response, args):
         #if resp_content is not None:
             #print("%Error: {}".format(str(resp_content)))
     #else:
-    if not response.ok() and response.status_code != 404:
+    if not response.ok():
         print(response.error_message())
 
 
@@ -111,13 +138,17 @@ def set_stp_global_portfast(args):
 def del_stp_vlan_subcmds(args):
     op_str = args[0].strip()
     if op_str == 'hello-time':
-        return delete_stp_vlan_hello_time(args[1:])
+        args.append(g_stp_data['hello-time'])
+        return patch_stp_vlan_hello_time(args[1:])
     elif op_str == 'priority':
-        return delete_stp_vlan_bridge_priority(args[1:])
+        args.append(g_stp_data['bridge-priority'])
+        return patch_stp_vlan_bridge_priority(args[1:])
     elif op_str == 'max-age':
-        return delete_stp_vlan_max_age(args[1:])
+        args.append(g_stp_data['max-age'])
+        return patch_stp_vlan_max_age(args[1:])
     elif op_str == 'forward-time':
-        return delete_stp_vlan_fwd_delay(args[1:])
+        args.append(g_stp_data['forwarding-delay'])
+        return patch_stp_vlan_fwd_delay(args[1:])
     else:
         return delete_stp_vlan(args)
 
@@ -138,12 +169,83 @@ def set_stp_vlan_subcmds(args):
     return None
 
 
-def patch_stp_vlan_fwd_delay(args):
-    body = { "openconfig-spanning-tree:forwarding-delay": int(args[1]) }
+def range_to_list(vrange):
+    range_list = []
+    vlist = vrange.split(',')
+    for v in vlist:
+        if '-' in v:
+            ranges = v.split('-')
+            for i in range(int(ranges[0]), int(ranges[1])+1):
+                range_list.append(i)
+        else:
+            range_list.append(int(v))
+
+    return range_list
+
+
+def build_vlan_config_body(vlan_range, param_dict):
+
+    body = {}
     if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/config/forwarding-delay', vlan_id=args[0])
+        oc_vlan_format = "openconfig-spanning-tree-ext:vlan"
     elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/config/forwarding-delay', vlan_id=args[0])
+        oc_vlan_format = "openconfig-spanning-tree:vlan"
+    else:
+        return None
+    
+    body[oc_vlan_format] = []
+
+    vlan_list = range_to_list(vlan_range)
+
+    for vlan in vlan_list:
+        vlan_data = {
+                    "vlan-id": vlan,
+                    "config": {
+                        "vlan-id": vlan,
+                        }
+                    }
+        vlan_data["config"].update(param_dict)
+        body[oc_vlan_format].append(vlan_data)
+    return body
+
+
+def build_vlan_intf_config_body(vlan_range, intf_name, param_dict):
+    body = {}
+    if g_stp_mode == 'PVST':
+        oc_vlan_format = "openconfig-spanning-tree-ext:vlan"
+    elif g_stp_mode == 'RAPID_PVST':
+        oc_vlan_format = "openconfig-spanning-tree:vlan"
+    else:
+        return None
+    
+    body[oc_vlan_format] = []
+
+    vlan_list = range_to_list(vlan_range)
+    for vlan in vlan_list:
+        vlan_data = {
+                    "vlan-id": vlan,
+                    "interfaces": {
+                        "interface": [
+                            {
+                                "name" : intf_name,
+                                "config" : {
+                                    "name" : intf_name,
+                                }
+                            }
+                        ]
+                        }
+                    }
+        vlan_data["interfaces"]["interface"][0]["config"].update(param_dict)
+        body[oc_vlan_format].append(vlan_data)
+    return body
+
+
+def patch_stp_vlan_fwd_delay(args):
+    body = build_vlan_config_body(args[0], {'forwarding-delay':int(args[1])})
+    if g_stp_mode == 'PVST':
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan')
+    elif g_stp_mode == 'RAPID_PVST':
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan')
     else:
         return None
 
@@ -151,11 +253,11 @@ def patch_stp_vlan_fwd_delay(args):
 
 
 def patch_stp_vlan_hello_time(args):
-    body = { "openconfig-spanning-tree:hello-time": int(args[1]) }
+    body = build_vlan_config_body(args[0], {'hello-time':int(args[1])})
     if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/config/hello-time', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan')
     elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/config/hello-time', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan')
     else:
         return None
 
@@ -163,11 +265,11 @@ def patch_stp_vlan_hello_time(args):
 
 
 def patch_stp_vlan_max_age(args):
-    body = { "openconfig-spanning-tree:max-age": int(args[1]) }
+    body = build_vlan_config_body(args[0], {'max-age':int(args[1])})
     if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/config/max-age', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan')
     elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/config/max-age', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan')
     else:
         return None
 
@@ -175,11 +277,11 @@ def patch_stp_vlan_max_age(args):
 
 
 def patch_stp_vlan_bridge_priority(args):
-    body = { "openconfig-spanning-tree:bridge-priority": int(args[1]) }
+    body = build_vlan_config_body(args[0], {'bridge-priority':int(args[1])})
     if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/config/bridge-priority', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan')
     elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/config/bridge-priority', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan')
     else:
         return None
 
@@ -357,23 +459,22 @@ def set_stp_intf_vlan_subcmds(args):
 
 
 def patch_stp_vlan_intf_cost(args):
-    body = {"openconfig-spanning-tree:interface": [{"name": args[1], "config": { "name": "string", "cost": int(args[2])}}]}
+    body = build_vlan_intf_config_body(args[0], args[1], {"cost": int(args[2])})
     if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/interfaces/interface', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan')
     elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/interfaces/interface', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan')
     else:
         return None
     return aa.patch(uri, body)
 
 
 def patch_stp_vlan_intf_priority(args):
-    body = {"openconfig-spanning-tree:interface": [{"name": args[1], "config": { "name": "string", "port-priority": int(args[2])}}]}
-
+    body = build_vlan_intf_config_body(args[0], args[1], {"port-priority": int(args[2])})
     if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/interfaces/interface', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan')
     elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/interfaces/interface', vlan_id=args[0])
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan')
     else:
         return None
     return aa.patch(uri, body)
@@ -511,23 +612,39 @@ def del_stp_intf_bpdu_guard(args):
 
 
 def delete_stp_vlan_intf_cost(args):
+    resp = None
+    vlan_list = range_to_list(args[0])
     if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/interfaces/interface={name}/config/cost', vlan_id=args[0], name=args[1])
+        for vlan in vlan_list:
+            uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/interfaces/interface={name}/config/cost', vlan_id=str(vlan), name=args[1])
+            resp = aa.delete(uri, None)
+            if not resp.ok():
+                return resp
     elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/interfaces/interface={name}/config/cost', vlan_id=args[0], name=args[1])
-    else:
-        return None
-    return aa.delete(uri, None)
+        for vlan in vlan_list:
+            uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/interfaces/interface={name}/config/cost', vlan_id=str(vlan), name=args[1])
+            resp = aa.delete(uri, None)
+            if not resp.ok():
+                return resp
+    return resp
 
 
 def delete_stp_vlan_intf_priority(args):
+    resp = None
+    vlan_list = range_to_list(args[0])
     if g_stp_mode == 'PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/interfaces/interface={name}/config/port-priority', vlan_id=args[0], name=args[1])
+        for vlan in vlan_list:
+            uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}/interfaces/interface={name}/config/port-priority', vlan_id=str(vlan), name=args[1])
+            resp = aa.delete(uri, None)
+            if not resp.ok():
+                return resp
     elif g_stp_mode == 'RAPID_PVST':
-        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/interfaces/interface={name}/config/port-priority', vlan_id=args[0], name=args[1])
-    else:
-        return None
-    return aa.delete(uri, None)
+        for vlan in vlan_list:
+            uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}/interfaces/interface={name}/config/port-priority', vlan_id=str(vlan), name=args[1])
+            resp = aa.delete(uri, None)
+            if not resp.ok():
+                return resp
+    return resp
 
 
 def del_stp_intf_link_type(args):
@@ -545,22 +662,52 @@ def del_stp_intf_edge_port(args):
 def get_stp_response():
     if g_stp_mode == 'PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst')  
-        str = 'openconfig-spanning-tree-ext:pvst'
+        str1 = 'openconfig-spanning-tree-ext:pvst'
     elif g_stp_mode == 'RAPID_PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst')
-        str = 'openconfig-spanning-tree:rapid-pvst'
+        str1 = 'openconfig-spanning-tree:rapid-pvst'
     else:
         return None
 
     output = {}
     api_response = aa.get(uri, None)
     if api_response.ok() and api_response.content is not None:
-        if str in api_response.content and 'vlan' in api_response.content[str]:
-            value = api_response.content[str]['vlan']
+        if str1 in api_response.content and 'vlan' in api_response.content[str1]:
+            value = api_response.content[str1]['vlan']
             for item in value:
                 if 'interfaces' in item and 'interface' in item['interfaces']:
                     tup = item['interfaces']['interface']
                     item['interfaces']['interface'] = sorted(tup, key=getId)
+            api_response.content[str1]['vlan'] = sorted(api_response.content[str1]['vlan'], key = lambda i: int(i['vlan-id']))
+        output.update(g_stp_resp.content)
+        output.update(api_response.content)
+    return output
+
+
+def get_stp_bulk_vlan_response_and_filter(vlan_list):
+    if g_stp_mode == 'PVST':
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan')
+        str1 = 'openconfig-spanning-tree-ext:vlan'
+    elif g_stp_mode == 'RAPID_PVST':
+        uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan')
+        str1 = 'openconfig-spanning-tree:vlan'
+    else:
+        return None
+
+    output = {}
+    api_response = aa.get(uri, None)
+    if api_response.ok() and api_response.content is not None:
+        if str1 in api_response.content:
+            value = api_response.content[str1]
+            vlan_data_in_range = []
+            for item in value:
+                if "vlan-id" in item and item["vlan-id"] in vlan_list:
+                    if 'interfaces' in item and 'interface' in item['interfaces']:
+                        tup = item['interfaces']['interface']
+                        item['interfaces']['interface'] = sorted(tup, key=getId)
+                    vlan_data_in_range.append(item)
+            api_response.content[str1] = sorted(vlan_data_in_range, key = lambda i: int(i['vlan-id']))
+
         output.update(g_stp_resp.content)
         output.update(api_response.content)
     return output
@@ -569,22 +716,23 @@ def get_stp_response():
 def get_stp_vlan_response(vlan):
     if g_stp_mode == 'PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/openconfig-spanning-tree-ext:pvst/vlan={vlan_id}', vlan_id=vlan)
-        str = 'openconfig-spanning-tree-ext:vlan'
+        str1 = 'openconfig-spanning-tree-ext:vlan'
     elif g_stp_mode == 'RAPID_PVST':
         uri = cc.Path('/restconf/data/openconfig-spanning-tree:stp/rapid-pvst/vlan={vlan_id}', vlan_id=vlan)
-        str = 'openconfig-spanning-tree:vlan'
+        str1 = 'openconfig-spanning-tree:vlan'
     else:
         return None
 
     output = {}
     api_response = aa.get(uri, None)
     if api_response.ok() and api_response.content is not None:
-        if str in api_response.content:
-            value = api_response.content[str]
+        if str1 in api_response.content:
+            value = api_response.content[str1]
             for item in value:
                 if 'interfaces' in item and 'interface' in item['interfaces']:
                     tup = item['interfaces']['interface']
                     item['interfaces']['interface'] = sorted(tup, key=getId)
+            api_response.content[str1] = sorted(api_response.content[str1], key = lambda i: int(i['vlan-id']))
      
         output.update(g_stp_resp.content)
         output.update(api_response.content)
@@ -631,7 +779,11 @@ def show_stp(args):
 
 
 def show_stp_vlan(args):
-    output = get_stp_vlan_response(args[1])
+    vlan_list  = range_to_list(args[1])
+    if len(vlan_list) > 1:
+        output = get_stp_bulk_vlan_response_and_filter(vlan_list)
+    else:
+        output = get_stp_vlan_response(args[1])
     if not output:
         return None
 
@@ -643,7 +795,12 @@ def show_stp_vlan(args):
 
 
 def show_stp_vlan_intfs(args):
-    output = get_stp_vlan_response(args[1])
+    vlan_list  = range_to_list(args[1])
+    if len(vlan_list) > 1:
+        output = get_stp_bulk_vlan_response_and_filter(vlan_list)
+    else:
+        output = get_stp_vlan_response(args[1])
+
     if not output:
         return None
 
@@ -677,7 +834,12 @@ def show_stp_counters(args):
 
 
 def show_stp_counters_vlan(args):
-    output = get_stp_vlan_response(args[1])
+    vlan_list  = range_to_list(args[1])
+    if len(vlan_list) > 1:
+        output = get_stp_bulk_vlan_response_and_filter(vlan_list)
+    else:
+        output = get_stp_vlan_response(args[1])
+
     if not output:
         return None
 
@@ -824,9 +986,12 @@ def is_stp_mode_mandatory_prerequisite(op_str, new_args):
 def run(op_str, args):
     global g_stp_mode
     global g_stp_resp
+    global g_stp_data
 
     g_stp_mode = None
     g_stp_resp = None
+    g_stp_data = {}
+
     try:
         new_args = []
         for arg in args:
@@ -935,7 +1100,9 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
         cmd += cmd_prfx + 'uplinkfast'
 
     if len(vlan_list) != 0:
+        vdata = {'cost' : {}, 'port-priority' : {}}
         for vlan_dict in vlan_list:
+            vid = vlan_dict['vlan-id']
             if 'interfaces' in vlan_dict.keys():
                 if 'interface' in vlan_dict['interfaces']:
                     vport_list = vlan_dict['interfaces']['interface']
@@ -943,10 +1110,24 @@ def show_run_config_interface(intf_dict, vlan_list=[]):
                         if 'config' not in vport_dict.keys():
                             continue
                         if vport_dict['name'] == intf_dict['name']:
-                            if 'cost' in vport_dict['config'].keys():
-                                cmd += cmd_prfx + 'vlan ' + str(vlan_dict['vlan-id']) + ' cost ' + str(vport_dict['config']['cost'])
-                            if 'port-priority' in vport_dict['config'].keys():
-                                cmd += cmd_prfx + 'vlan ' + str(vlan_dict['vlan-id']) + ' port-priority ' + str(vport_dict['config']['port-priority'])
+                            for param in ['cost', 'port-priority']:
+                                if param in vport_dict['config'].keys():
+                                    val = vport_dict['config'][param]
+                                    if val in vdata[param].keys():
+                                        vdata[param][val].append(vid)
+                                    else:
+                                        vdata[param][val] = [vid]
+
+        for param in ['cost', 'port-priority']:
+            configured_values = vdata[param].keys()
+            if len(configured_values) == 0:
+                continue
+
+            configured_values = sorted(configured_values)
+
+            for val in configured_values:
+                vrange_str = convert_list_to_range_groups(vdata[param][val])
+                cmd += ' '.join(['\n spanning-tree', 'vlan', vrange_str, param, str(val)])
 
     if len(cmd) != 0:
         ifname = intf_dict['name'].strip()
@@ -998,22 +1179,14 @@ def convert_list_to_range_groups(vlist):
     return ','.join(vrange_list)
 
 
-def show_run_config_vlan(vlan_data):
+def show_run_config_vlan(vlan_data, g_stp):
     cmd_list = []
     vlan_params_name_map = {'bridge-priority': 'priority', 'hello-time': 'hello-time', 'forwarding-delay': 'forward-time', 'max-age': 'max-age'}
     # dictionary holding list of vlans with common value
     vdata = {'bridge-priority':{}, 'hello-time':{}, 'forwarding-delay':{}, 'max-age':{}}
-    g_stp = {}
-    g_stp['forwarding-delay'] = g_fwd_delay
-    g_stp['hello-time'] = g_hello_time
-    g_stp['max-age'] = g_max_age
-    g_stp['bridge-priority'] = g_br_prio
-
-    from pprint import pprint as pp
-    #pp(vlan_data)
 
     for vlan_dict in vlan_data:
-        if 'vlan-id' not in vlan_dict.keys():
+        if 'vlan-id' not in vlan_dict.keys() or 'config' not in vlan_dict.keys():
             continue
 
         vid = vlan_dict['vlan-id']
@@ -1169,7 +1342,12 @@ def show_running_spanning_tree():
 
             if stp_mode in data.keys():
                 if 'vlan' in data[stp_mode].keys():
-                    show_run_config_vlan(data[stp_mode]['vlan'])
+                    g_stp = {}
+                    g_stp['forwarding-delay'] = g_fwd_delay
+                    g_stp['hello-time'] = g_hello_time
+                    g_stp['max-age'] = g_max_age
+                    g_stp['bridge-priority'] = g_br_prio
+                    show_run_config_vlan(data[stp_mode]['vlan'], g_stp)
                     #for vlan_dict in data[stp_mode]['vlan']:
                         #show_run_config_vlan(vlan_dict['config'])
 
