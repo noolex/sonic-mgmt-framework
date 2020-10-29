@@ -284,6 +284,11 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
 
+    #Delete port speed to revert the speed to default.
+    elif func == 'delete_port_speed':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/port-speed', name=args[0])
+        return api.delete(path)
+
     # Remove IP addresses from interface
     elif func == 'delete_if_ip':
 	if args[0].startswith("Vlan"):
