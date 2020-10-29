@@ -24,7 +24,6 @@ import ast
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-
 import urllib3
 urllib3.disable_warnings()
 
@@ -123,6 +122,14 @@ def invoke(func, args):
     elif func == 'delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening':
         keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING')
         return aa.delete(keypath)
+    elif func == 'rpc_clear_mac_damp_disabled_ports':
+        keypath = cc.Path('/restconf/operations/sonic-mac-dampening:clear-mac-dampening-disabled-ports')
+        body = {"sonic-mac-dampening:input": dict()}
+        if len(args) != 0:
+            body["sonic-mac-dampening:input"]["ifname"] = args[0]
+        else:
+            body["sonic-mac-dampening:input"]["ifname"] = "ALL"
+        return aa.post(keypath, body)
     else:
         return body
 

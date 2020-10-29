@@ -1242,6 +1242,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="LOADSHARE_SEED_VAL"
+        method="integer"
+        pattern="1..16777215"
+        help="IP ECMP Load share seed value 1 to 16777215"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="MIRROR_DIRECTION"
         method="select"
         pattern="rx(rx) tx(tx) both(both)"
