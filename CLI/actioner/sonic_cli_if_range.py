@@ -284,6 +284,7 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
 
+<<<<<<< HEAD
       #Remove all vlans
     elif func == 'delete_all_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config', name=args[0])
@@ -292,6 +293,11 @@ def invoke_api(func, args=[]):
       #Remove aggregate all vlans
     elif func == 'delete_aggregate_all_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
+=======
+    #Delete port speed to revert the speed to default.
+    elif func == 'delete_port_speed':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/port-speed', name=args[0])
+>>>>>>> origin/broadcom_sonic_3.1.x_share
         return api.delete(path)
 
     # Remove IP addresses from interface

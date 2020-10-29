@@ -110,7 +110,7 @@ limitations under the License.
         >
         <PARAM
             name="vlan-id"
-            help="VLAN identifier"
+            help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
             ptype="VLAN_RANGE"
             >
             <PARAM
@@ -176,7 +176,7 @@ limitations under the License.
             >
             <PARAM
                 name="vlan-id"
-                help="VLAN identifier"
+                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
                 ptype="VLAN_RANGE"
                 >
             </PARAM>
@@ -223,7 +223,7 @@ limitations under the License.
             >
             <PARAM
                 name="vlan-id"
-                help="VLAN identifier"
+                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
                 ptype="VLAN_RANGE"
                 >
             </PARAM>
@@ -331,7 +331,7 @@ limitations under the License.
         >
         <PARAM
             name="vlan-range"
-            help="VLAN identifier"
+            help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
             ptype="VLAN_RANGE"
             >
         </PARAM>
@@ -933,7 +933,7 @@ limitations under the License.
         >
         <PARAM
             name="vlan-range"
-            help="VLAN identifier"
+            help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
             ptype="VLAN_RANGE"
             dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/vlanid"
             >
