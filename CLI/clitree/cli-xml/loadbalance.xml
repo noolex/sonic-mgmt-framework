@@ -20,10 +20,12 @@
         name="ip load-share hash seed"
         help="Hash Parameter Configuration"
         ptype="SUBCOMMAND"
+        command_tables="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_SEED/ECMP_LOADBALANCE_TABLE_SEED_LIST/hash=hash"
         mode="subcommand">
         <PARAM
             name="seed-val"
             help="IP ECMP hash seed value"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_SEED/ECMP_LOADBALANCE_TABLE_SEED_LIST/ecmp_hash_seed"
             ptype="LOADSHARE_SEED_VAL" />
         <ACTION builtin="clish_pyobj">sonic_cli_ip_loadbalance patch_loadshare_seed_config ${__params}</ACTION>
         <DOCGEN>
@@ -42,6 +44,7 @@
         name="ip load-share hash ipv4"
         help="Hash Parameter Configuration"
         ptype="SUBCOMMAND"
+        command_tables="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV4/ECMP_LOADBALANCE_TABLE_IPV4_LIST/ipv4=ipv4"
         mode="subcommand">
         <PARAM
             name="IPv4 hash config options"
@@ -53,26 +56,31 @@
             name="ipv4-src-ip"
             help="Source IP Address"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV4/ECMP_LOADBALANCE_TABLE_IPV4_LIST/ipv4_src_ip"
             mode="subcommand" />
         <PARAM
             name="ipv4-dst-ip"
             help="Destination IP Address"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV4/ECMP_LOADBALANCE_TABLE_IPV4_LIST/ipv4_dst_ip"
             mode="subcommand" />
         <PARAM
             name="ipv4-ip-proto"
             help="IPv4 Protocol"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV4/ECMP_LOADBALANCE_TABLE_IPV4_LIST/ipv4_protocol"
             mode="subcommand" />
         <PARAM
             name="ipv4-l4-src-port"
             help="IPv4 Protocol"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV4/ECMP_LOADBALANCE_TABLE_IPV4_LIST/ipv4_l4_src_port"
             mode="subcommand" />
         <PARAM
             name="ipv4-l4-dst-port"
             help="IPv4 Protocol"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV4/ECMP_LOADBALANCE_TABLE_IPV4_LIST/ipv4_l4_dst_port"
             mode="subcommand" />
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_ip_loadbalance patch_loadshare_ipv4_config ${__params}</ACTION>
@@ -92,6 +100,7 @@
         name="ip load-share hash ipv6"
         help="Hash Parameter Configuration"
         ptype="SUBCOMMAND"
+        command_tables="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV6/ECMP_LOADBALANCE_TABLE_IPV6_LIST/ipv6=ipv6"
         mode="subcommand">
         <PARAM
             name="IPv6 hash config options"
@@ -103,26 +112,31 @@
             name="ipv6-src-ip"
             help="Source IP Address"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV6/ECMP_LOADBALANCE_TABLE_IPV6_LIST/ipv6_src_ip"
             mode="subcommand" />
         <PARAM
             name="ipv6-dst-ip"
             help="Destination IP Address"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV6/ECMP_LOADBALANCE_TABLE_IPV6_LIST/ipv6_dst_ip"
             mode="subcommand" />
         <PARAM
             name="ipv6-next-hdr"
             help="IPv6 Protocol"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV6/ECMP_LOADBALANCE_TABLE_IPV6_LIST/ipv6_next_hdr"
             mode="subcommand" />
         <PARAM
             name="ipv6-l4-src-port"
             help="IPv6 L4 Source port"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV6/ECMP_LOADBALANCE_TABLE_IPV6_LIST/ipv6_l4_src_port"
             mode="subcommand" />
         <PARAM
             name="ipv6-l4-dst-port"
             help="IPv6 L4 Destination port"
             ptype="SUBCOMMAND"
+            dbpath="sonic-loadbalance-mode:sonic-loadbalance-mode/ECMP_LOADBALANCE_TABLE_IPV6/ECMP_LOADBALANCE_TABLE_IPV6_LIST/ipv6_l4_dst_port"
             mode="subcommand" />
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_ip_loadbalance patch_loadshare_ipv6_config ${__params}</ACTION>
