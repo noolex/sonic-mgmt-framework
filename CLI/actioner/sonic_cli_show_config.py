@@ -733,8 +733,8 @@ def render_cli_config(view_name = '', view_keys = {}):
                 mod_name = inspect.getmodule(module_cb).__name__
                 DB_Cache[mod_name] = {}
                 module_cb(context, DB_Cache[mod_name])
-    except e:
-        showrun_log(logging.ERROR, "Exception {} ", e)           
+    except Exception as e:
+        showrun_log(logging.ERROR, "Exception {} ", e)
 
     if view_name:
         if view_name in CLI_XML_VIEW_MAP:

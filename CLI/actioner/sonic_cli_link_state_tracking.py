@@ -121,9 +121,11 @@ def set_link_state_tracking_group_downstream(args):
 
 def delete_link_state_tracking_group_downstream(args):
     if len(args) == 2:
-        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={downstr}/downstream-group', downstr=args[1])
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={downstr}/downstream-group',
+                      downstr=args[1])
     else:
-        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={downstr}/downstream-group', downstr=args[0])
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={downstr}/downstream-group',
+                      downstr=args[0])
     return lst_client.delete(uri)
 
 
@@ -160,9 +162,11 @@ def set_link_state_tracking_group_upstream(args):
 
 def delete_link_state_tracking_group_upstream(args):
     if len(args) == 2:
-        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups/upstream-group={grp_name}', grp_name=args[0], upstr=args[1])
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups/upstream-group={grp_name}',
+                      grp_name=args[0], upstr=args[1])
     else:
-        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups', upstr=args[0])
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups',
+                      upstr=args[0])
     return lst_client.delete(uri)
 
 def delete_link_state_tracking_group_binding(args):
@@ -196,19 +200,22 @@ def delete_link_state_tracking_group_threshold(args):
     return lst_client.delete(uri)
 
 def set_link_state_tracking_group_all_mclag_downstream(args):
-    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream',
+                  grp_name=args[0])
     body = {
         "openconfig-lst-ext:all-mclags-downstream": True
     }
     return lst_client.patch(uri, body)
 
 def delete_link_state_tracking_group_all_mclag_downstream(args):
-    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream', grp_name=args[0])
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream',
+                  grp_name=args[0])
     return lst_client.delete(uri)
 
 def show_link_state_tracking_group_info(args):
     if len(args):
-        uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST={grp_name}', grp_name=args[0])
+        uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST={grp_name}',
+                      grp_name=args[0])
     else:
         uri = cc.Path('/restconf/data/sonic-link-state-tracking:sonic-link-state-tracking/INTF_TRACKING_TABLE/INTF_TRACKING_TABLE_LIST')
     return lst_client.get(uri, depth=None, ignore404=False)
@@ -290,7 +297,8 @@ def show_link_state_tracking_group_response_handler(response, args):
     if response.ok():
         data = response.content
         if bool(data):
-            show_link_state_tracking_group_data(data['sonic-link-state-tracking:INTF_TRACKING_TABLE_LIST'], len(args) > 0)
+            show_link_state_tracking_group_data(data['sonic-link-state-tracking:INTF_TRACKING_TABLE_LIST'],
+                                                len(args) > 0)
         elif len(args) > 0:
             raise SonicLinkStateTrackingCLIError("Group not found")
     elif str(response.status_code) == '404':
@@ -362,7 +370,8 @@ def show_running_lst_group(render_tables):
     output = list()
 
     if 'group' in render_tables:
-        response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={group}', group=render_tables['group']), depth=None, ignore404=False)
+        response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={group}',
+                                          group=render_tables['group']), depth=None, ignore404=False)
         if response.ok():
             status = 'CB_SUCCESS'
             if bool(response.content):
@@ -396,12 +405,10 @@ def __show_running_config_group(output, grp_data):
 
 
 def show_running_lst_interface(render_tables):
-    status = 'CB_FAIL'
+    status = 'CB_SUCCESS'
     output = []
-    response = lst_client.get(cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}', id=render_tables['name']), depth=None, ignore404=False)
-    if response.ok():
-        status = 'CB_SUCCESS'
-        data = response.content['openconfig-lst-ext:interface'][0]
+    if render_tables['name'] in render_tables[__name__]:
+        data = render_tables[__name__][render_tables['name']]
         if 'upstream-groups' in data:
             upstr_grps = data['upstream-groups']['upstream-group']
             for grp in upstr_grps:
@@ -410,6 +417,52 @@ def show_running_lst_interface(render_tables):
         if 'downstream-group' in data:
             if 'config' in data['downstream-group']:
                 output.append('link state track {} downstream'.format(data['downstream-group']['config']['group-name']))
+    else:
+        log.log_debug("No LST config for {}".format(render_tables['name']))
 
     return status, ';'.join(output), True
 
+
+def __build_lst_interface_bind_cache(intf_type, ifname, cache):
+    log.log_debug("LST Interface {},{} specific show running".format(intf_type, ifname))
+    if ifname:
+        keypath = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={id}', id=ifname)
+        response = lst_client.get(keypath, depth=None, ignore404=False)
+        if response.ok() is False:
+            log.log_debug("Resp not success")
+            return
+        if 'openconfig-lst-ext:interface' not in response.content:
+            log.log_debug("'openconfig-lst-ext:interface' not found in response {}".format(str(response.content)))
+            return
+        cache[ifname] = response.content['openconfig-lst-ext:interface'][0]
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface')
+        response = lst_client.get(keypath, depth=None, ignore404=False)
+        if response.ok():
+            for intf_data in response.content['openconfig-lst-ext:interface']:
+                if (intf_type and intf_data['id'].startswith(intf_type)) or (intf_type is None):
+                    cache[intf_data['id']] = intf_data
+                else:
+                    log.log_debug("Not storing cache for {}".format(intf_data['id']))
+        else:
+            log.log_debug("Resp not success")
+            return
+
+
+def show_running_config_lst_start_callback(context, cache):
+    log.log_debug("LST Context={}".format(str(context)))
+    if context['view_name'] == '':
+        log.log_debug("All LST and Interfaces config")
+        __build_lst_interface_bind_cache(None, None, cache)
+    elif not bool(context['view_keys']):
+        if context['view_name'] == 'configure-if':
+            log.log_debug('All ethernet interfaces')
+            __build_lst_interface_bind_cache('Eth', None, cache)
+        elif context['view_name'] == 'configure-vlan':
+            log.log_debug('All VLAN interfaces')
+            __build_lst_interface_bind_cache('Vlan', None, cache)
+        elif context['view_name'] == 'configure-lag':
+            log.log_debug("All LAG interfaces")
+            __build_lst_interface_bind_cache('PortChannel', None, cache)
+    else:
+        __build_lst_interface_bind_cache(None, context['view_keys']['name'], cache)
