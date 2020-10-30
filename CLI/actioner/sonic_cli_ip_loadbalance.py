@@ -100,8 +100,7 @@ def invoke(func, args):
 
     elif func == 'delete_loadshare_seed_config':
         keypath = cc.Path('/restconf/data/openconfig-loadbalance-mode-ext:seed-attrs')        
-        body = {"openconfig-loadbalance-mode-ext:seed-attrs": {"seed-attr": [{"hash": "hash", "config": {"hash": "hash", "ecmp-hash-seed": int(10)}}]}}
-        return aa.patch(keypath, body)
+        return aa.delete(keypath)
 
 def run(func, args):
     try:
