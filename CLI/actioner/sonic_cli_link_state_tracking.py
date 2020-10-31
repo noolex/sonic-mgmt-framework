@@ -393,6 +393,15 @@ def __show_running_config_group(output, grp_data):
         output.append('  description {}'.format(descr))
     if 'all-mclags-downstream' in config and config['all-mclags-downstream']:
         output.append('  downstream all-mclag')
+    thr_cmd = 'threshold'
+    if config.get('threshold-type') == "openconfig-lst-ext:ONLINE_PERCENTAGE":
+        thr_cmd += " type percentage"
+    if config.get('threshold-up'):
+        thr_cmd += " up {}".format(int(config.get('threshold-up')))
+    if config.get('threshold-down'):
+        thr_cmd += " down {}".format(int(config.get('threshold-down')))
+    if thr_cmd != 'threshold':
+        output.append('  ' + thr_cmd)
 
 
 def show_running_lst_interface(render_tables):
