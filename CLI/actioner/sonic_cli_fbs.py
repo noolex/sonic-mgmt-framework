@@ -1216,7 +1216,13 @@ def handle_generic_set_response(response, args, op_str):
                 else:
                     return 0
             else:
-                print(response.error_message())
+                try:
+                    if (1003 == error_data['error-info']['cvl-error']['error-code']) and (op_str in ['create_flow_qos', 'create_flow_monitoring', 'create_flow_forwarding']):
+                        print("%Error: Priority must be specified for create")
+                    else:
+                        print(response.error_message())
+                except:
+                    print(response.error_message())
         except Exception as e:
             print(response.error_message())
 
