@@ -46,7 +46,7 @@
 {{'  Chassis:'}}
 {{'    ChassisID:    '}}{{chassis_id}}
 {{'    SysName:      '}}{{sys_name}}
-{{'    SysDescr:     '}}{{sys_desc.split('\r\n')[0]}}
+{{'    SysDescr:     '}}{{sys_desc.replace('\r\n', '\r\n'.ljust(20))}}
 {{'    TTL:          '}}{{ttl}}
 {% if mgmt_addr %}
 {% set mgmt_ip = mgmt_addr.split(',') %}
