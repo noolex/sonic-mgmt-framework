@@ -283,4 +283,30 @@
         </DOCGEN>
   </COMMAND>
   </VIEW>
+<VIEW name="enable-view">
+<!--show ip load-share -->
+    <COMMAND name = "show ip load-share"
+        help = "Shows ECMP load-share information"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_ip_loadbalance get_load_balance
+        </ACTION>
+
+        <DOCGEN>
+          <DESCRIPTION>
+            Displays load balance information
+          </DESCRIPTION>
+          <USAGE>
+            Use this command to display load balance information of ECMP paths on a system
+          </USAGE>
+          <EXAMPLE summary="Display hash param for load balancing" >
+            sonic-cli# show ip load-share
+
+          </EXAMPLE>
+          <FEATURE> HASH </FEATURE>
+        </DOCGEN>
+    </COMMAND>
+</VIEW>
+
+
 </CLISH_MODULE>

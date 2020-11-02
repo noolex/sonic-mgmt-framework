@@ -25,7 +25,7 @@ from rpipe_utils import pipestr
 import scripts.render_cli as cli
 import cli_log as log
 import traceback
-
+import time
 
 lst_client = cc.ApiClient()
 
@@ -171,6 +171,30 @@ def delete_link_state_tracking_group_binding(args):
     else:
         return delete_link_state_tracking_group_downstream(args[1:])
 
+def set_link_state_tracking_group_threshold(args):
+    uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config', grp_name=args[0])
+    body = {
+        "openconfig-lst-ext:config": {
+            "name": args[0],
+        }
+    }
+
+    params = args[1:]
+    for key, val in zip(params[::2], params[1::2]):
+        if key == "type" and val == "percentage":
+            body["openconfig-lst-ext:config"]["threshold-type"] = "ONLINE_PERCENTAGE"
+        elif key == 'up' or key == 'down':
+            body["openconfig-lst-ext:config"]["threshold-{}".format(key)] = val
+
+    return lst_client.patch(uri, body)
+
+def delete_link_state_tracking_group_threshold(args):
+    if len(args) > 1:
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/threshold-{op}', grp_name=args[0], op=args[1])
+    else:
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/threshold-type', grp_name=args[0])
+    return lst_client.delete(uri)
+
 def set_link_state_tracking_group_all_mclag_downstream(args):
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config/all-mclags-downstream', grp_name=args[0])
     body = {
@@ -228,9 +252,23 @@ def show_link_state_tracking_group_data(groups, details):
         output = output + 'Name: {}'.format(data['name']) + '\n'
         descr = data.get('description', "")
         output = output + 'Description: {}'.format(descr if " " not in descr else '"{}"'.format(descr)) + '\n'
-        output = output + 'Timeout: {}'.format(data.get('timeout', "")) + '\n'
+        timeout = int(data.get('timeout', 60))
+        output = output + 'Timeout: {}'.format(timeout) + '\n'
 
         if details:
+            rem_time = 0
+            now_time = int(time.time())
+            start_time = int(data['bringup_start_time'])
+            if 0 != start_time:
+                rem_time = timeout - (now_time - start_time)
+            output = output + 'Startup remaining time: {} seconds'.format(rem_time) + '\n'
+
+            if data.get('threshold_type', None):
+                if data['threshold_type'] == 'ONLINE_PERCENTAGE':
+                    output = output + "Threshold type: Online-percentage\n"
+                output = output + "Threshold up: {}\n".format(int(float(data['threshold_up'])))
+                output = output + "Threshold down: {}\n".format(int(float(data['threshold_down'])))
+
             output = output + 'Upstream:' + '\n'
             for upstr, status in zip(data.get('upstream', []), data.get('upstream_status', [])):
                 if status == "":
@@ -274,6 +312,8 @@ request_handlers = {
     'delete_link_state_tracking_group_all_mclag_downstream': delete_link_state_tracking_group_all_mclag_downstream,
     'set_link_state_tracking_group_upstream': set_link_state_tracking_group_upstream,
     'delete_link_state_tracking_group_binding': delete_link_state_tracking_group_binding,
+    'set_link_state_tracking_group_threshold': set_link_state_tracking_group_threshold,
+    'delete_link_state_tracking_group_threshold': delete_link_state_tracking_group_threshold,
     'show_link_state_tracking_group_info': show_link_state_tracking_group_info
 }
 
@@ -289,19 +329,25 @@ response_handlers = {
     'delete_link_state_tracking_group_all_mclag_downstream': generic_set_response_handler,
     'set_link_state_tracking_group_upstream': generic_set_response_handler,
     'delete_link_state_tracking_group_binding': generic_delete_response_handler,
+    'set_link_state_tracking_group_threshold': generic_set_response_handler,
+    'delete_link_state_tracking_group_threshold': generic_delete_response_handler,
     'show_link_state_tracking_group_info': show_link_state_tracking_group_response_handler
 }
 
 
 def run(op_str, args):
     try:
+        log.log_debug("Op:{} Args:{}".format(op_str, str(args)));
         full_cmd = os.getenv('USER_COMMAND', None)
         if full_cmd is not None:
             pipestr().write(full_cmd.split())
         resp = request_handlers[op_str](args)
         response_handlers[op_str](resp, args)
     except SonicLinkStateTrackingCLIError as e:
-        print("%Error: {}".format(e.message))
+        if e.message.startswith("%Error"):
+            print(e.message)
+        else:
+            print("%Error: {}".format(e.message))
         return -1
     except Exception as e:
         log.log_error(traceback.format_exc())

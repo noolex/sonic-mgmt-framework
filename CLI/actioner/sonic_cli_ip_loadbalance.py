@@ -102,9 +102,21 @@ def invoke(func, args):
         keypath = cc.Path('/restconf/data/openconfig-loadbalance-mode-ext:seed-attrs')        
         return aa.delete(keypath)
 
+    if func == 'get_load_balance':
+        keypath = cc.Path('/restconf/data/openconfig-loadbalance-mode-ext:ipv4-attrs/ipv4-attr={id}/state', id="ipv4")
+        return aa.get(keypath)
+
 def run(func, args):
     try:
         api_response = invoke(func, args)
+        if api_response.ok():
+            response = api_response.content
+            if response is None:
+                pass
+            elif 'openconfig-loadbalance-mode-ext:state' in response.keys():
+                show_cli_output("show_ip_loadbalance.j2", response)
+                return
+
     except:
         # system/network error
         raise

@@ -291,6 +291,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_0_100"
+        method="integer"
+        pattern="0..100"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_0_255"
         method="integer"
         pattern="0..255"
