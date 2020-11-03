@@ -243,6 +243,22 @@ def generate_body(func, args=[]):
         else:
             body.update({"subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
 
+    # FEC config
+    elif func == 'patch_port_fec':
+        body = {
+                 "name": args[0],
+                 "openconfig-if-ethernet:ethernet" : {"config": {}}
+               }
+
+        fec_map = {"RS": "FEC_RS", "FC": "FEC_FC", "off": "FEC_DISABLED", "default": "FEC_AUTO"}
+        fec = args[1]
+        if fec not in fec_map.keys():
+            print("%Error: Invalid port FEC config")
+            return None
+        else:
+            fec = fec_map.get(args[1])
+            body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-ethernet:port-fec": fec } )
+
     else:
         print("%Error: %s not supported" % func)
 
