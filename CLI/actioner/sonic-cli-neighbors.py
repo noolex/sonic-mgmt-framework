@@ -66,7 +66,8 @@ def get_keypath(func,args):
     rcvdVrf = inputDict.get('vrf')
     if rcvdVrf == None:
         rcvdVrf = ""
-
+##################
+#################
     if func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors':
         keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=rcvdIntfName, index="0")
     elif func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors':
@@ -429,10 +430,14 @@ def show_neighbors():
         rcvdIp = rcvdIp.lower()
 
     rendererScript = "arp_show.j2"
+
     rcvdFamily = inputDict.get('family')
     if rcvdFamily == None:
-        rcvdFamily = "IPv4"
-    if rcvdFamily.lower() == "ipv6":
+        rcvdFamily = "ipv4"
+    else:
+        rcvdFamily = rcvdFamily.lower()
+
+    if rcvdFamily == "ipv6":
         rendererScript = "arp_show_v6.j2"
 
     summary = inputDict.get('summary')
@@ -443,18 +448,24 @@ def show_neighbors():
         if ((vrf is None and rcvdVrfName is None) or
             (vrf == rcvdVrfName) or
             rcvdVrfName == "all"):
-            if (inputDict.get('family').lower() == "ipv4"):
-                if rcvdIp is not None:
-                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors/neighbor={ip}', name=intf, index="0", ip=rcvdIp)
-                    msgType = PREFIXIP
-                else:
-                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=intf, index="0")
-            elif (inputDict.get('family').lower() == "ipv6"):
-                if rcvdIp is not None:
-                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors/neighbor={ip}', name=intf, index="0", ip=rcvdIp)
-                    msgType = PREFIXIP
-                else:
-                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors', name=intf, index="0")
+
+            namespace = '/restconf/data/openconfig-interfaces:interfaces/interface=' + intf
+            if intf.lower().startswith('vlan'):
+                namespace = namespace + "/openconfig-vlan:routed-vlan"
+            else:
+                namespace = namespace + "/subinterfaces/subinterface=0"
+
+            if (rcvdFamily == "ipv4"):
+                namespace = namespace + '/openconfig-if-ip:ipv4/neighbors'
+            else:
+                namespace = namespace + '/openconfig-if-ip:ipv6/neighbors'
+
+            if rcvdIp is not None:
+                msgType = PREFIXIP
+                namespace = namespace + '/neighbor=' + rcvdIp
+
+            keypath = cc.Path(namespace)
+
         else:
             continue
 
