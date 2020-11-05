@@ -41,6 +41,7 @@ from show_config_ospfv2 import *
 from show_config_ip_helper import *
 from show_config_pim import *
 from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
+from sonic_cli_link_state_tracking import show_running_config_lst_start_callback
 from show_config_vxlan import *
 from show_config_ipsla import *
 from show_config_lldp import *
@@ -116,7 +117,15 @@ module_cleanup_cb = []
 # module_startup_cb = {'config-if':[acl_startup_callback, fbs_startup_callback],
 #                     'config-vlan':[acl_startup_callback, fbs_startup_callback]}
 
-module_startup_cb = {}
+module_startup_cb = {
+    'configure': [show_running_config_acl_start_callback, show_running_config_fbs_start_callback],
+    'configure-mac-acl': [show_running_config_acl_start_callback],
+    'configure-ipv4-acl': [show_running_config_acl_start_callback],
+    'configure-ipv6-acl': [show_running_config_acl_start_callback],
+    'configure-if': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
+    'configure-lag': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
+    'configure-vlan': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback]
+}
 
 render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'router_bgp_neighbor'     : show_router_bgp_neighbor_cmd,
@@ -287,12 +296,12 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'sag4_config'             : show_sag4_config,
                   'sag6_config'             : show_sag6_config,
                   'vrrp_config'             : show_vrrp_config,
-                  'mac_acl_table_cb'        : mac_acl_table_cb,
-                  'ipv4_acl_table_cb'       : ipv4_acl_table_cb,
-                  'ipv6_acl_table_cb'       : ipv6_acl_table_cb,
-                  'acl_bind_cb'             : acl_bind_cb,
-                  'acl_global_bind_cb'      : acl_global_bind_cb,
-                  'acl_ctrl_plane_bind_cb'  : acl_ctrl_plane_bind_cb,
+                  'mac_acl_table_cb'        : show_running_mac_acl_table_cb,
+                  'ipv4_acl_table_cb'       : show_running_ipv4_acl_table_cb,
+                  'ipv6_acl_table_cb'       : show_running_ipv6_acl_table_cb,
+                  'acl_bind_cb'             : show_running_acl_intf_bind_cb,
+                  'acl_global_bind_cb'      : show_running_acl_global_bind_cb,
+                  'acl_ctrl_plane_bind_cb'  : show_running_acl_ctrl_plane_bind_cb,
                   'username_config'         : show_username_config,
                   'if_vrf_binding'          : show_if_vrf_binding,
                   'show_runn_hardware_cb'   : show_running_config_hardware,

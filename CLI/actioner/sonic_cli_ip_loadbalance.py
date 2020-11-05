@@ -103,7 +103,7 @@ def invoke(func, args):
         return aa.delete(keypath)
 
     if func == 'get_load_balance':
-        keypath = cc.Path('/restconf/data/openconfig-loadbalance-mode-ext:ipv4-attrs/ipv4-attr={id}/state', id="ipv4")
+        keypath = cc.Path('/restconf/data/openconfig-loadbalance-mode-ext:seed-attrs/seed-attr={id}/state', id="hash")
         return aa.get(keypath)
 
 def run(func, args):

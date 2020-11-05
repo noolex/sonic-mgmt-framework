@@ -1,8 +1,29 @@
+#!/usr/bin/python
+###########################################################################
+#
+# Copyright 2019 Broadcom.  The term "Broadcom" refers to Broadcom Inc. and/or
+# its subsidiaries.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+###########################################################################
+
 import cli_client as cc
 from collections import OrderedDict
 from natsort import natsorted
 import sonic_cli_acl
 from sonic_cli_fbs import ethertype_to_user_fmt
+
 
 def show_running_fbs_classifier(render_tables):
     fbs_client = cc.ApiClient()
@@ -48,6 +69,8 @@ def show_running_fbs_classifier(render_tables):
                             acl_type_str = "ip"
                         elif acl_type == "L3V6":
                             acl_type_str = "ipv6"
+                        else:
+                            acl_type_str = 'unknown'
                         if 'ACL_NAME' in class_data:
                             cmd_str += ' match access-group acl {} {};'.format(acl_type_str, class_data["ACL_NAME"])
                 elif match_type.lower() == 'fields':
@@ -148,7 +171,7 @@ def show_running_fbs_policy(render_tables):
                     cmd_str += ' description {} ;'.format(render_data['DESCRIPTION'])
                 for flow in render_data[policy_name]['FLOWS']:
                     flow_data = render_data[policy_name]['FLOWS'][flow]
-                    priority   = ""
+                    priority = ""
                     if 'PRIORITY' in flow_data:
                         priority = "priority " + str(flow_data['PRIORITY']) 
                     cmd_str += ' class {} {} ;'.format(flow_data['CLASS_NAME'], priority)
@@ -205,7 +228,8 @@ def show_running_fbs_policy(render_tables):
                                     vrf_str = "vrf " + str(nhop["VRF"])
                                 if "PRIORITY" in nhop:
                                     prio_str = "priority " + str(nhop["PRIORITY"])
-                                cmd_str += '  set ipv6 next-hop {} {} {} ;'.format(nhop["IP_ADDRESS"], vrf_str, prio_str)
+                                cmd_str += '  set ipv6 next-hop {} {} {} ;'.format(nhop["IP_ADDRESS"], vrf_str,
+                                                                                   prio_str)
                         cmd_str += ' !;'
                     elif match_type == 'monitoring':
                         if 'SET_MIRROR_SESSION' in flow_data:
@@ -215,31 +239,19 @@ def show_running_fbs_policy(render_tables):
     return 'CB_SUCCESS', cmd_str, True
 
 
-def __show_runn_fbs_service_policy_for_intf(ifname):
-    fbs_client = cc.ApiClient()
-    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST={interface_name}', interface_name=ifname)
-    response = fbs_client.get(keypath, None, False)
-    render_data = OrderedDict()
+def __show_runn_fbs_service_policy_for_intf(ifname, cache):
     cmd_str = ''
     policy_types = ['qos', 'monitoring', 'forwarding']
     directions = ['ingress', 'egress']
-    cfg_pdir_map = { directions[0]:"in", directions[1]:"out"}
-    if response.ok():
-        for binding in response.content.get('sonic-flow-based-services:POLICY_BINDING_TABLE_LIST', []):
-            if_data = []
-            for pdir in directions:
-                for policy_type in policy_types:
-                    key = '{}_{}_POLICY'.format(pdir.upper(), policy_type.upper())
-                    if key in binding:
-                        if_data.append(tuple([policy_type, cfg_pdir_map[pdir], binding[key]]))
-            if len(if_data):
-                render_data[binding['INTERFACE_NAME']] = if_data
-        sorted_data = OrderedDict(natsorted(render_data.items(), key=sonic_cli_acl.acl_natsort_intf_prio))
-        for  intf_name in sorted_data:
-            if_bind_list = sorted_data[intf_name]
-            for bind_entry in if_bind_list:
-                cmd_str += 'service-policy type {} {} {} ;'.format(bind_entry[0], bind_entry[1], bind_entry[2])
-            
+    cfg_pdir_map = {directions[0]: "in", directions[1]: "out"}
+    if ifname in cache:
+        ifdata = cache[ifname]
+        for pdir in directions:
+            for policy_type in policy_types:
+                key = '{}_{}_POLICY'.format(pdir.upper(), policy_type.upper())
+                if key in ifdata:
+                    cmd_str += 'service-policy type {} {} {} ;'.format(policy_type, cfg_pdir_map[pdir], ifdata[key])
+
     return 'CB_SUCCESS', cmd_str, True
 
 
@@ -252,14 +264,26 @@ def show_running_fbs_service_policy_ctrlplane(render_tables):
 
 
 def show_running_fbs_service_policy_interface(render_tables):
-    ifname = render_tables['name'].replace(" ", "")
-    return __show_runn_fbs_service_policy_for_intf(ifname)
+    return __show_runn_fbs_service_policy_for_intf(render_tables['name'], render_tables[__name__])
 
 
 def run(opstr, args):
     if opstr == "show_running_class_map":
         show_running_class_map(args)
 
+
 def show_running_class_map(class_name):
     import sonic_cli_show_config 
-    sonic_cli_show_config.run("show_view", ["views=configure-${fbs-class-type}-classifier", 'view_keys="fbs-class-name={class_name}"'.format(class_name=class_name[0] if len(class_name) == 1 else "" )])
+    sonic_cli_show_config.run("show_view",
+                              ["views=configure-${fbs-class-type}-classifier",
+                               'view_keys="fbs-class-name={class_name}"'.format(
+                                   class_name=class_name[0] if len(class_name) == 1 else "")])
+
+
+def show_running_config_fbs_start_callback(context, cache):
+    fbs_client = cc.ApiClient()
+    keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_BINDING_TABLE/POLICY_BINDING_TABLE_LIST')
+    response = fbs_client.get(keypath, depth=None, ignore404=False)
+    if response.ok():
+        for binding in response.content.get('sonic-flow-based-services:POLICY_BINDING_TABLE_LIST', []):
+            cache[binding.pop('INTERFACE_NAME')] = binding

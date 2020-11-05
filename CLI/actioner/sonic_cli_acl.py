@@ -729,8 +729,10 @@ def handle_generic_set_response(response, op_str, args):
                     print('%Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
                 elif error_data['error-app-tag'] == 'update-not-allowed':
                     print("%Error: Creating ACLs with same name and different type not allowed")
-                else:
+                elif error_data['error-app-tag'] != 'same-config-exists':
                     print(response.error_message())
+                else:
+                    return 0
             else:
                 print(response.error_message())
             return -1
