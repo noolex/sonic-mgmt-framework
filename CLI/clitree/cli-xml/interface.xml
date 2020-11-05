@@ -930,14 +930,56 @@ limitations under the License.
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
-                    <PARAM
-                        name="vlan_id_list"
-                        help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
-                        ptype="VLAN_RANGE"
-                        />
+		    <PARAM 
+			name="vlan-subcommands"
+			help="Add/Remove Vlan"
+			ptype="SUBCOMMAND"
+			mode="switch"
+			>
+			<PARAM
+			    name="add"
+			    help="Configure trunking parameters on an interface"
+			    ptype="SUBCOMMAND"
+			    mode="subcommand"
+			    >
+                            <PARAM
+                        	name="vlan_id_list"
+                        	help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                        	ptype="VLAN_RANGE"
+                        	/>
+			</PARAM>
+                        <PARAM
+                            name="remove"
+                            help="Remove trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+		    </PARAM>
                 </PARAM>
             </PARAM>
-             <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config ${iface} TRUNK ${vlan_id_list}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if vlan_trunk_add_remove_ethernet ${iface} TRUNK ${vlan_id_list} ${vlan-subcommands}</ACTION>
+            <DOCGEN>
+               <DESCRIPTION>
+                   Configure trunking parameters on an interface.
+               </DESCRIPTION>
+               <USAGE>
+                    Use this command to add or remove trunking parameters on an interface.
+               </USAGE>
+               <EXAMPLE summary="Add trunking parameter on an interface">
+		    sonic(conf-if-Ethernet4)# switchport trunk allowed Vlan add 10
+		    sonic(conf-if-Ethernet4)# 
+               </EXAMPLE>
+	       <EXAMPLE summary="Remove trunking parameter on an interface">
+                    sonic(conf-if-Ethernet4)# switchport trunk allowed Vlan remove 10
+                    sonic(conf-if-Ethernet4)#
+	       </EXAMPLE>
+           </DOCGEN>
        </COMMAND>
 
        <COMMAND name="sflow" help="Interface sFlow settings"/>
@@ -971,6 +1013,22 @@ limitations under the License.
                 >
             </PARAM>
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan</ACTION>
+        </COMMAND>
+
+       <COMMAND
+            name="no switchport allowed"
+            help="Remove all VLANs configured on the interface"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+       >
+            <PARAM
+                name="Vlan"
+                help="Remove all VLANs configured on the interface"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+            </PARAM>
+            <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config</ACTION>
         </COMMAND>
 
         <COMMAND
@@ -1287,14 +1345,57 @@ limitations under the License.
                    ptype="SUBCOMMAND"
                    mode="subcommand"
                    >
-                   <PARAM
-                       name="vlan_id_list"
-                       help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
-                       ptype="VLAN_RANGE"
-                       />
+                    <PARAM
+                        name="vlan-subcommands"
+                        help="Add/Remove Vlan"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="add"
+                            help="Configure trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+                        <PARAM
+                            name="remove"
+                            help="Remove trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+		    </PARAM>	    
                </PARAM>
            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config ${po_name} TRUNK ${vlan_id_list}</ACTION>
+           <ACTION builtin="clish_pyobj">sonic_cli_if vlan_trunk_add_remove_portchannel ${po_name} TRUNK ${vlan_id_list} ${vlan-subcommands} </ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure trunking parameters on an interface.
+               </DESCRIPTION>
+               <USAGE>
+                    Use this command to add or remove trunking parameters on an interface.
+               </USAGE>
+               <EXAMPLE summary="Add trunking parameter on an interface">
+                    sonic(conf-if-po1)# switchport trunk allowed Vlan add 10
+                    sonic(conf-if-po1)#
+               </EXAMPLE>
+               <EXAMPLE summary="Remove trunking parameter on an interface">
+                    sonic(conf-if-po1)# switchport trunk allowed Vlan remove 10
+                    sonic(conf-if-po1)#
+               </EXAMPLE>
+           </DOCGEN>
+	
       </COMMAND>
 
         <COMMAND
@@ -1316,6 +1417,22 @@ limitations under the License.
                 >
             </PARAM>
             <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/access-vlan</ACTION>
+       </COMMAND>
+
+      <COMMAND
+            name="no switchport allowed"
+            help="Remove all VLANs configured on the interface"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            >
+            <PARAM
+                name="Vlan"
+                help="Remove all VLANs configured on the interface"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+            </PARAM>
+            <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config</ACTION>
        </COMMAND>
 
        <COMMAND
