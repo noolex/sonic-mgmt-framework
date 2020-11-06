@@ -36,7 +36,14 @@ def stp_mode_get(aa):
 
     g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config', None, False)
     if not g_stp_resp.ok():
-        print ("%Error: Entry not found or STP not enabled")
+        if 'ietf-restconf:errors' in g_stp_resp.content \
+            and 'error' in g_stp_resp.content['ietf-restconf:errors'] \
+            and len(g_stp_resp.content['ietf-restconf:errors']['error']) \
+            and 'error-message' in g_stp_resp.content['ietf-restconf:errors']['error'][0] \
+            and 'Spanning-tree is not supported' in g_stp_resp.content['ietf-restconf:errors']['error'][0]['error-message']:
+                print ('%Error: Spanning-tree is not supported with this software package')
+        else:
+            print ("%Error: Entry not found or STP not enabled")
         return g_stp_resp,g_stp_mode
 
     #g_stp_resp = aa.api_client.sanitize_for_serialization(g_stp_resp)
