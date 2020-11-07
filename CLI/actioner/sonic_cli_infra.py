@@ -18,6 +18,9 @@ def stp_mode_get():
     if not g_stp_resp.ok():
         return 0
 
+    if not 'openconfig-spanning-tree:enabled-protocol' in g_stp_resp.content:
+        return 0
+
     if g_stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
         return -1
     elif g_stp_resp['openconfig-spanning-tree:enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
