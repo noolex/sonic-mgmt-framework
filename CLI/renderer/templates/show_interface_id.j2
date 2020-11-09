@@ -50,7 +50,7 @@
     {% for key in interface %}
       {% if "ethernet" in key %}
         {% if "state" in interface[key] %}
-          {% if vars.update({'fec':interface[key]["state"]["openconfig-if-ethernet-ext2:port-fec"]|replace("openconfig-platform-types:FEC_", "")}) %}{% endif %}
+          {% if vars.update({'fec':interface[key]["state"]["openconfig-if-ethernet-ext2:port-fec"]|replace("openconfig-platform-types:FEC_", "")|replace("openconfig-platform-ext:FEC_", "")}) %}{% endif %}
           {% if vars.update({'speed':interface[key]["state"]["port-speed"]|replace("openconfig-if-ethernet:SPEED_", "")}) %}{% endif %}
           {% if "counters" in interface[key]["state"] %}
             {% if vars.update({'in_oversize':interface[key]["state"]["counters"]["in-oversize-frames"]}) %}{% endif %}
