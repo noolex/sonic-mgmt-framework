@@ -1,0 +1,19 @@
+    SNMP Counters
+    =============================================================
+    {{ json_output["snmpInPkts"] }} SNMP packets input
+    {{ json_output["snmpInBadVersions"] }} Bad SNMP version errors
+    {{ json_output["snmpInBadCommunityNames"] }} Unknown community name
+    {{ json_output["snmpInBadCommunityUses"] }} Illegal operation for community name supplied
+    {{ json_output["snmpInASNParseErrs"] }} Encoding errors
+    {{ json_output["snmpInTotalReqVars"] }} Number of requested variables
+    {{ json_output["snmpInTotalSetVars"] }} Number of altered variables
+    {{ json_output["snmpInGetRequests"] }} Get-request PDUs
+    {{ json_output["snmpInGetNexts"] }} Get-next PDUs
+    {{ json_output["snmpInSetRequests"] }} Set-request PDUs
+    {{ json_output["snmpOutPkts"] }} SNMP packets output
+    {{ json_output["snmpInTooBigs"] }} Too big errors (Maximum packet size 1500)
+    {{ json_output["snmpInNoSuchNames"] }} No such name errors
+    {{ json_output["snmpInBadValues"] }} Bad values errors
+    {{ json_output["snmpInGenErrs"] }} General errors
+    {{ json_output["snmpOutGetResponses"] }} Response PDUs
+    {{ json_output["snmpOutTraps"] }} Trap PDUs
