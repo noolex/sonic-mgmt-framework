@@ -174,7 +174,11 @@ LineSpeed {{ vars.speed }}, Auto-negotiation off
 FEC: {{ vars.fec }}
 {% endif %}
 {% if vars.found_counters == True %}
+{% if vars.last_clear != "0" %}
 {% set datetime = datetimeformat(vars.last_clear) %}
+{% else %}
+{% set datetime = "never" %}
+{% endif %}
 Last clearing of "show interface" counters: {{ datetime }}
 {{vars.rate_interval}} seconds input rate {{vars.in_pkts_per_sec}} packets/sec, {{vars.in_bits_per_sec}} bits/sec, {{vars.in_bytes_per_sec}} Bytes/sec
 {{vars.rate_interval}} seconds output rate {{vars.out_pkts_per_sec}} packets/sec, {{vars.out_bits_per_sec}} bits/sec, {{vars.out_bytes_per_sec}} Bytes/sec
