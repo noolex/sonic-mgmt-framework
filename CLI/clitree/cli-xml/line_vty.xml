@@ -26,39 +26,55 @@ limitations under the License.
     <VIEW name="configure-view">
         <!-- Global binding options -->
         <COMMAND name="line" help="Session configuration" />
-        <COMMAND name="line vty" help="Terminal type" view="configure-line-vty-view" />
+        <COMMAND name="line vty" help="Terminal type" view="configure-line-vty-view"/>
     </VIEW>
 
     <VIEW name="configure-line-vty-view" prompt="${SYSTEM_NAME}(config-line-vty)# " depth="2">
+        <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_ctrl_plane_bind_cb"/>
         <COMMAND name="ip" help="Configure Internet Protocol (IP)"/>
         <COMMAND name="ipv6" help="Configure Internet Protocol v6 (IPv6)"/>
 
-        <COMMAND name="ip access-group" help="Configure IPv4 ACL">
+        <COMMAND name="mac access-group" help="Configure MAC ACL">
+            <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_L2 ControlPlane ${direction-switch}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="ip access-group" help="Configure Internet Protocol v4 (IPv4) ACL">
             <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV4 ControlPlane ${direction-switch}</ACTION>
         </COMMAND>
 
-        <COMMAND name="ipv6 access-group" help="Configure Internet Protocol v6 (IPv6)">
+        <COMMAND name="ipv6 access-group" help="Configure Internet Protocol v6 (IPv6) ACL">
             <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl bind_acl ${access-list-name} ACL_IPV6 ControlPlane ${direction-switch}</ACTION>
         </COMMAND>
 
         <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <COMMAND name="no ip" help="Configure Internet Protocol (IP)"/>
         <COMMAND name="no ipv6" help="Configure Internet Protocol v6 (IPv6)"/>
 
-        <COMMAND name="no ip access-group" help="Configure IPv4 ACL">
+        <COMMAND name="no mac access-group" help="Configure MAC ACL">
+            <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
+            <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_L2 ControlPlane ${direction-switch}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no ip access-group" help="Configure Internet Protocol v4 (IPv4) ACL">
             <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV4 ControlPlane ${direction-switch}</ACTION>
         </COMMAND>
 
-        <COMMAND name="no ipv6 access-group" help="Configure Internet Protocol v6 (IPv6)">
+        <COMMAND name="no ipv6 access-group" help="Configure Internet Protocol v6 (IPv6) ACL">
             <MACRO name="ACL-BINDING-OPTIONS-INGRESS" />
             <ACTION builtin="clish_pyobj">sonic_cli_acl unbind_acl ${access-list-name} ACL_IPV6 ControlPlane ${direction-switch}</ACTION>
         </COMMAND>
     </VIEW>
 
     <!--============================== EXEC MODE COMMANDS =======================-->
-    <!--<VIEW name="enable-view">
-    </VIEW>-->
+    <VIEW name="enable-view">
+        <COMMAND name="show running-configuration line" help="Show current session configuration"/>
+        <COMMAND name="show running-configuration line vty" help="Show current session configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-line-vty</ACTION>
+        </COMMAND>
+    </VIEW>
 </CLISH_MODULE>

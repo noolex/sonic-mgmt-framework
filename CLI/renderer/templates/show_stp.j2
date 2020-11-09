@@ -50,8 +50,9 @@ Spanning-tree Mode: PVST
 {% for vlan in vlan_list %}
     {% set stp_vlan_status = false %}
     {% if vars.update({'vlan_name':vlan['vlan-id']}) %}{% endif %}
+    {% if "config" is in vlan and "state" is in vlan %}
     {% if vars.update({'stp_instance':vlan['state']['stp-instance']}) %}{% endif %}
-    {% set stp_vlan_status = vlan['config']['spanning-tree-enable'] %}
+    {% set stp_vlan_status = vlan['state']['spanning-tree-enable'] %}
 {% if stp_vlan_status == true  %}
 {{' '}}
 VLAN {{'%s'| format(vars.vlan_name)}} - STP instance {{'%s'| format(vars.stp_instance)}}
@@ -132,6 +133,7 @@ STP Port Parameters:
         {%endfor %}
     {% endfor %}
     {%endif %}
+    {% endif %}
     {% endfor %}
 {% endif %}
 {% if stp_protocol == "openconfig-spanning-tree-types:RAPID_PVST" %}
@@ -146,8 +148,9 @@ Spanning-tree Mode: RPVST
    {% set stp_vlan_status = false %}
    {% set vars = {'br_txHCnt':""} %}
    {% if vars.update({'vlan_name':vlan['vlan-id']}) %}{% endif %}
+   {% if "config" is in vlan and "state" is in vlan %}
    {% if vars.update({'stp_instance':vlan['state']['openconfig-spanning-tree-ext:stp-instance']}) %}{% endif %}
-   {% set stp_vlan_status = vlan['config']['openconfig-spanning-tree-ext:spanning-tree-enable'] %}
+   {% set stp_vlan_status = vlan['state']['openconfig-spanning-tree-ext:spanning-tree-enable'] %}
 {% if stp_vlan_status == true  %}
 {{ " " }}
 VLAN {{'%s'| format(vars.vlan_name)}} - RSTP instance {{'%s'| format(vars.stp_instance)}}
@@ -227,6 +230,7 @@ RSTP (IEEE 802.1w) Port Parameters:
         {%endif %}
         {%endfor %}
     {% endfor %}
+{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}

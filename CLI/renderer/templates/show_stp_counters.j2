@@ -25,7 +25,7 @@
     {% set stp_vlan_status = false %}
     {% if vars.update({'vlan_name':vlan['vlan-id']}) %}{% endif %}
     {% if vars.update({'stp_instance':vlan['state']['stp-instance']}) %}{% endif %}
-    {% set stp_vlan_status = vlan['config']['spanning-tree-enable'] %}
+    {% set stp_vlan_status = vlan['state']['spanning-tree-enable'] %}
 {% if stp_vlan_status == true  %}
 {{" " }}
 VLAN {{'%s'| format(vars.vlan_name)}} - {{mode}} instance {{'%s'| format(vars.stp_instance)}}
@@ -62,7 +62,7 @@ VLAN {{'%s'| format(vars.vlan_name)}} - {{mode}} instance {{'%s'| format(vars.st
     {% set stp_vlan_status = false %}
     {% if vars.update({'vlan_name':vlan['vlan-id']}) %}{% endif %}
     {% if vars.update({'stp_instance':vlan['state']['openconfig-spanning-tree-ext:stp-instance']}) %}{% endif %}
-    {% set stp_vlan_status = vlan['config']['openconfig-spanning-tree-ext:spanning-tree-enable'] %}
+    {% set stp_vlan_status = vlan['state']['openconfig-spanning-tree-ext:spanning-tree-enable'] %}
 {% if stp_vlan_status == true  %}
 {{" " }}
 VLAN {{'%s'| format(vars.vlan_name)}} - {{mode}} instance {{'%s'| format(vars.stp_instance)}}

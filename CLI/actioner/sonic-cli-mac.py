@@ -24,7 +24,6 @@ import ast
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-
 import urllib3
 urllib3.disable_warnings()
 
@@ -73,6 +72,16 @@ def invoke(func, args):
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/mac-table/entries/entry={macaddress},{vlan}', 
                 name='default', macaddress=args[0], vlan=args[1].lower().strip("vlan"))
         return aa.delete(keypath)
+    elif func == 'add_openconfig_network_instance_network_instances_network_instance_fdb_config_mac_aging_time':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/config/mac-aging-time',name='default')
+        body = {"openconfig-network-instance:mac-aging-time":int(args[0])}
+        return aa.patch(keypath, body)
+    elif func == 'delete_openconfig_network_instance_network_instances_network_instance_fdb_config_mac_aging_time':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/config/mac-aging-time',name='default')
+        return aa.delete(keypath)
+    elif func == 'get_openconfig_network_instance_network_instances_network_instance_fdb_config_mac_aging_time':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/fdb/config/mac-aging-time', name='default')
+        return aa.get(keypath)
     elif func == 'rpc_sonic_fdb_clear_fdb':
         keypath = cc.Path('/restconf/operations/sonic-fdb:clear_fdb')
         body = {"sonic-fdb:input": { args[0]: args[1]}}
@@ -98,7 +107,29 @@ def invoke(func, args):
             response = api_response.content
             if response is not None and len(response) is not 0:
                 print_content = response['sonic-mac-dampening:MAC_DAMPENING_LIST']
-                print "MAC Dampening-Threshold Value: {}".format(print_content[0]['threshold'])
+                print "MAC Move Dampening Threshold : {}".format(print_content[0]['threshold'])
+    elif func == 'get_openconfig_network_instance_ext_network_instances_network_instance_mac_dampening_state':
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/openconfig-network-instance-ext:mac-dampening/state')
+        api_response = aa.get(keypath)
+        if api_response.ok():
+            response = api_response.content
+            if response is not None and len(response) is not 0:
+                print_content = response['openconfig-network-instance-ext:state']['interfaces']
+                output = "\nPorts disabled due to MAC Dampening:\n\n"
+                for interface in print_content:
+                    output = output + interface + "\n"
+                print output    
+    elif func == 'delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening':
+        keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING')
+        return aa.delete(keypath)
+    elif func == 'rpc_clear_mac_damp_disabled_ports':
+        keypath = cc.Path('/restconf/operations/sonic-mac-dampening:clear-mac-dampening-disabled-ports')
+        body = {"sonic-mac-dampening:input": dict()}
+        if len(args) != 0:
+            body["sonic-mac-dampening:input"]["ifname"] = args[0]
+        else:
+            body["sonic-mac-dampening:input"]["ifname"] = "ALL"
+        return aa.post(keypath, body)
     else:
         return body
 
@@ -115,6 +146,9 @@ def run(func, args):
                     mac_entries = response['openconfig-network-instance:entries']['entry']
                 elif 'openconfig-network-instance:state' in response:
                     mac_entries = response['openconfig-network-instance:state']
+                elif 'openconfig-network-instance:mac-aging-time' in response:
+                    show_cli_output(args[0], response)
+                    return
                 else:
                     return
             else:

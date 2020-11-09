@@ -377,6 +377,46 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND
+        name="no use-v2-checksum"
+        help="Disables checksum compatibility"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_use_v2_checksum ${iface} ${vrrp-id} false ipv4
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure checksum compatiblity for IPv4 VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure preempt for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#no use-v2-checksum
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="use-v2-checksum"
+        help="Enables checksum compatibility"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_use_v2_checksum ${iface} ${vrrp-id} true ipv4
+        </ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure checksum compatiblity for VRRP instance
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure preempt for IPv4 VRRP instance">
+                sonic(config)# interface Ethernet4
+                sonic(conf-if-Ethernet4)#
+                sonic(conf-if-Ethernet4)# vrrp 1 address-family ipv4
+                sonic(conf-if-Ethernet4-vrrp-ipv4-1)#use-v2-checksum
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
         name="priority"
         help="Priority for MASTER election"
         >

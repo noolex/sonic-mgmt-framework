@@ -231,6 +231,10 @@ def run():
         iflist = ["all"]
         template_file = sys.argv[2]
     else:
+        # PortChannel ID list is empty. No PortChannels configured in the given range
+        if sys.argv[2] == "":
+            return
+
         iflist = sys.argv[2].rstrip().split(',') 
         template_file = sys.argv[3]
 

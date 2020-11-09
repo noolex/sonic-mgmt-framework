@@ -21,6 +21,7 @@ package server
 
 import (
 	"github.com/Azure/sonic-mgmt-common/cvl"
+	"github.com/Azure/sonic-mgmt-common/translib/db"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -88,6 +89,7 @@ func clearAllStats() {
 	authStat.clear()
 	translibStat.clear()
 	cvl.ClearValidationTimeStats()
+	db.ClearDBStats()
 
 	theStatMutex.Unlock()
 }
@@ -160,6 +162,36 @@ func getStatsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// writeStatsDBStatsText dumps out one table/map worth of DB Stats
+func writeDBStatsText(tw *tabwriter.Writer, name string, stats *db.Stats) {
+	fmt.Fprintf(tw,"\tTable Name:%s\n", name)
+	fmt.Fprintln(tw,
+		"\t\tGetEntry\tGetKeys\tGetKeysPattern\tGetMap\tGetMapAll\tTotal")
+	fmt.Fprintln(tw,
+		"\t\t--------\t-------\t--------------\t------\t---------\t-----")
+	fmt.Fprintf(tw, "\tHits\t%d\t%d\t%d\t%d\t%d\t%d\n",
+		stats.GetEntryHits,
+		stats.GetKeysHits, stats.GetKeysPatternHits,
+		stats.GetMapHits, stats.GetMapAllHits,
+		stats.Hits)
+	fmt.Fprintf(tw, "\tCacheHits\t%d\t%d\t%d\t%d\t%d\n",
+		stats.GetEntryCacheHits,
+		stats.GetKeysCacheHits, stats.GetKeysPatternCacheHits,
+		stats.GetMapCacheHits, stats.GetMapAllCacheHits)
+	fmt.Fprintf(tw, "\tTime\t%s\t%s\t%s\t%s\t%s\t%s\n",
+		stats.GetEntryTime,
+		stats.GetKeysTime, stats.GetKeysPatternTime,
+		stats.GetMapTime, stats.GetMapAllTime,
+		stats.Time)
+	fmt.Fprintf(tw, "\tPeak\t%s\t%s\t%s\t%s\t%s\t%s\n",
+		stats.GetEntryPeak,
+		stats.GetKeysPeak, stats.GetKeysPatternPeak,
+		stats.GetMapPeak, stats.GetMapAllPeak,
+		stats.Peak)
+	fmt.Fprintln(tw, "")
+}
+
+
 // writeStatsText dumps all stats into a http.ResponseWriter in tabular format.
 func writeStatsText(w http.ResponseWriter) {
 	tw := tabwriter.NewWriter(w, 0, 0, 1, ' ', 0)
@@ -167,6 +199,10 @@ func writeStatsText(w http.ResponseWriter) {
 
 	// Get CVL time stats.
 	cvlStat := cvl.GetValidationTimeStats()
+
+	// Get DB Stats
+	dbHits, dbTime, dbPeak := db.GetDBStatsTotals()
+	dbStat,_ := db.GetDBStats()
 
 	fmt.Fprintln(tw, "API TYPE\tTIMER TYPE\tNUM HITS\tTOTAL TIME\tPEAK")
 	fmt.Fprintln(tw, "============\t============\t==========\t============\t============")
@@ -177,9 +213,41 @@ func writeStatsText(w http.ResponseWriter) {
 	fmt.Fprintf(tw, "\tAuth\t%d\t%s\t%s\n", authStat.Hits, authStat.Time, authStat.Peak)
 	fmt.Fprintf(tw, "\tTranslib\t%d\t%s\t%s\n", translibStat.Hits, translibStat.Time, translibStat.Peak)
 	fmt.Fprintf(tw, "\tCVL\t%d\t%s\t%s\n", cvlStat.Hits, cvlStat.Time, cvlStat.Peak)
+	fmt.Fprintf(tw, "\tDB\t%d\t%s\t%s\n", dbHits, dbTime, dbPeak)
 
 	fmt.Fprintf(tw, "Service APIs")
 	fmt.Fprintf(tw, "\tServer\t%d\t%s\t%s\n", svcRequestStat.Hits, svcRequestStat.Time, svcRequestStat.Peak)
+
+	fmt.Fprintln(tw, "")
+	fmt.Fprintf(tw, "DB APIs")
+	fmt.Fprintf(tw,
+		"\tGlobals: New: %d Delete: %d PeakOpen: %d ZeroGetHits %d\n",
+		dbStat.New, dbStat.Delete, dbStat.PeakOpen, dbStat.ZeroGetHits)
+	fmt.Fprintf(tw, "\tGlobals: NewTime: %s NewPeak: %s\n",
+		dbStat.NewTime, dbStat.NewPeak)
+	fmt.Fprintln(tw, "")
+	if len(dbStat.Databases) != 0 {
+		fmt.Fprintln(tw, "\tDatabases:")
+	}
+	for dbN, dbS := range dbStat.Databases {
+		if (dbS.AllTables.Hits == 0) && (dbS.AllMaps.Hits == 0) &&
+				(len(dbS.Tables) == 0) && (len(dbS.Maps) == 0) {
+			continue
+		}
+		fmt.Fprintf(tw, "\t%d:\n", dbN)
+		if dbS.AllTables.Hits != 0 {
+			writeDBStatsText(tw, "AllTables", &(dbS.AllTables))
+		}
+		if dbS.AllMaps.Hits != 0 {
+			writeDBStatsText(tw, "AllMaps", &(dbS.AllMaps))
+		}
+		for name,stats := range dbS.Tables {
+			writeDBStatsText(tw, name, &stats)
+		}
+		for name,stats := range dbS.Maps {
+			writeDBStatsText(tw, name, &stats)
+		}
+	}
 
 	theStatMutex.Unlock()
 
@@ -196,16 +264,27 @@ func writeStatsJSON(w http.ResponseWriter) {
 	ret := cvl.GetValidationTimeStats()
 	cvlStat := opStat{Hits: ret.Hits, Peak: ret.Peak, Time: ret.Time}
 
+	// Get DB Stats
+	dbHits, dbTime, dbPeak := db.GetDBStatsTotals()
+	dbOpStat := opStat{ Hits: dbHits, Time: dbTime, Peak: dbPeak}
+
+	dbStat,_ := db.GetDBStats()
+
 	data["rest-api"] = map[string]interface{}{
 		"server":   apiRequestStat,
 		"handler":  handlerStat,
 		"auth":     authStat,
 		"translib": translibStat,
 		"cvl":      cvlStat,
+		"db":       dbOpStat,
 	}
 
 	data["service-api"] = map[string]interface{}{
 		"server": svcRequestStat,
+	}
+
+	data["db-api"] = map[string]interface{}{
+		"db-stat": *dbStat,
 	}
 
 	theStatMutex.Unlock()

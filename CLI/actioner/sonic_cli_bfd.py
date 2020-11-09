@@ -44,6 +44,35 @@ def apply_vrf_filter(response, inputvrf):
                         new_list_mhop.append(mhopsession)
                 response['openconfig-bfd:bfd']['openconfig-bfd-ext:bfd-mhop-sessions']['multi-hop'] = new_list_mhop
 
+
+def apply_key_filter(response, inputpeeraddr, inputlocaladdr, inputvrf, inputintf, multihop):
+    new_list_shop = []
+    new_list_mhop = []
+    if 'openconfig-bfd:bfd' in response:
+        if 'openconfig-bfd-ext:bfd-shop-sessions' in response['openconfig-bfd:bfd']:
+            if multihop == False:
+                for i in range(len(response['openconfig-bfd:bfd']['openconfig-bfd-ext:bfd-shop-sessions']['single-hop'])):
+                    shopsession = response['openconfig-bfd:bfd']['openconfig-bfd-ext:bfd-shop-sessions']['single-hop'][i]
+                    if inputvrf == shopsession['vrf'] and inputpeeraddr == shopsession['remote-address']:
+                        if ("null" != inputintf) and (inputintf != shopsession['interface']):
+                            continue
+                        if ("null" != inputlocaladdr) and (inputlocaladdr != shopsession['local-address']):
+                            continue
+                        new_list_shop.append(shopsession)
+            response['openconfig-bfd:bfd']['openconfig-bfd-ext:bfd-shop-sessions']['single-hop'] = new_list_shop
+    if 'openconfig-bfd:bfd' in response:
+        if 'openconfig-bfd-ext:bfd-mhop-sessions' in response['openconfig-bfd:bfd']:
+            for i in range(len(response['openconfig-bfd:bfd']['openconfig-bfd-ext:bfd-mhop-sessions']['multi-hop'])):
+                mhopsession = response['openconfig-bfd:bfd']['openconfig-bfd-ext:bfd-mhop-sessions']['multi-hop'][i]
+                if inputvrf == mhopsession['vrf'] and inputpeeraddr == mhopsession['remote-address']:
+                    if ("null" != inputintf) and (inputintf != mhopsession['interface']):
+                        continue
+                    if ("null" != inputlocaladdr) and (inputlocaladdr != mhopsession['local-address']):
+                        continue
+                    new_list_mhop.append(mhopsession)
+            response['openconfig-bfd:bfd']['openconfig-bfd-ext:bfd-mhop-sessions']['multi-hop'] = new_list_mhop
+
+
 def bfd_get_session_params (args=[]):
 
     peeraddr = ""
@@ -228,35 +257,16 @@ def invoke_show_api(func, args=[]):
 			apply_vrf_filter(response.content, vrfname)
 		return response;
 	elif func == 'get_openconfig_bfd_ext_bfd_sessions':
+                multihop = False
                 peeraddr, intfname, vrf, localaddr = bfd_get_session_params(args[1:])
 
-                multihop = ''
-
-		if (args[1] == "multihop"):
-                    multihop = 'True'
-                    if localaddr == "null":
-                        return api._make_error_response('%Error: Local Address must be specified for multi-hop peer')
-
-                    keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-mhop-sessions/multi-hop={address},{interfacename},{vrfname},{localaddress}/state', address=peeraddr, interfacename=intfname, vrfname=vrf, localaddress=localaddr)
-		else:
-                    if intfname == "null":
-                        return api._make_error_response('%Error: Interface must be specified for single-hop peer')
-
-                    if (("fe80:" in peeraddr) and (localaddr == "null")):
-                        return api._make_error_response('%Error: Local address must be specified for IPv6 link-local peer')
-
-                    keypath = cc.Path('/restconf/data/openconfig-bfd:bfd/openconfig-bfd-ext:bfd-shop-sessions/single-hop={address},{interfacename},{vrfname},{localaddress}/state', address=peeraddr, interfacename=intfname, vrfname=vrf, localaddress=localaddr)
-
+                keypath = cc.Path('/restconf/data/openconfig-bfd:bfd')
                 response = api.get(keypath)
-                if response.ok():
-                        if response.content:
-                                content = response.content
-                                content['openconfig-bfd-ext:state']['remote-address'] = peeraddr
-                                content['openconfig-bfd-ext:state']['local-address'] = localaddr
-                                content['openconfig-bfd-ext:state']['interface'] = intfname
-                                content['openconfig-bfd-ext:state']['vrf'] = vrf
-                                content['openconfig-bfd-ext:state']['multi-hop'] = multihop
+                if (args[1] == "multihop"):
+                    multihop = True
+                apply_key_filter(response.content, peeraddr, localaddr, vrf, intfname, multihop)
                 return response
+
 	else:
 		return api.cli_not_implemented(func)
 

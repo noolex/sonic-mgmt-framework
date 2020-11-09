@@ -30,6 +30,8 @@ from collections import OrderedDict
 import requests_unixsocket
 import signal
 import sys
+import timeit
+import traceback
 
 urllib3.disable_warnings()
 
@@ -54,6 +56,33 @@ class ApiClient(object):
         signal.signal(signal.SIGINT, self.sig_handler)
 
         self.checkCertificate = False
+
+        self.init_timer()
+
+    def init_timer(self):
+        self.request_time = False
+        self.request_timer_running = 0
+        if os.getenv('APICLIENT_TIME') != None:
+            self.request_time = True
+
+    def start_timer(self):
+        if self.request_timer_running == 0:
+            self.request_start = timeit.default_timer()
+
+        self.request_timer_running += 1
+
+    def stop_timer(self, method, url):
+        if self.request_timer_running <= 0:
+            sys.stderr.write("ApiClient.stop_timer: Bad Recursion\n")
+            traceback.print_stack()
+            return
+
+        if self.request_timer_running == 1:
+            self.request_end = timeit.default_timer()
+            sys.stderr.write("ApiClient Method {} Url {} Time {}\n".format(\
+                method, url, self.request_end - self.request_start))
+
+        self.request_timer_running -= 1
 
     def set_headers(self):
         return CaseInsensitiveDict({
@@ -83,6 +112,8 @@ class ApiClient(object):
             body = json.dumps(data)
 
         try:
+            if self.request_time:
+                self.start_timer()
             r = ApiClient._session.request(
                 method,
                 url,
@@ -95,6 +126,9 @@ class ApiClient(object):
             syslog.syslog(syslog.LOG_WARNING, "cli_client request exception %s" % str(e))
             #TODO have more specific error message based
             return self._make_error_response('%Error: Could not connect to Management REST Server')
+        finally:
+            if self.request_time:
+                self.stop_timer(method, url)
 
     def post(self, path, data={}, response_type=None):
         return self.request("POST", path, data, {}, None, response_type)

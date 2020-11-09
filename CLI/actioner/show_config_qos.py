@@ -67,7 +67,7 @@ def show_wred_policy_red(render_tables):
 def convert_db_to_config_format(name, prefix):
     prefix = '[' + prefix + '|'
     name = name.rstrip(']')
-    name = name.lstrip(prefix)
+    name = name[name.startswith(prefix) and len(prefix):]
     return name
 
 
@@ -170,7 +170,7 @@ def show_qos_intf_pfc(render_tables):
                priorities = port_qos_map['pfc_enable'].split(',')
                for prio in priorities:
                    cmd_str += 'priority-flow-control priority ' + prio + ';'
-    
+
     if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
         port_inst = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
         if 'ifname' in port_inst:
@@ -326,8 +326,8 @@ def show_scheduler_policy(render_tables):
 
             cur_sp_name = spname
             cmd_str += 'qos scheduler-policy ' + spname + ';'
-    
-    
+
+
         if (spseq == '255'):
             cmd_str += ' !;'
             cmd_str += ' port;'
@@ -344,7 +344,7 @@ def show_scheduler_policy(render_tables):
     return 'CB_SUCCESS', cmd_str
 
 def show_scheduler_instance(stype, spname, scheduler_inst):
-    
+
     cmd_str = ''
 
     for key in scheduler_inst:
@@ -368,11 +368,11 @@ def show_scheduler_instance(stype, spname, scheduler_inst):
 
         if 'type' == key:
             cmd_str += '  type ' + scheduler_inst[key].lower() + ';'
-            
+
         if 'weight' == key:
             cmd_str += '  weight ' + str(scheduler_inst[key]) + ';'
 
-        if 'meter-type' == key:
+        if 'meter_type' == key:
             cmd_str += '  meter-type ' + str(scheduler_inst[key].lower()) + ';'
 
     return cmd_str
@@ -421,5 +421,5 @@ def show_scheduler_policy_port(render_tables):
                 spname = sch['name']
 
         cmd_str += show_scheduler_instance('port', spname, scheduler_inst)
-        
+
     return 'CB_SUCCESS', cmd_str
