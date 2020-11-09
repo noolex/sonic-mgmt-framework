@@ -70,7 +70,7 @@ def get_keypath(func,args):
     if func == 'get_nbrs':
         intf = ""
 
-        namespace = '/restconf/data/openconfig-interfaces:interfaces/interface={name}'
+        path = '/restconf/data/openconfig-interfaces:interfaces/interface={name}'
         if len(rcvdIntfName) > 0:
             intf = rcvdIntfName
         else:
@@ -80,20 +80,19 @@ def get_keypath(func,args):
             return None
 
         if intf.lower().startswith('vlan'):
-            namespace = namespace + "/openconfig-vlan:routed-vlan"
+            path = path + "/openconfig-vlan:routed-vlan"
         else:
-            namespace = namespace + "/subinterfaces/subinterface={index}"
+            path = path + "/subinterfaces/subinterface={index}"
 
         if (rcvdFamily.lower() == "ipv4"):
-            namespace = namespace + '/openconfig-if-ip:ipv4/neighbors'
+            path = path + '/openconfig-if-ip:ipv4/neighbors'
         else:
-            namespace = namespace + '/openconfig-if-ip:ipv6/neighbors'
+            path = path + '/openconfig-if-ip:ipv6/neighbors'
 
         if len(rcvdIpAddr) > 0:
-            msgType = PREFIXIP
-            namespace = namespace + '/neighbor=' + rcvdIpAddr
+            path = path + '/neighbor=' + rcvdIpAddr
 
-        keypath = cc.Path(namespace, name=intf, index="0")
+        keypath = cc.Path(path, name=intf, index="0")
 
 #keypath for 'clear ip/ipv6 arp/neighbors'
     elif func == 'rpc_sonic_clear_neighbors':
@@ -254,13 +253,15 @@ def build_vrf_list():
     else:
         vrfDict["eth0"] = None
 
-def process_nbrs(response, rcvdIntfName, outputList, msgType):
+def process_nbrs(response, rcvdIntfName, outputList):
+    msgType = PREFIX
     if rcvdIntfName is None:
         return
 
-    rcvdIpAddr  = inputDict.get('ip')
+    rcvdIpAddr = inputDict.get('ip')
     if rcvdIpAddr is not None:
         rcvdIpAddr = rcvdIpAddr.lower()
+        msgType = PREFIXIP
 
     rcvdMacAddr = inputDict.get('mac')
     rcvdFamily  = inputDict.get('family')
@@ -396,7 +397,7 @@ def show_neighbors(func):
             print "% Error: Internal error"
             return
         if response:
-            outputList = process_nbrs(response, rcvdIntf, outputList, PREFIX)
+            outputList = process_nbrs(response, rcvdIntf, outputList)
     else:
         for intf, vrf in vrfDict.items():
             if ((vrf is None and rcvdVrfName is None) or
@@ -422,7 +423,7 @@ def show_neighbors(func):
             if (response is None) or (len(response) == 0):
                 continue
 
-            outputList = process_nbrs(response, intf, outputList, msgType)
+            outputList = process_nbrs(response, intf, outputList)
 
     if len(outputList) > 0 :
         outputList =  sorted(outputList, key=lambda k: k['ipAddr'])
