@@ -107,7 +107,7 @@ def show_sflow_source_if(render_tables):
                            cmd_prfx)
 
 def show_mac_source_if(render_tables):
-    cmd_prfx = 'mac-address '
+    cmd_prfx = 'mac address-table '
     table_name = 'sonic-fdb:sonic-fdb/FDB'
     cmd_str = ''
     if table_name in render_tables:
