@@ -109,12 +109,12 @@ def invoke(func, args):
                 print_content = response['sonic-mac-dampening:MAC_DAMPENING_LIST']
                 print "MAC Move Dampening Threshold : {}".format(print_content[0]['threshold'])
     elif func == 'get_openconfig_network_instance_ext_network_instances_network_instance_mac_dampening_state':
-        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/openconfig-network-instance-ext:mac-dampening/state')
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/openconfig-mac-dampening:mac-dampening/state')
         api_response = aa.get(keypath)
         if api_response.ok():
             response = api_response.content
             if response is not None and len(response) is not 0:
-                print_content = response['openconfig-network-instance-ext:state']['interfaces']
+                print_content = response['openconfig-mac-dampening:state']['interfaces']
                 output = "\nPorts disabled due to MAC Dampening:\n\n"
                 for interface in print_content:
                     output = output + interface + "\n"
