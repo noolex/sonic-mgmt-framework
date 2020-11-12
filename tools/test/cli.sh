@@ -33,7 +33,7 @@ case "$1" in
 esac
 done
 
-TOPDIR=$PWD
+TOPDIR=$(git rev-parse --show-toplevel || echo ${PWD})
 BUILDDIR=$TOPDIR/build
 
 CLISOURCE=$TOPDIR/CLI
@@ -64,9 +64,18 @@ PYTHONPATH+=:$(realpath $TOPDIR/..)/sonic-py-swsssdk/src
 export PYTHONPATH
 
 # KLISH_BIN can be set to use klish exe and libs from other directory
-[ ! -d "$KLISH_BIN" ] && KLISH_BIN=$CLIBUILD
+if [[ -z ${KLISH_BIN} ]]; then
+    if [[ -f ${CLIBUILD}/clish ]]; then
+        KLISH_BIN=${CLIBUILD}
+    elif [[ -f ${BUILDDIR}/target/clish ]]; then
+        KLISH_BIN=${BUILDDIR}/target
+    else
+        echo "Error: could not locate clish."
+        exit 1
+    fi
+fi
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$KLISH_BIN/.libs
+export LD_LIBRARY_PATH=${KLISH_BIN}/.libs:${LD_LIBRARY_PATH}
 
 DBCLI="$(type -t sonic-db-cli > /dev/null && echo sonic-db-cli CONFIG_DB || echo redis-cli -n 4)"
 
