@@ -77,15 +77,15 @@ def get_crm_config(info, field, prefix):
 
 def show_crm_config(render_tables):
     info = {}
-    conf = []
+    cmds = []
 
     # skip if render_tables is None
     if render_tables is None:
         return 'CB_SUCCESS', ''
 
-    if 'sonic-system-crm:sonic-system-crm/CRM' in render_tables:
-        if 'CRM_LIST' in render_tables['sonic-system-crm:sonic-system-crm/CRM']:
-            info = render_tables['sonic-system-crm:sonic-system-crm/CRM']['CRM_LIST'][0]
+    key = 'sonic-system-crm:sonic-system-crm/CRM/CRM_LIST'
+    if (key in render_tables) and (len(render_tables[key]) > 0):
+        info = render_tables[key][0]
 
     # skip if render_tables['sonic-system-crm:sonic-system-crm/CRM']['CRM_LIST'][0] is not available
     if not info:
@@ -95,6 +95,6 @@ def show_crm_config(render_tables):
     for field, prefix in sorted(cfgmap.items(), key=lambda x: x[1]):
         cmd = get_crm_config(info, field, prefix)
         if len(cmd) > 0:
-            conf.append(cmd)
+            cmds.append(cmd)
 
-    return 'CB_SUCCESS', "\n".join(conf)
+    return 'CB_SUCCESS', "\n".join(cmds)

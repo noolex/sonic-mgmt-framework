@@ -39,10 +39,10 @@ limitations under the License.
                 <PARAM name="type" help="Shows all policy-maps using the policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-policy-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-policy-name}" = "type"'>
-                <PARAM name="qos" help="Shows all QoS Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="monitoring" help="Shows all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="forwarding" help="Shows all forwarding Policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Shows all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="qos" help="Show all QoS policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="monitoring" help="Show all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="forwarding" help="Show all forwarding policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Show all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
             <DOCGEN>
@@ -120,9 +120,6 @@ limitations under the License.
            </DOCGEN>
         </COMMAND>
 
-
-        <COMMAND name="show service-policy" help="Shows applied Flow based services policies" />
-
         <!-- show service-policy summary [interface NAME] | [type qos|monitoring|forwarding] -->
         <COMMAND name="show service-policy summary" help="Shows summary of all applied polices">
             <PARAM name="interface-type-options" help="Shows policies applied for interface" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
@@ -130,8 +127,9 @@ limitations under the License.
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
                 </PARAM>
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="CtrlPlane" help="Out of band interface" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
-            <MACRO name="FBS-POLICY-TYPES" arg="true" />
+            <MACRO name="FBS-POLICY-TYPES" arg="true,0" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy_summary ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -163,6 +161,7 @@ limitations under the License.
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
                 </PARAM>
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="CtrlPlane" help="Out of band interface" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_policy ${__params}</ACTION>
             <DOCGEN>
@@ -210,7 +209,7 @@ limitations under the License.
         <!-- show service-policy interface NAME [type qos|monitoring|forwarding] -->
         <COMMAND name="show service-policy interface" help="Shows policy-map binding details by interface name">
             <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
-            <MACRO name="FBS-POLICY-TYPES" arg="true" />
+            <MACRO name="FBS-POLICY-TYPES" arg="true,0" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -262,13 +261,16 @@ limitations under the License.
                     Packet matches: 0 frames 0 bytes
               </EXAMPLE>
            </DOCGEN>
-
         </COMMAND>
 
-        <!-- show service-policy Switch [type qos|monitoring|forwarding] -->
-        <COMMAND name="show service-policy Switch" help="Switch/Global interface">
-            <MACRO name="FBS-POLICY-TYPES" arg="true" />
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface Switch ${__params}</ACTION>
+        <!-- show service-policy [Switch|CtrlPlane] [type qos|monitoring|forwarding] -->
+        <COMMAND name="show service-policy" help="Switch/Global interface">
+            <PARAM name="interface-type-options" help="Shows policies applied for interface" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="CtrlPlane" help="Out of band interface" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+            <MACRO name="FBS-POLICY-TYPES" arg="true,0" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                   Shows Global/Switch level flow based services applied policies information 
@@ -291,7 +293,6 @@ limitations under the License.
                     set ip nexthop 12.12.2.2 vrf Vrf-BLUE priority 20
                     set ip nexthop 12.12.1.2 priority 10
                     Packet matches: 0 frames 0 bytes
-
               </EXAMPLE>
            </DOCGEN>
         </COMMAND>
@@ -323,7 +324,7 @@ limitations under the License.
                   Shows running configuration of policy-map(s)
               </DESCRIPTION>
               <USAGE>
-                  Policy-map name is optional. If Policy-map name provided it will show all running configuration of all policy-maps configured
+                  Policy-map name is optional. If policy-map name provided it will show all running configuration of all policy-maps configured
               </USAGE>
               <EXAMPLE summary="show running-configuration policy-map">
                  sonic# show running-configuration policy-map policy_vrf
@@ -339,8 +340,6 @@ limitations under the License.
            </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="clear counters service-policy" help="Clear all policy-map binding counters" />
-
         <!-- clear counters service-policy policy-map NAME [interface NAME] -->
         <COMMAND name="clear counters service-policy policy-map" help="Clear policy-map binding counters using policy-map name">
             <PARAM name="fbs-policy-name" help="Policy-map name (Max: 63 characters)" ptype="STRING_63"/>
@@ -349,6 +348,7 @@ limitations under the License.
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
                 </PARAM>
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="CtrlPlane" help="Out of band interface" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_details_by_policy ${__params}</ACTION>
             <DOCGEN>
@@ -367,7 +367,7 @@ limitations under the License.
         <!-- clear counters service-policy interface NAME [type qos|monitoring|forwarding] -->
         <COMMAND name="clear counters service-policy interface" help="Clear counters for policy-maps applied to interface">
             <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
-            <MACRO name="FBS-POLICY-TYPES" arg="true" />
+            <MACRO name="FBS-POLICY-TYPES" arg="true,0" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_details_by_interface ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -383,8 +383,12 @@ limitations under the License.
         </COMMAND>
 
         <!-- clear counters service-policy Switch [type qos|monitoring|forwarding] -->
-        <COMMAND name="clear counters service-policy Switch" help="Clear counters for policy-maps applied Switch/Global interface">
-            <MACRO name="FBS-POLICY-TYPES" arg="true" />
+        <COMMAND name="clear counters service-policy" help="Clear counters for applied policy-maps">
+            <PARAM name="interface-type-options" help="Shows policies applied for interface" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="CtrlPlane" help="Out of band interface" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+            <MACRO name="FBS-POLICY-TYPES" arg="true,0" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_details_by_interface Switch ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -407,11 +411,11 @@ limitations under the License.
         <COMMAND name="policy-map" help="Configures policy-map" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}"
             data_and_render_cb="fbs_policy_render">
             <PARAM name="fbs-policy-name" help="Name of the policy-map (Max: 63 characters)" ptype="STRING_63"/>
-            <MACRO name="FBS-POLICY-TYPES" arg="false" />
+            <MACRO name="FBS-POLICY-TYPES" arg="false,0" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_policy_${fbs-policy-type} ${fbs-policy-name} ${fbs-policy-type}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
-                 Configures Policy-map 
+                 Configures policy-map 
               </DESCRIPTION>
               <USAGE>
                  Policy-map name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character
@@ -427,7 +431,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_policy ${fbs-policy-name}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
-                 Deletes Policy-map 
+                 Deletes policy-map 
               </DESCRIPTION>
               <USAGE>
                  Policy-map name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character
@@ -481,7 +485,7 @@ limitations under the License.
 
         </COMMAND>
 
-        <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Switch,switch"/>
     </VIEW>
 
     <!--===================================================================================-->
@@ -496,7 +500,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policy_description ${fbs-policy-name} ${description-value}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
-                 Configures Policy-map description 
+                 Configures policy-map description 
               </DESCRIPTION>
               <USAGE>
                  A string describing the policy-map max 256 characters. Description should be in double quotes if it has spaces
@@ -580,8 +584,6 @@ limitations under the License.
                sonic(config-class-map)# no match access-group 
               </EXAMPLE>
            </DOCGEN>
-
-
         </COMMAND>
     </VIEW>
 
@@ -622,7 +624,6 @@ limitations under the License.
                   sonic(config-class-map)# no match source-address
               </EXAMPLE>
            </DOCGEN>
-
         </COMMAND>
 
         <COMMAND name="match destination-address" help="Match packets using destination address">
@@ -1341,25 +1342,31 @@ limitations under the License.
         </COMMAND>
     </VIEW>
 
-
     <!--===================================================================================-->
     <!--                            Policy binding CLIs for Ethernet                       -->
     <!--===================================================================================-->
     <VIEW name="configure-if-view">
-        <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Ethernet,interface"/>
     </VIEW>
 
     <!--===================================================================================-->
     <!--                            Policy binding CLIs for PortChannel                    -->
     <!--===================================================================================-->
     <VIEW name="configure-lag-view">
-        <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,PortChannel,interface"/>
     </VIEW>
 
     <!--===================================================================================-->
     <!--                            Policy binding CLIs for VLANs                          -->
     <!--===================================================================================-->
     <VIEW name="configure-vlan-view">
-        <MACRO name="FBS-POLICY-BINDING-OPTIONS"/>
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Vlan,interface"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for CtrlPlane                      -->
+    <!--===================================================================================-->
+    <VIEW name="configure-line-vty-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="2,CtrlPlane,ctrlplane"/>
     </VIEW>
 </CLISH_MODULE>

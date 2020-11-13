@@ -1,0 +1,8 @@
+{{""}}
+{% if json_output['openconfig-network-instance:mac-aging-time'] == 0 %}
+{{'Global aging time: '}}{{json_output['openconfig-network-instance:mac-aging-time']}}{{' seconds(disabled)'}}
+{% else %}
+{{'Global aging time: '}}{{json_output['openconfig-network-instance:mac-aging-time']}}{{' seconds'}}
+{% endif %}
+{{""}}
+
