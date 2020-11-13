@@ -1687,6 +1687,7 @@ limitations under the License.
         <MACRO name="INTF_RANGE_SHUT_DESCR" arg="${iflist}"></MACRO>
 	<MACRO name="INTF_RNG_SWITCHPORT" arg="${iflist}"></MACRO>
         <MACRO name="INTF_SPEED" arg="${iflist}"></MACRO>
+        <MACRO name="INTF_FEC" arg="${iflist}"></MACRO>
     </VIEW>
 
     <!-- Configure range of Vlan interfaces -->

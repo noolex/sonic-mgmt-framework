@@ -65,6 +65,11 @@ view_dependency= \
 
 config_view_hierarchy= \
       ['configure',
+       'renderCfg_v4prefix_lists',
+       'renderCfg_v6prefix_lists',
+       'renderCfg_bgp_com_list',
+       'renderCfg_bgp_extcom_list',
+       'renderCfg_bgp_aspath_list',
        'configure-nat',
        'configure-tam',
        'configure-wred',
