@@ -166,6 +166,63 @@ limitations under the License.
                 </ALTCMD>
             </DOCGEN>
         </COMMAND>
+
+        <COMMAND name="threshold" help="Configure threshold parameters">
+            <PARAM name="threshold-options" help="" mode="switch" ptype="SUBCOMMAND">
+                <PARAM name="type" help="Threshold type" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="percentage" help="Threshold is percentage of upstream ports which are online" ptype="SUBCOMMAND" mode="subcommand"/>
+                    <PARAM name="up" help="Threshold value above which the downstream interfaces will be brought up" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                        <PARAM name="threshold-up" help="Threshold up value" ptype="RANGE_0_100"/>
+                    </PARAM>
+                    <PARAM name="down" help="Threshold value below which the downstream interfaces will be shut down" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                        <PARAM name="threshold-down" help="Threshold down value" ptype="RANGE_0_100"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="up" help="Threshold value above which the downstream interfaces will be brought up" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="threshold-up" help="Threshold up value" ptype="RANGE_0_100"/>
+                    <PARAM name="down" help="Threshold value below which the downstream interfaces will be shut down" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                        <PARAM name="threshold-down" help="Threshold down value" ptype="RANGE_0_100"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="down" help="Threshold value below which the downstream interfaces will be shut down" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="threshold-down" help="Threshold down value" ptype="RANGE_0_100"/>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking set_link_state_tracking_group_threshold ${group} ${__params}</ACTION> 
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configure the threshold parameters which can be used to startup or shutdown downstream interfaces.
+                </DESCRIPTION>
+                <USAGE>
+                    The threshold up value must be higher than threshold down value. If threshold up is not configured then its assumed as all upstream interface must be online to bringup downstream interfaces. If threshold down is not configured then its assumed as all upstream interfaces must be offline to shutdown downstream interfaces.
+                </USAGE>
+                <EXAMPLE summary="Configure threshold parameters">
+                    sonic(config-link-track)# threshold type percentage up 70 down 40
+                    sonic(config-link-track)# threshold up 80
+                    sonic(config-link-track)# threshold down 20
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND name="no threshold" help="Configure threshold parameters">
+            <PARAM name="threshold-type-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
+                <PARAM name="up" help="Threshold value above which the downstream interfaces will be brought up" mode="subcommand" ptype="SUBCOMMAND" />
+                <PARAM name="down" help="Threshold value below which the downstream interfaces will be shut down" mode="subcommand" ptype="SUBCOMMAND" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_link_state_tracking delete_link_state_tracking_group_threshold ${group} ${__params}</ACTION> 
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete the threshold parameters which can be used to startup or shutdown downstream interfaces.
+                </DESCRIPTION>
+                <USAGE>
+                    Deleting threshold type will delete both up and down values. If threshold up is deleted then its value is assumed as all upstream interface must be online to bringup downstream interfaces. If threshold down is deleted then its assumed as all upstream interfaces must be offline to shutdown downstream interfaces.
+                </USAGE>
+                <EXAMPLE summary="Delete threshold parameters">
+                    sonic(config-link-track)# no threshold up
+                    sonic(config-link-track)# no threshold down
+                    sonic(config-link-track)# no threshold
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
     </VIEW>
 
     <VIEW name="configure-if-view">

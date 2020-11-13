@@ -91,5 +91,12 @@
     {{'Preemption is enabled'}}
     {% endif %}
 
+    {% if 'openconfig-interfaces-ext:use-v2-checksum' in vrrpstate %}
+    {% set use_v2_checksum = vrrpstate['openconfig-interfaces-ext:use-v2-checksum'] %}
+    {% if use_v2_checksum == true or use_v2_checksum == True %}
+    {{'Use version 2 checksum'}}
+    {% endif %}
+    {% endif %}   
+
 {% else %}
 {% endif %}

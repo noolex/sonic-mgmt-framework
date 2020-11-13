@@ -167,11 +167,44 @@ def __format_mac_addr(macaddr):
     return "{}{}:{}{}:{}{}:{}{}:{}{}:{}{}".format(*macaddr.translate(None, ".:-"))
 
 
+def __convert_oc_fwd_action_to_user(action):
+    if ":" in action:
+        action = action.split(":")[-1]
+
+    if action == "ACCEPT":
+        return "permit"
+    if action == "DROP":
+        return "deny"
+    if action == "DISCARD":
+        return "discard"
+    if action == "TRANSIT":
+        return "transit"
+    if action == "DENY":
+        return "DROP"
+    if action == "DO_NOT_NAT":
+        return "do-not-nat"
+
+    raise SonicAclCLIError("Internal error. Unsupported action")
+
+
+def __convert_user_fwd_action_to_oc(action):
+    if action == "permit":
+        return "ACCEPT"
+    if action == "discard":
+        return "DISCARD"
+    if action == "deny":
+        return "DROP"
+    if action == "transit":
+        return "TRANSIT"
+    if action == "do-not-nat":
+        return "DO_NOT_NAT"
+
+    raise SonicAclCLIError("Internal error. Unsupported action")
+
+
 def __create_acl_rule_l2(args):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries',
                       name=args[0], acl_type=args[1])
-
-    forwarding_action = "ACCEPT" if args[3] == 'permit' else 'DROP'
 
     body = collections.defaultdict()
     body["openconfig-acl:acl-entry"] = [{
@@ -185,7 +218,7 @@ def __create_acl_rule_l2(args):
         },
         "actions": {
             "config": {
-                "forwarding-action": forwarding_action
+                "forwarding-action": __convert_user_fwd_action_to_oc(args[3])
             }
         }
     }]
@@ -251,15 +284,6 @@ def __create_acl_rule_ipv4_ipv6(args):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}/acl-entries',
                       name=args[0], acl_type=args[1])
 
-    if args[3] == 'permit':
-        forwarding_action = "ACCEPT"
-    elif args[3] == 'do-not-nat':
-        forwarding_action = 'DO_NOT_NAT'
-    else :
-        forwarding_action = 'DROP'
-    
-    log.log_debug('Forwarding action is {}'.format(forwarding_action))
-
     body = collections.defaultdict()
     if args[1] == 'ACL_IPV4':
         af = 'ipv4'
@@ -278,7 +302,7 @@ def __create_acl_rule_ipv4_ipv6(args):
             },
             "actions": {
                 "config": {
-                    "forwarding-action": forwarding_action
+                    "forwarding-action": __convert_user_fwd_action_to_oc(args[3])
                 }
             }
         }]
@@ -299,7 +323,7 @@ def __create_acl_rule_ipv4_ipv6(args):
             },
             "actions": {
                 "config": {
-                    "forwarding-action": forwarding_action
+                    "forwarding-action": __convert_user_fwd_action_to_oc(args[3])
                 }
             }
         }]
@@ -705,8 +729,10 @@ def handle_generic_set_response(response, op_str, args):
                     print('%Error: ACL Counter mode update is not allowed when ACLs are applied to interfaces.')
                 elif error_data['error-app-tag'] == 'update-not-allowed':
                     print("%Error: Creating ACLs with same name and different type not allowed")
-                else:
+                elif error_data['error-app-tag'] != 'same-config-exists':
                     print(response.error_message())
+                else:
+                    return 0
             else:
                 print(response.error_message())
             return -1
@@ -948,12 +974,7 @@ def __parse_acl_entry(data, acl_entry, acl_type):
         pass
 
     rule_data = list()
-    if 'openconfig-acl:ACCEPT' == acl_entry['actions']['state']["forwarding-action"]:
-        rule_data.append('permit')
-    elif 'openconfig-acl:DROP' == acl_entry['actions']['state']["forwarding-action"]:
-        rule_data.append('deny')
-    elif 'openconfig-acl-ext:DO_NOT_NAT' == acl_entry['actions']['state']["forwarding-action"]:
-        rule_data.append('do_not_nat')
+    rule_data.append(__convert_oc_fwd_action_to_user(acl_entry['actions']['state']["forwarding-action"]))
 
     if 'ip' == acl_type:
         __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data)

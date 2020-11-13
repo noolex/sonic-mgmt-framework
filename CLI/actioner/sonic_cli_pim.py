@@ -63,6 +63,7 @@ def get_keypath(func,args):
     body = None
     path_prefix = '/restconf/data/openconfig-network-instance:network-instances/network-instance='
     intf = ""
+    intf_uri = ""
     vrf = ""
     path = ""
 
@@ -129,8 +130,12 @@ def get_keypath(func,args):
         if intf is None:
             return None, None
 
+        intf_uri = inputDict.get('intf_uri')
+        if intf_uri is None:
+            return None, None
+
         #get vrf, needed for keypath
-        vrf=get_vrf(intf)
+        vrf=get_vrf(intf_uri)
         if vrf is None:
             return None, None
 
@@ -142,28 +147,28 @@ def get_keypath(func,args):
             path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces'
             body = {"openconfig-network-instance:interfaces": {"interface": [{"interface-id": intf, "config": {"interface-id": intf, "mode": "PIM_MODE_SPARSE"}}]}}
         elif func.startswith('del'):
-            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/mode'
+            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf_uri + '/config/mode'
 
     if func.endswith('config_drprio'):
         if func.startswith('patch'):
             path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces'
             body = {"openconfig-network-instance:interfaces": {"interface": [{"interface-id": intf, "config": {"interface-id": intf, "dr-priority": float(inputDict.get('drprio'))}}]}}
         elif func.startswith('del'):
-            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/dr-priority'
+            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf_uri + '/config/dr-priority'
 
     if func.endswith('config_hello'):
         if func.startswith('patch'):
             path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces'
             body = {"openconfig-network-instance:interfaces": {"interface": [{"interface-id": intf, "config": {"interface-id": intf, "hello-interval": float(inputDict.get('hello'))}}]}}
         elif func.startswith('del'):
-            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/hello-interval'
+            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf_uri + '/config/hello-interval'
 
     if func.endswith('config_bfd'):
         if func.startswith('patch'):
             path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces'
             body = {"openconfig-network-instance:interfaces": {"interface": [{"interface-id": intf, "config": {"interface-id": intf, "bfd-enabled": True}}]}}
         elif func.startswith('del'):
-            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf + '/config/openconfig-pim-ext:bfd-enabled'
+            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf_uri + '/config/openconfig-pim-ext:bfd-enabled'
 
     ##############################################################
     #show config

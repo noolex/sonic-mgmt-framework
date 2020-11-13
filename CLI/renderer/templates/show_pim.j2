@@ -8,7 +8,7 @@ SSM group range: {{output}}
 {% endif %}
 
 {% if cmd == 'show_neighbor' %}
-PIM Neighbor information for VRF: {{vrf}}
+PIM neighbor information for VRF: {{vrf}}
 {{'Interface'.ljust(15)}}{{'Neighbor'.ljust(18)}}{{'Uptime'.ljust(15)}}{{'Expirytime'.ljust(15)}}{{'DR-Priority'.ljust(10)}}
 {% for entry in output %}
 {{(entry['intfId'] | string).ljust(15)}}{{(entry['rcvdNbr'] | string).ljust(18)}}{{(entry['upTime'] | string).ljust(15)}}{{(entry['expiryTime'] | string).ljust(15)}}{{(entry['pimDrPrio'] | string).ljust(10)}}
@@ -16,7 +16,7 @@ PIM Neighbor information for VRF: {{vrf}}
 {% endif %}
 
 {% if cmd == 'show_interface' %}
-PIM Interface information for VRF: {{vrf}}
+PIM interface information for VRF: {{vrf}}
 {{'Interface'.ljust(15)}}{{'State'.ljust(10)}}{{'Address'.ljust(18)}}{{'PIM Nbrs'.ljust(12)}}{{'PIM DR'.ljust(18)}}{{'Hello-interval'.ljust(18)}}{{'PIM DR-Priority'.ljust(15)}}
 {% for entry in output %}
 {{(entry['intfId'] | string).ljust(15)}}{{(entry['intfState'] | string).ljust(10)}}{{(entry['localAddr'] | string).ljust(18)}}{{(entry['nbrCount'] | string).ljust(12)}}{{(entry['pimDrAddr'] | string).ljust(18)}}{{(entry['helloInterval'] | string).ljust(18)}}{{(entry['pimDrPrio'] | string).ljust(15)}}
@@ -32,7 +32,7 @@ PIM RPF information for VRF: {{vrf}}
 {% endif %}
 
 {% if cmd == 'show_topo' %}
-PIM Multicast Routing Table for VRF: {{vrf}}
+PIM multicast routing table for VRF: {{vrf}}
 Flags: S - Sparse, C - Connected, L - Local, P - Pruned,
 R - RP-bit set, F - Register Flag, T - SPT-bit set, J - Join SPT,
 K - Ack-Pending state

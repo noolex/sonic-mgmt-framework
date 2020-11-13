@@ -221,6 +221,20 @@ def invoke(func, args):
 
         return aa.patch(keypath, body)
 
+    # VRRP set & delete use_v2_checksum
+    if func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_use_v2_checksum':
+        if "Vlan" in args[0]:
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:use-v2-checksum', name=args[0], ip=addr4, vrid=args[1])
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:use-v2-checksum', name=args[0], index="0", ip=addr4, vrid=args[1])
+
+        body=collections.defaultdict(dict)
+        if args[2] == "true":
+            body = {"openconfig-if-ip:use-v2-checksum": True}
+        else:
+            body = {"openconfig-if-ip:use-v2-checksum": False}
+
+        return aa.patch(keypath, body)
 
     # VRRP delete advertisement
     if func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval' :
