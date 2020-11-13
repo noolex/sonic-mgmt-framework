@@ -7,7 +7,7 @@
 
 {{'Packet Header Fields:'}}
 
-{% if "ipv4-src-ip" in lb_entry or "ipv4-dst-ip" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-protocol" in lb_entry  %}
+{% if "ipv4-src-ip" in lb_entry or "ipv4-dst-ip" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-l4-dst-port" in lb_entry or "ipv4-protocol" in lb_entry  %}
 {{ 'ip:' -}}
 {% if "ipv4-src-ip" in lb_entry and lb_entry['ipv4-src-ip'] > 0 -%}
  {{' ipv4-src-ip ' -}}
@@ -28,7 +28,7 @@
 
 
 
-{% if "ipv6-src-ip" in lb_entry or "ipv6-dst-ip" in lb_entry or "ipv6-l4-src-port" in lb_entry or "ipv6-l4-src-port" in lb_entry or "ipv6-next-hdr" in lb_entry  %}
+{% if "ipv6-src-ip" in lb_entry or "ipv6-dst-ip" in lb_entry or "ipv6-l4-src-port" in lb_entry or "ipv6-l4-dst-port" in lb_entry or "ipv6-next-hdr" in lb_entry  %}
 {{ 'Ipv6:' -}}
 {% if "ipv6-src-ip" in lb_entry and lb_entry['ipv6-src-ip'] > 0 -%}
  {{' ipv6-src-ip ' -}}
