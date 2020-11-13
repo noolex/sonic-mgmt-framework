@@ -54,7 +54,7 @@ def show_running_fbs_classifier(render_tables):
                 fields_str = ""
                 if match_type == 'fields':
                     fields_str = 'match-all'
-                cmd_str += 'class-map {} match-type {} {} ;'.format(class_name, match_type, fields_str)
+                cmd_str += 'class-map {} match-type {} {};'.format(class_name, match_type, fields_str)
                 if match_type == 'copp':
                     if 'TRAP_IDS' in class_data.keys():
                         trap_id_list = class_data['TRAP_IDS'].split(',')
@@ -72,11 +72,11 @@ def show_running_fbs_classifier(render_tables):
                         else:
                             acl_type_str = 'unknown'
                         if 'ACL_NAME' in class_data:
-                            cmd_str += ' match access-group acl {} {};'.format(acl_type_str, class_data["ACL_NAME"])
+                            cmd_str += ' match access-group {} {};'.format(acl_type_str, class_data["ACL_NAME"])
                 elif match_type.lower() == 'fields':
                     if 'ETHER_TYPE' in class_data:
                         val = ethertype_to_user_fmt(class_data["ETHER_TYPE"])
-                        cmd_str += ' match ethertype  {};'.format(val)
+                        cmd_str += ' match ethertype {};'.format(val)
                     if 'SRC_MAC' in class_data:
                         val = sonic_cli_acl.mac_addr_to_user_fmt(class_data["SRC_MAC"])
                         cmd_str += ' match source-adress mac {};'.format(val)
@@ -84,33 +84,33 @@ def show_running_fbs_classifier(render_tables):
                         val = sonic_cli_acl.mac_addr_to_user_fmt(class_data["DST_MAC"])
                         cmd_str += ' match destination-adress mac {};'.format(val)
                     if 'VLAN' in class_data:
-                        cmd_str += ' match vlan  {};'.format(class_data["VLAN"])
+                        cmd_str += ' match vlan {};'.format(class_data["VLAN"])
                     if 'PCP' in class_data:
                         cmd_str += ' match pcp {};'.format(sonic_cli_acl.pcp_to_user_fmt(class_data["PCP"]))
                     if 'DSCP' in class_data:
                         cmd_str += ' match dscp {};'.format(sonic_cli_acl.dscp_to_user_fmt(class_data["DSCP"]))
                     if 'DEI' in class_data:
-                        cmd_str += ' match dei  {};'.format(class_data["DEI"]) 
+                        cmd_str += ' match dei {};'.format(class_data["DEI"]) 
                     if 'IP_PROTOCOL' in class_data:
                         val = sonic_cli_acl.ip_protocol_to_user_fmt(class_data["IP_PROTOCOL"])
                         cmd_str += ' match ip protocol {};'.format(val)
                     if 'SRC_IP' in class_data:
                         val = sonic_cli_acl.convert_ip_addr_to_user_fmt(class_data["SRC_IP"])
-                        cmd_str += ' match source-address ip  {};'.format(val)
+                        cmd_str += ' match source-address ip {};'.format(val)
                     if 'SRC_IPV6' in class_data:
                         val = sonic_cli_acl.convert_ip_addr_to_user_fmt(class_data["SRC_IPV6"])
-                        cmd_str += ' match source-address ipv6  {};'.format(val)
+                        cmd_str += ' match source-address ipv6 {};'.format(val)
                     if 'DST_IP' in class_data:
                         val = sonic_cli_acl.convert_ip_addr_to_user_fmt(class_data["DST_IP"])
-                        cmd_str += ' match destination-address {};'.format(val)
+                        cmd_str += ' match destination-address ip {};'.format(val)
                     if 'DST_IPV6' in class_data:
                         val = sonic_cli_acl.convert_ip_addr_to_user_fmt(class_data["DST_IPV6"])
-                        cmd_str += ' match destination-address {};'.format(val)
+                        cmd_str += ' match destination-address ipv6 {};'.format(val)
                     if 'L4_SRC_PORT' in class_data:
                         cmd_str += ' match source-port eq {};'.format(class_data["L4_SRC_PORT"])
                     if 'L4_SRC_PORT_RANGE' in class_data:
                         val = class_data["L4_SRC_PORT_RANGE"]
-                        cmd_str += '  match source-port range {};'.format(class_data["L4_SRC_PORT_RANGE"])
+                        cmd_str += ' match source-port range {};'.format(class_data["L4_SRC_PORT_RANGE"])
                     if 'L4_DST_PORT' in class_data:
                         val = class_data["L4_DST_PORT"]
                         cmd_str += ' match destination-port eq {};'.format(class_data["L4_DST_PORT"])
@@ -168,15 +168,15 @@ def show_running_fbs_policy(render_tables):
                 match_type = render_data[policy_name]['TYPE'].lower()
                 cmd_str += 'policy-map {} type {};'.format(policy_name, match_type)
                 if 'DESCRIPTION' in render_data and render_data['DESCRIPTION'] != "":
-                    cmd_str += ' description {} ;'.format(render_data['DESCRIPTION'])
+                    cmd_str += ' description {};'.format(render_data['DESCRIPTION'])
                 for flow in render_data[policy_name]['FLOWS']:
                     flow_data = render_data[policy_name]['FLOWS'][flow]
                     priority = ""
                     if 'PRIORITY' in flow_data:
                         priority = "priority " + str(flow_data['PRIORITY']) 
-                    cmd_str += ' class {} {} ;'.format(flow_data['CLASS_NAME'], priority)
+                    cmd_str += ' class {} {};'.format(flow_data['CLASS_NAME'], priority)
                     if 'DESCRIPTION' in flow_data and flow_data['DESCRIPTION'] != "":
-                        cmd_str += ' description {} ;'.format(flow_data['DESCRIPTION'])
+                        cmd_str += ' description {};'.format(flow_data['DESCRIPTION'])
                     if match_type == 'copp':
                         if 'TRAP_GROUP' in flow_data:
                             if flow_data['TRAP_GROUP'] != 'null':
@@ -184,11 +184,11 @@ def show_running_fbs_policy(render_tables):
                                 cmd_str += ' !;'
                     elif match_type == 'qos':
                         if 'SET_PCP' in flow_data:
-                            cmd_str += '  set pcp {} ;'.format(flow_data['SET_PCP'])
+                            cmd_str += '  set pcp {};'.format(flow_data['SET_PCP'])
                         if 'SET_DSCP' in flow_data:
-                            cmd_str += '  set dscp {} ;'.format(flow_data['SET_DSCP'])
+                            cmd_str += '  set dscp {};'.format(flow_data['SET_DSCP'])
                         if 'SET_TC' in flow_data:
-                            cmd_str += '  set traffic-class {} ;'.format(flow_data['SET_TC'])
+                            cmd_str += '  set traffic-class {};'.format(flow_data['SET_TC'])
 
                         pstr = ""
                         if 'SET_POLICER_CIR' in flow_data:
@@ -200,40 +200,40 @@ def show_running_fbs_policy(render_tables):
                         if 'SET_POLICER_PBS' in flow_data:
                             pstr += 'pbs {} '.format(flow_data['SET_POLICER_PBS'])
                         if pstr != "":
-                            cmd_str += '  police {} ;'.format(pstr)
+                            cmd_str += '  police {};'.format(pstr)
                         cmd_str += ' !;'
                     elif match_type == 'forwarding':
                         if 'DEFAULT_PACKET_ACTION' in flow_data:
-                            cmd_str += ' set interface null ;'
+                            cmd_str += ' set interface null;'
                         if 'SET_INTERFACE' in flow_data:
                             for intf in  flow_data["SET_INTERFACE"]:
                                 prio_str = ""
                                 if "PRIORITY" in intf:
                                     prio_str = "priority " + str(intf["PRIORITY"])
-                                cmd_str += '  set interface {} {} ;'.format(intf["INTERFACE"], prio_str)
+                                cmd_str += '  set interface {} {};'.format(intf["INTERFACE"], prio_str)
                         if 'SET_IP_NEXTHOP' in flow_data:
-                            for nhop in  flow_data["SET_IP_NEXTHOP"]:
+                            for nhop in flow_data["SET_IP_NEXTHOP"]:
                                 vrf_str = "" 
                                 prio_str = ""
                                 if "VRF" in nhop:
                                     vrf_str = "vrf " + str(nhop["VRF"])
                                 if "PRIORITY" in nhop:
                                     prio_str = "priority " + str(nhop["PRIORITY"])
-                                cmd_str += '  set ip next-hop {} {} {} ;'.format(nhop["IP_ADDRESS"], vrf_str, prio_str)
+                                cmd_str += '  set ip next-hop {} {} {};'.format(nhop["IP_ADDRESS"], vrf_str, prio_str)
                         if 'SET_IPV6_NEXTHOP' in flow_data:
-                            for nhop in  flow_data["SET_IPV6_NEXTHOP"]:
+                            for nhop in flow_data["SET_IPV6_NEXTHOP"]:
                                 vrf_str = "" 
                                 prio_str = ""
                                 if "VRF" in nhop:
                                     vrf_str = "vrf " + str(nhop["VRF"])
                                 if "PRIORITY" in nhop:
                                     prio_str = "priority " + str(nhop["PRIORITY"])
-                                cmd_str += '  set ipv6 next-hop {} {} {} ;'.format(nhop["IP_ADDRESS"], vrf_str,
+                                cmd_str += '  set ipv6 next-hop {} {} {};'.format(nhop["IP_ADDRESS"], vrf_str,
                                                                                    prio_str)
                         cmd_str += ' !;'
                     elif match_type == 'monitoring':
                         if 'SET_MIRROR_SESSION' in flow_data:
-                            cmd_str += '  set mirror-session {} ;'.format(flow_data['SET_MIRROR_SESSION'])
+                            cmd_str += '  set mirror-session {};'.format(flow_data['SET_MIRROR_SESSION'])
                         cmd_str += ' !;'
 
     return 'CB_SUCCESS', cmd_str, True
@@ -250,7 +250,7 @@ def __show_runn_fbs_service_policy_for_intf(ifname, cache):
             for policy_type in policy_types:
                 key = '{}_{}_POLICY'.format(pdir.upper(), policy_type.upper())
                 if key in ifdata:
-                    cmd_str += 'service-policy type {} {} {} ;'.format(policy_type, cfg_pdir_map[pdir], ifdata[key])
+                    cmd_str += 'service-policy type {} {} {};'.format(policy_type, cfg_pdir_map[pdir], ifdata[key])
 
     return 'CB_SUCCESS', cmd_str, True
 
