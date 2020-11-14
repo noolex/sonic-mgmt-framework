@@ -102,6 +102,18 @@ limitations under the License.
         </EXAMPLE>
       </DOCGEN>
     </COMMAND>
+    <COMMAND name="show running-configuration bgp community-list" help="Show current BGP community-list configuration">
+      <PARAM name="community-list-name" help="Name of community-list" ptype="STRING_63" optional="true"> </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=renderCfg_bgp_com_list view_keys="community-list-name=${community-list-name}"</ACTION>
+    </COMMAND>
+    <COMMAND name="show running-configuration bgp extcommunity-list" help="Show current BGP extended community-list configuration">
+      <PARAM name="extcommunity-list-name" help="Name of extended community-list" ptype="STRING_63" optional="true"> </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=renderCfg_bgp_extcom_list view_keys="extcommunity-list-name=${extcommunity-list-name}"</ACTION>
+    </COMMAND>
+    <COMMAND name="show running-configuration bgp as-path-acess-list" help="Show current BGP AS path acess list configuration">
+      <PARAM name="aspath-list-name" help="Name of as-path-list" ptype="STRING_63" optional="true"> </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=renderCfg_bgp_aspath_list view_keys="aspath-list-name=${aspath-list-name}"</ACTION>
+    </COMMAND>
    </VIEW>
 
    <VIEW
@@ -116,7 +128,8 @@ limitations under the License.
         help="Add BGP community-list entry" escape_chars=""
         command_keys="name=*"
         command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/COMMUNITY_SET/COMMUNITY_SET_LIST/name={name}"
-        render_command_cb="bgp_com_list">
+        render_command_cb="bgp_com_list"
+        render_command_viewid="renderCfg_bgp_com_list">
         <PARAM
             name="bgp-subcommands"
             help="BGP subcommands"
@@ -565,6 +578,7 @@ limitations under the License.
         command_keys="name=*"
         command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/AS_PATH_SET/AS_PATH_SET_LIST/name={name}"
         render_command_cb="bgp_aspath_list"
+        render_command_viewid="renderCfg_bgp_aspath_list"
         >
         <PARAM
             name="as-path-list-name"

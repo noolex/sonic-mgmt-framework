@@ -49,8 +49,9 @@ CONFIG_VIEW_CMD_TABLES_IDX=4
 CONFIG_VIEW_DB_RENDER_IDX=5
 CONFIG_VIEW_RENDER_VIEW_IDX=6
 CONFIG_VIEW_RENDER_CMD_IDX=7
-CONFIG_VIEW_NAME_IDX=8
-CONFIG_VIEW_IDX_LEN=9
+CONFIG_VIEW_RENDER_CMD_VIEWID_IDX=8
+CONFIG_VIEW_NAME_IDX=9
+CONFIG_VIEW_IDX_LEN=10
 
 NODE_ELEM_NAME_IDX =0
 NODE_ELEM_DBPATH_IDX =1
@@ -73,17 +74,21 @@ format_read = False
 jinja_loader = {}
 
 CMDS_STRING = ''
+CMDS_VIEW = ''
+CMDS_VIEW_CHANGED = False
 DB_Cache = {}
 
 
 def cache_view_commands(command_list, indent, ctxt):
-    global CMDS_STRING
+    global CMDS_STRING, CMDS_VIEW_CHANGED
     for idx, command in enumerate(command_list):
         if command:
             if CMDS_STRING =='':
                 CMDS_STRING = '\n' + ' ' *indent + '!' + '\n'
-            elif (ctxt and idx ==0):
+                CMDS_VIEW_CHANGED = False
+            elif (CMDS_VIEW_CHANGED or ctxt) and idx == 0:
                 CMDS_STRING += ' ' *indent + '!' + '\n'
+                CMDS_VIEW_CHANGED = False
             CMDS_STRING += ' ' *indent + command + '\n'
 
 def get_rendered_template_output(template_file, response, render_view):
@@ -195,8 +200,10 @@ def update_table_keys(table_keys, view_member):
 
 
 def cleanup():
-    global CMDS_STRING
+    global CMDS_STRING, CMDS_VIEW, CMDS_VIEW_CHANGED
     CMDS_STRING = ""
+    CMDS_VIEW = ""
+    CMDS_VIEW_CHANGED = False
     DB_Cache.clear()
     config_tables_dict.clear()
     # call module cleanup callback functions.
@@ -212,6 +219,8 @@ class cli_xml_view:
 
         #xml view name (for e.g, config-router-bgp)
         self.name = command_line[CONFIG_VIEW_NAME_IDX]
+        #view id for config cmd view (only for config cmd views).
+        self.cfgcmd_viewid = command_line[CONFIG_VIEW_RENDER_CMD_VIEWID_IDX]
 
         #List of command lines from DB.txt
         self.view_cmd_list = []
@@ -257,6 +266,7 @@ class cli_xml_view:
 
     #only config-view case.
     def process_view_commands_no_table(self, member_keys,indent):
+        global CMDS_VIEW, CMDS_VIEW_CHANGED
 
         showrun_log(logging.DEBUG,'ENTER view {} ', self.name)
         if not self.view_cmd_list:
@@ -270,16 +280,20 @@ class cli_xml_view:
         #applicable to the parent command which changes to a new view.
 
         #Process the first command in the view with argument is_first_command=True.
+        if self.name != CMDS_VIEW:
+            CMDS_VIEW = self.name
+            #next cmds are different xml view
+            CMDS_VIEW_CHANGED = True
         view_keys = copy.deepcopy(member_keys)
         process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
-                                                True, self.view_cmd_list[0], indent)
+                                                CMDS_VIEW_CHANGED, self.view_cmd_list[0], indent)
         #For the top view "configure", leave indent as zero.
         if self.name != "configure":
             indent +=1 
         for cmd in  self.view_cmd_list[1:]:
             view_keys = copy.deepcopy(member_keys)
             ret, is_view_rendered = process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
-                                                False, cmd, indent)
+                                                CMDS_VIEW_CHANGED, cmd, indent)
         #Process child views.
 
         if view_dependency.get(self.name) is not None:
@@ -324,6 +338,7 @@ class cli_xml_view:
     #remaining commands.
     #Then process dependent views.
     def process_view_commands(self, view_table_keys, indent):
+        global CMDS_VIEW
 
         #get primary table
         primary_table_path = self.primary_table
@@ -356,6 +371,12 @@ class cli_xml_view:
 
         showrun_log(logging.DEBUG,'Table keys {}, to filter primary table {}' ,filter_keys, primary_table_path)
 
+        if self.name != CMDS_VIEW:
+            CMDS_VIEW = self.name
+            new_view = True
+        else:
+            new_view = False
+
         for member in response:
 
             skip_record = False
@@ -374,8 +395,14 @@ class cli_xml_view:
             #process first command, if success continue others othewise
             #return to process next context.
 
-            ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
+            if new_view:
+                ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
                                                               True, self.view_cmd_list[0], indent)
+            else:
+                #continuing cmds with previous view
+                new_view = True
+                ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
+                                                              False, self.view_cmd_list[0], indent + 1)
 
 #            if is_view_rendered:
 #                showrun_log(logging.INFO,' Entire view rendred by template for {}', self.name)
@@ -702,17 +729,22 @@ def parse_command_line(command_line):
     #create cli-xml view if not exist
     cli_view = None
 
-    if cmd_attributes[CONFIG_VIEW_NAME_IDX] in CLI_XML_VIEW_MAP:
-        cli_view = CLI_XML_VIEW_MAP[cmd_attributes[CONFIG_VIEW_NAME_IDX]]
+    if cmd_attributes[CONFIG_VIEW_RENDER_CMD_VIEWID_IDX]:
+        view_name = cmd_attributes[CONFIG_VIEW_RENDER_CMD_VIEWID_IDX]
+    else:
+        view_name = cmd_attributes[CONFIG_VIEW_NAME_IDX]
+
+    if view_name in CLI_XML_VIEW_MAP:
+        cli_view = CLI_XML_VIEW_MAP[view_name]
     else:
         cli_view = cli_xml_view(cmd_attributes)
-        CLI_XML_VIEW_MAP.update({cmd_attributes[CONFIG_VIEW_NAME_IDX]: cli_view})
+        CLI_XML_VIEW_MAP.update({view_name: cli_view})
 
     cli_view.view_cmd_list.append(command_line)
 
 
 def render_cli_config(view_name = '', view_keys = {}):
-    global CMDS_STRING
+    global CMDS_STRING, CMDS_VIEW, CMDS_VIEW_CHANGED
     context = {'view_name':view_name, 'view_keys':view_keys}
 
     #Call application
@@ -756,6 +788,8 @@ def render_cli_config(view_name = '', view_keys = {}):
     # write to output.            
     write(CMDS_STRING)
     CMDS_STRING = ''
+    CMDS_VIEW = ''
+    CMDS_VIEW_CHANGED = False
 
 
 def print_cli_views(view_name=''):

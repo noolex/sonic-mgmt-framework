@@ -293,6 +293,7 @@ def show_router_bgp_af_redist_cmd(render_tables):
 def show_bgpcom_lists(render_tables):
   cmd_str = ''
 
+  get_com_name = render_tables['community-list-name'] if 'community-list-name' in render_tables else None
   if 'sonic-routing-policy-sets:sonic-routing-policy-sets/COMMUNITY_SET/COMMUNITY_SET_LIST' in render_tables:
       com_list = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/COMMUNITY_SET/COMMUNITY_SET_LIST']
       cmd_prfx = 'bgp community-list '
@@ -301,6 +302,8 @@ def show_bgpcom_lists(render_tables):
               com_type = com['set_type'].lower()
               com_action = com['action'].lower()
               if 'name' in com:
+                  if get_com_name and com['name'] != get_com_name:
+                      continue
                   name = com['name'] + " "
                   act_str = ''
                   if 'match_action' in com :
@@ -345,12 +348,15 @@ def show_bgpcom_lists(render_tables):
 def show_bgpextcom_lists(render_tables):
   cmd_str = ''
 
+  get_extcom_name = render_tables['extcommunity-list-name'] if 'extcommunity-list-name' in render_tables else None
   if 'sonic-routing-policy-sets:sonic-routing-policy-sets/EXTENDED_COMMUNITY_SET/EXTENDED_COMMUNITY_SET_LIST' in render_tables:
       extcom_list = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/EXTENDED_COMMUNITY_SET/EXTENDED_COMMUNITY_SET_LIST']
       cmd_prfx = 'bgp extcommunity-list '
       for extcom in extcom_list:
           if 'set_type' in extcom:
               if 'name' in extcom:
+                  if get_extcom_name and extcom['name'] != get_extcom_name:
+                      continue
                   if 'match_action' in extcom:
                       act_str = ''
                       # ANY is optional, do not show. show only ALL
@@ -374,11 +380,14 @@ def show_bgpextcom_lists(render_tables):
 def show_bgpaspath_lists(render_tables):
   cmd_str = ''
 
+  get_aspath_name = render_tables['aspath-list-name'] if 'aspath-list-name' in render_tables else None
   if 'sonic-routing-policy-sets:sonic-routing-policy-sets/AS_PATH_SET/AS_PATH_SET_LIST' in render_tables:
       aspath_list = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/AS_PATH_SET/AS_PATH_SET_LIST']
       cmd_prfx = 'bgp as-path-list '
       for aspath in aspath_list:
           if 'name' in aspath:
+              if get_aspath_name and aspath['name'] != get_aspath_name:
+                  continue
               if 'action' in aspath:
                   if 'as_path_set_member' in aspath:
                       for member in aspath['as_path_set_member']:
