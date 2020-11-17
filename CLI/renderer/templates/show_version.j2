@@ -15,7 +15,9 @@
 {% endif %}
 {{ 'Serial Number'.ljust(18) }}: {{ json_output['serial-number'] }}
 {{ 'Uptime'.ljust(18) }}: {{ json_output['up-time'] }}
+{% if json_output['mfg-name'] != '' %}
 {{ 'Mfg'.ljust(18) }}: {{ json_output['mfg-name'] }}
+{% endif %}
 {{ ' ' }}
 
 {% set docker_version = json_output["docker"]["docker-version"] %}
