@@ -10,17 +10,21 @@
 {{ 'Platform'.ljust(18) }}: {{ json_output['platform-name'] }}
 {{ 'HwSKU'.ljust(18) }}: {{ json_output['hwsku-version'] }}
 {{ 'ASIC'.ljust(18) }}: {{ json_output['asic-version'] }}
+{% if json_output['hardware-version'] != '' %}
 {{ 'Hardware Version'.ljust(18) }}: {{ json_output['hardware-version'] }}
+{% endif %}
 {{ 'Serial Number'.ljust(18) }}: {{ json_output['serial-number'] }}
 {{ 'Uptime'.ljust(18) }}: {{ json_output['up-time'] }}
+{% if json_output['mfg-name'] != '' %}
 {{ 'Mfg'.ljust(18) }}: {{ json_output['mfg-name'] }}
+{% endif %}
 {{ ' ' }}
 
 {% set docker_version = json_output["docker"]["docker-version"] %}
-{{'REPOSITORY'.ljust(40)}} {{'TAG'.ljust(20)}}{{'IMAGE ID'.ljust(20)}} {{'SIZE'.ljust(20)}}
+{{'REPOSITORY'.ljust(39)}} {{'TAG'.ljust(40)}}{{'IMAGE ID'.ljust(19)}} {{'SIZE'}}
 {% for dv in docker_version %}
 {% set docker_ver = dv['state'] %}
-{{(docker_ver['docker-name'] | string).ljust(40)}}{{(docker_ver['docker-tag-id'] | string).ljust(20)}}{{(docker_ver['docker-image-id'] | string).ljust(20)}}{{(docker_ver['docker-size'] | string).ljust(20)}}
+{{(docker_ver['docker-name'] | string).ljust(40)}}{{(docker_ver['docker-tag-id'] | string).ljust(40)}}{{(docker_ver['docker-image-id'] | string).ljust(20)}}{{(docker_ver['docker-size'] | string)}}
 {% endfor %}
 
 {{ ' ' }}
