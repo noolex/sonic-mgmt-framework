@@ -189,8 +189,7 @@
             name="IPv4 hash config options"
             help=""
             ptype="SUBCOMMAND"
-            mode="switch"
-            optional = "true">
+            mode="switch">
         <PARAM
             name="ipv4-src-ip"
             help="Source IP Address"
@@ -239,8 +238,7 @@
             name="IPv6 hash config options"
             help=""
             ptype="SUBCOMMAND"
-            mode="switch"
-            optional = "true">
+            mode="switch">
         <PARAM
             name="ipv6-src-ip"
             help="Source IP Address"
