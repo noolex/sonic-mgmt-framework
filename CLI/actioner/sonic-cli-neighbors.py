@@ -293,9 +293,6 @@ def process_nbrs(response, rcvdIntfName, outputList):
 
         egressPort = get_egress_port(rcvdIntfName, macAddr)
 
-        if rcvdIntfName == "eth0":
-            rcvdIntfName = "Management0"
-
         nbrEntry = {'ipAddr':ipaddress.ip_address(ipAddr),
                     'macAddr':macAddr,
                     'intfName':rcvdIntfName,
