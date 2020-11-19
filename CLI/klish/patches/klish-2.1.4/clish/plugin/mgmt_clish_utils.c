@@ -75,13 +75,18 @@ void flush_ctrlc_pipe(void)
  */
 static char *obscure_string= "*****";
 
-#define MAX_KEYWORDS 4
+#define MAX_KEYWORDS 9
 /* Entries with only 0 as encryption identifier may not strictly have one - used as placeholder */
 static const char * keywords[2*MAX_KEYWORDS] = {
     "password", "079",
     "key", "079",
     "auth-password", "079",
-    "priv-password", "079"
+    "priv-password", "079",
+    "md5", "07",
+    "sha1", "09",
+    "sha2-256", "09",
+    "authentication-key", "0",
+    "trusted-key", "0"
 };
 
 /* URL patterns contain: prefix string

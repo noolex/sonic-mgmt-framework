@@ -21,24 +21,38 @@
         {{-"\n"}}
         {{-"----------------------------------------------"}}
         {% set global_info = json_output['global'] %}
-        {% if vars.update({'source':global_info["openconfig-system-ext:ntp-source-interface"]}) %}{% endif %}
+        {% if vars.update({'sources':global_info["openconfig-system-ext:ntp-source-interface"]}) %}{% endif %}
         {% if vars.update({'vrf':global_info["openconfig-system-ext:vrf"]}) %}{% endif %}
-        {{-'NTP source-interface:'.ljust(24)}}{{vars.source}}
+        {% if vars.update({'auth':global_info["enable-ntp-auth"]}) %}{% endif %}
+        {{-'NTP source-interfaces:'.ljust(24)-}}
+        {% set ns = namespace(spt='') %}
+        {% for source in vars.sources %}
+            {{-ns.spt-}}
+            {{-source-}}
+            {% set ns.spt = ', ' %}
+        {% endfor %}
         {{-"\n"}}
         {{-'NTP vrf:'.ljust(24)}}{{vars.vrf}}
+        {{-"\n"}}
+        {% if vars.auth == True %}
+            {{-'NTP authenticate:'.ljust(24)}}{{"Yes"}}
+        {% else %}
+            {{-'NTP authenticate:'.ljust(24)}}{{"No"}}
+        {% endif %}
     {% elif "servers" in json_output %}
-        {{-"--------------------------------"}}
+        {{-"------------------------------------------------------"}}
         {{-"\n"}}
-        {{-'NTP Servers'.ljust(20)}}
+        {{-'NTP Servers'.ljust(32)}}{{'Authentication key ID'}}
         {{-"\n"}}
-        {{-"--------------------------------"}}
+        {{-"------------------------------------------------------"}}
         {% set server_list = json_output["servers"] %}
         {% for server in server_list %}
             {% if vars.update({'address':server["address"]}) %}{% endif %}
-            {{-vars.address.ljust(20)}}
+            {% if vars.update({'key_id':server["config"]['openconfig-system-ext:key-id']}) %}{% endif %}
+            {{-vars.address.ljust(32)}}{{'%-22s'|format(vars.key_id)}}
         {% endfor %}
     {% elif "associations" in json_output %}
-{{'%-21s'|format("remote")}} {{'%-16s'|format("refid")}} {{'%-4s'|format("st")}} {{'%-2s'|format("t")}} {{'%-6s'|format("when")}} {{'%-6s'|format("poll")}} {{'%-6s'|format("reach")}} {{'%-6s'|format("delay")}} {{'%-12s'|format("offset")}} {{'%-12s'|format("jitter")}}
+{{'%-27s'|format("remote")}} {{'%-16s'|format("refid")}} {{'%-4s'|format("st")}} {{'%-2s'|format("t")}} {{'%-6s'|format("when")}} {{'%-6s'|format("poll")}} {{'%-6s'|format("reach")}} {{'%-6s'|format("delay")}} {{'%-12s'|format("offset")}} {{'%-12s'|format("jitter")}}
 {{"------------------------------------------------------------------------------------------------------"-}}
         {% set server_list = json_output["associations"] %}
         {% for server in server_list %}
@@ -89,7 +103,7 @@
                 {% else %}
                     {% if vars.update({'jitter':""}) %}{% endif %}
                 {% endif %}
-{{'%-1s'|format(vars.selmode)}}{{'%-20s'|format(vars.remote)}} {{'%-16s'|format(vars.refid)}} {{'%-4s'|format(vars.st)}} {{'%-2s'|format(vars.t)}} {{'%-6s'|format(vars.when)}} {{'%-6s'|format(vars.poll)}} {{'%-6s'|format(vars.reach)}} {{'%-6s'|format(vars.delay)}} {{'%-12s'|format(vars.offset)}} {{'%-12s'|format(vars.jitter)-}}
+{{'%-1s'|format(vars.selmode)}}{{'%-26s'|format(vars.remote)}} {{'%-16s'|format(vars.refid)}} {{'%-4s'|format(vars.st)}} {{'%-2s'|format(vars.t)}} {{'%-6s'|format(vars.when)}} {{'%-6s'|format(vars.poll)}} {{'%-6s'|format(vars.reach)}} {{'%-6s'|format(vars.delay)}} {{'%-12s'|format(vars.offset)}} {{'%-12s'|format(vars.jitter)-}}
             {% endif %}
         {% endfor %}
 {{-"\n"}}
