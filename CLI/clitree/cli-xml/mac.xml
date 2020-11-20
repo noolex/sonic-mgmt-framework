@@ -272,7 +272,7 @@ limitations under the License.
         fi
     </ACTION>
     </COMMAND>
-    <COMMAND name="show mac dampening-threshold" help="Show MAC dampening-threshold value" >
+    <COMMAND name="show mac dampening" help="Show MAC dampening configuration" >
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-mac.py get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list show_mac_dampening.j2 ${__full_line__}
     </ACTION>
@@ -451,9 +451,18 @@ limitations under the License.
         <PARAM name="threshold-value" help="MAC move dampening threshold count" ptype="RANGE_5_100">
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py patch_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list "config" ${threshold-value} &#xA;-->
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py patch_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list "threshold" ${threshold-value} &#xA;-->
         </ACTION>
     </COMMAND>
+    <COMMAND
+        name="mac address-table dampening-interval" help="MAC move dampening threshold interval" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="interval-value" help="MAC move dampening interval" ptype="RANGE_5_120">
+        </PARAM>
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py patch_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list "interval" ${interval-value} &#xA;-->
+        </ACTION>
+    </COMMAND>
+
 
 <!--====================mac address-table aging-time command======================-->
     <COMMAND
@@ -481,12 +490,17 @@ limitations under the License.
     </COMMAND>
 
 <!--============Unconfigure mac address-table dampening-threshold command=============-->
-    <COMMAND name="no mac-address dampening-threshold" help="Disable MAC move dampening threshold" mode="subcommand" ptype="SUBCOMMAND">
+    <COMMAND name="no mac address-table dampening-threshold" help="Disable MAC move dampening threshold" mode="subcommand" ptype="SUBCOMMAND">
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening "config" ${threshold-value} &#xA;-->
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list_threshold "config"  &#xA;-->
         </ACTION>
     </COMMAND>
- 
+     <COMMAND name="no mac address-table dampening-interval" help="Revert MAC move dampening threshold interval " mode="subcommand" ptype="SUBCOMMAND">
+        <ACTION>
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list_interval "config"  &#xA;-->
+        </ACTION>
+    </COMMAND>
+
 <!--============Unconfigure mac address-table aging-time command=====================-->
     <COMMAND
         name="no mac address-table aging-time" help="Unconfigure MAC address table aging-time" mode="subcommand" ptype="SUBCOMMAND">

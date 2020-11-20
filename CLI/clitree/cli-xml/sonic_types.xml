@@ -323,6 +323,13 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="RANGE_5_120"
+        method="integer"
+        pattern="5..120"
+        help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="RANGE_0_65535"
         method="integer"
         pattern="0..65535"

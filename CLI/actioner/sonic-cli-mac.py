@@ -18,6 +18,7 @@
 ###########################################################################
 
 import sys
+import syslog
 import time
 import json
 import ast
@@ -25,7 +26,11 @@ import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 import urllib3
+
 urllib3.disable_warnings()
+
+MAC_DAMPENING_DEFAULT_THRESHOLD = 5
+MAC_DAMPENING_DEFAULT_INTERVAL  = 5
 
 def mac_fill_count(mac_entries):
     static = dynamic = 0
@@ -91,14 +96,24 @@ def invoke(func, args):
         return aa.get(keypath)
     elif func == 'patch_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list':
         keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING/MAC_DAMPENING_LIST')
-        body = {
-                "sonic-mac-dampening:MAC_DAMPENING_LIST": [
-                    {
-                        "config": "config",
-                        "threshold": int(args[1])
+        if args[0] == "threshold":
+            body = {
+                    "sonic-mac-dampening:MAC_DAMPENING_LIST": [
+                        {
+                            "config": "config",
+                            "threshold": int(args[1])
+                            }
+                        ]
+                    }
+        elif args[0] == "interval":
+            body = {
+                    "sonic-mac-dampening:MAC_DAMPENING_LIST": [
+                        {
+                            "config": "config",
+                            "interval": int(args[1])
                         }
-                    ]
-                }
+                      ]
+                    }
         return aa.patch(keypath,body)
     elif func == 'get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list':
         keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING/MAC_DAMPENING_LIST')
@@ -107,7 +122,15 @@ def invoke(func, args):
             response = api_response.content
             if response is not None and len(response) is not 0:
                 print_content = response['sonic-mac-dampening:MAC_DAMPENING_LIST']
-                print "MAC Move Dampening Threshold : {}".format(print_content[0]['threshold'])
+                threshold = MAC_DAMPENING_DEFAULT_THRESHOLD
+                interval  = MAC_DAMPENING_DEFAULT_INTERVAL
+                if "threshold" in print_content[0] and print_content[0]['threshold'] is not None:
+                    threshold = print_content[0]['threshold']
+                if "interval" in print_content[0] and print_content[0]['interval'] is not None:
+                    interval = print_content[0]['interval']
+                 
+                print "MAC Move Dampening Threshold : {}".format(threshold)
+                print "MAC Move Dampening Interval  : {}".format(interval)
     elif func == 'get_openconfig_network_instance_ext_network_instances_network_instance_mac_dampening_state':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/openconfig-mac-dampening:mac-dampening/state')
         api_response = aa.get(keypath)
@@ -119,6 +142,12 @@ def invoke(func, args):
                 for interface in print_content:
                     output = output + interface + "\n"
                 print output    
+    elif func == 'delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list_threshold':
+        keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING/MAC_DAMPENING_LIST={config}/threshold', config=args[0])
+        return aa.delete(keypath)
+    elif func == 'delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list_interval':
+        keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING/MAC_DAMPENING_LIST={config}/interval', config=args[0])
+        return aa.delete(keypath)
     elif func == 'delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening':
         keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING')
         return aa.delete(keypath)
@@ -136,10 +165,11 @@ def invoke(func, args):
 def run(func, args):
     try:
         api_response = invoke(func,args)
-        if api_response.errors():
+        if api_response is not None and api_response.errors():
             print api_response.error_message()
             return
-        if api_response.ok():
+
+        if api_response is not None and  api_response.ok():
             response = api_response.content
             if response is not None and len(response) is not 0:
                 if 'openconfig-network-instance:entries' in response:
@@ -153,6 +183,8 @@ def run(func, args):
                     return
             else:
                 return
+        if func == 'get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list':
+            return
         
         mac_table_list = [] 
         if func == 'get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
@@ -230,8 +262,8 @@ def run(func, args):
         show_cli_output(args[0], mac_table_list)
         return
     except Exception as e:
-        log.syslog(log.LOG_ERR, str(e))
         print "% Error: Internal error"
+        syslog.syslog(syslog.LOG_ERR, str(e))
 
 if __name__ == '__main__':
 
