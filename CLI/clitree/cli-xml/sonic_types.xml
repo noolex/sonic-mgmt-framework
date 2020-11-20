@@ -1274,8 +1274,8 @@ limitations under the License.
     <PTYPE
         name="LOADSHARE_SEED_VAL"
         method="integer"
-        pattern="1..16777215"
-        help="IP ECMP Load share seed value 1 to 16777215"
+        pattern="0..16777215"
+        help="IP ECMP Load share seed value 0 to 16777215"
         />
     <!--=======================================================-->
     <PTYPE
