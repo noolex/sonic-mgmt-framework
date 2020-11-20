@@ -390,12 +390,16 @@ limitations under the License.
       </PARAM>
       <PARAM name="PORT_ID" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand">
       </PARAM>
+      <PARAM name="PO_ID" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand">
+      </PARAM>
    </PARAM>
     <ACTION>
         if test "${damp-subcommands}" = "all"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_clear_mac_damp_disabled_ports  &#xA;
         elif test "${damp-subcommands}" = "PORT_ID"; then&#xA;
             python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_clear_mac_damp_disabled_ports ${PORT_ID}&#xA;
+        elif test "${damp-subcommands}" = "PO_ID"; then&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py rpc_clear_mac_damp_disabled_ports ${PO_ID}&#xA;
         fi
     </ACTION>
   </COMMAND>
