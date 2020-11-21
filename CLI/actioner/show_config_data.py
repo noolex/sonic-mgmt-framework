@@ -36,6 +36,7 @@ from show_config_logging import *
 from show_config_ldap import *
 from show_config_radius import *
 from show_config_aaa import *
+from show_config_ntp import *
 from show_config_nat import *
 from show_config_ospfv2 import *
 from show_config_ip_helper import *
@@ -156,6 +157,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'tacacs_server_source_if' : show_tacacs_source_if,
                   'dns_server_source_if'    : show_dns_source_if,
                   'ntp_server_source_if'    : show_ntp_source_if,
+                  'ntp_trusted_key'         : show_ntp_trusted_key,
                   'ptp_mode'                : show_ptp_mode,
                   'ptp_domain_profile'      : show_ptp_domain_profile,
                   'ptp_domain_two_step'     : show_ptp_two_step,

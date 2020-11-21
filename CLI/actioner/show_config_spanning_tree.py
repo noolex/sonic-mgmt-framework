@@ -142,7 +142,6 @@ def show_config_spanning_tree_global_root_guard_time(render_tables):
 
 def show_config_spanning_tree_vlan(render_tables):
     cmd_str = ''
-    cmd_sep = ';'
 
     if 'sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST' not in render_tables:
         return 'CB_SUCCESS', cmd_str
@@ -172,14 +171,17 @@ def show_config_spanning_tree_vlan(render_tables):
             vid = int(db_entry['name'][len('Vlan'):])
             vdata['vlan-id'] = vid
             vdata['config'] = {}
-            vdata['config']['forwarding-delay'] = db_entry['forward_delay']
-            vdata['config']['hello-time'] = db_entry['hello_time']
-            vdata['config']['max-age'] = db_entry['max_age']
-            vdata['config']['bridge-priority'] = db_entry['priority']
+            if 'forward_delay' in db_entry:
+                vdata['config']['forwarding-delay'] = db_entry['forward_delay']
+            if 'hello_time' in db_entry:
+                vdata['config']['hello-time'] = db_entry['hello_time']
+            if 'max_age' in db_entry:
+                vdata['config']['max-age'] = db_entry['max_age']
+            if 'priority' in db_entry:
+                vdata['config']['bridge-priority'] = db_entry['priority']
             vlist.append(vdata)
 
-    cmd_str = cli_stp.show_run_config_vlan(vlist, g_stp)
-    cmd_str = cmd_str.replace("\n", cmd_sep)
+    cli_stp.show_run_config_vlan(vlist, g_stp)
     return 'CB_SUCCESS', cmd_str
 
 
@@ -203,6 +205,7 @@ def show_config_no_spanning_tree_vlan(render_tables):
 def show_config_spanning_tree_intf_vlan(render_tables):
     cmd_str = ''
     cmd_list = []
+    vpdata = {'cost':{}, 'prio':{}}
 
     if 'name' not in render_tables.keys():
         return ret_err(g_err_transaction_fail, 'key:name not found in render_tables')
@@ -210,7 +213,6 @@ def show_config_spanning_tree_intf_vlan(render_tables):
     if 'sonic-spanning-tree:sonic-spanning-tree/STP_VLAN_PORT/STP_VLAN_PORT_LIST' in render_tables \
             and 'sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST' in render_tables:
 
-        vpdata = {'cost':{}, 'prio':{}}
         for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_VLAN_PORT/STP_VLAN_PORT_LIST']:
             if 'ifname' not in db_entry.keys():
                 return ret_err(g_err_transaction_fail, 'key:ifname not found in STP_VLAN_PORT_DB, render_table[name] = {}'.format(render_tables['name']))

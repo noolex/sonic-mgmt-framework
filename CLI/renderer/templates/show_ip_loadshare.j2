@@ -1,13 +1,13 @@
 {% if json_output %}
 
-{% set lb_entry = json_output['openconfig-loadbalance-mode-ext:state'] %}
+{% set lb_entry = json_output['openconfig-loadshare-mode-ext:state'] %}
 {% set ipvars = {'ip': ""} %}
 {% set ipv6vars = {'ipv6': ""} %}
 {% set seedvars = {'Hash Seed': ""} %}
 
 {{'Packet Header Fields:'}}
 
-{% if "ipv4-src-ip" in lb_entry or "ipv4-dst-ip" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-protocol" in lb_entry  %}
+{% if "ipv4-src-ip" in lb_entry or "ipv4-dst-ip" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-l4-dst-port" in lb_entry or "ipv4-protocol" in lb_entry  %}
 {{ 'ip:' -}}
 {% if "ipv4-src-ip" in lb_entry and lb_entry['ipv4-src-ip'] > 0 -%}
  {{' ipv4-src-ip ' -}}
@@ -18,17 +18,17 @@
 {% if "ipv4-l4-src-port" in lb_entry and lb_entry['ipv4-l4-src-port'] > 0 -%}
  {{' ipv4-l4-src-port ' -}}
 {% endif %}
-{% if "ipv4-l4-src-port" in lb_entry and lb_entry['ipv4-l4-dst-port'] > 0 -%}
+{% if "ipv4-l4-dst-port" in lb_entry and lb_entry['ipv4-l4-dst-port'] > 0 -%}
  {{' ipv4-l4-dst-port ' -}}
 {% endif %}
 {% if "ipv4-protocol" in lb_entry and lb_entry['ipv4-protocol'] > 0 -%}
- {{' ipv4-proto' -}}
+ {{' ipv4-ip-proto' -}}
 {% endif %}
 {% endif %}
 
 
 
-{% if "ipv6-src-ip" in lb_entry or "ipv6-dst-ip" in lb_entry or "ipv6-l4-src-port" in lb_entry or "ipv6-l4-src-port" in lb_entry or "ipv6-next-hdr" in lb_entry  %}
+{% if "ipv6-src-ip" in lb_entry or "ipv6-dst-ip" in lb_entry or "ipv6-l4-src-port" in lb_entry or "ipv6-l4-dst-port" in lb_entry or "ipv6-next-hdr" in lb_entry  %}
 {{ 'Ipv6:' -}}
 {% if "ipv6-src-ip" in lb_entry and lb_entry['ipv6-src-ip'] > 0 -%}
  {{' ipv6-src-ip ' -}}
@@ -39,7 +39,7 @@
 {% if "ipv6-l4-src-port" in lb_entry and lb_entry['ipv6-l4-src-port'] > 0 -%}
  {{' ipv6-l4-src-port ' -}}
 {% endif %}
-{% if "ipv6-l4-src-port" in lb_entry and lb_entry['ipv6-l4-dst-port'] > 0 -%}
+{% if "ipv6-l4-dst-port" in lb_entry and lb_entry['ipv6-l4-dst-port'] > 0 -%}
  {{' ipv6-l4-dst-port ' -}}
 {% endif %}
 {% if "ipv6-next-hdr" in lb_entry and lb_entry['ipv6-next-hdr'] > 0 -%}

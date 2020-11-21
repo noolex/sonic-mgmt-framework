@@ -183,6 +183,19 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="PHY_LB_MGMT_PO_VL_INTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(Port) Loopback(0-16383) Management(0-0) PortChannel(1-128) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[/subport]) Loopback(0-16383) Management(0-0) PortChannel(1-128) Vlan(1-4093)"
+        ext_help="(Ethernet interface type) (Loopback interface type) (Management interface type) (PortChannel interface type) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF;|&LOOPB_INTF;|&MGMT_INTF;|&PO_ALL_INTF;|&VLAN_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_ALIAS;|&LOOPB_INTF;|&MGMT_INTF;|&PO_ALL_INTF;|&VLAN_ALL_INTF;"
+        help="Interface Type - Ranges"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+  
+    <PTYPE
         name="MIN_LINK"
         method="integer"
         pattern="1..255"
@@ -497,6 +510,12 @@ limitations under the License.
     <PTYPE
         name="DOMAIN_NAME_OR_IPADDR"
         pattern="^((([a-zA-Z0-9_]([a-zA-Z0-9_\-]){0,61})?[a-zA-Z0-9]\.)*([a-zA-Z0-9_]([a-zA-Z0-9_\-]){0,61})?[a-zA-Z0-9]\.?)$|^\.$|(&IPV4_OR_IPV6_ADDR_PATTERN;)"
+        help="WORD"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="ALL_VRF"
+        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(default)$|^(mgmt)$"
         help="WORD"
         />
     <!--=======================================================-->
@@ -1255,8 +1274,8 @@ limitations under the License.
     <PTYPE
         name="LOADSHARE_SEED_VAL"
         method="integer"
-        pattern="1..16777215"
-        help="IP ECMP Load share seed value 1 to 16777215"
+        pattern="0..16777215"
+        help="IP ECMP Load share seed value 0 to 16777215"
         />
     <!--=======================================================-->
     <PTYPE
