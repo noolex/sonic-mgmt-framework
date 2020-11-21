@@ -10,12 +10,12 @@
 {{ 'Platform'.ljust(18) }}: {{ json_output['platform-name'] }}
 {{ 'HwSKU'.ljust(18) }}: {{ json_output['hwsku-version'] }}
 {{ 'ASIC'.ljust(18) }}: {{ json_output['asic-version'] }}
-{% if json_output['hardware-version'] != '' %}
+{% if json_output['hardware-version'] %}
 {{ 'Hardware Version'.ljust(18) }}: {{ json_output['hardware-version'] }}
 {% endif %}
 {{ 'Serial Number'.ljust(18) }}: {{ json_output['serial-number'] }}
 {{ 'Uptime'.ljust(18) }}: {{ json_output['up-time'] }}
-{% if json_output['mfg-name'] != '' %}
+{% if json_output['mfg-name'] %}
 {{ 'Mfg'.ljust(18) }}: {{ json_output['mfg-name'] }}
 {% endif %}
 {{ ' ' }}
