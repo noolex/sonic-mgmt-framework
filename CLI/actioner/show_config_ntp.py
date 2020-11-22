@@ -43,9 +43,9 @@ def show_ntp_trusted_key(render_tables):
     cmd_prfx = 'ntp trusted-key '
     if 'sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST' in render_tables:
         for ntp_inst in render_tables['sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST']:
-            if 'trusted-key' in ntp_inst:
-                if type(ntp_inst['trusted-key']) == list:
-                    for key_id in ntp_inst['trusted-key']:
+            if 'trusted_key' in ntp_inst:
+                if type(ntp_inst['trusted_key']) == list:
+                    for key_id in ntp_inst['trusted_key']:
                         cmd_str = cmd_str+';'+cmd_prfx+str(key_id)
 
     return 'CB_SUCCESS', cmd_str
