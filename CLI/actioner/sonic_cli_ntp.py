@@ -133,12 +133,12 @@ def invoke_api(func, args=[]):
     elif func == 'set_ntp_trusted_key':
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
-        body = {"openconfig-system:config":{"openconfig-system-ext:trustedkey":[int(args[0])]}}
+        body = {"openconfig-system:config":{"openconfig-system-ext:trusted-key":[int(args[0])]}}
         return api.patch(keypath, body)
 
     elif func == 'delete_ntp_trusted_key':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:trustedkey={trustkey}',
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:trusted-key={trustkey}',
                           trustkey=args[0])
         return api.delete(keypath)
 
@@ -148,8 +148,8 @@ def invoke_api(func, args=[]):
         body = { "openconfig-system:ntp-keys": { "ntp-key" : [{"config" : {"key-id": int(args[0]),
                                                                            "key-type" : args[1],
                                                                            "key-value" : args[2],
-                       "openconfig-system-ext:key-encrypted" : False if len(args) < 4 else True},
-                                                              "key-id" : int(args[0])}]}}
+                           "openconfig-system-ext:encrypted" : False if len(args) < 4 else True},
+                                                               "key-id" : int(args[0])}]}}
         return api.patch(keypath, body)
 
     elif func == 'delete_ntp_authentication_key':

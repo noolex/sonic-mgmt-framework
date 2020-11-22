@@ -509,26 +509,26 @@ limitations under the License.
     <COMMAND name="ntp authentication-key"
              help="Configure NTP authentication key"
              mode="subcommand"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/key_id={id}">
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id={id}">
       <PARAM name="key-number"
              help="Authentication key number"
              ptype="RANGE_1_65535"
-             dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/key_id">
+             dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id">
         <PARAM name="auth-type"
                help="Authentication type"
                ptype="NTP_AUTHENTICATION_TYPE"
-               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/key_type">
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/type">
           <PARAM name="key"
                  help="Authentication-key string (max 64 chars, key longer than 20 chars must be hex)"
                  ptype="STRING_64"
-                 dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/key_value">
+                 dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/value">
             <PARAM name="encrypted"
                    help = "Key is in encrypted format"
                    ptype="SUBCOMMAND"
                    mode="subcommand"
                    optional="true"
                    hidden="true"
-                   dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/key_encrypted">
+                   dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/encrypted">
             </PARAM>
           </PARAM>
         </PARAM>

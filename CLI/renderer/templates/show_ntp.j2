@@ -15,29 +15,33 @@
 
 {% if json_output %}
     {% if "global" in json_output %}
-        {{-"----------------------------------------------"}}
-        {{-"\n"}}
-        {{-"NTP Global Configuration".ljust(30)}}
-        {{-"\n"}}
-        {{-"----------------------------------------------"}}
         {% set global_info = json_output['global'] %}
         {% if vars.update({'sources':global_info["openconfig-system-ext:ntp-source-interface"]}) %}{% endif %}
         {% if vars.update({'vrf':global_info["openconfig-system-ext:vrf"]}) %}{% endif %}
         {% if vars.update({'auth':global_info["enable-ntp-auth"]}) %}{% endif %}
-        {{-'NTP source-interfaces:'.ljust(24)-}}
-        {% set ns = namespace(spt='') %}
-        {% for source in vars.sources %}
-            {{-ns.spt-}}
-            {{-source-}}
-            {% set ns.spt = ', ' %}
-        {% endfor %}
-        {{-"\n"}}
-        {{-'NTP vrf:'.ljust(24)}}{{vars.vrf}}
-        {{-"\n"}}
+        {% if vars.sources or vars.vrf or vars.auth %}
+            {{-"----------------------------------------------"}}
+            {{-"\n"}}
+            {{-"NTP Global Configuration".ljust(30)}}
+            {{-"\n"}}
+            {{-"----------------------------------------------"}}
+        {% endif %}
+        {% if vars.sources %}
+            {{-'NTP source-interfaces:'.ljust(24)-}}
+            {% set ns = namespace(spt='') %}
+            {% for source in vars.sources %}
+                {{-ns.spt-}}
+                {{-source-}}
+                {% set ns.spt = ', ' %}
+            {% endfor %}
+            {{-"\n"}}
+        {% endif %}
+        {% if vars.vrf %}
+            {{-'NTP vrf:'.ljust(24)}}{{vars.vrf}}
+            {{-"\n"}}
+        {% endif %}
         {% if vars.auth == True %}
             {{-'NTP authenticate:'.ljust(24)}}{{"Yes"}}
-        {% else %}
-            {{-'NTP authenticate:'.ljust(24)}}{{"No"}}
         {% endif %}
     {% elif "servers" in json_output %}
         {{-"------------------------------------------------------"}}
