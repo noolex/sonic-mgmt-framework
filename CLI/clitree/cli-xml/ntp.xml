@@ -33,7 +33,7 @@ limitations under the License.
   />
 <!--=======================================================-->
   <PTYPE
-    name="STRING_64"
+    name="STRING_PASSWORD"
     pattern="[^|]+"
     help="WORD"
   />
@@ -520,7 +520,7 @@ limitations under the License.
                dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/type">
           <PARAM name="key"
                  help="Authentication-key string (max 64 chars, key longer than 20 chars must be hex)"
-                 ptype="STRING_64"
+                 ptype="STRING_PASSWORD"
                  dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/value">
             <PARAM name="encrypted"
                    help = "Key is in encrypted format"
