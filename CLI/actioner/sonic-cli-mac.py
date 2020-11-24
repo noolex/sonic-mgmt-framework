@@ -183,7 +183,7 @@ def run(func, args):
                     return
             else:
                 return
-        if func == 'get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list':
+        if func == 'get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list' or func == 'get_openconfig_network_instance_ext_network_instances_network_instance_mac_dampening_state':
             return
         
         mac_table_list = [] 
