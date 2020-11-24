@@ -48,7 +48,7 @@ def invoke(func, args):
         elif args[0] == 'ipv4-dst-ip':
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-dst-ip": True}}}
         elif args[0] == 'ipv4-ip-proto':
-            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-protocol": True}}}
+            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-ip-proto": True}}}
         return aa.patch(keypath, body)
 
     elif func == 'delete_loadshare_ipv4_config':
@@ -62,7 +62,7 @@ def invoke(func, args):
         elif args[0] == 'ipv4-dst-ip':
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-dst-ip": False}}}
         elif args[0] == 'ipv4-ip-proto':
-            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-protocol": False}}}
+            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-ip-proto": False}}}
         return aa.patch(keypath, body)
 
     if func == 'patch_loadshare_ipv6_config':
