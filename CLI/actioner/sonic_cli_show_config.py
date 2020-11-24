@@ -479,7 +479,7 @@ class cli_xml_view:
 
 def process_command(view, view_member, table_list, member_keys, dbpathstr, is_view_first_cmd, cmd_line, indent):
 
-    showrun_log(logging.DEBUG,"Enter: view: {}, \nmember: {}, \nview_table_list: {}, member_keys: {}, dbpathstr: {} is_view_fist_cmd: {}",
+    showrun_log(logging.DEBUG,"Enter: process_command: {}, \nmember: {}, \nview_table_list: {}, member_keys: {}, dbpathstr: {} is_view_fist_cmd: {}",
                             view.name, view_member, table_list, member_keys, dbpathstr, is_view_first_cmd)
 
     #split command attributes
@@ -642,9 +642,9 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
                    showrun_log(logging.WARNING,'Key {} missing in table {}, skip cmd table' ,table_key_val, dbpathstr)
                    return CMD_SUCCESS, False
 
-        showrun_log(logging.DEBUG,'Cmd table keys {}, to filter table {}' ,filter_keys, dbpathstr)
+        showrun_log(logging.DEBUG,'Cmd table keys {}, Filter keys {} to filter table {}' ,cmd_table_keys, filter_keys, dbpathstr)
 
-        if len(filter_keys) == 1: 
+        if len(cmd_table_keys) == 1 and filter_keys:
            table_dict = config_tables_dict.get(cmd_table_path)
            if table_dict:
               cmd_member = table_dict.get(filter_keys[0][1])
