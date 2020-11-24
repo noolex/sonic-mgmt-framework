@@ -195,10 +195,9 @@ def show_running_acl_global_bind_cb(render_tables):
 
 def show_running_acl_ctrl_plane_bind_cb(render_tables):
     # log.log_debug("Show CtrlPlane ACL bindings for {}".format(str(render_tables)))
-    cmd_str = 'line vty;'
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:control-plane')
-    cmd_str += __show_running_acl_binding(keypath, 'openconfig-acl-ext:control-plane', None, ' ')
-    return 'CB_SUCCESS', cmd_str, True
+    cmd_str = __show_running_acl_binding(keypath, 'openconfig-acl-ext:control-plane', None, ' ')
+    return 'CB_SUCCESS', cmd_str, False
 
 
 def show_running_config_hardware(render_tables):
@@ -250,3 +249,7 @@ def show_running_config_acl_start_callback(context, cache):
         __build_acl_config_cache('ACL_IPV4', context['view_keys']['access-list-name'], cache)
     elif context['view_name'] == 'configure-ipv6-acl':
         __build_acl_config_cache('ACL_IPV6', context['view_keys']['access-list-name'], cache)
+
+
+def show_running_config_line_vty_view_cb(render_tables):
+    return 'CB_SUCCESS', 'line vty', True
