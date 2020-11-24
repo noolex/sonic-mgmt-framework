@@ -396,8 +396,11 @@ def __create_acl_rule_ipv4_ipv6(args):
         elif args[next_item] == 'dscp':
             body["openconfig-acl:acl-entry"][0][af]["config"]["dscp"] = int(args[next_item + 1]) if args[next_item + 1] not in dscp_map else dscp_map[args[next_item + 1]]
             next_item += 2
-        elif args[next_item] in ['fin', 'syn', 'ack', 'urg', 'rst', 'psh']:
-            flags_list.append("tcp_{}".format(args[next_item]).upper())
+        elif args[next_item] in TCP_FLAGS_LIST:
+            flags_list.append("tcp_{}".format(args[next_item]).upper().replace('-', '_'))
+            next_item += 1
+        elif args[next_item] == "established":
+            body["openconfig-acl:acl-entry"][0]["transport"]["config"]["tcp-session-established"] = True
             next_item += 1
         elif args[next_item] == "vlan":
             body["openconfig-acl:acl-entry"][0]["l2"] = {}
@@ -876,9 +879,15 @@ def __convert_oc_ip_rule_to_user_fmt(acl_entry, rule_data, ipv4=True):
 
     if proto == 'tcp':
         try:
+            established = acl_entry['transport']['state']['openconfig-acl-ext:tcp-session-established']
+            rule_data.append('established')
+        except KeyError:
+            pass
+
+        try:
             tcp_flags = acl_entry['transport']['state']['tcp-flags']
             for flag in tcp_flags:
-                rule_data.append(flag.replace('openconfig-packet-match-types:TCP_', '').lower())
+                rule_data.append(flag.split(":")[1].replace('TCP_', '').lower().replace("_", "-"))
         except KeyError:
             pass
 
