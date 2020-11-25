@@ -80,15 +80,6 @@ def show_dns_source_if(render_tables):
                            'src_intf',
                            cmd_prfx)
 
-
-def show_ntp_source_if(render_tables):
-
-    cmd_prfx = 'ntp source-interface  '
-    return show_get_if_cmd(render_tables,
-                           'sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST',
-                           'src_intf',
-                           cmd_prfx)
-
 def show_tacacs_source_if(render_tables):
 
     cmd_prfx = 'tacacs-server source-interface '

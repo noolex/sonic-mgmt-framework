@@ -274,22 +274,22 @@ limitations under the License.
         </PARAM>
         <ACTION>
             if test "${iftype}" = "phy-if-name"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors intf:${phy-if-name} summary:${summary}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:${phy-if-name} summary:${summary}&#xA;
             fi&#xA;
             if test "${iftype}" = "Loopback"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors intf:${iftype}${lo-id} summary:${summary}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:${iftype}${lo-id} summary:${summary}&#xA;
             fi&#xA;
             if test "${iftype}" = "Management"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors intf:eth${mgmt-if-id} summary:${summary}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:eth${mgmt-if-id} summary:${summary}&#xA;
             fi&#xA;
             if test "${iftype}" = "PortChannel"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors intf:${iftype}${lag-id} summary:${summary}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:${iftype}${lag-id} summary:${summary}&#xA;
             fi&#xA;
             if test "${iftype}" = "Vlan"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors intf:${iftype}${vlan-id} summary:${summary}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:${iftype}${vlan-id} summary:${summary}&#xA;
             fi&#xA;
             if test "${iftype}" = "Vxlan"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors intf:${iftype}${vxlan-if-name} summary:${summary}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:${iftype}${vxlan-if-name} summary:${summary}&#xA;
             fi&#xA;
         </ACTION>
     </COMMAND>

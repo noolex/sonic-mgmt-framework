@@ -71,6 +71,9 @@ def invoke_api(func, args=[]):
                     body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["metric"]=int(args[i])
                 elif args[i]=='interface':
                     i+=1
+                    if (args[i] == 'Management0'): 
+                        args[i] = 'eth0'
+
                     body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["interface-ref"] = {"config": {"interface": args[i]}}
                     index_v =  args[i]
                     if  conf_ip == "true" : index_v = index_v +  '_' + args[2]
@@ -88,7 +91,6 @@ def invoke_api(func, args=[]):
                     i+=1
                     body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["config"]["track"] =int(args[i])
                 i+=1
-
             keypath = cc.Path(uri,
                       name=args[0], identifier = IDENTIFIER, name1=NAME1)
             body["openconfig-network-instance:static-routes"]["static"][0]["next-hops"]["next-hop"][0]["index"] = index_v 
@@ -108,6 +110,8 @@ def invoke_api(func, args=[]):
             while(i<len(args)):
                 if args[i]=='interface':
                     i+=1
+                    if (args[i] == 'Management0'): 
+                        args[i] = 'eth0'
                     index_v =  args[i]
                     if conf_ip =="true": index_v = index_v +  '_' + args[2]
                 elif args[i] == 'nexthop-vrf':
@@ -117,7 +121,6 @@ def invoke_api(func, args=[]):
                     index_v = "DROP"
 
                 i+=1
-
             keypath = cc.Path(uri,
                       name=args[0], identifier = IDENTIFIER, name1=NAME1, prefix = args[1], index=index_v)
             return api.delete(keypath) 
