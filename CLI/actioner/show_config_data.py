@@ -120,6 +120,7 @@ module_cleanup_cb = []
 
 module_startup_cb = {
     'configure': [show_running_config_acl_start_callback, show_running_config_fbs_start_callback],
+    'configure-line-vty': [show_running_config_fbs_start_callback],
     'configure-mac-acl': [show_running_config_acl_start_callback],
     'configure-ipv4-acl': [show_running_config_acl_start_callback],
     'configure-ipv6-acl': [show_running_config_acl_start_callback],
@@ -308,7 +309,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'if_vrf_binding'          : show_if_vrf_binding,
                   'show_runn_hardware_cb'   : show_running_config_hardware,
                   'show_runn_hardware_acl_cb' : show_running_config_hardware_acl,
-                  'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode
+                  'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode,
+                  'line_vty_view_cb'        : show_running_config_line_vty_view_cb
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
