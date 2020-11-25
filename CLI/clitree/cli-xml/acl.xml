@@ -611,7 +611,7 @@ limitations under the License.
                 <USAGE>
                     The rule will be created if there is no existing rule with the same sequence number. ACL Rule cant be updated. To update, the rule must be deleted and added with updated parameters.
                 </USAGE>
-                <EXAMPLE summary="Add MAC ACL Rule">
+                <EXAMPLE summary="Add IP ACL Rule">
                     sonic(config-ip-acl)# seq 10 permit ip host 10.1.1.1 host 20.1.1.1
                 </EXAMPLE>
             </DOCGEN>
@@ -645,7 +645,7 @@ limitations under the License.
                 <USAGE>
                     The rule will be created if there is no existing rule with the same sequence number. ACL Rule cant be updated. To update, the rule must be deleted and added with updated parameters.
                 </USAGE>
-                <EXAMPLE summary="Add MAC ACL Rule">
+                <EXAMPLE summary="Add IPv6 ACL Rule">
                     sonic(config-ip-acl)# seq 100 permit ipv6 host abcd::1 host bcde::1
                 </EXAMPLE>
             </DOCGEN>

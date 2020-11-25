@@ -1,13 +1,13 @@
 {% if json_output %}
 
-{% set lb_entry = json_output['openconfig-loadshare-mode-ext:state'] %}
+{% set lb_entry = json_output['openconfig-loadshare-mode-ext:loadshare'] ['state'] %}
 {% set ipvars = {'ip': ""} %}
 {% set ipv6vars = {'ipv6': ""} %}
 {% set seedvars = {'Hash Seed': ""} %}
 
 {{'Packet Header Fields:'}}
 
-{% if "ipv4-src-ip" in lb_entry or "ipv4-dst-ip" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-l4-dst-port" in lb_entry or "ipv4-protocol" in lb_entry  %}
+{% if "ipv4-src-ip" in lb_entry or "ipv4-dst-ip" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-l4-dst-port" in lb_entry or "ipv4-ip-proto" in lb_entry  %}
 {{ 'ip:' -}}
 {% if "ipv4-src-ip" in lb_entry and lb_entry['ipv4-src-ip'] > 0 -%}
  {{' ipv4-src-ip ' -}}
@@ -21,7 +21,7 @@
 {% if "ipv4-l4-dst-port" in lb_entry and lb_entry['ipv4-l4-dst-port'] > 0 -%}
  {{' ipv4-l4-dst-port ' -}}
 {% endif %}
-{% if "ipv4-protocol" in lb_entry and lb_entry['ipv4-protocol'] > 0 -%}
+{% if "ipv4-ip-proto" in lb_entry and lb_entry['ipv4-ip-proto'] > 0 -%}
  {{' ipv4-ip-proto' -}}
 {% endif %}
 {% endif %}

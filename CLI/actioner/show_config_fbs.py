@@ -256,11 +256,11 @@ def __show_runn_fbs_service_policy_for_intf(ifname, cache):
 
 
 def show_running_fbs_service_policy_global(render_tables):
-    return __show_runn_fbs_service_policy_for_intf('Switch')
+    return __show_runn_fbs_service_policy_for_intf('Switch', render_tables[__name__])
 
 
 def show_running_fbs_service_policy_ctrlplane(render_tables):
-    return __show_runn_fbs_service_policy_for_intf('CtrlPlane')
+    return __show_runn_fbs_service_policy_for_intf('CtrlPlane', render_tables[__name__])
 
 
 def show_running_fbs_service_policy_interface(render_tables):

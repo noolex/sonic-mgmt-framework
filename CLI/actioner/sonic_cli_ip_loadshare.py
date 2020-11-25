@@ -38,7 +38,7 @@ def invoke(func, args):
         return aa.get(keypath)
 
     if func == 'patch_loadshare_ipv4_config':
-        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:ipv4-attrs')        
+        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:loadshare/ipv4-attrs')
         if args[0] == 'ipv4-l4-src-port':
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-l4-src-port": True}}}
         elif args[0] == 'ipv4-l4-dst-port':
@@ -48,11 +48,11 @@ def invoke(func, args):
         elif args[0] == 'ipv4-dst-ip':
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-dst-ip": True}}}
         elif args[0] == 'ipv4-ip-proto':
-            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-protocol": True}}}
+            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-ip-proto": True}}}
         return aa.patch(keypath, body)
 
     elif func == 'delete_loadshare_ipv4_config':
-        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:ipv4-attrs')        
+        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:loadshare/ipv4-attrs')
         if args[0] == 'ipv4-l4-src-port':
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-l4-src-port": False}}}
         elif args[0] == 'ipv4-l4-dst-port':
@@ -62,11 +62,11 @@ def invoke(func, args):
         elif args[0] == 'ipv4-dst-ip':
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-dst-ip": False}}}
         elif args[0] == 'ipv4-ip-proto':
-            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-protocol": False}}}
+            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-ip-proto": False}}}
         return aa.patch(keypath, body)
 
     if func == 'patch_loadshare_ipv6_config':
-        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:ipv6-attrs')        
+        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:loadshare/ipv6-attrs')
         if args[0] == 'ipv6-l4-src-port':
             body = {"openconfig-loadshare-mode-ext:ipv6-attrs": {"config": {"ipv6": "ipv6", "ipv6-l4-src-port": True}}}
         elif args[0] == 'ipv6-l4-dst-port':
@@ -80,7 +80,7 @@ def invoke(func, args):
         return aa.patch(keypath, body)
 
     elif func == 'delete_loadshare_ipv6_config':
-        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:ipv6-attrs')        
+        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:loadshare/ipv6-attrs')
         if args[0] == 'ipv6-l4-src-port':
             body = {"openconfig-loadshare-mode-ext:ipv6-attrs": {"config": {"ipv6": "ipv6", "ipv6-l4-src-port": False}}}
         elif args[0] == 'ipv6-l4-dst-port':
@@ -94,16 +94,16 @@ def invoke(func, args):
         return aa.patch(keypath, body)
 
     if func == 'patch_loadshare_seed_config':
-        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:seed-attrs')        
+        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:loadshare/seed-attrs')
         body = {"openconfig-loadshare-mode-ext:seed-attrs": {"config": {"hash": "hash", "ecmp-hash-seed": int(args[0])}}}
         return aa.patch(keypath, body)
 
     elif func == 'delete_loadshare_seed_config':
-        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:seed-attrs')        
+        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:loadshare/seed-attrs')
         return aa.delete(keypath)
 
     if func == 'get_load_share':
-        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:seed-attrs/state')
+        keypath = cc.Path('/restconf/data/openconfig-loadshare-mode-ext:loadshare')
         return aa.get(keypath)
 
 def run(func, args):
@@ -113,7 +113,7 @@ def run(func, args):
             response = api_response.content
             if response is None:
                 pass
-            elif 'openconfig-loadshare-mode-ext:state' in response.keys():
+            elif 'openconfig-loadshare-mode-ext:loadshare' in response.keys():
                 show_cli_output("show_ip_loadshare.j2", response)
                 return
 
