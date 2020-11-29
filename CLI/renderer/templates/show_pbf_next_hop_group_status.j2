@@ -1,0 +1,11 @@
+{% for ifname, ifgroups in json_output.items() %}
+{{ ifname }}
+    {% for grpname, grpdata in ifgroups.items() %}
+        {{- '  Next-hop-group'}} {{ grpname }} {{ 'Type' }} {{ grpdata['TYPE'] }} {{ '\n' }}
+        {{- '    Status:' }} {{ grpdata['STATUS'] }} {{ '\n' }}
+        {{- '    Members:\n' }}
+        {% for nh in grpdata['NEXT_HOPS'] %}
+            {{- '     ' }} {{ nh }}
+        {% endfor %}
+    {% endfor %}
+{% endfor %}

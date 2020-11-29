@@ -161,14 +161,18 @@ def show_running_fbs_policy(render_tables):
                     render_data[name]["FLOWS"][flow] = flows[flow]
 
                 render_data[name]["APPLIED_INTERFACES"] = policy_data.get("APPLIED_INTERFACES", [])
+
             index = 0
             for policy_name in render_data:
                 cmd_str += '' if index == 0 else "!;" 
                 index += 1
                 match_type = render_data[policy_name]['TYPE'].lower()
                 cmd_str += 'policy-map {} type {};'.format(policy_name, match_type)
-                if 'DESCRIPTION' in render_data and render_data['DESCRIPTION'] != "":
-                    cmd_str += ' description {};'.format(render_data['DESCRIPTION'])
+                if 'DESCRIPTION' in render_data[policy_name] and render_data[policy_name]['DESCRIPTION'] != "":
+                    if ' ' in render_data[policy_name]['DESCRIPTION']:
+                        cmd_str += ' description "{}";'.format(render_data[policy_name]['DESCRIPTION'])
+                    else:
+                        cmd_str += ' description {};'.format(render_data[policy_name]['DESCRIPTION'])
                 for flow in render_data[policy_name]['FLOWS']:
                     flow_data = render_data[policy_name]['FLOWS'][flow]
                     priority = ""
@@ -176,7 +180,10 @@ def show_running_fbs_policy(render_tables):
                         priority = "priority " + str(flow_data['PRIORITY']) 
                     cmd_str += ' class {} {};'.format(flow_data['CLASS_NAME'], priority)
                     if 'DESCRIPTION' in flow_data and flow_data['DESCRIPTION'] != "":
-                        cmd_str += ' description {};'.format(flow_data['DESCRIPTION'])
+                        if " " in flow_data['DESCRIPTION']:
+                            cmd_str += ' description "{}";'.format(flow_data['DESCRIPTION'])
+                        else:
+                            cmd_str += ' description {};'.format(flow_data['DESCRIPTION'])
                     if match_type == 'copp':
                         if 'TRAP_GROUP' in flow_data:
                             if flow_data['TRAP_GROUP'] != 'null':
