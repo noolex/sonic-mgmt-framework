@@ -195,6 +195,10 @@ limitations under the License.
     <MACRO name="BIND-INTF-TO-VRF" arg="${iface_uri},${iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/vrf_name"></MACRO>
 </VIEW>
 
+<VIEW name="configure-subif-view">
+    <MACRO name="BIND-INTF-TO-VRF" arg="${iface_uri},${iface},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/vrf_name"></MACRO>
+</VIEW>
+
 <VIEW name="configure-if-range-view">
     <MACRO name="BIND-INTF-RNG-TO-VRF" arg="${iflist}"></MACRO>
 </VIEW>

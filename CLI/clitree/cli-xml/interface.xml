@@ -25,6 +25,21 @@ limitations under the License.
     <VAR name="phyifname" dynamic="true">
         <ACTION>echo -n "${phy-if-name}" | sed 's#/#%2f#g'</ACTION>
     </VAR>
+    <VAR name="physubifname" dynamic="true">
+        <ACTION>echo -n "${phy-sub-if-name}" | sed 's#/#%2f#g'</ACTION>
+    </VAR>
+    <VAR name="subifparent" dynamic="true">
+        <ACTION>echo -n "${phy-sub-if-name}" | sed 's/\..*//g'</ACTION>
+    </VAR>
+    <VAR name="subifindex" dynamic="true">
+        <ACTION>echo -n "${phy-sub-if-name}" | sed 's/.*\.//g'</ACTION>
+    </VAR>
+    <VAR name="subiflagparent" dynamic="true">
+        <ACTION>echo -n "${lag-id-subid}" | sed 's/\..*//g'</ACTION>
+    </VAR>
+    <VAR name="subiflagindex" dynamic="true">
+        <ACTION>echo -n "${lag-id-subid}" | sed 's/.*\.//g'</ACTION>
+    </VAR>
     <VAR name="phy-if-eth-name" dynamic="true">
       <ACTION> if test "${iface_num}" != ""; then echo -n "Eth${iface_num}"; fi</ACTION>
     </VAR>
@@ -479,8 +494,16 @@ limitations under the License.
                 dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name"
                 viewid="vlan_name=${vlan-if-name}"
         />
+        <PARAM
+                name="phy-sub-if-name"
+                help="Enter Physical sub interface configuration"
+                ptype="PHY_SUB_INTERFACE"
+                view="configure-subif-view"
+                dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id"
+                viewid="iface=${phy-sub-if-name};iface_uri=${physubifname};parent=${subifparent};index=${subifindex}"
+        />
         </PARAM>
-	<ACTION builtin="clish_pyobj">sonic_cli_if if_config ${if-switch} ${phy-if-name}${vlan-if-name}</ACTION>
+	<ACTION builtin="clish_pyobj">sonic_cli_if if_config ${if-switch} ${phy-if-name}${vlan-if-name}${phy-sub-if-name}</ACTION>
      </COMMAND>
 
      <COMMAND
@@ -508,64 +531,71 @@ limitations under the License.
         help="PortChannel interface configuration"
         mode="subcommand"
         ptype="SUBCOMMAND"
-        view="configure-lag-view"
-        viewid="po_id=po${lag-id};po_name=PortChannel${lag-id};"
         view_keys="name=*"
         view_tables="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/name={name}"
         render_command_cb="interface_portchannel"
         >
-        <PARAM
+        <PARAM name="mode" help="" mode="switch" ptype="SUBCOMMAND">
+            <PARAM
                 name="lag-id"
                 help="Enter PortChannel interface configuration"
                 ptype="LAG_ID"
-                >
-        </PARAM>
-        <PARAM
-                name="mode"
-                help="PortChannel Mode"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                optional="true"
+                view="configure-lag-view"
+                viewid="po_id=po${lag-id};po_name=PortChannel${lag-id};"
                 >
                 <PARAM
+                    name="mode"
+                    help="PortChannel Mode"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                    <PARAM
                         name="PoMode"
                         help=""
                         ptype="PO_MODE"
                         >
+                    </PARAM>
                 </PARAM>
-        </PARAM>
-        <PARAM
-                name="min-links"
-                help="Minimum links"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                optional="true"
-                >
                 <PARAM
+                    name="min-links"
+                    help="Minimum links"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                    <PARAM
                         name="min-links-value"
                         help="Minimum links value"
                         ptype="MIN_LINK"
                         >
+                    </PARAM>
                 </PARAM>
+                <PARAM
+                    name="fallback"
+                    help="LACP Fallback"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+                <PARAM
+                    name="fast_rate"
+                    help="LACP Fast Rate Interval"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
+            <PARAM name="lag-id-subid" help="Enter PortChannel subinterface configuration" ptype="LAG_ID_SUBID"
+                view="configure-subif-view"
+                viewid="iface=PortChannel${lag-id-subid};po_name=PortChannel${subiflagparent};iface_uri=PortChannel${lag-id-subid};parent=PortChannel${subiflagparent};index=${subiflagindex}"
+                >
+            </PARAM>
         </PARAM>
-        <PARAM
-                name="fallback"
-                help="LACP Fallback"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                optional="true"
-                >
-         </PARAM>
-         <PARAM
-                name="fast_rate"
-                help="LACP Fast Rate Interval"
-                ptype="SUBCOMMAND"
-                mode="subcommand"
-                optional="true"
-                >
-         </PARAM>
 
-         <ACTION builtin="clish_pyobj">sonic_cli_if portchannel_config PortChannel${lag-id} mode=${PoMode} min-links=${min-links-value} fallback=${fallback} fast_rate=${fast_rate}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if portchannel_config PortChannel${lag-id}${lag-id-subid} mode=${PoMode} min-links=${min-links-value} fallback=${fallback} fast_rate=${fast_rate}</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -725,8 +755,13 @@ limitations under the License.
                 ptype="PO_INTERFACE_RANGE"
                 >
             </PARAM>
+            <PARAM
+                name="phy-sub-if-name"
+                help="Sub interface"
+                ptype="PHY_SUB_INTERFACE"
+                />
         </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=${vlaniflist}${poiflist} delete_interface</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=${vlaniflist}${poiflist}${phy-sub-if-name} delete_interface</ACTION>
     </COMMAND>
 
     <COMMAND
@@ -1684,4 +1719,35 @@ limitations under the License.
 		</DOCGEN>
         </COMMAND>
 </VIEW>
+<!--VIEW
+        name="configure-subif-view"
+        prompt="${SYSTEM_NAME}(conf-subif-${iface})# "
+        depth="2"
+        >
+        <NAMESPACE
+            ref="configure-view"
+            help="false"
+            completion="false"
+            />
+        <COMMAND
+            name="show configuration"
+            help = "show configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-subif view_keys="name=${iface}" </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no"
+            help="Negate a command or set its defaults"
+            />
+        <COMMAND name="encapsulation" help=""/>
+        <COMMAND name="encapsulation dot1q" help=""/>
+        <COMMAND name="encapsulation dot1q vlan-id" help="" >
+            <PARAM name="vlanid" ptype="VLAN_ID" help=""> </PARAM>
+            <ACTION
+          builtin="clish_restcl">
+          oper=PATCH 
+          url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/openconfig-vlan:vlan/config/vlan-id 
+          body={ "openconfig-vlan:vlan-id": ${vlanid} }
+        </ACTION>
+        </COMMAND>
+</VIEW-->
 </CLISH_MODULE>

@@ -70,6 +70,8 @@ def rangetolst(givenifrange):
         else:
             givenifrange.append(i)
     ifrangelist = [iftype+str(i) for i in givenifrange]
+    if '.' in idlst[0]:
+        iftype = 'SubInterface'
     return iftype, ifrangelist
 
 # Function to check if intf fall inside any subset in the range list
@@ -254,6 +256,10 @@ def invoke_api(func, args=[]):
 
     # Delete interface
     if func == 'delete_interface':
+        if '.' in args[0]:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={sub}', 
+                name=args[0].split('.')[0], sub=args[0].split('.')[1])
+            return api.delete(path)
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}', name=args[0])
         return api.delete(path)
 
@@ -345,6 +351,16 @@ def invoke_api(func, args=[]):
 	    	tbl_key = "sonic-portchannel:PORTCHANNEL_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("PortChannel")]
+	elif args[0] == "SubInterface":
+            path = cc.Path('/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST')
+            responseSubIntfTbl = api.get(path)
+	    iflist = []
+            if responseSubIntfTbl.ok():
+		intf_map = responseSubIntfTbl.content
+	    	tbl_key = "sonic-interface:VLAN_SUB_INTERFACE_LIST"
+		if tbl_key in intf_map:
+		    iflist = [i["id"].replace("po", "PortChannel") for i in intf_map[tbl_key] if i["id"].startswith("po")]
+
 	return iflist
 
     elif func == 'create_if_range': 
