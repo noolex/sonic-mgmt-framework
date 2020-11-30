@@ -68,6 +68,7 @@ ATTR_DB_AND_RENDER_CB = "data_and_render_cb"
 ATTR_MODE = "mode"
 ATTR_ADD_CONFIG_ENTRY = "add_config_entry"
 ATTR_DB_FLAG = 'db_flag'
+ATTR_RENDER_CMD_VIEWID = "render_command_viewid"
 PARAM_VAL_STR = "%s"
 SEP_CLI_FLAG = "SEP_CLI"
 
@@ -123,6 +124,7 @@ NODE_COMMAND_KEYS_LIST_MAP = {}
 NODE_DB_AND_RENDER_LIST_MAP = {}
 NODE_RENDER_VIEW_CB_LIST_MAP = {}
 NODE_RENDER_CMD_CB_LIST_MAP = {}
+NODE_RENDER_CMD_VIEWID_LIST_MAP = {}
 
 
 CMD_TARGET_VIEW_MAP = {}
@@ -295,6 +297,25 @@ def get_render_cmd_cb(node_tag):
 
 
 
+def get_render_cmd_viewid(node_tag):
+
+    """Return the cmd viewid to be picked in the current iteration
+       from the command"""
+    render_cmd_viewid = ''
+
+    if ATTR_RENDER_CMD_VIEWID in node_tag.attrs:
+        if node_tag not in NODE_RENDER_CMD_VIEWID_LIST_MAP:
+            render_cmd_viewid_str = node_tag[ATTR_RENDER_CMD_VIEWID]
+            render_cmd_viewid_list = render_cmd_viewid_str.split(VIEW_ATTR_DELIMITER)
+            NODE_RENDER_CMD_VIEWID_LIST_MAP.update({node_tag : render_cmd_viewid_list})
+
+        render_cmd_viewid = NODE_RENDER_CMD_VIEWID_LIST_MAP[node_tag].pop(0)
+        if len(NODE_RENDER_CMD_VIEWID_LIST_MAP[node_tag]) == 0:
+            NODE_RENDER_CMD_VIEWID_LIST_MAP.pop(node_tag, None)
+    return render_cmd_viewid
+
+
+
 def process_view_tag(view_name, view_tag):
     target_view = ""
 
@@ -310,6 +331,7 @@ def process_view_tag(view_name, view_tag):
                 db_render_cb = get_db_and_render_cb(command_tag)
                 render_view_cb = get_render_view_cb(command_tag)
                 render_cmd_cb = get_render_cmd_cb(command_tag)
+                render_cmd_viewid = get_render_cmd_viewid(command_tag)
 
                 if db_render_cb or render_view_cb or render_cmd_cb:
                     render_cb_pr = True
@@ -323,7 +345,7 @@ def process_view_tag(view_name, view_tag):
                     add_dict_entry(view_tag, command_tag, field1_str, target_view, \
                         get_view_keys(command_tag), get_view_tables(command_tag), \
                         get_command_keys(command_tag), get_command_tables(command_tag),\
-                        db_render_cb, render_view_cb, render_cmd_cb, DICT_FILE)
+                        db_render_cb, render_view_cb, render_cmd_cb, render_cmd_viewid, DICT_FILE)
                     # Check if PARAM tag has view configured
                     if target_view:
                         process_view_name(target_view)
@@ -346,6 +368,7 @@ def process_view_tag(view_name, view_tag):
             db_render_cb = get_db_and_render_cb(command_tag)
             render_view_cb = get_render_view_cb(command_tag)
             render_cmd_cb = get_render_cmd_cb(command_tag)
+            render_cmd_viewid = get_render_cmd_viewid(command_tag)
 
             if db_render_cb or render_view_cb or render_cmd_cb:
                render_cb_pr = True
@@ -362,7 +385,7 @@ def process_view_tag(view_name, view_tag):
                 add_dict_entry(view_tag, command_tag, field1_str, target_view, \
                        get_view_keys(command_tag), get_view_tables(command_tag), \
                        get_command_keys(command_tag), get_command_tables(command_tag), \
-                       db_render_cb, render_view_cb, render_cmd_cb, DICT_FILE)
+                       db_render_cb, render_view_cb, render_cmd_cb, render_cmd_viewid, DICT_FILE)
 
                 if target_view:
                     process_view_name(target_view)
@@ -692,14 +715,15 @@ def get_command_view(view_tag, target_view):
 
 def add_dict_entry(view_tag, cmd_tag, field1str, target_view, view_keys, \
                    view_tables, command_keys, command_tables, db_render_cb, \
-                   render_view_cb, render_cmd_cb, dictfile):
+                   render_view_cb, render_cmd_cb, render_cmd_viewid, dictfile):
 
     command_view = get_command_view(view_tag, target_view)
 
     dict_entry=field1str + FIELD_DELIMITER + view_keys + \
                FIELD_DELIMITER + view_tables + FIELD_DELIMITER + command_keys + FIELD_DELIMITER + command_tables + \
                FIELD_DELIMITER + db_render_cb + FIELD_DELIMITER + render_view_cb + \
-               FIELD_DELIMITER + render_cmd_cb + FIELD_DELIMITER + command_view + '\n'
+               FIELD_DELIMITER + render_cmd_cb + FIELD_DELIMITER + render_cmd_viewid + \
+               FIELD_DELIMITER + command_view + '\n'
 
     log.debug('add_dict_entry: CMD :{}, Dict Entry: {}' \
                    .format(cmd_tag[ATTR_NAME], dict_entry))

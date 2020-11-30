@@ -76,7 +76,6 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'bfd-state' in neighborinfo['state']%}
   {{'  '}}
     BFD: Type: {{neighborinfo['state']['bfd-peer-type']}}
-      Detect Multiplier: 3, Min Rx interval: 300, Min Tx interval: 300
       Status: {{neighborinfo['state']['bfd-status']}}, Last update:{{neighborinfo['state']['bfd-peer-last-update-time']}}
 {% endif %}
 {% endif %}
@@ -156,7 +155,6 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'bfd-state' in neighborinfo['state'] %}
   {{'  '}}
     BFD: Type: {{neighborinfo['state']['bfd-peer-type']}}
-      Detect Multiplier: 3, Min Rx interval: 300, Min Tx interval: 300
       Status: {{neighborinfo['state']['bfd-status']}}, Last update:{{neighborinfo['state']['bfd-peer-last-update-time']}}
 {% endif %}
 {% endif %}

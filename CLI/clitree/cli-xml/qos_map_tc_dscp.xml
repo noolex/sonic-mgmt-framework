@@ -101,17 +101,13 @@ limitations under the License.
      </COMMAND>
 
      <COMMAND name="traffic-class" help="Internal Traffic Class (TC)" mode="subcommand" ptype="SUBCOMMAND" >
-         <PARAM name="tc" help="Traffic-class value" ptype="RANGE_0_7" >
+         <PARAM name="tc_list" help="(-) or (,) separated individual Traffic-class and ranges of TC's; for example, 0,2-7" ptype="VAL_0_7_RANGE">
             <PARAM name="dscp" help="DSCP" mode="subcommand" ptype="SUBCOMMAND" >
                 <PARAM name="dscp-val" help="DSCP value (0-63)" ptype="RANGE_0_63" >
                 </PARAM>
             </PARAM>
         </PARAM>
-        <ACTION builtin="clish_restcl">
-            oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${map_name}/forwarding-group-dscp-map-entries/
-            body={"openconfig-qos-maps-ext:forwarding-group-dscp-map-entries": {"forwarding-group-dscp-map-entry": [{"fwd-group":"${tc}", "config": {"dscp": ${dscp-val}}}]}}
-        </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_qos_map patch_tc_dscp_map_entries ${map_name} ${tc_list} ${dscp-val}</ACTION>
         <DOCGEN>
           <DESCRIPTION>
             This command to add Traffic class to DSCP entry in map.
@@ -132,12 +128,9 @@ limitations under the License.
 
       <!-- no dscp-->
       <COMMAND name="no traffic-class" help="Unconfigure a mapping">
-        <PARAM name="tc" help="TC value (0-7)" ptype="RANGE_0_7" >
+        <PARAM name="tc_list" help="(-) or (,) separated individual Traffic-class and ranges of TC's; for example, 0,2-7" ptype="VAL_0_7_RANGE">
         </PARAM>
-        <ACTION builtin="clish_restcl">
-            oper=DELETE
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-dscp-maps/forwarding-group-dscp-map=${map_name}/forwarding-group-dscp-map-entries/forwarding-group-dscp-map-entry=${tc}
-        </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_qos_map delete_tc_dscp_map_entries ${map_name} ${tc_list}</ACTION>
         <DOCGEN>
           <DESCRIPTION>
             This command to delete Traffic class to DSCP entry in map.

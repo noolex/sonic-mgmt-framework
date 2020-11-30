@@ -36,20 +36,16 @@ def stp_mode_get(aa):
 
     g_stp_resp = aa.get('/restconf/data/openconfig-spanning-tree:stp/global/config', None, False)
     if not g_stp_resp.ok():
-        if 'ietf-restconf:errors' in g_stp_resp.content \
-            and 'error' in g_stp_resp.content['ietf-restconf:errors'] \
-            and len(g_stp_resp.content['ietf-restconf:errors']['error']) \
-            and 'error-message' in g_stp_resp.content['ietf-restconf:errors']['error'][0] \
-            and 'Spanning-tree is not supported' in g_stp_resp.content['ietf-restconf:errors']['error'][0]['error-message']:
-                print ('%Error: Spanning-tree is not supported with this software package')
+        if g_stp_resp.status_code == 405:
+            print(g_stp_resp.error_message())
         else:
-            print ("%Error: Entry not found or STP not enabled")
+            print ("%Error: spanning-tree is not enabled")
         return g_stp_resp,g_stp_mode
 
     #g_stp_resp = aa.api_client.sanitize_for_serialization(g_stp_resp)
 
     if not 'enabled-protocol' in g_stp_resp['openconfig-spanning-tree:config']:
-        print ("%Error: Entry not found or STP not enabled")
+        print ("%Error: spanning-tree is not enabled")
         return g_stp_resp,g_stp_mode
 
     if g_stp_resp['openconfig-spanning-tree:config']['enabled-protocol'][0] == "openconfig-spanning-tree-ext:PVST":
@@ -57,7 +53,7 @@ def stp_mode_get(aa):
     elif g_stp_resp['openconfig-spanning-tree:config']['enabled-protocol'][0] == "openconfig-spanning-tree-types:RAPID_PVST":
         g_stp_mode = "RAPID_PVST"
     else:
-        print ("%Error: Invalid STP mode")
+        print ("%Error: Invalid spanning-tree mode")
 
 
     if "loop-guard" in g_stp_resp['openconfig-spanning-tree:config']:
@@ -91,11 +87,6 @@ def getId(item):
     return ifutils.name_to_int_val(ifName)
 
 def generic_set_response_handler(response, args):
-    #if response.ok():
-        #resp_content = response.content
-        #if resp_content is not None:
-            #print("%Error: {}".format(str(resp_content)))
-    #else:
     if not response.ok():
         print(response.error_message())
 
@@ -105,7 +96,7 @@ def generic_delete_response_handler(response, args):
         resp_content = response.content
         if resp_content is not None:
             print("%Error: {}".format(str(resp_content)))
-    elif response.status_code != '404':
+    elif response.status_code != 404:
         print(response.error_message())
 
 
@@ -1174,12 +1165,9 @@ def _convert_list_to_range_groups(vlist):
 def convert_list_to_range_groups(vlist):
     vlist_len = len(vlist)
     if vlist_len == 0:
-        print('Cannot convert a empty List')
         return None
 
     if not all(isinstance(item, int) for item in vlist):
-        print(vlist)
-        print('All Items not of type integer')
         return None
 
     vrange_list = list(_convert_list_to_range_groups(vlist))

@@ -580,7 +580,11 @@ def getDetails(fn, args):
                     for i in ids:
                         flowGroupsMap[i['name']] = i['id']
         if data['name'] in flowGroupsMap:
-            details['url'] = detach_flowgroup_url.format(name=data['name'], interfaces=data['interface'])
+            intf = data['interface']
+            getIntfList = get_intf_alias()
+            if len(getIntfList) > 0:
+               intf = list(getIntfList.keys())[list(getIntfList.values()).index(data['interface'])]
+            details['url'] = detach_flowgroup_url.format(name=data['name'], interfaces=intf)
         else:
             details['do_request'] = False
             details['ok'] = True

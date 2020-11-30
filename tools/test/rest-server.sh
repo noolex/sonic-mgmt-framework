@@ -21,7 +21,7 @@
 
 set -e
 
-TOPDIR=$PWD
+TOPDIR=$(git rev-parse --show-toplevel || echo ${PWD})
 BUILD_DIR=$TOPDIR/build
 SERVER_DIR=$BUILD_DIR/rest_server
 
@@ -51,9 +51,11 @@ fi
 
 # Prepare CVL config file with all traces enabled
 if [[ -z $CVL_CFG_FILE ]]; then
-    sed -E 's/((TRACE|LOG).*)\"false\"/\1\"true\"/' \
-        $MGMT_COMMON_DIR/cvl/conf/cvl_cfg.json > $SERVER_DIR/cvl_cfg.json
     export CVL_CFG_FILE=$SERVER_DIR/cvl_cfg.json
+    if [[ ! -e $CVL_CFG_FILE ]]; then
+        F=$MGMT_COMMON_DIR/cvl/conf/cvl_cfg.json
+        sed -E 's/((TRACE|LOG).*)\"false\"/\1\"true\"/' $F > $CVL_CFG_FILE
+    fi
 fi
 
 # Prepare yang files directiry for transformer
@@ -66,6 +68,7 @@ if [ -z $YANG_MODELS_PATH ]; then
     find $MGMT_COMN/models/yang -name "*.yang" -not -path "*/testdata/*" -exec ln -sf {} \;
     ln -sf $MGMT_COMN/models/yang/version.xml
     ln -sf $MGMT_COMN/config/transformer/models_list
+    ln -sf $MGMT_COMN/config/transformer/sonic_table_info.json
     ln -sf $MGMT_COMN/build/yang/api_ignore
     popd > /dev/null
 fi

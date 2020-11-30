@@ -37,7 +37,7 @@ def do_tr_vrf(args, tr_type, vrfName):
                 cmd = "traceroute -i " + vrfName + " " + args
 
         cmdList = cmd.split(' ')
-        subprocess.call(cmdList, shell=False)
+        subprocess.call(cmdList, stderr=1, shell=False)
 
     except KeyboardInterrupt:
         # May be triggered when Ctrl + C is used to stop script execution
@@ -55,7 +55,7 @@ def do_tr(args, tr_type):
             cmd = "traceroute " + args
 
         cmdList = cmd.split(' ')
-        subprocess.call(cmdList, shell=False)
+        subprocess.call(cmdList, stderr=1, shell=False)
 
     except KeyboardInterrupt:
         # May be triggered when Ctrl + C is used to stop script execution

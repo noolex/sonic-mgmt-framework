@@ -94,6 +94,7 @@ limitations under the License.
   <xs:attribute name="command_tables" type="stringType" use="optional"/>
   <xs:attribute name="db_flag" type="stringType" use="optional"/>
   <xs:attribute name="command_keys" type="stringType" use="optional"/>
+  <xs:attribute name="render_command_viewid" type="stringType" use="optional"/>
 </xs:attributeGroup>
 
 <xs:attributeGroup name="paramAttr">

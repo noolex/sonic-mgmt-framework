@@ -19,6 +19,13 @@
 #!/usr/bin/python
 
 import cli_client as cc
+from show_config_interface import find_ranges
+
+NUM_FWDGRP = 16
+NUM_QUEUES = 8
+NUM_PG = 8
+NUM_DSCP = 64
+NUM_DOT1P = 8
 
 def qos_map_dscp_tc_cb(render_tables):
 
@@ -65,15 +72,16 @@ def qos_map_dscp_tc_cb(render_tables):
 
             cmd_str += 'qos map dscp-tc ' + map['name'] + ';'
 
-    
         entries = map['dscp-map-entries']['dscp-map-entry']
         entries = sorted(entries, key = lambda x: int(x['dscp']))
+
+        fwdGrpDict = {x:[] for x in range(NUM_FWDGRP)}
         for entry in entries:
-            if entry['config']['fwd-group'] != 'NULL':
-                cmd_str += ' dscp ' + str(entry['dscp']) + ' traffic-class ' + str(entry['config']['fwd-group']) + ';'
-
-
-    #print ("cmd_str: ", cmd_str)
+           if entry['config']['fwd-group'] != 'NULL':
+              fwdGrpDict[int(entry['config']['fwd-group'])].append(int(entry['dscp']))
+        for x in range(NUM_FWDGRP):
+            if len(fwdGrpDict[x]):
+               cmd_str += ' dscp ' + find_ranges(fwdGrpDict[x]) + ' traffic-class ' + str(x) + ';'
 
     return 'CB_SUCCESS', cmd_str, True
 
@@ -122,15 +130,18 @@ def qos_map_dot1p_tc_cb(render_tables):
 
             cmd_str += 'qos map dot1p-tc ' + map['name'] + ';'
 
-    
         entries = map['dot1p-map-entries']['dot1p-map-entry']
         entries = sorted(entries, key = lambda x: int(x['dot1p']))
+
+        fwdGrpDict = {x:[] for x in range(NUM_FWDGRP)}
+
         for entry in entries:
-            if entry['config']['fwd-group'] != 'NULL':
-                cmd_str += ' dot1p ' + str(entry['dot1p']) + ' traffic-class ' + str(entry['config']['fwd-group']) + ';'
+           if entry['config']['fwd-group'] != 'NULL':
+              fwdGrpDict[int(entry['config']['fwd-group'])].append(int(entry['dot1p']))
 
-
-    #print ("cmd_str: ", cmd_str)
+        for x in range(NUM_FWDGRP):
+            if len(fwdGrpDict[x]):
+               cmd_str += ' dot1p ' + find_ranges(fwdGrpDict[x]) + ' traffic-class ' + str(x) + ';'
 
     return 'CB_SUCCESS', cmd_str, True
 
@@ -178,9 +189,15 @@ def qos_map_tc_queue_cb(render_tables):
     
         entries = map['forwarding-group-queue-map-entries']['forwarding-group-queue-map-entry']
         entries = sorted(entries, key = lambda x: int(x['fwd-group']))
-        for entry in entries:
-            cmd_str += ' traffic-class ' + str(entry['fwd-group']) + ' queue ' + str(entry['config']['output-queue-index']) + ';'
+        qDict = {x:[] for x in range(NUM_QUEUES)}
 
+        for entry in entries:
+           if entry['config']['output-queue-index'] != 'NULL':
+              qDict[int(entry['config']['output-queue-index'])].append(int(entry['fwd-group']))
+
+        for x in range(NUM_QUEUES):
+            if len(qDict[x]):
+               cmd_str += ' traffic-class ' + find_ranges(qDict[x]) + ' queue ' + str(x) + ';'
 
     return 'CB_SUCCESS', cmd_str, True
 
@@ -228,9 +245,15 @@ def qos_map_tc_pg_cb(render_tables):
     
         entries = map['forwarding-group-priority-group-map-entries']['forwarding-group-priority-group-map-entry']
         entries = sorted(entries, key = lambda x: int(x['fwd-group']))
-        for entry in entries:
-            cmd_str += ' traffic-class ' + str(entry['fwd-group']) + ' priority-group ' + str(entry['config']['priority-group-index']) + ';'
+        pgDict = {x:[] for x in range(NUM_PG)}
 
+        for entry in entries:
+           if entry['config']['priority-group-index'] != 'NULL':
+              pgDict[int(entry['config']['priority-group-index'])].append(int(entry['fwd-group']))
+
+        for x in range(NUM_PG):
+            if len(pgDict[x]):
+               cmd_str += ' traffic-class ' + find_ranges(pgDict[x]) + ' priority-group ' + str(x) + ';'
 
     return 'CB_SUCCESS', cmd_str, True
 
@@ -278,9 +301,15 @@ def qos_map_pfc_queue_cb(render_tables):
     
         entries = map['pfc-priority-queue-map-entries']['pfc-priority-queue-map-entry']
         entries = sorted(entries, key = lambda x: int(x['dot1p']))
-        for entry in entries:
-            cmd_str += ' pfc-priority ' + str(entry['dot1p']) + ' queue ' + str(entry['config']['output-queue-index']) + ';'
+        qDict = {x:[] for x in range(NUM_QUEUES)}
 
+        for entry in entries:
+           if entry['config']['output-queue-index'] != 'NULL':
+              qDict[int(entry['config']['output-queue-index'])].append(int(entry['dot1p']))
+
+        for x in range(NUM_QUEUES):
+            if len(qDict[x]):
+               cmd_str += ' pfc-priority ' + find_ranges(qDict[x]) + ' queue ' + str(x) + ';'
 
     return 'CB_SUCCESS', cmd_str, True
 
@@ -328,10 +357,16 @@ def qos_map_tc_dscp_cb(render_tables):
     
         entries = map['forwarding-group-dscp-map-entries']['forwarding-group-dscp-map-entry']
         entries = sorted(entries, key = lambda x: int(x['fwd-group']))
-        for entry in entries:
-            if entry['fwd-group'] != 'NULL':
-                cmd_str += ' traffic-class ' + str(entry['fwd-group']) + ' dscp ' + str(entry['config']['dscp']) + ';'
 
+        dscpDict = {x:[] for x in range(NUM_DSCP)}
+
+        for entry in entries:
+           if entry['config']['dscp'] != 'NULL':
+              dscpDict[int(entry['config']['dscp'])].append(int(entry['fwd-group']))
+
+        for x in range(NUM_DSCP):
+            if len(dscpDict[x]):
+               cmd_str += ' traffic-class ' + find_ranges(dscpDict[x]) + ' dscp ' + str(x) + ';'
 
     return 'CB_SUCCESS', cmd_str, True
 
@@ -379,10 +414,16 @@ def qos_map_tc_dot1p_cb(render_tables):
     
         entries = map['forwarding-group-dot1p-map-entries']['forwarding-group-dot1p-map-entry']
         entries = sorted(entries, key = lambda x: int(x['fwd-group']))
-        for entry in entries:
-            if entry['fwd-group'] != 'NULL':
-                cmd_str += ' traffic-class ' + str(entry['fwd-group']) + ' dot1p ' + str(entry['config']['dot1p']) + ';'
 
+        dot1pDict = {x:[] for x in range(NUM_DOT1P)}
+
+        for entry in entries:
+           if entry['config']['dot1p'] != 'NULL':
+              dot1pDict[int(entry['config']['dot1p'])].append(int(entry['fwd-group']))
+
+        for x in range(NUM_DOT1P):
+            if len(dot1pDict[x]):
+               cmd_str += ' traffic-class ' + find_ranges(dot1pDict[x]) + ' dot1p ' + str(x) + ';'
 
     return 'CB_SUCCESS', cmd_str, True
 
