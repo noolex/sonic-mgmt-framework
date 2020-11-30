@@ -279,7 +279,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND name="show mac dampening-disabled-ports" help="Show MAC dampening-disabled-ports" >
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_ext_network_instances_network_instance_mac_dampening_state show_mac_dampening.j2 ${__full_line__}
+            python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_mac_dampening_network_instances_network_instance_mac_dampening_state show_mac_dampening.j2 ${__full_line__}
         </ACTION>
     </COMMAND>
 

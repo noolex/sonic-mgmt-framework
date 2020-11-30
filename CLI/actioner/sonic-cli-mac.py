@@ -131,17 +131,18 @@ def invoke(func, args):
                  
                 print "MAC Move Dampening Threshold : {}".format(threshold)
                 print "MAC Move Dampening Interval  : {}".format(interval)
-    elif func == 'get_openconfig_network_instance_ext_network_instances_network_instance_mac_dampening_state':
+    elif func == 'get_openconfig_mac_dampening_network_instances_network_instance_mac_dampening_state':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/openconfig-mac-dampening:mac-dampening/state')
         api_response = aa.get(keypath)
         if api_response.ok():
             response = api_response.content
             if response is not None and len(response) is not 0:
-                print_content = response['openconfig-mac-dampening:state']['interfaces']
-                output = "\nPorts disabled due to MAC Dampening:\n\n"
-                for interface in print_content:
-                    output = output + interface + "\n"
-                print output    
+                if 'interfaces' in response['openconfig-mac-dampening:state']:
+                    print_content = response['openconfig-mac-dampening:state']['interfaces']
+                    output = "\nPorts disabled due to MAC Dampening:\n\n"
+                    for interface in print_content:
+                        output = output + interface + "\n"
+                    print output    
     elif func == 'delete_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list_threshold':
         keypath = cc.Path('/restconf/data/sonic-mac-dampening:sonic-mac-dampening/MAC_DAMPENING/MAC_DAMPENING_LIST={config}/threshold', config=args[0])
         return aa.delete(keypath)
@@ -183,7 +184,7 @@ def run(func, args):
                     return
             else:
                 return
-        if func == 'get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list' or func == 'get_openconfig_network_instance_ext_network_instances_network_instance_mac_dampening_state':
+        if func == 'get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list' or func == 'get_openconfig_mac_dampening_network_instances_network_instance_mac_dampening_state':
             return
         
         mac_table_list = [] 
