@@ -54,8 +54,6 @@ def show_aaa_config(render_tables):
                 failthrough = config['openconfig-system-ext:failthrough']
                 if failthrough == "True":
                     cmd += "aaa authentication failthrough enable;"
-                else:
-                    cmd += "aaa authentication failthrough disable;"
 
     # aaa authorization
     if 'authorization' in aaa:
