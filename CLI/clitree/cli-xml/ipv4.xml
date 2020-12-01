@@ -1690,5 +1690,44 @@ limitations under the License.
     <MACRO name="NO_INTF_RANGE_IPv6" arg="${iflist}"></MACRO>
   </VIEW>
 
+  <VIEW name="configure-subif-view">
+
+    <COMMAND
+        name="ip"
+        help="Interface Internet Protocol config commands"
+    />
+    <COMMAND
+        name="no ip"
+        help="Interface Internet Protocol config commands"
+    >
+    </COMMAND>
+
+    <COMMAND
+        name="ip address"
+        help="IP address">
+        <PARAM
+            name="addr"
+            help="IP address with mask"
+            ptype="IP_ADDR_MASK"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_if_ipv4 ${iface} ${addr} ${ip-subcommands}</ACTION>
+    </COMMAND>
+
+    <COMMAND
+        name="no ip address"
+        help="Delete IPv4 address(es) on the interface"
+        >
+        <PARAM
+            name="addr"
+            help="IPv4 address"
+            optional="true"
+            ptype="IP_ADDR_MASK"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True ${ip-subcommands}</ACTION>
+    </COMMAND>
+</VIEW>
+
 </CLISH_MODULE>
 
