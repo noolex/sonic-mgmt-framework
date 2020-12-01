@@ -50,9 +50,9 @@ def show_aaa_config(render_tables):
                         cmd += " group"
                     cmd += ' ' + method
                 cmd += ";"
-            if 'openconfig-aaa-ext:failthrough' in config:
-                failthrough = config['openconfig-aaa-ext:failthrough']
-                if failthrough:
+            if 'openconfig-system-ext:failthrough' in config:
+                failthrough = config['openconfig-system-ext:failthrough']
+                if failthrough == "True":
                     cmd += "aaa authentication failthrough enable;"
 
     # aaa authorization
