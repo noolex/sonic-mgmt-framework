@@ -28,7 +28,7 @@ limitations under the License.
   <PTYPE
     name="NTP_AUTHENTICATION_TYPE"
     method="select"
-    pattern="md5(md5) sha1(sha1) sha2-256(sha2-256)"
+    pattern="md5(NTP_AUTH_MD5) sha1(NTP_AUTH_SHA1) sha2-256(NTP_AUTH_SHA2_256)"
     help=""
   />
 <!--=======================================================-->
@@ -183,7 +183,8 @@ limitations under the License.
     <COMMAND name="ntp authentication-key"
              help="Configure NTP authentication key"
              mode="subcommand"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id={id}">
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id={id}"
+             render_command_cb="ntp_authentication_key">
       <PARAM name="key-number"
              help="Authentication key number"
              ptype="RANGE_1_65535"
