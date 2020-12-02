@@ -27,7 +27,11 @@ from scripts.render_cli import show_cli_output
 
 IDENTIFIER='NTP'
 NAME1='ntp'
-
+auth_type_dict = {
+  "sha1": "NTP_AUTH_SHA1",
+  "md5": "NTP_AUTH_MD5",
+  "sha2-256": "NTP_AUTH_SHA2_256"
+}
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
@@ -41,10 +45,10 @@ def invoke_api(func, args=[]):
         api_response = api.get(keypath)
         if  not api_response.ok():
             print api_response.error_message()
-            return False
+            return None
 
         if api_response.content == None:
-            return False
+            return None
 
         ntp_config = api_response.content
         if len(ntp_config) != 0:
@@ -57,10 +61,10 @@ def invoke_api(func, args=[]):
         api_response = api.get(keypath)
         if not api_response.ok():
             print api_response.error_message()
-            return False
+            return None
 
         if api_response.content == None:
-            return False
+            return None
 
         ntp_servers = api_response.content
         if len(ntp_servers) != 0:
@@ -73,10 +77,10 @@ def invoke_api(func, args=[]):
         api_response = api.get(keypath)
         if not api_response.ok():
             print api_response.error_message()
-            return False
+            return None
 
         if api_response.content == None:
-            return False
+            return None
   
         ntp_servers = api_response.content
         if len(ntp_servers) != 0:
@@ -86,22 +90,25 @@ def invoke_api(func, args=[]):
     elif func == 'set_ntp_source':
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface')
-        body = { "openconfig-system-ext:ntp-source-interface" : args[0] if args[0] != 'Management0' else 'eth0' }
-        api_response = api.patch(keypath, body)
-        if not api_response.ok():
-            # error response
-            print api_response.error_message()
-            return False
+        body = { "openconfig-system-ext:ntp-source-interface" : [args[0] if args[0] != 'Management0' else 'eth0'] }
+        return api.patch(keypath, body)
 
     elif func == 'delete_ntp_source':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface')
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface={source}',
+                          source=args[0] if args[0] != 'Management0' else 'eth0')
         return api.delete(keypath)
 
     elif func == 'set_ntp_server':
       
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers') 
-        body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0]}, "address" : args[0]}]}}
+        if len(args) >= 3:
+            body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0],
+                                                                             "openconfig-system-ext:key-id" : int(args[2])},
+                                                                 "address" : args[0]}]}}
+        else:
+            body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0]},
+                                                                 "address" : args[0]}]}}
         return api.patch(keypath, body)
 
     elif func == 'delete_ntp_server':
@@ -114,25 +121,57 @@ def invoke_api(func, args=[]):
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
         body = {"openconfig-system:config":{"openconfig-system-ext:vrf":args[0]}}
-        api_response = api.patch(keypath, body)
-        if not api_response.ok():
-            print api_response.error_message()
-            return False
+        return api.patch(keypath, body)
 
     elif func == 'delete_ntp_vrf':
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:vrf')
         return api.delete(keypath)
  
+    elif func == 'set_ntp_authentication':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
+        body = {"openconfig-system:config":{"enable-ntp-auth":True if args[0] == 'True' else False}}
+        return api.patch(keypath, body)
+
+    elif func == 'set_ntp_trusted_key':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
+        body = {"openconfig-system:config":{"openconfig-system-ext:trusted-key":[int(args[0])]}}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_ntp_trusted_key':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:trusted-key={trustkey}',
+                          trustkey=args[0])
+        return api.delete(keypath)
+
+    elif func == 'set_ntp_authentication_key':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/ntp-keys')
+        body = { "openconfig-system:ntp-keys": { "ntp-key" : [{"config" : {"key-id": int(args[0]),
+                                                                           "key-type" : auth_type_dict[args[1]],
+                                                                           "key-value" : args[2],
+                           "openconfig-system-ext:encrypted" : False if len(args) < 4 else True},
+                                                               "key-id" : int(args[0])}]}}
+        return api.patch(keypath, body)
+
+    elif func == 'delete_ntp_authentication_key':
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/ntp-keys/ntp-key={ntpkey}', ntpkey=args[0])
+        return api.delete(keypath)
+
     else:
         print("%Error: Invalid NTP CLI function: {}".format(func))
-        return False
+        return None
 
-    return True
+    return None
 
 def run(func, args):
     try:
-        invoke_api(func, args)
+        response = invoke_api(func, args)
+        if response is not None and not response.ok():
+            print response.error_message()
     except:
         # system/network error
         print "%Error: Transaction Failure"

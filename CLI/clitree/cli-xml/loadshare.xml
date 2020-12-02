@@ -163,10 +163,6 @@
         help="Hash Parameter Unconfiguration"
         ptype="SUBCOMMAND"
         mode="subcommand">
-        <PARAM
-            name="seed-val"
-            help="IP ECMP hash seed value"
-            ptype="LOADSHARE_SEED_VAL" />
         <ACTION builtin="clish_pyobj">sonic_cli_ip_loadshare delete_loadshare_seed_config ${__params}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -176,7 +172,7 @@
                 Use this command to configure IP ECMP load share hash seed
             </USAGE>
             <EXAMPLE summary="Unconfigure ip ecmp load share hash seed">
-                sonic-cli(config)# no ip load-share hash seed 200
+                sonic-cli(config)# no ip load-share hash seed
             </EXAMPLE>
         </DOCGEN>
   </COMMAND>
@@ -189,8 +185,7 @@
             name="IPv4 hash config options"
             help=""
             ptype="SUBCOMMAND"
-            mode="switch"
-            optional = "true">
+            mode="switch">
         <PARAM
             name="ipv4-src-ip"
             help="Source IP Address"
@@ -239,8 +234,7 @@
             name="IPv6 hash config options"
             help=""
             ptype="SUBCOMMAND"
-            mode="switch"
-            optional = "true">
+            mode="switch">
         <PARAM
             name="ipv6-src-ip"
             help="Source IP Address"
