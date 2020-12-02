@@ -48,10 +48,7 @@
 {% endif %}
 
 {% if "ecmp-hash-seed" in lb_entry %}
-{% if lb_entry['ecmp-hash-seed'] > 0 -%}
  {{'Hash seed: %s'|format(lb_entry['ecmp-hash-seed'])}}
-{% endif %}
-
 {% endif %}
 
 {% endif %}
