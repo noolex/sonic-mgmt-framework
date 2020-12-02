@@ -461,8 +461,8 @@ limitations under the License.
         name="interface"
         help="Configure interfaces"
         db_flag="SEP_CLI"
-        view_keys="name=*|name=*"
-        view_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={name}|sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name={name}"
+        view_keys="name=*|name=*|name=*"
+        view_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={name}|sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/name={name}|sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name}"
         >
         <PARAM
                 name="if-switch"

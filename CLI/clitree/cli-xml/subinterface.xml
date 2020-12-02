@@ -62,7 +62,7 @@ limitations under the License.
         <COMMAND name="encapsulation" help=""/>
         <COMMAND name="encapsulation dot1q" help=""/>
         <COMMAND name="encapsulation dot1q vlan-id" help="" >
-            <PARAM name="vlanid" ptype="VLAN_ID" help=""> </PARAM>
+            <PARAM name="vlanid" ptype="VLAN_ID" help="" dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/vlan"> </PARAM>
             <ACTION
                 builtin="clish_restcl">
                 oper=PATCH 

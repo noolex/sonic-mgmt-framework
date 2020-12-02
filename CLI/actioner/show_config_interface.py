@@ -413,3 +413,17 @@ def show_ipv6_lo_ip_address(render_tables):
                           'name',
                           'loIfName',
                           'ipv6 address')
+
+def show_ipv4_subif_ip_address(render_tables):
+    return show_ip_address(render_tables,
+                          'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_IPADDR_LIST',
+                          'name',
+                          'id',
+                          'ip address')
+
+def show_ipv6_subif_ip_address(render_tables):
+    return show_ip_address(render_tables,
+                          'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_IPADDR_LIST',
+                          'name',
+                          'id',
+                          'ipv6 address')

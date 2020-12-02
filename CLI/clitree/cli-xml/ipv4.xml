@@ -1704,7 +1704,9 @@ limitations under the License.
 
     <COMMAND
         name="ip address"
-        help="IP address">
+        help="IP address"
+        command_tables="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_IPADDR_LIST/id={name},ipPrefix={prfx}"
+        render_command_cb="ipv4_subif_ip_address">
         <PARAM
             name="addr"
             help="IP address with mask"

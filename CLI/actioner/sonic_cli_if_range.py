@@ -239,11 +239,17 @@ def generate_body(func, args=[]):
             speed = speed_map.get(args[1])
             body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-ethernet:port-speed": speed } )
     elif func == 'patch_ipv6_enabled':
-        body = { "name": args[0] }
-        if args[0].startswith("Vlan"):
+        parent_if=args[0]
+        sub_if = 0
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = int(args[0].split('.')[1])
+        parent_if = parent_if.replace("po", "PortChannel")
+        body = { "name": parent_if }
+        if parent_if.startswith("Vlan"):
             body.update({"openconfig-vlan:routed-vlan" : {"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}}})
         else:
-            body.update({"subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
+            body.update({"subinterfaces" : {"subinterface": [ {"index": sub_if,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
 
     # FEC config
     elif func == 'patch_port_fec':
@@ -340,7 +346,13 @@ def invoke_api(func, args=[]):
 	if args[0].startswith("Vlan"):
             path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/config/enabled', name=args[0])
         else:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=args[0], index="0")
+            parent_if=args[0]
+            sub_if="0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+            parent_if = parent_if.replace("po", "PortChannel")
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=parent_if, index=sub_if)
         return api.delete(path)
 
     # Get interface

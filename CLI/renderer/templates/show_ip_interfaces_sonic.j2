@@ -102,8 +102,8 @@ Flags: U-Unnumbered interface, A-Anycast IP
                 {% if subintfvars.update({'admin_state':"up"}) -%}{% endif -%}
                 {% if subintfvars.update({'ipv4_src_pfx':vlanSubIntf["ipPrefix"]}) -%}{% endif -%}
             {% endif -%}
-            {% if "oper" in vlanSubIntf -%}
-                {% if subintfvars.update({'oper_state':vlanSubIntf["oper"]}) -%}{% endif -%}
+            {% if subintfvars.admin_state == "up" -%}
+                {% if subintfvars.update({'oper_state':'up'}) -%}{% endif -%}
             {% endif -%}
             {% for entry in vlanSubIntfList -%}
                 {% if vlanSubIntf["id"] == entry["id"] and entry["vrf_name"] != 'default' -%}
@@ -118,6 +118,9 @@ Flags: U-Unnumbered interface, A-Anycast IP
         {% endfor -%}    
     {% endif %}
    {% for ifKey in intfTblList %}
+    {% if '.' in ifKey["ifName"] %}
+        {% continue %}
+    {% endif %}
 	{% if "secondary" in ifKey %}
             {% if vars.update({'secondary':ifKey["secondary"]}) %}{% endif %}
             {% if vars.secondary == true %}

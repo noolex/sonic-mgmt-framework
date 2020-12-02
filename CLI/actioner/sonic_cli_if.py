@@ -270,8 +270,14 @@ def invoke_api(func, args=[]):
         return api.patch(path, body)    
     
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config':
+        parent_if=args[0]
+        sub_if="0"
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = args[0].split('.')[1]
+        parent_if = parent_if.replace("po", "PortChannel")
         sp = args[1].split('/')
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=parent_if, index=sub_if)
         if len(args) > 2 and len(args[2]) > 0:
             body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:gw-addr": args[2]} }]}}
         else:
