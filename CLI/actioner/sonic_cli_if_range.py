@@ -296,7 +296,8 @@ def invoke_api(func, args=[]):
 
     elif func == 'rpc_replace_vlan':
         vlanStr = args[1].replace('-', '..')
-        body = {"openconfig-interfaces-ext:input":{"ifname":args[0],"vlanlist":vlanStr}}
+	ifList = ','.join(args[0])
+        body = {"openconfig-interfaces-ext:input":{"ifname":ifList,"vlanlist":vlanStr}}
         path = cc.Path('/restconf/operations/openconfig-interfaces-ext:vlan-replace')
         return api.post(path,body)
 
@@ -571,18 +572,18 @@ def run(func, args):
                 return 1
             iflist = iflistStr.rstrip().split(',')
             subfunc = args[1]
-            for intf in iflist:
-                intfargs = [intf]+ args[2:]
-                response = invoke_api(subfunc, intfargs)
-                if response and response.ok() and (response.content is not None):
-                    api_response = response.content
-                    if 'openconfig-interfaces-ext:output' in api_response:
-                        value = api_response['openconfig-interfaces-ext:output']
-                        if value["status"] != 0:
-                            if value["status-detail"] != '':
-                                print("%Error: {}".format(value["status-detail"]))
-                            else:
-                                print "%Error: Interface: "+intf
+	    intfargs = [iflist]+ args[2:]
+            response = invoke_api(subfunc, intfargs)
+            if response and response.ok() and (response.content is not None):
+                api_response = response.content
+                if 'openconfig-interfaces-ext:output' in api_response:
+                    value = api_response['openconfig-interfaces-ext:output']
+                    if value["status"] != 0:
+                        if value["status-detail"] != '':
+                            print("%Error: {}".format(value["status-detail"]))
+                        else:
+                            print "%Error: replacing VLANs for interface range failed"
+
         else:
             response = invoke_api(func, args)
             return check_response(response, func, args)
