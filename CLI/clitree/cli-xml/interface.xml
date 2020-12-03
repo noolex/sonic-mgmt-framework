@@ -526,6 +526,8 @@ limitations under the License.
         ptype="SUBCOMMAND"
         view_keys="name=*"
         view_tables="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/name={name}"
+        view="configure-lag-view"
+        viewid="po_id=po${lag-id};po_name=PortChannel${lag-id};"
         render_command_cb="interface_portchannel"
         >
         <PARAM name="mode" help="" mode="switch" ptype="SUBCOMMAND">
