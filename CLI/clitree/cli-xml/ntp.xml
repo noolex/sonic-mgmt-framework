@@ -28,7 +28,7 @@ limitations under the License.
   <PTYPE
     name="NTP_AUTHENTICATION_TYPE"
     method="select"
-    pattern="md5(NTP_AUTH_MD5) sha1(NTP_AUTH_SHA1) sha2-256(NTP_AUTH_SHA2_256)"
+    pattern="md5(md5) sha1(sha1) sha2-256(sha2-256)"
     help=""
   />
 <!--=======================================================-->
@@ -133,6 +133,123 @@ limitations under the License.
 
     <COMMAND name="no ntp"
              help="Delete NTP configuration">
+    </COMMAND>
+
+    <!-- NTP authenticate configuration commands -->
+    <COMMAND name="ntp authenticate"
+             help="Enables NTP authentication"
+             mode="subcommand"
+             command_keys="global_key=global"
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
+             dbpath="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/auth_enabled=true">
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_authentication True
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Enable NTP authentication in configuration mode. By default, NTP authentication is disabled
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# ntp authenticate
+          </USAGE>
+          <EXAMPLE summary="Enable NTP authentication">
+              sonic# configure
+              sonic(config)# ntp authenticate
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- no NTP authenticate configuration commands -->
+    <COMMAND name="no ntp authenticate"
+             help="Disable NTP authentication">
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_authentication False
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Disable NTP authentication in configuration mode.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# no ntp authenticate
+          </USAGE>
+          <EXAMPLE summary="Disable NTP authentication">
+              sonic# configure
+              sonic(config)# no ntp authenticate
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- NTP authentication-key configuration commands -->
+    <COMMAND name="ntp authentication-key"
+             help="Configure NTP authentication key"
+             mode="subcommand"
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id={id}">
+      <PARAM name="key-number"
+             help="Authentication key number"
+             ptype="RANGE_1_65535"
+             dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id">
+        <PARAM name="auth-type"
+               help="Authentication type"
+               ptype="NTP_AUTHENTICATION_TYPE"
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/type">
+          <PARAM name="key"
+                 help="Authentication-key string (max 64 chars, key longer than 20 chars must be hex)"
+                 ptype="STRING_PASSWORD"
+                 dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/value">
+            <PARAM name="encrypted"
+                   help = "Key is in encrypted format"
+                   ptype="SUBCOMMAND"
+                   mode="subcommand"
+                   optional="true"
+                   hidden="true"
+                   dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/encrypted">
+            </PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_authentication_key ${key-number} ${auth-type} ${#key} ${encrypted}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure NTP authentication key.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# ntp authentication-key key-number auth-type key encrypted
+              "encrypted" is optional
+          </USAGE>
+          <EXAMPLE summary="Configure NTP authentication-key">
+              sonic# configure
+              sonic(config)# ntp authentication-key 128 md5 DellEmc2020
+              sonic(config)# ntp authentication-key 128 md5 dryjsgjd123 encrypted
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- no NTP authentication-key configuration commands -->
+    <COMMAND name="no ntp authentication-key"
+             help="Delete NTP authentication-key"
+             mode="subcommand">
+      <PARAM name="key-number"
+             help="Authentication key number"
+             ptype="RANGE_1_65535">
+      </PARAM>
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp delete_ntp_authentication_key ${key-number}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Delete NTP authentication-key.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# no ntp authentication-key 
+                   key-number  Authentication key number
+          </USAGE>
+          <EXAMPLE summary="Delete NTP authentication-key">
+              sonic# configure
+              sonic(config)# no ntp authentication-key 128
+          </EXAMPLE>
+      </DOCGEN>
     </COMMAND>
 
     <!-- NTP server configuration commands -->
@@ -343,6 +460,61 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
+    <!-- NTP trusted-key configuration commands -->
+    <COMMAND name="ntp trusted-key"
+             help="Configure NTP authentication key number for trusted time source"
+             mode="subcommand"
+             command_keys="global_key=global"
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
+             render_command_cb="ntp_trusted_key">
+      <PARAM name="key-number"
+             help="Trusted key number"
+             ptype="RANGE_1_65535">
+      </PARAM>
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_trusted_key ${key-number}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure NTP authentication key number for trusted time source.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# ntp trusted-key
+                   key-number  Trusted key number
+          </USAGE>
+          <EXAMPLE summary="Configure NTP trusted-key number">
+              sonic# configure
+              sonic(config)# ntp trusted-key 128
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
+    <!-- no NTP trusted-key configuration commands -->
+    <COMMAND name="no ntp trusted-key"
+             help="Delete NTP trusted-key"
+             mode="subcommand">
+      <PARAM name="key-number"
+             help="Trusted key number"
+             ptype="RANGE_1_65535">
+      </PARAM>
+      <ACTION
+        builtin="clish_pyobj">sonic_cli_ntp delete_ntp_trusted_key ${key-number}
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Delete NTP trusted-key number.
+          </DESCRIPTION>
+          <USAGE>
+              sonic(config)# no ntp trusted-key 
+                   key-number  Trusted key number
+          </USAGE>
+          <EXAMPLE summary="Delete NTP trusted-key number">
+              sonic# configure
+              sonic(config)# no ntp trusted-key 128
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
     <!-- NTP VRF configuration commands -->
     <COMMAND name="ntp vrf"
              help="Enable NTP on VRF"
@@ -402,178 +574,6 @@ limitations under the License.
           <EXAMPLE summary="Disable NTP on VRF">
               sonic# configure
               sonic(config)# no ntp vrf
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <!-- NTP authenticate configuration commands -->
-    <COMMAND name="ntp authenticate"
-             help="Enables NTP authentication"
-             mode="subcommand"
-             command_keys="global_key=global"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
-             dbpath="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/auth_enabled=true">
-      <ACTION
-        builtin="clish_pyobj">sonic_cli_ntp set_ntp_authentication True
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Enable NTP authentication in configuration mode. By default, NTP authentication is disabled
-          </DESCRIPTION>
-          <USAGE>
-              sonic(config)# ntp authenticate
-          </USAGE>
-          <EXAMPLE summary="Enable NTP authentication">
-              sonic# configure
-              sonic(config)# ntp authenticate
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <!-- no NTP authenticate configuration commands -->
-    <COMMAND name="no ntp authenticate"
-             help="Disable NTP authentication">
-      <ACTION
-        builtin="clish_pyobj">sonic_cli_ntp set_ntp_authentication False
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Disable NTP authentication in configuration mode.
-          </DESCRIPTION>
-          <USAGE>
-              sonic(config)# no ntp authenticate
-          </USAGE>
-          <EXAMPLE summary="Disable NTP authentication">
-              sonic# configure
-              sonic(config)# no ntp authenticate
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <!-- NTP trusted-key configuration commands -->
-    <COMMAND name="ntp trusted-key"
-             help="Configure NTP authentication key number for trusted time source"
-             mode="subcommand"
-             command_keys="global_key=global"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
-             render_command_cb="ntp_trusted_key">
-      <PARAM name="key-number"
-             help="Trusted key number"
-             ptype="RANGE_1_65535">
-      </PARAM>
-      <ACTION
-        builtin="clish_pyobj">sonic_cli_ntp set_ntp_trusted_key ${key-number}
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Configure NTP authentication key number for trusted time source.
-          </DESCRIPTION>
-          <USAGE>
-              sonic(config)# ntp trusted-key
-                   key-number  Trusted key number
-          </USAGE>
-          <EXAMPLE summary="Configure NTP trusted-key number">
-              sonic# configure
-              sonic(config)# ntp trusted-key 128
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <!-- no NTP trusted-key configuration commands -->
-    <COMMAND name="no ntp trusted-key"
-             help="Delete NTP trusted-key"
-             mode="subcommand">
-      <PARAM name="key-number"
-             help="Trusted key number"
-             ptype="RANGE_1_65535">
-      </PARAM>
-      <ACTION
-        builtin="clish_pyobj">sonic_cli_ntp delete_ntp_trusted_key ${key-number}
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Delete NTP trusted-key number.
-          </DESCRIPTION>
-          <USAGE>
-              sonic(config)# no ntp trusted-key 
-                   key-number  Trusted key number
-          </USAGE>
-          <EXAMPLE summary="Delete NTP trusted-key number">
-              sonic# configure
-              sonic(config)# no ntp trusted-key 128
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <!-- NTP authentication-key configuration commands -->
-    <COMMAND name="ntp authentication-key"
-             help="Configure NTP authentication key"
-             mode="subcommand"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id={id}">
-      <PARAM name="key-number"
-             help="Authentication key number"
-             ptype="RANGE_1_65535"
-             dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id">
-        <PARAM name="auth-type"
-               help="Authentication type"
-               ptype="NTP_AUTHENTICATION_TYPE"
-               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/type">
-          <PARAM name="key"
-                 help="Authentication-key string (max 64 chars, key longer than 20 chars must be hex)"
-                 ptype="STRING_PASSWORD"
-                 dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/value">
-            <PARAM name="encrypted"
-                   help = "Key is in encrypted format"
-                   ptype="SUBCOMMAND"
-                   mode="subcommand"
-                   optional="true"
-                   hidden="true"
-                   dbpath="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/encrypted">
-            </PARAM>
-          </PARAM>
-        </PARAM>
-      </PARAM>
-      <ACTION
-        builtin="clish_pyobj">sonic_cli_ntp set_ntp_authentication_key ${key-number} ${auth-type} ${#key} ${encrypted}
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Configure NTP authentication key.
-          </DESCRIPTION>
-          <USAGE>
-              sonic(config)# ntp authentication-key key-number auth-type key encrypted
-              "encrypted" is optional
-          </USAGE>
-          <EXAMPLE summary="Configure NTP authentication-key">
-              sonic# configure
-              sonic(config)# ntp authentication-key 128 md5 DellEmc2020
-              sonic(config)# ntp authentication-key 128 md5 dryjsgjd123 encrypted
-          </EXAMPLE>
-      </DOCGEN>
-    </COMMAND>
-
-    <!-- no NTP authentication-key configuration commands -->
-    <COMMAND name="no ntp authentication-key"
-             help="Delete NTP authentication-key"
-             mode="subcommand">
-      <PARAM name="key-number"
-             help="Authentication key number"
-             ptype="RANGE_1_65535">
-      </PARAM>
-      <ACTION
-        builtin="clish_pyobj">sonic_cli_ntp delete_ntp_authentication_key ${key-number}
-      </ACTION>
-      <DOCGEN>
-          <DESCRIPTION>
-              Delete NTP authentication-key.
-          </DESCRIPTION>
-          <USAGE>
-              sonic(config)# no ntp authentication-key 
-                   key-number  Authentication key number
-          </USAGE>
-          <EXAMPLE summary="Delete NTP authentication-key">
-              sonic# configure
-              sonic(config)# no ntp authentication-key 128
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>

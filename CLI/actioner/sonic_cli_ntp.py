@@ -27,7 +27,11 @@ from scripts.render_cli import show_cli_output
 
 IDENTIFIER='NTP'
 NAME1='ntp'
-
+auth_type_dict = {
+  "sha1": "NTP_AUTH_SHA1",
+  "md5": "NTP_AUTH_MD5",
+  "sha2-256": "NTP_AUTH_SHA2_256"
+}
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
@@ -146,7 +150,7 @@ def invoke_api(func, args=[]):
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/ntp-keys')
         body = { "openconfig-system:ntp-keys": { "ntp-key" : [{"config" : {"key-id": int(args[0]),
-                                                                           "key-type" : args[1],
+                                                                           "key-type" : auth_type_dict[args[1]],
                                                                            "key-value" : args[2],
                            "openconfig-system-ext:encrypted" : False if len(args) < 4 else True},
                                                                "key-id" : int(args[0])}]}}

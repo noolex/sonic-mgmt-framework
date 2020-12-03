@@ -95,6 +95,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                     {% if vars.update({'validRoute':path["state"]["valid-route"]}) %}{% endif %}
                     {% if vars.update({'bestRoute':path["state"]["best-path"]}) %}{% endif %}
                     {% if vars.update({'pathId':path["state"]["path-id"]}) %}{% endif %}
+                    {% if vars.update({'routerId':path["state"]["remote-router-id"]}) %}{% endif %}
                  {% endif %}
                  {% if "attr-sets" in key %}
                     {% set attr_sets = path[key] %}
