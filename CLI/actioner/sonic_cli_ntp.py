@@ -109,13 +109,24 @@ def invoke_api(func, args=[]):
         else:
             body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0]},
                                                                  "address" : args[0]}]}}
-        return api.patch(keypath, body)
+        api_response = api.patch(keypath, body)
+        if not api_response.ok() and "does not match regular expression pattern" in api_response.error_message():
+            print "%Error: Invalid IP address or hostname"
+            return None
+        else:
+            return api_response
 
     elif func == 'delete_ntp_server':
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers/server={server}',
                           server=args[0])
-        return api.delete(keypath)
+
+        api_response = api.delete(keypath)
+        if not api_response.ok() and "does not match regular expression pattern" in api_response.error_message():
+            print "%Error: Invalid IP address or hostname"
+            return None
+        else:
+            return api_response
 
     elif func == 'set_ntp_vrf':
 
