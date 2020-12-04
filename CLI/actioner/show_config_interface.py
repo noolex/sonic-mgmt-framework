@@ -53,6 +53,9 @@ def show_if_vrf_binding(render_tables):
     elif 'sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST' in render_tables:
         intfdata = render_tables['sonic-loopback-interface:sonic-loopback-interface/LOOPBACK_INTERFACE/LOOPBACK_INTERFACE_LIST']
         key = 'loIfName'
+    elif 'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST' in render_tables:
+        intfdata = render_tables['sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST']
+        key = 'id'
     else:
         return 'CB_SUCCESS', cmd_str
 
@@ -60,7 +63,7 @@ def show_if_vrf_binding(render_tables):
         if render_tables['name'] == item[key] and 'vrf_name' in item:
             cmd_str = 'ip vrf forwarding ' + item['vrf_name']
             break  
-        
+            
     return 'CB_SUCCESS', cmd_str
 
 def show_if_switchport_access(render_tables):

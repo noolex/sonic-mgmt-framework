@@ -6,7 +6,7 @@
     {% set subIntfList = json_output["sonic-interface:VLAN_SUB_INTERFACE_LIST"] %}
     {% for subIntf in subIntfList %}
         {% set subintfvars = ({'speed':'','mtu':'','vlan':'','admin_state':'down','type':'802.1Q'}) %}
-        {% if subintfvars.update({'name':subIntf["id"]|replace("Eth","Ethernet")|replace("po","PortChannel")}) -%}{% endif -%}
+        {% if subintfvars.update({'name':subIntf["id"]}) -%}{% endif -%}
         {% if "vlan" in subIntf -%}
             {% if subintfvars.update({'vlan':subIntf["vlan"]}) -%}{% endif -%}
         {% endif -%}

@@ -74,6 +74,22 @@ def filter_address(d, isIPv4):
         del ipData[:]
         ipData.extend(newIpData)
 
+    if 'sonic-interface:VLAN_SUB_INTERFACE_IPADDR_LIST' in d:
+        ipData = d['sonic-interface:VLAN_SUB_INTERFACE_IPADDR_LIST']
+        newIpData = []
+        for l in ipData:
+            for k, v in l.items():
+               if k == "ip_prefix":
+                  ip = IPNetwork(v)
+                  if isIPv4:
+                      if ip.version == 4:
+                          newIpData.append(l)
+                  else:
+                      if ip.version == 6:
+                          newIpData.append(l)
+        del ipData[:]
+        ipData.extend(newIpData)
+
 def get_helper_adr_str(args):
     ipAdrStr = ""
     for index,i in  enumerate(args):
@@ -560,6 +576,10 @@ def invoke_api(func, args=[]):
         responseSubIntfIpTbl =  api.get(path)
         if responseSubIntfIpTbl.ok():
             d.update(responseSubIntfIpTbl.content)
+            if func == 'ip_interfaces_get':
+               filter_address(d, True)
+            else:
+               filter_address(d, False)
         path = cc.Path('/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST')
         responseSubIntfTbl =  api.get(path)
         if responseSubIntfTbl.ok():
