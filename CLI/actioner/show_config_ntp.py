@@ -61,8 +61,8 @@ def show_ntp_authentication_key(render_tables):
                 encrypted = " encrypted"
 
             if ntp_key['type'] == 'SHA2_256':
-                cmd_str = cmd_str+';'+cmd_prfx+str(ntp_key['id'])+" SHA2-256 "+ntp_key['value']+encrypted
+                cmd_str = cmd_str+';'+cmd_prfx+str(ntp_key['id'])+" sha2-256 "+ntp_key['value']+encrypted
             else:
-                cmd_str = cmd_str+';'+cmd_prfx+str(ntp_key['id'])+" "+ntp_key['type']+" "+ntp_key['value']+encrypted
+                cmd_str = cmd_str+';'+cmd_prfx+str(ntp_key['id'])+" "+ntp_key['type'].lower()+" "+ntp_key['value']+encrypted
 
     return 'CB_SUCCESS', cmd_str
