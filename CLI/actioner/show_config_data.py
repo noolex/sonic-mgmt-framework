@@ -94,7 +94,7 @@ config_view_hierarchy= \
        'configure-lag',
        'configure-if-mgmt',
        'configure-if',
-       'configure-subif'
+       'configure-subif',
        'configure-route-map',
        'configure-router-bgp',
        'configure-router-ospf',

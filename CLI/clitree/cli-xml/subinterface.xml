@@ -35,6 +35,11 @@ limitations under the License.
             >
             <ACTION builtin="clish_pyobj">sonic_cli_show_subinterface status_sonic</ACTION>
         </COMMAND>
+        <COMMAND
+           name="show running-configuration subinterface"
+           help="Show subinterface config">
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-subif view_keys="name=*" </ACTION>
+      </COMMAND>
 
     </VIEW>
 
@@ -69,6 +74,42 @@ limitations under the License.
                 url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/openconfig-vlan:vlan/config/vlan-id 
                 body={ "openconfig-vlan:vlan-id": ${vlanid} }
             </ACTION>
+        </COMMAND>
+        <COMMAND name="no encapsulation" help="">
+            <ACTION
+                builtin="clish_restcl">
+                oper=DELETE 
+                url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/openconfig-vlan:vlan/config/vlan-id 
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="mtu"
+            help="Configure MTU">
+            <PARAM
+                name="mtu"
+                help="MTU of the interface"
+                dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/mtu"
+                ptype="RANGE_MTU" />
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/openconfig-interfaces-ext:mtu body={"openconfig-interfaces-ext:mtu": ${mtu}}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no mtu"
+            help="Remove MTU">
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/openconfig-interfaces-ext:mtu body={"openconfig-interfaces-ext:mtu": 9100}</ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="shutdown"
+            help="Disable the interface"
+            dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/admin_status=down">
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no shutdown"
+            help="Enable the interface"
+            dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/admin_status=up">
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>
