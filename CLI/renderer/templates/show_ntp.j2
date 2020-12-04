@@ -52,7 +52,11 @@
         {% set server_list = json_output["servers"] %}
         {% for server in server_list %}
             {% if vars.update({'address':server["address"]}) %}{% endif %}
-            {% if vars.update({'key_id':server["config"]['openconfig-system-ext:key-id']}) %}{% endif %}
+            {% if "config" in server %}
+                {% if vars.update({'key_id':server["config"]['openconfig-system-ext:key-id']}) %}{% endif %}
+            {% else %}
+                {% if vars.update({'key_id':""}) %}{% endif %}
+            {% endif %}
             {{-vars.address.ljust(32)}}{{'%-22s'|format(vars.key_id)}}
         {% endfor %}
     {% elif "associations" in json_output %}
@@ -85,7 +89,7 @@
                     {% if vars.update({'poll':""}) %}{% endif %}
                 {% endif %}
                 {% if "openconfig-system-ext:reach" in assoc_info %}
-                    {% if vars.update({'reach':'%d'|format(assoc_info["openconfig-system-ext:reach"])}) %}{% endif %}
+                    {% if vars.update({'reach':'%o'|format(assoc_info["openconfig-system-ext:reach"])}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'reach':""}) %}{% endif %}
                 {% endif %}
