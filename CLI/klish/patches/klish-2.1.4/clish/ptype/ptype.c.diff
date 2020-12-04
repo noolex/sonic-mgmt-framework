@@ -443,7 +443,7 @@
 >                                            If user has eth1, it needs to be converted to ethernet1.
 >                                            Similarly,if user gives "ethernet 1", the space need to be
 >                                            stripped */
->                                 	if (name) {
+>                                 	if (name && strncmp(name, result, strlen(name))) {
 >                                                    /*User could have entered short form eth.So check if
 >                                                    the entered string is substring of the name after
 >                                                    stripping the port number portion */

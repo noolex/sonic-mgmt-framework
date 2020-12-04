@@ -37,7 +37,7 @@ def do_ping_vrf(args, ping_type, vrfName):
                 cmd = "ping -I " + vrfName + " " + args
 
         cmdList = cmd.split(' ')
-        subprocess.call(cmdList, shell=False)
+        subprocess.call(cmdList, stderr=1, shell=False)
 
     except KeyboardInterrupt:
         # May be triggered when Ctrl + C is used to stop script execution
@@ -55,7 +55,7 @@ def do_ping(args, ping_type):
             cmd = "ping " + args
 
         cmdList = cmd.split(' ')
-        subprocess.call(cmdList, shell=False)
+        subprocess.call(cmdList, stderr=1, shell=False)
 
     except KeyboardInterrupt:
         # May be triggered when Ctrl + C is used to stop script execution

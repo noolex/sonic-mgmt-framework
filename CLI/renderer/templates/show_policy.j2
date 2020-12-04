@@ -48,6 +48,9 @@
                     {% endif %}
                 {% endif %}
             {% endfor %}
+            {% if policy_name != json_output.keys()|last %}
+                {{ "\n" }}
+            {% endif %}
         {% else %}
         {{- 'Policy' }} {{ policy_name }} {{ 'Type' }} {{  json_output[policy_name]["TYPE"] }}{{ "\n" }}
         {{- '  Description:'}} {{ json_output[policy_name]["DESCRIPTION"] }}
@@ -70,19 +73,11 @@
             {% if "SET_MIRROR_SESSION" in flow_data %}
                 {{- '    set mirror-session' }} {{ flow_data["SET_MIRROR_SESSION"] }}
             {% endif %}
-            {% if "SET_IP_NEXTHOP" in flow_data %}
-                {% for nhop in flow_data["SET_IP_NEXTHOP"] %}
-                    {{- '    set ip nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{"\n"}}
-                {% endfor %}
-            {% endif %}
-            {% if "SET_IPV6_NEXTHOP" in flow_data %}
-                {% for nhop in flow_data["SET_IPV6_NEXTHOP"] %}
-                    {{- '    set ipv6 nexthop'}} {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "PRIORITY" in nhop %} {{ 'priority'}} {{ nhop["PRIORITY"] }}{% endif %}{{"\n"}}
-                {% endfor %}
-            {% endif %}
-            {% if "SET_INTERFACE" in flow_data %}
-                {% for intf in flow_data["SET_INTERFACE"] %}
-                    {{- '    set interface'}} {{ intf["INTERFACE"] }}{% if "PRIORITY" in intf %} {{ 'priority'}} {{ intf["PRIORITY"] }}{% endif %}{{"\n"}}
+            {% if "FORWARDING_ACTIONS" in flow_data %}
+                {% for egr_entries in flow_data["FORWARDING_ACTIONS"].values() %}
+                    {% for egr_entry in egr_entries %}
+                        {{- '    set'}} {{ egr_entry }}{{"\n"}}
+                    {% endfor %}
                 {% endfor %}
             {% endif %}
             {% if "DEFAULT_PACKET_ACTION" in flow_data %}
