@@ -70,6 +70,8 @@ def rangetolst(givenifrange):
         else:
             givenifrange.append(i)
     ifrangelist = [iftype+str(i) for i in givenifrange]
+    if '.' in idlst[0]:
+        iftype = 'SubInterface'
     return iftype, ifrangelist
 
 # Function to check if intf fall inside any subset in the range list
@@ -237,11 +239,33 @@ def generate_body(func, args=[]):
             speed = speed_map.get(args[1])
             body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-ethernet:port-speed": speed } )
     elif func == 'patch_ipv6_enabled':
-        body = { "name": args[0] }
-        if args[0].startswith("Vlan"):
+        parent_if=args[0]
+        sub_if = 0
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = int(args[0].split('.')[1])
+        parent_if = parent_if.replace("po", "PortChannel")
+        body = { "name": parent_if }
+        if parent_if.startswith("Vlan"):
             body.update({"openconfig-vlan:routed-vlan" : {"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}}})
         else:
-            body.update({"subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
+            body.update({"subinterfaces" : {"subinterface": [ {"index": sub_if,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
+
+    # FEC config
+    elif func == 'patch_port_fec':
+        body = {
+                 "name": args[0],
+                 "openconfig-if-ethernet:ethernet" : {"config": {}}
+               }
+
+        fec_map = {"RS": "FEC_RS", "FC": "FEC_FC", "off": "FEC_DISABLED", "default": "FEC_AUTO"}
+        fec = args[1]
+        if fec not in fec_map.keys():
+            print("%Error: Invalid port FEC config")
+            return None
+        else:
+            fec = fec_map.get(args[1])
+            body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-ethernet:port-fec": fec } )
 
     else:
         print("%Error: %s not supported" % func)
@@ -254,6 +278,10 @@ def invoke_api(func, args=[]):
 
     # Delete interface
     if func == 'delete_interface':
+        if '.' in args[0]:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={sub}', 
+                name=args[0].split('.')[0], sub=args[0].split('.')[1])
+            return api.delete(path)
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}', name=args[0])
         return api.delete(path)
 
@@ -318,7 +346,13 @@ def invoke_api(func, args=[]):
 	if args[0].startswith("Vlan"):
             path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/config/enabled', name=args[0])
         else:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=args[0], index="0")
+            parent_if=args[0]
+            sub_if="0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+            parent_if = parent_if.replace("po", "PortChannel")
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=parent_if, index=sub_if)
         return api.delete(path)
 
     # Get interface
@@ -360,6 +394,16 @@ def invoke_api(func, args=[]):
 	    	tbl_key = "sonic-portchannel:PORTCHANNEL_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("PortChannel")]
+	elif args[0] == "SubInterface":
+            path = cc.Path('/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST')
+            responseSubIntfTbl = api.get(path)
+	    iflist = []
+            if responseSubIntfTbl.ok():
+		intf_map = responseSubIntfTbl.content
+	    	tbl_key = "sonic-interface:VLAN_SUB_INTERFACE_LIST"
+		if tbl_key in intf_map:
+		    iflist = [i["id"].replace("po", "PortChannel") for i in intf_map[tbl_key] if i["id"].startswith("po")]
+
 	return iflist
 
     elif func == 'create_if_range': 

@@ -46,8 +46,8 @@ def invoke(func, args):
             keypath = cc.Path('/restconf/data/openconfig-ip-sla:ip-slas/ip-sla={id}', id=args[0])
             return aa.get(keypath)
         else:
-            keypath = cc.Path('/restconf/operations/sonic-ip-sla:get-ipsla-history')
-            body = {"sonic-ip-sla:input": {"ip_sla_id": args[0]}}
+            keypath = cc.Path('/restconf/operations/openconfig-ip-sla:get-ipsla-history')
+            body = {"openconfig-ip-sla:input": {"ip-sla-id": args[0]}}
             return aa.post(keypath, body)
 
     # IP SLA clear

@@ -26,7 +26,7 @@ limitations under the License.
     <VIEW name="configure-view">
         <!-- Global binding options -->
         <COMMAND name="line" help="Session configuration" />
-        <COMMAND name="line vty" help="Terminal type" view="configure-line-vty-view"/>
+        <COMMAND name="line vty" help="Terminal type" view="configure-line-vty-view" data_and_render_cb="line_vty_view_cb"/>
     </VIEW>
 
     <VIEW name="configure-line-vty-view" prompt="${SYSTEM_NAME}(config-line-vty)# " depth="2">

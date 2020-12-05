@@ -18,6 +18,8 @@
 #
 ###########################################################################
 import sys
+import re
+import os
 from collections import OrderedDict
 import cli_client as cc
 from scripts.render_cli import show_cli_output
@@ -69,10 +71,16 @@ def delete_policy(args):
 
 def set_policy_description(args):
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/config/description', policy_name=args[0])
-    if len(args) > 2:
-        body = {"openconfig-fbs-ext:description": '"{}"'.format(" ".join(args[1:]))}
-    else:
-        body = {"openconfig-fbs-ext:description": args[1]}
+    descr = args[1]
+    full_cmd = os.getenv('USER_COMMAND', None)
+    log.log_debug(full_cmd)
+    match = re.search('description (.*)', full_cmd)
+    if match:
+        descr = match.group(1)
+        if descr.startswith('"') and descr.endswith('"'):
+            descr = descr[1:-1]
+
+    body = {"openconfig-fbs-ext:description": descr}
     return fbs_client.patch(keypath, body)
 
 
@@ -113,11 +121,16 @@ def delete_classifier(args):
 
 def set_classifier_description(args):
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/config/description', class_name=args[0])
-    if len(args) > 2:
-        body = {"openconfig-fbs-ext:description": '"{}"'.format(" ".join(args[1:]))}
-    else:
-        body = {"openconfig-fbs-ext:description": args[1]}
+    descr = args[1]
+    full_cmd = os.getenv('USER_COMMAND', None)
+    log.log_debug(full_cmd)
+    match = re.search('description (.*)', full_cmd)
+    if match:
+        descr = match.group(1)
+        if descr.startswith('"') and descr.endswith('"'):
+            descr = descr[1:-1]
 
+    body = {"openconfig-fbs-ext:description": descr}
     return fbs_client.patch(keypath, body)
 
 
@@ -212,6 +225,8 @@ def clear_match_source_address(args):
         keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/source-address', class_name=args[0])
     elif 'ipv6' == args[1]:
         keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/source-address', class_name=args[0])
+    else:
+        raise FbsAclCLIError("Unknown option")
 
     return fbs_client.delete(keypath)
 
@@ -227,6 +242,8 @@ def clear_match_destination_address(args):
         keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv4/config/destination-address', class_name=args[0])
     elif 'ipv6' == args[1]:
         keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/classifiers/classifier={class_name}/match-hdr-fields/ipv6/config/destination-address', class_name=args[0])
+    else:
+        raise FbsAclCLIError("Unknown option")
 
     return fbs_client.delete(keypath)
 
@@ -465,10 +482,16 @@ def delete_flow(args):
 def set_flow_description(args):
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/config/description',
                       policy_name=args[0], class_name=args[1])
-    if len(args) > 3:
-        body = {'openconfig-fbs-ext:description': '"{}"'.format(" ".join(args[2:]))}
-    else:
-        body = {'openconfig-fbs-ext:description': args[2]}
+    descr = args[2]
+    full_cmd = os.getenv('USER_COMMAND', None)
+    log.log_debug(full_cmd)
+    match = re.search('description (.*)', full_cmd)
+    if match:
+        descr = match.group(1)
+        if descr.startswith('"') and descr.endswith('"'):
+            descr = descr[1:-1]
+
+    body = {"openconfig-fbs-ext:description": descr}
     return fbs_client.patch(keypath, body)
 
 
@@ -690,6 +713,30 @@ def clear_next_hop_action(args):
                           policy_name=args[0], classifier_name=args[1], ip_address=args[4], network_instance=vrf)
 
     return fbs_client.delete(keypath)
+
+
+def set_next_hop_group_action(args):
+    keypath = cc.Path("/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/forwarding/next-hop-groups/next-hop-group",
+                      policy_name=args[0], class_name=args[1])
+    body = {
+        "openconfig-fbs-ext:next-hop-group": [
+            {
+                "group-name": args[4],
+                "config": {
+                    "group-name": args[4],
+                    "group-type": 'NEXT_HOP_GROUP_TYPE_IPV4' if args[2] == 'ip' else 'NEXT_HOP_GROUP_TYPE_IPV6'
+                }
+            }
+        ]
+    }
+    if len(args) == 7:
+        body["openconfig-fbs-ext:next-hop-group"][0]["config"]["priority"] = int(args[6])
+
+    return fbs_client.patch(keypath, body)
+
+
+def clear_next_hop_group_action(args):
+    pass
 
 
 def set_egress_interface_action(args):
@@ -1189,6 +1236,170 @@ def show_copp_protocols(args):
     return fbs_client.post(keypath, {})
 
 
+def convert_user_next_hop_group_type_to_oc(grp_type):
+    if grp_type == "ip":
+        return "NEXT_HOP_GROUP_TYPE_IPV4"
+    else:
+        return "NEXT_HOP_GROUP_TYPE_IPV6"
+
+
+def create_next_hop_group(args):
+    body = {
+        "openconfig-fbs-ext:next-hop-group": [
+            {
+                "group-name": args[0],
+                "config": {
+                    "name": args[0],
+                }
+            }
+        ]
+    }
+    if len(args) == 2:
+        body["openconfig-fbs-ext:next-hop-group"][0]["config"]["group-type"] = convert_user_next_hop_group_type_to_oc(args[1])
+
+    keypath = cc.Path("/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={group_name}", group_name=args[0])
+    return fbs_client.patch(keypath, body)
+
+
+def delete_next_hop_group(args):
+    keypath = cc.Path("/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={group_name}", group_name=args[0])
+    return fbs_client.delete(keypath)
+
+
+def create_next_hop_group_member(args):
+    keypath = cc.Path("/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={grp}/next-hops/next-hop={eid}",
+                      grp=args[0], eid=args[1])
+    body = {
+        "openconfig-fbs-ext:next-hop": [
+            {
+                "entry-id": int(args[1]),
+                "config": {
+                    "ip-address": args[3],
+                    "entry-id": int(args[1]),
+                }
+            }
+        ]
+    }
+    if len(args) == 7:
+        body["openconfig-fbs-ext:next-hop"][0]["config"]["network-instance"] = args[5]
+        if args[6] == "non-recursive":
+            body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_NON_RECURSIVE"
+        else:
+            body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_RECURSIVE"
+    elif len(args) == 6:
+        body["openconfig-fbs-ext:next-hop"][0]["config"]["network-instance"] = args[5]
+    elif len(args) == 5:
+        if args[4] == "non-recursive":
+            body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_NON_RECURSIVE"
+        else:
+            body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_RECURSIVE"
+
+    return fbs_client.put(keypath, body)
+
+
+def delete_next_hop_group_member(args):
+    keypath = cc.Path("/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={grp}/next-hops/next-hop={eid}",
+                      grp=args[0], eid=args[1])
+    return fbs_client.delete(keypath)
+
+
+def create_next_hop_group_description(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={group_name}/config/description',
+                      group_name=args[0])
+    descr = args[1]
+    full_cmd = os.getenv('USER_COMMAND', None)
+    log.log_debug(full_cmd)
+    match = re.search('description (.*)', full_cmd)
+    if match:
+        descr = match.group(1)
+        if descr.startswith('"') and descr.endswith('"'):
+            descr = descr[1:-1]
+
+    body = {"openconfig-fbs-ext:description": '{}'.format(descr)}
+    return fbs_client.patch(keypath, body)
+
+
+def delete_next_hop_group_description(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={group_name}/config/description',
+                      group_name=args[0])
+    return fbs_client.delete(keypath)
+
+
+def set_next_hop_group_threshold(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={group_name}/config',
+                      group_name=args[0])
+    body = {
+        "openconfig-fbs-ext:config": {
+        }
+    }
+    idx = 1
+    while len(args) >= idx + 2:
+        log.log_debug("{} {}={}".format(idx, args[idx], args[idx+1]))
+        if args[idx] == 'type':
+            if args[idx + 1] == 'count':
+                body['openconfig-fbs-ext:config']['threshold-type'] = 'NEXT_HOP_GROUP_THRESHOLD_COUNT'
+            elif args[idx + 1] == 'percentage':
+                body['openconfig-fbs-ext:config']['threshold-type'] = 'NEXT_HOP_GROUP_THRESHOLD_PERCENTAGE'
+        elif args[idx] == 'up':
+            body['openconfig-fbs-ext:config']['threshold-up'] = int(args[1+idx])
+        elif args[idx] == 'down':
+            body['openconfig-fbs-ext:config']['threshold-down'] = int(args[1+idx])
+        idx += 2
+
+    return fbs_client.patch(keypath, body)
+
+
+def delete_next_hop_group_threshold(args):
+    args.append('type')
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={group_name}/config/threshold-{thr_type}',
+                      group_name=args[0], thr_type=args[1])
+    return fbs_client.delete(keypath)
+
+
+def get_next_hop_group_type(args):
+    log.log_debug("Input Args are {}".format(str(args)))
+    if len(args) == 2:
+        return args[1]
+    else:
+        keypath = cc.Path("/restconf/data/sonic-flow-based-services:sonic-flow-based-services/PBF_NEXTHOP_GROUP_TABLE/PBF_NEXTHOP_GROUP_TABLE_LIST={grp_name}/TYPE",
+                          grp_name=args[0])
+        return fbs_client.get(keypath, ignore404=False)
+
+
+def show_pbf_next_hop_group_request(args):
+    keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-pbf-next-hop-group')
+    body = {
+        "sonic-flow-based-services:input": {
+        }
+    }
+    if len(args) > 0 and args[0] == 'type':
+        body["sonic-flow-based-services:input"]["TYPE"] = "IPV4" if args[1] == "ip" else "IPV6"
+    elif len(args) > 0:
+        body["sonic-flow-based-services:input"]["GROUP_NAME"] = args[0]
+
+    return fbs_client.post(keypath, body)
+
+
+def show_pbf_next_hop_group_status_request(args):
+    grp_name = None
+    ifname = args[0]
+    next_id = 1
+    if ifname == 'interface':
+        ifname = args[1]
+        next_id = 2
+
+    if len(args) > next_id:
+        grp_name = args[next_id]
+        if grp_name == "type":
+            grp_name = None
+
+    if grp_name:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={ifname}/next-hop-groups/next-hop-group={group_name}', ifname=ifname, group_name=grp_name)
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={ifname}/next-hop-groups', ifname=ifname)
+    return fbs_client.get(keypath, ignore404=False)
+
+
 ########################################################################################################################
 #                                                  Response handlers                                                   #
 ########################################################################################################################
@@ -1219,6 +1430,8 @@ def handle_generic_set_response(response, args, op_str):
                 try:
                     if (1003 == error_data['error-info']['cvl-error']['error-code']) and (op_str in ['create_flow_qos', 'create_flow_monitoring', 'create_flow_forwarding']):
                         print("%Error: Priority must be specified for create")
+                    elif (1003 == error_data['error-info']['cvl-error']['error-code']) and (op_str == "create_next_hop_group"):
+                        print("%Error: Next-hop group type must be specified for create")
                     else:
                         print(response.error_message())
                 except:
@@ -1312,11 +1525,44 @@ def handle_show_policy_response(response, args, op_str):
                 policy_data = data[name]
                 render_data[name]["TYPE"] = policy_data["TYPE"].lower()
                 render_data[name]["DESCRIPTION"] = policy_data.get("DESCRIPTION", "")
+                if " " in render_data[name]["DESCRIPTION"]:
+                    render_data[name]["DESCRIPTION"] = '"{}"'.format(render_data[name]["DESCRIPTION"])
 
                 render_data[name]["FLOWS"] = OrderedDict()
                 flows = dict()
                 for flow in policy_data.get("FLOWS", list()):
                     flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
+                    if "DESCRIPTION" in flow and " " in flow["DESCRIPTION"]:
+                        flow["DESCRIPTION"] = '"{}"'.format(flow["DESCRIPTION"])
+
+                    fwd_entries = OrderedDict()
+                    fwd_dict = dict()
+                    for field in ['SET_IP_NEXTHOP', 'SET_IP_NEXTHOP_GROUP', 'SET_IPV6_NEXTHOP', 'SET_IPV6_NEXTHOP_GROUP', 'SET_INTERFACE']:
+                        for ent in flow.get(field, list()):
+                            if field == 'SET_IP_NEXTHOP':
+                                out = 'ip next-hop {}'.format(ent['IP_ADDRESS'])
+                            elif field == 'SET_IP_NEXTHOP_GROUP':
+                                out = 'ip next-hop-group {}'.format(ent['GROUP_NAME'])
+                            elif field == 'SET_IPV6_NEXTHOP':
+                                out = 'ipv6 next-hop {}'.format(ent['IP_ADDRESS'])
+                            elif field == 'SET_IPV6_NEXTHOP_GROUP':
+                                out = 'ipv6 next-hop-group {}'.format(ent['GROUP_NAME'])
+                            else:
+                                out = 'interface {}'.format(ent['INTERFACE'])
+
+                            if 'VRF' in ent:
+                                out = '{} vrf {}'.format(out, ent['VRF'])
+                            if 'PRIORITY' in ent:
+                                out = '{} priority {}'.format(out, ent['PRIORITY'])
+
+                            sets = fwd_dict.get(ent.get('PRIORITY', 0), list())
+                            sets.append(out)
+                            fwd_dict[ent.get('PRIORITY', 0)] = sets
+
+                    for fwd_key in sorted(fwd_dict.keys(), reverse=True):
+                        fwd_entries[fwd_key] = fwd_dict[fwd_key]
+
+                    flow['FORWARDING_ACTIONS'] = fwd_entries
 
                 flow_keys = natsorted(flows.keys(), reverse=True)
                 for flow in flow_keys:
@@ -1336,6 +1582,8 @@ def handle_show_classifier_response(response, args, op_str):
             output_dict = dict()
             for entry in output:
                 output_dict[entry["CLASSIFIER_NAME"]] = entry
+                if "DESCRIPTION" in entry and " " in entry["DESCRIPTION"]:
+                    entry["DESCRIPTION"] = '"{}"'.format(entry["DESCRIPTION"])
             sorted_keys = natsorted(output_dict.keys())
             for key in sorted_keys:
                 render_data[key] = output_dict[key]
@@ -1393,6 +1641,50 @@ def handle_show_service_policy_details_response(response, args, op_str):
                             for flow in policy_data.get("FLOWS", list()):
                                 flows[(flow["PRIORITY"], flow["CLASS_NAME"])] = flow
 
+                                fwd_entries = OrderedDict()
+                                fwd_dict = dict()
+                                fwd_selected = flow.get('STATE', {}).get('FORWARDING_SELECTED', {})
+
+                                for field in ['SET_IP_NEXTHOP', 'SET_IP_NEXTHOP_GROUP', 'SET_IPV6_NEXTHOP',
+                                              'SET_IPV6_NEXTHOP_GROUP', 'SET_INTERFACE']:
+                                    for ent in flow.get(field, list()):
+                                        selected = True
+                                        if field == 'SET_IP_NEXTHOP':
+                                            out = 'ip next-hop {}'.format(ent['IP_ADDRESS'])
+                                            selected = selected and (ent['IP_ADDRESS'] == fwd_selected.get('IP_ADDRESS'))
+                                        elif field == 'SET_IP_NEXTHOP_GROUP':
+                                            out = 'ip next-hop-group {}'.format(ent['GROUP_NAME'])
+                                            selected = selected and (ent['GROUP_NAME'] == fwd_selected.get('GROUP_NAME'))
+                                        elif field == 'SET_IPV6_NEXTHOP':
+                                            out = 'ipv6 next-hop {}'.format(ent['IP_ADDRESS'])
+                                            selected = selected and (ent['IP_ADDRESS'] == fwd_selected.get('IP_ADDRESS'))
+                                        elif field == 'SET_IPV6_NEXTHOP_GROUP':
+                                            out = 'ipv6 next-hop-group {}'.format(ent['GROUP_NAME'])
+                                            selected = selected and (ent['GROUP_NAME'] == fwd_selected.get('GROUP_NAME'))
+                                        else:
+                                            out = 'interface {}'.format(ent['INTERFACE'])
+                                            selected = selected and (ent['INTERFACE_NAME'] == fwd_selected.get('INTERFACE_NAME'))
+
+                                        if 'VRF' in ent:
+                                            out = '{} vrf {}'.format(out, ent['VRF'])
+                                            selected = selected and (ent['VRF'] == fwd_selected.get('VRF'))
+
+                                        if 'PRIORITY' in ent:
+                                            out = '{} priority {}'.format(out, ent['PRIORITY'])
+                                            selected = selected and (ent['PRIORITY'] == fwd_selected.get('PRIORITY'))
+
+                                        if selected:
+                                            out = out + ' (Selected)'
+
+                                        sets = fwd_dict.get(ent.get('PRIORITY', 0), list())
+                                        sets.append(out)
+                                        fwd_dict[ent.get('PRIORITY', 0)] = sets
+
+                                for fwd_key in sorted(fwd_dict.keys(), reverse=True):
+                                    fwd_entries[fwd_key] = fwd_dict[fwd_key]
+
+                                flow['FORWARDING_ACTIONS'] = fwd_entries
+
                             # Sort Policy flows by priority
                             flow_keys = natsorted(flows.keys(), reverse=True)
                             for flow in flow_keys:
@@ -1444,9 +1736,111 @@ def handle_show_copp_protocols_response(response, args, op_str):
                 show_cli_output('show_copp_classifier.j2', content)
 
 
-# ######################################################################################################################
+def get_next_hop_group_type_response(response, args, op_str):
+    log.log_debug(response)
+    if len(args) == 2:
+        return args[1]
+    else:
+        if response.ok():
+            content = response.content
+            ret = content.get("sonic-flow-based-services:TYPE", "")
+            log.log_debug("{} is of type {}".format(args[0], ret))
+            return "ip" if ret == "IPV4" else "ipv6"
+        else:
+            log.log_debug(response.error_message())
+            return "-"
+
+
+def show_pbf_next_hop_group_response(response, args, op_str):
+    if response.ok():
+        groups = response.content['sonic-flow-based-services:output']['GROUPS']
+        render_data = OrderedDict()
+        data = dict()
+        for group in groups:
+            group['TYPE'] = 'ip' if group['TYPE'] == 'IPV4' else 'ipv6'
+            data[group['GROUP_NAME']] = group
+
+            nhops_ordered = OrderedDict()
+            nhops_data = dict()
+            for nh in group.get('NEXT_HOPS', list()):
+                nhops_data[nh['ENTRY_ID']] = nh
+            for eid in sorted(nhops_data.keys()):
+                nhops_ordered[eid] = nhops_data[eid]
+            group['NEXT_HOPS'] = nhops_ordered
+            if 'REFERENCES' not in group:
+                group['REFERENCES'] = list()
+        for grp_name in natsorted(data.keys()):
+            render_data[grp_name] = data[grp_name]
+
+        show_cli_output('show_pbf_next_hop_group.j2', render_data)
+    else:
+        print(response.error_message())
+
+
+def show_pbf_next_hop_group_status_response(response, args, op_str):
+    if response.ok():
+        grp_name = None
+        filter_grp_type = None
+        ifname = args[0]
+        next_id = 1
+        if ifname == 'interface':
+            ifname = args[1]
+            next_id = 2
+
+        if len(args) > next_id:
+            grp_name = args[next_id]
+            if grp_name == "type":
+                grp_name = None
+                filter_grp_type = args[next_id + 1]
+
+        render_data = OrderedDict()
+        render_data[ifname] = OrderedDict()
+        data = dict()
+        if grp_name:
+            all_groups = response.content.get("openconfig-fbs-ext:next-hop-group", list())
+        else:
+            all_groups = response.content.get("openconfig-fbs-ext:next-hop-groups", dict()).get("next-hop-group", list())
+        for grp_data in all_groups:
+            if grp_name and grp_name != grp_data["group-name"]:
+                continue
+            grp_type = (grp_data["state"].get("group-type", "")).replace("openconfig-fbs-ext:NEXT_HOP_GROUP_TYPE_", "").replace("V4", "").lower()
+            if filter_grp_type and filter_grp_type != grp_type:
+                continue
+
+            item = dict()
+            data[grp_data["group-name"]] = item
+            if grp_data["state"].get("active"):
+                data[grp_data["group-name"]]["STATUS"] = "Active"
+            else:
+                data[grp_data["group-name"]]["STATUS"] = "Inactive"
+            data[grp_data["group-name"]]["TYPE"] = grp_type
+            data[grp_data["group-name"]]["NEXT_HOPS"] = list()
+
+            nh_dict = dict()
+            for nh in grp_data.get("next-hops", dict()).get("next-hop", list()):
+                eid = int(nh["entry-id"])
+                cli_str = "Entry {} next-hop {}".format(eid, nh["state"]["ip-address"])
+                if "network-instance" in nh["state"]:
+                    cli_str = "{} vrf {}".format(cli_str, nh["state"]["network-instance"])
+                if "next-hop-type" in nh["state"]:
+                    cli_str = "{} {}".format(cli_str, "recursive" if nh["state"]["next-hop-type"] == "openconfig-fbs-ext:NEXT_HOP_TYPE_RECURSIVE" else "non-recursive")
+                if "active" in nh["state"] and nh["state"]["active"]:
+                    cli_str = "{} (Active)".format(cli_str)
+                nh_dict[eid] = cli_str
+            for eid in sorted(nh_dict.keys()):
+                data[grp_data["group-name"]]["NEXT_HOPS"].append(nh_dict[eid])
+
+        for grp_name in natsorted(data.keys()):
+            render_data[ifname][grp_name] = data[grp_name]
+
+        show_cli_output('show_pbf_next_hop_group_status.j2', render_data)
+    else:
+        print(response.error_message())
+
+
+#######################################################################################################################
 #
-# #######################################################################################################################
+#######################################################################################################################
 
 request_handlers = {
     'create_policy_qos': create_policy,
@@ -1504,8 +1898,10 @@ request_handlers = {
     'clear_policer_action': clear_policer_action,
     'set_mirror_session_action': set_mirror_session_action,
     'clear_mirror_session_action': clear_mirror_session_action,
-    'set_next_hop_action': set_next_hop_action,
-    'clear_next_hop_action': clear_next_hop_action,
+    'set_next-hop_action': set_next_hop_action,
+    'clear_next-hop_action': clear_next_hop_action,
+    'set_next-hop-group_action': set_next_hop_group_action,
+    'clear_next-hop-group_action': clear_next_hop_group_action,
     'set_egress_interface_action': set_egress_interface_action,
     'clear_egress_interface_action': clear_egress_interface_action,
     'bind_policy': bind_policy,
@@ -1530,7 +1926,18 @@ request_handlers = {
     'delete_copp_action': delete_copp_action,
     'set_copp_action_group': set_copp_action_group,
     'set_copp_trap_priority_action': set_copp_trap_priority_action,
-    'clear_copp_trap_priority_action': clear_copp_trap_priority_action
+    'clear_copp_trap_priority_action': clear_copp_trap_priority_action,
+    'create_next_hop_group': create_next_hop_group,
+    'delete_next_hop_group': delete_next_hop_group,
+    'create_next_hop_group_member': create_next_hop_group_member,
+    'delete_next_hop_group_member': delete_next_hop_group_member,
+    'create_next_hop_group_description': create_next_hop_group_description,
+    'delete_next_hop_group_description': delete_next_hop_group_description,
+    'set_next_hop_group_threshold': set_next_hop_group_threshold,
+    'delete_next_hop_group_threshold': delete_next_hop_group_threshold,
+    'get_next_hop_group_type': get_next_hop_group_type,
+    'show_pbf_next_hop_group': show_pbf_next_hop_group_request,
+    'show_pbf_next_hop_group_status': show_pbf_next_hop_group_status_request
 }
 
 
@@ -1590,8 +1997,10 @@ response_handlers = {
     'clear_policer_action': handle_generic_delete_response,
     'set_mirror_session_action': handle_generic_set_response,
     'clear_mirror_session_action': handle_generic_delete_response,
-    'set_next_hop_action': handle_generic_set_response,
-    'clear_next_hop_action': handle_generic_delete_response,
+    'set_next-hop_action': handle_generic_set_response,
+    'clear_next-hop_action': handle_generic_delete_response,
+    'set_next-hop-group_action': handle_generic_set_response,
+    'clear_next-hop-group_action': handle_generic_delete_response,
     'set_egress_interface_action': handle_generic_set_response,
     'clear_egress_interface_action': handle_generic_delete_response,
     'bind_policy': handle_generic_set_response,
@@ -1616,20 +2025,30 @@ response_handlers = {
     'delete_copp_action': handle_generic_delete_response,
     'set_copp_action_group': handle_generic_set_response,
     'set_copp_trap_priority_action': handle_generic_set_response,
-    'clear_copp_trap_priority_action': handle_generic_delete_response
+    'clear_copp_trap_priority_action': handle_generic_delete_response,
+    'create_next_hop_group': handle_generic_set_response,
+    'delete_next_hop_group': handle_generic_delete_response,
+    'create_next_hop_group_member': handle_generic_set_response,
+    'delete_next_hop_group_member': handle_generic_delete_response,
+    'create_next_hop_group_description': handle_generic_set_response,
+    'delete_next_hop_group_description': handle_generic_delete_response,
+    'set_next_hop_group_threshold': handle_generic_set_response,
+    'delete_next_hop_group_threshold': handle_generic_delete_response,
+    'get_next_hop_group_type': get_next_hop_group_type_response,
+    'show_pbf_next_hop_group': show_pbf_next_hop_group_response,
+    'show_pbf_next_hop_group_status': show_pbf_next_hop_group_status_response
 }
 
 
 def run(op_str, args):
     try:
-        log.log_debug(str(args))
         correct_args = list()
         for arg in args:
             if arg == "|" or arg == "\\|":
                 break
             else:
                 correct_args.append(arg)
-        log.log_debug(str(correct_args))
+        log.log_debug("OpCode:{} InArgs:{} CorrectArgs:{}".format(op_str, str(args), str(correct_args)))
         resp = request_handlers[op_str](correct_args)
         if resp:
             return response_handlers[op_str](resp, correct_args, op_str)
@@ -1656,4 +2075,3 @@ def ethertype_to_user_fmt(val):
         return 'arp'
     else:
         return val
-

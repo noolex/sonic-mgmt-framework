@@ -188,6 +188,7 @@ def show_routemap_matchtag(render_tables):
 def show_prefix_lists(render_tables, ip_mode):
     cmd_str = ''
     temp = {}
+    get_prefix_name = render_tables['prefix-list-name'] if 'prefix-list-name' in render_tables else None
     # Fetch IPv4 or Ipv6 mode and store from PREFIX_SET_LIST table and then filter PREFIX_LIST
     if 'sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST' in render_tables:
         prefix_set = render_tables['sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST']
@@ -202,6 +203,8 @@ def show_prefix_lists(render_tables, ip_mode):
             mode = ''
             mask_range_str = ''
             prefix_name = prefix["set_name"]
+            if get_prefix_name and prefix_name != get_prefix_name:
+                continue
 
             # Display only IP or IPv6 prefixes based on request.
             if temp[prefix_name] != ip_mode:

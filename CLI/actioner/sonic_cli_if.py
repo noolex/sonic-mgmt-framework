@@ -74,6 +74,22 @@ def filter_address(d, isIPv4):
         del ipData[:]
         ipData.extend(newIpData)
 
+    if 'sonic-interface:VLAN_SUB_INTERFACE_IPADDR_LIST' in d:
+        ipData = d['sonic-interface:VLAN_SUB_INTERFACE_IPADDR_LIST']
+        newIpData = []
+        for l in ipData:
+            for k, v in l.items():
+               if k == "ip_prefix":
+                  ip = IPNetwork(v)
+                  if isIPv4:
+                      if ip.version == 4:
+                          newIpData.append(l)
+                  else:
+                      if ip.version == 6:
+                          newIpData.append(l)
+        del ipData[:]
+        ipData.extend(newIpData)
+
 def get_helper_adr_str(args):
     ipAdrStr = ""
     for index,i in  enumerate(args):
@@ -139,6 +155,12 @@ def invoke_api(func, args=[]):
             body = { "openconfig-interfaces:interfaces": { "interface": [{ "name": args[1], "config": { "name": args[1] }} ]}}
             path = cc.Path('/restconf/data/openconfig-interfaces:interfaces')
             return api.patch(path, body)
+        elif args[0] == 'phy-sub-if-name':
+            parent_if = args[1].split('.')[0]
+            sub_if = int(args[1].split('.')[1])
+            body = { "openconfig-interfaces:subinterfaces": { "subinterface": [{ "index": sub_if, "config": { "index": sub_if }} ]}}
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces', name=parent_if)
+            return api.patch(path, body)
 
     # Create interface
     if func == 'patch_openconfig_interfaces_interfaces_interface':
@@ -152,6 +174,12 @@ def invoke_api(func, args=[]):
 
     #Configure PortChannel
     elif func == 'portchannel_config':
+        if '.' in args[0]:
+            parent_if = args[0].split('.')[0]
+            sub_if = int(args[0].split('.')[1])
+            body = { "openconfig-interfaces:subinterfaces": { "subinterface": [{ "index": sub_if, "config": { "index": sub_if }} ]}}
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces', name=parent_if)
+            return api.patch(path, body)
         body ={
                  "openconfig-interfaces:interfaces": { "interface": [{
                                                       "name": args[0],
@@ -258,8 +286,14 @@ def invoke_api(func, args=[]):
         return api.patch(path, body)    
     
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config':
+        parent_if=args[0]
+        sub_if="0"
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = args[0].split('.')[1]
+        parent_if = parent_if.replace("po", "PortChannel")
         sp = args[1].split('/')
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=args[0], index="0")
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses', name=parent_if, index=sub_if)
         if len(args) > 2 and len(args[2]) > 0:
             body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:gw-addr": args[2]} }]}}
         else:
@@ -267,8 +301,14 @@ def invoke_api(func, args=[]):
         return api.patch(path, body)
         
     elif func == 'patch_if_ipv4':
+        parent_if=args[0]
+        sub_if="0"
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = args[0].split('.')[1]
+        parent_if = parent_if.replace("po", "PortChannel")
         sp = args[1].split('/')
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=args[0], index="0")
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses', name=parent_if, index=sub_if)
         if len(args) > 2 and args[2] == "secondary":
             body = { "openconfig-if-ip:addresses": {"address":[ {"ip":sp[0], "openconfig-if-ip:config":  {"ip" : sp[0], "prefix-length" : int(sp[1]), "openconfig-interfaces-ext:secondary": True} }]}}
         else:
@@ -362,9 +402,9 @@ def invoke_api(func, args=[]):
 
         else:
             if len(args) == 4 and args[3] == "secondary":
-                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1],"secondary": True}}
+                body = {"sonic-interface:input":{"ifName":args[0].replace("po","PortChannel"),"ipPrefix":args[1],"secondary": True}}
             else:
-                body = {"sonic-interface:input":{"ifName":args[0],"ipPrefix":args[1]}}
+                body = {"sonic-interface:input":{"ifName":args[0].replace("po","PortChannel"),"ipPrefix":args[1]}}
             path = cc.Path('/restconf/operations/sonic-interface:clear_ip')
             return api.post(path, body)
         return api.delete(path)
@@ -458,13 +498,14 @@ def invoke_api(func, args=[]):
             path = cc.Path('/restconf/data/sonic-mgmt-port:sonic-mgmt-port/MGMT_PORT/MGMT_PORT_LIST')
             responseMgmtPortTbl = api.get(path)
             if responseMgmtPortTbl.ok():
-                for port in responseMgmtPortTbl.content['sonic-mgmt-port:MGMT_PORT_LIST']:
-                    ifname = port['ifname']
-                    path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/oper-status', name=ifname)
-                    responseMgmtPortOperStatus = api.get(path)
-                    if responseMgmtPortOperStatus.ok():
-                        port.update({'oper_status' : responseMgmtPortOperStatus.content['openconfig-interfaces:oper-status'].lower()})
-                d.update(responseMgmtPortTbl.content)
+                if 'sonic-mgmt-port:MGMT_PORT_LIST' in responseMgmtPortTbl.content:
+                    for port in responseMgmtPortTbl.content['sonic-mgmt-port:MGMT_PORT_LIST']:
+                        ifname = port['ifname']
+                        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/oper-status', name=ifname)
+                        responseMgmtPortOperStatus = api.get(path)
+                        if responseMgmtPortOperStatus.ok():
+                            port.update({'oper_status' : responseMgmtPortOperStatus.content['openconfig-interfaces:oper-status'].lower()})
+                    d.update(responseMgmtPortTbl.content)
 
 
         path = cc.Path('/restconf/data/sonic-interface:sonic-interface/INTF_TABLE/INTF_TABLE_IPADDR_LIST')
@@ -530,6 +571,19 @@ def invoke_api(func, args=[]):
                     if 'v4GwIp' in sag and func == 'ip6_interfaces_get':
                         del sag['v4GwIp']
             d.update(responseSAGTbl.content)
+
+        path = cc.Path('/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_IPADDR_LIST')
+        responseSubIntfIpTbl =  api.get(path)
+        if responseSubIntfIpTbl.ok():
+            d.update(responseSubIntfIpTbl.content)
+            if func == 'ip_interfaces_get':
+               filter_address(d, True)
+            else:
+               filter_address(d, False)
+        path = cc.Path('/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST')
+        responseSubIntfTbl =  api.get(path)
+        if responseSubIntfTbl.ok():
+            d.update(responseSubIntfTbl.content)
 
 	return d
         

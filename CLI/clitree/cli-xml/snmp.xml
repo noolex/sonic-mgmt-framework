@@ -13,6 +13,56 @@ Copyright 2020 Broadcom, Inc.
 
 <!--=========================================================================-->
 <VIEW name="enable-view">
+<!-- clear snmp counters -->
+  <COMMAND name="clear snmp" help="Clear SNMP"></COMMAND>
+  <COMMAND name="clear snmp counters" help="Clear SNMP counters">
+    <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_clear_counters</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Clears the Simple Network Management Protocol (SNMP) counters statistics
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to clear the global SNMP counters statistics.
+      </USAGE>
+      <EXAMPLE>      
+        sonic# clear snmp counters
+      </EXAMPLE>
+    </DOCGEN>  
+  </COMMAND>
+<!-- show snmp counters -->
+  <COMMAND name="show snmp" help="Show SNMP"></COMMAND>
+  <COMMAND name="show snmp counters" help="Show SNMP counters">
+    <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_show_counters</ACTION>
+    <DOCGEN>
+      <DESCRIPTION>
+        Displays the Simple Network Management Protocol (SNMP) counters statistics
+        as per RFC1213 MIB SNMP group 
+      </DESCRIPTION>
+      <USAGE>
+        Use this command to view global SNMP counters statistics.
+      </USAGE>
+      <EXAMPLE>      
+        sonic# show snmp counters
+        37 SNMP packets input
+        0 Bad SNMP version errors
+        4 Unknown community name
+        0 Illegal operation for community name supplied
+        0 Encoding errors
+        24 Number of requested variables
+        0 Number of altered variables
+        0 Get-request PDUs
+        28 Get-next PDUs
+        0 Set-request PDUs
+        78 SNMP packets output
+        0 Too big errors (Maximum packet size 1500)
+        0 No such name errors
+        0 Bad values errors
+        0 General errors
+        24 Response PDUs
+        13 Trap PDUs
+      </EXAMPLE>
+    </DOCGEN>  
+  </COMMAND>
   <!-- show snmp-server -->
   <COMMAND name="show snmp-server" help="Show SNMP server information">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_get show_snmp.j2</ACTION>

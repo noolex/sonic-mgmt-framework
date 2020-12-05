@@ -36,6 +36,7 @@ from show_config_logging import *
 from show_config_ldap import *
 from show_config_radius import *
 from show_config_aaa import *
+from show_config_ntp import *
 from show_config_nat import *
 from show_config_ospfv2 import *
 from show_config_ip_helper import *
@@ -65,6 +66,11 @@ view_dependency= \
 
 config_view_hierarchy= \
       ['configure',
+       'renderCfg_v4prefix_lists',
+       'renderCfg_v6prefix_lists',
+       'renderCfg_bgp_com_list',
+       'renderCfg_bgp_extcom_list',
+       'renderCfg_bgp_aspath_list',
        'configure-nat',
        'configure-tam',
        'configure-wred',
@@ -88,6 +94,7 @@ config_view_hierarchy= \
        'configure-lag',
        'configure-if-mgmt',
        'configure-if',
+       'configure-subif'
        'configure-route-map',
        'configure-router-bgp',
        'configure-router-ospf',
@@ -114,6 +121,7 @@ module_cleanup_cb = []
 
 module_startup_cb = {
     'configure': [show_running_config_acl_start_callback, show_running_config_fbs_start_callback],
+    'configure-line-vty': [show_running_config_fbs_start_callback],
     'configure-mac-acl': [show_running_config_acl_start_callback],
     'configure-ipv4-acl': [show_running_config_acl_start_callback],
     'configure-ipv6-acl': [show_running_config_acl_start_callback],
@@ -151,6 +159,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'tacacs_server_source_if' : show_tacacs_source_if,
                   'dns_server_source_if'    : show_dns_source_if,
                   'ntp_server_source_if'    : show_ntp_source_if,
+                  'ntp_trusted_key'         : show_ntp_trusted_key,
                   'ptp_mode'                : show_ptp_mode,
                   'ptp_domain_profile'      : show_ptp_domain_profile,
                   'ptp_domain_two_step'     : show_ptp_two_step,
@@ -172,6 +181,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ipv6_lag_ip_address'     : show_ipv6_lag_ip_address,
                   'ipv6_mgmt_ip_address'    : show_ipv6_mgmt_ip_address,
                   'ipv6_lo_ip_address'      : show_ipv6_lo_ip_address,
+                  'ipv4_subif_ip_address'   : show_ipv4_subif_ip_address,
+                  'ipv6_subif_ip_address'   : show_ipv6_subif_ip_address,
                   'routemap_set_community'  : show_routemap_setcommunity,
                   'routemap_set_extcommunity' : show_routemap_setextcommunity,
                   'routemap_set_metric'       : show_routemap_set_metric,
@@ -301,7 +312,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'if_vrf_binding'          : show_if_vrf_binding,
                   'show_runn_hardware_cb'   : show_running_config_hardware,
                   'show_runn_hardware_acl_cb' : show_running_config_hardware_acl,
-                  'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode
+                  'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode,
+                  'line_vty_view_cb'        : show_running_config_line_vty_view_cb
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
