@@ -40,7 +40,6 @@ MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
 
 GO_DEPS_LIST = github.com/gorilla/mux \
                github.com/Workiva/go-datastructures/queue \
-               github.com/go-redis/redis \
                github.com/golang/glog \
                github.com/pkg/profile \
                gopkg.in/go-playground/validator.v9 \
@@ -62,17 +61,16 @@ GO_DEPS_LIST_2 = github.com/openconfig/gnmi/proto/gnmi \
 
 # List of go dependencies in PACKAGE/VERSION format. Version is mandatory.
 # These packages are downloaded before GO_DEPS_LIST.
-GO_DEPS_VER_LIST += go.opentelemetry.io/otel/1f2eba2cdb0fb7e92ce199c6c06167d4080a55ff
+GO_DEPS_VER_LIST += github.com/go-redis/redis/d19aba07b47683ef19378c4a4d43959672b7cec8
 
 REST_BIN = $(BUILD_DIR)/rest_server/main
 CERTGEN_BIN = $(BUILD_DIR)/rest_server/generate_cert
 
 go-deps = $(BUILD_DIR)/gopkgs/.done
 go-patch = $(BUILD_DIR)/gopkgs/.patch_done
-go-redis-patch = $(BUILD_DIR)/gopkgs/.redis_patch_done
 go-dep-vers = $(GO_DEPS_VER_LIST:%=$(BUILD_GOPATH)/src/%)
 
-all: build-deps $(go-deps) $(go-redis-patch) $(go-patch) translib rest-server cli ham
+all: build-deps $(go-deps) $(go-patch) translib rest-server cli ham
 
 build-deps:
 	mkdir -p $(BUILD_DIR)/gopkgs
@@ -86,11 +84,6 @@ $(go-dep-vers):
 	$(GO) get -v -d $(subst $(BUILD_GOPATH)/src/,,$(@D))
 	cd $(@D) && git clean -fd && git checkout -fq $(@F)
 	touch $@
-
-$(go-redis-patch): $(go-deps)
-	cd $(BUILD_GOPATH)/src/github.com/go-redis/redis; git checkout d19aba07b47683ef19378c4a4d43959672b7cec8 2>/dev/null ; true; \
-$(GO) install -v -gcflags "-N -l" $(BUILD_GOPATH)/src/github.com/go-redis/redis
-	touch  $@
 
 cli: 
 	$(MAKE) -C src/CLI
@@ -107,7 +100,7 @@ clidocgen:
 clidocgen-clean:
 	TGT_DIR=$(BUILD_DIR)/cli $(MAKE) -C src/CLI/clitree doc_gen_clean
 
-cvl: $(go-deps) $(go-patch) $(go-redis-patch)
+cvl: $(go-deps) $(go-patch)
 	$(MAKE) -C src/cvl
 
 cvl-test:
@@ -221,6 +214,7 @@ clean: rest-clean
 cleanall:
 	$(MAKE) -C src/cvl cleanall
 	rm -rf build/*
+	rm -rf gopkgs
 
 #Function to apply CVL related patches
 define apply_cvl_dep_patches
