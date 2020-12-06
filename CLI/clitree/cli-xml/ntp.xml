@@ -183,7 +183,8 @@ limitations under the License.
     <COMMAND name="ntp authentication-key"
              help="Configure NTP authentication key"
              mode="subcommand"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id={id}">
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id={id}"
+             render_command_cb="ntp_authentication_key">
       <PARAM name="key-number"
              help="Authentication key number"
              ptype="RANGE_1_65535"

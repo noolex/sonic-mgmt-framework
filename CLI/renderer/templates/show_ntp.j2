@@ -89,7 +89,7 @@
                     {% if vars.update({'poll':""}) %}{% endif %}
                 {% endif %}
                 {% if "openconfig-system-ext:reach" in assoc_info %}
-                    {% if vars.update({'reach':'%o'|format(assoc_info["openconfig-system-ext:reach"])}) %}{% endif %}
+                    {% if vars.update({'reach':assoc_info["openconfig-system-ext:reach"]}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'reach':""}) %}{% endif %}
                 {% endif %}
