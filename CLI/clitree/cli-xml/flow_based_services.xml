@@ -1409,6 +1409,13 @@ limitations under the License.
     </VIEW>
 
     <!--===================================================================================-->
+    <!--                            Policy binding CLIs for subinterface                   -->
+    <!--===================================================================================-->
+    <VIEW name="configure-subif-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Ethernet,interface"/>
+    </VIEW>
+
+    <!--===================================================================================-->
     <!--                            Policy binding CLIs for PortChannel                    -->
     <!--===================================================================================-->
     <VIEW name="configure-lag-view">

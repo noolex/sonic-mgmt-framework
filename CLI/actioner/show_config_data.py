@@ -126,6 +126,7 @@ module_startup_cb = {
     'configure-ipv4-acl': [show_running_config_acl_start_callback],
     'configure-ipv6-acl': [show_running_config_acl_start_callback],
     'configure-if': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
+    'configure-subif': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
     'configure-lag': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
     'configure-vlan': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback]
 }
