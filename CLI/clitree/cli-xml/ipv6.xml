@@ -609,7 +609,7 @@ limitations under the License.
 
     </COMMAND>
 
-    <MACRO name="INTF_IPV6_ENABLE" arg="${iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/ipv6_use_link_local_only=enable"> </MACRO>
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iface},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/ipv6_use_link_local_only=enable"> </MACRO>
 
 </VIEW>
 </CLISH_MODULE>
