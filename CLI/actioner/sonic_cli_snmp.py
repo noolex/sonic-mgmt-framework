@@ -1243,6 +1243,18 @@ def invoke(func, args):
       response = aa.delete(keypath)
     return response
 
+  # Clear SNMP counters
+  elif func == 'snmp_clear_counters':
+    keypath = cc.Path('/restconf/operations/sonic-snmp:clear-counters')
+    response = aa.post(keypath)
+    return response
+
+  # Show SNMP counters
+  elif func == 'snmp_show_counters':
+    keypath = cc.Path('/restconf/operations/sonic-snmp:show-counters')
+    response = aa.post(keypath)
+    return response
+
   else:
       print("%Error: %func not implemented "+func)
       exit(1)
@@ -1263,6 +1275,8 @@ def run(func, args):
           show_cli_output('show_snmp_agentaddr.j2', temp['agentAddr'])
       elif func == 'snmp_community_get':
         show_cli_output(args[0], api_response.content['community'])
+      elif func == 'snmp_show_counters':
+          show_cli_output('show_snmp_counters.j2', api_response.content['sonic-snmp:output']['counters'])
       elif func == 'snmp_view_get':
         show_cli_output(args[0], api_response.content['view'])
       elif func == 'snmp_group_access_get':

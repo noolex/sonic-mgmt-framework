@@ -100,17 +100,13 @@ limitations under the License.
      </COMMAND>
 
      <COMMAND name="pfc-priority" help="PFC Priority value" mode="subcommand" ptype="SUBCOMMAND" >
-        <PARAM name="dot1p" help="PFC Priority value (0-7)" ptype="RANGE_0_7" >
+        <PARAM name="dot1p_list" help="(-) or (,) separated individual PFC Priority and ranges of PFC Priority's; for example, 0,2-7" ptype="VAL_0_7_RANGE">
             <PARAM name="queue" help="Queue" mode="subcommand" ptype="SUBCOMMAND" >
                 <PARAM name="qid" help="Queue value" ptype="RANGE_0_7" >
                 </PARAM>
             </PARAM>
         </PARAM>
-        <ACTION builtin="clish_restcl">
-            oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${map_name}/pfc-priority-queue-map-entries/
-            body={"openconfig-qos-maps-ext:pfc-priority-queue-map-entries": {"pfc-priority-queue-map-entry": [{"dot1p":${dot1p}, "config": {"output-queue-index": ${qid}}}]}}
-        </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_qos_map patch_pfc_priority_map_entries ${map_name} ${dot1p_list} ${qid}</ACTION>
         <DOCGEN>
           <DESCRIPTION>
             This command to add PFC Priority to queue entry in map.
@@ -130,12 +126,9 @@ limitations under the License.
 
       <!-- no dot1p-->
       <COMMAND name="no pfc-priority" help="Unconfigure a mapping">
-        <PARAM name="dot1p" help="PFC Priority value (0-7)" ptype="RANGE_0_7" >
+        <PARAM name="dot1p_list" help="(-) or (,) separated individual PFC Priority and ranges of PFC Priority's; for example, 0,2-7" ptype="VAL_0_7_RANGE">
         </PARAM>
-        <ACTION builtin="clish_restcl">
-            oper=DELETE
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:pfc-priority-queue-maps/pfc-priority-queue-map=${map_name}/pfc-priority-queue-map-entries/pfc-priority-queue-map-entry=${dot1p}
-        </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_qos_map delete_pfc_priority_map_entries ${map_name} ${dot1p_list}</ACTION>
         <DOCGEN>
           <DESCRIPTION>
             This command to delete PFC Priority to queue entry in map.

@@ -100,10 +100,10 @@ def static_route_ntwk_inst(ip_version, cmd_prfx, render_tables):
          if (vrf_key == 'default' and rt_inst['vrf-name'] != vrf_key):
             continue
          if (vrf_key == 'Vrf*'):
-            if('Vrf' not in rt_inst['vrf-name']): 
-                continue
+            if (rt_inst['vrf-name'] != 'default'):
+               cmd_for_vrf = "vrf "+ rt_inst['vrf-name'] 
             else:
-                cmd_for_vrf = "vrf "+ rt_inst['vrf-name'] 
+               continue 
 
          prefix = rt_inst['prefix'] 
          prefix_type = static_route_get_prefix_type(prefix)

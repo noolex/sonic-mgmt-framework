@@ -64,7 +64,11 @@ def run(func, args):
 
            if func == 'show_ip_route_summary':
                if len(args) >= 6 and args[4] == 'vrf' and args[5] != 'default':
-                    d['vrfname'] = args[5]
+                   if args[5] != 'all':
+                       d = { args[5] : d }
+               else:
+                   d = { 'default' : d }
+
                show_cli_output(args[0], d)
                return
 

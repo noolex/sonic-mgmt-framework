@@ -1,0 +1,31 @@
+{% set group_list = json_output.keys() %}
+{% set last_elem = group_list|last %}
+{% for group_name in json_output %}
+    {% set group_data = json_output[group_name] %}
+    {{- 'Next-hop-group'}} {{ group_name }} {{ 'Type' }} {{ group_data["TYPE"] }}{{ "\n" }}
+    {{- '  Description:' }} {{ group_data["DESCRIPTION"] }}{{ "\n" }}
+    {% if "THRESHOLD_TYPE" in group_data %}
+        {{- '  Threshold type:' }} {{ group_data["THRESHOLD_TYPE"].capitalize() }}
+    {% endif %}
+    {% if "THRESHOLD_UP" in group_data %}
+        {{- '  Threshold up:' }} {{ group_data["THRESHOLD_UP"] }}
+    {% endif %}
+    {% if "THRESHOLD_DOWN" in group_data %}
+        {{- '  Threshold down:' }} {{ group_data["THRESHOLD_DOWN"] }}
+    {% endif %}
+    {{- '  Members:' }}
+    {% if "NEXT_HOPS" in group_data %}
+        {% for nhop in group_data["NEXT_HOPS"].values() %}
+            {{- '    Entry'}} {{ nhop["ENTRY_ID"] }} next-hop {{ nhop["IP_ADDRESS"] }}{% if "VRF" in nhop %} {{ 'vrf' }} {{ nhop["VRF"] }}{% endif %}{% if "NEXT_HOP_TYPE" in nhop %} {{ nhop["NEXT_HOP_TYPE"] }}{% endif %}{{"\n"}}
+        {% endfor %}
+    {% endif %}
+    {% if 'REFERENCES' in group_data %}
+        {{- '  Referenced in flows:' }}
+    {% endif %}
+    {% for referring_policy in group_data.get("REFERENCES", []) %}
+        {{- '    policy' }} {{ referring_policy["POLICY_NAME"] }} at priority {{ referring_policy["PRIORITY"] }}
+    {% endfor %}
+    {% if group_name != last_elem %}
+        {{ "\n" }}
+    {% endif %}
+{% endfor %}

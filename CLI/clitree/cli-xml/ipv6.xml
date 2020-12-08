@@ -575,4 +575,41 @@ limitations under the License.
     />
     <MACRO name="INTF_IPV6_ENABLE" arg="${iflist}"> </MACRO>
 </VIEW>
+
+<VIEW name="configure-subif-view">
+    <COMMAND
+        name="ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="no ipv6"
+        help="Interface Internet Protocol v6 config commands"
+    />
+    <COMMAND
+        name="ipv6 address"
+        help="IPv6 address"
+        command_tables="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_IPADDR_LIST/id={name},ipPrefix={prfx}"
+        render_command_cb="ipv6_subif_ip_address"
+        >
+        <PARAM
+            name="addr"
+            help="IPv6 address with mask"
+            ptype="IPV6_ADDR_MASK" />
+            <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_addresses_address_config ${iface} ${addr}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no ipv6 address"
+        help="Delete IPv6 address(es) on the interface" >
+        <PARAM
+            name="addr"
+            help="IPv6 address"
+            optional="true"
+            ptype="IPV6_ADDR_MASK" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} False</ACTION>
+
+    </COMMAND>
+
+    <MACRO name="INTF_IPV6_ENABLE" arg="${iface},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/ipv6_use_link_local_only=enable"> </MACRO>
+
+</VIEW>
 </CLISH_MODULE>

@@ -410,7 +410,6 @@ limitations under the License.
             help="Spanning tree subcommands"
             ptype="SUBCOMMAND"
             mode="switch"
-            optional="true"
             >
             <PARAM
                 name="pvst"
