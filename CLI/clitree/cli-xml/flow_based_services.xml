@@ -29,10 +29,10 @@ limitations under the License.
     <PTYPE name="POLICER_RATE_BITS" pattern="^((&UINT_32_RANGE;)([kmgt]?bps)?)$" help="" />
     <PTYPE name="POLICER_RATE_BYTES" pattern="^((&UINT_32_RANGE;)([KMGT]?B)?)$" help="" />
     <PTYPE name="DESCRIPTION" pattern=".{1,256}" help="String (Max: 256 characters)"/>
-
+    <PTYPE name="TRAP_QUEUE" method="integer" pattern="0..47" help=""/>
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
-        <!-- show policy-map [NAME] | [type qos|monitoring|forwarding] -->
+        <!-- show policy-map [NAME] | [type qos|monitoring|forwarding|copp|acl-copp] -->
         <COMMAND name="show policy-map" help="Shows policy-map information">
             <PARAM name="show-fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max: 63 characters)" ptype="STRING_63"/>
@@ -43,6 +43,7 @@ limitations under the License.
                 <PARAM name="monitoring" help="Show all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="forwarding" help="Show all forwarding policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="copp" help="Show all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="acl-copp" help="Show all ACL based CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
             <DOCGEN>
@@ -1115,88 +1116,7 @@ limitations under the License.
            </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="police" help="Set rate limiting parameters">
-            <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    </PARAM>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    </PARAM>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                </PARAM>
-            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policer_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
-            <DOCGEN>
-              <DESCRIPTION>
-                 Configures policer action for Qos Flow
-              </DESCRIPTION>
-              <USAGE>
-                  CIR: Committed information rate in bits per second. CIR is mandatory. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000)cir 300000000 cbs 300000000 pir 300000000 pbs 300000000.
-                  CBS: Committed burst size in bytes. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the CIR in bytes. If configured by the user, it must be greater than or equal to CIR in bytes. 
-                  PIR: Peak information rate in bits per second. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000). If configured by the user, it must be greater than CIR 
-                  PBS: Peak burst size. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the PIR value in bytes. If configured by the user, it must be greater than PIR value in bytes and also CBS value 
-                  If only CIR is configured, then its 1 rate, 2 color policer.  Any traffic exceeding CIR value will be marked as red and will be dropped.
-
-                  If both CIR and PIR is configured, then is 2 rate 3 color policer. Any traffic that exceeds CIR but less than PIR will be marked as yellow. Any traffic that is more than PIR will be marked as red and will be dropped
-              </USAGE>
-              <EXAMPLE summary="Configures traffic class action for Qos Flow">
-                  sonic(config)# policy-map policy_qos type qos
-                  sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#cir 300000000 cbs 300000000 pir 300000000 pbs 300000000
-              </EXAMPLE>
-           </DOCGEN>
-        </COMMAND>
-
-        <COMMAND name="no police" help="Clear or reset rate limiting parameters">
-            <PARAM name="cir" help="Clear committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="cbs" help="Clear committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="pir" help="Clear peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="pbs" help="Clear peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_policer_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
-            <DOCGEN>
-              <DESCRIPTION>
-                 Unconfigures policer action for Qos Flow
-              </DESCRIPTION>
-              <USAGE>
-                  CIR: Committed information rate in bits per second. CIR is mandatory. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000)cir 300000000 cbs 300000000 pir 300000000 pbs 300000000.
-                  CBS: Committed burst size in bytes. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the CIR in bytes. If configured by the user, it must be greater than or equal to CIR in bytes. 
-                  PIR: Peak information rate in bits per second. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000). If configured by the user, it must be greater than CIR 
-                  PBS: Peak burst size. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the PIR value in bytes. If configured by the user, it must be greater than PIR value in bytes and also CBS value 
-                  If only CIR is configured, then its 1 rate, 2 color policer.  Any traffic exceeding CIR value will be marked as red and will be dropped.
-
-                  If both CIR and PIR is configured, then is 2 rate 3 color policer. Any traffic that exceeds CIR but less than PIR will be marked as yellow. Any traffic that is more than PIR will be marked as red and will be dropped
-              </USAGE>
-              <EXAMPLE summary="Unconfigures traffic class action for Qos Flow">
-                  sonic(config)# policy-map policy_qos type qos
-                  sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#no police 
-              </EXAMPLE>
-           </DOCGEN>
-
-        </COMMAND>
+        <MACRO name="POLICER-PARAM-OPTIONS" arg="qos,set_policer_action, clear_policer_action"/>
     </VIEW>
 
     <!--===================================================================================-->
@@ -1402,6 +1322,50 @@ limitations under the License.
     </VIEW>
 
     <!--===================================================================================-->
+    <!--                            Flow view for ACL-COPP actions                              -->
+    <!--===================================================================================-->
+    <VIEW name="configure-acl-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="set" help="Set parameters" />
+        <COMMAND name="no set" help="Remove/Disable ACL-COPP actions" />
+
+        <MACRO name="POLICY-FLOW-DESCRIPTION" />
+
+        <COMMAND name="set trap-queue" help="Set CoPP queue id">
+            <PARAM name="trap-queue-id-value" help="Queue ID value (0-47)" ptype="TRAP_QUEUE" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_acl_copp_queue_id_action ${fbs-policy-name} ${fbs-class-name} ${trap-queue-id-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures CPU Queue for ACL-CoPP flows
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures CPU Queue for acl-copp flows">
+                  sonic(config)# policy-map policy3 type acl-copp
+                  sonic(config-policy-map)# class class0 priority 100
+                  sonic(config-policy-map-flow)# set trap-queue 30
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="no set trap-queue" help="Clear CoPP queue id">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_acl_copp_queue_id_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes set CPU Queue for ACL-CoPP flows
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes CPU Queue for acl-copp flows">
+                  sonic(config)# policy-map policy3 type acl-copp
+                  sonic(config-policy-map)# class class0 priority 100
+                  sonic(config-policy-map-flow)# no set trap-queue
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <MACRO name="POLICER-PARAM-OPTIONS" arg="acl-copp,set_acl_copp_policer_action,clear_acl_copp_policer_action"/>
+
+    </VIEW>
+    <!--===================================================================================-->
+
     <!--                            Policy binding CLIs for Ethernet                       -->
     <!--===================================================================================-->
     <VIEW name="configure-if-view">
@@ -1443,5 +1407,11 @@ limitations under the License.
     <VIEW name="configure-pbf-ipv6-nh-grp-view" prompt="${SYSTEM_NAME}(config-pbf-ipv6-nh-group)# " depth="2">
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <MACRO name="FBS-NEXT-HOP-GROUP-CLIS" arg="IPv6,IPV6_ADDR" />
+    </VIEW>
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for CPU                            -->
+    <!--===================================================================================-->
+    <VIEW name="config-if-CPU-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="3,CPU,cpu_port"/>
     </VIEW>
 </CLISH_MODULE>

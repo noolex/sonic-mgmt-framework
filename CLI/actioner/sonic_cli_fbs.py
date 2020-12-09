@@ -60,6 +60,20 @@ def create_policy(args):
     return fbs_client.patch(keypath, body)
 
 
+def create_policy_acl_copp(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy')
+    body = {
+    "openconfig-fbs-ext:policy": [{
+        "policy-name": args[0],
+            "config": {
+                "name": args[0],
+                "type": "POLICY_COPP"
+            }
+        }]
+    }
+    return fbs_client.patch(keypath, body)
+
+
 def delete_policy(args):
     if args[0] == "copp-system-policy":
         print("%Error: copp-system-policy cannot be deleted")
@@ -527,6 +541,31 @@ def clear_dscp_remarking_action(args):
     return fbs_client.delete(keypath)
 
 
+def set_acl_copp_queue_id_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/copp/config/cpu-queue-index',
+                      policy_name=args[0], class_name=args[1])
+    body = {'openconfig-fbs-ext:cpu-queue-index': int(args[2])}
+    return fbs_client.patch(keypath, body)
+
+
+def clear_acl_copp_queue_id_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/copp/config/cpu-queue-index',
+                      policy_name=args[0], class_name=args[1])
+    return fbs_client.delete(keypath)
+
+
+def set_acl_copp_policer_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/copp/policer/config',
+                      policy_name=args[0], class_name=args[1])
+    return set_policer_action_internal(args, keypath=keypath)
+
+
+def clear_acl_copp_policer_action(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/copp/policer/config',
+                      policy_name=args[0], class_name=args[1])
+    return clear_policer_action_internal(args, keypath=keypath)
+
+
 def set_traffic_class_action(args):
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/queuing/config/output-queue-index',
                       policy_name=args[0], class_name=args[1])
@@ -540,106 +579,116 @@ def clear_traffic_class_action(args):
     return fbs_client.delete(keypath)
 
 
+def set_policer_action_internal(args, keypath=None):
+    if keypath is not None:
+        body = {
+            "openconfig-fbs-ext:config": {
+            }
+        }
+
+        index = 2
+        while index < len(args):
+            if args[index] == 'cir':
+                key = 'cir'
+                value = args[index + 1]
+                if value.endswith('kbps'):
+                    value = value.replace('kbps', '000')
+                elif value.endswith('mbps'):
+                    value = value.replace('mbps', '000000')
+                elif value.endswith('gbps'):
+                    value = value.replace('gbps', '000000000')
+                elif value.endswith('tbps'):
+                    value = value.replace('tbps', '000000000000')
+                elif value.endswith('bps'):
+                    value = value.replace('bps', '')
+            elif args[index] == 'cbs':
+                key = 'cbs'
+                value = args[index + 1]
+                if value.endswith('KB'):
+                    value = value.replace('KB', '000')
+                elif value.endswith('MB'):
+                    value = value.replace('MB', '000000')
+                elif value.endswith('GB'):
+                    value = value.replace('GB', '000000000')
+                elif value.endswith('TB'):
+                    value = value.replace('TB', '000000000000')
+                elif value.endswith('B'):
+                    value = value.replace('B', '')
+            elif args[index] == 'pir':
+                key = 'pir'
+                value = args[index+1]
+                if value.endswith('kbps'):
+                    value = value.replace('kbps', '000')
+                elif value.endswith('mbps'):
+                    value = value.replace('mbps', '000000')
+                elif value.endswith('gbps'):
+                    value = value.replace('gbps', '000000000')
+                elif value.endswith('tbps'):
+                    value = value.replace('tbps', '000000000000')
+                elif value.endswith('bps'):
+                    value = value.replace('bps', '')
+            elif args[index] == 'pbs':
+                key = 'pbs'
+                value = args[index + 1]
+                if value.endswith('KB'):
+                    value = value.replace('KB', '000')
+                elif value.endswith('MB'):
+                    value = value.replace('MB', '000000')
+                elif value.endswith('GB'):
+                    value = value.replace('GB', '000000000')
+                elif value.endswith('TB'):
+                    value = value.replace('TB', '000000000000')
+                elif value.endswith('B'):
+                    value = value.replace('B', '')
+            else:
+                print('%Error: Unknown argument {}'.format(args[index]))
+                return
+
+            body["openconfig-fbs-ext:config"][key] = value
+            index += 2
+
+        return fbs_client.patch(keypath, body)
+
+
 def set_policer_action(args):
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/policer/config',
                       policy_name=args[0], class_name=args[1])
-    body = {
-        "openconfig-fbs-ext:config": {
-        }
-    }
+    return set_policer_action_internal(args, keypath=keypath)
 
-    index = 2
-    while index < len(args):
-        if args[index] == 'cir':
-            key = 'cir'
-            value = args[index + 1]
-            if value.endswith('kbps'):
-                value = value.replace('kbps', '000')
-            elif value.endswith('mbps'):
-                value = value.replace('mbps', '000000')
-            elif value.endswith('gbps'):
-                value = value.replace('gbps', '000000000')
-            elif value.endswith('tbps'):
-                value = value.replace('tbps', '000000000000')
-            elif value.endswith('bps'):
-                value = value.replace('bps', '')
-        elif args[index] == 'cbs':
-            key = 'cbs'
-            value = args[index + 1]
-            if value.endswith('KB'):
-                value = value.replace('KB', '000')
-            elif value.endswith('MB'):
-                value = value.replace('MB', '000000')
-            elif value.endswith('GB'):
-                value = value.replace('GB', '000000000')
-            elif value.endswith('TB'):
-                value = value.replace('TB', '000000000000')
-            elif value.endswith('B'):
-                value = value.replace('B', '')
-        elif args[index] == 'pir':
-            key = 'pir'
-            value = args[index+1]
-            if value.endswith('kbps'):
-                value = value.replace('kbps', '000')
-            elif value.endswith('mbps'):
-                value = value.replace('mbps', '000000')
-            elif value.endswith('gbps'):
-                value = value.replace('gbps', '000000000')
-            elif value.endswith('tbps'):
-                value = value.replace('tbps', '000000000000')
-            elif value.endswith('bps'):
-                value = value.replace('bps', '')
-        elif args[index] == 'pbs':
-            key = 'pbs'
-            value = args[index + 1]
-            if value.endswith('KB'):
-                value = value.replace('KB', '000')
-            elif value.endswith('MB'):
-                value = value.replace('MB', '000000')
-            elif value.endswith('GB'):
-                value = value.replace('GB', '000000000')
-            elif value.endswith('TB'):
-                value = value.replace('TB', '000000000000')
-            elif value.endswith('B'):
-                value = value.replace('B', '')
+
+def clear_policer_action_internal(args, keypath=None):
+    if keypath is not None:
+        if len(args) == 2:
+            return fbs_client.delete(keypath)
+
+        response = fbs_client.get(keypath, depth=None, ignore404=False)
+        if response.ok():
+            data = response.content
+            if len(args) == 2:
+                delete_params = ['cir', 'cbs', 'pir', 'pbs']
+            else:
+                delete_params = []
+                for feat in args[2:]:
+                    if feat == 'cir' or feat == 'pir':
+                        delete_params.append(feat)
+                    elif feat == 'cbs':
+                        delete_params.append('cbs')
+                    elif feat == 'pbs':
+                        delete_params.append('pbs')
+
+            for feat in delete_params:
+                if feat in data['openconfig-fbs-ext:config'].keys():
+                    del data['openconfig-fbs-ext:config'][feat]
+
+            return fbs_client.put(keypath, data)
         else:
-            print('%Error: Unknown argument {}'.format(args[index]))
-            return
-
-        body["openconfig-fbs-ext:config"][key] = value
-        index += 2
-
-    return fbs_client.patch(keypath, body)
+            print(response.error_message())
 
 
 def clear_policer_action(args):
     keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/qos/policer/config',
                       policy_name=args[0], class_name=args[1])
-    if len(args) == 2:
-        return fbs_client.delete(keypath)
-
-    response = fbs_client.get(keypath, depth=None, ignore404=False)
-    if response.ok():
-        data = response.content
-        if len(args) == 2:
-            delete_params = ['cir', 'cbs', 'pir', 'pbs']
-        else:
-            delete_params = []
-            for feat in args[2:]:
-                if feat == 'cir' or feat == 'pir':
-                    delete_params.append(feat)
-                elif feat == 'cbs':
-                    delete_params.append('cbs')
-                elif feat == 'pbs':
-                    delete_params.append('pbs')
-
-        for feat in delete_params:
-            if feat in data['openconfig-fbs-ext:config'].keys():
-                del data['openconfig-fbs-ext:config'][feat]
-
-        return fbs_client.put(keypath, data)
-    else:
-        print(response.error_message())
+    return clear_policer_action_internal(args, keypath=keypath)
 
 
 def set_mirror_session_action(args):
@@ -783,35 +832,61 @@ def clear_egress_interface_action(args):
         return fbs_client.delete(keypath)
 
 
-def bind_policy(args):
-    ifname = args[3]
+def bind_cpu_port_policy(args):
     body = {
-        "openconfig-fbs-ext:config": {
-            "id": ifname
-        },
-        "openconfig-fbs-ext:interface-ref": {
-            "config": {
-                "interface": ifname
-            }
-        },
         "openconfig-fbs-ext:{}-policies".format('ingress' if args[2] =='in' else 'egress'): {
-            args[1]: {
+            "copp": {
                 "config": {
                     "policy-name": args[0]
                 }
             }
         }
     }
-    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={interface_name}',
-                      interface_name=ifname)
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/cpu-port')
     return fbs_client.post(keypath, body)
+
+
+def unbind_cpu_port_policy(args):
+    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/cpu-port/{direction}-policies/copp',
+            direction='ingress' if args[1] =='in' else 'egress')
+    return fbs_client.delete(keypath)
+
+
+def bind_policy(args):
+    ifname = args[3]
+    if ifname == 'CPU':
+        return bind_cpu_port_policy(args)
+    else:
+        body = {
+            "openconfig-fbs-ext:config": {
+                "id": ifname
+            },
+            "openconfig-fbs-ext:interface-ref": {
+                "config": {
+                    "interface": ifname
+                }
+            },
+            "openconfig-fbs-ext:{}-policies".format('ingress' if args[2] =='in' else 'egress'): {
+                args[1]: {
+                    "config": {
+                        "policy-name": args[0]
+                    }
+                }
+            }
+        }
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={interface_name}',
+                          interface_name=ifname)
+        return fbs_client.post(keypath, body)
 
 
 def unbind_policy(args):
     ifname = args[2]
-    keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={interface_name}/{direction}-policies/{policy_type}', 
-            interface_name=ifname, direction='ingress' if args[1] =='in' else 'egress', policy_type=args[0])
-    return fbs_client.delete(keypath)
+    if ifname == 'CPU':
+        return unbind_cpu_port_policy(args)
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/interfaces/interface={interface_name}/{direction}-policies/{policy_type}',
+                interface_name=ifname, direction='ingress' if args[1] =='in' else 'egress', policy_type=args[0])
+        return fbs_client.delete(keypath)
 
 
 def show_policy_summary(args):
@@ -1458,7 +1533,7 @@ def handle_generic_delete_response(response, args, op_str):
 
 def handle_show_policy_summary_response(response, args, op_str):
     if response.ok():
-        filter_type = ['qos', 'monitoring', 'forwarding']
+        filter_type = ['qos', 'monitoring', 'forwarding', 'acl_copp']
         directions = ['ingress', 'egress']
         if_filter = None
         next = 0
@@ -1488,7 +1563,7 @@ def handle_show_policy_summary_response(response, args, op_str):
 
                     key = '{}_{}_POLICY'.format(dir.upper(), ft.upper())
                     if key in binding:
-                        if_data.append(tuple([ft, binding[key], dir]))
+                        if_data.append(tuple([ft.replace("_", "-"), binding[key], dir]))
 
             if len(if_data):
                 render_data[binding['INTERFACE_NAME']] = if_data
@@ -1634,7 +1709,7 @@ def handle_show_service_policy_details_response(response, args, op_str):
                         for name in policy_names:
                             policy_sort_data = OrderedDict()
                             policy_data = data[name]
-                            policy_sort_data["TYPE"] = policy_data["TYPE"].lower()
+                            policy_sort_data["TYPE"] = policy_data["TYPE"].lower().replace("_","-")
                             policy_sort_data["DESCRIPTION"] = policy_data.get("DESCRIPTION", "")
                             policy_sort_data["FLOWS"] = OrderedDict()
                             flows = dict()
@@ -1847,6 +1922,7 @@ request_handlers = {
     'create_policy_monitoring': create_policy,
     'create_policy_forwarding': create_policy,
     'create_policy_copp': create_policy_copp,
+    'create_policy_acl-copp': create_policy_acl_copp,
     'delete_policy': delete_policy,
     'set_policy_description': set_policy_description,
     'clear_policy_description': clear_policy_description,
@@ -1882,10 +1958,12 @@ request_handlers = {
     'create_flow_monitoring': create_flow,
     'create_flow_forwarding': create_flow,
     'create_flow_copp': create_flow_copp,
+    'create_flow_acl-copp': create_flow,
     'delete_flow_qos': delete_flow,
     'delete_flow_monitoring': delete_flow,
     'delete_flow_forwarding': delete_flow,
     'delete_flow_copp': delete_flow_copp,
+    'delete_flow_acl-copp': delete_flow,
     'set_flow_description': set_flow_description,
     'clear_flow_description': clear_flow_description,
     'set_pcp_remarking_action': set_pcp_remarking_action,
@@ -1937,7 +2015,11 @@ request_handlers = {
     'delete_next_hop_group_threshold': delete_next_hop_group_threshold,
     'get_next_hop_group_type': get_next_hop_group_type,
     'show_pbf_next_hop_group': show_pbf_next_hop_group_request,
-    'show_pbf_next_hop_group_status': show_pbf_next_hop_group_status_request
+    'show_pbf_next_hop_group_status': show_pbf_next_hop_group_status_request,
+    'set_acl_copp_queue_id_action': set_acl_copp_queue_id_action,
+    'clear_acl_copp_queue_id_action':clear_acl_copp_queue_id_action ,
+    'set_acl_copp_policer_action':set_acl_copp_policer_action,
+    'clear_acl_copp_policer_action':clear_acl_copp_policer_action
 }
 
 
@@ -1946,6 +2028,7 @@ response_handlers = {
     'create_policy_monitoring': handle_generic_set_response,
     'create_policy_forwarding': handle_generic_set_response,
     'create_policy_copp': handle_generic_set_response,
+    'create_policy_acl-copp': handle_generic_set_response,
     'delete_policy': handle_generic_delete_response,
     'set_policy_description': handle_generic_set_response,
     'clear_policy_description': handle_generic_delete_response,
@@ -1981,10 +2064,12 @@ response_handlers = {
     'create_flow_monitoring': handle_generic_set_response,
     'create_flow_forwarding': handle_generic_set_response,
     'create_flow_copp': handle_generic_set_response,
+    'create_flow_acl-copp': handle_generic_set_response,
     'delete_flow_qos': handle_generic_delete_response,
     'delete_flow_monitoring': handle_generic_delete_response,
     'delete_flow_forwarding': handle_generic_delete_response,
     'delete_flow_copp': handle_generic_set_response,
+    'delete_flow_acl-copp': handle_generic_set_response,
     'set_flow_description': handle_generic_set_response,
     'clear_flow_description': handle_generic_delete_response,
     'set_pcp_remarking_action': handle_generic_set_response,
@@ -2036,7 +2121,11 @@ response_handlers = {
     'delete_next_hop_group_threshold': handle_generic_delete_response,
     'get_next_hop_group_type': get_next_hop_group_type_response,
     'show_pbf_next_hop_group': show_pbf_next_hop_group_response,
-    'show_pbf_next_hop_group_status': show_pbf_next_hop_group_status_response
+    'show_pbf_next_hop_group_status': show_pbf_next_hop_group_status_response,
+    'set_acl_copp_queue_id_action': handle_generic_set_response,
+    'clear_acl_copp_queue_id_action': handle_generic_delete_response,
+    'set_acl_copp_policer_action': handle_generic_set_response,
+    'clear_acl_copp_policer_action': handle_generic_delete_response
 }
 
 
