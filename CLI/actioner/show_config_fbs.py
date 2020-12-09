@@ -148,7 +148,7 @@ def show_running_fbs_policy(render_tables):
             for name in policy_names:
                 render_data[name] = OrderedDict()
                 policy_data = data[name]
-                render_data[name]["TYPE"] = policy_data["TYPE"].lower()
+                render_data[name]["TYPE"] = policy_data["TYPE"].lower().replace("_", "-")
                 render_data[name]["DESCRIPTION"] = policy_data.get("DESCRIPTION", "")
 
                 render_data[name]["FLOWS"] = OrderedDict()
@@ -166,7 +166,7 @@ def show_running_fbs_policy(render_tables):
             for policy_name in render_data:
                 cmd_str += '' if index == 0 else "!;" 
                 index += 1
-                match_type = render_data[policy_name]['TYPE'].lower()
+                match_type = render_data[policy_name]['TYPE'].lower().replace("_", "-")
                 cmd_str += 'policy-map {} type {};'.format(policy_name, match_type)
                 if 'DESCRIPTION' in render_data[policy_name] and render_data[policy_name]['DESCRIPTION'] != "":
                     if ' ' in render_data[policy_name]['DESCRIPTION']:
@@ -242,13 +242,29 @@ def show_running_fbs_policy(render_tables):
                         if 'SET_MIRROR_SESSION' in flow_data:
                             cmd_str += '  set mirror-session {};'.format(flow_data['SET_MIRROR_SESSION'])
                         cmd_str += ' !;'
+                    elif match_type == 'acl-copp':
+                        if 'SET_TRAP_QUEUE' in flow_data:
+                            cmd_str += '  set trap-queue {};'.format(flow_data['SET_TRAP_QUEUE'])
+
+                        pstr = ""
+                        if 'SET_POLICER_CIR' in flow_data:
+                            pstr += 'cir {} '.format(flow_data['SET_POLICER_CIR'])
+                        if 'SET_POLICER_CBS' in flow_data:
+                            pstr += 'cbs {} '.format(flow_data['SET_POLICER_CBS'])
+                        if 'SET_POLICER_PIR' in flow_data:
+                            pstr += 'pir {} '.format(flow_data['SET_POLICER_PIR'])
+                        if 'SET_POLICER_PBS' in flow_data:
+                            pstr += 'pbs {} '.format(flow_data['SET_POLICER_PBS'])
+                        if pstr != "":
+                            cmd_str += '  police {};'.format(pstr)
+                        cmd_str += ' !;'
 
     return 'CB_SUCCESS', cmd_str, True
 
 
 def __show_runn_fbs_service_policy_for_intf(ifname, cache):
     cmd_str = ''
-    policy_types = ['qos', 'monitoring', 'forwarding']
+    policy_types = ['qos', 'monitoring', 'forwarding', 'acl-copp']
     directions = ['ingress', 'egress']
     cfg_pdir_map = {directions[0]: "in", directions[1]: "out"}
     if ifname in cache:

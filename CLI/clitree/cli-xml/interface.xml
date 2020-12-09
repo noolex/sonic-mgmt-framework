@@ -29,10 +29,10 @@ limitations under the License.
         <ACTION>echo -n "${phy-sub-if-name}" | sed 's#/#%2f#g'</ACTION>
     </VAR>
     <VAR name="subifparent" dynamic="true">
-        <ACTION>echo -n "${phy-sub-if-name}" | sed 's/\..*//g'</ACTION>
+        <ACTION>echo -n "${phy-sub-if-name}" | sed 's#\..*##g;s#/#%2f#g'</ACTION>
     </VAR>
     <VAR name="subifindex" dynamic="true">
-        <ACTION>echo -n "${phy-sub-if-name}" | sed 's/.*\.//g'</ACTION>
+        <ACTION>echo -n "${phy-sub-if-name}" | sed 's#.*\.##g'</ACTION>
     </VAR>
     <VAR name="subiflagparent" dynamic="true">
         <ACTION>echo -n "${lag-id-subid}" | sed 's/\..*//g'</ACTION>

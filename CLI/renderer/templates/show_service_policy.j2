@@ -44,6 +44,9 @@
                         {% endif %}
                         {{- '      set interface null'}} {{ is_selected }}
                     {% endif %}
+                    {% if "SET_TRAP_QUEUE" in flow_data %}
+                        {{- '      set-trap-queue' }} {{ flow_data["SET_TRAP_QUEUE"] }}
+                    {% endif %}
                     {{- '      Packet matches:' }} {{ flow_data["STATE"].get("MATCHED_PACKETS", "-") }} frames {{ flow_data["STATE"].get("MATCHED_BYTES", "-") }} bytes
                 {% endfor %}
             {% endfor %}
