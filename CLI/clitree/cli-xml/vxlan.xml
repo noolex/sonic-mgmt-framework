@@ -359,6 +359,23 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
+        <COMMAND
+            name="no primary-ip"
+            help="unset the primary IPv4 address">
+            <ACTION builtin="clish_pyobj">sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_primary_ip ${iface}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to unset the Primary IPv4 address
+                </DESCRIPTION>
+                <USAGE>
+                    (config-if-vtep)# no primary-ip 
+                </USAGE>
+                <EXAMPLE summary="unset the primary IPv4 address">
+                    sonic(config)# interface vxlan vtep1
+                    sonic(conf-if-vxlan-vtep1)# no primary-ip
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
         <COMMAND 
             name="no map" 
             help="Delete VNI Mapping">
@@ -419,6 +436,31 @@
                 <EXAMPLE summary="configure the source IPv4 address">
                     sonic(config)# interface vxlan vtep1
                     sonic(conf-if-vxlan-vtep1)# source-ip 1.1.1.1
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND
+            name="primary-ip"
+            help="Set the Primary IPv4 address">
+            <PARAM
+                name="PIP"
+                help="Primary IPv4 address"
+                ptype="IPV4_ADDR_ABC"
+                dbpath="sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST/primary_ip"
+                >
+            </PARAM>
+            <ACTION builtin="clish_pyobj"> sonic_cli_vxlan patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_primary_ip ${iface} ${PIP} </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Command to set the primary IPv4 address
+                </DESCRIPTION>
+                <USAGE>
+                    (conf-if-vxlan-vtep)# primary-ip SOURCEIP
+                    SOURCEIP - primary IPv4 address
+                </USAGE>
+                <EXAMPLE summary="configure the primary IPv4 address">
+                    sonic(config)# interface vxlan vtep1
+                    sonic(conf-if-vxlan-vtep1)# primary-ip 1.1.1.2
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
