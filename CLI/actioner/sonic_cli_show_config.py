@@ -540,15 +540,15 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
             #if first command table same as view table,
             #ignore command table
             if dbpathstr and dbpathstr in cmd_table_path:
-                showrun_log(logging.WARNING, "Command table same as primary view table, process only member provided from primary view table {}, {}",
+                showrun_log(logging.DEBUG, "Command table same as primary view table, process only member provided from primary view table {}, {}",
                  dbpathstr, cmd_table_path )
-                break
-            cmd_table_present = True
-            # new dbpathstr and keys from cmd table
-            dbpathstr = '/'.join(cmd_table_path.split('/')[:-1])
+            else:
+                cmd_table_present = True
+                # new dbpathstr and keys from cmd table
+                dbpathstr = '/'.join(cmd_table_path.split('/')[:-1])
 
         if not db_render_callback:
-            if idx == 0:
+            if idx == 0 and cmd_table_present:
                cmd_table_keys =get_view_table_keys(cmd_table_path)
             response = get_rest_table(cmd_table_path, cmd_table_keys)
             if response is not None:

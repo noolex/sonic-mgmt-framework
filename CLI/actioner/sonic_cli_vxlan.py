@@ -193,6 +193,20 @@ def invoke(func, args):
             else:
                 return aa.delete(keypath)
 
+    #[un]configure VTEP pip
+    if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_primary_ip' or
+        func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_primary_ip'):
+        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}/primary_ip', name=args[0][6:])
+
+        if (func.startswith("patch") is True):
+            body = {
+                    "sonic-vxlan:primary_ip": args[1]
+                  }
+            response = aa.patch(keypath, body)
+            return response
+        else:
+            return aa.delete(keypath)
+
     if (func == 'patch_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_qos_mode'):
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0][6:])
 
