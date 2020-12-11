@@ -5,6 +5,9 @@
 {% set sip = tunnel['src_ip'] %}
 {% if 'src_ip' in tunnel %}
 {{'VTEP Source IP   : '}} {{(tunnel.src_ip|string).ljust(8)}}
+{% if 'primary_ip' in tunnel %}
+{{'VTEP Primary IP  : '}} {{(tunnel.primary_ip|string).ljust(8)}}
+{% endif %}
 {% set qos_mode = tunnel['qos-mode'] %}
 {% if qos_mode == 'pipe' %}
 {% set dscp_value = tunnel.dscp %}
