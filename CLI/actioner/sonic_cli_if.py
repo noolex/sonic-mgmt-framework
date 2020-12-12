@@ -386,8 +386,11 @@ def invoke_api(func, args=[]):
         return api.delete(path)
 
     elif func == 'rpc_replace_vlan':
-        vlanStr = args[2].replace('-', '..')
-        body = {"openconfig-interfaces-ext:input":{"ifname":args[0],"vlanlist":vlanStr}}
+        #vlanStr = args[2].replace('-', '..')
+        vlanlst = args[2].split(',')
+        vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+
+        body = {"openconfig-interfaces-ext:input":{"ifname":[args[0]],"vlanlist":vlanlst}}
         path = cc.Path('/restconf/operations/openconfig-interfaces-ext:vlan-replace')
         return api.post(path,body)
 
