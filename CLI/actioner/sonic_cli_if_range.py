@@ -105,6 +105,36 @@ def eth_intf_range_expand(givenifrange):
             intf_list.add(p)
     return list(intf_list)
 
+def vlanFullList():
+    fullList = []
+    for i in range (1,4095):
+        fullList.append(str(i))
+    return fullList
+    
+def vlanExceptList(vlan):
+    exceptStr = ''
+    exceptList = vlanFullList()
+    vlanList = vlan.split(',')
+    for vid in vlanList:
+        if '-' in vid:
+            vid = vid.replace('-','..')
+        if '..' in vid:
+            vidList = vid.split('..')
+            print(vidList)
+            lower = int(vidList[0])
+            print(lower)
+            upper = int(vidList[1])
+            print(upper)
+            for i in range(lower,upper+1):
+                vid = str(i)
+                if vid in exceptList:
+                    exceptList.remove(vid)
+        else:
+            exceptList.remove(vid)
+            
+    exceptStr = ','.join(exceptList)
+            
+    return exceptStr
 def generate_body(func, args=[]):
 
     body = {}
@@ -501,7 +531,18 @@ def run(func, args):
             return res
 
 	elif func == 'vlan_trunk_if_range':
-	    if args[3] == 'add':
+            if args[2] == 'all':
+                args.insert(2,'1..4094')
+                func = 'config_if_range'
+                response = invoke_api(func, args)
+                return check_response(response, func, args)
+	    elif args[3] == 'add':
+		func = 'config_if_range'
+		response = invoke_api(func, args)
+		return check_response(response, func, args)
+	    elif args[3] == 'except':
+		exceptStr = vlanExceptList(args[2])
+		args[2] = exceptStr
 		func = 'config_if_range'
 		response = invoke_api(func, args)
 		return check_response(response, func, args)
@@ -510,7 +551,12 @@ def run(func, args):
 		args[1] = 'delete_trunk_vlan'
 
 	elif func == 'vlan_trunk_if_range_pc':
-	    if args[3] == 'add':
+	    if args[2] == 'all':
+		args.insert(2,'1..4094')
+		func = 'config_if_range'
+		response = invoke_api(func, args)
+		return check_response(response, func, args)
+	    elif args[3] == 'add':
 	        func = 'config_if_range'
                	response = invoke_api(func, args)
                 return check_response(response, func, args)
