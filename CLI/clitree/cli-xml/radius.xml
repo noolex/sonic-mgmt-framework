@@ -379,7 +379,7 @@ limitations under the License.
                 />
               <PARAM
                 name="vrf-name"
-                help="Name of VRF (Max: 15 characters, prefixed with Vrf)"
+                help="Name of VRF"
                 ptype = "VRF_NAME"
                 />
             </PARAM>
