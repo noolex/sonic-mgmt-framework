@@ -1,8 +1,10 @@
+{% set ns = namespace(newChassis = True) %}
 {% set ns = namespace(newModule = True) %}
 {{'-------------------------------------------------------------------------------------------------------'}}
 {{'Chassis'.ljust(15)}}{{'Module'.ljust(15)}}{{'Component'.ljust(15)}}{{'Version'.ljust(15)}}{{'Description'.ljust(25)}}
 {{'-------------------------------------------------------------------------------------------------------'}}
 {% for chassis in json_output %}
+{% set ns.newChassis = True %}
 {% for module in json_output[chassis] %}
 {% set ns.newModule = True %}
 {% for firmName in json_output[chassis][module] %}
@@ -15,8 +17,12 @@
 {% if 'description' in firmInfo %}
 {% set firmDesc = firmInfo['description'] %}
 {% endif %}
-{% if ns.newModule %}
+{% if ns.newChassis %}
 {{(chassis | truncate(15)).ljust(15)}}{{(module | truncate(15)).ljust(15)}}{{(firmName | truncate(15)).ljust(15)}}{{(firmVer | truncate(15)).ljust(15)}}{{(firmDesc | truncate(45)).ljust(25)}}
+{% set ns.newChassis = False %}
+{% set ns.newModule = False %}
+{% elif ns.newModule %}
+{{''.ljust(15)}}{{(module | truncate(15)).ljust(15)}}{{(firmName | truncate(15)).ljust(15)}}{{(firmVer | truncate(15)).ljust(15)}}{{(firmDesc | truncate(45)).ljust(25)}}
 {% set ns.newModule = False %}
 {% else %}
 {{''.ljust(30)}}{{(firmName | truncate(15)).ljust(15)}}{{(firmVer | truncate(15)).ljust(15)}}{{(firmDesc | truncate(45)).ljust(25)}}
