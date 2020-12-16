@@ -1,7 +1,7 @@
 #!/usr/bin/python
 ###########################################################################
 #
-# Copyright 2019 Dell, Inc.
+# Copyright 2020 Dell, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -247,6 +247,50 @@ def run(func, args):
                     tempInfo[tempName] = OrderedDict()
             tempInfo = OrderedDict(sorted(tempInfo.items()))
             show_cli_output(template, tempInfo)
+        elif func == 'get_openconfig_platform_components_component_firmware':
+            template = sys.argv[2]
+            firmInfo = OrderedDict()
+            for i in xrange(1, 10):
+                path = cc.Path('/restconf/data/openconfig-platform:components/component=FIRMWARE %s'%i)
+                response = aa.get(path)
+                if not response.ok():
+                    if not hasValidComp:
+                        print response.error_message()
+                        return
+                    break
+                if response.content is None:
+                    break
+                hasValidComp = True
+                if (response.content is None or len(response.content) == 0 or
+                    not ('openconfig-platform:component' in response.content) or
+                    len(response.content['openconfig-platform:component']) == 0 or
+                    not ('state' in response.content['openconfig-platform:component'][0])):
+                    break
+                firmName = response.content['openconfig-platform:component'][0]['state']['name']
+                resp = response.content['openconfig-platform:component'][0]
+                chassisName = 'N/A'
+                moduleName = 'N/A'
+
+                if ('chassis' in resp and 'state' in resp['chassis'] and
+                    'openconfig-platform-ext:name' in resp['chassis']['state']):
+                    chassisName = resp['chassis']['state']['openconfig-platform-ext:name']
+                if ('chassis' in resp and 'state' in resp['chassis'] and
+                    'openconfig-platform-ext:module' in resp['chassis']['state']):
+                    chassisName = resp['chassis']['state']['openconfig-platform-ext:module']
+
+                if chassisName not in firmInfo:
+                    firmInfo[chassisName] = OrderedDict()
+                if moduleName not in firmInfo[chassisName]:
+                    firmInfo[chassisName][moduleName] = OrderedDict()
+                firmInfo[chassisName][moduleName][firmName] = resp['state']
+
+            firmInfo = OrderedDict(sorted(firmInfo.items()))
+            for chassis in firmInfo.items():
+                sorted(chassis)
+                for module in chassis:
+                   sorted(module)
+            show_cli_output(template, firmInfo)
+            pass
     except Exception as e:
         print("%Error: Transaction Failure")
         return
