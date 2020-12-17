@@ -331,6 +331,11 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
 
+    elif func == 'delete_trunk_vlan_all':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
+        return api.delete(path)
+
+
     #Remove aggregate access vlan
     elif func == 'delete_aggregate_access_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
@@ -341,6 +346,10 @@ def invoke_api(func, args=[]):
         vlanStr = args[1].replace('-', '..')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
+    
+    elif func == 'delete_aggregate_trunk_vlan_all':
+	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
+	return api.delete(path)
 
     #Remove all vlans
     elif func == 'delete_all_vlan':
@@ -556,6 +565,10 @@ def run(func, args):
 		func = 'config_if_range'
 		response = invoke_api(func, args)
 		return check_response(response, func, args)
+	    
+	    elif args[2] == 'none':
+		func = 'delete_if_range'
+		args[1] = 'delete_aggregate_trunk_vlan_all'
 	    elif args[3] == 'add':
 	        func = 'config_if_range'
                	response = invoke_api(func, args)

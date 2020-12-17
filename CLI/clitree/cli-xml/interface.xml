@@ -1015,6 +1015,12 @@ limitations under the License.
 			    ptype="SUBCOMMAND"
 			    mode="subcommand"
 			    />
+			<PARAM 
+			    name="none"
+			    help="Remove all trunking parameters on an interface"
+			    ptype="SUBCOMMAND"
+			    mode="subcommand"
+			    />
 		    </PARAM>
                 </PARAM>
             </PARAM>
@@ -1447,8 +1453,13 @@ limitations under the License.
                             help="configures port on all VLANs"
                             ptype="SUBCOMMAND"
                             mode="subcommand"
-                            >
-			</PARAM>
+			    />
+                        <PARAM
+                            name="none"
+                            help="Remove all trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            />
 		    </PARAM>	    
                </PARAM>
            </PARAM>
