@@ -388,7 +388,14 @@ def invoke_api(func, args=[]):
            body = {"openconfig-vlan:config": {"interface-mode": "TRUNK","trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}}
 
         return api.patch(path, body)
-        
+
+    elif func == 'put_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config':
+	vlanlst = args[2].split(',')
+	vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans', name=args[0])
+	body = {"openconfig-vlan:trunk-vlans":[int(i) if '..' not in i else i for i in vlanlst]}
+        return api.put(path,body)
+
     elif func == 'patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
         if args[1] == "ACCESS":
@@ -398,6 +405,14 @@ def invoke_api(func, args=[]):
            vlanlst = [sub.replace('-', '..') for sub in vlanlst]
            body = {"openconfig-vlan:config": {"interface-mode": "TRUNK","trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}}
         return api.patch(path, body)
+
+    elif func == 'put_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config':
+        vlanlst = args[2].split(',')
+	vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
+        body = {"openconfig-vlan:trunk-vlans":[int(i) if '..' not in i else i for i in vlanlst]}
+        return api.put(path,body)
+
 
     elif func == 'delete_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_access_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
@@ -1097,7 +1112,7 @@ def run(func, args):
 	elif args[3] == 'except':
 	    exceptStr = vlanExceptList(args[2])
 	    args[2] = exceptStr
-	    func = 'patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config'
+	    func = 'put_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config'
 	else:
 	    print('none')
     if func == 'vlan_trunk_add_remove_portchannel':
@@ -1113,7 +1128,7 @@ def run(func, args):
 	elif args[3] == 'except':
 	    exceptStr = vlanExceptList(args[2])
 	    args[2] = exceptStr
-	    func = 'patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config'
+	    func = 'put_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config'
 	else:
 	    print('none')
 
