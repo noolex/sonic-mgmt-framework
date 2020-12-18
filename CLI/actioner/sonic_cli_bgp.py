@@ -114,9 +114,15 @@ def getIntfId(item):
 
     ifName = item['neighbor-address']
     if ifName.startswith("Ethernet"):
-        ifId = int(ifName[len("Ethernet"):])
+        nums = ifName[len("Ethernet"):].split('.')
+        ifId = int(nums[0]) * 2 ** 32
+        if len(nums) > 1:
+            ifId += int(nums[1])
     elif ifName.startswith("PortChannel"):
-        ifId = int(ifName[len("PortChannel"):])
+        nums = ifName[len("PortChannel"):].split('.')
+        ifId = int(nums[0]) * 2 ** 32
+        if len(nums) > 1:
+            ifId += int(nums[1])
     elif ifName.startswith("Vlan"):
         ifId = int(ifName[len("Vlan"):])
     elif ifName.startswith("Loopback"):
