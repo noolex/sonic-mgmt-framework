@@ -50,3 +50,19 @@ def show_ntp_trusted_key(render_tables):
 
     return 'CB_SUCCESS', cmd_str
 
+def show_ntp_authentication_key(render_tables):
+
+    cmd_str = ''
+    cmd_prfx = 'ntp authentication-key '
+    if 'sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST' in render_tables:
+        for ntp_key in render_tables['sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST']:
+            encrypted = ""
+            if ntp_key['encrypted'] == True:
+                encrypted = " encrypted"
+
+            if ntp_key['type'] == 'SHA2_256':
+                cmd_str = cmd_str+';'+cmd_prfx+str(ntp_key['id'])+" sha2-256 "+ntp_key['value']+encrypted
+            else:
+                cmd_str = cmd_str+';'+cmd_prfx+str(ntp_key['id'])+" "+ntp_key['type'].lower()+" "+ntp_key['value']+encrypted
+
+    return 'CB_SUCCESS', cmd_str
