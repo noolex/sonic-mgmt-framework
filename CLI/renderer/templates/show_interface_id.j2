@@ -103,6 +103,7 @@
                subif["openconfig-if-ip:ipv4"]["addresses"] and subif["openconfig-if-ip:ipv4"]["addresses"]["address"] is not none %}
               {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
               {% for ip in ip_list %}
+                {%- if "state" in ip -%}
                 {%- set ipfx = ip["state"]["ip"] + "/" + ip["state"]["prefix-length"]|string() -%}
                 {%- if "openconfig-interfaces-ext:secondary" in ip["state"] -%}
                     {%- if vars.update({'secondary':ip["state"]["openconfig-interfaces-ext:secondary"]}) %}{% endif -%}
@@ -113,6 +114,7 @@
                     {% endif %}
                 {% endif %}
                 {% if vars.update({'mode4':"MANUAL"}) %}{% endif %}
+                {% endif %}
               {% endfor %}
             {% else %}
               {% if vars.update({'mode4':"not-set"}) %}{% endif %}
