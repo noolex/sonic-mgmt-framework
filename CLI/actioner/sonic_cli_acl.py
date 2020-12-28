@@ -491,7 +491,13 @@ def handle_delete_acl_rule_request(args):
 
 def __handle_interface_acl_bind_request(args):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}', id=args[2])
-    if args[3] == "in":
+    # PortChannel subinterface contains an extra argument after interface id - parent interface.
+    if len(args) > 4 and '.' in args[2]:
+        direction = args[4]
+    else:
+        direction = args[3]
+
+    if direction == "in":
         body = {
             "openconfig-acl:config": {
                 "id": args[2]
