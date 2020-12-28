@@ -285,12 +285,11 @@ def run(func, args):
                 firmInfo[chassisName][moduleName][firmName] = resp['state']
 
             firmInfo = OrderedDict(sorted(firmInfo.items()))
-            for chassis in firmInfo.items():
-                sorted(chassis)
-                for module in chassis:
-                   sorted(module)
+            for chassis in firmInfo:
+                firmInfo[chassis] = OrderedDict(sorted(firmInfo[chassis].items()))
+                for module in firmInfo[chassis]:
+                    firmInfo[chassis][module] = OrderedDict(sorted(firmInfo[chassis][module].items()))
             show_cli_output(template, firmInfo)
-            pass
     except Exception as e:
         print("%Error: Transaction Failure")
         return
