@@ -95,7 +95,7 @@ limitations under the License.
     <PTYPE
         name="VLAN_RANGE"
         pattern="((&VLAN_NUM;|&VLAN_RNG;)(,(&VLAN_NUM;|&VLAN_RNG;))*)$"
-        help=""
+        help="&lt;1..4094>"
         />
     <!--=======================================================-->
     <PTYPE
