@@ -410,8 +410,8 @@ def invoke_api(func, args=[]):
 		intf_map = responseSubIntfTbl.content
 	    	tbl_key = "sonic-interface:VLAN_SUB_INTERFACE_LIST"
 		if tbl_key in intf_map:
-		    iflist = [i["id"].replace("po", "PortChannel") for i in intf_map[tbl_key] if i["id"].startswith("po")]
-
+		    iflist = [i["id"] for i in intf_map[tbl_key] if i["id"].startswith("Po")]
+        
 	return iflist
 
     elif func == 'create_if_range': 
