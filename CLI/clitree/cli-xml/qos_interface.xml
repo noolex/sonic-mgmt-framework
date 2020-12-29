@@ -561,6 +561,69 @@ limitations under the License.
             </ACTION>
         </COMMAND>
   </VIEW>
+
+  <!-- qos interface Subinterface <id> -->
+  <VIEW name="configure-subif-view">
+        <COMMAND
+            name="qos-map"
+            help="QoS Map Configuration"
+            >
+        </COMMAND>
+        <COMMAND
+            name="no qos-map"
+            help="QoS Map Unconfiguration"
+            >
+        </COMMAND>
+
+        <COMMAND
+            name="qos-map dscp-tc"
+            help="DSCP to TC map configuration"
+            command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_map_dscp_tc"
+            >
+           <PARAM
+               name="dscp_tc_map_name"
+               help="DSCP to TC map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_dscp_tc_map ${iface} ${dscp_tc_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no qos-map dscp-tc" help="Unconfigure a DSCP to TC map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group?deleteEmptyEntry=True
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="qos-map tc-dscp"
+            help="TC to DSCP map configuration"
+            command_tables="sonic-port-qos-map:sonic-port-qos-map/PORT_QOS_MAP/PORT_QOS_MAP_LIST/ifname={name}"
+            render_command_cb="qos_intf_map_tc_dscp"
+            >
+           <PARAM
+               name="tc_dscp_map_name"
+               help="TC to DSCP map name"
+               ptype="STRING_32"
+               >
+            </PARAM>
+            <ACTION builtin="clish_pyobj">
+                sonic_cli_qos patch_openconfig_qos_maps_ext_qos_interfaces_interface_interface_maps_config_forwarding_group_to_dscp ${iface} ${tc_dscp_map_name}
+            </ACTION>
+        </COMMAND>
+
+
+        <COMMAND name="no qos-map tc-dscp" help="Unconfigure a TC to DSCP map">
+            <ACTION builtin="clish_restcl">
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp?deleteEmptyEntry=True
+            </ACTION>
+        </COMMAND>
+  </VIEW>
+
   <VIEW name="enable-view">
     <COMMAND name="show qos" help="Show QoS information">
         <PARAM 
@@ -619,6 +682,12 @@ limitations under the License.
                      ptype="VLAN_INTERFACE"
                      >
                  </PARAM>
+                 <PARAM
+                     name="phy-sub-if-name"
+                     help="Sub interface"
+                     ptype="PHY_PO_SUB_INTERFACE"
+                     >
+                 </PARAM>
              </PARAM>
          </PARAM>
          <ACTION>
@@ -651,6 +720,10 @@ limitations under the License.
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${po-intf-name} &#xA;
             elif test "${qos-if-subcommands}" = "vlan-intf-name"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${vlan-intf-name} &#xA;
+            elif test "${qos-if-subcommands}" = "phy-sub-if-name"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${phy-sub-if-name} &#xA;
+            elif test "${qos-if-subcommands}" = "lag-id-subid"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interfaces_interface_maps ${lag-id-subid} &#xA;
             elif test "${qos-if-subcommands}" = "CPU"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_qos.py get_openconfig_qos_qos_interface_scheduler_policy_config CPU &#xA;
             fi&#xA;
