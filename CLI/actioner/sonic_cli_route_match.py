@@ -102,7 +102,7 @@ def invoke_api(func, args=[]):
 
     elif func == 'patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface':
         keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/match-interface/config/interface',name=args[0], name1= args[1])
-        body = {"openconfig-routing-policy:interface":args[3] if args[2] == 'phy-if-name' else args[2] + args[3]}
+        body = {"openconfig-routing-policy:interface":args[3] if args[2] == 'phy-if-name' or args[2] == 'PortChannel' else args[2] + args[3]}
         return api.patch(keypath, body)
     elif func == 'delete_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface':
         keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/match-interface/config/interface',name=args[0], name1= args[1])
@@ -173,7 +173,7 @@ def invoke_api(func, args=[]):
         keypath  = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/match-neighbor-set/config/openconfig-routing-policy-ext:address',
              name=args[0], name1= args[1])
         api.delete(keypath)
-        body = {"openconfig-routing-policy-ext:address":[ args[3] if args[2] == 'match-peer' or args[2] == 'phy-if-name' else args[2] + args[3] ]}
+        body = {"openconfig-routing-policy-ext:address":[ args[3] if args[2] == 'match-peer' or args[2] == 'phy-if-name' or args[2] == 'PortChannel' else args[2] + args[3] ]}
         return api.patch(keypath, body)
     elif func == 'delete_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address':
         keypath  = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/conditions/match-neighbor-set/config/openconfig-routing-policy-ext:address',
