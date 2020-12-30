@@ -104,7 +104,9 @@ write_resp:
 	if r.RemoteAddr != "@" {
 		auditMsg := fmt.Sprintf("[%s] User \"%s@%s\" request \"%s %s\" status - %d",
 			reqID, rc.Auth.User, r.RemoteAddr, r.Method, r.URL.Path, status)
-		auditWriter.Info(auditMsg)
+		if auditWriter != nil {
+			auditWriter.Info(auditMsg)
+		}
 	}
 
 	// Write http response.. Following strict order should be
