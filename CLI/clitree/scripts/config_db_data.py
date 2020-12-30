@@ -18,9 +18,11 @@
 
 
 VIEW_PRIORITY_FILE_MAP = { "configure-if-view" : ['interface.xml', 'vrf.xml', 'ipv4.xml', 'ipv6.xml' ],
+                           "configure-subif-view": ['interface.xml', 'vrf.xml', 'ipv4.xml', 'ipv6.xml' ],
                            "configure-lag-view": ['interface.xml', 'vrf.xml', 'ipv4.xml', 'ipv6.xml' ],
                            "configure-vlan-view": ['interface.xml','vrf.xml', 'ipv4.xml', 'ipv6.xml' ],
                            "configure-if-mgmt-view": ['interface.xml','vrf.xml', 'ipv4.xml', 'ipv6.xml'],
                            "configure-lo-view": ['interface.xml','vrf.xml', 'ipv4.xml', 'ipv6.xml'],
-                           "configure-vxlan-view": ['vxlan.xml']
+                           "configure-vxlan-view": ['vxlan.xml'],
+                           "configure-subif-view" : ['interface.xml', 'subinterface.xml', 'vrf.xml', 'ipv4.xml', 'ipv6.xml' ]
                          }

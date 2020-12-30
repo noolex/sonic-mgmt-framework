@@ -530,7 +530,7 @@ limitations under the License.
         viewid="po_id=po${lag-id};po_name=PortChannel${lag-id};"
         render_command_cb="interface_portchannel"
         >
-        <PARAM name="mode" help="" mode="switch" ptype="SUBCOMMAND">
+        <PARAM name="select-if-subif" help="" mode="switch" ptype="SUBCOMMAND">
             <PARAM
                 name="lag-id"
                 help="Enter PortChannel interface configuration"
@@ -953,7 +953,7 @@ limitations under the License.
             ptype="SUBCOMMAND"
             mode="subcommand"
             render_command_cb="if_switchport_trunk"
-            command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST/name={vname},ifname={name}"
+            command_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={name}"
             >
             <PARAM
                 name="allowed"
@@ -1021,6 +1021,11 @@ limitations under the License.
 			    ptype="SUBCOMMAND"
 			    mode="subcommand"
 			    />
+                        <PARAM
+                            name="vlan_id_list"
+                            help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                            ptype="VLAN_RANGE"
+                            />
 		    </PARAM>
                 </PARAM>
             </PARAM>
@@ -1459,6 +1464,11 @@ limitations under the License.
                             help="Remove all trunking parameters on an interface"
                             ptype="SUBCOMMAND"
                             mode="subcommand"
+			    />
+			<PARAM
+                            name="vlan_id_list"
+                            help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                            ptype="VLAN_RANGE"
                             />
 		    </PARAM>	    
                </PARAM>
