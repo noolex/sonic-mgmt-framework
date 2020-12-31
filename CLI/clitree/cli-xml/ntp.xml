@@ -38,6 +38,13 @@ limitations under the License.
     help="WORD"
   />
 <!--=======================================================-->
+  <PTYPE
+     name="NTP_POLL_INTERVAL"
+     method="integer"
+     pattern="4..17"
+     help="seconds"
+  />
+<!--=======================================================-->
 
 
   <VIEW name="enable-view">
@@ -284,8 +291,29 @@ limitations under the License.
                dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/key_id">
         </PARAM>
       </PARAM>
+      <PARAM name="minpoll"
+             help="NTP minimum poll interval to poll server"
+             ptype="SUBCOMMAND"
+             mode="subcommand"
+             optional="true">
+        <PARAM name="min-poll"
+               help="NTP minimum poll interval for NTP messages, in seconds as a power of two"
+               ptype="NTP_POLL_INTERVAL"
+               dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/minpoll">
+          <PARAM name="maxpoll"
+                 help="NTP maximum poll interval to poll server"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand">
+            <PARAM name="max-poll"
+                   help="NTP maximum poll interval for NTP messages, in seconds as a power of two"
+                   ptype="NTP_POLL_INTERVAL"
+                   dbpath="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/maxpoll">
+            </PARAM>
+          </PARAM>
+        </PARAM>
+      </PARAM>
       <ACTION
-        builtin="clish_pyobj">sonic_cli_ntp set_ntp_server ${ip} ${server-name} ${key} ${key-number}
+        builtin="clish_pyobj">sonic_cli_ntp set_ntp_server ${ip} ${server-name} key:${key-number} minpoll:${min-poll} maxpoll:${max-poll}
       </ACTION>
       <DOCGEN>
           <DESCRIPTION>
