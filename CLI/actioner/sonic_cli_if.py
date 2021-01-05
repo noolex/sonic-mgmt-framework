@@ -146,6 +146,18 @@ def build_relay_address_info (args):
             print "%Error: Internal error"
     return output
 
+
+def get_if_and_subif(input_if_name):
+    if_name = input_if_name
+    subif = "0"
+    if "." in input_if_name:
+        split_if_name = input_if_name.split(".")
+        if_name = split_if_name[0]
+        subif = split_if_name[1]
+    #print("get_if_and_subif if_name {} subif {}".format(if_name, subif))
+    return if_name, subif
+
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
@@ -636,18 +648,21 @@ def invoke_api(func, args=[]):
 
     # Config IPv4 Unnumbered interface
     elif func == 'patch_intf_ipv4_unnumbered_intf':
-        if "Vlan" in args[0]:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0])
+        if_name, subif = get_if_and_subif(args[0])
+        #print("patch_intf_ipv4_unnumbered_intf args = {} if_name {} subif {}".format(args, if_name, subif))
+        if "Vlan" in if_name:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name)
         else:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0], index="0")
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name, index=subif)
 
         body = { "openconfig-if-ip:interface" : args[1] }
         return api.patch(path, body)    
     elif func == 'delete_intf_ipv4_unnumbered_intf':
-        if "Vlan" in args[0]:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0])
+        if_name, subif = get_if_and_subif(args[0])
+        if "Vlan" in if_name:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name)
         else:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0], index="0")
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name, index=subif)
         return api.delete(path)    
      
     # Configure static ARP
