@@ -290,6 +290,9 @@ class CliDoc:
         for model in CliDoc.modelsDict:
             soup = CliDoc.modelsDict[model]
             for command_tag in soup.find_all('COMMAND'):
+                if 'hidden' in command_tag.attrs:
+                    if command_tag['hidden'] == 'true':
+                        continue
                 cmdList = []
                 modeCmdList = set()  
                 paramsList = []        

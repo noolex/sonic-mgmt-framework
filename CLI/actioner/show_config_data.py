@@ -126,6 +126,7 @@ module_startup_cb = {
     'configure-ipv4-acl': [show_running_config_acl_start_callback],
     'configure-ipv6-acl': [show_running_config_acl_start_callback],
     'configure-if': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
+    'configure-subif': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
     'configure-lag': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
     'configure-vlan': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback]
 }
@@ -160,6 +161,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'dns_server_source_if'    : show_dns_source_if,
                   'ntp_server_source_if'    : show_ntp_source_if,
                   'ntp_trusted_key'         : show_ntp_trusted_key,
+                  'ntp_authentication_key'  : show_ntp_authentication_key,
                   'ptp_mode'                : show_ptp_mode,
                   'ptp_domain_profile'      : show_ptp_domain_profile,
                   'ptp_domain_two_step'     : show_ptp_two_step,

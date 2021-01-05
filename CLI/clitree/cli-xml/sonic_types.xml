@@ -206,6 +206,18 @@ limitations under the License.
         preprocess="mode"
         />
     <!--=======================================================-->
+    <PTYPE
+        name="PHY_PO_SUB_INTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(port\.subport) PortChannel(X.Y) "
+        alt_ext_pattern="Eth(slot/port\.subport) PortChannel(X.Y)"
+        ext_help="(EthernetX.Y) (PortChannelX.Y)"
+        pattern="&ETH_ALL_SUBINTF;|&PO_ALL_SUBINTF_RANGE;"
+        alt_pattern="&ETH_ALL_SUBINTF_ALIAS;|&PO_ALL_SUBINTF_RANGE;"
+        help="Interface Type"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
   
     <PTYPE
         name="MIN_LINK"
