@@ -292,7 +292,6 @@ limitations under the License.
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
-<!--
   <COMMAND
         name="ip igmp"
         help="Enable IGMP operation"
@@ -596,7 +595,6 @@ limitations under the License.
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
--->
 </VIEW>
 
 <!--=======================================================-->
@@ -829,7 +827,6 @@ limitations under the License.
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
-<!--
     <COMMAND
         name="ip igmp join"
         help="IGMP join multicast group"
@@ -1122,7 +1119,6 @@ limitations under the License.
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
--->
 </VIEW>
 
 <!--=======================================================-->
@@ -1267,7 +1263,6 @@ limitations under the License.
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
-<!--
     <COMMAND
         name="ip igmp"
         command_tables="sonic-igmp:sonic-igmp/IGMP_INTERFACE_QUERY/IGMP_INTERFACE_QUERY_LIST/interface-id={name}"
@@ -1571,7 +1566,6 @@ limitations under the License.
             </EXAMPLE>
         </DOCGEN>
     </COMMAND>
--->
 </VIEW>
 
 <!--=======================================================-->
