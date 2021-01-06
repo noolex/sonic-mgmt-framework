@@ -43,9 +43,9 @@ def get_alias(interface):
         isSubIntf = True
         tmpIntf = result.group(2) + result.group(4)
         subIntfId = result.group(5)
+
     path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=tmpIntf)
     response = api.get(path)
-
     if response is None:
         return None
 
@@ -59,6 +59,7 @@ def get_alias(interface):
             result = re.search('(\s*)(Ethernet)(\d+)', interface, re.IGNORECASE)
             if result:
                 interface = "Eth" + result.group(3) + subIntfId
+
         return interface
 
 def print_and_log(msg):
