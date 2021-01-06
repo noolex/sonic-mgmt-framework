@@ -33,7 +33,17 @@ NATIVE_SUBIFNAME= 4
 MGMT_IFNAME     = 5
 
 def get_alias(interface):
-    path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=interface)
+    isSubIntf = False
+    tmpIntf = interface
+    subIntfId = ""
+
+    #if 'interface' is a subinteface, separate interface name and its ID
+    result = re.search('(\s*)(Eth)(\s*)(\d+/\d+/*\d*)(\.\d+)', tmpIntf, re.IGNORECASE)
+    if result:
+        isSubIntf = True
+        tmpIntf = result.group(2) + result.group(4)
+        subIntfId = result.group(5)
+    path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=tmpIntf)
     response = api.get(path)
 
     if response is None:
@@ -45,6 +55,10 @@ def get_alias(interface):
             return None
 
         interface = response.get('sonic-port:alias')
+        if interface and isSubIntf:
+            result = re.search('(\s*)(Ethernet)(\d+)', interface, re.IGNORECASE)
+            if result:
+                interface = "Eth" + result.group(3) + subIntfId
         return interface
 
 def print_and_log(msg):
@@ -74,14 +88,12 @@ def getIfName(args, cmd):
         return ifName, NATIVE_SUBIFNAME
 
     #Check for subinterface with alias
-    result = re.search('('+intfSwitch+'\s*)(Eth|PortChannel)(\s*)(\d+/\d+/*\d*\.\d+)\s+', args, re.IGNORECASE)
+    result = re.search('('+intfSwitch+'\s*)(Eth)(\s*)(\d+/\d+/*\d*\.\d+)\s+', args, re.IGNORECASE)
     if result:
         if not stdNaming:
             return None, INVALID_IFNAME
         if result.group(2).startswith("Eth"):
             ifName = "Eth" + result.group(4)
-        elif args.startswith("Port"):
-            ifName = "Po" + result.group(4)
         ifName = get_alias(ifName)
         return ifName, STD_SUBIFNAME
 
