@@ -111,5 +111,8 @@ limitations under the License.
             dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/admin_status=up">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
         </COMMAND>
+
+        <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${parent}.${index},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST"> </MACRO>
+        <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${parent}.${index} "> </MACRO>
     </VIEW>
 </CLISH_MODULE>

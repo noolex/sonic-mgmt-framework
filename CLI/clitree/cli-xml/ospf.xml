@@ -1338,6 +1338,10 @@
     <MACRO name="BIND-INTF-TO-OSPF" arg="${lo_name}"></MACRO>
 </VIEW>
 
+<VIEW name="configure-subif-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${iface}"></MACRO>
+</VIEW>
+
 
 <!--=======================================================-->
 <!--            OSPFv2 show and clear commands             -->
