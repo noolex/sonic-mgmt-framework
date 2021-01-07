@@ -595,7 +595,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map dscp-tc" help="Unconfigure a DSCP to TC map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group?deleteEmptyEntry=True
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/dscp-to-forwarding-group?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
 
@@ -619,7 +619,7 @@ limitations under the License.
 
         <COMMAND name="no qos-map tc-dscp" help="Unconfigure a TC to DSCP map">
             <ACTION builtin="clish_restcl">
-                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp?deleteEmptyEntry=True
+                oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${iface_uri}/openconfig-qos-maps-ext:interface-maps/config/forwarding-group-to-dscp?deleteEmptyEntry=True
             </ACTION>
         </COMMAND>
   </VIEW>
