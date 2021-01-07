@@ -2,6 +2,7 @@
 {% set vars = {'ipv6': ""} %}
 {% set vars = {'name': ""} %}
 {% set vars = {'admin_state': ""} %}
+{% set vars = {'oper_state': ""} %}
 {% set vars = {'mtu': ""} %}
 {% set vars = {'ipv4_src_pfx': ""} %}
 {% set vars = {'ipv6_src_pfx': ""} %}
@@ -18,6 +19,7 @@
       {% if "state" in key %}
         {% if vars.update({'name':interface[key]["name"]}) %}{% endif %}
         {% if vars.update({'admin_state':interface[key]["admin-status"]}) %}{% endif %}
+        {% if vars.update({'oper_state':interface[key]["oper-status"]}) %}{% endif %}
         {% if vars.update({'mtu':interface[key]["mtu"]}) %}{% endif %}
         {% if vars.update({'description':interface[key]["description"]}) %}{% endif %}
       {% endif %}
@@ -71,7 +73,7 @@
       {% endif %}
     {% endfor %}
 {% if vars.name %}
-{{ vars.name }} is {{ vars.admin_state|lower() }}
+{{ vars.name }} is {{ vars.admin_state|lower() }}, line protocol is {{vars.oper_state|lower() }}
 {% if vars.description %}
 Description: {{vars.description}}
 {% endif %}
