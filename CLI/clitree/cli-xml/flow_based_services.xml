@@ -1300,9 +1300,9 @@ limitations under the License.
     <!--===================================================================================-->
     <!--                            Flow view for CoPP actions                              -->
     <!--===================================================================================-->
-    <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="2">
-        <NAMESPACE ref="configure-view" help="false" completion="false" />
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
+    <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="set" help="Set parameters" />
 
         <MACRO name="POLICY-FLOW-DESCRIPTION" />
 
@@ -1369,6 +1369,13 @@ limitations under the License.
     <!--                            Policy binding CLIs for Ethernet                       -->
     <!--===================================================================================-->
     <VIEW name="configure-if-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Ethernet,interface"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for subinterface                   -->
+    <!--===================================================================================-->
+    <VIEW name="configure-subif-view">
         <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Ethernet,interface"/>
     </VIEW>
 

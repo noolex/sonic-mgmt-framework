@@ -21,6 +21,16 @@ def ospf_cli_log(log_string) :
     if ospf_config_cli_log_enabled :
         print(log_string)
 
+def get_ospf_if_and_subif(input_if_name):
+    if_name = input_if_name
+    subif = 0
+    if "." in input_if_name:
+        split_if_name = input_if_name.split(".")
+        if_name = split_if_name[0]
+        subif = int(split_if_name[1])
+    #print("get_ospf_if_and_subif if_name {} subif {}".format(if_name, subif))
+    return if_name, subif
+
 ############## OSPF uris
 def get_ospf_router_nw_instance_uri(vrf_name) :
     ospf_router_nwinst_uri = '/restconf/data/openconfig-network-instance:network-instances'
@@ -400,7 +410,9 @@ def get_ospf_intf_uri(intf_name, sub_intf=0):
 
 def patch_ospf_interface_config(api, intf_name, intf_addr, cfg_body={}) :
     ospf_cli_log("patch_ospf_interface_config: {} {} {}".format(intf_name, intf_addr, cfg_body))
-    sub_intf = 0
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
     ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     key_data = {"address": intf_addr }
@@ -426,7 +438,7 @@ def patch_ospf_interface_config(api, intf_name, intf_addr, cfg_body={}) :
                              "address": intf_addr
                           }] } }  }] }
 
-        temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][sub_intf]
+        temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][0]
 
     temp_entry = temp_entry["openconfig-if-ip:ipv4"]["openconfig-ospfv2-ext:ospfv2"]
     uri_cfg_body = temp_entry["if-addresses"][0]
@@ -439,7 +451,10 @@ def patch_ospf_interface_config(api, intf_name, intf_addr, cfg_body={}) :
 
 def delete_ospf_interface_config(api, intf_name, intf_addr, cfg_field) :
     ospf_cli_log("delete_ospf_interface_config: {} {} {}".format(intf_name, intf_addr, cfg_field))
-    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     ospf_intf_uri += '/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2'
     if intf_addr != '' :
@@ -455,7 +470,10 @@ def delete_ospf_interface_config(api, intf_name, intf_addr, cfg_field) :
 ############## OSPF interface authentication config
 def patch_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg_body={}) :
     ospf_cli_log("patch_ospf_interface_md_auth_config: {} {} {}".format(intf_name, intf_addr, cfg_body))
-    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     key_data = {"authentication-key-id": auth_key }
     add_key_to_config_data(cfg_body, key_data)
@@ -477,7 +495,7 @@ def patch_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg
     else :
         ospf_intf_uri_body = {
             "openconfig-interfaces:subinterface": [{
-                "index": 0,
+                "index": sub_intf,
                 "openconfig-if-ip:ipv4": {
                      "openconfig-ospfv2-ext:ospfv2": {
                          "if-addresses": [{
@@ -501,7 +519,10 @@ def patch_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg
 
 def delete_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg_field) :
     ospf_cli_log("delete_ospf_interface_md_auth_config: {} {} {}".format(intf_name, intf_addr, cfg_field))
-    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     ospf_intf_uri += '/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2'
     if intf_addr != '' :

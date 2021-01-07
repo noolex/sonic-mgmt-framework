@@ -146,6 +146,18 @@ def build_relay_address_info (args):
             print "%Error: Internal error"
     return output
 
+
+def get_if_and_subif(input_if_name):
+    if_name = input_if_name
+    subif = "0"
+    if "." in input_if_name:
+        split_if_name = input_if_name.split(".")
+        if_name = split_if_name[0]
+        subif = split_if_name[1]
+    #print("get_if_and_subif if_name {} subif {}".format(if_name, subif))
+    return if_name, subif
+
+
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
 
@@ -384,6 +396,15 @@ def invoke_api(func, args=[]):
         vlanStr = args[2].replace('-', '..')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
+
+    elif func == 'rpc_replace_vlan':
+        #vlanStr = args[2].replace('-', '..')
+        vlanlst = args[2].split(',')
+        vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+
+        body = {"openconfig-interfaces-ext:input":{"ifname":[args[0]],"vlanlist":vlanlst}}
+        path = cc.Path('/restconf/operations/openconfig-interfaces-ext:vlan-replace')
+        return api.post(path,body)
 
     elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_addresses_address_config_prefix_length':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/config/prefix-length', name=args[0], index="0", ip=args[1])
@@ -627,18 +648,21 @@ def invoke_api(func, args=[]):
 
     # Config IPv4 Unnumbered interface
     elif func == 'patch_intf_ipv4_unnumbered_intf':
-        if "Vlan" in args[0]:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0])
+        if_name, subif = get_if_and_subif(args[0])
+        #print("patch_intf_ipv4_unnumbered_intf args = {} if_name {} subif {}".format(args, if_name, subif))
+        if "Vlan" in if_name:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name)
         else:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0], index="0")
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name, index=subif)
 
         body = { "openconfig-if-ip:interface" : args[1] }
         return api.patch(path, body)    
     elif func == 'delete_intf_ipv4_unnumbered_intf':
-        if "Vlan" in args[0]:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0])
+        if_name, subif = get_if_and_subif(args[0])
+        if "Vlan" in if_name:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name)
         else:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=args[0], index="0")
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name, index=subif)
         return api.delete(path)    
      
     # Configure static ARP
@@ -1048,13 +1072,18 @@ def run(func, args):
     if func == 'vlan_trunk_add_remove_ethernet':
         if args[3] == 'add':
             func = 'patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config'
-        else:
+        elif args[3] == 'remove':
             func = 'del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans'
+	else:
+	    func = 'rpc_replace_vlan'
+
     if func == 'vlan_trunk_add_remove_portchannel':
 	if args[3] == 'add':
 	    func = 'patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config'
-	else:
+	elif args[3] == 'remove':
 	    func = 'del_llist_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config_trunk_vlans'
+	else:
+	    func = 'rpc_replace_vlan'
 
     try:
         response = invoke_api(func, args)
@@ -1095,6 +1124,15 @@ def run(func, args):
             elif func == 'delete_phy_if_ip' or func == 'delete_mgmt_if_ip' or func == 'delete_vlan_if_ip' or func == 'delete_po_if_ip' or func == 'delete_lo_if_ip':
                 if 'sonic-interface:output' in api_response:
                     value = api_response['sonic-interface:output']
+                    if value["status"] != 0:
+                        if value["status-detail"] != '':
+                            print("%Error: {}".format(value["status-detail"]))
+                        else:
+                            print("%Error: Internal error.")
+
+            elif func == 'rpc_replace_vlan':
+                if 'openconfig-interfaces-ext:output' in api_response:
+                    value = api_response['openconfig-interfaces-ext:output']
                     if value["status"] != 0:
                         if value["status-detail"] != '':
                             print("%Error: {}".format(value["status-detail"]))

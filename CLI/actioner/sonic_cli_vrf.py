@@ -35,6 +35,7 @@ def get_vrf_data(vrf_name, vrf_intf_info):
     api = cc.ApiClient()
     vrf = {}
     vrf_data = {}
+    get_intfaces = True
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/config', name=vrf_name)
     vrf_config = api.get(keypath)
     if vrf_config.ok():
@@ -48,7 +49,10 @@ def get_vrf_data(vrf_name, vrf_intf_info):
         if vrf_name == 'mgmt':
             if vrf_data['openconfig-network-instance:config']['enabled'] == True:
                 vrf_intf_info.setdefault("mgmt", []).append("eth0")
-        else:
+            else:
+                get_intfaces = False
+
+        if get_intfaces:
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/interfaces/interface', name=vrf_name)
             vrf_intfs = api.get(keypath)
             vrf_data['openconfig-network-instance:interface'] = []

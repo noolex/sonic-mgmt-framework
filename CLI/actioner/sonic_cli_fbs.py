@@ -1615,11 +1615,11 @@ def handle_show_policy_response(response, args, op_str):
                     for field in ['SET_IP_NEXTHOP', 'SET_IP_NEXTHOP_GROUP', 'SET_IPV6_NEXTHOP', 'SET_IPV6_NEXTHOP_GROUP', 'SET_INTERFACE']:
                         for ent in flow.get(field, list()):
                             if field == 'SET_IP_NEXTHOP':
-                                out = 'ip next-hop {}'.format(ent['IP_ADDRESS'])
+                                out = 'ip nexthop {}'.format(ent['IP_ADDRESS'])
                             elif field == 'SET_IP_NEXTHOP_GROUP':
                                 out = 'ip next-hop-group {}'.format(ent['GROUP_NAME'])
                             elif field == 'SET_IPV6_NEXTHOP':
-                                out = 'ipv6 next-hop {}'.format(ent['IP_ADDRESS'])
+                                out = 'ipv6 nexthop {}'.format(ent['IP_ADDRESS'])
                             elif field == 'SET_IPV6_NEXTHOP_GROUP':
                                 out = 'ipv6 next-hop-group {}'.format(ent['GROUP_NAME'])
                             else:
@@ -1725,13 +1725,13 @@ def handle_show_service_policy_details_response(response, args, op_str):
                                     for ent in flow.get(field, list()):
                                         selected = True
                                         if field == 'SET_IP_NEXTHOP':
-                                            out = 'ip next-hop {}'.format(ent['IP_ADDRESS'])
+                                            out = 'ip nexthop {}'.format(ent['IP_ADDRESS'])
                                             selected = selected and (ent['IP_ADDRESS'] == fwd_selected.get('IP_ADDRESS'))
                                         elif field == 'SET_IP_NEXTHOP_GROUP':
                                             out = 'ip next-hop-group {}'.format(ent['GROUP_NAME'])
                                             selected = selected and (ent['GROUP_NAME'] == fwd_selected.get('GROUP_NAME'))
                                         elif field == 'SET_IPV6_NEXTHOP':
-                                            out = 'ipv6 next-hop {}'.format(ent['IP_ADDRESS'])
+                                            out = 'ipv6 nexthop {}'.format(ent['IP_ADDRESS'])
                                             selected = selected and (ent['IP_ADDRESS'] == fwd_selected.get('IP_ADDRESS'))
                                         elif field == 'SET_IPV6_NEXTHOP_GROUP':
                                             out = 'ipv6 next-hop-group {}'.format(ent['GROUP_NAME'])

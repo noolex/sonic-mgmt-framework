@@ -314,6 +314,12 @@ limitations under the License.
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
+    <!--============================== SUB-INTERFACE MODE COMMANDS ======================-->
+    <VIEW name="configure-subif-view">
+        <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
+    </VIEW>
+
     <!--============================== CONFIG MODE COMMANDS ======================-->
     <VIEW name="configure-view">
         <!-- Global binding options -->

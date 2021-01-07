@@ -114,9 +114,15 @@ def getIntfId(item):
 
     ifName = item['neighbor-address']
     if ifName.startswith("Ethernet"):
-        ifId = int(ifName[len("Ethernet"):])
+        nums = ifName[len("Ethernet"):].split('.')
+        ifId = int(nums[0]) * 2 ** 32
+        if len(nums) > 1:
+            ifId += int(nums[1])
     elif ifName.startswith("PortChannel"):
-        ifId = int(ifName[len("PortChannel"):])
+        nums = ifName[len("PortChannel"):].split('.')
+        ifId = int(nums[0]) * 2 ** 32
+        if len(nums) > 1:
+            ifId += int(nums[1])
     elif ifName.startswith("Vlan"):
         ifId = int(ifName[len("Vlan"):])
     elif ifName.startswith("Loopback"):
@@ -2194,11 +2200,10 @@ def parseGlobl(vrf_name, cmd, args=[]):
     elif cmd == 'bestpath med':
          rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_missing_as_worst', [ vrf_name ] + mkArgds2list(argds, 'missing-as-worst'))
          rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_route_selection_options_config_med_confed', [ vrf_name ] + mkArgds2list(argds, 'confed'))
-    elif cmd == 'listen':
-         if argds.get('listen-opt') == 'range':
-             rc += parseInvoke_api('patch_openconfig_network_instance1717438887', [ vrf_name ] + mkArgds2list(argds, 'addr', 'pgname'))
-         else:
-             rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_max_dynamic_neighbors', [ vrf_name ] + mkArgds2list(argds, 'lmt-val'))
+    elif cmd == 'listen range':
+         rc += parseInvoke_api('patch_openconfig_network_instance1717438887', [ vrf_name ] + mkArgds2list(argds, 'addr', 'pgname'))
+    elif cmd == 'listen limit':
+         rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_config_max_dynamic_neighbors', [ vrf_name ] + mkArgds2list(argds, 'lmt-val'))
     elif cmd == 'confederation':
          if argds.get('conf-opt') == 'identifier':
              rc += parseInvoke_api('patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_bgp_global_confederation_config_identifier', [ vrf_name ] + mkArgds2list(argds, 'id-as'))
