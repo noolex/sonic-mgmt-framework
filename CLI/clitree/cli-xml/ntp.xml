@@ -357,8 +357,8 @@ limitations under the License.
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="Ethernet"
-               help="Ethernet interface"
-               ptype="PHY_INTERFACE"
+               help="Ethernet interface or sub-interface"
+               ptype="PHY_INTERFACE_SUBIF"
                mode="subcommand">
         </PARAM>
         <PARAM name="Loopback"
@@ -372,8 +372,8 @@ limitations under the License.
                mode="subcommand">
         </PARAM>
         <PARAM name="PortChannel"
-               help="PortChannel interface"
-               ptype="PO_INTERFACE"
+               help="PortChannel interface or sub-interface"
+               ptype="PO_INTERFACE_SUBIF"
                mode="subcommand">
         </PARAM>
         <PARAM name="Vlan"
@@ -392,18 +392,20 @@ limitations under the License.
           </DESCRIPTION>
           <USAGE>
               sonic(config)# ntp source-interface INTERFACE
-              INTERFACE: Ethernet     Ethernet interface
+              INTERFACE: Ethernet     Ethernet interface or sub-interface
                          Loopback     Loopback interface
                          Management   Management Interface
-                         PortChannel  PortChannel interface
+                         PortChannel  PortChannel interface or sub-interface
                          Vlan         Vlan interface
           </USAGE>
           <EXAMPLE summary="Configure NTP source interface">
               sonic# configure
               sonic(config)# ntp source-interface Ethernet 8
+              sonic(config)# ntp source-interface Ethernet 8.100
               sonic(config)# ntp source-interface Management 0
               sonic(config)# ntp source-interface Loopback 88
               sonic(config)# ntp source-interface PortChannel 18
+              sonic(config)# ntp source-interface PortChannel 18.200
               sonic(config)# ntp source-interface Vlan 888
           </EXAMPLE>
       </DOCGEN>
@@ -419,8 +421,8 @@ limitations under the License.
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="Ethernet"
-               help="Ethernet interface"
-               ptype="PHY_INTERFACE"
+               help="Ethernet interface or sub-interface"
+               ptype="PHY_INTERFACE_SUBIF"
                mode="subcommand">
         </PARAM>
         <PARAM name="Loopback"
@@ -434,8 +436,8 @@ limitations under the License.
                mode="subcommand">
         </PARAM>
         <PARAM name="PortChannel"
-               help="PortChannel interface"
-               ptype="PO_INTERFACE"
+               help="PortChannel interface or sub-interface"
+               ptype="PO_INTERFACE_SUBIF"
                mode="subcommand">
         </PARAM>
         <PARAM name="Vlan"
@@ -453,10 +455,21 @@ limitations under the License.
           </DESCRIPTION>
           <USAGE>
               sonic(config)# no ntp source-interface
+              INTERFACE: Ethernet     Ethernet interface or sub-interface
+                         Loopback     Loopback interface
+                         Management   Management Interface
+                         PortChannel  PortChannel interface or sub-interface
+                         Vlan         Vlan interface
           </USAGE>
           <EXAMPLE summary="Delete NTP source interface">
               sonic# configure
-              sonic(config)# no ntp source-interface
+              sonic(config)# no ntp source-interface Ethernet 8
+              sonic(config)# no ntp source-interface Ethernet 8.100
+              sonic(config)# no ntp source-interface Management 0
+              sonic(config)# no ntp source-interface Loopback 88
+              sonic(config)# no ntp source-interface PortChannel 18
+              sonic(config)# no ntp source-interface PortChannel 18.200
+              sonic(config)# no ntp source-interface Vlan 888
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
