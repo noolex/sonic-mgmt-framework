@@ -121,7 +121,11 @@ def build_relay_address_info (args):
                         "sonic-portchannel-interface:PORTCHANNEL_INTERFACE_LIST",
                         "pch_name")
 
-    requests = [tIntf, tVlanIntf, tPortChannelIntf]
+    tSubIntf = ("/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST",
+                        "sonic-interface:VLAN_SUB_INTERFACE_LIST",
+                        "id")
+
+    requests = [tIntf, tVlanIntf, tPortChannelIntf, tSubIntf]
 
     reqStr = args[0]
     for request in requests:
@@ -780,7 +784,7 @@ def invoke_api(func, args=[]):
 
         for index,i in  enumerate(args):
                 #Find the ipv4 address from the list of args
-                if not ((i.find(".") == -1)):
+                if not ((i.find(".") == -1)) and i.startswith("Ethernet") == False and i.startswith("PortChannel") == False:
                    #Insert the found v4 address in the body
                    body1["openconfig-relay-agent:helper-address"].insert(j,args[index])
                    j += 1

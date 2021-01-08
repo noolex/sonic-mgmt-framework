@@ -1723,6 +1723,10 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True ${ip-subcommands}</ACTION>
     </COMMAND>
+
+    <MACRO name="DHCP-RELAY-CONFIG-OPTIONS" arg="{iface},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_IPADDR_LIST/id={name},ipv4_subintf_dhcp_relay,sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_IPADDR_LIST"> </MACRO>
+    <MACRO name="DHCP-RELAY-NO-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
+
 </VIEW>
 
 </CLISH_MODULE>

@@ -609,6 +609,9 @@ limitations under the License.
 
     </COMMAND>
 
+    <MACRO name="DHCPV6-RELAY-CONFIG-OPTIONS" arg="{iface},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},ipv6_subintf_dhcp_relay,sonic-interface:sonic-interface/VALN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST"> </MACRO>
+    <MACRO name="DHCPV6-RELAY-NO-CONFIG-OPTIONS" arg="{iface} "> </MACRO>
+
     <MACRO name="INTF_IPV6_ENABLE" arg="${iface},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/ipv6_use_link_local_only=enable"> </MACRO>
 
 </VIEW>
