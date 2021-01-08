@@ -1410,11 +1410,11 @@ limitations under the License.
     <PTYPE
         name="PHY_VL_PO_LB_INTERFACE"
         method="regexp_select"
-        ext_pattern="Ethernet(Port) PortChannel(1-128) Vlan(1-4093) Loopback(0..16383)"
-        alt_ext_pattern="Eth(slot/port[/subport]) PortChannel(1-128) Vlan(1-4093) Loopback(0..16383)"
-        ext_help="(Ethernet interface type) (PortChannel interface type) (Vlan interface type) (Loopback interface type)"
-        pattern="&ETH_ALL_INTF;|&VLAN_ALL_INTF;|&PO_ALL_INTF;|&LOOPB_INTF;"
-        alt_pattern="&ETH_ALL_INTF_ALIAS;|&VLAN_ALL_INTF;|&PO_ALL_INTF;|&LOOPB_INTF;"
+        ext_pattern="Ethernet(Port) Ethernet(Port).(Subinterface) Loopback(0..16383) PortChannel(1-128) PortChannel(1-128).(Subinterface) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[/subport]) Eth(slot/port[/subport]).(Subinterface) Loopback(0..16383) PortChannel(1-128) PortChannel(1-128).(Subinterface) Vlan(1-4093)"
+        ext_help="(Ethernet interface type) (Ethernet subinterface type) (Loopback interface type) (PortChannel interface type) (PortChannel subinterface type) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF;|&ETH_ALL_SUBINTF;|&LOOPB_INTF;|&PO_ALL_INTF_RANGE;|&PO_ALL_SUBINTF_RANGE;|&VLAN_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_ALIAS;|&ETH_ALL_SUBINTF_ALIAS;|&LOOPB_INTF;|&PO_ALL_INTF_RANGE;|&PO_ALL_SUBINTF_RANGE;|&VLAN_ALL_INTF;"
         help="Interface Type - Ranges"
         preprocess="mode"
         />
