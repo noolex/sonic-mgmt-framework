@@ -161,11 +161,8 @@ def vlanExceptList(vlan):
             vid = vid.replace('-','..')
         if '..' in vid:
             vidList = vid.split('..')
-            print(vidList)
             lower = int(vidList[0])
-            print(lower)
             upper = int(vidList[1])
-            print(upper)
             for i in range(lower,upper+1):
                 vid = str(i)
                 if vid in exceptList:

@@ -930,7 +930,7 @@ limitations under the License.
             ptype="SUBCOMMAND"
             mode="subcommand"
             render_command_cb="if_switchport_access"
-            command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST/name={vname},ifname={name}"
+            command_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={name}"
             >
             <PARAM
                 name="Vlan"
@@ -1374,7 +1374,7 @@ limitations under the License.
            help="Set access mode characteristics of the interface"
            ptype="SUBCOMMAND"
            mode="subcommand"
-           command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST/name={vname},ifname={name}"
+           command_tables="sonic-port:sonic-port/PORTCHANNEL/PORTCHANNEL_LIST/name={name}"
            render_command_cb="if_switchport_access">
            <PARAM
                name="Vlan"
@@ -1396,7 +1396,7 @@ limitations under the License.
            help="Configure trunking parameters on an interface"
            ptype="SUBCOMMAND"
            mode="subcommand"
-           command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST/name={vname},ifname={name}"
+           command_tables="sonic-port:sonic-port/PORTCHANNEL/PORTCHANNEL_LIST/name={name}"
            render_command_cb="if_switchport_trunk"
            >
            <PARAM

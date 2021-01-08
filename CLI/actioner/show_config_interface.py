@@ -68,19 +68,25 @@ def show_if_vrf_binding(render_tables):
 
 def show_if_switchport_access(render_tables):
     cmd_str = ''
-
     if 'name' in render_tables:
        ifname_key = render_tables['name']
-       if 'sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST' in render_tables:
-           for vlan_member in render_tables['sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST']:
-              if 'ifname' in vlan_member:
-                  if ifname_key == vlan_member['ifname'] and vlan_member['tagging_mode']=='untagged':
-                      vlan_id = vlan_member['name'].lstrip('Vlan')
+       if 'sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST' in render_tables:
+           portList = render_tables['sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST']
+           if 'name' in portList:
+               if ifname_key == portList['name']:
+                   access_vlan = portList['access_vlan']
+                   vlan_id = access_vlan.lstrip('Vlan')
+		   cmd_str = 'switchport access Vlan ' + vlan_id
+
+       if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
+           portList = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
+           if 'ifname' in portList:
+               if ifname_key == portList['ifname']:
+                      access_vlan = portList['access_vlan']
+                      vlan_id = access_vlan.lstrip('Vlan')
                       cmd_str = 'switchport access Vlan ' + vlan_id
 
     return 'CB_SUCCESS', cmd_str
-
-
 
 def find_ranges(vlan_lst):
     ranges = []
@@ -101,7 +107,6 @@ def find_ranges(vlan_lst):
 def show_if_switchport_trunk(render_tables):
     cmd_str = ''
     vlan_lst = []
-    print(render_tables)
     if 'name' in render_tables:
        ifname_key = render_tables['name']
 
@@ -109,7 +114,7 @@ def show_if_switchport_trunk(render_tables):
            portList = render_tables['sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST']
            if 'name' in portList:
                if ifname_key == portList['name']:
-                   vlan_list = portList['tagged_vlan']
+                   vlan_list = portList['tagged_vlans']
                    for vlan_id in vlan_list:
                        vlan_id = vlan_id.lstrip('Vlan')
                        vlan_lst.append(vlan_id)
@@ -119,7 +124,7 @@ def show_if_switchport_trunk(render_tables):
 	   for tables in portList:
                if 'ifname' in tables:
                    if ifname_key == tables['ifname']:
-                       vlan_list = tables['tagged_vlan']
+                       vlan_list = tables['tagged_vlans']
                        for vlan_id in vlan_list:
                            vlan_id = vlan_id.lstrip('Vlan')
                            vlan_lst.append(vlan_id)
