@@ -80,11 +80,12 @@ def show_if_switchport_access(render_tables):
 
        if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
            portList = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
-           if 'ifname' in portList:
-               if ifname_key == portList['ifname']:
-                      access_vlan = portList['access_vlan']
-                      vlan_id = access_vlan.lstrip('Vlan')
-                      cmd_str = 'switchport access Vlan ' + vlan_id
+	   for tables in portList:
+               if 'ifname' in portList:
+                   if ifname_key == tables['ifname']:
+                       access_vlan = tables['access_vlan']
+                       vlan_id = access_vlan.lstrip('Vlan')
+                       cmd_str = 'switchport access Vlan ' + vlan_id
 
     return 'CB_SUCCESS', cmd_str
 
