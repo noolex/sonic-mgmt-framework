@@ -598,98 +598,28 @@ limitations under the License.
          help="Sets source address"
          >
 
-         <PARAM
-             name="intf"
-             help="ICMP Source interface"
-             ptype="STRING"
-             />
+     <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+       <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+       <PARAM name="Subif" help="Ethernet sub-interface" ptype="PHY_PO_SUB_INTERFACE" mode="subcommand"/>
+       <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+       <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
 
-         <ACTION builtin="clish_pyobj">
-             sonic_cli_ipsla patch_icmp_src_if ${sla-id} ${intf}
-         </ACTION>
+     </PARAM>
 
-     </COMMAND>
+     <ACTION builtin="clish_pyobj">
+         sonic_cli_ipsla patch_icmp_src_if ${sla-id} ${Ethernet} ${Subif} ${PortChannel} ${Vlan}
+     </ACTION>
 
-     <COMMAND
-         name="source-interface Vlan"
-         help="Set source interface"
-         >
-
-         <PARAM
-            name="vlan-id"
-            help="Vlan Interface"
-            ptype="VLAN_ID"
-             />
-
-         <ACTION builtin="clish_pyobj">
-             sonic_cli_ipsla patch_icmp_src_if_vlan ${sla-id} ${vlan-id}
-         </ACTION>
-
-         <DOCGEN>
-             <DESCRIPTION>
-                 Configure source interface as Ethernet for an IP SLA ICMP instance
-             </DESCRIPTION>
-             <EXAMPLE summary="Configure source interface as Vlan for an IP SLA ICMP instance">
-                sonic(config)# ip sla 10
-                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
-                sonic(conf-ipsla-10-icmp)# source-interface Vlan50
-             </EXAMPLE>
-         </DOCGEN>
-
-     </COMMAND>
-
-     <COMMAND
-         name="source-interface PortChannel"
-         help="Set source interface"
-         >
-
-         <PARAM
-           name="po-id"
-           help="PortChannel Interface"
-           ptype="LAG_ID"
-             />
-
-         <ACTION builtin="clish_pyobj">
-             sonic_cli_ipsla patch_icmp_src_if_po ${sla-id} ${po-id}
-         </ACTION>
-
-         <DOCGEN>
-             <DESCRIPTION>
-                 Configure source interface as PortChannel for an IP SLA ICMP instance
-             </DESCRIPTION>
-             <EXAMPLE summary="Configure source interface as PortChannel for an IP SLA ICMP instance">
-                sonic(config)# ip sla 10
-                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
-                sonic(conf-ipsla-10-icmp)# source-interface PortChannel50
-             </EXAMPLE>
-         </DOCGEN>
-     </COMMAND>
-
-     <COMMAND
-         name="source-interface Ethernet"
-         help="Set source interface"
-         >
-
-         <PARAM
-            name="iface_num"
-            help="Physical Interface"
-            ptype="UINT16"
-             />
-
-         <ACTION builtin="clish_pyobj">
-             sonic_cli_ipsla patch_icmp_src_if_eth ${sla-id} ${iface_num}
-         </ACTION>
-
-         <DOCGEN>
-             <DESCRIPTION>
-                 Configure source interface as Ethernet for an IP SLA ICMP instance
-             </DESCRIPTION>
-             <EXAMPLE summary="Configure source interface as Ethernet for an IP SLA ICMP instance">
-                sonic(config)# ip sla 10
-                sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
-                sonic(conf-ipsla-10-icmp)# source-interface Ethernet10
-             </EXAMPLE>
-         </DOCGEN>
+     <DOCGEN>
+         <DESCRIPTION>
+             Configure source interface for an IP SLA ICMP instance
+         </DESCRIPTION>
+         <EXAMPLE summary="Configure source interface as Ethernet for an IP SLA ICMP instance">
+            sonic(config)# ip sla 10
+            sonic(conf-ipsla-10)# icmp-echo 30.30.1.2
+            sonic(conf-ipsla-10-icmp)# source-interface Ethernet10
+         </EXAMPLE>
+     </DOCGEN>
 
      </COMMAND>
 
@@ -1041,103 +971,30 @@ limitations under the License.
 
       </COMMAND>
 
-      <COMMAND
-          name="source-interface"
-          help="Sets source address"
-          >
+      <COMMAND name="source-interface" help="Sets source interface">
 
-          <PARAM
-              name="intf"
-              help="TCP Source interface"
-              ptype="STRING"
-              />
+      <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+        <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+        <PARAM name="Subif" help="Ethernet sub-interface" ptype="PHY_PO_SUB_INTERFACE" mode="subcommand"/>
+        <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+        <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
 
-          <ACTION builtin="clish_pyobj">
-              sonic_cli_ipsla patch_tcp_src_if ${sla-id} ${intf}
-          </ACTION>
-      </COMMAND>
+      </PARAM>
 
-      <COMMAND
-          name="source-interface Vlan"
-          help="Set source interface"
-          >
+      <ACTION builtin="clish_pyobj">
+          sonic_cli_ipsla patch_tcp_src_if ${sla-id} ${Ethernet} ${Subif} ${PortChannel} ${Vlan}
+      </ACTION>
 
-          <PARAM
-             name="vlan-id"
-             help="Vlan Interface"
-             ptype="VLAN_ID"
-              />
-
-          <ACTION builtin="clish_pyobj">
-              sonic_cli_ipsla patch_tcp_src_if_vlan ${sla-id} ${vlan-id}
-          </ACTION>
-
-          <DOCGEN>
-              <DESCRIPTION>
-                  Configure source interface as Ethernet for an IP SLA TCP instance
-              </DESCRIPTION>
-              <EXAMPLE summary="Configure source interface as Vlan for an IP SLA TCP instance">
-                 sonic(config)# ip sla 10
-                 sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
-                 sonic(conf-ipsla-20-tcp)# source-interface Vlan50
-              </EXAMPLE>
-          </DOCGEN>
-
-      </COMMAND>
-
-      <COMMAND
-          name="source-interface PortChannel"
-          help="Set source interface"
-          >
-
-          <PARAM
-            name="po-id"
-            help="PortChannel Interface"
-            ptype="LAG_ID"
-              />
-
-          <ACTION builtin="clish_pyobj">
-              sonic_cli_ipsla patch_tcp_src_if_po ${sla-id} ${po-id}
-          </ACTION>
-
-          <DOCGEN>
-              <DESCRIPTION>
-                  Configure source interface as PortChannel for an IP SLA TCP instance
-              </DESCRIPTION>
-              <EXAMPLE summary="Configure source interface as PortChannel for an IP SLA TCP instance">
-                 sonic(config)# ip sla 10
-                 sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
-                 sonic(conf-ipsla-20-tcp)# source-interface PortChannel50
-              </EXAMPLE>
-          </DOCGEN>
-
-      </COMMAND>
-
-      <COMMAND
-          name="source-interface Ethernet"
-          help="Set source interface"
-          >
-
-          <PARAM
-             name="iface_num"
-             help="Physical Interface"
-             ptype="UINT16"
-              />
-
-          <ACTION builtin="clish_pyobj">
-              sonic_cli_ipsla patch_tcp_src_if_eth ${sla-id} ${iface_num}
-          </ACTION>
-
-          <DOCGEN>
-              <DESCRIPTION>
-                  Configure source interface as Ethernet for an IP SLA TCP instance
-              </DESCRIPTION>
-              <EXAMPLE summary="Configure source interface as Vlan for an IP SLA TCP instance">
-                 sonic(config)# ip sla 10
-                 sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
-                 sonic(conf-ipsla-20-tcp)# source-interface Ethernet50
-              </EXAMPLE>
-          </DOCGEN>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure source interface for an IP SLA TCP instance
+          </DESCRIPTION>
+          <EXAMPLE summary="Configure source interface as Vlan for an IP SLA TCP instance">
+             sonic(config)# ip sla 10
+             sonic(conf-ipsla-20)# tcp-connect 40.40.1.2
+             sonic(conf-ipsla-20-tcp)# source-interface Ethernet50
+          </EXAMPLE>
+      </DOCGEN>
 
       </COMMAND>
 
