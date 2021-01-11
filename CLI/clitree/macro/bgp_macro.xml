@@ -76,8 +76,8 @@ limitations under the License.
         <PARAM name="ip-prefix" help="IPv4 Prefix to clear BGP" ptype="IP_ADDR_MASK" test='"4" = "arg1"'/>
         <PARAM name="interface" help="Interface to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name="interface_type" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
-            <PARAM name="Ethernet" help="Ethernet Interface to clear BGP" ptype="PHY_INTERFACE" mode="subcommand"/>
-            <PARAM name="PortChannel" help="PortChannel to clear BGP" ptype="PO_INTERFACE" mode="subcommand"/>
+            <PARAM name="Ethernet" help="Ethernet interface or sub-interface to clear BGP" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+            <PARAM name="PortChannel" help="PortChannel interface or sub-interface to clear BGP" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
             <PARAM name="Vlan" help="Vlan to clear BGP" ptype="VLAN_INTERFACE" mode="subcommand"/>
           </PARAM>
         </PARAM>
@@ -131,8 +131,8 @@ limitations under the License.
         </PARAM>
         <PARAM name="interface" help="Interface to clear BGP" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name="interface_type" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
-            <PARAM name="Ethernet" help="Ethernet Interface to clear BGP" ptype="PHY_INTERFACE" mode="subcommand"/>
-            <PARAM name="PortChannel" help="PortChannel to clear BGP" ptype="PO_INTERFACE" mode="subcommand"/>
+            <PARAM name="Ethernet" help="Ethernet interface or sub-interface to clear BGP" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+            <PARAM name="PortChannel" help="PortChannel interface or sub-interface to clear BGP" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
             <PARAM name="Vlan" help="Vlan to clear BGP" ptype="VLAN_INTERFACE" mode="subcommand"/>
           </PARAM>
         </PARAM>
@@ -158,10 +158,10 @@ limitations under the License.
             </PARAM>
             <PARAM name="interface" help="Interface to display Neighbor information about" ptype="SUBCOMMAND" mode="subcommand">
               <PARAM name="neighbor-interface" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="Ethernet" help="Ethernet Interface to display BGP Neighbor information" ptype="PHY_INTERFACE" mode="subcommand">
+                <PARAM name="Ethernet" help="Ethernet interface or sub-interface to display BGP Neighbor information" ptype="PHY_INTERFACE_SUBIF" mode="subcommand">
                   <MACRO name="IP_BGP_NBR_SHW_RTE_OPTIONS" arg=""/>
                 </PARAM>
-                <PARAM name="PortChannel" help="PortChannel to display BGP Neighbor information" ptype="PO_INTERFACE" mode="subcommand">
+                <PARAM name="PortChannel" help="PortChannel interface or sub-interface to display BGP Neighbor information" ptype="PO_INTERFACE_SUBIF" mode="subcommand">
                   <MACRO name="IP_BGP_NBR_SHW_RTE_OPTIONS" arg=""/>
                 </PARAM>
                 <PARAM name="Vlan" help="Vlan to display BGP Neighbor information" ptype="VLAN_INTERFACE" mode="subcommand">
