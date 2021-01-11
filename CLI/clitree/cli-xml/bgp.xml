@@ -45,8 +45,8 @@ limitations under the License.
            <PARAM name="ip" help="Neighbor router" ptype="IPV4V6_ADDR"/>
            <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
              <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-               <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
-               <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+               <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+               <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
                <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
              </PARAM>
            </PARAM>
@@ -152,8 +152,8 @@ limitations under the License.
         <PARAM name="neighbor-ip" help="Display one particular BGP neighbor" ptype="IPV4V6_ADDR" optional="true"/>
         <PARAM name="interface" help="Interface to display Neighbor information about" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name="neighbor-interface" help="Neigh type" ptype="SUBCOMMAND" mode="switch">
-            <PARAM name="Ethernet" help="Ethernet Interface to display BGP Neighbor information" ptype="PHY_INTERFACE" mode="subcommand"/>
-            <PARAM name="PortChannel" help="PortChannel to display BGP Neighbor information" ptype="PO_INTERFACE" mode="subcommand"/>
+            <PARAM name="Ethernet" help="Ethernet interface or sub-interface to display BGP Neighbor information" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+            <PARAM name="PortChannel" help="PortChannel interface or sub-interface to display BGP Neighbor information" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
             <PARAM name="Vlan" help="Vlan to display BGP Neighbor information" ptype="VLAN_INTERFACE" mode="subcommand"/>
           </PARAM>
         </PARAM>
@@ -962,8 +962,8 @@ limitations under the License.
       <PARAM name="ip" help="Neighbor router" ptype="IPV4V6_ADDR"/>
       <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
-          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
         </PARAM>
       </PARAM>
@@ -1292,8 +1292,8 @@ limitations under the License.
       <PARAM name="ip" help="Neighbor router" ptype="IPV4V6_ADDR"/>
       <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
-          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
         </PARAM>
       </PARAM>
@@ -1478,8 +1478,8 @@ limitations under the License.
       <PARAM name="ip" help="IP source" ptype="IPV4V6_ADDR"/>
       <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
-          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
         </PARAM>
@@ -1491,8 +1491,8 @@ limitations under the License.
         This command specifies the IPv4 or IPv6 source address to use for the
         BGP session to this neighbor. Source address may be specified as either
         an IPv4/IPv6 address directly or as an interface name. The interface
-        name could be router port or Port Channel or Vlan interface with
-        IPv4/IPv6 address configured on it.
+        name could be router port or Port Channel or Vlan interface or
+        routed Vlan sub-interface with IPv4/IPv6 address configured on it.
       </DESCRIPTION>
       <USAGE>
         Use this command to configure source interface for a BGP neighbor
@@ -2016,8 +2016,8 @@ limitations under the License.
       <PARAM name="ip" help="IP source" ptype="IPV4V6_ADDR" optional="true"/>
       <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
-          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
         </PARAM>
@@ -2190,8 +2190,8 @@ limitations under the License.
       <PARAM name="ip" help="IP source" ptype="IPV4V6_ADDR"/>
       <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
-          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
         </PARAM>
@@ -2203,8 +2203,8 @@ limitations under the License.
         This command specifies the IPv4 or IPv6 source address to use for the
         BGP session to neighbors in a peer-group. Source address may be specified
         as either an IPv4/IPv6 address directly or as an interface name. The
-        interface name could be router port or Port Channel or Vlan interface with
-        IPv4/IPv6 address configured on it.
+        interface name could be router port or Port Channel or Vlan interface or
+        routed Vlan sub-interface with IPv4/IPv6 address configured on it.
       </DESCRIPTION>
       <USAGE>
         Use this command to configure source interface for a BGP peer-group
@@ -2731,8 +2731,8 @@ limitations under the License.
       <PARAM name="ip" help="IP source" ptype="IPV4V6_ADDR" optional="true"/>
       <PARAM name="interface" help="Interface name" mode="subcommand" ptype="SUBCOMMAND">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
-          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
         </PARAM>
