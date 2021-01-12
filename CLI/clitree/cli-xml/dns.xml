@@ -71,10 +71,10 @@ limitations under the License.
              command_tables="sonic-system-dns:sonic-system-dns/DNS/DNS_LIST/type={type}"
              render_command_cb="dns_server_source_if">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
           <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
-          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
         </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_dns patch_openconfig_dns_global_config_source_address ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${instance}</ACTION>
