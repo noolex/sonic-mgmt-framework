@@ -72,7 +72,7 @@ limitations under the License.
                         <PARAM
                              name="port-id"
                              help="Physical interface"
-                             ptype="PHY_INTERFACE">
+                             ptype="PHY_INTERFACE_SUBIF">
                         </PARAM>
                         <PARAM
                             name="PortChannel"
@@ -82,7 +82,7 @@ limitations under the License.
                             <PARAM
                                 name="port-id"
                                 help="PortChannel ID"
-                                ptype="LAG_ID">
+                                ptype="LAG_ID_SUBID">
                             </PARAM>
                         </PARAM>
                         <PARAM
@@ -680,4 +680,10 @@ limitations under the License.
         <MACRO name="BIND-INTF-TO-PIM" arg="${vlan_name}, ${vlan_name}"></MACRO>
     </VIEW>
 
+    <!-- =================== -->
+    <!-- Subinterface Config -->
+    <!-- =================== -->
+    <VIEW name="configure-subif-view">
+        <MACRO name="BIND-INTF-TO-PIM" arg="${iface}, ${iface_uri}"></MACRO>
+    </VIEW>
 </CLISH_MODULE>
