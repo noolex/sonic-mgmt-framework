@@ -1254,4 +1254,146 @@ limitations under the License.
 
 </VIEW>
 
+
+<!--MODE : sub-interface -->
+
+<VIEW name="configure-subif-view">
+
+<!-- vrrp -->
+   <COMMAND
+         name="vrrp"
+         help="Configures VRRP"
+         view_keys="ifname=*|idkey=*"
+         command_tables="sonic-vrrp:sonic-vrrp/VRRP/VRRP_LIST/ifname={iface},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP6/VRRP6_LIST/ifname={iface},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP_TRACK;sonic-vrrp:sonic-vrrp/VRRP6_TRACK"
+         render_command_cb="vrrp_config"
+         >
+         <PARAM
+             name="vrrp-id"
+             help="VRRP ID (1 to 255)"
+             ptype="RANGE_1_255"
+             dbpath="sonic-vrrp:sonic-vrrp/VRRP/VRRP_LIST/vrid"
+             >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+        </PARAM>
+
+        <PARAM
+            name="vrrp-afi-sub-cmds"
+            help = "VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+        <PARAM
+          name="ipv4"
+          help="IPv4 address-family"
+          view="configure-vrrp-ipv4-view"
+          viewid="vrrp-id=${vrrp-id};iface=${iface}"
+          ptype="SUBCOMMAND"
+          mode="subcommand"
+          dbpath="sonic-vrrp:sonic-vrrp/VRRP/VRRP_LIST/vrid"
+          >
+        </PARAM>
+        <PARAM
+          name="ipv6"
+          help="IPv6 address-family"
+          view="configure-vrrp-ipv6-view"
+          viewid="vrrp-id=${vrrp-id};iface=${iface}"
+          ptype="SUBCOMMAND"
+          mode="subcommand"
+          dbpath="sonic-vrrp:sonic-vrrp/VRRP6/VRRP6_LIST/vrid"
+          >
+        </PARAM>
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp post_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config ${iface} ${vrrp-id} ${vrrp-afi-sub-cmds}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure Virtual Router Redundancy Protocol(VRRP) on Ethernet interface
+            </DESCRIPTION>
+            <EXAMPLE summary="Configure VRRP for IPv4 on sub-interface">
+                sonic(config)# interface Eth4.1
+                sonic(conf-if-Eth4.1)#
+                sonic(conf-if-Eth4.1)# vrrp 1 address-family ipv4
+                sonic(conf-if-Eth4.1-vrrp-ipv4-1)#
+            </EXAMPLE>
+            <EXAMPLE summary="Configure VRRP for IPv6 on Ethernet interface">
+                sonic(config)# interface Eth4.1
+                sonic(conf-if-Eth4.1)#
+                sonic(conf-if-Eth4.1)# vrrp 1 address-family ipv6
+            </EXAMPLE>
+        </DOCGEN>
+
+    </COMMAND>
+
+<!-- no vrrp -->
+   <COMMAND name="no vrrp"
+         help="Removes VRRP"
+     >
+         <PARAM name="vrrp-id"
+             help="VRRP ID (1 to 255)"
+             ptype="RANGE_1_255"
+             >
+        </PARAM>
+        <PARAM
+            name="address-family"
+            help="VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+        >
+        </PARAM>
+
+        <PARAM
+            name="vrrp-afi-sub-cmds"
+            help = "VRRP address-family"
+            ptype="SUBCOMMAND"
+            mode="switch"
+            >
+
+        <PARAM
+          name="ipv4"
+          help="IPv4 address-family"
+          ptype="SUBCOMMAND"
+          mode="subcommand"
+          >
+        </PARAM>
+        <PARAM
+          name="ipv6"
+          help="IPv6 address-family"
+          ptype="SUBCOMMAND"
+          mode="subcommand"
+          >
+        </PARAM>
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group ${iface} ${vrrp-id} ${vrrp-afi-sub-cmds}
+        </ACTION>
+
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure Virtual Router Redundancy Protocol(VRRP) on Ethernet interface
+            </DESCRIPTION>
+            <EXAMPLE summary="Unconfigure VRRP for IPv4 on Ethernet interface">
+                sonic(config)# interface Eth4.1
+                sonic(conf-if-Eth4.1)#
+                sonic(conf-if-Eth4.1)#no vrrp 1 address-family ipv4
+            </EXAMPLE>
+            <EXAMPLE summary="Unconfigure VRRP for IPv6 on Ethernet interface">
+                sonic(config)# interface Eth4.1
+                sonic(conf-if-Eth4.1)#
+                sonic(conf-if-Eth4.1)#no vrrp 1 address-family ipv6
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+</VIEW>
+
 </CLISH_MODULE>

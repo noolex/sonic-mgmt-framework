@@ -254,11 +254,11 @@ limitations under the License.
            mode="switch" 
            ptype="SUBCOMMAND">
            <PARAM name="phy-if-name" 
-              help="Select an interface or subinterface" 
+              help="Select an interface or sub-interface" 
               ptype="PHY_INTERFACE_SUBIF"> 
            </PARAM>
            <PARAM name="PortChannel" 
-              help="Port channel interface or subinterface configuration" 
+              help="PortChannel interface or sub-interface configuration" 
               mode="subcommand" 
               ptype="PO_INTERFACE_SUBIF">
            </PARAM>
@@ -367,11 +367,11 @@ limitations under the License.
               ptype="IPV4V6_ADDR"
            />
            <PARAM name="phy-if-name" 
-              help="Select an interface or subinterface" 
+              help="Select an interface or sub-interface" 
               ptype="PHY_INTERFACE_SUBIF">
            </PARAM>
            <PARAM name="PortChannel" 
-              help="Port channel interface or subinterface configuration" 
+              help="PortChannel interface or sub-interface configuration" 
               mode="subcommand" 
               ptype="PO_INTERFACE_SUBIF">
            </PARAM>
