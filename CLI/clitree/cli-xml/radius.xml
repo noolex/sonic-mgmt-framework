@@ -345,6 +345,7 @@ limitations under the License.
                 <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
                 <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
                 <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+                <PARAM name="SubInterface" help="Vlan interface" ptype="PHY_PO_SUB_INTERFACE" mode="subcommand"/>
             </PARAM>
         </PARAM>
 
@@ -385,7 +386,7 @@ limitations under the License.
             </PARAM>
         </PARAM>
 
-        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${#vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${mgmt}${vrf-name} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${#vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${mgmt}${vrf-name} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${SubInterface}</ACTION>
         <DOCGEN>
           <DESCRIPTION>Configures a server for RADIUS.</DESCRIPTION>
           <EXAMPLE>
