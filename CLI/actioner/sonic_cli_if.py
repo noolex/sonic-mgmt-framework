@@ -406,7 +406,7 @@ def invoke_api(func, args=[]):
     elif func == 'put_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config':
         vlanlst = args[2].split(',')
 	vlanlst = [sub.replace('-', '..') for sub in vlanlst]
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans', name=args[0])
         body = {"openconfig-vlan:trunk-vlans":[int(i) if '..' not in i else i for i in vlanlst]}
         return api.put(path,body)
 
