@@ -1440,7 +1440,7 @@ def get_next_hop_group_type(args):
     if len(args) == 2:
         return args[1]
     else:
-        keypath = cc.Path("/restconf/data/sonic-flow-based-services:sonic-flow-based-services/PBF_NEXTHOP_GROUP_TABLE/PBF_NEXTHOP_GROUP_TABLE_LIST={grp_name}/TYPE",
+        keypath = cc.Path("/restconf/data/sonic-flow-based-services:sonic-flow-based-services/PBF_NEXTHOP_GROUP/PBF_NEXTHOP_GROUP_LIST={grp_name}/TYPE",
                           grp_name=args[0])
         return fbs_client.get(keypath, ignore404=False)
 
