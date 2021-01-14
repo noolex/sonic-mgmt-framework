@@ -333,12 +333,7 @@ def invoke_api(func, args=[]):
 
     elif func == 'delete_trunk_vlan_all':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
-        response =  api.delete(path)
-	if response.ok():
-	    path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT/PORT_LIST={name}/tagged_vlans',name=args[0])
-	    return api.delete(path)
-	return response
-
+        return api.delete(path)
 
     #Remove aggregate access vlan
     elif func == 'delete_aggregate_access_vlan':
@@ -353,11 +348,7 @@ def invoke_api(func, args=[]):
     
     elif func == 'delete_aggregate_trunk_vlan_all':
 	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
-	response =  api.delete(path)
-	if response.ok():
-	    path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST={name}/tagged_vlans',name=args[0])
-	    return api.delete(path)
-	return response
+	return api.delete(path)
 
     #Remove all vlans
     elif func == 'delete_all_vlan':
