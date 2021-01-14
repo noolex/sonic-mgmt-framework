@@ -101,14 +101,20 @@ def invoke_api(func, args=[]):
 
     elif func == 'set_ntp_server':
       
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers') 
-        if len(args) >= 3:
-            body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0],
-                                                                             "openconfig-system-ext:key-id" : int(args[2])},
-                                                                 "address" : args[0]}]}}
-        else:
-            body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0]},
-                                                                 "address" : args[0]}]}}
+        key_id   = args[1].split(":", 1)[-1]
+        min_poll = args[2].split(":", 1)[-1]
+        max_poll = args[3].split(":", 1)[-1]
+
+        config_body = {"address": args[0]}
+        if key_id:
+            config_body["openconfig-system-ext:key-id"] = int(key_id)
+        if min_poll:
+            config_body["openconfig-system-ext:minpoll"] = int(min_poll)
+            config_body["openconfig-system-ext:maxpoll"] = int(max_poll)
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers')
+        body = { "openconfig-system:servers": { "server" : [{"config" : config_body,
+                                                             "address" : args[0]}]}}
         api_response = api.patch(keypath, body)
         if not api_response.ok() and "does not match regular expression pattern" in api_response.error_message():
             print "%Error: Invalid IP address or hostname"
