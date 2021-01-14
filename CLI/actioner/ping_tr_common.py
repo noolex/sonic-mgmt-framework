@@ -24,10 +24,28 @@ import re
 blocked_chars = frozenset(['&', ';', '<', '>', '|', '`', '\''])
 api = cc.ApiClient()
 
-def get_alias(interface):
-    path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=interface)
-    response = api.get(path)
+INVALID_IFNAME  = -1
+DEFAULT_IFNAME  = 0
+STD_IFNAME      = 1
+STD_SUBIFNAME   = 2
+NATIVE_IFNAME   = 3
+NATIVE_SUBIFNAME= 4
+MGMT_IFNAME     = 5
 
+def get_alias(interface):
+    isSubIntf = False
+    tmpIntf = interface
+    subIntfId = ""
+
+    #if 'interface' is a subinteface, separate interface name and its ID
+    result = re.search('(\s*)(Eth)(\s*)(\d+/\d+/*\d*)(\.\d+)', tmpIntf, re.IGNORECASE)
+    if result:
+        isSubIntf = True
+        tmpIntf = result.group(2) + result.group(4)
+        subIntfId = result.group(5)
+
+    path = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}/alias', name=tmpIntf)
+    response = api.get(path)
     if response is None:
         return None
 
@@ -37,40 +55,118 @@ def get_alias(interface):
             return None
 
         interface = response.get('sonic-port:alias')
+        if interface and isSubIntf:
+            result = re.search('(\s*)(Ethernet)(\d+)', interface, re.IGNORECASE)
+            if result:
+                interface = "Eth" + result.group(3) + subIntfId
+
         return interface
 
 def print_and_log(msg):
     print "% Error:", msg
     log.syslog(log.LOG_ERR, msg)
 
+def getIfName(args, cmd):
+
+    intfSwitch = '-I'
+    if cmd == 'traceroute':
+        intfSwitch = '-i'
+
+    stdNaming = is_intf_naming_mode_std()
+
+    # Check for interfaces, order is important.
+    # Regex for subinterfaces should come first.
+
+    #Check for subinterface
+    result = re.search('('+intfSwitch+'\s*)(Ethernet|PortChannel)(\s*)(\d+\.\d+)\s+', args, re.IGNORECASE)
+    if result:
+        if stdNaming: #For std naming we shouldn't come here
+            return None, INVALID_IFNAME
+        if result.group(2).startswith("Eth"):
+            ifName = "Eth" + result.group(4)
+        elif result.group(2).startswith("Port"):
+            ifName = "Po" + result.group(4)
+        return ifName, NATIVE_SUBIFNAME
+
+    #Check for subinterface with alias
+    result = re.search('('+intfSwitch+'\s*)(Eth)(\s*)(\d+/\d+/*\d*\.\d+)\s+', args, re.IGNORECASE)
+    if result:
+        if not stdNaming:
+            return None, INVALID_IFNAME
+        if result.group(2).startswith("Eth"):
+            ifName = "Eth" + result.group(4)
+        ifName = get_alias(ifName)
+        return ifName, STD_SUBIFNAME
+
+    #Check for interface
+    result = re.search('('+intfSwitch+'\s*)(Ethernet)(\s*)(\d+)(\s+)', args, re.IGNORECASE)
+    if result:
+        if stdNaming: #For std naming we shouldn't come here
+            return None, INVALID_IFNAME
+        ifName = result.group(2) + result.group(4)
+        return ifName, NATIVE_IFNAME
+
+    #Check for interface with alias
+    result = re.search('('+intfSwitch+'\s*)(Eth)(\s*)(\d+/\d+/*\d*)(\s+)', args, re.IGNORECASE)
+    if result:
+        if not stdNaming:
+            return None, INVALID_IFNAME
+        ifName = result.group(2) + result.group(4)
+        ifName = get_alias(ifName)
+        return ifName, STD_IFNAME
+
+    #Check for mgmt interface
+    result = re.search('('+intfSwitch+'\s*)(Management)(\s*)(\d+)(\s+)', args, re.IGNORECASE)
+    if result:
+        ifName = "eth" + result.group(4)
+        return ifName, MGMT_IFNAME
+
+    #Check for other interfaces
+    result = re.search('('+intfSwitch+'\s*)(PortChannel|Management|Loopback|Vlan)(\s*)(\d+)(\s+)', args, re.IGNORECASE)
+    if result:
+        ifName = result.group(2) + result.group(4)
+        return ifName, DEFAULT_IFNAME
+
+    return None, INVALID_IFNAME
+
 def transform_input(args, cmd):
-    if is_intf_naming_mode_std():
-        if 'ping' in cmd.lower():
-            result = re.search('(-I\s*)(Eth\d+/\d+/*\d*)', args, re.IGNORECASE)
-        else:
-            result = re.search('(-i\s*)(Eth\d+/\d+/*\d*)', args, re.IGNORECASE)
+    ifName = ""
+    isSubIntf = False
 
-        if (result is not None):
-            interface = result.group(2)
-            alias = get_alias(interface)
-            if alias is None:
-                return None
+    ifName, nameType = getIfName(args, cmd)
+    stdNaming = is_intf_naming_mode_std()
 
-            if 'ping' in cmd.lower():
-                args = re.sub('(-I\s*)(Eth\d+/\d+/*\d*)', '\g<1>' + alias, args, re.IGNORECASE)
-            else:
-                args = re.sub('(-i\s*)(Eth\d+/\d+/*\d*)', '\g<1>' + alias, args, re.IGNORECASE)
-            print "Using the native name:", alias, "for the interface:", interface
+    if ifName is None or nameType == INVALID_IFNAME:
+        return args
 
-    #remove space betetween Interface Type and Interface ID.
-    args = re.sub(r"(PortChannel|Ethernet|Management|Loopback|Vlan)(\s+)(\d+)", "\g<1>\g<3>", args)
+    intfSwitch = '-I'
+    if cmd == 'traceroute':
+        intfSwitch = '-i'
 
-    #convert 'Management' to 'eth'
-    if 'ping' in cmd.lower():
-        args = re.sub('-I\s*Management', '-I eth', args)
-    else:
-        args = re.sub('-i\s*Management', '-i eth', args)
-    return args
+    # Substitute interface name in the args based on interface type.
+    if nameType == NATIVE_IFNAME:
+        args = re.sub('('+intfSwitch+')(\s*)(Ethernet\s*\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args
+
+    if nameType == NATIVE_SUBIFNAME:
+        args = re.sub('('+intfSwitch+')(\s*)(Ethernet|PortChannel)(\s*\d+\.\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args
+
+    if nameType == STD_IFNAME:
+        args = re.sub('('+intfSwitch+')(\s*)(Eth)(\s*)(\d+/\d+/*\d*)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args
+
+    if nameType == STD_SUBIFNAME:
+        args = re.sub('('+intfSwitch+')(\s*)(Eth|PortChannel)(\s*)(\d+/\d+/*\d*\.\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args
+
+    if nameType == MGMT_IFNAME:
+        args = re.sub('('+intfSwitch+')(\s*)(Management\s*\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args
+
+    if nameType == DEFAULT_IFNAME:
+        args = re.sub('('+intfSwitch+')(\s*)(PortChannel|Management|Loopback|Vlan)(\s*)(\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args
 
 def validate_input(args, isVrf, cmd):
     if len(args) == 0:
