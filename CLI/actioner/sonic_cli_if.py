@@ -725,7 +725,11 @@ def invoke_api(func, args=[]):
         else:
             path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/unnumbered/interface-ref/config/interface', name=if_name, index=subif)
 
-        body = { "openconfig-if-ip:interface" : args[1] }
+        body = {}
+        if if_name == args[1] :
+            body = { "openconfig-if-ip:interface" : args[2] }
+        else :
+            body = { "openconfig-if-ip:interface" : args[1] }
         return api.patch(path, body)    
     elif func == 'delete_intf_ipv4_unnumbered_intf':
         if_name, subif = get_if_and_subif(args[0])

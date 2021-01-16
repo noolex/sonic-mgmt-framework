@@ -133,9 +133,6 @@ Flags: U-Unnumbered interface, A-Anycast IP
                 {% if vlanSubIntf["id"] == entry["id"] and entry["vrf_name"] != 'default' -%}
                     {% if subintfvars.update({'vrf':entry["vrf_name"]}) -%}{% endif -%}
                 {% endif -%}
-                {% if "unnumbered" in entry %}
-                    {% if subintfvars.update({'flags':"U"}) -%}{% endif -%}
-                {% endif %}
             {% endfor -%}
             {% set admin_op = subintfvars.admin_state|string() + "/" + subintfvars.oper_state|string() -%}
             {% if subintfvars.update({'admin_oper':admin_op}) -%}{% endif -%}     
@@ -150,7 +147,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
         {% if "sonic-interface:VLAN_SUB_INTERFACE_LIST" not in json_output -%}
             {% continue %}
         {% endif %}
-        {% if vars.name.startswith('Ethernet') and "sonic-port:PORT_TABLE_LIST" not in json_output -%}
+        {% if vars.name.startswith('Eth') and "sonic-port:PORT_TABLE_LIST" not in json_output -%}
             {% continue %}
         {% endif %}
         {% if vars.name.startswith('PortChannel') and "sonic-portchannel:LAG_TABLE_LIST" not in json_output -%}
@@ -160,7 +157,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
         {% set portTblList = json_output["sonic-port:PORT_TABLE_LIST"] %}
         {% set lagTblList = json_output["sonic-portchannel:LAG_TABLE_LIST"] %}
         {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
-        {% if vars.name.startswith('Ethernet') or vars.name.startswith('PortChannel') -%}
+        {% if vars.name.startswith('Eth') or vars.name.startswith('PortChannel') -%}
             {% for vlanSubIntf in vlanSubIntfList -%}
                 {% if (vlanSubIntf["id"] != vars.name) %}
                      {% continue %}
@@ -176,7 +173,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
                 {% if "vrf_name" in vlanSubIntf and vlanSubIntf["vrf_name"] != 'default' %}
                      {% if vars.update({'vrf':vlanSubIntf["vrf_name"]}) %}{% endif %}
                 {% endif %}
-                {% if vars.name.startswith("Ethernet") -%}
+                {% if vars.name.startswith("Eth") -%}
                     {% for port in portTblList -%}
                         {% if vars.name.split('.')[0] == port["ifname"] -%}
                             {% if "admin_status" in port %}
