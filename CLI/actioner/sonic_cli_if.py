@@ -991,6 +991,17 @@ def run(func, args):
     if func == "get_all_ethernet":
         return hdl_get_all_ethernet(args)
 
+    if func == 'vlan_trunk_add_remove_ethernet':
+        if args[3] == 'add':
+            func = 'patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config'
+        else:
+            func = 'del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans'
+    if func == 'vlan_trunk_add_remove_portchannel':
+	if args[3] == 'add':
+	    func = 'patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config'
+	else:
+	    func = 'del_llist_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config_trunk_vlans'
+
     try:
         response = invoke_api(func, args)
         if func == 'ip_interfaces_get' or func == 'ip6_interfaces_get':

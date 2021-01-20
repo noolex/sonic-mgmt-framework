@@ -23,6 +23,7 @@ import os
 import sys
 import copy
 import logging
+import inspect
 import cli_client as cc
 from scripts.render_cli import write
 from rpipe_utils import pipestr
@@ -31,14 +32,13 @@ from show_config_data import config_view_hierarchy
 from show_config_data import view_dependency
 from show_config_data import render_cb_dict
 from show_config_data import table_sort_cb_dict
+from show_config_data import module_cleanup_cb
+from show_config_data import module_startup_cb
 from show_config_utils import process_cmd
 from show_config_utils import get_view_table_keys
-from show_config_utils import log
 from show_config_utils import showrun_log 
 from show_config_table_sort import natsort_list
-import show_config_db_cache as db
-
-
+from collections import OrderedDict
 CLI_XML_VIEW_MAP = {}
 
 CONFIG_VIEW_CMD_IDX =0
@@ -49,8 +49,9 @@ CONFIG_VIEW_CMD_TABLES_IDX=4
 CONFIG_VIEW_DB_RENDER_IDX=5
 CONFIG_VIEW_RENDER_VIEW_IDX=6
 CONFIG_VIEW_RENDER_CMD_IDX=7
-CONFIG_VIEW_NAME_IDX=8
-CONFIG_VIEW_IDX_LEN=9
+CONFIG_VIEW_RENDER_CMD_VIEWID_IDX=8
+CONFIG_VIEW_NAME_IDX=9
+CONFIG_VIEW_IDX_LEN=10
 
 NODE_ELEM_NAME_IDX =0
 NODE_ELEM_DBPATH_IDX =1
@@ -73,27 +74,22 @@ format_read = False
 jinja_loader = {}
 
 CMDS_STRING = ''
+CMDS_VIEW = ''
+CMDS_VIEW_CHANGED = False
+DB_Cache = {}
 
 
 def cache_view_commands(command_list, indent, ctxt):
-    global CMDS_STRING
-
-    showrun_log(logging.DEBUG, "command_list {}", command_list)
-    fmtst = ''
+    global CMDS_STRING, CMDS_VIEW_CHANGED
     for idx, command in enumerate(command_list):
-
         if command:
             if CMDS_STRING =='':
-                fmtst = (' ' *indent) + '!'
-                CMDS_STRING = '\n' + fmtst
-                CMDS_STRING += '\n'
-            elif (ctxt and idx ==0):
-                fmtst = (' ' *indent) + '!'
-                CMDS_STRING += fmtst
-                CMDS_STRING += '\n'
-            fmtst = (' ' *indent) + command
-            CMDS_STRING += fmtst
-            CMDS_STRING += '\n'
+                CMDS_STRING = '\n' + ' ' *indent + '!' + '\n'
+                CMDS_VIEW_CHANGED = False
+            elif (CMDS_VIEW_CHANGED or ctxt) and idx == 0:
+                CMDS_STRING += ' ' *indent + '!' + '\n'
+                CMDS_VIEW_CHANGED = False
+            CMDS_STRING += ' ' *indent + command + '\n'
 
 def get_rendered_template_output(template_file, response, render_view):
     # Create the jinja2 environment.
@@ -116,8 +112,23 @@ def get_rendered_template_output(template_file, response, render_view):
         t_str = (loader.render(json_output=response, view=render_view))
     return t_str
 
+config_tables_dict = {}
 
-def get_rest_table(table_path):
+
+def store_table_as_dict(table_path, table, table_keys):
+
+    table_name = ('/').join(table_path.split('/')[:-1])
+    if not table_name.endswith("LIST"):
+       return 
+    table_dict = OrderedDict()
+    key = table_keys[0][0]
+    
+    for rec in table:
+        if key in rec:
+            table_dict.update({str(rec[key]):rec})
+    config_tables_dict.update({table_path:table_dict})    
+
+def get_rest_table(table_path, table_keys):
 
     showrun_log(logging.DEBUG,'table path: {}', table_path)
 
@@ -130,10 +141,9 @@ def get_rest_table(table_path):
     #This is to avoid multiple REST api calls, which are expensive.
     sonic_table = '/'.join(table_path.split('/')[:-1])
 
-
-    if db.is_table_in_cache(sonic_table):
-       return db.get_cached_table(sonic_table)
-
+    if sonic_table in DB_Cache:
+        return DB_Cache.get(sonic_table)
+        
     sonic_table_yang_path = '/restconf/data/' + sonic_table
     showrun_log(logging.DEBUG,"sonic_table_name {}", sonic_table_yang_path)
 
@@ -142,9 +152,12 @@ def get_rest_table(table_path):
 
     keypath = cc.Path(sonic_table_yang_path)
     response = api.get(keypath)
+
     if(response.ok()):
         if (response.content is None) or (not (isinstance(response.content, dict))):
-            showrun_log(logging.INFO,"Get Table {} response failure, continue next table or next view " ,sonic_table_yang_path )
+            DB_Cache.update({sonic_table: None})
+            showrun_log(logging.WARNING,"Get Table {} response failure, continue next table or next view {}:{}" ,sonic_table_yang_path,
+                   len(table_keys), table_keys )
             return None
 
         modulename = sonic_table.split(':')[0]
@@ -153,8 +166,9 @@ def get_rest_table(table_path):
         response_table = response.content.get(yang_table_fmt)
         if response_table is None:
             # Cache to denote get request is done.
-            db.cache_table(sonic_table, None)
-            showrun_log(logging.INFO,"Table {} not in ConfigDB continue next table or next view", yang_table_fmt)
+            DB_Cache.update({sonic_table: None})
+            showrun_log(logging.WARNING,"Table {} not in ConfigDB continue next table or next view {}:{}", 
+                yang_table_fmt, len(table_keys), table_keys)
             return None
 
         #get table sorting callback if given. otherwise use default natsort.
@@ -163,8 +177,12 @@ def get_rest_table(table_path):
            sort_callback= natsort_list 
         response_table = sort_callback(response_table, table_path)
 
+        showrun_log(logging.WARNING,"sonic_table_name {} {}:{}", sonic_table_yang_path, len(table_keys), table_keys)
         #cache table
-        db.cache_table(sonic_table, response_table) 
+        
+        DB_Cache.update({sonic_table: response_table})
+        if len(table_keys) ==1: 
+       	    store_table_as_dict(table_path, response_table, table_keys)
         return response_table
     else:
         showrun_log(logging.WARNING,"Response failure for {} in configDB" ,sonic_table_yang_path)    
@@ -172,7 +190,7 @@ def get_rest_table(table_path):
 
 def update_table_keys(table_keys, view_member):
     table_key_values = {}
-    for key, value in table_keys.iteritems():
+    for (key, value) in table_keys:
         if key not in view_member:
             showrun_log(logging.WARNING, "key {} not in table " ,key)
             continue
@@ -181,12 +199,28 @@ def update_table_keys(table_keys, view_member):
     return table_key_values
 
 
+def cleanup():
+    global CMDS_STRING, CMDS_VIEW, CMDS_VIEW_CHANGED
+    CMDS_STRING = ""
+    CMDS_VIEW = ""
+    CMDS_VIEW_CHANGED = False
+    DB_Cache.clear()
+    config_tables_dict.clear()
+    # call module cleanup callback functions.
+    for cleanup_fn in module_cleanup_cb:
+       try:
+          cleanup_fn()
+       except Exception as e:
+          showrun_log(logging.ERROR, "Callback {} exception: {}", cleanup_fn, e)
+
 class cli_xml_view:
 
     def __init__(self, command_line):
 
         #xml view name (for e.g, config-router-bgp)
         self.name = command_line[CONFIG_VIEW_NAME_IDX]
+        #view id for config cmd view (only for config cmd views).
+        self.cfgcmd_viewid = command_line[CONFIG_VIEW_RENDER_CMD_VIEWID_IDX]
 
         #List of command lines from DB.txt
         self.view_cmd_list = []
@@ -232,6 +266,7 @@ class cli_xml_view:
 
     #only config-view case.
     def process_view_commands_no_table(self, member_keys,indent):
+        global CMDS_VIEW, CMDS_VIEW_CHANGED
 
         showrun_log(logging.DEBUG,'ENTER view {} ', self.name)
         if not self.view_cmd_list:
@@ -245,16 +280,20 @@ class cli_xml_view:
         #applicable to the parent command which changes to a new view.
 
         #Process the first command in the view with argument is_first_command=True.
+        if self.name != CMDS_VIEW:
+            CMDS_VIEW = self.name
+            #next cmds are different xml view
+            CMDS_VIEW_CHANGED = True
         view_keys = copy.deepcopy(member_keys)
         process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
-                                                True, self.view_cmd_list[0], indent)
+                                                CMDS_VIEW_CHANGED, self.view_cmd_list[0], indent)
         #For the top view "configure", leave indent as zero.
         if self.name != "configure":
             indent +=1 
         for cmd in  self.view_cmd_list[1:]:
             view_keys = copy.deepcopy(member_keys)
             ret, is_view_rendered = process_command(self, None, self.table_list, view_keys, self.dbpathstr,\
-                                                False, cmd, indent)
+                                                CMDS_VIEW_CHANGED, cmd, indent)
         #Process child views.
 
         if view_dependency.get(self.name) is not None:
@@ -272,7 +311,7 @@ class cli_xml_view:
                 showrun_log(logging.INFO,"Preparing for child view: {}, child view keys: {}, parent view: {}, parent member keys: {} ",
                  view, view_keys, self.name,  member_keys)
 
-                for key, value in view_keys.iteritems():
+                for key, value in view_keys.items():
                     # set default key value to wildcard
                     # check if key has a value or a dbpath to parent member key name.
                     view_key_values.update({key.lstrip():"*"})
@@ -285,7 +324,10 @@ class cli_xml_view:
                             view_key_values.update({key.lstrip():keypath_list[0]})
 
                 showrun_log(logging.INFO,"Preparing for child view {}, child view keys {} ",cli_view.name, view_key_values)
-                cmd_status = cli_view.process_view_commands(view_key_values, indent+1)
+                if cli_view.table_list:
+                    cmd_status = cli_view.process_cli_view(view_key_values, indent+1)
+                else:
+                    cmd_status = cli_view.process_view_commands_no_table(view_key_values, indent)
 
         showrun_log(logging.DEBUG,' Exit.view {}, status {}',self.name, CMD_SUCCESS)
         return CMD_SUCCESS
@@ -296,19 +338,18 @@ class cli_xml_view:
     #remaining commands.
     #Then process dependent views.
     def process_view_commands(self, view_table_keys, indent):
-
-        showrun_log(logging.DEBUG,"Enter: table_list= {}, view_table_keys= {}",
-                    self.table_list, view_table_keys)
+        global CMDS_VIEW
 
         #get primary table
         primary_table_path = self.primary_table
 
         #get table keys from table path in form of dict ={key:value, key1:value,..}
         primary_table_keys = get_view_table_keys(primary_table_path)
-        showrun_log(logging.DEBUG,"Primary table path {},  keys {}",primary_table_path, primary_table_keys)
+        showrun_log(logging.DEBUG,"Enter: table_list= {}, view_table_keys= {},  Primary table path= {},  keys= {}",
+            self.table_list, view_table_keys, primary_table_path, primary_table_keys)
 
         #get configDB table using rest call.
-        response = get_rest_table(primary_table_path)
+        response = get_rest_table(primary_table_path, primary_table_keys)
 
         if response is None:
             showrun_log(logging.INFO,'Table {} not found return SUCCESS to continue next table/view', primary_table_path)
@@ -317,48 +358,60 @@ class cli_xml_view:
         #get view primary table from response.
 
 
-        filter_keys = collections.OrderedDict()
-        for table_key, table_key_val in primary_table_keys.iteritems():
+        filter_keys = []
+        for table_key, table_key_val in primary_table_keys:
             if table_key_val in view_table_keys:
                 view_key_val = view_table_keys.get(table_key_val)
                 if view_key_val:
                     if view_key_val != "*":
-                        filter_keys.update({table_key:view_key_val})
+                        filter_keys.append((table_key,view_key_val))
                 else:
                     showrun_log(logging.WARNING,'Key {} missing in table {}, skip view', table_key_val, primary_table_path)
                     return CMD_SUCCESS
 
         showrun_log(logging.DEBUG,'Table keys {}, to filter primary table {}' ,filter_keys, primary_table_path)
 
+        if self.name != CMDS_VIEW:
+            CMDS_VIEW = self.name
+            new_view = True
+        else:
+            new_view = False
+
         for member in response:
+
+            skip_record = False
+            for (filter_key, filter_key_value) in filter_keys:
+                if ((filter_key not in member)) or (str(member[filter_key]) != filter_key_value):
+                    skip_record = True
+                    break
+            if skip_record:
+                continue
 
             #create member keys for processing commands and dependent tables
             member_keys =update_table_keys(primary_table_keys, member)
             showrun_log(logging.DEBUG,"Member key values {}, filter keys {}",member_keys, filter_keys)
 
-            skip_record = False
-            for filter_key, filter_key_value in filter_keys.iteritems():
-                if ((filter_key not in member)) or (str(member[filter_key]) != filter_key_value):
-                    showrun_log(logging.DEBUG,"Skipping record; member keys {}, given key {}" ,member_keys, member[filter_key])
-                    skip_record = True
-                    break
-            if skip_record == True:
-                continue
 
             #process first command, if success continue others othewise
             #return to process next context.
 
-            ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
+            if new_view:
+                ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
                                                               True, self.view_cmd_list[0], indent)
+            else:
+                #continuing cmds with previous view
+                new_view = True
+                ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
+                                                              False, self.view_cmd_list[0], indent + 1)
 
-            if is_view_rendered:
-                showrun_log(logging.INFO,' Entire view rendred by template for {}', self.name)
+#            if is_view_rendered:
+#                showrun_log(logging.INFO,' Entire view rendred by template for {}', self.name)
 
 
             if ret == CMD_SUCCESS:
             #process all remaining commands under this view.
             #if view is rendered skip processing commands, go to child view.
-                if is_view_rendered == False:
+                if not is_view_rendered:
                     for cmd in  self.view_cmd_list[1:]:
                         ret, is_view_rendered = process_command(self, member, self.table_list, member_keys, self.dbpathstr,\
                                                         False, cmd, indent +1)
@@ -380,7 +433,7 @@ class cli_xml_view:
                         showrun_log(logging.INFO,"Preparing for child view: {}, child view keys: {}, parent view: {}, parent member keys: {} ", 
                          view, view_keys, self.name,  member_keys)
 
-                        for key, value in view_keys.iteritems():
+                        for key, value in view_keys.items():
                             # set default key value to wildcard
                             # check if key has a value or a dbpath to parent member key name.
                             view_key_values.update({key.lstrip():"*"})
@@ -426,9 +479,7 @@ class cli_xml_view:
 
 def process_command(view, view_member, table_list, member_keys, dbpathstr, is_view_first_cmd, cmd_line, indent):
 
-    render_tables = {}
-    view_tables = {}
-    showrun_log(logging.DEBUG,"Enter: view: {}, \nmember: {}, \nview_table_list: {}, member_keys: {}, dbpathstr: {} is_view_fist_cmd: {}",
+    showrun_log(logging.DEBUG,"Enter: process_command: {}, \nmember: {}, \nview_table_list: {}, member_keys: {}, dbpathstr: {} is_view_fist_cmd: {}",
                             view.name, view_member, table_list, member_keys, dbpathstr, is_view_first_cmd)
 
     #split command attributes
@@ -436,15 +487,15 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
     if member_keys is None:
         member_keys = {}
 
-    cmd_list = []
     cmd_line_parts = cmd_line.split(":::")
     if len(cmd_line_parts) != CONFIG_VIEW_IDX_LEN:
         return CMD_FAIL, False
 
     #if a render view is given.
     db_render_callback = cmd_line_parts[CONFIG_VIEW_DB_RENDER_IDX]
-    render_view_callback = cmd_line_parts[CONFIG_VIEW_RENDER_VIEW_IDX]
-    render_cmd_callback = cmd_line_parts[CONFIG_VIEW_RENDER_CMD_IDX]
+
+    render_tables = {}
+    view_tables = {}
 
     #update tables only for render_view
     if not db_render_callback:
@@ -458,21 +509,19 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
             #to pass to render templates
 
             table_name = ('/').join(view.primary_table.split('/')[:-1])
-            showrun_log(logging.DEBUG, 'Adding view table {} to view_tables list',table_name)
             render_tables.update({table_name: view_member})
 
         ## Add keys for primary table
         if table_list and len(table_list) >1 :
             for table_path in table_list[1:]:
-                response = get_rest_table(table_path)
+                response = get_rest_table(table_path, [])
 
                 if response is not None:
                     table_name = ('/').join(table_path.split('/')[:-1])
-                    showrun_log(logging.DEBUG, 'Adding view table {} to view_tables list',table_name)
                     render_tables.update({table_name: response})
 
     #Get command related tables
-
+    render_view_callback = cmd_line_parts[CONFIG_VIEW_RENDER_VIEW_IDX]
     if render_view_callback:
         cmd_status  = process_render_callback(render_view_callback, render_tables, member_keys, is_view_first_cmd, indent)
         return cmd_status, True
@@ -483,6 +532,7 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
 
     cmd_table_present = False
     cmd_table = None
+    cmd_table_keys = [] 
     for idx, cmd_table_path in enumerate(cmd_table_list):
 
         showrun_log(logging.DEBUG, "Process command_table {} " ,cmd_table_path)
@@ -497,17 +547,14 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
             # new dbpathstr and keys from cmd table
             dbpathstr = '/'.join(cmd_table_path.split('/')[:-1])
 
-            if not member_keys:
-                showrun_log(logging.INFO, " No view keys for table {} " ,cmd_table_path)
-
-
         if not db_render_callback:
-            response = get_rest_table(cmd_table_path)
+            if idx == 0:
+               cmd_table_keys =get_view_table_keys(cmd_table_path)
+            response = get_rest_table(cmd_table_path, cmd_table_keys)
             if response is not None:
 
                 view_tables.update({cmd_table_path:response})
                 cmd_table_name = ('/').join(cmd_table_path.split('/')[:-1])
-                showrun_log(logging.DEBUG, 'Adding table {} to render_tables list', cmd_table_name)
                 render_tables.update({cmd_table_name: response})
 
                 if idx == 0:
@@ -546,30 +593,33 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
             cb_status = CB_FAIL
             cmd_list_str = ''
             is_view_rendered = False
+            mod_name =inspect.getmodule(db_render_callback_func).__name__
+            if mod_name in DB_Cache:
+                member_keys.update({mod_name:DB_Cache[mod_name]})
 
             try:
                 cb_status, cmd_list_str, is_view_rendered = db_render_callback_func(member_keys)
             except Exception as e:
-                log.error("Callback {} exception: {} " .format(db_render_callback_func, e))
+                showrun_log(logging.ERROR, "Callback {} exception: {} ", db_render_callback_func, e)
                 return CMD_FAIL, True
             else:
                 if cb_status == CB_FAIL:
-                    showrun_log(logging.WARNING,"Db render callback func failure, return SUCCESS for next view/command")
+                    showrun_log(logging.WARNING,"Db render callback func {} failure, return SUCCESS for next view/command", db_render_callback)
                     return CMD_FAIL, True
                 else:
                     cache_view_commands(cmd_list_str.split(';'), indent, is_view_first_cmd)
                     return CMD_SUCCESS, is_view_rendered
         else:
-            log.error("Db render callback func is None, return SUCCESS for next view")
+            showrun_log(logging.ERROR, "Db render callback func is None for {}, return SUCCESS for next view", db_render_callback)
             return CMD_FAIL, True
 
-
+    render_cmd_callback = cmd_line_parts[CONFIG_VIEW_RENDER_CMD_IDX]
     if render_cmd_callback:
         cmd_status  = process_render_callback(render_cmd_callback, render_tables, member_keys, is_view_first_cmd, indent)
         return cmd_status, False
 
 
-    if  cmd_table_present == False and view_member:
+    if  not cmd_table_present and view_member:
 
         cmdlst, cmdfound = process_cmd(view_member, dbpathstr, cmd_table_list, view_tables, member_keys, cmd_line)
         if cmdfound:
@@ -579,50 +629,55 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
             return CMD_FAIL, False
 
     elif cmd_table is not None:
-        #loop through cmd table
 
         showrun_log(logging.INFO,"processing command_table {}, member_keys {}", cmd_table, member_keys)
-        cmd_table_keys =get_view_table_keys(cmd_table_path)
-        filter_keys = collections.OrderedDict()
-        for table_key, table_key_val in cmd_table_keys.iteritems():
+        filter_keys = []
+        for table_key, table_key_val in cmd_table_keys:
             if table_key_val in member_keys:
-                view_key_val = member_keys.get(table_key_val)
-                if view_key_val:
-                    if view_key_val != "*":
-                        filter_keys.update({table_key:view_key_val})
-                else:
-                    showrun_log(logging.WARNING,'Key {} missing in table {}, skip cmd table' ,table_key_val, dbpathstr)
-                    return CMD_SUCCESS
+               view_key_val = member_keys.get(table_key_val)
+               if view_key_val:
+                  if  view_key_val != "*":
+                     filter_keys.append((table_key, view_key_val))
+               else:
+                   showrun_log(logging.WARNING,'Key {} missing in table {}, skip cmd table' ,table_key_val, dbpathstr)
+                   return CMD_SUCCESS, False
 
-        showrun_log(logging.DEBUG,'Cmd table keys {}, to filter table {}' ,filter_keys, dbpathstr)
+        showrun_log(logging.DEBUG,'Cmd table keys {}, Filter keys {} to filter table {}' ,cmd_table_keys, filter_keys, dbpathstr)
 
-        for cmd_member in cmd_table:
-            #update dbpathstr to new table
-            #Match the keys
+        if len(cmd_table_keys) == 1 and filter_keys:
+           table_dict = config_tables_dict.get(cmd_table_path)
+           if table_dict:
+              cmd_member = table_dict.get(filter_keys[0][1])
+              if cmd_member:
+                  cmdlst, cmdfound = process_cmd(cmd_member, dbpathstr, cmd_table_list, view_tables, member_keys, cmd_line)
+                  if cmdfound:
+                      cache_view_commands(cmdlst, indent, is_view_first_cmd)
+        else:
+        #loop through cmd table
+		  for cmd_member in cmd_table:
+		    #update dbpathstr to new table
+		    #Match the keys
 
-            skip_record = False
-            for filter_key, filter_key_value in filter_keys.iteritems():
+		    skip_record = False
+		    for filter_key, filter_key_value in filter_keys:
 
-                if filter_key in cmd_member:
-                    if str(cmd_member[filter_key]) != filter_key_value:
-                       skip_record  = True
-                       showrun_log(logging.DEBUG,"Skipping record; member keys {}, given key {}", member_keys, cmd_member[filter_key])
-                       break
-                else:
-                    skip_record = True
-                    showrun_log(logging.DEBUG,"Skipping record; member keys {}, filter_key {} missing in record" ,member_keys, filter_key)
-                    break
-                    
-            if skip_record == True:
-                continue
-            
-            cmdlst, cmdfound = process_cmd(cmd_member, dbpathstr, cmd_table_list, view_tables, member_keys, cmd_line)
-            if cmdfound:
-                cache_view_commands(cmdlst, indent, is_view_first_cmd)
-            else:
-                continue
+			    if filter_key in cmd_member:
+			        if str(cmd_member[filter_key]) != filter_key_value:
+			           skip_record  = True
+			           break
+			    else:
+			        skip_record = True
+			        break
+			    
+		    if skip_record:
+			continue
+		    
+		    cmdlst, cmdfound = process_cmd(cmd_member, dbpathstr, cmd_table_list, view_tables, member_keys, cmd_line)
+		    if cmdfound:
+			    cache_view_commands(cmdlst, indent, is_view_first_cmd)
+		    else:
+			    continue
 
-    showrun_log(logging.DEBUG,"Exit status {}" ,CMD_SUCCESS)
     return CMD_SUCCESS, False
 
 
@@ -640,7 +695,7 @@ def process_render_callback(render_callback, render_tables, member_keys, is_view
         try:
             cb_status, cmd_list_str = render_callback_func(render_tables)
         except Exception as e:
-            log.error("Callback {} exception: {}" .format(render_callback_func, e))
+            showrun_log(logging.ERROR, "Callback {} exception: {}", render_callback_func, e)
             return CMD_FAIL
 
         else:
@@ -659,7 +714,7 @@ def process_render_callback(render_callback, render_tables, member_keys, is_view
         cache_view_commands(cmd_list_str.split(';'), indent, is_view_first_cmd)
         return CMD_SUCCESS
     else:
-        log.error("Callback or template missing for cmd callback, {}" .format(render_callback))
+        showrun_log(logging.ERROR, "Callback or template missing for cmd callback, {}", render_callback)
         return CMD_FAIL
 
 
@@ -668,28 +723,55 @@ def parse_command_line(command_line):
 
     cmd_attributes = command_line.split(":::")
     if len(cmd_attributes) != CONFIG_VIEW_IDX_LEN:
-        log.error("Invalid number of command attributes {}: {} " .format(cmd_attributes, len(cmd_attributes)))
+        showrun_log(logging.ERROR, "Invalid number of command attributes {}: {} " ,cmd_attributes, len(cmd_attributes))
         sys.exit(1)
 
     #create cli-xml view if not exist
     cli_view = None
 
-    if cmd_attributes[CONFIG_VIEW_NAME_IDX] in CLI_XML_VIEW_MAP:
-        cli_view = CLI_XML_VIEW_MAP[cmd_attributes[CONFIG_VIEW_NAME_IDX]]
+    if cmd_attributes[CONFIG_VIEW_RENDER_CMD_VIEWID_IDX]:
+        view_name = cmd_attributes[CONFIG_VIEW_RENDER_CMD_VIEWID_IDX]
+    else:
+        view_name = cmd_attributes[CONFIG_VIEW_NAME_IDX]
+
+    if view_name in CLI_XML_VIEW_MAP:
+        cli_view = CLI_XML_VIEW_MAP[view_name]
     else:
         cli_view = cli_xml_view(cmd_attributes)
-        CLI_XML_VIEW_MAP.update({cmd_attributes[CONFIG_VIEW_NAME_IDX]: cli_view})
+        CLI_XML_VIEW_MAP.update({view_name: cli_view})
 
     cli_view.view_cmd_list.append(command_line)
 
 
 def render_cli_config(view_name = '', view_keys = {}):
-    global CMDS_STRING
-    depth = 0
+    global CMDS_STRING, CMDS_VIEW, CMDS_VIEW_CHANGED
+    context = {'view_name':view_name, 'view_keys':view_keys}
+
+    #Call application
+    #set cache
+    try:
+        if view_name:
+            for module_cb in module_startup_cb.get(view_name, []):
+                mod_name = inspect.getmodule(module_cb).__name__
+                DB_Cache[mod_name] = {}
+                module_cb(context, DB_Cache[mod_name])
+
+        else:
+            modules =[]
+            for module_cb_val in module_startup_cb.values():
+                modules.extend(module_cb_val)
+
+            for module_cb in set(modules):
+                mod_name = inspect.getmodule(module_cb).__name__
+                DB_Cache[mod_name] = {}
+                module_cb(context, DB_Cache[mod_name])
+    except Exception as e:
+        showrun_log(logging.ERROR, "Exception {} ", e)
+
     if view_name:
         if view_name in CLI_XML_VIEW_MAP:
             cli_view = CLI_XML_VIEW_MAP[view_name]
-            cli_view.process_cli_view(view_keys, depth)
+            cli_view.process_cli_view(view_keys, 0)
     else:
 
         for config_view in config_view_hierarchy:
@@ -698,7 +780,7 @@ def render_cli_config(view_name = '', view_keys = {}):
                 cli_view = CLI_XML_VIEW_MAP[config_view]
                 cli_view_keys = cli_view.table_keys
 
-                cli_view.process_cli_view(cli_view_keys, depth)
+                cli_view.process_cli_view(cli_view_keys, 0)
             else:
                 showrun_log(logging.WARNING,"render_cli_config: config view {} does not exist, skip rendering", config_view)
                 continue
@@ -706,7 +788,8 @@ def render_cli_config(view_name = '', view_keys = {}):
     # write to output.            
     write(CMDS_STRING)
     CMDS_STRING = ''
-    db.clear_cache()
+    CMDS_VIEW = ''
+    CMDS_VIEW_CHANGED = False
 
 
 def print_cli_views(view_name=''):
@@ -742,7 +825,7 @@ def show_views(func, args = []):
           view_keys_str = arg.lstrip("view_keys=")
           view_keys_str = view_keys_str.replace('"','')
           view_keys = view_keys_str.split(',')
-    
+
     if not views:
       showrun_log(logging.WARNING,"Missing view name, args {}", args)
       return
@@ -756,25 +839,24 @@ def show_views(func, args = []):
         for key in view_keys: 
             key_split = key.split('=')
             if len(key_split) != 2:
-                log.error("Invalid keys {}" .format(key_split))
+                showrun_log(logging.ERROR, "Invalid keys {}", key_split)
                 return
             if key_split[1]:
                viewKV.update({key_split[0]:key_split[1]})
     showrun_log(logging.DEBUG,'view-keys {}' ,viewKV)
+
     for view_name in views:
         render_cli_config(view_name, viewKV)
 
 
 def run(func = '', args=[]):
     global format_read
-    global CMDS_STRING
+
     showrun_log(logging.DEBUG,"args {}",args)
 
-    #Reset global 
-    CMDS_STRING = ""
-    db.clear_cache()
-
-    if format_read == False:
+    cleanup()
+    
+    if not format_read:
         template_path = os.getenv('SHOW_CONFIG_TOOLS', RENDERER_TEMPLATE_PATH)
         format_file = os.path.join(template_path, FORMAT_FILE)
 
@@ -790,7 +872,7 @@ def run(func = '', args=[]):
         show_views(func, args) 
     else:
         render_cli_config()
-
+    cleanup()    
 
 if __name__ ==  "__main__":
     pipestr().write(sys.argv) 

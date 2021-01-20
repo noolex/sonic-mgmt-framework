@@ -322,9 +322,9 @@ def invoke(func, args):
     #[un]configure Neighbour Suppression
     if (func == 'patch_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list' or
         func == 'delete_sonic_vxlan_sonic_vxlan_suppress_vlan_neigh_suppress_vlan_neigh_list'):
-        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/SUPPRESS_VLAN_NEIGH_LIST')
 
         if (func.startswith("patch") is True):
+            keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/SUPPRESS_VLAN_NEIGH_LIST')
             body = {
                 "sonic-vxlan:SUPPRESS_VLAN_NEIGH_LIST": [
                 {
@@ -335,6 +335,7 @@ def invoke(func, args):
             }
             return aa.patch(keypath, body)
         else:
+            keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/SUPPRESS_VLAN_NEIGH/SUPPRESS_VLAN_NEIGH_LIST={name}',name=args[0])
             return aa.delete(keypath)
     else:
         print("Error: not implemented")

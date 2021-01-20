@@ -309,7 +309,7 @@ def generateServerStubs(ctx, module_name):
         templateDir), trim_blocks=True, lstrip_blocks=True)
     # pathsDict = swaggerDict["paths"]
     # generate router.go file
-    OpIds = OpIdDict.keys()
+    OpIds = list(OpIdDict.keys())
     OpIds.sort()
     routersDotGoContent = templateEnv.get_template(
         'routers.j2').render(OpIdDict=OpIdDict, OpIds=OpIds)

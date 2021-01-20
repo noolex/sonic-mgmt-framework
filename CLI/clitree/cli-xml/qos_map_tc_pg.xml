@@ -100,17 +100,13 @@ limitations under the License.
      </COMMAND>
 
      <COMMAND name="traffic-class" help="Traffic Class value" mode="subcommand" ptype="SUBCOMMAND" >
-        <PARAM name="tc" help="Traffic-class value" ptype="RANGE_0_7" >
+        <PARAM name="tc_list" help="(-) or (,) separated individual Traffic-class and ranges of TC's; for example, 0,2-7" ptype="VAL_0_7_RANGE">
             <PARAM name="priority-group" help="Priority-Group id" mode="subcommand" ptype="SUBCOMMAND" >
                 <PARAM name="pg" help="Priority-Group id" ptype="RANGE_0_7" >
                 </PARAM>
             </PARAM>
         </PARAM>
-        <ACTION builtin="clish_restcl">
-            oper=PATCH
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-priority-group-maps/forwarding-group-priority-group-map=${map_name}/forwarding-group-priority-group-map-entries/
-            body={"openconfig-qos-maps-ext:forwarding-group-priority-group-map-entries": {"forwarding-group-priority-group-map-entry": [{"fwd-group":"${tc}", "config": {"priority-group-index": ${pg}}}]}}
-        </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_qos_map patch_tc_pg_map_entries ${map_name} ${tc_list} ${pg}</ACTION>
         <DOCGEN>
           <DESCRIPTION>
             This command to add Traffic class to Priority-Group entry in map.
@@ -130,12 +126,9 @@ limitations under the License.
 
       <!-- no tc-->
       <COMMAND name="no traffic-class" help="Unconfigure a mapping">
-        <PARAM name="tc" help="TC value (0-7)" ptype="RANGE_0_7" >
+        <PARAM name="tc_list" help="(-) or (,) separated individual Traffic-class and ranges of TC's; for example, 0,2-7" ptype="VAL_0_7_RANGE">
         </PARAM>
-        <ACTION builtin="clish_restcl">
-            oper=DELETE
-            url=/restconf/data/openconfig-qos:qos/openconfig-qos-maps-ext:forwarding-group-priority-group-maps/forwarding-group-priority-group-map=${map_name}/forwarding-group-priority-group-map-entries/forwarding-group-priority-group-map-entry=${tc}
-        </ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_qos_map delete_tc_pg_map_entries ${map_name} ${tc_list}</ACTION>
         <DOCGEN>
           <DESCRIPTION>
             This command to delete Traffic class to Priority-Group entry in map.

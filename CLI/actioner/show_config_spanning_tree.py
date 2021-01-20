@@ -20,7 +20,7 @@
 ###########################################################################
  
 import syslog as log
-from natsort import natsorted
+import sonic_cli_stp as cli_stp
 
 g_err_transaction_fail = '%Error: Transaction Failure'
 
@@ -142,7 +142,6 @@ def show_config_spanning_tree_global_root_guard_time(render_tables):
 
 def show_config_spanning_tree_vlan(render_tables):
     cmd_str = ''
-    cmd_sep = ';'
 
     if 'sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST' not in render_tables:
         return 'CB_SUCCESS', cmd_str
@@ -156,46 +155,49 @@ def show_config_spanning_tree_vlan(render_tables):
     if len(missing_fields) != 0:
         return ret_err(g_err_transaction_fail, 'keys : {} not found in STP-GLOBAL'.format(missing_fields))
         
-    global_fwd_delay = db_entry['forward_delay']
-    global_hello_time = db_entry['hello_time']
-    global_max_age = db_entry['max_age']
-    global_br_prio = db_entry['priority']
+    g_stp = {}
+    g_stp['forwarding-delay'] = db_entry['forward_delay']
+    g_stp['hello-time'] = db_entry['hello_time']
+    g_stp['max-age'] = db_entry['max_age']
+    g_stp['bridge-priority'] = db_entry['priority']
 
+    vlist = []
     if 'sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST' in render_tables:
         for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST']:
-            if 'vlanid' not in db_entry.keys():
-                #vlanid  field is created only when any field of table is modified.
+            if 'name' not in db_entry.keys():
                 continue;
 
-            keys = ['forward_delay', 'hello_time', 'max_age', 'priority']
-            if all(key in db_entry.keys() for key in keys):
-                cmd_prfx = cmd_sep + "spanning-tree vlan " + str(db_entry['vlanid']) + ' '
-                if db_entry["forward_delay"] != global_fwd_delay:
-                    cmd_str += cmd_prfx + 'forward-time ' + str(db_entry['forward_delay'])
-                if db_entry["hello_time"] != global_hello_time:
-                    cmd_str += cmd_prfx + 'hello-time ' + str(db_entry['hello_time'])
-                if db_entry["max_age"] != global_max_age:
-                    cmd_str += cmd_prfx + 'max-age ' + str(db_entry['max_age'])
-                if db_entry["priority"] != global_br_prio:
-                    cmd_str += cmd_prfx + 'priority ' + str(db_entry['priority'])
+            vdata = {}
+            vid = int(db_entry['name'][len('Vlan'):])
+            vdata['vlan-id'] = vid
+            vdata['config'] = {}
+            if 'forward_delay' in db_entry:
+                vdata['config']['forwarding-delay'] = db_entry['forward_delay']
+            if 'hello_time' in db_entry:
+                vdata['config']['hello-time'] = db_entry['hello_time']
+            if 'max_age' in db_entry:
+                vdata['config']['max-age'] = db_entry['max_age']
+            if 'priority' in db_entry:
+                vdata['config']['bridge-priority'] = db_entry['priority']
+            vlist.append(vdata)
 
+    cli_stp.show_run_config_vlan(vlist, g_stp)
     return 'CB_SUCCESS', cmd_str
 
 
 def show_config_no_spanning_tree_vlan(render_tables):
     cmd_str = ''
-    cmd_list = []
     disabled_vlans = []
     if 'sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST' in render_tables:
         for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST']:
             if 'enabled' in db_entry.keys() and db_entry["enabled"] == False:
                 disabled_vlans.append(db_entry['name'][4:])
 
-    disabled_vlans = natsorted(disabled_vlans)
+    if len(disabled_vlans) != 0:
+        disabled_vlans = [int(vlanid) for vlanid in disabled_vlans]
+        disabled_vlans = sorted(disabled_vlans)
 
-    cmd_list = ["no spanning-tree vlan " + vlan for vlan in disabled_vlans]
-    if cmd_list:
-        cmd_str = ';'.join(cmd_list)
+        cmd_str = "no spanning-tree vlan " + cli_stp.convert_list_to_range_groups(disabled_vlans)
 
     return 'CB_SUCCESS', cmd_str
 
@@ -203,6 +205,7 @@ def show_config_no_spanning_tree_vlan(render_tables):
 def show_config_spanning_tree_intf_vlan(render_tables):
     cmd_str = ''
     cmd_list = []
+    vpdata = {'cost':{}, 'prio':{}}
 
     if 'name' not in render_tables.keys():
         return ret_err(g_err_transaction_fail, 'key:name not found in render_tables')
@@ -211,7 +214,6 @@ def show_config_spanning_tree_intf_vlan(render_tables):
             and 'sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST' in render_tables:
 
         for db_entry in render_tables['sonic-spanning-tree:sonic-spanning-tree/STP_VLAN_PORT/STP_VLAN_PORT_LIST']:
-
             if 'ifname' not in db_entry.keys():
                 return ret_err(g_err_transaction_fail, 'key:ifname not found in STP_VLAN_PORT_DB, render_table[name] = {}'.format(render_tables['name']))
 
@@ -223,12 +225,26 @@ def show_config_spanning_tree_intf_vlan(render_tables):
 
             vlan_name = db_entry['vlan-name']
             vlanid = vlan_name[len('Vlan'):]
-            cmd_prfx = 'spanning-tree vlan ' + vlanid + ' '
             if 'path_cost' in db_entry.keys():
-                cmd_list.append(cmd_prfx + 'cost ' + str(db_entry['path_cost']))
+                key = int(db_entry['path_cost'])
+                if key in vpdata['cost'].keys():
+                    vpdata['cost'][key].append(int(vlanid))
+                else:
+                    vpdata['cost'][key] = [int(vlanid)]
             if 'priority' in db_entry.keys():
-                cmd_list.append(cmd_prfx + 'port-priority ' + str(db_entry['priority']))
+                key = int(db_entry['priority'])
+                if key in vpdata['prio'].keys():
+                    vpdata['prio'][key].append(int(vlanid))
+                else:
+                    vpdata['prio'][key] = [int(vlanid)]
 
+    for cost in sorted(vpdata['cost'].keys()):
+        vrange = cli_stp.convert_list_to_range_groups(vpdata['cost'][cost])
+        cmd_list.append('spanning-tree vlan ' + vrange + ' cost ' + str(cost))
+    for prio in sorted(vpdata['prio'].keys()):
+        vrange = cli_stp.convert_list_to_range_groups(vpdata['prio'][prio])
+        cmd_list.append('spanning-tree vlan ' + vrange + ' port-priority ' + str(prio))
+    
     if cmd_list:
         cmd_str = ';'.join(cmd_list)
     return 'CB_SUCCESS', cmd_str

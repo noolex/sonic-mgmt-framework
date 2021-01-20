@@ -1,6 +1,6 @@
-{{'----------------------------------------------------------------------------------------------------------------------------------'}}
-{{'%-5s'|format("TxQ")}}{{'%-22s'|format("Counter/pkts")}}{{'%-22s'|format("Counter/bytes")}}{{'%-22s'|format("Rate/PPS")}}{{'%-22s'|format("Rate/BPS")}}{{'%-22s'|format("Drop/pkts")}}{{'%-22s'|format("Drop/bytes")}}
-{{'----------------------------------------------------------------------------------------------------------------------------------'}}
+{{'------------------------------------------------------------------------------------------------------------------------------------------------------'}}
+{{'%-5s'|format("TxQ")}}{{'%-22s'|format("Counter/pkts")}}{{'%-22s'|format("Counter/bytes")}}{{'%-22s'|format("Rate/PPS")}}{{'%-22s'|format("Rate/BPS")}}{{'%-22s'|format("Rate/bPS")}}{{'%-22s'|format("Drop/pkts")}}{{'%-22s'|format("Drop/bytes")}}
+{{'------------------------------------------------------------------------------------------------------------------------------------------------------'}}
 {% if json_output %}
 {% set q_stats_info = json_output['openconfig-qos:state'] %}
 {% set queue = q_stats_info['name'] %}
@@ -19,7 +19,12 @@
 {% else %}
    {% set bps = '0' + '/s' %}
 {% endif %}
+{% if 'openconfig-qos-ext:transmit-bits-per-second' in q_stats_info %}
+   {% set bit_rate = q_stats_info['openconfig-qos-ext:transmit-bits-per-second'] + '/s' %}
+{% else %}
+   {% set bit_rate = '0' + '/s' %}
+{% endif %}
 {% set droppedPackets = q_stats_info['dropped-pkts'] %}
 {% set droppedBytes = q_stats_info['openconfig-qos-ext:dropped-octets'] %}
-{{'%-5s'|format(queue_name)}}{{'%-22s'|format(packets)}}{{'%-22s'|format(bytes)}}{{'%-22s'|format(pps)}}{{'%-22s'|format(bps)}}{{'%-22s'|format(droppedPackets)}}{{'%-22s'|format(droppedBytes)}}
+{{'%-5s'|format(queue_name)}}{{'%-22s'|format(packets)}}{{'%-22s'|format(bytes)}}{{'%-22s'|format(pps)}}{{'%-22s'|format(bps)}}{{'%-22s'|format(bit_rate)}}{{'%-22s'|format(droppedPackets)}}{{'%-22s'|format(droppedBytes)}}
 {% endif %}

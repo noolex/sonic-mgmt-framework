@@ -243,6 +243,22 @@ def generate_body(func, args=[]):
         else:
             body.update({"subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
 
+    # FEC config
+    elif func == 'patch_port_fec':
+        body = {
+                 "name": args[0],
+                 "openconfig-if-ethernet:ethernet" : {"config": {}}
+               }
+
+        fec_map = {"RS": "FEC_RS", "FC": "FEC_FC", "off": "FEC_DISABLED", "default": "FEC_AUTO"}
+        fec = args[1]
+        if fec not in fec_map.keys():
+            print("%Error: Invalid port FEC config")
+            return None
+        else:
+            fec = fec_map.get(args[1])
+            body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-ethernet:port-fec": fec } )
+
     else:
         print("%Error: %s not supported" % func)
 
@@ -282,6 +298,21 @@ def invoke_api(func, args=[]):
     elif func == 'delete_aggregate_trunk_vlan':
         vlanStr = args[1].replace('-', '..')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
+        return api.delete(path)
+
+    #Remove all vlans
+    elif func == 'delete_all_vlan':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config', name=args[0])
+        return api.delete(path)
+		
+    #Remove aggregate all vlans
+    elif func == 'delete_aggregate_all_vlan':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
+        return api.delete(path)
+
+    #Delete port speed to revert the speed to default.
+    elif func == 'delete_port_speed':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/config/port-speed', name=args[0])
         return api.delete(path)
 
     # Remove IP addresses from interface
@@ -441,7 +472,25 @@ def run(func, args):
             res = ",".join(natsorted(ifrangelist))
             return res
 
-        elif func == 'delete_if_range':
+	elif func == 'vlan_trunk_if_range':
+	    if args[3] == 'add':
+		func = 'config_if_range'
+		response = invoke_api(func, args)
+		return check_response(response, func, args)
+	    else:
+		func = 'delete_if_range'
+		args[1] = 'delete_trunk_vlan'
+
+	elif func == 'vlan_trunk_if_range_pc':
+	    if args[3] == 'add':
+	        func = 'config_if_range'
+               	response = invoke_api(func, args)
+                return check_response(response, func, args)
+	    else:
+		func = 'delete_if_range'
+		args[1] = 'delete_aggregate_trunk_vlan'
+
+        if func == 'delete_if_range':
             """
                 - Delete/Remove config for given number, range, or comma-delimited list of numbers and range of interfaces.
                 - Transaction is per interface.

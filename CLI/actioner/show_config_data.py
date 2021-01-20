@@ -36,11 +36,13 @@ from show_config_logging import *
 from show_config_ldap import *
 from show_config_radius import *
 from show_config_aaa import *
+from show_config_ntp import *
 from show_config_nat import *
 from show_config_ospfv2 import *
 from show_config_ip_helper import *
 from show_config_pim import *
 from sonic_cli_link_state_tracking import show_running_lst_group, show_running_lst_interface
+from sonic_cli_link_state_tracking import show_running_config_lst_start_callback
 from show_config_vxlan import *
 from show_config_ipsla import *
 from show_config_lldp import *
@@ -51,17 +53,24 @@ from show_config_swresource import *
 from show_config_sag import *
 from show_config_vrrp import *
 from show_config_acl import *
+from show_config_xcvr_diag import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
                          'configure-router-bgp-template', 'configure-router-bgp-nbr'],
 'configure-router-bgp-template':['configure-router-bgp-template-ipv4', 'configure-router-bgp-template-ipv6', 'configure-router-bgp-template-l2vpn'],
 'configure-router-bgp-nbr':['configure-router-bgp-nbr-ipv4', 'configure-router-bgp-nbr-ipv6', 'configure-router-bgp-nbr-l2vpn'],
-'configure-router-bgp-l2vpn':['configure-router-bgp-l2vpn-vni']}
+'configure-router-bgp-l2vpn':['configure-router-bgp-l2vpn-vni'],
+'configure-hardware': ['configure-hardware-acl']}
 
 
 config_view_hierarchy= \
       ['configure',
+       'renderCfg_v4prefix_lists',
+       'renderCfg_v6prefix_lists',
+       'renderCfg_bgp_com_list',
+       'renderCfg_bgp_extcom_list',
+       'renderCfg_bgp_aspath_list',
        'configure-nat',
        'configure-tam',
        'configure-wred',
@@ -74,9 +83,11 @@ config_view_hierarchy= \
        'configure-tc-dot1p-map',
        'configure-tc-dscp-map',
        'configure-link-state-track',
+       'configure-hardware',
        'configure-mac-acl',
        'configure-ipv4-acl',
        'configure-ipv6-acl',
+       'configure-line-vty',
        'config-if-CPU',
        'configure-vlan',
        'configure-lo',
@@ -98,6 +109,25 @@ config_view_hierarchy= \
        'configure-vrrp']
 
 render_filelst  = {}
+
+module_cleanup_cb = []
+
+
+#
+# eg.
+# module_startup_cb = {'config-if':[acl_startup_callback, fbs_startup_callback],
+#                     'config-vlan':[acl_startup_callback, fbs_startup_callback]}
+
+module_startup_cb = {
+    'configure': [show_running_config_acl_start_callback, show_running_config_fbs_start_callback],
+    'configure-line-vty': [show_running_config_fbs_start_callback],
+    'configure-mac-acl': [show_running_config_acl_start_callback],
+    'configure-ipv4-acl': [show_running_config_acl_start_callback],
+    'configure-ipv6-acl': [show_running_config_acl_start_callback],
+    'configure-if': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
+    'configure-lag': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
+    'configure-vlan': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback]
+}
 
 render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'router_bgp_neighbor'     : show_router_bgp_neighbor_cmd,
@@ -128,6 +158,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'tacacs_server_source_if' : show_tacacs_source_if,
                   'dns_server_source_if'    : show_dns_source_if,
                   'ntp_server_source_if'    : show_ntp_source_if,
+                  'ntp_trusted_key'         : show_ntp_trusted_key,
+                  'ntp_authentication_key'  : show_ntp_authentication_key,
                   'ptp_mode'                : show_ptp_mode,
                   'ptp_domain_profile'      : show_ptp_domain_profile,
                   'ptp_domain_two_step'     : show_ptp_two_step,
@@ -159,7 +191,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'mac_source_if'           : show_mac_source_if,
                   'fbs_classifier_render'   : show_running_fbs_classifier,
                   'fbs_policy_render'       : show_running_fbs_policy,
-                  'fbs_service_policy_render' : show_running_fbs_service_policy,
+                  'fbs_service_policy_render_switch' : show_running_fbs_service_policy_global,
+                  'fbs_service_policy_render_ctrlplane' : show_running_fbs_service_policy_ctrlplane,
+                  'fbs_service_policy_render_interface' : show_running_fbs_service_policy_interface,
                   'copp_police'             : show_copp_police,
                   'crm_config'              : show_crm_config,
                   'snmp_agentaddress'       : show_snmp_agentaddress,
@@ -173,6 +207,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'snmp_user'               : show_snmp_user,
                   'snmp_view'               : show_snmp_view,
                   'sflow_source_if'         : show_sflow_source_if,
+                  'xcvr_diag_ctrl'          : show_xcvr_diag_ctrl,
                   'qos_map_dscp_tc_cb'      : qos_map_dscp_tc_cb,
                   'qos_map_dot1p_tc_cb'     : qos_map_dot1p_tc_cb,
                   'qos_map_tc_queue_cb'     : qos_map_tc_queue_cb,
@@ -265,13 +300,18 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'sag4_config'             : show_sag4_config,
                   'sag6_config'             : show_sag6_config,
                   'vrrp_config'             : show_vrrp_config,
-                  'mac_acl_table_cb'        : mac_acl_table_cb,
-                  'ipv4_acl_table_cb'       : ipv4_acl_table_cb,
-                  'ipv6_acl_table_cb'       : ipv6_acl_table_cb,
-                  'acl_bind_cb'             : acl_bind_cb,
-                  'acl_global_bind_cb'      : acl_global_bind_cb,
+                  'mac_acl_table_cb'        : show_running_mac_acl_table_cb,
+                  'ipv4_acl_table_cb'       : show_running_ipv4_acl_table_cb,
+                  'ipv6_acl_table_cb'       : show_running_ipv6_acl_table_cb,
+                  'acl_bind_cb'             : show_running_acl_intf_bind_cb,
+                  'acl_global_bind_cb'      : show_running_acl_global_bind_cb,
+                  'acl_ctrl_plane_bind_cb'  : show_running_acl_ctrl_plane_bind_cb,
                   'username_config'         : show_username_config,
                   'if_vrf_binding'          : show_if_vrf_binding,
+                  'show_runn_hardware_cb'   : show_running_config_hardware,
+                  'show_runn_hardware_acl_cb' : show_running_config_hardware_acl,
+                  'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode,
+                  'line_vty_view_cb'        : show_running_config_line_vty_view_cb
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

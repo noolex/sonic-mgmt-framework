@@ -1,4 +1,3 @@
-#
 # Copyright 2019 Dell, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,9 +28,12 @@ urllib3.disable_warnings()
 vrfDict = {}
 macDict = {}
 inputDict = {}
+intfList = []
 egressPortDict = {}
 isMacDictAvailable = False
 apiClient = cc.ApiClient()
+PREFIX = 0
+PREFIXIP = 1
 
 def get_keypath(func,args):
     keypath = None
@@ -64,16 +66,35 @@ def get_keypath(func,args):
     if rcvdVrf == None:
         rcvdVrf = ""
 
-    if func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors':
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=rcvdIntfName, index="0")
-    elif func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors':
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors', name=rcvdIntfName, index="0")
-    elif func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv4_neighbors_neighbor':
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors/neighbor={ip}', name=rcvdIntfName, index="0", ip=rcvdIpAddr)
-    elif func == 'get_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ipv6_neighbors_neighbor':
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors/neighbor={ip}',name=rcvdIntfName, index="0", ip=rcvdIpAddr)
-    elif func == 'get_sonic_neigh_sonic_neigh_neigh_table':
-        keypath = cc.Path('/restconf/data/sonic-neighbor:sonic-neighbor/NEIGH_TABLE')
+#keypath for 'show ip/ipv6 arp/neighbors'
+    if func == 'get_nbrs':
+        intf = ""
+
+        path = '/restconf/data/openconfig-interfaces:interfaces/interface={name}'
+        if len(rcvdIntfName) > 0:
+            intf = rcvdIntfName
+        else:
+            intf = args
+
+        if len(intf) == 0:
+            return None
+
+        if intf.lower().startswith('vlan'):
+            path = path + "/openconfig-vlan:routed-vlan"
+        else:
+            path = path + "/subinterfaces/subinterface={index}"
+
+        if (rcvdFamily.lower() == "ipv4"):
+            path = path + '/openconfig-if-ip:ipv4/neighbors'
+        else:
+            path = path + '/openconfig-if-ip:ipv6/neighbors'
+
+        if len(rcvdIpAddr) > 0:
+            path = path + '/neighbor=' + rcvdIpAddr
+
+        keypath = cc.Path(path, name=intf, index="0")
+
+#keypath for 'clear ip/ipv6 arp/neighbors'
     elif func == 'rpc_sonic_clear_neighbors':
         keypath = cc.Path('/restconf/operations/sonic-neighbor:clear-neighbors')
         if rcvdVrf == "all":
@@ -225,21 +246,33 @@ def build_vrf_list():
         except Exception as e:
             log.syslog(log.LOG_ERR, str(e))
             print "% Error: Internal error"
+            break
 
     if isMgmtVrfEnabled():
         vrfDict["eth0"] = "mgmt"
+    else:
+        vrfDict["eth0"] = None
 
-def process_oc_nbrs(response):
-    outputList = []
-    rcvdIntfName = inputDict.get('intf')
+def process_nbrs(response, rcvdIntfName, outputList):
+    msgType = PREFIX
     if rcvdIntfName is None:
         return
 
-    nbrsContainer = response.get('openconfig-if-ip:neighbors')
-    if nbrsContainer is None:
-        return
+    rcvdIpAddr = inputDict.get('ip')
+    if rcvdIpAddr is not None:
+        rcvdIpAddr = rcvdIpAddr.lower()
+        msgType = PREFIXIP
 
-    nbrsList = nbrsContainer.get('neighbor')
+    rcvdMacAddr = inputDict.get('mac')
+    rcvdFamily  = inputDict.get('family')
+
+    if msgType is PREFIX:
+        nbrsContainer = response.get('openconfig-if-ip:neighbors')
+        if nbrsContainer:
+            nbrsList = nbrsContainer.get('neighbor')
+    elif msgType is PREFIXIP:
+        nbrsList = response.get('openconfig-if-ip:neighbor')
+
     if nbrsList is None:
         return
 
@@ -260,78 +293,20 @@ def process_oc_nbrs(response):
 
         egressPort = get_egress_port(rcvdIntfName, macAddr)
 
-        if rcvdIntfName == "eth0":
-            rcvdIntfName = "Management0"
-
         nbrEntry = {'ipAddr':ipaddress.ip_address(ipAddr),
                     'macAddr':macAddr,
                     'intfName':rcvdIntfName,
                     'egressPort':egressPort
                     }
-        outputList.append(nbrEntry)
 
-    return sorted(outputList, key=lambda k: k['ipAddr'])
+        if (rcvdMacAddr == macAddr):
+            outputList.append(nbrEntry)
+        elif (rcvdIpAddr == ipAddr.lower()):
+            outputList.append(nbrEntry)
+        elif (rcvdIpAddr is None and rcvdMacAddr is None):
+            outputList.append(nbrEntry)
 
-def process_sonic_nbrs(response):
-    outputList  = []
-    rcvdVrfName = inputDict.get('vrf')
-
-    rcvdIpAddr  = inputDict.get('ip')
-    if rcvdIpAddr is not None:
-	    rcvdIpAddr = rcvdIpAddr.lower()
-
-    rcvdMacAddr = inputDict.get('mac')
-    rcvdFamily  = inputDict.get('family')
-
-    nbrContainer = response.get('sonic-neighbor:NEIGH_TABLE')
-    if nbrContainer is None:
-        return []
-
-    nbrsList = nbrContainer.get('NEIGH_TABLE_LIST')
-    if nbrsList is None:
-        return []
-
-    for nbr in nbrsList:
-        vrfName = ""
-        egressPort = "-"
-
-        family = nbr.get('family')
-        if family is None or family != rcvdFamily:
-            continue
-
-        ifName = nbr.get('ifname')
-        if ifName is None:
-            continue
-
-        ipAddr = nbr.get('ip')
-        if ipAddr is None or ipAddr == "0.0.0.0":
-            continue
-
-        macAddr = nbr.get('neigh')
-        if macAddr is None:
-            continue
-
-        vrfName = vrfDict.get(ifName)
-
-        egressPort = get_egress_port(ifName, macAddr)
-
-        if ifName == "eth0":
-            ifName = "Management0"
-
-        nbrEntry = {'ipAddr':ipaddress.ip_address(ipAddr),
-                           'macAddr':macAddr,
-                           'intfName':ifName,
-                           'egressPort':egressPort
-                        }
-        if (rcvdVrfName == vrfName) or (rcvdVrfName == "all"):
-            if (rcvdMacAddr == macAddr):
-                outputList.append(nbrEntry)
-            elif (rcvdIpAddr == ipAddr.lower()):
-                outputList.append(nbrEntry)
-            elif (rcvdIpAddr is None and rcvdMacAddr is None):
-                outputList.append(nbrEntry)
-
-    return sorted(outputList, key=lambda k: k['ipAddr'])
+    return outputList
 
 def clear_neighbors(keypath, body):
     status = ""
@@ -378,44 +353,78 @@ def set_neighbors(keypath, body, del_req):
         return -1
     return 0
 
-def show_neighbors(keypath, args):
+def show_neighbors(func):
+    global inputDict
+    msgType = PREFIX
+    keypath = ""
     outputList = []
+    rcvdVrfName = inputDict.get('vrf')
+    rcvdIp = inputDict.get('ip')
+    if rcvdIp is not None:
+        rcvdIp = rcvdIp.lower()
+
     rendererScript = "arp_show.j2"
 
     rcvdFamily = inputDict.get('family')
-    if rcvdFamily == "IPv6":
+    if rcvdFamily == None:
+        rcvdFamily = "ipv4"
+    else:
+        rcvdFamily = rcvdFamily.lower()
+
+    if rcvdFamily == "ipv6":
         rendererScript = "arp_show_v6.j2"
 
     summary = inputDict.get('summary')
     if summary is not None:
         rendererScript = "arp_summary_show.j2"
 
-    try:
-        apiResponse = apiClient.get(keypath)
-    except:
-        # system/network error
-        print "Error: Unable to connect to the server"
-        return
+    rcvdIntf = inputDict.get('intf')
+    if rcvdIntf is not None:
+        keypath, body = get_keypath(func, rcvdIntf)
+        try:
+            apiResponse = apiClient.get(keypath)
+        except:
+            # system/network error
+            print "Error: Unable to connect to the server"
+            return
 
-    try:
         if apiResponse.ok():
             response = apiResponse.content
         else:
             print "% Error: Internal error"
             return
+        if response:
+            outputList = process_nbrs(response, rcvdIntf, outputList)
+    else:
+        for intf, vrf in vrfDict.items():
+            if ((vrf is None and rcvdVrfName is None) or
+                (vrf == rcvdVrfName) or
+                rcvdVrfName == "all"):
+                keypath, body = get_keypath(func, intf)
+            else:
+                continue
 
-        if response is None:
-            return
+            try:
+                apiResponse = apiClient.get(keypath)
+            except:
+                # system/network error
+                print "Error: Unable to connect to the server"
+                return
 
-        if 'openconfig-if-ip:neighbors' in response.keys():
-            outputList = process_oc_nbrs(response)
-        elif 'sonic-neighbor:NEIGH_TABLE' in response.keys():
-            outputList = process_sonic_nbrs(response)
+            if apiResponse.ok():
+                response = apiResponse.content
+            else:
+                print "% Error: Internal error"
+                continue
 
+            if (response is None) or (len(response) == 0):
+                continue
+
+            outputList = process_nbrs(response, intf, outputList)
+
+    if len(outputList) > 0 :
+        outputList =  sorted(outputList, key=lambda k: k['ipAddr'])
         show_cli_output(rendererScript, outputList)
-    except Exception as e:
-        # system/network error
-        print "% Error: Internal error"
 
 def process_args(args):
   global inputDict
@@ -438,17 +447,17 @@ def run(func, args):
     process_args(args)
     build_vrf_list()
 
-    # create a body block
-    keypath, body = get_keypath(func, args)
-
     if (func == 'rpc_sonic_clear_neighbors'):
+        keypath, body = get_keypath(func, args)
         clear_neighbors(keypath, body)
     elif (func == 'set_ipv4_arp_timeout') or (func == 'set_ipv6_nd_cache_expiry'):
+        keypath, body = get_keypath(func, args)
         status = set_neighbors(keypath, body, False)
     elif (func == 'del_ipv4_arp_timeout') or (func == 'del_ipv6_nd_cache_expiry'):
+        keypath, body = get_keypath(func, args)
         status = set_neighbors(keypath, body, True)
-    else:
-        show_neighbors(keypath, args)
+    elif(func == ('get_nbrs')):
+        show_neighbors(func)
 
     macDict = {}
     vrfDict = {}

@@ -41,6 +41,9 @@ def show_vrrp_common(render_table, table_inst, afi):
         cmd_str += ' version ' + str(table_inst['version']) + ';'
     if 'adv_interval' in table_inst:
         cmd_str += ' advertisement-interval ' + str(table_inst['adv_interval']) + ';'
+    if 'use_v2_checksum' in table_inst:
+        if 'True' == table_inst['use_v2_checksum']:
+            cmd_str += ' use-v2-checksum ' + ';'
     if 'vip' in table_inst:
         vips = table_inst['vip']
         for vip in vips:

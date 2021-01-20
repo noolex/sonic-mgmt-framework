@@ -18,12 +18,14 @@ limitations under the License.
 <ROOT>
     <MACRODEF name="ACL-ACTION-OPTIONS">
         <PARAM name="action-options" help="" ptype="SUBCOMMAND" mode="switch">
-            <PARAM name="deny" help="Drop traffic in data plane" ptype="SUBCOMMAND" mode="subcommand"/>
-            <PARAM name="permit" help="Allow traffic in control and data plane" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="deny" help="Do not forward the packet. Allow trap to CPU" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="discard" help="Do not forward the packet. Do not allow trap to CPU" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="permit" help="Allow packet to be forwarded and trapped to CPU" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="transit" help="Allow traffic to be forwarded. Do not allow trap to CPU" ptype="SUBCOMMAND" mode="subcommand"/>
+            <PARAM name="do-not-nat" help="Do not allow NAT processing for the packet" ptype="SUBCOMMAND" mode="subcommand"/>
             <PARAM name="remark" help="Set remark or description for rule" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM name="remark-val" help="Remark or description for rule" ptype="ACL_REMARK"/>
             </PARAM>
-            <PARAM name="do-not-nat" help="Do not allow NAT processing for the packet" ptype="SUBCOMMAND" mode="subcommand"/>
         </PARAM>
     </MACRODEF>
 
@@ -67,12 +69,31 @@ limitations under the License.
     </MACRODEF>
 
     <MACRODEF name="TCP-FLAGS-OPTIONS">
-        <PARAM name="fin" help="Match packets with FIN TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
-        <PARAM name="syn" help="Match packets with SYN TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
-        <PARAM name="rst" help="Match packets with RST TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
-        <PARAM name="psh" help="Match packets with PSH TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
-        <PARAM name="ack" help="Match packets with ACK TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
-        <PARAM name="urg" help="Match packets with URG TCP Flag" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
+        <PARAM name="tcp-established" value="established" help="Match packets which are part of established TCP session" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'/>
+        <PARAM name="fin-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( "${tcp-established}" != "established" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'>
+            <PARAM name="fin" help="Match packets with FIN TCP flag set" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+            <PARAM name="not-fin" help="Match packets with FIN TCP flag cleared" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+        </PARAM>
+        <PARAM name="syn-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( "${tcp-established}" != "established" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'>
+            <PARAM name="syn" help="Match packets with SYN TCP flag set" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+            <PARAM name="not-syn" help="Match packets with SYN TCP Flag cleared" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+        </PARAM>
+        <PARAM name="rst-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( "${tcp-established}" != "established" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'>
+            <PARAM name="rst" help="Match packets with RST TCP flag set" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+            <PARAM name="not-rst" help="Match packets with RST TCP flag cleared" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+        </PARAM>
+        <PARAM name="psh-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( "${tcp-established}" != "established" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'>
+            <PARAM name="psh" help="Match packets with PSH TCP flag set" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+            <PARAM name="not-psh" help="Match packets with PSH TCP flag cleared" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+        </PARAM>
+        <PARAM name="ack-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( "${tcp-established}" != "established" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'>
+            <PARAM name="ack" help="Match packets with ACK TCP flag set" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+            <PARAM name="not-ack" help="Match packets with ACK TCP flag cleared" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+        </PARAM>
+        <PARAM name="urg-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='( "${action-options}" != "remark" ) -a ( "${tcp-established}" != "established" ) -a ( ( "${ip-protocol}" = "tcp" ) -o ( "${ip-protocol-val}" = "6" ) )'>
+            <PARAM name="urg" help="Match packets with URG TCP flag set" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+            <PARAM name="not-urg" help="Match packets with URG TCP flag cleared" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+        </PARAM>
     </MACRODEF>
 
     <MACRODEF name="ICMP-TYPE-CODE-OPTIONS">

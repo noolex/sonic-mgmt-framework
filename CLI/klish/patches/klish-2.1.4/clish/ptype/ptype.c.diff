@@ -380,7 +380,7 @@
 >                         is_alt_regex_required = true;
 >                 break;
 >         }
-346a642,764
+346a642,760
 >         case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 >         {
 >         	unsigned i;
@@ -443,9 +443,8 @@
 >                                            If user has eth1, it needs to be converted to ethernet1.
 >                                            Similarly,if user gives "ethernet 1", the space need to be
 >                                            stripped */
->                                 	if (name && strncasecmp(name, result, strlen(name))) {
->                                         	/* result not matching the name specified in the ptype.
->                                                    user could have entered short form eth.So check if
+>                                 	if (name && strncmp(name, result, strlen(name))) {
+>                                                    /*User could have entered short form eth.So check if
 >                                                    the entered string is substring of the name after
 >                                                    stripping the port number portion */
 >                                                 index = get_index(result);
@@ -471,9 +470,6 @@
 >                                                                 break;
 >                                                 }
 >                                         } else {
->                                         	/* CLI is given matches with complete help string
->                                                  * such as ethernet, vlan, portchannel, so nothing
->                                                  * do to here. */
 >                                                 matched = BOOL_TRUE;
 >                             			/* Variable name going out of scope will leaks the storage it
 >                              			 * points to. So free memory pointed by it
@@ -504,23 +500,23 @@
 > 	}
 > 
 > 	/*------------------------------------------------- */
-437c855
+437c851
 < char *clish_ptype_validate(clish_ptype_t * this, const char *text)
 ---
 > char *clish_ptype_validate(clish_ptype_t * this, const char *text, bool_t isHelp)
-439c857
+439c853
 < 	return clish_ptype_validate_or_translate(this, text, BOOL_FALSE);
 ---
 > 	return clish_ptype_validate_or_translate(this, text, BOOL_FALSE, BOOL_TRUE);
-445c863
+445c859
 < 	return clish_ptype_validate_or_translate(this, text, BOOL_TRUE);
 ---
 > 	return clish_ptype_validate_or_translate(this, text, BOOL_TRUE, BOOL_FALSE);
-457c875
+457c871
 < 	const char *pattern, clish_ptype_method_e method)
 ---
 > 	const char *pattern, clish_ptype_method_e method, const char *alt_pattern)
-500a919,944
+500a915,940
 > 	case CLISH_PTYPE_METHOD_REGEXP_SELECT:
 >                 {
 >                         int result;
@@ -547,7 +543,7 @@
 >                 }
 > 
 > 	/*------------------------------------------------- */
-506a951,1083
+506a947,1079
 > 
 > 
 > void clish_ptype__set_extpattern(clish_ptype_t * this,

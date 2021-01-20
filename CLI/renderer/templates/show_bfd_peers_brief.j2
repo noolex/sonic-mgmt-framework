@@ -28,7 +28,9 @@ Session Count: {{ count.value }}
                 {% if "local-address" in peer %}
                     {% if vars.update({'localAddress':peer['local-address']}) %}{% endif %}
                     {% if vars.localAddress == 'null'%}
-                        {% if vars.update({'localAddress':"unknown"}) %}{% endif %}
+			{% if "pkt-local-address" in peer['state'] %}
+                            {% if vars.update({'localAddress':peer['state']['pkt-local-address']}) %}{% endif %}
+			{% endif %}
                     {% endif %}
                 {% endif %}
                 {% if "remote-address" in peer %}

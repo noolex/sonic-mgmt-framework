@@ -158,7 +158,7 @@ limitations under the License.
     <COMMAND name="crm"
              help="Configure critical resource monitoring"
              command_keys="type=Config"
-             command_tables="sonic-system-crm:sonic-system-crm/CRM/CRM_LIST={type}"
+             command_tables="sonic-system-crm:sonic-system-crm/CRM/CRM_LIST/type={type}"
              render_command_cb="crm_config"
              >
       <PARAM name="crm-subcmd-1st" help="" mode="switch" ptype="SUBCOMMAND">

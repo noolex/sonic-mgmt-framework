@@ -25,15 +25,15 @@ limitations under the License.
     <!--============================== CONFIG MODE COMMANDS ======================-->
     <VIEW name="configure-view">
         <!-- Global binding options -->
-        <COMMAND name="hardware" help="Configure ASIC parameters" view="configure-hardware-view" />
+        <COMMAND name="hardware" help="Configure ASIC parameters" view="configure-hardware-view" data_and_render_cb="show_runn_hardware_cb"/>
     </VIEW>
 
     <VIEW name="configure-hardware-view" prompt="${SYSTEM_NAME}(config-hardware)# " depth="2">
-        <COMMAND name="access-list" help="Configure ACL parameters" view="configure-hardware-acl-view" />
+        <COMMAND name="access-list" help="Configure ACL parameters" view="configure-hardware-acl-view" data_and_render_cb="show_runn_hardware_acl_cb"/>
     </VIEW>
 
     <VIEW name="configure-hardware-acl-view" prompt="${SYSTEM_NAME}(config-hardware-acl)# " depth="3">
-        <COMMAND name="counters" help="Set ACL counters mode">
+        <COMMAND name="counters" help="Set ACL counters mode" data_and_render_cb="show_runn_hardware_acl_counter_cb">
             <PARAM name="counter-modes" help="" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="per-entry" help="ACL counters are reported per ACL entry, aggregated across all interfaces" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="per-interface-entry" help="ACL counters are reported per interface and ACL entry" ptype="SUBCOMMAND" mode="subcommand" />
@@ -43,6 +43,12 @@ limitations under the License.
     </VIEW>
 
     <!--============================== EXEC MODE COMMANDS =======================-->
-    <!--<VIEW name="enable-view">
-    </VIEW>-->
+    <VIEW name="enable-view">
+        <COMMAND name="show running-configuration hardware" help="Show current hardware configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-hardware</ACTION>
+        </COMMAND>
+        <COMMAND name="show running-configuration hardware access-list" help="Show current hardware ACL configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-hardware-acl</ACTION>
+        </COMMAND>
+    </VIEW>
 </CLISH_MODULE>

@@ -94,7 +94,7 @@ limitations under the License.
     <COMMAND
         name="no speed"
         help="Set default speed config">
-        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_port_speed SPEED_UNKNOWN</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_port_speed</ACTION>
     </COMMAND>
 </MACRODEF>
 
@@ -158,14 +158,40 @@ limitations under the License.
 		help="Configure trunking parameters on an interface" 
 		ptype="SUBCOMMAND" 
 		mode="subcommand">
-                <PARAM 
-		    name="vlan_id_list" 
-		    help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142" 
-		    ptype="VLAN_RANGE" 
-		/>
-                </PARAM>
+                <PARAM
+                    name="vlan-subcommands"
+                    help="Add/Remove Vlan"
+                    ptype="SUBCOMMAND"
+                    mode="switch"
+                    >
+                    <PARAM
+                        name="add"
+                        help="Configure trunking parameters on an interface"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand"
+                        >
+                        <PARAM
+                            name="vlan_id_list"
+                            help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                            ptype="VLAN_RANGE"
+                            />
+                        </PARAM>
+                        <PARAM
+                            name="remove"
+                            help="Remove trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+		    </PARAM>
+               </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_trunk_vlan ${vlan_id_list}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range vlan_trunk_if_range iflist=arg1 patch_trunk_vlan ${vlan_id_list} ${vlan-subcommands}</ACTION>
     </COMMAND>
     <COMMAND 
 	name="no switchport" 
@@ -186,6 +212,23 @@ limitations under the License.
 	</PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_access_vlan</ACTION>
     </COMMAND>
+
+    <COMMAND
+        name="no switchport allowed"
+        help="Remove all VLANs configured on the interface"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+    >
+        <PARAM
+            name="Vlan"
+            help="Remove all VLANs configured on the interface"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_all_vlan</ACTION>
+    </COMMAND>
+
         
     <COMMAND 
 	name="no switchport trunk" 
@@ -257,14 +300,40 @@ limitations under the License.
                 help="Configure trunking parameters on an interface"
                 ptype="SUBCOMMAND"
                 mode="subcommand">
-                <PARAM
-                    name="vlan_id_list"
-                    help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
-                    ptype="VLAN_RANGE"
-                />
+                    <PARAM
+                        name="vlan-subcommands"
+                        help="Add/Remove Vlan"
+                        ptype="SUBCOMMAND"
+                        mode="switch"
+                        >
+                        <PARAM
+                            name="add"
+                            help="Configure trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+                        <PARAM
+                            name="remove"
+                            help="Remove trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+		    </PARAM>
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_aggregation_trunk_vlan ${vlan_id_list}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_if_range vlan_trunk_if_range_pc iflist=arg1 patch_aggregation_trunk_vlan ${vlan_id_list} ${vlan-subcommands}</ACTION>
     </COMMAND>
     <COMMAND
         name="no switchport"
@@ -285,6 +354,23 @@ limitations under the License.
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_aggregate_access_vlan</ACTION>
     </COMMAND>
+
+    <COMMAND
+        name="no switchport allowed"
+        help="Remove all VLANs configured on the interface"
+        ptype="SUBCOMMAND"
+        mode="subcommand"
+    >
+        <PARAM
+            name="Vlan"
+            help="Remove all VLANs configured on the interface"
+            ptype="SUBCOMMAND"
+            mode="subcommand"
+            >
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_aggregate_all_vlan</ACTION>
+    </COMMAND>
+
 
     <COMMAND
         name="no switchport trunk"
@@ -326,6 +412,22 @@ limitations under the License.
         name="no ipv6 enable"
         help="Disable IPv6" >
         <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_if_ip6_enabled</ACTION>
+    </COMMAND>
+</MACRODEF>
+<MACRODEF name="INTF_FEC">
+    <COMMAND
+        name="fec"
+        help="Configure FEC (forward error correction)">
+        <PARAM
+            name="fec"
+            help="FEC configuration of the interface"
+            ptype="INTF_FEC" />
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_port_fec ${fec}</ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no fec"
+        help="Set default FEC (forward error correction) configuration">
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range iflist=arg1 patch_port_fec default</ACTION>
     </COMMAND>
 </MACRODEF>
 

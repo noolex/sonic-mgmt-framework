@@ -81,9 +81,6 @@ VRF Name: {{list_elem['vrfName']}}
 {% if 'openconfig-ospfv2-ext:neighbor-count' in interface_state and 'openconfig-ospfv2-ext:adjacency-count' in interface_state %}
   Neighbor Count is {{interface_state['openconfig-ospfv2-ext:neighbor-count']}}, Adjacent neighbor count is {{interface_state['openconfig-ospfv2-ext:adjacency-count']}}
 {% endif %}
-{% if 'openconfig-ospfv2-ext:bfd-state' in interface_state and interface_state['openconfig-ospfv2-ext:bfd-state'] == True %}
-  BFD: Detect Multiplier: 3, Min Rx interval: 300, Min Tx interval: 300
-{% endif %}
 {% endif -%}
 {% endfor -%}
 {% endif -%}
