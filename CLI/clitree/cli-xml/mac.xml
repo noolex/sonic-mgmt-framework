@@ -263,7 +263,7 @@ limitations under the License.
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic vlan ${Vlan}&#xA;
         elif test "${d-subcommands}" = "interface"; then&#xA;
             if test "${interface-subcommand}" = "PortChannel"; then&#xA;
-                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface $(PortChannel}&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface ${PortChannel}&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries show_mac.j2 dynamic interface ${phy-if-name}&#xA;
             fi&#xA;
