@@ -60,7 +60,16 @@
         name="show ip igmp interface"
         help="IGMP interface information">
         <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="false">
+
+          <PARAM
+              name="detail"
+              help="IGMP interface information in detail"
+              ptype="SUBCOMMAND" optional="true"
+              mode="subcommand"
+          >
+          </PARAM>
         </PARAM>
+
         <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_interface show_ip_igmp_interface.j2 ${vrf-name} ${interfacename}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -131,7 +140,9 @@
     <COMMAND
         name="show ip igmp statistics"
         help="IGMP statistics information">
-        <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_statistics show_ip_igmp_statistics.j2 ${vrf-name} </ACTION>
+        <PARAM name = "interface" help="IGMP interface information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name ="interfacename" help = "Interface name" ptype = "STRING"/></PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_statistics show_ip_igmp_statistics.j2 ${vrf-name} ${interfacename} </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Show IGMP RX statistics information
@@ -167,11 +178,14 @@
 
       <PARAM name = "cmdtype" help= "" ptype="SUBCOMMAND" mode="switch" optional="true">
 
-      <PARAM name = "interface" help="IGMP interface information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
-        <PARAM name="interfacename" help = "Interface name" ptype = "STRING" optional="true" />
+      <PARAM name = "interface" help="IGMP interface information" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="interfacename" help = "Interface name" ptype = "STRING" optional="true" >
+        <PARAM name="detail" help="IGMP interface information in detail" ptype="SUBCOMMAND" optional="true" mode="subcommand"/></PARAM>
       </PARAM>
 
       <PARAM name = "statistics" help="IGMP statistics information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name = "interface" help="IGMP interface information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name ="interfacename" help = "Interface name" ptype = "STRING"/></PARAM>
       </PARAM>
 
       <PARAM name = "groups" help="IGMP groups information" ptype="SUBCOMMAND" mode="subcommand" optional="true">

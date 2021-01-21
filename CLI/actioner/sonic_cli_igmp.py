@@ -50,13 +50,31 @@ def generate_show_ip_igmp_statistics(args):
     api = cc.ApiClient()
     keypath = []
     vrfName = "default"
-    i = 0
-    for arg in args:
-        if "vrf" in arg or "Vrf" in arg:
-            vrfName = args[i]
-        i = i + 1
+    interfaceName = "None"
+
+    if len(args) == 2:
+        interfaceName = args[1]
+    elif len(args) > 2:
+        vrfName = args[1]
+        if "interface" in args:
+            interfaceName = args[len(args) - 1]
+
+    #
+    #i = 0
+    #for arg in args:
+    #    if "vrf" in arg or "Vrf" in arg:
+    #        vrfName = args[i]
+    #    if "interface" in arg:
+    #        interfaceName = arg[i]
+    #    i = i + 1
+
+
     dlist = []
-    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=IGMP,igmp/igmp/openconfig-igmp-ext:statistics', name=vrfName)
+
+    if interfaceName is not "None":
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=IGMP,igmp/igmp/interfaces/interface={ifId}/counters', name=vrfName, ifId=interfaceName)
+    else:
+        keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=IGMP,igmp/igmp/openconfig-igmp-ext:statistics', name=vrfName)
     response = api.get(keypath)
     if(response.ok()):
         if response.content is not None:
@@ -65,7 +83,10 @@ def generate_show_ip_igmp_statistics(args):
             if api_response is None:
                 return
             dlist.append(api_response)
-    show_cli_output(args[0], api_response)
+    if interfaceName is not "None":
+        show_cli_output('show_ip_igmp_statistics_interface.j2', api_response)
+    else:
+        show_cli_output(args[0], api_response)
     return api_response
 
 def generate_show_ip_igmp_interface(args):
