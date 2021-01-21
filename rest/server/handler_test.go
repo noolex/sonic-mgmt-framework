@@ -222,6 +222,16 @@ func TestPathConv(t *testing.T) {
 		"/restconf/data/id=TEST2,NEW,LATEST/data/color=RED,ff0000/v=1.0",
 		"/id[name=TEST2][type=NEW][subtype=LATEST]/data/color[colorname=RED][rgb=ff0000]/v[ver=1.0]"))
 
+	t.Run("rcoper", testPathConv(
+		"/restconf/operations/hello-world",
+		"/restconf/operations/hello-world",
+		"/hello-world"))
+
+	t.Run("x_rcoper", testPathConv(
+		"/myroot/restconf/operations/hello-world",
+		"/myroot/restconf/operations/hello-world",
+		"/hello-world"))
+
 	t.Run("no_template", testPathConv(
 		"*",
 		"/test/id=NOTEMPLATE",

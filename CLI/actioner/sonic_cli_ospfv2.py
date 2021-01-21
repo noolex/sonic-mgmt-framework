@@ -365,7 +365,9 @@ def patch_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_addr
     ospf_cli_log("patch_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_body))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name)
 
-    key_data = {"name": intf_name, "address": if_addr }
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
+    key_data = {"name": intf_name, "subinterface":sub_intf, "address": if_addr }
     add_key_to_config_data(cfg_body, key_data)
 
     ospf_rtr_pif_uri_body = {
@@ -374,6 +376,7 @@ def patch_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_addr
                 "openconfig-ospfv2-ext:passive-interfaces": {
                     "passive-interface": [ {
                         "name": intf_name,
+                        "subinterface":sub_intf,
                         "address": if_addr
                      } ] } } } }
 
@@ -390,8 +393,11 @@ def delete_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_add
     ospf_cli_log("delete_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_field))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name, 'ospfv2')
     ospf_rtr_pif_uri += '/global/openconfig-ospfv2-ext:passive-interfaces'
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
     if intf_name != '' and if_addr != '' :
-        ospf_rtr_pif_uri += '/passive-interface={},{}'.format(quote(intf_name, safe=''), if_addr)
+        ospf_rtr_pif_uri += '/passive-interface={},{},{}'.format(quote(intf_name, safe=''), sub_intf, if_addr)
         if cfg_field != '' :
             ospf_rtr_pif_uri += '/{}'.format(cfg_field)
     ospf_cli_log("delete_ospf_router_passive_interface_config: uri {}".format(ospf_rtr_pif_uri))
@@ -571,6 +577,17 @@ def invoke_api(func, args=[]):
     body = None
 
     ospf_cli_log("invoke_api: argslen {} args={}".format(len(args), args))
+
+    if func.find('openconfig_interfaces_interface_subinterfaces_subinterface') != -1 :
+        if len(args) > 2 and 'PortChannel' in args[0] and 'PortChannel' in args[1] :
+            temp_args = []
+            temp_args.insert(0, args[0])
+            idx = 2
+            while idx < len(args) :
+              temp_args.insert(idx-1, args[idx])
+              idx = idx + 1
+            args = temp_args
+            ospf_cli_log("invoke_api: adjusted argslen {} args={}".format(len(args), args))
 
     #Ospf router config
     if func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config':
