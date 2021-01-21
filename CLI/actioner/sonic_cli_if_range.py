@@ -30,6 +30,8 @@ from netaddr import *
 from scripts.render_cli import show_cli_output
 import subprocess
 import re
+from itertools import groupby
+from operator import itemgetter
 from sonic_intf_utils import name_to_int_val
 from natsort import natsorted
 
@@ -105,12 +107,28 @@ def eth_intf_range_expand(givenifrange):
             intf_list.add(p)
     return list(intf_list)
 
+def find_ranges(vlan_lst):
+    ranges = []
+    vlan_lst.sort()
+    for k, g in groupby(enumerate(vlan_lst), lambda (i,x):i-x):
+        group = map(itemgetter(1), g)
+        ranges.append((group[0], group[-1]))
+    vlan_list_str = ''
+    for range in ranges:
+       if vlan_list_str:
+           vlan_list_str += ','
+       if range[0] == range[1]:
+           vlan_list_str += str(range[0])
+       else:
+           vlan_list_str = vlan_list_str + str(range[0]) + "-" + str(range[1])
+    return vlan_list_str
+
 def vlanFullList():
     fullList = []
     for i in range (1,4095):
-        fullList.append(str(i))
+        fullList.append(i)
     return fullList
-    
+
 def vlanExceptList(vlan):
     exceptStr = ''
     exceptList = vlanFullList()
@@ -123,15 +141,14 @@ def vlanExceptList(vlan):
             lower = int(vidList[0])
             upper = int(vidList[1])
             for i in range(lower,upper+1):
-                vid = str(i)
-                if vid in exceptList:
-                    exceptList.remove(vid)
+                if i in exceptList:
+                    exceptList.remove(i)
         else:
-            exceptList.remove(vid)
-            
-    exceptStr = ','.join(exceptList)
-            
+            exceptList.remove(int(vid))
+
+    exceptStr = find_ranges(exceptList)
     return exceptStr
+    
 def generate_body(func, args=[]):
 
     body = {}
@@ -559,9 +576,8 @@ def run(func, args):
 	    elif args[3] == 'except':
 		exceptStr = vlanExceptList(args[2])
 		args[2] = exceptStr
-		func = 'config_if_range'
-		response = invoke_api(func, args)
-		return check_response(response, func, args)
+		func = 'replace_vlan'
+		args[1] = 'rpc_replace_vlan'
 	    elif args[3] == 'remove':
 		func = 'delete_if_range'
 		args[1] = 'delete_trunk_vlan'
@@ -575,7 +591,6 @@ def run(func, args):
 		func = 'config_if_range'
 		response = invoke_api(func, args)
 		return check_response(response, func, args)
-	    
 	    elif args[2] == 'none':
 		func = 'delete_if_range'
 		args[1] = 'delete_aggregate_trunk_vlan_all'
@@ -583,6 +598,11 @@ def run(func, args):
 	        func = 'config_if_range'
                	response = invoke_api(func, args)
                 return check_response(response, func, args)
+            elif args[3] == 'except':
+                exceptStr = vlanExceptList(args[2])
+                args[2] = exceptStr
+                func = 'replace_vlan'
+                args[1] = 'rpc_replace_vlan'
 	    elif args[3] == 'remove':
 		func = 'delete_if_range'
 		args[1] = 'delete_aggregate_trunk_vlan'
