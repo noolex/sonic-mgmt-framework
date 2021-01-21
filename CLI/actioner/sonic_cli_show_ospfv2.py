@@ -177,7 +177,8 @@ def generate_show_ip_ospf_interfaces(vrf, template, intfname):
     areasInfo['area'] = areaInfoList
     areasOuter = OrderedDict()
     areasOuter['openconfig-network-instance:areas'] = areasInfo  
-    if '.' in intfname or ':' in intfname:
+    #if '.' in intfname or ':' in intfname:
+    if ':' in intfname:
         countNbr = ospfv2_filter_neighbors_by_neighbor_id(areasOuter, intfname)
         if countNbr == 0 and template == "show_ip_ospf_neighbor_detail.j2":
             print("No such interface.")
