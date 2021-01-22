@@ -1,0 +1,15 @@
+{% set list_elem = json_output  %}
+{% if 'openconfig-network-instance:counters' in list_elem %}
+IGMP RX statistics
+Interface       : Global
+V1 query        :  {{list_elem['openconfig-network-instance:counters']['queries']['sent']['state']['v1']}}
+V2 query        :  {{list_elem['openconfig-network-instance:counters']['queries']['sent']['state']['v2']}}
+V3 query        :  {{list_elem['openconfig-network-instance:counters']['queries']['sent']['state']['v3']}}
+V2 leave        :  {{list_elem['openconfig-network-instance:counters']['queries']['received']['state']['v3']}}
+V1 report       :  {{list_elem['openconfig-network-instance:counters']['reports']['state']['v1']}}
+V2 report       :  {{list_elem['openconfig-network-instance:counters']['reports']['state']['v2']}}
+V3 report       :  {{list_elem['openconfig-network-instance:counters']['reports']['state']['v3']}}
+mtrace response :  0
+mtrace request  :  0
+unsupported     :  0
+{% endif %}
