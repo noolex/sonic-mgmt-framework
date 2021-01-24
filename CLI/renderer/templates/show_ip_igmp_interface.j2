@@ -1,0 +1,56 @@
+{% set vars = {'all-multicast' : "yes", 'mtrace_response' : "0", 'unsupported' : "0",'v1': "0", 'v2': "0", 'v3': "0"} %}
+
+{% if 'openconfig-network-instance:interface' in json_output %}
+{% set interfacelist = json_output['openconfig-network-instance:interface'] %}
+{% for interfaceinfo in interfacelist %}
+{% if 'state' in interfaceinfo %}
+{% set statelist = interfaceinfo['state']%}
+{% if 'openconfig-igmp-ext:querier' in statelist %}
+{% set querierlist = statelist['openconfig-igmp-ext:querier'] %}
+Interface : {{interfaceinfo['interface-id']}}
+UpTime    : {{statelist['filter-prefixes']}}
+State     : {{querierlist['status']}}
+Address   : {{querierlist['ip-addr']}}
+Version   : {{statelist['version']}}
+
+Querier
+-------
+Querier     : {{querierlist['querier-type']}}
+Start Count : {{querierlist['query-startup-count']}}
+Query Timer : {{querierlist['query-timer']}}
+Other Timer : {{querierlist['query-general-timer']}}
+{% endif%}
+
+{% if 'openconfig-igmp-ext:timers' in statelist %}
+{% set timerslist = statelist['openconfig-igmp-ext:timers'] %}
+Timers
+------
+Group Membership Interval      : {{timerslist['group-membership-interval']}}s
+Last Member Query Count        : {{timerslist['last-member-query-count']}}s
+Last Member Query Time         : {{timerslist['last-member-query-time']}}s
+Older Host Present Interval    : {{timerslist['older-host-present-interval']}}s
+Other Querier Present Interval : {{timerslist['querier-present-interval']}}s
+Query Interval                 : {{timerslist['querier-present-interval']}}s
+Query Response Interval        : {{timerslist['query-response-interval']}}s
+Robustness Variable            : {{timerslist['robustness-variable']}}
+Startup Query Interval         : {{timerslist['startup-query-interval']}}s
+{% endif %}
+
+{% if 'openconfig-igmp-ext:flags' in statelist %}
+{%set flagslist = statelist['openconfig-igmp-ext:flags']%}
+Flags
+-----
+All Multicast   : {{flagslist['all-multicast']}}
+Broadcast       : {{flagslist['broadcast']}}
+Deleted         : {{flagslist['deleted']}}
+Interface Index : {{flagslist['index']}}
+Multicast       : {{flagslist['multicast']}}
+Multicast Loop  : {{flagslist['multicast-loop']}}
+Promiscuous     : {{flagslist['promiscous']}}
+{%endif%}
+
+{% endif %}
+{% endfor %}
+
+{% endif %}
+

@@ -63,7 +63,7 @@ def __build_acl_binding_cache(intf_type, ifname, cache):
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={intfname}', intfname=ifname)
         response = acl_client.get(keypath, depth=None, ignore404=False)
         if response.ok() is False:
-            log.log_error("Resp not success")
+            log.log_debug("Resp not success")
             return
         if 'openconfig-acl:interface' not in response.content:
             log.log_debug("'openconfig-acl:interface' not found in response {}".format(str(response.content)))
