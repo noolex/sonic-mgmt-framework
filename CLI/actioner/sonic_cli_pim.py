@@ -24,6 +24,7 @@ import cli_client as cc
 from datetime import datetime, timedelta
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
+from urllib import quote
 
 import urllib3
 urllib3.disable_warnings()
@@ -84,16 +85,16 @@ def get_keypath(func,args):
         #generate keypath
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/global'
 
-        if inputDict.get('jpi') is not None:
+        if inputDict.get('jpi'):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"join-prune-interval": float(inputDict.get('jpi'))}}}
-        elif inputDict.get('kat') is not None:
+        elif inputDict.get('kat'):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"keep-alive-timer": float(inputDict.get('kat'))}}}
-        elif inputDict.get('pln') is not None:
+        elif inputDict.get('pln'):
             body = {"openconfig-network-instance:global": {"ssm": {"config": {"ssm-ranges": inputDict.get('pln')}}}}
         #as rebalance is a child of ecmp, check it first
-        elif inputDict.get('rebalance') is not None:
+        elif inputDict.get('rebalance'):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-rebalance-enabled": True}}}
-        elif inputDict.get('ecmp') is not None:
+        elif inputDict.get('ecmp'):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-enabled": True}}}
 
     ##############################################################
@@ -109,16 +110,16 @@ def get_keypath(func,args):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/global'
 
         #generate del request based on the input
-        if inputDict.get('jpi') is not None:
+        if inputDict.get('jpi'):
             path = path + "/openconfig-pim-ext:config/join-prune-interval"
-        elif inputDict.get('kat') is not None:
+        elif inputDict.get('kat'):
             path = path + "/openconfig-pim-ext:config/keep-alive-timer"
-        elif inputDict.get('pln') is not None:
+        elif inputDict.get('pln'):
             path = path + "/ssm/config/ssm-ranges"
         #as rebalance is a child of ecmp, check it first
-        elif inputDict.get('rebalance') is not None:
+        elif inputDict.get('rebalance'):
             path = path + "/openconfig-pim-ext:config/ecmp-rebalance-enabled"
-        elif inputDict.get('ecmp') is not None:
+        elif inputDict.get('ecmp'):
             path = path + "/openconfig-pim-ext:config/ecmp-enabled"
 
     ##############################################################
@@ -177,25 +178,26 @@ def get_keypath(func,args):
         #generate keypath
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim'
 
-        if ((inputDict.get('intf') is not None) or
-            (inputDict.get('nbr') is not None)):
+        if ((inputDict.get('intf')) or
+            (inputDict.get('nbr'))):
             path = path + "/interfaces"
             port = inputDict.get('port')
-            if port is not None:
+            if port:
+		port =  quote(port, safe='')
                 if port.lower().startswith('e'):
                     path = path + "/interface=" + port
                 else:
                     path = path + "/interface=" + inputDict.get('ifType') + port
 
-        if (inputDict.get('ssm') is not None):
+        if (inputDict.get('ssm')):
             path = path + "/global/ssm"
-        if (inputDict.get('srcAddr') is not None):
+        if (inputDict.get('srcAddr')):
             path = path + "/global/openconfig-pim-ext:tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr') + "/state/src-entries/src-entry=" + inputDict.get('srcAddr') + ",SG"
-        elif (inputDict.get('grpAddr') is not None):
+        elif (inputDict.get('grpAddr')):
             path = path + "/global/openconfig-pim-ext:tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr')
-        elif (inputDict.get('topology') is not None):
+        elif (inputDict.get('topology')):
             path = path + "/global/openconfig-pim-ext:tib"
-        elif (inputDict.get('rpf') is not None):
+        elif (inputDict.get('rpf')):
             path = "/restconf/operations/sonic-pim-show:show-pim"
             body = {"sonic-pim-show:input":{"vrf-name": vrf, "address-family": "IPV4_UNICAST", "query-type": "RPF", "rpf": True}}
 
@@ -204,9 +206,9 @@ def get_keypath(func,args):
     ##############################################################
     if 'clear_pim' in func:
         path = "/restconf/operations/sonic-pim-clear:clear-pim"
-        if (inputDict.get('interfaces') is not None):
+        if (inputDict.get('interfaces')):
             body = {"sonic-pim-clear:input": {"vrf-name": vrf, "address-family":"IPV4_UNICAST", "config-type":"ALL-INTERFACES", "all-interfaces": True}}
-        elif (inputDict.get('oil') is not None):
+        elif (inputDict.get('oil')):
             body = {"sonic-pim-clear:input": {"vrf-name": vrf, "address-family":"IPV4_UNICAST", "config-type":"ALL-OIL", "all-oil": True}}
 
     keypath = cc.Path(path)
@@ -251,17 +253,17 @@ def get_vrf(intf):
         return None
 
 def show_response(response):
-    if (inputDict.get('intf') is not None):
+    if (inputDict.get('intf')):
         show_intf_info(response)
-    elif (inputDict.get('nbr') is not None):
+    elif (inputDict.get('nbr')):
         show_nbr_info(response)
-    elif (inputDict.get('ssm') is not None):
+    elif (inputDict.get('ssm')):
         show_ssm_info(response)
-    elif (inputDict.get('srcAddr') is not None):
+    elif (inputDict.get('srcAddr')):
         show_topology_src_info(response)
-    elif (inputDict.get('topology') is not None):
+    elif (inputDict.get('topology')):
         show_topology_info(response)
-    elif (inputDict.get('rpf') is not None):
+    elif (inputDict.get('rpf')):
         show_rpf_info(response)
     return
 
@@ -275,7 +277,7 @@ def show_intf_info(response):
     if not response:
         return
 
-    if inputDict.get('port') is not None:
+    if inputDict.get('port'):
         intfList = response.get('openconfig-network-instance:interface')
     else:
         intfsContainer = response.get('openconfig-network-instance:interfaces')
@@ -392,13 +394,13 @@ def show_topology_src_info(response):
 
         rpfNbr = ""
         rpfState = srcState.get('rpf-info').get('state')
-        if rpfState is not None:
+        if rpfState:
             rpfNbr = rpfState.get('rpf-neighbor-address')
             if rpfNbr is None:
                 rpfNbr = ""
 
         oilList = srcState.get('oil-info-entries').get('oil-info-entry')
-        if oilList is not None:
+        if oilList:
             for oil in oilList:
                 outIntf = oil.get('outgoing-interface')
                 if  outIntf is None:
@@ -463,7 +465,7 @@ def show_topology_info(response):
         return
 
     try:
-        if inputDict.get('grpAddr') is not None:
+        if inputDict.get('grpAddr'):
             ipList = response.get('openconfig-pim-ext:ipv4-entry')
         else:
             tmpContainer = response.get('openconfig-pim-ext:tib')
@@ -524,7 +526,7 @@ def show_topology_info(response):
 
                 rpfNbr = ""
                 rpfState = srcState.get('rpf-info').get('state')
-                if rpfState is not None:
+                if rpfState:
                     rpfNbr = rpfState.get('rpf-neighbor-address')
                     if rpfNbr is None:
                         rpfNbr = ""
@@ -645,7 +647,7 @@ def show_rpf_info(response):
 
         for subkey in rpfEntry.keys():
             rpfSubEntry = rpfEntry.get(subkey)
-            if rpfSubEntry is not None:
+            if rpfSubEntry:
                 outputList.append(rpfSubEntry)
 
     if len(outputList) > 0:
@@ -698,7 +700,7 @@ def show_nbr_info(response):
             if rcvdNbr is None:
                 continue
 
-            if givenNbr is not None:
+            if givenNbr:
                 if givenNbr != rcvdNbr:
                     continue
 
