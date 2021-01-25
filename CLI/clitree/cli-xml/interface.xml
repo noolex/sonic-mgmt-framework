@@ -1010,7 +1010,7 @@ limitations under the License.
                         </PARAM>
 			<PARAM 
 			    name="all"
-			    help="configures port on all VLANs"
+			    help="Configure an interface on all VLANs"
 			    ptype="SUBCOMMAND"
 			    mode="subcommand"
 			    />
@@ -1442,7 +1442,7 @@ limitations under the License.
                         </PARAM>
                         <PARAM
                             name="except"
-                            help="Remove trunking parameters on an interface"
+                            help="Configure trunking parameters on an interface"
                             ptype="SUBCOMMAND"
                             mode="subcommand"
                             >
@@ -1454,7 +1454,7 @@ limitations under the License.
                         </PARAM>
                         <PARAM
                             name="all"
-                            help="configures port on all VLANs"
+                            help="configures an interface on all VLANs"
                             ptype="SUBCOMMAND"
                             mode="subcommand"
 			    />
