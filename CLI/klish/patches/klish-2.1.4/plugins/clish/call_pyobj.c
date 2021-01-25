@@ -20,6 +20,7 @@
 #include "lub/dump.h"
 #include "private.h"
 #include "logging.h"
+#include "clish/plugin/mgmt_clish_utils.h"
 
 #include <stdio.h>
 #include <Python.h>
@@ -129,12 +130,18 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
     char *token[128];
     char *buf;
     int i;
+    char *masked_cmd = NULL;
 
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
 
     pyobj_set_user_cmd(cmd);
-    syslog(LOG_DEBUG, "clish_pyobj: cmd=%s", cmd);
+    mask_password(cmd, &masked_cmd);
+    if (masked_cmd) {
+        syslog(LOG_DEBUG, "clish_pyobj: cmd=%s", masked_cmd);
+        free(masked_cmd);
+        masked_cmd = NULL;
+    }
 
     buf = strdup(arg);
     if (!buf) {
@@ -223,7 +230,12 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
     value = PyObject_CallObject(func, args);
     if (value == NULL) {
        pyobj_handle_error();
-       syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", cmd, arg);
+       mask_password(cmd, &masked_cmd);
+       if (masked_cmd) {
+           syslog(LOG_WARNING, "clish_pyobj: Failed [cmd=%s][args:%s]", masked_cmd, arg);
+           free(masked_cmd);
+           masked_cmd = NULL;
+       }
        ret_code = 1;
     } else {
         if (PyInt_Check(value)) {
@@ -240,7 +252,12 @@ int call_pyobj(char *cmd, const char *arg, char **out) {
         }
 
         if (ret_code) {
-            syslog(LOG_WARNING, "clish_pyobj: [cmd=%s][args:%s] ret_code:%d", cmd, arg, ret_code);
+            mask_password(cmd, &masked_cmd);
+            if (masked_cmd) {
+                syslog(LOG_WARNING, "clish_pyobj: [cmd=%s][args:%s] ret_code:%d", masked_cmd, arg, ret_code);
+                free(masked_cmd);
+                masked_cmd = NULL;
+            }
         }
     }
 

@@ -38,7 +38,35 @@ limitations under the License.
         <COMMAND
            name="show running-configuration subinterface"
            help="Show subinterface config">
-        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-subif view_keys="name=*" </ACTION>
+           <PARAM
+             name="if-subcommands"
+             help="Interface subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND"
+             optional="true"
+             >
+             <PARAM
+               name="subifname"
+               help="Sub Interface"
+               ptype="PHY_SUB_INTERFACE"
+               optional="true">
+            </PARAM>
+            <PARAM
+                name="PortChannel"
+                help="Physical Interface"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="pch_num"
+                    help="Physical Interface"
+                    ptype="LAG_ID_SUBID"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-subif view_keys="name=${subifname}${PortChannel}${pch_num}" </ACTION>
       </COMMAND>
 
     </VIEW>
@@ -111,5 +139,8 @@ limitations under the License.
             dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/admin_status=up">
         <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
         </COMMAND>
+
+        <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${parent}.${index},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST"> </MACRO>
+        <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${parent}.${index} "> </MACRO>
     </VIEW>
 </CLISH_MODULE>

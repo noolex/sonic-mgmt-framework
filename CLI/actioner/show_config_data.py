@@ -161,6 +161,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'dns_server_source_if'    : show_dns_source_if,
                   'ntp_server_source_if'    : show_ntp_source_if,
                   'ntp_trusted_key'         : show_ntp_trusted_key,
+                  'ntp_authentication_key'  : show_ntp_authentication_key,
                   'ptp_mode'                : show_ptp_mode,
                   'ptp_domain_profile'      : show_ptp_domain_profile,
                   'ptp_domain_two_step'     : show_ptp_two_step,
@@ -314,7 +315,10 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'show_runn_hardware_cb'   : show_running_config_hardware,
                   'show_runn_hardware_acl_cb' : show_running_config_hardware_acl,
                   'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode,
-                  'line_vty_view_cb'        : show_running_config_line_vty_view_cb
+                  'line_vty_view_cb'        : show_running_config_line_vty_view_cb,
+                  'ipv4_subintf_dhcp_relay'     : show_ipv4_subintf_dhcp_relay,
+                  'ipv6_subintf_dhcp_relay'     : show_ipv6_subintf_dhcp_relay
+
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

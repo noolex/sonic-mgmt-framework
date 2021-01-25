@@ -326,6 +326,19 @@ def show_ipv6_vlan_dhcp_relay(render_tables):
                              'ipv6 dhcp-relay')
 
 
+def show_ipv4_subintf_dhcp_relay(render_tables):
+   return show_ip_dhcp_relay(render_tables,
+                             'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST',
+                             'name',
+                             'id',
+                             'ip dhcp-relay')
+
+def show_ipv6_subintf_dhcp_relay(render_tables):
+   return show_ip_dhcp_relay(render_tables,
+                             'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST',
+                             'name',
+                             'id',
+                             'ipv6 dhcp-relay')
 
 def show_ip_address(render_tables, table_name, key_name, table_key_name, cmd_prfx):
 

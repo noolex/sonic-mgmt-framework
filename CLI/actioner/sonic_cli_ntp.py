@@ -27,7 +27,11 @@ from scripts.render_cli import show_cli_output
 
 IDENTIFIER='NTP'
 NAME1='ntp'
-
+auth_type_dict = {
+  "sha1": "NTP_AUTH_SHA1",
+  "md5": "NTP_AUTH_MD5",
+  "sha2-256": "NTP_AUTH_SHA2_256"
+}
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
@@ -97,21 +101,38 @@ def invoke_api(func, args=[]):
 
     elif func == 'set_ntp_server':
       
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers') 
-        if len(args) >= 3:
-            body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0],
-                                                                             "openconfig-system-ext:key-id" : int(args[2])},
-                                                                 "address" : args[0]}]}}
+        key_id   = args[1].split(":", 1)[-1]
+        min_poll = args[2].split(":", 1)[-1]
+        max_poll = args[3].split(":", 1)[-1]
+
+        config_body = {"address": args[0]}
+        if key_id:
+            config_body["openconfig-system-ext:key-id"] = int(key_id)
+        if min_poll:
+            config_body["openconfig-system-ext:minpoll"] = int(min_poll)
+            config_body["openconfig-system-ext:maxpoll"] = int(max_poll)
+
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers')
+        body = { "openconfig-system:servers": { "server" : [{"config" : config_body,
+                                                             "address" : args[0]}]}}
+        api_response = api.patch(keypath, body)
+        if not api_response.ok() and "does not match regular expression pattern" in api_response.error_message():
+            print "%Error: Invalid IP address or hostname"
+            return None
         else:
-            body = { "openconfig-system:servers": { "server" : [{"config" : {"address": args[0]},
-                                                                 "address" : args[0]}]}}
-        return api.patch(keypath, body)
+            return api_response
 
     elif func == 'delete_ntp_server':
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers/server={server}',
                           server=args[0])
-        return api.delete(keypath)
+
+        api_response = api.delete(keypath)
+        if not api_response.ok() and "does not match regular expression pattern" in api_response.error_message():
+            print "%Error: Invalid IP address or hostname"
+            return None
+        else:
+            return api_response
 
     elif func == 'set_ntp_vrf':
 
@@ -146,7 +167,7 @@ def invoke_api(func, args=[]):
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/ntp-keys')
         body = { "openconfig-system:ntp-keys": { "ntp-key" : [{"config" : {"key-id": int(args[0]),
-                                                                           "key-type" : args[1],
+                                                                           "key-type" : auth_type_dict[args[1]],
                                                                            "key-value" : args[2],
                            "openconfig-system-ext:encrypted" : False if len(args) < 4 else True},
                                                                "key-id" : int(args[0])}]}}

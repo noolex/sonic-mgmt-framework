@@ -29,7 +29,7 @@ limitations under the License.
     <PTYPE name="POLICER_RATE_BITS" pattern="^((&UINT_32_RANGE;)([kmgt]?bps)?)$" help="" />
     <PTYPE name="POLICER_RATE_BYTES" pattern="^((&UINT_32_RANGE;)([KMGT]?B)?)$" help="" />
     <PTYPE name="DESCRIPTION" pattern=".{1,256}" help="String (Max: 256 characters)"/>
-    <PTYPE name="TRAP_QUEUE" method="integer" pattern="0..47" help=""/>
+    <PTYPE name="TRAP_QUEUE" method="integer" pattern="0..31" help=""/>
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
         <!-- show policy-map [NAME] | [type qos|monitoring|forwarding|copp|acl-copp] -->
@@ -1300,9 +1300,9 @@ limitations under the License.
     <!--===================================================================================-->
     <!--                            Flow view for CoPP actions                              -->
     <!--===================================================================================-->
-    <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="2">
-        <NAMESPACE ref="configure-view" help="false" completion="false" />
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
+    <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="set" help="Set parameters" />
 
         <MACRO name="POLICY-FLOW-DESCRIPTION" />
 
@@ -1333,7 +1333,7 @@ limitations under the License.
         <MACRO name="POLICY-FLOW-DESCRIPTION" />
 
         <COMMAND name="set trap-queue" help="Set CoPP queue id">
-            <PARAM name="trap-queue-id-value" help="Queue ID value (0-47)" ptype="TRAP_QUEUE" />
+            <PARAM name="trap-queue-id-value" help="CPU queue ID value (0-31)" ptype="TRAP_QUEUE" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_acl_copp_queue_id_action ${fbs-policy-name} ${fbs-class-name} ${trap-queue-id-value}</ACTION>
             <DOCGEN>
               <DESCRIPTION>

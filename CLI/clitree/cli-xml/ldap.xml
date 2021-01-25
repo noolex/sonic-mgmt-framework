@@ -658,6 +658,7 @@ limitations under the License.
           <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
           <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+          <PARAM name="SubInterface" help="Vlan interface" ptype="PHY_PO_SUB_INTERFACE" mode="subcommand"/>
         </PARAM>
 		  <ACTION builtin="clish_pyobj">sonic_cli_ldap ldap_server_src_if_config ${__params}</ACTION>
       <DOCGEN>

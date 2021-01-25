@@ -37,7 +37,10 @@ def name_to_int_val(ifName):
         if len(tk) == 2:   #ex: 2345 in Eth1/1.2345
            val += int(tk[1])
     elif ifName.startswith('PortChannel'):
-        val = 2000000000 + int(ifName[11:])
+        tk = ifName.split('.')
+        val = 2000000000 + int(tk[0][11:])
+        if len(tk) == 2:   #ex: 100 in PortChannel2.100
+           val += int(tk[1])
     elif ifName.startswith('Vlan'):
         val = 3000000000 + int(ifName[4:])
 

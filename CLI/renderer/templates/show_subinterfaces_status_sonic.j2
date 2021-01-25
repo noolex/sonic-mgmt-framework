@@ -10,8 +10,8 @@
         {% if "vlan" in subIntf -%}
             {% if subintfvars.update({'vlan':subIntf["vlan"]}) -%}{% endif -%}
         {% endif -%}
-        {% if "enabled" in subIntf and subIntf["enabled"] == "true" -%}
-            {% if subintfvars.update({'admin_state':'up'}) -%}{% endif -%}
+        {% if "admin_status" in subIntf-%}
+            {% if subintfvars.update({'admin_state':subIntf["admin_status"]}) -%}{% endif -%}
         {% endif -%}
 {{'%-20s'|format(subintfvars.name)}}{{'%-10s'|format(subintfvars.speed)}}{{'%-10s'|format(subintfvars.mtu)}}{{'%-10s'|format(subintfvars.vlan)}}{{'%-10s'|format(subintfvars.admin_state)}}{{'%-30s'|format(subintfvars.type)}}
     {% endfor %}

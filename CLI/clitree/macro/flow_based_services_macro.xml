@@ -9,7 +9,10 @@
         </PARAM>
     </MACRODEF>
 
-    <!-- Case 0: All types for show commands etc. Case 1: All FBS types. Case 2: Only QoS for CtrlPlane-->
+    <!-- Case 0: All types for show commands etc.
+         Case 1: All FBS types. 
+         Case 2: Only QoS for CtrlPlane
+         Case 3: ACL Copp -->
     <MACRODEF name="FBS-POLICY-TYPES">
         <PARAM name="type" help="Policy type" ptype="SUBCOMMAND" mode="subcommand" optional="arg1" order="true">
             <PARAM name="fbs-policy-type" help="Policy type" ptype="SUBCOMMAND" mode="switch">
@@ -17,7 +20,7 @@
                 <PARAM name="monitoring" help="Monitoring Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "1" )'/>
                 <PARAM name="forwarding" help="Forwarding Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "1" )'/>
                 <PARAM name="copp" help="CoPP Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" )'/>
-                <PARAM name="acl-copp" help="ACL CoPP Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "1" ) -o ( "arg2" = "3" )'/>
+                <PARAM name="acl-copp" help="ACL CoPP Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "3" )'/>
             </PARAM>
         </PARAM>
     </MACRODEF>
@@ -235,8 +238,9 @@
                     </PARAM>
                 </PARAM>
                 <PARAM name="next-hop-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                    <PARAM name="recursive" help="Next hop must be recursive or indirectly connected" ptype="SUBCOMMAND" mode="subcommand" />
-                    <PARAM name="non-recursive" help="Next hop must be non-recursive or directly connected" ptype="SUBCOMMAND" mode="subcommand"/>
+                    <PARAM name="recursive" help="Next hop must be recursively resolved via an underlay interface" ptype="SUBCOMMAND" mode="subcommand" />
+                    <PARAM name="non-recursive" help="Next hop must be non-recursive resolved an underlay interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                    <PARAM name="overlay" help="Next hop must be reachable via an overlay interface" ptype="SUBCOMMAND" mode="subcommand"/>
                 </PARAM>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_next_hop_group_member ${fbs-nh-grp-name} ${__params}</ACTION>

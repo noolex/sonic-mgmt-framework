@@ -44,16 +44,24 @@
             {{-'NTP authenticate:'.ljust(24)}}{{"Yes"}}
         {% endif %}
     {% elif "servers" in json_output %}
-        {{-"------------------------------------------------------"}}
+        {{-"----------------------------------------------------------------------"}}
         {{-"\n"}}
-        {{-'NTP Servers'.ljust(32)}}{{'Authentication key ID'}}
+        {{-'NTP Servers'.ljust(32)}}{{'%-8s'|format("minpoll")}}{{'%-8s'|format("maxpoll")}}{{'Authentication key ID'}}
         {{-"\n"}}
-        {{-"------------------------------------------------------"}}
+        {{-"----------------------------------------------------------------------"}}
         {% set server_list = json_output["servers"] %}
         {% for server in server_list %}
             {% if vars.update({'address':server["address"]}) %}{% endif %}
-            {% if vars.update({'key_id':server["config"]['openconfig-system-ext:key-id']}) %}{% endif %}
-            {{-vars.address.ljust(32)}}{{'%-22s'|format(vars.key_id)}}
+            {% if "config" in server %}
+                {% if vars.update({'key_id':server["config"]['openconfig-system-ext:key-id']}) %}{% endif %}
+                {% if vars.update({'min_poll':server["config"]['openconfig-system-ext:minpoll']}) %}{% endif %}
+                {% if vars.update({'max_poll':server["config"]['openconfig-system-ext:maxpoll']}) %}{% endif %}
+            {% else %}
+                {% if vars.update({'key_id':""}) %}{% endif %}
+                {% if vars.update({'min_poll':""}) %}{% endif %}
+                {% if vars.update({'max_poll':""}) %}{% endif %}
+            {% endif %}
+            {{-vars.address.ljust(32)}}{{'%-8s'|format(vars.min_poll)}}{{'%-8s'|format(vars.max_poll)}}{{'%-22s'|format(vars.key_id)}}
         {% endfor %}
     {% elif "associations" in json_output %}
 {{'%-27s'|format("remote")}} {{'%-16s'|format("refid")}} {{'%-4s'|format("st")}} {{'%-2s'|format("t")}} {{'%-6s'|format("when")}} {{'%-6s'|format("poll")}} {{'%-6s'|format("reach")}} {{'%-6s'|format("delay")}} {{'%-12s'|format("offset")}} {{'%-12s'|format("jitter")}}
@@ -85,7 +93,7 @@
                     {% if vars.update({'poll':""}) %}{% endif %}
                 {% endif %}
                 {% if "openconfig-system-ext:reach" in assoc_info %}
-                    {% if vars.update({'reach':'%d'|format(assoc_info["openconfig-system-ext:reach"])}) %}{% endif %}
+                    {% if vars.update({'reach':assoc_info["openconfig-system-ext:reach"]}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'reach':""}) %}{% endif %}
                 {% endif %}
