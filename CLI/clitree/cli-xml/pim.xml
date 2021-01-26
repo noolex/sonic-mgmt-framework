@@ -52,11 +52,10 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="filter"
-                help="options: rpf, interface, neighbor, ssm, topology"
+                help="options: interface, neighbor, rpf, ssm, topology"
                 mode="switch"
                 order="true"
                 ptype="SUBCOMMAND">
-
                 <PARAM
                     name="interface"
                     help="Show interface details"
@@ -64,38 +63,9 @@ limitations under the License.
                     mode="subcommand"
                     optional="true">
                     <PARAM
-                        name="iftype"
-                        help="interface type"
-                        mode="switch"
-                        optional="true"
-                        ptype="SUBCOMMAND">
-                        <PARAM
-                             name="port-id"
-                             help="Physical interface"
-                             ptype="PHY_INTERFACE_SUBIF">
-                        </PARAM>
-                        <PARAM
-                            name="PortChannel"
-                            help="PortChannel interface"
-                            mode="subcommand"
-                            ptype="SUBCOMMAND">
-                            <PARAM
-                                name="port-id"
-                                help="PortChannel ID"
-                                ptype="LAG_ID_SUBID">
-                            </PARAM>
-                        </PARAM>
-                        <PARAM
-                            name="Vlan"
-                            help="VLAN interface"
-                            mode="subcommand"
-                            ptype="SUBCOMMAND">
-                            <PARAM
-                                name="port-id"
-                                help="VLAN ID"
-                                ptype="VLAN_ID">
-                            </PARAM>
-                        </PARAM>
+                        name="ifName"
+                        help="Interface-type number"
+                        ptype="PHY_PO_VL_SUBINTERFACE">
                     </PARAM>
                 </PARAM>
                 <PARAM
@@ -146,7 +116,7 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} intf:${interface} ifType:${iftype} port:${port-id}
+            <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} ifName:${ifName}
             </ACTION>
             <DOCGEN>
                  <DESCRIPTION>

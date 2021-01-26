@@ -178,16 +178,13 @@ def get_keypath(func,args):
         #generate keypath
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim'
 
-        if ((inputDict.get('intf')) or
+        if ((inputDict.get('ifName')) or
             (inputDict.get('nbr'))):
             path = path + "/interfaces"
-            port = inputDict.get('port')
-            if port:
-		port =  quote(port, safe='')
-                if port.lower().startswith('e'):
-                    path = path + "/interface=" + port
-                else:
-                    path = path + "/interface=" + inputDict.get('ifType') + port
+            ifName = inputDict.get('ifName')
+            if ifName:
+		ifName =  quote(ifName, safe='')
+                path = path + "/interface=" + ifName
 
         if (inputDict.get('ssm')):
             path = path + "/global/ssm"
@@ -253,7 +250,7 @@ def get_vrf(intf):
         return None
 
 def show_response(response):
-    if (inputDict.get('intf')):
+    if (inputDict.get('ifName')):
         show_intf_info(response)
     elif (inputDict.get('nbr')):
         show_nbr_info(response)
@@ -277,7 +274,7 @@ def show_intf_info(response):
     if not response:
         return
 
-    if inputDict.get('port'):
+    if inputDict.get('ifName'):
         intfList = response.get('openconfig-network-instance:interface')
     else:
         intfsContainer = response.get('openconfig-network-instance:interfaces')
