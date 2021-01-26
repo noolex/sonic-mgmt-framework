@@ -335,7 +335,34 @@ limitations under the License.
                     mode="subcommand"
                     optional="true"
                     >
-                 </PARAM>
+                </PARAM>
+                <PARAM
+                    name="diagnostics"
+                    help="Transceiver diagnostics info"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                    <PARAM
+                        name="if-xcvr-diag-subcommands"
+                        help="Interface transceiver diagnostics subcommands"
+                        mode="switch"
+                        ptype="SUBCOMMAND"
+                        >
+                            <PARAM
+                                name="capability"
+                                help="Show transceiver diagnostics capability"
+                                mode="subcommand"
+                                ptype="SUBCOMMAND"
+                                />
+                            <PARAM
+                                name="status"
+                                help="Show transceiver diagnostics status"
+                                mode="subcommand"
+                                ptype="SUBCOMMAND"
+                                />
+                    </PARAM>
+                </PARAM>
           </PARAM>
          </PARAM>
    <ACTION>
@@ -387,7 +414,9 @@ limitations under the License.
                 python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_if_range "${ethiflist_nativeNum}" show_interface_id.j2  ${__full_line}&#xA;
             fi&#xA;
         elif test "${if-subcommands}" = "transceiver"; then&#xA;
-            if test "${summary}" = "summary"; then&#xA;
+            if test "${diagnostics}" != ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_xcvr_diag.py ${__full_line}&#xA;
+            elif test "${summary}" = "summary"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_transceiver_status Ethernet_SUMMARY platform_transceiver_show.j2 ${__full_line}&#xA;
             elif test "${phy-if-name}" = ""; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_transceiver_status Ethernet_ALL platform_transceiver_show.j2 ${__full_line}&#xA;
