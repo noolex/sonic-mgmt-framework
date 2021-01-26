@@ -410,16 +410,6 @@ limitations under the License.
                 <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
                 <PARAM name="type" help="Shows all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
-            <PARAM name="show-fbs-group-interface-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='( "${show-fbs-group-name}" != "type" ) -a ( "${show-fbs-group-name}" != "" )'>
-                <PARAM name="interface" help="Show fbs next-hop group state for policies applied for interface" mode="subcommand" ptype="SUBCOMMAND">
-                    <PARAM name="show-fbs-group-interface" help="" ptype="SUBCOMMAND" mode="switch">
-                        <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE"/>
-                        <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE"/>
-                        <PARAM name="vlan-if-id" help="Vlan interface" ptype="VLAN_INTERFACE"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
-            </PARAM>
             <PARAM name="show-fbs-group-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-group-name}" = "type"'>
                 <PARAM name="ip" help="Shows all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
                 <PARAM name="ipv6" help="Shows all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
