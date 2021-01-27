@@ -149,34 +149,6 @@ def build_relay_address_info (args):
             log.syslog(log.LOG_ERR, str(e))
             print "%Error: Internal error"
     return output
-
-def vlanFullList():
-    fullList = []
-    for i in range (1,4095):
-        fullList.append(str(i))
-    return fullList
-
-def vlanExceptList(vlan):
-    exceptStr = ''
-    exceptList = vlanFullList()
-    vlanList = vlan.split(',')
-    for vid in vlanList:
-        if '-' in vid:
-            vid = vid.replace('-','..')
-        if '..' in vid:
-            vidList = vid.split('..')
-            lower = int(vidList[0])
-            upper = int(vidList[1])
-            for i in range(lower,upper+1):
-                vid = str(i)
-                if vid in exceptList:
-                    exceptList.remove(vid)
-        else:
-            exceptList.remove(vid)
-            
-    exceptStr = ','.join(exceptList)
-            
-    return exceptStr
     
 def get_if_and_subif(input_if_name):
     if_name = input_if_name
@@ -401,13 +373,6 @@ def invoke_api(func, args=[]):
 
         return api.patch(path, body)
 
-    elif func == 'put_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config':
-	vlanlst = args[2].split(',')
-	vlanlst = [sub.replace('-', '..') for sub in vlanlst]
-	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans', name=args[0])
-	body = {"openconfig-vlan:trunk-vlans":[int(i) if '..' not in i else i for i in vlanlst]}
-        return api.put(path,body)
-
     elif func == 'patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
         if args[1] == "ACCESS":
@@ -417,14 +382,6 @@ def invoke_api(func, args=[]):
            vlanlst = [sub.replace('-', '..') for sub in vlanlst]
            body = {"openconfig-vlan:config": {"interface-mode": "TRUNK","trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}}
         return api.patch(path, body)
-
-    elif func == 'put_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config':
-        vlanlst = args[2].split(',')
-	vlanlst = [sub.replace('-', '..') for sub in vlanlst]
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans', name=args[0])
-        body = {"openconfig-vlan:trunk-vlans":[int(i) if '..' not in i else i for i in vlanlst]}
-        return api.put(path,body)
-
 
     elif func == 'delete_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_access_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
@@ -1217,9 +1174,9 @@ def run(func, args):
         elif args[3] == 'remove':
             func = 'del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans'
 	elif args[3] == 'except':
-	    exceptStr = vlanExceptList(args[2])
+	    exceptStr = ifutils.vlanExceptList(args[2])
 	    args[2] = exceptStr
-	    func = 'put_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config'
+	    func = 'rpc_replace_vlan'
 	else:
 	    func = 'rpc_replace_vlan'
 
@@ -1234,9 +1191,9 @@ def run(func, args):
 	elif args[3]=='remove':
 	    func = 'del_llist_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config_trunk_vlans'
 	elif args[3] == 'except':
-	    exceptStr = vlanExceptList(args[2])
+	    exceptStr = ifutils.vlanExceptList(args[2])
 	    args[2] = exceptStr
-	    func = 'put_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config'
+	    func = 'rpc_replace_vlan'
 	else:
 	    func = 'rpc_replace_vlan'
 

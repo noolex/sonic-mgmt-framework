@@ -34,6 +34,7 @@ from itertools import groupby
 from operator import itemgetter
 from sonic_intf_utils import name_to_int_val
 from natsort import natsorted
+import sonic_intf_utils as ifutils
 
 import urllib3
 urllib3.disable_warnings()
@@ -106,48 +107,6 @@ def eth_intf_range_expand(givenifrange):
         if check_in_range(p, rangelst):
             intf_list.add(p)
     return list(intf_list)
-
-def find_ranges(vlan_lst):
-    ranges = []
-    vlan_lst.sort()
-    for k, g in groupby(enumerate(vlan_lst), lambda (i,x):i-x):
-        group = map(itemgetter(1), g)
-        ranges.append((group[0], group[-1]))
-    vlan_list_str = ''
-    for range in ranges:
-       if vlan_list_str:
-           vlan_list_str += ','
-       if range[0] == range[1]:
-           vlan_list_str += str(range[0])
-       else:
-           vlan_list_str = vlan_list_str + str(range[0]) + "-" + str(range[1])
-    return vlan_list_str
-
-def vlanFullList():
-    fullList = []
-    for i in range (1,4095):
-        fullList.append(i)
-    return fullList
-
-def vlanExceptList(vlan):
-    exceptStr = ''
-    exceptList = vlanFullList()
-    vlanList = vlan.split(',')
-    for vid in vlanList:
-        if '-' in vid:
-            vid = vid.replace('-','..')
-        if '..' in vid:
-            vidList = vid.split('..')
-            lower = int(vidList[0])
-            upper = int(vidList[1])
-            for i in range(lower,upper+1):
-                if i in exceptList:
-                    exceptList.remove(i)
-        else:
-            exceptList.remove(int(vid))
-
-    exceptStr = find_ranges(exceptList)
-    return exceptStr
     
 def generate_body(func, args=[]):
 
@@ -574,7 +533,7 @@ def run(func, args):
 		response = invoke_api(func, args)
 		return check_response(response, func, args)
 	    elif args[3] == 'except':
-		exceptStr = vlanExceptList(args[2])
+		exceptStr = ifutils.vlanExceptList(args[2])
 		args[2] = exceptStr
 		func = 'replace_vlan'
 		args[1] = 'rpc_replace_vlan'
@@ -599,7 +558,7 @@ def run(func, args):
                	response = invoke_api(func, args)
                 return check_response(response, func, args)
             elif args[3] == 'except':
-                exceptStr = vlanExceptList(args[2])
+                exceptStr = ifutils.vlanExceptList(args[2])
                 args[2] = exceptStr
                 func = 'replace_vlan'
                 args[1] = 'rpc_replace_vlan'
