@@ -5,6 +5,8 @@
             <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE" />
             <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE" />
             <PARAM name="vlan-if-id" help="Vlan interface" ptype="VLAN_INTERFACE" />
+            <PARAM name="eth-sub-if-id" help="Ethernet sub-interface" ptype="PHY_INTERFACE_SUBIF" />
+            <PARAM name="po-sub-if-id" help="PortChannel sub-interface" ptype="PO_INTERFACE_SUBIF" />
             <PARAM name="CPU" help="CPU interface" ptype="SUBCOMMAND" mode="subcommand"/>
         </PARAM>
     </MACRODEF>

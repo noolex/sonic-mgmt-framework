@@ -638,7 +638,12 @@ def handle_unbind_acl_request(args):
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:control-plane/egress-acl-sets/egress-acl-set={set_name},{acl_type}',
                               set_name=args[0], acl_type=args[1])
     else:
-        if args[3] == 'in':
+        # PortChannel subinterface contains an extra argument after interface id - parent interface.
+        if len(args) > 4 and '.' in args[2]:
+            direction = args[4]
+        else:
+            direction = args[3]
+        if direction == 'in':
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/ingress-acl-sets/ingress-acl-set={set_name},{acl_type}',
                               id=args[2], set_name=args[0], acl_type=args[1])
         else:
@@ -1094,7 +1099,7 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
     log.log_debug('ACL:{} Type:{} Intf:{} Stage:{}'.format(acl_name, acl_type, intf_name, stage))
     acl_name = acl_name.replace("_" + acl_type, "")
     output = OrderedDict()
-    if cache.get(acl_name, None) is None:
+    if cache is None or cache.get(acl_name, None) is None:
         log.log_debug("No Cache present")
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/acl-sets/acl-set={name},{acl_type}',
                           name=acl_name, acl_type=acl_type)
@@ -1104,7 +1109,8 @@ def __get_and_show_acl_counters_by_name_and_intf(acl_name, acl_type, intf_name, 
             __convert_oc_acl_set_to_user_fmt(response.content['openconfig-acl:acl-set'][0], output)
             temp = OrderedDict()
             __deep_copy(temp, output)
-            cache[acl_name] = temp
+            if cache:
+                cache[acl_name] = temp
         else:
             log.log_error("Error pulling ACL config for {}:{}".format(acl_name, acl_type))
             raise SonicAclCLIError("{}".format(response.error_message()))
