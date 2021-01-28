@@ -68,19 +68,26 @@ def show_if_vrf_binding(render_tables):
 
 def show_if_switchport_access(render_tables):
     cmd_str = ''
-
     if 'name' in render_tables:
        ifname_key = render_tables['name']
-       if 'sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST' in render_tables:
-           for vlan_member in render_tables['sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST']:
-              if 'ifname' in vlan_member:
-                  if ifname_key == vlan_member['ifname'] and vlan_member['tagging_mode']=='untagged':
-                      vlan_id = vlan_member['name'].lstrip('Vlan')
-                      cmd_str = 'switchport access Vlan ' + vlan_id
+       if 'sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST' in render_tables:
+           portList = render_tables['sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST']
+           if 'name' in portList:
+               if ifname_key == portList['name']:
+                   access_vlan = portList['access_vlan']
+                   vlan_id = access_vlan.lstrip('Vlan')
+		   cmd_str = 'switchport access Vlan ' + vlan_id
+
+       if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
+           portList = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
+	   for tables in portList:
+               if 'ifname' in portList:
+                   if ifname_key == tables['ifname']:
+                       access_vlan = tables['access_vlan']
+                       vlan_id = access_vlan.lstrip('Vlan')
+                       cmd_str = 'switchport access Vlan ' + vlan_id
 
     return 'CB_SUCCESS', cmd_str
-
-
 
 def find_ranges(vlan_lst):
     ranges = []
@@ -98,20 +105,33 @@ def find_ranges(vlan_lst):
            vlan_list_str = vlan_list_str + str(range[0]) + "-" + str(range[1])
     return vlan_list_str
 
-
 def show_if_switchport_trunk(render_tables):
     cmd_str = ''
     vlan_lst = []
     if 'name' in render_tables:
        ifname_key = render_tables['name']
-       if 'sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST' in render_tables:
-           for vlan_member in render_tables['sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST']:
-              if 'ifname' in vlan_member:
-                if ifname_key == vlan_member['ifname'] and vlan_member['tagging_mode']=='tagged':
-                   vlan_id = vlan_member['name'].lstrip('Vlan')
-                   vlan_lst.append(int(vlan_id))
+
+       if 'sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST' in render_tables:
+           portList = render_tables['sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST']
+           if 'name' in portList:
+               if ifname_key == portList['name']:
+                   vlan_list = portList['tagged_vlans']
+                   for vlan_id in vlan_list:
+                       vlan_id = vlan_id.lstrip('Vlan')
+                       vlan_lst.append(vlan_id)
+
+       if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
+           portList = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
+	   for tables in portList:
+               if 'ifname' in tables:
+                   if ifname_key == tables['ifname']:
+                       vlan_list = tables['tagged_vlans']
+                       for vlan_id in vlan_list:
+                           vlan_id = vlan_id.lstrip('Vlan')
+                           vlan_lst.append(vlan_id)
+
     if vlan_lst:
-       vstr = find_ranges(vlan_lst)
+       vstr = ','.join(vlan_lst)
        if vstr:
           cmd_str = 'switchport trunk allowed Vlan ' + vstr
 
