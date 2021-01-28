@@ -614,5 +614,67 @@ limitations under the License.
 
     <MACRO name="INTF_IPV6_ENABLE" arg="${iface},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/ipv6_use_link_local_only=enable"> </MACRO>
 
+    <COMMAND
+        name="ipv6 neighbor"
+        help="Configure static ND"
+        command_tables="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticintf={name},staticip={addr}" 
+        dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/family=IPv6"
+         >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IPV4_OR_IPV6_ADDR"
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/staticip"
+             />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" 
+            dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh"
+            />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Configure static ND.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to configure static ND.
+            </USAGE>
+            <EXAMPLE summary="Configure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# ipv6 neighbor ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
+    <COMMAND
+        name="no ipv6 neighbor"
+        help="Unconfigure static ND" >
+        <PARAM
+            name="static-ip"
+            help="IP Address"
+            ptype="IPV4_OR_IPV6_ADDR" />
+        <PARAM
+            name="neigh"
+            help="MAC Address"
+            ptype="MAC_ADDR" />
+
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
+             ${neigh}</ACTION>
+        <DOCGEN>
+            <DESCRIPTION>
+                Unconfigure static ND.
+            </DESCRIPTION>
+            <USAGE>
+                Use this command to unconfigure static ND.
+            </USAGE>
+            <EXAMPLE summary="Unconfigure static ND">
+                sonic-cli(config)# interface Ethernet 0
+                sonic-cli(conf-if-Ethernet0)# no ipv6 neighbor ip_addr mac
+            </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
 </VIEW>
 </CLISH_MODULE>

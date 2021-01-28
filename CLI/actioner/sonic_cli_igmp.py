@@ -99,7 +99,12 @@ def generate_show_ip_igmp_interface(args):
         if "vrf" in arg or "Vrf" in arg:
             vrfName = args[i]
         i = i + 1
-    interfacename = args[len(args)-1]
+
+    if 'interface' in args:
+        interfacename = args[args.index('interface') + 1]
+    else:
+        interfacename = args[len(args)-1]
+
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=IGMP,igmp/igmp/openconfig-igmp-ext:interfaces/interface={name1}', name=vrfName, name1=interfacename)
     response = api.get(keypath)
     if(response.ok()):
