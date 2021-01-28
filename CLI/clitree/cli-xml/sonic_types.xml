@@ -207,6 +207,30 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="PHY_LB_MGMT_PO_VL_SUBINTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(Port[\.subport]) Loopback(0-16383) Management(0-0) PortChannel(1-128[\.subport]) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[\.subport]) Loopback(0-16383) Management(0-0) PortChannel(1-128[\.subport]) Vlan(1-4093)"
+        ext_help="(Ethernet X.Y) (Loopback interface type) (Management interface type) (PortChannel X.Y) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF_SUBIF;|&LOOPB_INTF;|&MGMT_INTF;|&PO_ALL_INTF_SUBIF;|&VLAN_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_SUBIF_ALIAS;|&LOOPB_INTF;|&MGMT_INTF;|&PO_ALL_INTF_SUBIF;|&VLAN_ALL_INTF;"
+        help="Interface Type - Ranges"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+ <PTYPE
+        name="PHY_PO_VL_SUBINTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(Port[\.subport]) PortChannel(1-128[\.subport]) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[\.subport]) PortChannel(1-128[\.subport]) Vlan(1-4093)"
+        ext_help="(Ethernet X.Y) (PortChannel X.Y) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF_SUBIF;|&PO_ALL_INTF_SUBIF;|&VLAN_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_SUBIF_ALIAS;|&PO_ALL_INTF_SUBIF;|&VLAN_ALL_INTF;"
+        help="Interface Type - Ranges"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="PHY_PO_SUB_INTERFACE"
         method="regexp_select"
         ext_pattern="Ethernet(port\.subport) PortChannel(X.Y) "
@@ -566,12 +590,6 @@ limitations under the License.
     <PTYPE
         name="VRF_OR_MGMT"
         pattern="^Vrf([a-zA-Z0-9_-]){1,12}$|^(mgmt)$"
-        help="WORD"
-        />
-    <!--=======================================================-->
-    <PTYPE
-        name="VRF"
-        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$"
         help="WORD"
         />
     <!--=======================================================-->

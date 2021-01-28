@@ -1,15 +1,18 @@
 diff --git a/plugins/clish/hook_log.c b/plugins/clish/hook_log.c
-index cafd29e..6ec171e 100644
+index cafd29e..1788b4e 100644
 --- a/plugins/clish/hook_log.c
 +++ b/plugins/clish/hook_log.c
-@@ -11,6 +11,7 @@
+@@ -11,8 +11,9 @@
  #include <pwd.h>
  
  #include "clish/shell.h"
 +#include "clish/plugin/mgmt_clish_utils.h"
  
- #define SYSLOG_IDENT "klish"
+-#define SYSLOG_IDENT "klish"
++#define SYSLOG_IDENT "clish"
  
+ /*--------------------------------------------------------- */
+ CLISH_HOOK_LOG(clish_hook_log)
 @@ -37,8 +38,18 @@ CLISH_HOOK_LOG(clish_hook_log)
  		if (!(uname = getenv("LOGNAME")))
  			uname = user ? user->pw_name : "unknown";

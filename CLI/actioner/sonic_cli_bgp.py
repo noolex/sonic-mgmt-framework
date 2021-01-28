@@ -748,10 +748,14 @@ def invoke_api(func, args=[]):
     elif func == 'patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/afi-safis/afi-safi={afi_safi_name}/openconfig-bgp-ext:network-config', name=args[0], identifier=IDENTIFIER, name1=NAME1, afi_safi_name=args[1])
         body = { "openconfig-bgp-ext:network-config" : { "network": [{ "prefix": args[2], "config": { "prefix" : args[2] } }] }}
-        if args[3] == 'backdoor':
-           body["openconfig-bgp-ext:network-config"]["network"][0]["config"]["backdoor"] = True
-        if len(args) > 4:
-           body["openconfig-bgp-ext:network-config"]["network"][0]["config"]["policy-name"] = args[4]
+        if (args[1] == 'IPV4_UNICAST'):
+           if (args[3] == 'backdoor'):
+               body["openconfig-bgp-ext:network-config"]["network"][0]["config"]["backdoor"] = True
+           if len(args) > 4:
+               body["openconfig-bgp-ext:network-config"]["network"][0]["config"]["policy-name"] = args[4]
+        elif (args[1] == 'IPV6_UNICAST'):
+           if len(args) > 3:
+               body["openconfig-bgp-ext:network-config"]["network"][0]["config"]["policy-name"] = args[3]
         return api.patch(keypath, body)
     elif func == 'patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_config_table_map_name':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol={identifier},{name1}/bgp/global/afi-safis/afi-safi={afi_safi_name}/config/openconfig-bgp-ext:table-map-name',
@@ -2687,11 +2691,9 @@ def parseGloblV6(vrf_name, cmd, args=[]):
         rc += parseInvoke_api('patch_openconfig_network_instance1543452951', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'ipaths'))
         rc += parseInvoke_api('patch_openconfig_bgp_ext3691744053', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'equal-cluster-length'))
     elif cmd == 'network':
-        if argds.get('backdoor') == 'x':
-            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_backdoor', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
         if not argds.get('route-map'):
             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_policy_name', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
-        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix', 'backdoor', 'route-map-name'))
+        rc += parseInvoke_api('patch_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix', 'route-map-name'))
     elif cmd == 'aggregate-address':
         if argds.get('rtemap'):
             rc += parseInvoke_api('PATCH_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_aggregate_address_config_aggregate_address_config_policy_name', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix', 'rtemap'))
@@ -2707,11 +2709,9 @@ def parseGloblV6(vrf_name, cmd, args=[]):
         rc += parseInvoke_api('delete_openconfig_network_instance1543452951', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'ipaths'))
         rc += parseInvoke_api('delete_openconfig_bgp_ext3691744053', [ vrf_name, 'IPV6_UNICAST' ])
     elif cmd == 'no network':
-        if argds.get('backdoor'):
-            rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_backdoor', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
         if argds.get('route-map'):
             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network_config_policy_name', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
-        elif not argds.get('backdoor'):
+        else:
             rc += parseInvoke_api('delete_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_network_config_network', [ vrf_name, 'IPV6_UNICAST' ] + mkArgds2list(argds, 'prefix'))
     elif cmd == 'no distance bgp':
         rc += parseInvoke_api('DELETE_openconfig_bgp_ext_network_instances_network_instance_protocols_protocol_bgp_global_afi_safis_afi_safi_default_route_distance_config_external_route_distance', [ vrf_name, 'IPV6_UNICAST' ])

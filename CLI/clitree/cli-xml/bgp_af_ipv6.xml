@@ -57,12 +57,11 @@ limitations under the License.
     </COMMAND>
   <COMMAND name="network" help="Enable routing on an IP network" render_command_cb="bgp_af_ipv6_nw" command_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF_NETWORK/BGP_GLOBALS_AF_NETWORK_LIST/vrf_name={vrf-name},afi_safi={afi-safi},ip_prefix={ip_prfx}">
     <PARAM name="prefix" help="Network number" ptype="IPV6_ADDR_MASK">
-      <PARAM name="backdoor" help="Backdoor" ptype="SUBCOMMAND" mode="subcommand" default="x" optional="true"/>
       <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
         <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63"/>
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV6 ${vrf-name} ${__cmd} &#xA; backdoor:${backdoor} prefix:${prefix} route-map:${route-map} route-map-name:${route-map-name}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV6 ${vrf-name} ${__cmd} &#xA; prefix:${prefix} route-map:${route-map} route-map-name:${route-map-name}</ACTION>
   </COMMAND>
   <COMMAND name="table-map" help="BGP table to RIB route download filter">
     <PARAM name="rtmap" help="Name of route-map" ptype="STRING_63" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route_download_filter" />
@@ -121,12 +120,11 @@ limitations under the License.
     </COMMAND>
   <COMMAND name="no network" help="Enable routing on an IP network">
     <PARAM name="prefix" help="Network number" ptype="IPV6_ADDR_MASK">
-      <PARAM name="backdoor" help="Backdoor" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
       <PARAM name="route-map" help="Route-map reference" mode="subcommand" ptype="SUBCOMMAND" optional="true">
         <PARAM name="route-map-name" help="Name of route-map" ptype="STRING_63"/>
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV6 ${vrf-name} ${__cmd} &#xA; backdoor:${backdoor} prefix:${prefix} route-map:${route-map}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_bgp _PyParse:GblV6 ${vrf-name} ${__cmd} &#xA; prefix:${prefix} route-map:${route-map}</ACTION>
   </COMMAND>
   <COMMAND name="no table-map" help="BGP table to RIB route download filter">
     <PARAM name="rtmap" help="Name of route-map" ptype="STRING_63" optional="true"/>
