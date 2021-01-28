@@ -785,7 +785,16 @@ def set_next_hop_group_action(args):
 
 
 def clear_next_hop_group_action(args):
-    pass
+    ip_type = args[2].upper()
+    if len(args) == 7:
+        next_hop = '{}|{}'.format(args[4], args[6])
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_{ip_type}_NEXTHOP_GROUP={next_hop}',
+                          policy_name=args[0], classifier_name=args[1], ip_type=args[2].upper(), next_hop=next_hop)
+    else:
+        keypath = cc.Path("/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/forwarding/next-hop-groups/next-hop-group={grp_name}",
+                          policy_name=args[0], class_name=args[1], grp_name=args[4])
+
+    return fbs_client.delete(keypath)
 
 
 def set_egress_interface_action(args):

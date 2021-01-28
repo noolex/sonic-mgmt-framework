@@ -662,7 +662,7 @@ def invoke_api(func, args=[]):
     # Disable IGMP
     elif func == 'patch_openconfig_if_ip_disable_igmp':
         name, index = get_if_and_subif(args[0])
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp/config', name=name, index=index)
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-igmp-ext:igmp', name=name, index=index)
         return api.delete(path)
 
     # Configure IGMP Version

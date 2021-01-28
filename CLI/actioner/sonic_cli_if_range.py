@@ -458,9 +458,9 @@ def invoke_api(func, args=[]):
 
 def check_response(response, func, args):
     if response.ok():
-        if response.content is not None:
+        api_response = response.content
+        if api_response is not None:
             # Get Command Output
-            api_response = response.content
             if 'openconfig-interfaces:interfaces' in api_response:
                 value = api_response['openconfig-interfaces:interfaces']
                 if 'interface' in value:
@@ -471,10 +471,6 @@ def check_response(response, func, args):
                 if 'PORT_TABLE_LIST' in value:
                     tup = value['PORT_TABLE_LIST']
                     value['PORT_TABLE_LIST'] =  sorted(tup, key=getSonicId)
-
-            if api_response is None:
-                print("%Error: Internal error.")
-                return 1
             else:
                 if func == 'get_openconfig_interfaces_interfaces_interface':
                     show_cli_output(args[1], api_response)
@@ -482,6 +478,9 @@ def check_response(response, func, args):
                     show_cli_output(args[0], api_response)
                 elif func == 'get_sonic_port_sonic_port_port_table':
                     show_cli_output(args[0], api_response)
+        else:
+            print("%Error: Internal error.")
+            return 1
     else:
         print response.error_message()
         return 1
