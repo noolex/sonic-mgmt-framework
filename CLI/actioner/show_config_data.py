@@ -66,6 +66,7 @@ view_dependency= \
 
 config_view_hierarchy= \
       ['configure',
+       'renderCfg_ipvrf',
        'renderCfg_v4prefix_lists',
        'renderCfg_v6prefix_lists',
        'renderCfg_bgp_com_list',
@@ -96,6 +97,7 @@ config_view_hierarchy= \
        'configure-if',
        'configure-subif',
        'configure-route-map',
+       'renderCfg_iprte',
        'configure-router-bgp',
        'configure-router-ospf',
        'configure-vxlan',
