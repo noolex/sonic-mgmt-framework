@@ -1373,7 +1373,6 @@ limitations under the License.
            help="Set access mode characteristics of the interface"
            ptype="SUBCOMMAND"
            mode="subcommand"
-	   dbpath="sonic-port:sonic-port/PORTCHANNEL/PORTCHANNEL_LIST/access_vlan"
 	   >
            <PARAM
                name="Vlan"
@@ -1385,6 +1384,7 @@ limitations under the License.
                    name="vlan-id"
                    help="VLAN ID of the VLAN when this port is in access mode"
                    ptype="VLAN_ID"
+		   dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/access_vlan"  
                    />
            </PARAM>
            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config body={"openconfig-vlan:config": {"interface-mode": "ACCESS", "access-vlan": ${vlan-id}}}</ACTION>
@@ -1395,7 +1395,7 @@ limitations under the License.
            help="Configure trunking parameters on an interface"
            ptype="SUBCOMMAND"
            mode="subcommand"
-           command_tables="sonic-port:sonic-port/PORTCHANNEL/PORTCHANNEL_LIST/name={name}"
+           command_tables="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/name={name}"
            render_command_cb="if_switchport_trunk"
            >
            <PARAM
