@@ -489,9 +489,6 @@ def check_response(response, func, args):
                     show_cli_output(args[0], api_response)
                 elif func == 'get_sonic_port_sonic_port_port_table':
                     show_cli_output(args[0], api_response)
-        else:
-            print("%Error: Internal error.")
-            return 1
     else:
         print response.error_message()
         return 1
