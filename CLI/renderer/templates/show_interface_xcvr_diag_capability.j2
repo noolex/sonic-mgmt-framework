@@ -1,0 +1,219 @@
+{% if json_output -%}
+{% for ifName in json_output %}
+
+{% set vars = {} %}
+
+{{' '}}
+{{'--------------------------------------------------------'}}
+{{ifName.ljust(20)}}
+{{'--------------------------------------------------------'}}
+{{"Loopback Capabilities"}}
+
+{% set data = json_output[ifName]['capabilities']['state']['loopback'] %}
+
+{% set key = 'Host Side Input' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Host Side Input Loopback".ljust(48)}}:  {{val}}
+
+{% set key = 'Host Side Output' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Host Side Output Loopback".ljust(48)}}:  {{val}}
+
+{% set key = 'Media Side Input' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Media Side Input Loopback".ljust(48)}}:  {{val}}
+
+{% set key = 'Media Side Output' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Media Side Output Loopback".ljust(48)}}:  {{val}}
+
+{% set key = 'Per-lane Host' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Per-lane Host Side Loopback".ljust(48)}}:  {{val}}
+
+{% set key = 'Per-lane Media' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Per-lane Media Side Loopback".ljust(48)}}:  {{val}}
+
+{% set key = 'Simultaneous' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Simultaneous Host and Media Side Loopback".ljust(48)}}:  {{val}}
+
+{{' '}}
+{{"General Pattern Capabilities"}}
+
+{% set data = json_output[ifName]['capabilities']['state']['pattern'] %}
+
+{% set key = 'Auto Restart' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Auto Restart".ljust(48)}}:  {{val}}
+
+{% set key = 'Gating' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Gating".ljust(48)}}:  {{val}}
+
+{% set key = 'Latched Error Information' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Latched Error Information".ljust(48)}}:  {{val}}
+
+{% set key = 'Per-lane Gating' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Per-lane Gating Timer".ljust(48)}}:  {{val}}
+
+{% set key = 'Real-time BER' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Real-time BER Error Count".ljust(48)}}:  {{val}}
+
+{{' '}}
+{{"Diagnostic Report Capabilities"}}
+{% set data = json_output[ifName]['capabilities']['state']['report'] %}
+
+{% set key = 'BER Error Count/Total Bits' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    BER Error Count/Total Bits".ljust(48)}}:  {{val}}
+
+{% set key = 'BER register' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    BER register".ljust(48)}}:  {{val}}
+
+{% set key = 'Host side FEC' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Host side FEC".ljust(48)}}:  {{val}}
+
+{% set key = 'Host side input peak' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Host side Input Peak".ljust(48)}}:  {{val}}
+
+{% set key = 'Host side SNR' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Host side SNR".ljust(48)}}:  {{val}}
+
+{% set key = 'Media side FEC' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Media side FEC".ljust(48)}}:  {{val}}
+
+{% set key = 'Media side input peak' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Media side Input Peak".ljust(48)}}:  {{val}}
+
+{% set key = 'Media side SNR' %}
+{% set val = '' %}
+{% if key in data %}
+{% set val = 'Supported' %}
+{% else %}
+{% set val = 'Not Supported' %}
+{% endif %}
+{{"    Media side SNR".ljust(48)}}:  {{val}}
+
+{{' '}}
+{{"Pattern Generation and Checking Capabilities"}}
+
+{% set data = json_output[ifName]['capabilities']['state']['pattern-chk-host'] %}
+{{"    Host Side Pattern Checker".ljust(48)}}:  {{data}}
+
+{% set data = json_output[ifName]['capabilities']['state']['pattern-gen-host'] %}
+{{"    Host Side Pattern Generator".ljust(48)}}:  {{data}}
+
+{% set data = json_output[ifName]['capabilities']['state']['pattern-chk-media'] %}
+{{"    Media Side Pattern Checker".ljust(48)}}:  {{data}}
+
+{% set data = json_output[ifName]['capabilities']['state']['pattern-gen-media'] %}
+{{"    Media Side Pattern Generator".ljust(48)}}:  {{data}}
+
+{% endfor %}
+{% endif %}
