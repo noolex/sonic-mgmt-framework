@@ -24,8 +24,12 @@ TOPDIR := $(abspath .)
 BUILD_DIR := $(TOPDIR)/build
 MGMT_COMMON_DIR := $(abspath ../sonic-mgmt-common)
 
-GO      ?= /usr/local/go/bin/go
-GOPATH  ?= /tmp/go
+export GO      ?= /usr/local/go/bin/go
+export GOPATH  ?= /tmp/go
+
+# GOPATH is overriten by Version Cache framework
+export GOPATH := $(shell GOPATH=$(GOPATH) ${GO} env GOPATH)
+
 INSTALL := /usr/bin/install
 
 MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
