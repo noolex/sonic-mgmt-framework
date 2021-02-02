@@ -676,11 +676,14 @@ def clear_policer_action_internal(args, keypath=None):
                     elif feat == 'pbs':
                         delete_params.append('pbs')
 
+            put_needed = False
             for feat in delete_params:
-                if feat in data['openconfig-fbs-ext:config'].keys():
+                if feat in data.get('openconfig-fbs-ext:config', dict()).keys():
+                    put_needed = True
                     del data['openconfig-fbs-ext:config'][feat]
 
-            return fbs_client.put(keypath, data)
+            if put_needed:
+                return fbs_client.put(keypath, data)
         else:
             print(response.error_message())
 
@@ -979,7 +982,7 @@ def clear_details_by_policy(args):
         body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
     if len(args) > 1:
         if args[1] == "interface":
-            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2]
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
@@ -994,9 +997,14 @@ def clear_details_by_interface(args):
         if len(args) == 3:
             body["sonic-flow-based-services:input"]["TYPE"] = args[2]
     else:
-        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
-        if len(args) == 3:
-            body["sonic-flow-based-services:input"]["TYPE"] = args[2]
+        if args[0] == "Vlan":
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
+            if len(args) == 5:
+                body["sonic-flow-based-services:input"]["TYPE"] = args[4]
+        else:
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+            if len(args) == 4:
+                body["sonic-flow-based-services:input"]["TYPE"] = args[3]
 
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
