@@ -59,7 +59,7 @@ def __build_acl_config_cache(acl_type, acl_name, cache):
 
 def __build_acl_binding_cache(intf_type, ifname, cache):
     log.log_debug("ACL Interface {},{} specific show running".format(intf_type, ifname))
-    if ifname and "*" not in ifname:
+    if ifname:
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={intfname}', intfname=ifname)
         response = acl_client.get(keypath, depth=None, ignore404=False)
         if response.ok() is False:
