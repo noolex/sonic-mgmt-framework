@@ -27,6 +27,7 @@ from scripts.render_cli import show_cli_output
 
 def invoke(func, args):
     body = None
+    is_update_oper = False
     aa = cc.ApiClient()
     # Get the rules of all ACL table entries.
     if func == 'get_igmp_snooping_interfaces_interface_state':
@@ -188,8 +189,22 @@ def invoke(func, args):
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/querier',
                 vlanid=args[0])
         elif args[1] == 'fast-leave' :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/fast-leave',
+            is_update_oper = True
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping',
                 vlanid=args[0])
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                            {
+                                "name": args[0],
+                                "config" : {
+                                "fast-leave": False
+                                }
+                            }
+                            ]
+                            }
+                        }
+                   }
         elif args[1] == 'version' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/version',
                 vlanid=args[0])
@@ -225,7 +240,10 @@ def invoke(func, args):
             print("%Error: Invalid command")
             exit(1)
             
-        return aa.delete (keypath)
+        if is_update_oper:
+            return aa.patch (keypath, body)
+        else:
+            return aa.delete (keypath)
     else:
         print("%Error: not implemented")
         exit(1)
