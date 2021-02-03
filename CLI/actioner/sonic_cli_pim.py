@@ -400,12 +400,12 @@ def show_topology_src_info(response):
 
         oilContainer = srcState.get('oil-info-entries')
         if oilContainer is None:
-            oilEntry = {'outIntf': "-", 'oilExpiry': "-", 'oilUpTime': "--:--:--"}
+            oilEntry = {'outIntf': "-", 'oilExpiry': "--:--:--", 'oilUpTime': "--:--:--"}
             oilList2.append(oilEntry)
         else:
             oilList = oilContainer.get('oil-info-entry')
             if oilList is None:
-                oilEntry = {'outIntf': "-", 'oilExpiry': "-", 'oilUpTime': "--:--:--"}
+                oilEntry = {'outIntf': "-", 'oilExpiry': "--:--:--", 'oilUpTime': "--:--:--"}
                 oilList2.append(oilEntry)
             else:
                 for oil in oilList:
@@ -546,12 +546,12 @@ def show_topology_info(response):
 
                 oilContainer = srcState.get('oil-info-entries')
                 if oilContainer is None:
-                    oilEntry = {'outIntf': "-", 'oilExpiry': "-", 'oilUpTime': "--:--:--"}
+                    oilEntry = {'outIntf': "-", 'oilExpiry': "--:--:--", 'oilUpTime': "--:--:--"}
                     oilList2.append(oilEntry)
                 else:
                     oilList = oilContainer.get('oil-info-entry')
                     if oilList is None:
-                        oilEntry = {'outIntf': "-", 'oilExpiry': "-", 'oilUpTime': "--:--:--"}
+                        oilEntry = {'outIntf': "-", 'oilExpiry': "--:--:--", 'oilUpTime': "--:--:--"}
                         oilList2.append(oilEntry)
                     else:
                         for oil in oilList:
