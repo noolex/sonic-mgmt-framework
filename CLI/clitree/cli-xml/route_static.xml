@@ -31,6 +31,7 @@ limitations under the License.
          help="Specify static route" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=default,prefix_v=*" 
          command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}" 
          render_command_cb="static_routes_entry"
+         render_command_viewid="renderCfg_iprte"
          >
          <MACRO name="STATIC-ROUTE-CFG"  arg=""/>
 
@@ -42,6 +43,7 @@ limitations under the License.
          help="Configure IP Route for a VRF instance" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=Vrf*,prefix_v=*" 
          command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}" 
          render_command_cb="static_routes_entry"
+         render_command_viewid="renderCfg_iprte"
          >
          <PARAM name="vrfname" help="VRF name" ptype="VRF_NAME">
               <MACRO name="STATIC-ROUTE-CFG"  arg=""/>
@@ -66,6 +68,7 @@ limitations under the License.
          help="Specify static route" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=default,prefix_v=*" 
          command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}" 
          render_command_cb="static_routes_v6entry"
+         render_command_viewid="renderCfg_iprte"
          >
          <MACRO name="STATIC-ROUTE-CFG"  arg="V6"/>
 
@@ -77,6 +80,7 @@ limitations under the License.
          help="Configure IP Route for a VRF instance" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=Vrf*,prefix_v=*" 
          command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}" 
          render_command_cb="static_routes_v6entry"
+         render_command_viewid="renderCfg_iprte"
          >
          <PARAM name="vrfname" help="VRF name" ptype="VRF_NAME">
               <MACRO name="STATIC-ROUTE-CFG"  arg="V6"/>

@@ -149,8 +149,7 @@ def build_relay_address_info (args):
             log.syslog(log.LOG_ERR, str(e))
             print "%Error: Internal error"
     return output
-
-
+    
 def get_if_and_subif(input_if_name):
     if_name = input_if_name
     subif = "0"
@@ -373,7 +372,7 @@ def invoke_api(func, args=[]):
            body = {"openconfig-vlan:config": {"interface-mode": "TRUNK","trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}}
 
         return api.patch(path, body)
-        
+
     elif func == 'patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
         if args[1] == "ACCESS":
@@ -383,7 +382,7 @@ def invoke_api(func, args=[]):
            vlanlst = [sub.replace('-', '..') for sub in vlanlst]
            body = {"openconfig-vlan:config": {"interface-mode": "TRUNK","trunk-vlans": [int(i) if '..' not in i else i for i in vlanlst]}}
         return api.patch(path, body)
-        
+
     elif func == 'delete_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_access_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
         return api.delete(path)
@@ -395,14 +394,21 @@ def invoke_api(func, args=[]):
         vlanStr = args[2].replace('-', '..')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
+    
+    elif func == 'del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans_all':
+	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
+	return api.delete(path)
 
     elif func == 'del_llist_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config_trunk_vlans':
         vlanStr = args[2].replace('-', '..')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
 
+    elif func == 'del_llist_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config_trunk_vlans_all':
+	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
+	return api.delete(path)
+
     elif func == 'rpc_replace_vlan':
-        #vlanStr = args[2].replace('-', '..')
         vlanlst = args[2].split(',')
         vlanlst = [sub.replace('-', '..') for sub in vlanlst]
 
@@ -1158,18 +1164,36 @@ def run(func, args):
         return hdl_get_all_ethernet(args)
 
     if func == 'vlan_trunk_add_remove_ethernet':
-        if args[3] == 'add':
+	if args[2] == 'all':
+	    args.insert(2,'1..4094')
+	    func = 'patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config'
+	elif args[2] == 'none':
+	    func = 'del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans_all'
+        elif args[3] == 'add':
             func = 'patch_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config'
         elif args[3] == 'remove':
             func = 'del_llist_openconfig_vlan_interfaces_interface_ethernet_switched_vlan_config_trunk_vlans'
+	elif args[3] == 'except':
+	    exceptStr = ifutils.vlanExceptList(args[2])
+	    args[2] = exceptStr
+	    func = 'rpc_replace_vlan'
 	else:
 	    func = 'rpc_replace_vlan'
 
     if func == 'vlan_trunk_add_remove_portchannel':
-	if args[3] == 'add':
+	if args[2] == 'all':
+	    args.insert(2,'1..4094')
 	    func = 'patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config'
-	elif args[3] == 'remove':
+	elif args[2] == 'none':
+	    func = 'del_llist_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config_trunk_vlans_all'
+	elif args[3] == 'add':
+	    func = 'patch_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config'
+	elif args[3]=='remove':
 	    func = 'del_llist_openconfig_vlan_interfaces_interface_aggregation_switched_vlan_config_trunk_vlans'
+	elif args[3] == 'except':
+	    exceptStr = ifutils.vlanExceptList(args[2])
+	    args[2] = exceptStr
+	    func = 'rpc_replace_vlan'
 	else:
 	    func = 'rpc_replace_vlan'
 
