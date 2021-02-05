@@ -163,7 +163,7 @@ func toErrorEntry(err error, r *http.Request) (status int, errInfo errorEntry) {
 		errInfo.Message = "Entry not found"
 
 	case tlerr.TranslibCVLFailure:
-		status = http.StatusInternalServerError
+		status = http.StatusBadRequest
 		errInfo.Tag = errtagInvalidValue
 		errInfo.Message = e.CVLErrorInfo.ConstraintErrMsg
 		errInfo.AppTag = e.CVLErrorInfo.ErrAppTag

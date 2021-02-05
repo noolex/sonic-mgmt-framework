@@ -174,7 +174,7 @@ func TestErrorEntry(t *testing.T) {
 
 	t.Run("CVL_SemanticErr", testErrorEntry(
 		cvlError(cvl.CVL_SEMANTIC_ERROR, "hii"),
-		500, "application", "invalid-value", "", "hii"))
+		400, "application", "invalid-value", "", "hii"))
 
 	// errorEntry mapping for YGOT errors
 	t.Run("YGOT_400", testErrorEntry(
