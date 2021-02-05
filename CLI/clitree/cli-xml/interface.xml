@@ -958,8 +958,6 @@ limitations under the License.
             help="Set access mode characteristics of the interface"
             ptype="SUBCOMMAND"
             mode="subcommand"
-            render_command_cb="if_switchport_access"
-            command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST/name={vname},ifname={name}"
             >
             <PARAM
                 name="Vlan"
@@ -971,6 +969,7 @@ limitations under the License.
                     name="vlan-id"
                     help="VLAN ID of the VLAN when this port is in access mode"
                     ptype="VLAN_ID"
+		    dbpath="sonic-port:sonic-port/PORT/PORT_LIST/access_vlan"
                     />
             </PARAM>
             <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config body={"openconfig-vlan:config": {"interface-mode": "ACCESS", "access-vlan": ${vlan-id}}}</ACTION>
@@ -982,7 +981,7 @@ limitations under the License.
             ptype="SUBCOMMAND"
             mode="subcommand"
             render_command_cb="if_switchport_trunk"
-            command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST/name={vname},ifname={name}"
+            command_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={name}"
             >
             <PARAM
                 name="allowed"
@@ -1026,6 +1025,30 @@ limitations under the License.
                                 ptype="VLAN_RANGE"
                                 />
                         </PARAM>
+			<PARAM 
+			    name="except"
+			    help="Configure trunking parameters on an interface"
+			    ptype="SUBCOMMAND"
+			    mode="subcommand"
+			    >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+			<PARAM 
+			    name="all"
+			    help="Configure an interface on all VLANs"
+			    ptype="SUBCOMMAND"
+			    mode="subcommand"
+			    />
+			<PARAM 
+			    name="none"
+			    help="Remove all trunking parameters on an interface"
+			    ptype="SUBCOMMAND"
+			    mode="subcommand"
+			    />
                         <PARAM
                             name="vlan_id_list"
                             help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
@@ -1379,8 +1402,7 @@ limitations under the License.
            help="Set access mode characteristics of the interface"
            ptype="SUBCOMMAND"
            mode="subcommand"
-           command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST/name={vname},ifname={name}"
-           render_command_cb="if_switchport_access">
+	   >
            <PARAM
                name="Vlan"
                help="Set VLAN when interface is in access mode"
@@ -1391,6 +1413,7 @@ limitations under the License.
                    name="vlan-id"
                    help="VLAN ID of the VLAN when this port is in access mode"
                    ptype="VLAN_ID"
+		   dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/access_vlan"  
                    />
            </PARAM>
            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${po_name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config body={"openconfig-vlan:config": {"interface-mode": "ACCESS", "access-vlan": ${vlan-id}}}</ACTION>
@@ -1401,7 +1424,7 @@ limitations under the License.
            help="Configure trunking parameters on an interface"
            ptype="SUBCOMMAND"
            mode="subcommand"
-           command_tables="sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST/name={vname},ifname={name}"
+           command_tables="sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST/name={name}"
            render_command_cb="if_switchport_trunk"
            >
            <PARAM
@@ -1447,6 +1470,30 @@ limitations under the License.
                                 />
                         </PARAM>
                         <PARAM
+                            name="except"
+                            help="Configure trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+                        <PARAM
+                            name="all"
+                            help="configures an interface on all VLANs"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+			    />
+                        <PARAM
+                            name="none"
+                            help="Remove all trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+			    />
+			<PARAM
                             name="vlan_id_list"
                             help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
                             ptype="VLAN_RANGE"

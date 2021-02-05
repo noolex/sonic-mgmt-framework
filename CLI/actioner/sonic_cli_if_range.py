@@ -30,8 +30,11 @@ from netaddr import *
 from scripts.render_cli import show_cli_output
 import subprocess
 import re
+from itertools import groupby
+from operator import itemgetter
 from sonic_intf_utils import name_to_int_val
 from natsort import natsorted
+import sonic_intf_utils as ifutils
 
 import urllib3
 urllib3.disable_warnings()
@@ -104,7 +107,7 @@ def eth_intf_range_expand(givenifrange):
         if check_in_range(p, rangelst):
             intf_list.add(p)
     return list(intf_list)
-
+    
 def generate_body(func, args=[]):
 
     body = {}
@@ -301,6 +304,10 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
 
+    elif func == 'delete_trunk_vlan_all':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
+        return api.delete(path)
+
     #Remove aggregate access vlan
     elif func == 'delete_aggregate_access_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
@@ -311,6 +318,10 @@ def invoke_api(func, args=[]):
         vlanStr = args[1].replace('-', '..')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
+    
+    elif func == 'delete_aggregate_trunk_vlan_all':
+	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
+	return api.delete(path)
 
     #Remove all vlans
     elif func == 'delete_all_vlan':
@@ -505,10 +516,23 @@ def run(func, args):
             return res
 
 	elif func == 'vlan_trunk_if_range':
-	    if args[3] == 'add':
+            if args[2] == 'all':
+                args.insert(2,'1..4094')
+                func = 'config_if_range'
+                response = invoke_api(func, args)
+                return check_response(response, func, args)
+	    elif args[2] == 'none':
+		func = 'delete_if_range'
+		args[1] = 'delete_trunk_vlan_all'
+	    elif args[3] == 'add':
 		func = 'config_if_range'
 		response = invoke_api(func, args)
 		return check_response(response, func, args)
+	    elif args[3] == 'except':
+		exceptStr = ifutils.vlanExceptList(args[2])
+		args[2] = exceptStr
+		func = 'replace_vlan'
+		args[1] = 'rpc_replace_vlan'
 	    elif args[3] == 'remove':
 		func = 'delete_if_range'
 		args[1] = 'delete_trunk_vlan'
@@ -517,10 +541,23 @@ def run(func, args):
                 args[1] = 'rpc_replace_vlan'
 
 	elif func == 'vlan_trunk_if_range_pc':
-	    if args[3] == 'add':
+	    if args[2] == 'all':
+		args.insert(2,'1..4094')
+		func = 'config_if_range'
+		response = invoke_api(func, args)
+		return check_response(response, func, args)
+	    elif args[2] == 'none':
+		func = 'delete_if_range'
+		args[1] = 'delete_aggregate_trunk_vlan_all'
+	    elif args[3] == 'add':
 	        func = 'config_if_range'
                	response = invoke_api(func, args)
                 return check_response(response, func, args)
+            elif args[3] == 'except':
+                exceptStr = ifutils.vlanExceptList(args[2])
+                args[2] = exceptStr
+                func = 'replace_vlan'
+                args[1] = 'rpc_replace_vlan'
 	    elif args[3] == 'remove':
 		func = 'delete_if_range'
 		args[1] = 'delete_aggregate_trunk_vlan'

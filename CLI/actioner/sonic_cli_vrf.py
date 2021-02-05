@@ -21,9 +21,12 @@ import sys
 import time
 import json
 import ast
+import re
+import os
 from rpipe_utils import pipestr
 import cli_client as cc
-from scripts.render_cli import show_cli_output
+from scripts.render_cli import show_cli_output, write
+from sonic_cli_show_config import showconfig_views_to_buffer
 import sonic_intf_utils as ifutils
 import collections
 from natsort import natsorted, ns
@@ -254,6 +257,39 @@ def run(func, args):
                 response = invoke_api(subfunc, intfargs)
                 if not response.ok():
                     print (response.error_message(), " Interface:", intf)
+
+        elif func == 'showrun':
+            api = cc.ApiClient()
+            keypath = []
+            keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST={}'.format(args[0]))
+            response = api.get(keypath)
+            if response.content == None:
+                 # vrf not found
+                 return 0
+            showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name={}"'.format(args[0])), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if-mgmt,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name={}"'.format(args[0])) ]
+            rcfgall = showconfig_views_to_buffer(showrun_list)
+            vrfcfgs = ''
+            gotSep = False
+            for cfgl in rcfgall.replace('\n ', '\t ').splitlines():
+                if cfgl == '!':
+                   gotSep = True
+                   continue
+                if args[0] != 'default':
+                   if not re.search('\\bvrf (forwarding )?{}\\b'.format(args[0]), cfgl):
+                      continue
+                else:
+                   if re.search('\\bvrf\\b', cfgl) and not re.search('\\bvrf (forwarding )?default\\b', cfgl):
+                      continue
+                if gotSep:
+                   vrfcfgs += '\n!\n' + cfgl
+                   gotSep = False
+                else:
+                   vrfcfgs += '\n' + cfgl
+            full_cmd = os.getenv('USER_COMMAND', None)
+            if full_cmd is not None:
+                pipestr().write(full_cmd.split())
+            write(vrfcfgs.replace('\t', '\n'))
+
         else:
             api_response = invoke_api(func, args)
 
