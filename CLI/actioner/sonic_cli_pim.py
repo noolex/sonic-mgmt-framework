@@ -387,7 +387,7 @@ def show_topology_src_info(response):
 
         inIntf = srcState.get('incoming-interface')
         if inIntf is None:
-            inIntf = ""
+            inIntf = "<none>"
 
         rpfNbr = ""
         rpfInfo = srcState.get('rpf-info')
@@ -527,7 +527,7 @@ def show_topology_info(response):
 
                 inIntf = srcState.get('incoming-interface')
                 if inIntf is None:
-                    inIntf = ""
+                    inIntf = "<none>"
 
                 rpfNbr = ""
                 rpfInfo = srcState.get('rpf-info')
