@@ -65,7 +65,8 @@ limitations under the License.
                     <PARAM
                         name="ifName"
                         help="Interface-type number"
-                        ptype="PHY_PO_VL_SUBINTERFACE">
+                        ptype="PHY_PO_VL_SUBINTERFACE"
+                        optional="true">
                     </PARAM>
                 </PARAM>
                 <PARAM
@@ -116,7 +117,7 @@ limitations under the License.
                     </PARAM>
                 </PARAM>
             </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} ifName:${ifName}
+            <ACTION builtin="clish_pyobj">sonic_cli_pim show_pim_config vrf:${vrf-name} ssm:${ssm} rpf:${rpf} topology:${topology} grpAddr:${grp-addr} srcAddr:${src-addr} nbr:${nbr} nbrAddr:${nbr-addr} ifName:${ifName} interface:${interface}
             </ACTION>
             <DOCGEN>
                  <DESCRIPTION>
