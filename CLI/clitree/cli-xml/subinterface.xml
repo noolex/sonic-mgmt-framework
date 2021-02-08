@@ -92,10 +92,10 @@ limitations under the License.
             name="no"
             help="Negate a command or set its defaults"
             />
-        <COMMAND name="encapsulation" help=""/>
-        <COMMAND name="encapsulation dot1q" help=""/>
-        <COMMAND name="encapsulation dot1q vlan-id" help="" >
-            <PARAM name="vlanid" ptype="VLAN_ID" help="" dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/vlan"> </PARAM>
+        <COMMAND name="encapsulation" help="Configure encapsulation for sub-interface"/>
+        <COMMAND name="encapsulation dot1q" help="Configure encapsulation type as DOT1Q"/>
+        <COMMAND name="encapsulation dot1q vlan-id" help="Configure DOT1Q vlan ID" >
+            <PARAM name="vlanid" ptype="VLAN_ID" help="VLAN ID" dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/vlan"> </PARAM>
             <ACTION
                 builtin="clish_restcl">
                 oper=PATCH 
@@ -103,7 +103,7 @@ limitations under the License.
                 body={ "openconfig-vlan:vlan-id": ${vlanid} }
             </ACTION>
         </COMMAND>
-        <COMMAND name="no encapsulation" help="">
+        <COMMAND name="no encapsulation" help="Unconfigure encapsulation for sub-interface">
             <ACTION
                 builtin="clish_restcl">
                 oper=DELETE 
