@@ -1706,6 +1706,22 @@ limitations under the License.
             help="IP address with mask"
             ptype="IP_ADDR_MASK"
             >
+            <PARAM
+                name="ip-subcommands"
+                help="IP address subcommands"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="true"
+                >
+                <PARAM
+                    name="secondary"
+                    help="Secondary IPv4 address"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_if_ipv4 ${iface} ${addr} ${ip-subcommands}</ACTION>
     </COMMAND>
@@ -1720,6 +1736,22 @@ limitations under the License.
             optional="true"
             ptype="IP_ADDR_MASK"
             >
+            <PARAM
+                name="ip-subcommands"
+                help="IP address subcommands"
+                ptype="SUBCOMMAND"
+                mode="switch"
+                optional="true"
+                >
+                <PARAM
+                    name="secondary"
+                    help="Secondary IPv4 address"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_if delete_phy_if_ip ${iface} ${addr} True ${ip-subcommands}</ACTION>
     </COMMAND>
