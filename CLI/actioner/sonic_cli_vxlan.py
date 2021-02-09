@@ -198,6 +198,9 @@ def invoke(func, args):
         func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_primary_ip'):
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}/primary_ip', name=args[0][6:])
 
+        if is_vlan_vni_mapping_exists() is True:
+           return aa._make_error_response("Error: Please delete all VLAN VNI mappings.");
+
         if (func.startswith("patch") is True):
             pip_response = aa.get(keypath)
             if pip_response.ok():
