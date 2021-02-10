@@ -85,6 +85,11 @@ def build_intf_vrf_binding (intf_vrf_binding):
              "INTERFACE_LIST",
              "portname")
 
+    tSubIntf = ("/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/",
+             "sonic-interface:VLAN_SUB_INTERFACE",
+             "VLAN_SUB_INTERFACE_LIST",
+             "id")
+
     tVlanIntf = ("/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/",
                  "sonic-vlan-interface:VLAN_INTERFACE",
                  "VLAN_INTERFACE_LIST",
@@ -100,7 +105,7 @@ def build_intf_vrf_binding (intf_vrf_binding):
                      "LOOPBACK_INTERFACE_LIST",
                      "loIfName")
 
-    requests = [tIntf, tLoopbackIntf, tPortChannelIntf, tVlanIntf]
+    requests = [tIntf, tSubIntf, tLoopbackIntf, tPortChannelIntf, tVlanIntf]
 
     for request in requests:
         keypath = cc.Path(request[0])
@@ -127,9 +132,9 @@ def build_intf_vrf_binding (intf_vrf_binding):
                 vrfName = intf.get('vrf_name')
 
                 if vrfName is None:
-                    continue
-
-                intf_vrf_binding.setdefault(vrfName, []).append(intfName)
+                    intf_vrf_binding.setdefault("default", []).append(intfName)
+                else:
+                    intf_vrf_binding.setdefault(vrfName, []).append(intfName)
 
             for vrf in intf_vrf_binding:
                 intf_vrf_binding[vrf] = natsorted(intf_vrf_binding[vrf], alg=ns.IGNORECASE)
@@ -137,6 +142,9 @@ def build_intf_vrf_binding (intf_vrf_binding):
         except  Exception as e:
             log.syslog(log.LOG_ERR, str(e))
             print "%Error: Internal error"
+
+    if len(intf_vrf_binding["default"]) == 0:
+        intf_vrf_binding.pop("default")
 
 def generate_body(func, args=[]):
     body = {}
@@ -169,8 +177,7 @@ def invoke_api(func, args=[]):
                     vrf_list = sonic_vrfs.content['sonic-vrf:VRF_LIST']
                     for vrf in vrf_list:
                        vrf_name = vrf['vrf_name']
-                       if vrf_name != "default":
-                           intf_vrf_binding.setdefault(vrf_name, [])
+                       intf_vrf_binding.setdefault(vrf_name, [])
 
             # build the dictionary with vrf name as key and list of interfaces as value
             build_intf_vrf_binding(intf_vrf_binding)
