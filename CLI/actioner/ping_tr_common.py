@@ -145,7 +145,7 @@ def transform_input(args, cmd):
 
     # Substitute interface name in the args based on interface type.
     if nameType == NATIVE_IFNAME:
-        args = re.sub('('+intfSwitch+')(\s*)(Ethernet\s*\d+)(\s+v|$)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        args = re.sub('('+intfSwitch+')(\s*)(Ethernet\s*\d+)(\s+|$)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
         return args.strip()
 
     if nameType == NATIVE_SUBIFNAME:
