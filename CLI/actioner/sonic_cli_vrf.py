@@ -143,9 +143,6 @@ def build_intf_vrf_binding (intf_vrf_binding):
             log.syslog(log.LOG_ERR, str(e))
             print "%Error: Internal error"
 
-    if len(intf_vrf_binding["default"]) == 0:
-        intf_vrf_binding.pop("default")
-
 def generate_body(func, args=[]):
     body = {}
     if func == 'patch_network_instance_interface':
