@@ -111,27 +111,39 @@
 116a180,181
 > 			if (BOOL_TRUE == clish_param__get_hidden(param))
 > 				continue;
-120c185,189
+120c185,190
 < 				result = clish_param__get_value(param);
 ---
 > 
 > 				const clish_ptype_t *ptype = clish_param__get_ptype(param);
+>                                 bool order =  clish_param__get_order(param);
 >                 		if (CLISH_PTYPE_METHOD_REGEXP_SELECT != 
 > 						clish_ptype__get_method(ptype))
 > 					result = clish_param__get_value(param);
-140,141c209,216
+122c192
+< 					lub_argv_add(matches, result);
+---
+> 					lub_argv_add(matches, result, order);
+129a200
+>                                 bool_t order =  clish_param__get_order(param);
+134c205
+< 							lub_argv_add(matches, q);
+---
+> 							lub_argv_add(matches, q, order);
+140,141c211,219
 < 			if ((ptype = clish_param__get_ptype(param)))
 < 				clish_ptype_word_generator(ptype, matches, text);
 ---
 > 			if ((ptype = clish_param__get_ptype(param))) {
+>                                 bool_t order =  clish_param__get_order(param);
 >                 		if (CLISH_PTYPE_METHOD_REGEXP_SELECT != clish_ptype__get_method(ptype))
->                                 	clish_ptype_word_generator(ptype, matches, text, NULL);
+>                                 	clish_ptype_word_generator(ptype, matches, text, NULL, order);
 >                 		else {
->                                 	clish_ptype_word_generator(ptype, matches, text, penultimate_text);
+>                                 	clish_ptype_word_generator(ptype, matches, text, penultimate_text, order);
 >                 		}
 > 
 > 			}
-144a220,222
+144a223,225
 > 		if(penultimate_text)
 >                         lub_string_free((char *)penultimate_text);
 > 

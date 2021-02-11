@@ -124,17 +124,18 @@
 < 	const char *name;
 ---
 > 	const char *name = NULL;
-93a184,186
+93a184,187
 > 	char *ext_help = NULL;
+>         bool_t order = clish_param__get_order(this);
 > 	help_type_t usename = USE_NAME;
 > 	clish_ptype_method_e method = clish_ptype__get_method(this->ptype);
-104c197
+104c198
 < 			clish_param_help(cparam, help);
 ---
 > 			clish_param_help(cparam, help, pval);
-105a199
+105a200
 > 		lub_string_free((char*)range);
-109,111c203,206
+109,111c204,207
 < 	if (CLISH_PARAM_SUBCOMMAND == clish_param__get_mode(this))
 < 		name = clish_param__get_value(this);
 < 	else
@@ -143,7 +144,7 @@
 > 		if (method != CLISH_PTYPE_METHOD_REGEXP_SELECT)
 > 			name = clish_param__get_value(this);
 > 	} else {
-113a209,277
+113a210,278
 > 	}
 > 
 > 	if (method == CLISH_PTYPE_METHOD_REGEXP_SELECT) {
@@ -179,8 +180,8 @@
 >                     }
 > 				} else {
 > 					if (!pval) {
-> 						lub_argv_add(help->name, pname);
-> 						lub_argv_add(help->help, clish_ptype_regexp_select__get_ext_help(ptype, i));
+> 						lub_argv_add(help->name, pname, order);
+> 						lub_argv_add(help->help, clish_ptype_regexp_select__get_ext_help(ptype, i), BOOL_FALSE);
 > 						if (pname) {
 > 							lub_string_free((char*)pname);
 > 							pname = NULL;
@@ -213,7 +214,7 @@
 > 			lub_string_cat(&str, name);
 > 		}
 > 	}
-115,123c279,312
+115,124c280,314
 < 	lub_string_cat(&str, this->text);
 < 	if (range) {
 < 		lub_string_cat(&str, " (");
@@ -223,14 +224,15 @@
 < 	lub_argv_add(help->name, name);
 < 	lub_argv_add(help->help, str);
 < 	lub_string_free(str);
+< 	lub_argv_add(help->detail, NULL);
 ---
 > 	switch (method) {
 > 		case CLISH_PTYPE_METHOD_SELECT:
 > 			{
 > 				clish_ptype_t *ptype = this->ptype;
-> 				if (clish_ptype_select__get_help(ptype, help, pval) != 0) {
-> 					lub_argv_add(help->name, str);
-> 					lub_argv_add(help->help, this->text);
+> 				if (clish_ptype_select__get_help(ptype, help, pval, order) != 0) {
+> 					lub_argv_add(help->name, str, order);
+> 					lub_argv_add(help->help, this->text, BOOL_FALSE);
 > 				}
 > 			}
 > 			break;
@@ -238,19 +240,19 @@
 > 			{
 > 				if (usename != USE_RANGE) {
 > 					if (str) {
-> 						lub_argv_add(help->name, str);
-> 						lub_argv_add(help->help, this->text);
+> 						lub_argv_add(help->name, str, order);
+> 						lub_argv_add(help->help, this->text, BOOL_FALSE);
 > 					}
 > 				} else if (pval) {
-> 					lub_argv_add(help->name, str);
-> 					lub_argv_add(help->help, ext_help);
+> 					lub_argv_add(help->name, str, order);
+> 					lub_argv_add(help->help, ext_help, BOOL_FALSE);
 > 				}
 > 			}
 > 			break;
 > 		default:
 > 			{
-> 				lub_argv_add(help->name, str);
-> 				lub_argv_add(help->help, this->text);
+> 				lub_argv_add(help->name, str, order);
+> 				lub_argv_add(help->help, this->text, BOOL_FALSE);
 > 			}
 > 			break;
 > 	}
@@ -258,7 +260,8 @@
 > 	if(str) {
 > 		lub_string_free(str);
 > 	}
-135,166c324,328
+> 	lub_argv_add(help->detail, NULL, BOOL_FALSE);
+135,166c325,329
 < CLISH_SET_STR(param, ptype_name);
 < CLISH_GET_STR(param, ptype_name);
 < CLISH_SET_STR(param, access);
@@ -297,35 +300,35 @@
 > 	unsigned index)
 > {
 > 	return clish_paramv__get_param(this->paramv, index);
-170c332
+170c333
 < _CLISH_GET_STR(param, range)
 ---
 > clish_paramv_t *clish_param__get_paramv(clish_param_t * this)
-172,173c334
+172,173c335
 < 	assert(inst);
 < 	return clish_ptype__get_range(inst->ptype);
 ---
 > 	return this->paramv;
-177,178c338
+177,178c339
 < clish_param_t *clish_param__get_param(const clish_param_t * this,
 < 	unsigned int index)
 ---
 > unsigned int clish_param__get_param_count(const clish_param_t * this)
-180,181c340
+180,181c341
 < 	assert(this);
 < 	return clish_paramv__get_param(this->paramv, index);
 ---
 > 	return clish_paramv__get_count(this->paramv);
-185c344
+185c345
 < _CLISH_GET(param, unsigned int, param_count)
 ---
 > void clish_param__set_optional(clish_param_t * this, bool_t optional)
-187,188c346
+187,188c347
 < 	assert(inst);
 < 	return clish_paramv__get_count(inst->paramv);
 ---
 > 	this->optional = optional;
-189a348,471
+189a349,472
 > 
 > /*--------------------------------------------------------- */
 > bool_t clish_param__get_optional(const clish_param_t * this)

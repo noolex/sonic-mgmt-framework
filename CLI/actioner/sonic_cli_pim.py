@@ -178,7 +178,7 @@ def get_keypath(func,args):
         #generate keypath
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim'
 
-        if ((inputDict.get('ifName')) or
+        if ((inputDict.get('interface')) or
             (inputDict.get('nbr'))):
             path = path + "/interfaces"
             ifName = inputDict.get('ifName')
@@ -210,6 +210,7 @@ def get_keypath(func,args):
 
     keypath = cc.Path(path)
     return keypath, body
+
 
 def get_vrf(intf):
     request = ''
@@ -250,7 +251,7 @@ def get_vrf(intf):
         return None
 
 def show_response(response):
-    if (inputDict.get('ifName')):
+    if (inputDict.get('interface')):
         show_intf_info(response)
     elif (inputDict.get('nbr')):
         show_nbr_info(response)
@@ -387,43 +388,47 @@ def show_topology_src_info(response):
 
         inIntf = srcState.get('incoming-interface')
         if inIntf is None:
-            inIntf = ""
+            inIntf = "-"
 
         rpfNbr = ""
-        rpfState = srcState.get('rpf-info').get('state')
-        if rpfState:
-            rpfNbr = rpfState.get('rpf-neighbor-address')
-            if rpfNbr is None:
-                rpfNbr = ""
+        rpfInfo = srcState.get('rpf-info')
+        if rpfInfo:
+            rpfState = rpfInfo.get('state')
+            if rpfState:
+                rpfNbr = rpfState.get('rpf-neighbor-address')
+                if rpfNbr is None:
+                    rpfNbr = ""
 
-        oilList = srcState.get('oil-info-entries').get('oil-info-entry')
-        if oilList:
-            for oil in oilList:
-                outIntf = oil.get('outgoing-interface')
-                if  outIntf is None:
-                    continue
+        oilContainer = srcState.get('oil-info-entries')
+        if oilContainer:
+            oilList = oilContainer.get('oil-info-entry')
+            if oilList:
+                for oil in oilList:
+                    outIntf = oil.get('outgoing-interface')
+                    if  outIntf is None:
+                        continue
 
-                oilState = oil.get('state')
-                if  oilState is None:
-                    continue
+                    oilState = oil.get('state')
+                    if  oilState is None:
+                        continue
 
-                oilExpiry = oilState.get('expiry')
-                if oilExpiry is None:
-                    oilExpiry = "Never"
-                else:
-                    oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
+                    oilExpiry = oilState.get('expiry')
+                    if oilExpiry is None:
+                        oilExpiry = "Never"
+                    else:
+                        oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
 
-                oilUpTime = oilState.get('uptime')
-                if oilUpTime is None:
-                    oilUpTime = "--:--:--"
-                else:
-                    oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
+                    oilUpTime = oilState.get('uptime')
+                    if oilUpTime is None:
+                        oilUpTime = "--:--:--"
+                    else:
+                        oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
 
-                oilEntry = {'outIntf': outIntf,
-                            'oilExpiry': oilExpiry,
-                            'oilUpTime': oilUpTime
-                           }
-                oilList2.append(oilEntry)
+                    oilEntry = {'outIntf': outIntf,
+                                'oilExpiry': oilExpiry,
+                                'oilUpTime': oilUpTime
+                               }
+                    oilList2.append(oilEntry)
 
         srcEntry = {'grpAddr': grpAddr,
                     'srcAddr': srcAddr,
@@ -487,7 +492,11 @@ def show_topology_info(response):
             if grpAddr is None:
                 continue
 
-            srcList = state.get('src-entries').get('src-entry')
+            srcEntries = state.get('src-entries')
+            if srcEntries is None:
+                continue
+
+            srcList = srcEntries.get('src-entry')
             if srcList is None:
                 continue
 
@@ -519,45 +528,47 @@ def show_topology_info(response):
 
                 inIntf = srcState.get('incoming-interface')
                 if inIntf is None:
-                    inIntf = ""
+                    inIntf = "-"
 
                 rpfNbr = ""
-                rpfState = srcState.get('rpf-info').get('state')
-                if rpfState:
-                    rpfNbr = rpfState.get('rpf-neighbor-address')
-                    if rpfNbr is None:
-                        rpfNbr = ""
+                rpfInfo = srcState.get('rpf-info')
+                if rpfInfo:
+                    rpfState = rpfInfo.get('state')
+                    if rpfState:
+                        rpfNbr = rpfState.get('rpf-neighbor-address')
+                        if rpfNbr is None:
+                            rpfNbr = ""
 
-                oilList = srcState.get('oil-info-entries').get('oil-info-entry')
-                if oilList is None:
-                    continue
+                oilContainer = srcState.get('oil-info-entries')
+                if oilContainer is not None:
+                    oilList = oilContainer.get('oil-info-entry')
+                    if oilList is not None:
+                        for oil in oilList:
+                            outIntf = oil.get('outgoing-interface')
+                            if  outIntf is None:
+                                continue
 
-                for oil in oilList:
-                    outIntf = oil.get('outgoing-interface')
-                    if  outIntf is None:
-                        continue
+                            oilState = oil.get('state')
+                            if  oilState is None:
+                                continue
 
-                    oilState = oil.get('state')
-                    if  oilState is None:
-                        continue
+                            oilExpiry = oilState.get('expiry')
+                            if oilExpiry is None:
+                                oilExpiry = "Never"
+                            else:
+                                oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
 
-                    oilExpiry = oilState.get('expiry')
-                    if oilExpiry is None:
-                        oilExpiry = "Never"
-                    else:
-                        oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
+                            oilUpTime = oilState.get('uptime')
+                            if oilUpTime is None:
+                                oilUpTime = "--:--:--"
+                            else:
+                                oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
 
-                    oilUpTime = oilState.get('uptime')
-                    if oilUpTime is None:
-                        oilUpTime = "--:--:--"
-                    else:
-                        oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
-
-                    oilEntry = {'outIntf': outIntf,
-                                'oilExpiry': oilExpiry,
-                                'oilUpTime': oilUpTime
-                               }
-                    oilList2.append(oilEntry)
+                            oilEntry = {'outIntf': outIntf,
+                                        'oilExpiry': oilExpiry,
+                                        'oilUpTime': oilUpTime
+                                       }
+                            oilList2.append(oilEntry)
 
                 srcEntry = {'grpAddr': grpAddr,
                             'srcAddr': srcAddr,

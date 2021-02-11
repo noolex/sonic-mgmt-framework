@@ -128,7 +128,7 @@
 > 
 > /*--------------------------------------------------------- */
 > static void clish_ptype_regexp_select_get_match(const clish_ptype_t *this,
-> 	const char *text, lub_argv_t *matches)
+> 	const char *text, lub_argv_t *matches, bool_t order )
 > {
 > 	char *result = NULL;
 > 	int i = 0;
@@ -139,7 +139,7 @@
 > 	while ((result = clish_ptype_regexp_select__get_name(this, i++))) {
 > 		/* get the next item and check if it is a completion */
 > 		if (result == lub_string_nocasestr(result, text)){
-> 			lub_argv_add(matches, result);
+> 			lub_argv_add(matches, result, order);
 > 		}
 > 		lub_string_free(result);
 > 	}
@@ -158,17 +158,17 @@
 >         this->alt_ext_pattern = NULL;
 >         this->alt_pattern = NULL;
 > 	this->usename = BOOL_TRUE;
-37a190
+37a190,196
 > 	this->u.select.ext_help = NULL;
-39c192,198
-< 	if (pattern) {
----
+> 
 > 	if (ext_pattern || ext_help || alt_ext_pattern) {
 > 		/* set the pattern */
 > 		clish_ptype__set_extpattern(this, ext_pattern, method, ext_help,
 >                                             alt_ext_pattern);
 > 	}
-> 
+39c198
+< 	if (pattern) {
+---
 > 	if (pattern || alt_pattern) {
 41c200
 < 		clish_ptype__set_pattern(this, pattern, method);
@@ -309,7 +309,7 @@
 264c529
 < 	lub_argv_t *matches, const char *text)
 ---
-> 	lub_argv_t *matches, const char *text,  const char *penultimate_text)
+> 	lub_argv_t *matches, const char *text,  const char *penultimate_text, bool_t order )
 267a533
 > 	bool ret = false;
 270c536,537
@@ -317,35 +317,35 @@
 ---
 > 	if (this->method != CLISH_PTYPE_METHOD_SELECT &&
 > 		this->method != CLISH_PTYPE_METHOD_REGEXP_SELECT)
-274,284c541,544
+274,279c541,548
 < 	result = clish_ptype_validate(this, text);
 < 	if (result) {
 < 		lub_argv_add(matches, result);
 < 		lub_string_free(result);
 < 		return;
 < 	}
-< 
-< 	/* Iterate possible completion */
-< 	while ((result = clish_ptype_select__get_name(this, i++))) {
-< 		/* get the next item and check if it is a completion */
-< 		if (result == lub_string_nocasestr(result, text))
 ---
 > 	if(this->method == CLISH_PTYPE_METHOD_SELECT)
 > 	{
 > 		result = clish_ptype_validate(this, text, BOOL_TRUE);
 > 		if (result) {
-286c546,572
-< 		lub_string_free(result);
----
+> 			lub_argv_add(matches, result, order);
 > 			lub_string_free(result);
 > 			return;
 > 		}
-> 
+281,286c550,572
+< 	/* Iterate possible completion */
+< 	while ((result = clish_ptype_select__get_name(this, i++))) {
+< 		/* get the next item and check if it is a completion */
+< 		if (result == lub_string_nocasestr(result, text))
+< 			lub_argv_add(matches, result);
+< 		lub_string_free(result);
+---
 > 		/* Iterate possible completion */
 > 		while ((result = clish_ptype_select__get_name(this, i++))) {
 > 			/* get the next item and check if it is a completion */
 > 			if (result == lub_string_nocasestr(result, text))
-> 				lub_argv_add(matches, result);
+> 				lub_argv_add(matches, result, order);
 > 			lub_string_free(result);
 > 		}
 > 	} else {
@@ -363,7 +363,7 @@
 >                 if(ret)
 >                         return;
 > 
->                 clish_ptype_regexp_select_get_match(this, text, matches);
+>                 clish_ptype_regexp_select_get_match(this, text, matches, order);
 287a574
 > 
 292c579
@@ -627,7 +627,7 @@
 > }
 > 
 > /*--------------------------------------------------------- */
-> int clish_ptype_select__get_help(const clish_ptype_t *this, clish_help_t *help, const char *pval)
+> int clish_ptype_select__get_help(const clish_ptype_t *this, clish_help_t *help, const char *pval, bool_t order)
 > {
 >         if(NULL != this->u.select.ext_help) {
 >                 unsigned i;
@@ -641,8 +641,8 @@
 >                                 }
 >                                 if(strncmp(pval, name, strlen(pval)) == 0) {
 >                                         ext_help = clish_ptype_select__get_ext_help(this, i);
->                                         lub_argv_add(help->name, name);
->                                         lub_argv_add(help->help, ext_help);
+>                                         lub_argv_add(help->name, name, order);
+>                                         lub_argv_add(help->help, ext_help, BOOL_FALSE);
 >                                 }
 >                 /*Overwriting pointer name while looping will
 >                  * leak the storage that name pointed to. So
@@ -660,8 +660,8 @@
 >                                         continue;
 >                                 }
 >                                 ext_help = clish_ptype_select__get_ext_help(this, i);
->                                 lub_argv_add(help->name, name);
->                                 lub_argv_add(help->help, ext_help);
+>                                 lub_argv_add(help->name, name, order);
+>                                 lub_argv_add(help->help, ext_help, BOOL_FALSE);
 >                 /*Overwriting pointer name while looping will 
 >                  * leak the storage that name pointed to. So 
 >                  * free the memory before overriding to avoid
