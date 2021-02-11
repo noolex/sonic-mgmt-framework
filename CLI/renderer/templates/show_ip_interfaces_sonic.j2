@@ -93,44 +93,6 @@ Flags: U-Unnumbered interface, A-Anycast IP
             {% endif %}
         {% endfor -%}    
     {% endif %}
-    {% if "sonic-interface:VLAN_SUB_INTERFACE_IPADDR_LIST" in key -%}
-        {% set vlanSubIntfIpList = json_output["sonic-interface:VLAN_SUB_INTERFACE_IPADDR_LIST"] -%}  
-        {% set vlanSubIntfList = json_output["sonic-interface:VLAN_SUB_INTERFACE_LIST"] -%}   
-        {% for vlanSubIntf in vlanSubIntfIpList -%}
-            {% set subintfvars = ({'admin_state':'down','oper_state':'down','vrf':'','flags':''}) %}
-            {% if subintfvars.update({'name':vlanSubIntf["id"]}) -%}{% endif -%}
-            {% if "ip_prefix" in vlanSubIntf -%}
-                {% if subintfvars.update({'ipv4_src_pfx':vlanSubIntf["ip_prefix"]}) -%}{% endif -%}
-            {% endif -%}
-            {% for nKey in json_output %}
-                {% if "sonic-port:PORT_TABLE_LIST" in nKey -%}
-                    {% set portTblList = json_output["sonic-port:PORT_TABLE_LIST"] %}
-                    {% for port in portTblList -%}
-                        {% if subintfvars.name == port["ifname"] -%}
-                            {% if "oper_status" in port %}
-                                {% if subintfvars.update({'oper_state':port["oper_status"]}) %}{% endif %}
-                            {% endif %}
-                        {% endif -%}
-                    {% endfor -%}
-                {% endif -%}
-            {% endfor -%}
-            {% for entry in vlanSubIntfList -%}
-                {% if vlanSubIntf["id"] == entry["id"] -%}
-                    {% if entry["vrf_name"] != 'default' -%}
-                        {% if subintfvars.update({'vrf':entry["vrf_name"]}) -%}{% endif -%}
-                    {% endif -%}
-                    {% if "admin_status" in entry %}
-                        {% if subintfvars.update({'admin_state':entry["admin_status"]}) %}{% endif %}
-                    {% endif %}
-                {% endif -%}
-            {% endfor -%}
-            {% set admin_op = subintfvars.admin_state|string() + "/" + subintfvars.oper_state|string() -%}
-            {% if subintfvars.update({'admin_oper':admin_op}) -%}{% endif -%}     
-            {% if "ip_prefix" in vlanSubIntf -%}       
-{{INTF_NAME_WIDTH|format(subintfvars.name)}}{{'%-35s'|format(subintfvars.ipv4_src_pfx)}}{{'%-15s'|format(subintfvars.vrf)}}{{'%-15s'|format(subintfvars.admin_oper)}}{{'%-15s'|format(subintfvars.flags)}}
-            {% endif %}
-        {% endfor -%}    
-    {% endif %}
    {% for ifKey in intfTblList %}
     {% if '.' in ifKey["ifName"] %}
         {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
@@ -152,11 +114,10 @@ Flags: U-Unnumbered interface, A-Anycast IP
                 {% if (vlanSubIntf["id"] != vars.name) %}
                      {% continue %}
                 {% endif %}
-                {% if "unnumbered" not in vlanSubIntf %}
-                     {% continue %}
+                {% if "unnumbered" in vlanSubIntf %}
+                     {% if vars.update({'flags':"U"}) %}{% endif %}
                 {% endif %}
                 {% if vars.update({'ipv4_src_pfx':ifKey["ipPrefix"]}) %}{% endif %}
-                {% if vars.update({'flags':"U"}) %}{% endif %}
                 {% if vars.update({'admin_state':"down"}) %}{% endif %}
                 {% if vars.update({'oper_state':"down"}) %}{% endif %}
                 {% if vars.update({'vrf':""}) %}{% endif %}
