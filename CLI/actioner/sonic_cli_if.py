@@ -92,12 +92,17 @@ def filter_address(d, isIPv4):
 
 def get_helper_adr_str(args):
     ipAdrStr = ""
+    ipAdrIndex = 2
+
+    if '.' in args[0] and args[0].startswith("PortChannel") == True:
+        ipAdrIndex = 3
+
     for index,i in  enumerate(args):
-        if (args[2] == 'ip'):
+        if (args[ipAdrIndex] == 'ip'):
            if not ((i.find(".") == -1)):
               ipAdrStr += i
               ipAdrStr += ","
-        elif (args[2] == 'ipv6'):
+        elif (args[ipAdrIndex] == 'ipv6'):
            if not ((i.find(":") == -1)):
               ipAdrStr += i
               ipAdrStr += ","
