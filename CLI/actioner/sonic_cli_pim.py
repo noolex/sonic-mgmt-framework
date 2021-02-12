@@ -178,7 +178,7 @@ def get_keypath(func,args):
         #generate keypath
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim'
 
-        if ((inputDict.get('ifName')) or
+        if ((inputDict.get('interface')) or
             (inputDict.get('nbr'))):
             path = path + "/interfaces"
             ifName = inputDict.get('ifName')
@@ -210,6 +210,7 @@ def get_keypath(func,args):
 
     keypath = cc.Path(path)
     return keypath, body
+
 
 def get_vrf(intf):
     request = ''
@@ -250,7 +251,7 @@ def get_vrf(intf):
         return None
 
 def show_response(response):
-    if (inputDict.get('ifName')):
+    if (inputDict.get('interface')):
         show_intf_info(response)
     elif (inputDict.get('nbr')):
         show_nbr_info(response)
