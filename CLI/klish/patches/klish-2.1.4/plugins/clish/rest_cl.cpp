@@ -348,7 +348,7 @@ int rest_cl(char *cmd, const char *buff)
         } else {
             int64_t http_code = 0;
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-            if (ret.size) {
+            if (ret.size && http_code != 200) {
                 syslog(LOG_DEBUG, "clish_restcl: http_code:%ld [%d:%s]", http_code, ret.size, ret.body.c_str());
                 print_error(ret.body.c_str());
             } else {
