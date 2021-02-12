@@ -1,4 +1,12 @@
-1414a1415,1430
+925,926c925,928
+< 			if (!this->handlers[key](this, key))
+< 				tinyrl_ding(this);
+---
+> 			if ((key >= 0) && (key < NUM_HANDLERS)) {
+> 				if (!this->handlers[key](this, key))
+> 					tinyrl_ding(this);
+> 			}
+1414a1417,1432
 >                         int indexi,indexj;
 >                         char * temp = NULL;
 >                         for (indexi=1;indexi<len-1;indexi++) {
@@ -15,7 +23,7 @@
 >                                 }
 >                         }
 > 
-1435a1452,1496
+1435a1454,1498
 > static void
 > tinyrl_do_complete_ignore_error(tinyrl_t * this, bool_t with_extensions)
 > {
@@ -61,14 +69,14 @@
 > }
 > 
 > /*-------------------------------------------------------- */
-1447a1509,1514
+1447a1511,1516
 > void tinyrl_complete_ignore_error(tinyrl_t * this)
 > {
 >         return tinyrl_do_complete_ignore_error(this, BOOL_FALSE);
 > }
 > 
 > /*-------------------------------------------------------- */
-1656a1724,1730
+1656a1726,1732
 > 
 > /*-------------------------------------------------------- */
 > bool_t tinyrl_is_cursor_in_middle(const tinyrl_t *this)

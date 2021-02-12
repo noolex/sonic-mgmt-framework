@@ -1,0 +1,5 @@
+591,592c591
+< 		if (fd > STDERR_FILENO)
+< 			close(fd);
+---
+> 		close(fd);
