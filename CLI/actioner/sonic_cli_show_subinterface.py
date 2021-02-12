@@ -20,6 +20,7 @@
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 import syslog as log
+from natsort import natsorted
 
 def add_speed_and_mtu(data_in):
     api = cc.ApiClient()
@@ -65,6 +66,9 @@ def run(func, args):
         if response.content is not None:
             api_response = response.content
             add_speed_and_mtu(api_response)
+            tbl_key = "sonic-interface:VLAN_SUB_INTERFACE_LIST"
+            if tbl_key in api_response:
+                api_response[tbl_key] = natsorted(api_response[tbl_key],key=lambda t: t["id"])
             show_cli_output(renderer, api_response)
         else:
             print("Empty response")
