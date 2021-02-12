@@ -223,6 +223,53 @@ def generate_show_ip_igmp_vrf_all_joins(args):
                print("VRF : "+vrf_name)
                generate_show_ip_igmp_joins(args)
 
+
+def generate_show_ip_igmp_interface_all(args):
+    api = cc.ApiClient()
+    keypath = []
+
+    vrfName = "default"
+    i = 0
+    for arg in args:
+        if "vrf" in arg or "Vrf" in arg:
+            vrfName = args[i]
+        i = i + 1
+
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=IGMP,igmp/igmp/openconfig-igmp-ext:interfaces', name=vrfName)
+    response = api.get(keypath)
+    if(response.ok()):
+        if response.content is not None:
+            # Get Command Output
+            api_response = response.content
+            if api_response is None:
+                print("% No such Interface")
+                return
+    show_cli_output(args[0], api_response)
+    return api_response
+
+def generate_show_ip_igmp_vrf_all_interfaces(args):
+    api = cc.ApiClient()
+    keypath = []
+    body = None
+    args[0] = 'show_ip_igmp_interface.j2'
+    # Use SONIC model to get all configued VRF names
+    keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST')
+    sonic_vrfs = api.get(keypath)
+    if sonic_vrfs.ok():
+        if 'sonic-vrf:VRF_LIST' in sonic_vrfs.content:
+            vrf_list = sonic_vrfs.content['sonic-vrf:VRF_LIST']
+            for vrf in vrf_list:
+               vrf_name = vrf['vrf_name']
+               args[1] = vrf_name
+               d = {}
+               dlist = []
+               d = {'vrfName': vrf_name}
+               dlist.append(d)
+               api_response = generate_show_ip_igmp_interface_all(args)
+               api_response["VRF"] = vrf_name
+               dlist.append(api_response)
+               show_cli_output(args[0], dlist)
+
 def invoke_show_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
@@ -247,8 +294,14 @@ def invoke_show_api(func, args=[]):
            api_response = generate_show_ip_igmp_statistics(args)
            show_cli_output('show_ip_igmp_statistics.j2', api_response)
         elif args[2].lower() == 'interface':
-           api_response = generate_show_ip_igmp_interface(args)
-           show_cli_output('show_ip_igmp_interface.j2', api_response)
+           if args[1].lower() == 'all':
+              generate_show_ip_igmp_vrf_all_interfaces(args)
+           elif len(args) > args.index('interface') + 1 and args[args.index('interface') + 1] != 'detail' and args[args.index('interface') + 1] != '\\|':
+              api_response = generate_show_ip_igmp_interface(args)
+              show_cli_output('show_ip_igmp_interface.j2', api_response)
+           else:
+              api_response = generate_show_ip_igmp_interface_all(args)
+              show_cli_output('show_ip_igmp_interface.j2', api_response)
         elif args[2].lower() == 'groups':
            if args[1].lower() == 'all':
               generate_show_ip_igmp_vrf_all_groups(args)
@@ -279,7 +332,7 @@ def invoke_show_api(func, args=[]):
         _, vrfname = args[0].split("=")
         body = {"sonic-igmp:input": { "vrf-name" : vrfname,"interface_all" : True } }
         return api.post(keypath, body)
-    else: 
+    else:
         return api.cli_not_implemented(func)
 
 
