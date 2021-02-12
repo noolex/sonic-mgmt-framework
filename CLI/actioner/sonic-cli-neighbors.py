@@ -45,6 +45,8 @@ def get_keypath(func,args):
         rcvdIntfName = ""
     elif rcvdIntfName == "phy-if-name":
         rcvdIntfName = inputDict.get('phyIf')
+    elif rcvdIntfName == "subif-name":
+        rcvdIntfName = inputDict.get('subIf')
     elif rcvdIntfName == "vlan-if-name":
         rcvdIntfName = inputDict.get('vlanIf')
     elif rcvdIntfName == "po-if-name":
