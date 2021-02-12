@@ -1,2 +1,6 @@
-75a76
+75c75,77
+< void lub_argv_add(lub_argv_t * instance, const char *text);
+---
+> void lub_argv_add(lub_argv_t * instance, const char *text, bool_t order);
 > bool_t lub_argv__swap_arg(const lub_argv_t * instance,unsigned index1, unsigned index2);
+> bool_t lub_argv__get_order(const lub_argv_t * instance, unsigned int index);

@@ -207,7 +207,11 @@ def show_mroute_info(response):
             if state is None:
                 continue
 
-            srcList = state.get('src-entries').get('src-entry')
+            srcEntries = state.get('src-entries')
+            if srcEntries is None:
+                continue
+
+            srcList = srcEntries.get('src-entry')
             if srcList is None:
                 continue
 

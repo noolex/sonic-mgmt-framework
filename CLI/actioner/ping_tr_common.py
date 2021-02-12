@@ -78,7 +78,7 @@ def getIfName(args, cmd):
     # Regex for subinterfaces should come first.
 
     #Check for subinterface
-    result = re.search('('+intfSwitch+'\s*)(Ethernet|PortChannel)(\s*)(\d+\.\d+)\s+', args, re.IGNORECASE)
+    result = re.search('('+intfSwitch+'\s*)(Ethernet|PortChannel)(\s*)(\d+\.\d+)(\s+|$)', args, re.IGNORECASE)
     if result:
         if stdNaming: #For std naming we shouldn't come here
             return None, INVALID_IFNAME
@@ -89,7 +89,7 @@ def getIfName(args, cmd):
         return ifName, NATIVE_SUBIFNAME
 
     #Check for subinterface with alias
-    result = re.search('('+intfSwitch+'\s*)(Eth)(\s*)(\d+/\d+/*\d*\.\d+)\s+', args, re.IGNORECASE)
+    result = re.search('('+intfSwitch+'\s*)(Eth)(\s*)(\d+/\d+/*\d*\.\d+)(\s+|$)', args, re.IGNORECASE)
     if result:
         if not stdNaming:
             return None, INVALID_IFNAME
@@ -99,7 +99,7 @@ def getIfName(args, cmd):
         return ifName, STD_SUBIFNAME
 
     #Check for interface
-    result = re.search('('+intfSwitch+'\s*)(Ethernet)(\s*)(\d+)(\s+)', args, re.IGNORECASE)
+    result = re.search('('+intfSwitch+'\s*)(Ethernet)(\s*)(\d+)(\s+|$)', args, re.IGNORECASE)
     if result:
         if stdNaming: #For std naming we shouldn't come here
             return None, INVALID_IFNAME
@@ -107,7 +107,7 @@ def getIfName(args, cmd):
         return ifName, NATIVE_IFNAME
 
     #Check for interface with alias
-    result = re.search('('+intfSwitch+'\s*)(Eth)(\s*)(\d+/\d+/*\d*)(\s+)', args, re.IGNORECASE)
+    result = re.search('('+intfSwitch+'\s*)(Eth)(\s*)(\d+/\d+/*\d*)(\s+|$)', args, re.IGNORECASE)
     if result:
         if not stdNaming:
             return None, INVALID_IFNAME
@@ -116,13 +116,13 @@ def getIfName(args, cmd):
         return ifName, STD_IFNAME
 
     #Check for mgmt interface
-    result = re.search('('+intfSwitch+'\s*)(Management)(\s*)(\d+)(\s+)', args, re.IGNORECASE)
+    result = re.search('('+intfSwitch+'\s*)(Management)(\s*)(\d+)(\s+|$)', args, re.IGNORECASE)
     if result:
         ifName = "eth" + result.group(4)
         return ifName, MGMT_IFNAME
 
     #Check for other interfaces
-    result = re.search('('+intfSwitch+'\s*)(PortChannel|Management|Loopback|Vlan)(\s*)(\d+)(\s+)', args, re.IGNORECASE)
+    result = re.search('('+intfSwitch+'\s*)(PortChannel|Loopback|Vlan)(\s*)(\d+)(\s+|$)', args, re.IGNORECASE)
     if result:
         ifName = result.group(2) + result.group(4)
         return ifName, DEFAULT_IFNAME
@@ -145,28 +145,28 @@ def transform_input(args, cmd):
 
     # Substitute interface name in the args based on interface type.
     if nameType == NATIVE_IFNAME:
-        args = re.sub('('+intfSwitch+')(\s*)(Ethernet\s*\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
-        return args
+        args = re.sub('('+intfSwitch+')(\s*)(Ethernet\s*\d+)(\s+|$)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args.strip()
 
     if nameType == NATIVE_SUBIFNAME:
-        args = re.sub('('+intfSwitch+')(\s*)(Ethernet|PortChannel)(\s*\d+\.\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
-        return args
+        args = re.sub('('+intfSwitch+')(\s*)(Ethernet|PortChannel)(\s*\d+\.\d+)(\s+|$)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args.strip()
 
     if nameType == STD_IFNAME:
-        args = re.sub('('+intfSwitch+')(\s*)(Eth)(\s*)(\d+/\d+/*\d*)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
-        return args
+        args = re.sub('('+intfSwitch+')(\s*)(Eth)(\s*)(\d+/\d+/*\d*)(\s+|$)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args.strip()
 
     if nameType == STD_SUBIFNAME:
-        args = re.sub('('+intfSwitch+')(\s*)(Eth|PortChannel)(\s*)(\d+/\d+/*\d*\.\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
-        return args
+        args = re.sub('('+intfSwitch+')(\s*)(Eth|PortChannel)(\s*)(\d+/\d+/*\d*\.\d+)(\s+|$)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args.strip()
 
     if nameType == MGMT_IFNAME:
-        args = re.sub('('+intfSwitch+')(\s*)(Management\s*\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
-        return args
+        args = re.sub('('+intfSwitch+')(\s*)(Management\s*\d+)(\s+|$)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args.strip()
 
     if nameType == DEFAULT_IFNAME:
-        args = re.sub('('+intfSwitch+')(\s*)(PortChannel|Management|Loopback|Vlan)(\s*)(\d+)(\s+)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
-        return args
+        args = re.sub('('+intfSwitch+')(\s*)(PortChannel|Loopback|Vlan)(\s*)(\d+)(\s+|$)', '\g<1>' + " " + ifName + " ", args, re.IGNORECASE)
+        return args.strip()
 
 def validate_input(args, isVrf, cmd):
     if len(args) == 0:
