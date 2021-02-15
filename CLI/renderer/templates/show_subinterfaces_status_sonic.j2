@@ -1,6 +1,6 @@
 {% if ("sonic-interface:VLAN_SUB_INTERFACE_LIST" in json_output) %}
 -----------------------------------------------------------------------------------------------
-{{'%-20s'|format("Sub port interface")}}{{'%-10s'|format("Speed")}}{{'%-10s'|format("MTU")}}{{'%-10s'|format("Vlan")}}{{'%-10s'|format("Admin")}}{{'%-30s'|format("Type")}}
+{{'%-20s'|format("Sub port interface")}} {{'%-10s'|format("Speed")}}{{'%-10s'|format("MTU")}}{{'%-10s'|format("Vlan")}}{{'%-10s'|format("Admin")}}{{'%-30s'|format("Type")}}
 -----------------------------------------------------------------------------------------------
     {% set subIntfList = json_output["sonic-interface:VLAN_SUB_INTERFACE_LIST"] %}
     {% for subIntf in subIntfList %}
@@ -20,6 +20,6 @@
         {% if subintfvars.name.split('.')[0] in json_output['aux_info'] %}
             {% if subintfvars.update({'speed':json_output['aux_info'][subintfvars.name.split('.')[0]]["speed"]}) -%}{% endif -%}
         {% endif -%}
-{{'%-20s'|format(subintfvars.name)}}{{'%-10s'|format(subintfvars.speed)}}{{'%-10s'|format(subintfvars.mtu)}}{{'%-10s'|format(subintfvars.vlan)}}{{'%-10s'|format(subintfvars.admin_state)}}{{'%-30s'|format(subintfvars.type)}}
+{{'%-20s'|format(subintfvars.name)}} {{'%-10s'|format(subintfvars.speed)}}{{'%-10s'|format(subintfvars.mtu)}}{{'%-10s'|format(subintfvars.vlan)}}{{'%-10s'|format(subintfvars.admin_state)}}{{'%-30s'|format(subintfvars.type)}}
     {% endfor %}
 {% endif %}
