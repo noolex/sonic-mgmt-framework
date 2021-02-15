@@ -66,12 +66,14 @@ view_dependency= \
 
 config_view_hierarchy= \
       ['configure',
+       'renderCfg_ipvrfmgmt',
        'renderCfg_ipvrf',
        'renderCfg_v4prefix_lists',
        'renderCfg_v6prefix_lists',
        'renderCfg_bgp_com_list',
        'renderCfg_bgp_extcom_list',
        'renderCfg_bgp_aspath_list',
+       'renderCfg_ippim',
        'configure-nat',
        'configure-tam',
        'configure-wred',
@@ -97,6 +99,7 @@ config_view_hierarchy= \
        'configure-if',
        'configure-subif',
        'configure-route-map',
+       'renderCfg_iprtemgmt',
        'renderCfg_iprte',
        'configure-router-bgp',
        'configure-router-ospf',
@@ -108,6 +111,9 @@ config_view_hierarchy= \
        'configure-mirror',
        'configure-ipsla',
        'configure-bfd',
+       'renderCfg_ntp',
+       'renderCfg_ipdns',
+       'renderCfg_tacacs',
        'configure-switch-resource',
        'configure-vrrp']
 
