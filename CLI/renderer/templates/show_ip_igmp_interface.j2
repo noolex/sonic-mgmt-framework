@@ -1,17 +1,29 @@
 {% set vars = {'all-multicast' : "yes", 'mtrace_response' : "0", 'unsupported' : "0",'v1': "0", 'v2': "0", 'v3': "0"} %}
 
+{% if 'openconfig-network-instance:interface' in json_output or 'openconfig-network-instance:interfaces' in json_output %}
 {% if 'openconfig-network-instance:interface' in json_output %}
 {% set interfacelist = json_output['openconfig-network-instance:interface'] %}
+{% elif 'openconfig-network-instance:interfaces' in json_output %}
+{% set interfacelist = json_output['openconfig-network-instance:interfaces']['interface'] %}
+{% endif %}
+{% if 'VRF' in json_output %}
+VRF : {{json_output['VRF']}}
+{% endif %}
 {% for interfaceinfo in interfacelist %}
 {% if 'state' in interfaceinfo %}
 {% set statelist = interfaceinfo['state']%}
 {% if 'openconfig-igmp-ext:querier' in statelist %}
 {% set querierlist = statelist['openconfig-igmp-ext:querier'] %}
+{%+ if True %}  {% endif %}
+
+
 Interface : {{interfaceinfo['interface-id']}}
 UpTime    : {{statelist['filter-prefixes']}}
 State     : {{querierlist['status']}}
 Address   : {{querierlist['ip-addr']}}
 Version   : {{statelist['version']}}
+{%+ if True %}  {% endif %}
+
 
 Querier
 -------
@@ -23,6 +35,9 @@ Other Timer : {{querierlist['query-general-timer']}}
 
 {% if 'openconfig-igmp-ext:timers' in statelist %}
 {% set timerslist = statelist['openconfig-igmp-ext:timers'] %}
+{%+ if True %}  {% endif %}
+
+
 Timers
 ------
 Group Membership Interval      : {{timerslist['group-membership-interval']}}s
@@ -30,7 +45,7 @@ Last Member Query Count        : {{timerslist['last-member-query-count']}}s
 Last Member Query Time         : {{timerslist['last-member-query-time']}}s
 Older Host Present Interval    : {{timerslist['older-host-present-interval']}}s
 Other Querier Present Interval : {{timerslist['querier-present-interval']}}s
-Query Interval                 : {{timerslist['querier-present-interval']}}s
+Query Interval                 : {{timerslist['query-interval']}}s
 Query Response Interval        : {{timerslist['query-response-interval']}}s
 Robustness Variable            : {{timerslist['robustness-variable']}}
 Startup Query Interval         : {{timerslist['startup-query-interval']}}s
@@ -38,6 +53,9 @@ Startup Query Interval         : {{timerslist['startup-query-interval']}}s
 
 {% if 'openconfig-igmp-ext:flags' in statelist %}
 {%set flagslist = statelist['openconfig-igmp-ext:flags']%}
+{%+ if True %}  {% endif %}
+
+
 Flags
 -----
 All Multicast   : {{flagslist['all-multicast']}}
@@ -53,4 +71,3 @@ Promiscuous     : {{flagslist['promiscous']}}
 {% endfor %}
 
 {% endif %}
-

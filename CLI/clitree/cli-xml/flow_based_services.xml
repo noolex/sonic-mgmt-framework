@@ -448,6 +448,12 @@ limitations under the License.
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_pbf_next_hop_group_status Switch ${__params}</ACTION>
         </COMMAND>
+
+        <COMMAND name="show running-configuration pbf" help="Show current PBF next-hop groups configuration"/>
+        <COMMAND name="show running-configuration pbf next-hop-group" help="Show current PBF next-hop groups configuration">
+            <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" optional="true"/>
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_next_hop_group_by_name ${show-fbs-group-name}</ACTION>
+        </COMMAND>
     </VIEW>
 
     <!--===================================================================================-->
@@ -535,7 +541,8 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="pbf" help="Policy based forwarding" />
-        <COMMAND name="pbf next-hop-group" help="configure next hop group" view="configure-pbf-${fbs-dynamic-nhgrp-type}-nh-grp-view" viewid="fbs-nh-grp-name=${fbs-nhgrp-name}">
+        <COMMAND name="pbf next-hop-group" help="configure next hop group" view="configure-pbf-${fbs-dynamic-nhgrp-type}-nh-grp-view" viewid="fbs-nh-grp-name=${fbs-nhgrp-name}"
+            data_and_render_cb="show_running_next_hop_group">
             <PARAM name="fbs-nhgrp-name" help="Name of the Next-hop group (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="type" help="Next hop group type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                 <PARAM name="fbs-next-hop-group-type" help="" ptype="SUBCOMMAND" mode="switch">
@@ -1354,7 +1361,6 @@ limitations under the License.
         </COMMAND>
 
         <MACRO name="POLICER-PARAM-OPTIONS" arg="acl-copp,set_acl_copp_policer_action,clear_acl_copp_policer_action"/>
-
     </VIEW>
     <!--===================================================================================-->
 

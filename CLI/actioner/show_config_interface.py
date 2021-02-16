@@ -223,8 +223,65 @@ def show_if_loopback(render_tables):
       cmd_str = "interface Loopback " + ifname.lstrip('Loopback')
   return 'CB_SUCCESS', cmd_str
 
+def show_ipv4_dhcp_relay_options(intf, cmd_prfx):
 
+   cmd_str = ''
 
+   if 'dhcp_relay_src_intf' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' source-interface ')
+       cmd_str += str(intf['dhcp_relay_src_intf'])
+
+   if 'dhcp_relay_link_select' in intf:
+       if intf['dhcp_relay_link_select'] == 'enable':
+           cmd_str += ';'
+           cmd_str += cmd_prfx
+           cmd_str += str(' link-select')
+
+   if 'dhcp_relay_max_hop_count' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' max-hop-count ')
+       cmd_str += str(intf['dhcp_relay_max_hop_count'])
+
+   if 'dhcp_relay_vrf_select' in intf:
+       if intf['dhcp_relay_vrf_select'] == 'enable':
+           cmd_str += ';'
+           cmd_str += cmd_prfx
+           cmd_str += str(' vrf-select')
+
+   if 'dhcp_relay_policy_action' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' policy-action ')
+       cmd_str += str(intf['dhcp_relay_policy_action'])
+
+   return  cmd_str
+
+def show_ipv6_dhcp_relay_options(intf, cmd_prfx):
+
+   cmd_str = ''
+
+   if 'dhcpv6_relay_src_intf' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' source-interface ')
+       cmd_str += str(intf['dhcpv6_relay_src_intf'])
+
+   if 'dhcpv6_relay_max_hop_count' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' max-hop-count ')
+       cmd_str += str(intf['dhcpv6_relay_max_hop_count'])
+
+   if 'dhcpv6_relay_vrf_select' in intf:
+       if intf['dhcpv6_relay_vrf_select'] == 'enable':
+           cmd_str += ';'
+           cmd_str += cmd_prfx
+           cmd_str += str(' vrf-select')
+
+   return  cmd_str
 
 def show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx):
 
@@ -246,6 +303,8 @@ def show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx):
                    cmd_str += " "
                    cmd_str += 'vrf '
                    cmd_str += intf['dhcp_server_vrf']
+               options_str = show_ipv4_dhcp_relay_options(intf, cmd_prfx)
+               cmd_str += options_str
          if 'dhcpv6_servers' in intf and cmd_prfx== 'ipv6 dhcp-relay':
            for server in intf['dhcpv6_servers']:
                dhcp_server_str += ' '
@@ -257,7 +316,8 @@ def show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx):
                    cmd_str += " "
                    cmd_str += 'vrf '
                    cmd_str += intf['dhcpv6_server_vrf']               
-
+               options_str = show_ipv6_dhcp_relay_options(intf, cmd_prfx)
+               cmd_str += options_str
 
    return  cmd_str
 
