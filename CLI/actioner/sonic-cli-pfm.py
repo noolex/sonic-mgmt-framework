@@ -82,7 +82,7 @@ def run(func, args):
                 show_cli_output(template, response.content)
             else:
                 print response.error_message()
-                return
+                return 1
         elif (func == 'get_openconfig_platform_components_component_psu_status' or
             func == 'get_openconfig_platform_components_component_psu_summary'):
             template = sys.argv[2]
@@ -93,7 +93,7 @@ def run(func, args):
                 if not response.ok():
                     if not hasValidComp:
                         print response.error_message()
-                        return
+                        return 1
                     break
                 if response.content == None:
                     break
@@ -113,7 +113,7 @@ def run(func, args):
                     if not response.ok():
                         if not hasValidComp:
                             print response.error_message()
-                            return
+                            return 1
                         break
                     if (response.content is None or len(response.content) == 0 or
                         not ('openconfig-platform:component' in response.content) or
@@ -133,7 +133,7 @@ def run(func, args):
                 if not response.ok():
                     if not hasValidComp:
                         print response.error_message()
-                        return
+                        return 1
                     break
                 if response.content is None:
                     break
@@ -161,13 +161,13 @@ def run(func, args):
                 response = aa.get(path)
                 if not response.ok():
                     print response.error_message()
-                    return
+                    return 1
                 if not response.content is None:
                     try:
                         for d in response.content['sonic-port:PORT_LIST']:
                             if_list.append(d['ifname'])
                     except:
-                        return
+                        return 1
             else:
                 # Singleton
                 if_list.append(if_name)
@@ -180,7 +180,7 @@ def run(func, args):
                 response = aa.get(path)
                 if not response.ok():
                     print response.error_message()
-                    return
+                    return 1
                 if response.content is None:
                     xcvrInfo[nm] = {}
                     continue
@@ -230,7 +230,7 @@ def run(func, args):
                 if not response.ok():
                     if not hasValidComp:
                         print response.error_message()
-                        return
+                        return 1
                     break
                 if response.content is None:
                     break
@@ -256,7 +256,7 @@ def run(func, args):
                 if not response.ok():
                     if not hasValidComp:
                         print response.error_message()
-                        return
+                        return 1
                     break
                 if response.content is None:
                     break
@@ -292,10 +292,12 @@ def run(func, args):
             show_cli_output(template, firmInfo)
     except Exception as e:
         print("%Error: Transaction Failure")
-        return
+        return 1
+    return 0
 
 if __name__ == '__main__':
 
     func = sys.argv[1]
-    run(func, sys.argv[2:])
+    ret = run(func, sys.argv[2:])
+    sys.exit(ret)
 
