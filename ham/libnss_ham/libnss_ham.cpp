@@ -135,7 +135,6 @@ static void read_cmdline()
     char      buffer[LINE_MAX];
     size_t    sz = sizeof(buffer);
     size_t    n  = 0;
-    buffer[0] = '\0';
     for(;;)
     {
         ssize_t r = read(fd, &buffer[n], sz-n);
@@ -168,6 +167,8 @@ static void read_cmdline()
             *p-- = '\0';
         }
     }
+    else
+        buffer[0] = '\0';
 
     cmdline_p = strdup(buffer);
 
