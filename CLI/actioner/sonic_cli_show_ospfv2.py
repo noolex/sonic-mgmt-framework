@@ -33,11 +33,11 @@ def generate_show_ip_ospf(vrf):
     vrfName = ""
     i = 0
     vrfName = vrf
-
     d = {}
     dlist = []
     area_id_list = []
     d = { 'vrfName': vrfName }
+
     area_id_list = build_area_id_list (vrfName)
     dlist.append(d)
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=vrfName)
@@ -380,6 +380,28 @@ def build_area_id_list (vrf_name):
 
 def invoke_show_api(func, args=[]):
     vrf = args[0]
+
+    if vrf == 'all' :
+        print("%Error: OSPF state display for VRF all not supported!");
+        return
+
+    vrf_name_valid = False
+    if vrf == '' or vrf == 'default' :
+        vrf_name_valid = True
+    elif vrf.startswith("Vrf") :
+        vrf_name_valid = True
+    if not vrf_name_valid :
+        print("%Error: Invalid VRF name {}".format(vrf))
+        return
+
+    api = cc.ApiClient()
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/config', name= vrf)
+    vrf_config = api.get(keypath)
+    if vrf_config.ok():
+        if vrf_config.content == None:
+           print("%Error: VRF instance not found")
+           return
+
     i = 3
     if 'do' in args and args[1] == 'do':
         # By default, the leftmost entry is removed
