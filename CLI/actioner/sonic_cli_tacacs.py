@@ -179,7 +179,7 @@ def run(func, args):
     elif func == 'get_sonic_tacacs_all':
         get_sonic_tacacs_all()
     else:
-        run_config(func, args)
+        return run_config(func, args)
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
