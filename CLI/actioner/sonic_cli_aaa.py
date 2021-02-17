@@ -144,6 +144,5 @@ def run(func, args):
 if __name__ == '__main__':
     pipestr().write(sys.argv)
     func = sys.argv[1]
-    ret = run(func, sys.argv[2:])
-    sys.exit(ret)
+    run(func, sys.argv[2:])
 
