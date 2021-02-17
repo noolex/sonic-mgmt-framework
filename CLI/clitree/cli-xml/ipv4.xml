@@ -53,14 +53,32 @@ limitations under the License.
             order = "true"
 	    mode="subcommand"
             ptype="SUBCOMMAND">
-	    <PARAM
-		help="Name of VRF"
-		name="vrfname"
-		ptype="STRING_15">
+            <PARAM name="vrforall"
+              help=""
+              ptype="SUBCOMMAND"
+              mode="switch">
+              <PARAM
+                name="all"
+                help="All VRFs"
+                ptype="SUBCOMMAND"
+                mode="subcommand">
+                <PARAM
+                     name="summary"
+                     help="Summary of all routes"
+                     mode="subcommand"
+                     ptype="SUBCOMMAND">
+                </PARAM>
+              </PARAM>
+	      <PARAM
+	          help="Name of VRF"
+	          name="vrfname"
+	          ptype="ALL_VRF">
+              </PARAM>
             </PARAM>
         </PARAM>
 	<PARAM
 	   name="route-cmd"
+           test='"${vrforall}" != "all"'
 	   help=""
 	   mode="switch"
 	   ptype="SUBCOMMAND"
