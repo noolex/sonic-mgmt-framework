@@ -9,7 +9,7 @@
 def show_sag4_config(render_tables):
     cmd_str = ''
 
-    if 'sonic-vlan:sonic-vlan/VLAN/VLAN_LIST' in render_tables:
+    if 'sonic-vlan:sonic-vlan/VLAN/VLAN_LIST' in render_tables or 'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST' in render_tables:
 
         ifname = render_tables['name']
 
@@ -34,7 +34,7 @@ def show_sag4_config(render_tables):
 def show_sag6_config(render_tables):
     cmd_str = ''
 
-    if 'sonic-vlan:sonic-vlan/VLAN/VLAN_LIST' in render_tables:
+    if 'sonic-vlan:sonic-vlan/VLAN/VLAN_LIST' in render_tables or 'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST' in render_tables:
 
         ifname = render_tables['name']
 
