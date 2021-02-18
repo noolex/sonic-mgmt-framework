@@ -407,8 +407,8 @@ def invoke_api(func, args=[]):
             keypath = cc.Path(keypath_str + 'advertise-pip-ip')
             response = api.delete(keypath)
             if response.ok() == False : return response
-            keypath = cc.Path(keypath_str + 'advertise-pip-mac')
-            response = api.delete(keypath)
+            #keypath = cc.Path(keypath_str + 'advertise-pip-mac')
+            #response = api.delete(keypath)
             return response
 
         if 'peer' in arg_map.keys() :
