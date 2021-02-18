@@ -132,9 +132,9 @@ def build_intf_vrf_binding (intf_vrf_binding):
                 vrfName = intf.get('vrf_name')
 
                 if vrfName is None:
-                    continue
-
-                intf_vrf_binding.setdefault(vrfName, []).append(intfName)
+                    intf_vrf_binding.setdefault("default", []).append(intfName)
+                else:
+                    intf_vrf_binding.setdefault(vrfName, []).append(intfName)
 
             for vrf in intf_vrf_binding:
                 intf_vrf_binding[vrf] = natsorted(intf_vrf_binding[vrf], alg=ns.IGNORECASE)
@@ -174,8 +174,7 @@ def invoke_api(func, args=[]):
                     vrf_list = sonic_vrfs.content['sonic-vrf:VRF_LIST']
                     for vrf in vrf_list:
                        vrf_name = vrf['vrf_name']
-                       if vrf_name != "default":
-                           intf_vrf_binding.setdefault(vrf_name, [])
+                       intf_vrf_binding.setdefault(vrf_name, [])
 
             # build the dictionary with vrf name as key and list of interfaces as value
             build_intf_vrf_binding(intf_vrf_binding)
