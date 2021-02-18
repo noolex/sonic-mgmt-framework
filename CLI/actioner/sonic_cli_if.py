@@ -766,24 +766,28 @@ def invoke_api(func, args=[]):
      
     # Configure static ARP
     elif func == 'patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=args[0], index="0")
+        if_name, subif = get_if_and_subif(args[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors', name=if_name, index=subif)
         body = {"openconfig-if-ip:neighbors":{"neighbor":[{"ip":args[1],"config":{"ip":args[1],"link-layer-address":args[2]}}]}}
         return api.patch(path, body)
 
     # Delete static ARP
     elif func == 'delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_static_arp_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors/neighbor={sip}', name=args[0], index="0",sip=args[1])
+        if_name, subif = get_if_and_subif(args[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/neighbors/neighbor={ip}', name=if_name, index=subif, ip=args[1])
         return api.delete(path)
 
     # Configure static ND
     elif func == 'patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors', name=args[0], index="0")
+        if_name, subif = get_if_and_subif(args[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors', name=if_name, index=subif)
         body = {"openconfig-if-ip:neighbors":{"neighbor":[{"ip":args[1],"config":{"ip":args[1],"link-layer-address":args[2]}}]}}
         return api.patch(path, body)
 
     # Delete static ND
     elif func == 'delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config':
-        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors/neighbor={sip}', name=args[0], index="0",sip=args[1])
+        if_name, subif = get_if_and_subif(args[0])
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/neighbors/neighbor={ip}', name=if_name, index=subif, ip=args[1])
         return api.delete(path)
 
     # Configure static ARP - Routed Vlan interface
