@@ -18,7 +18,8 @@ gtimer_c::gtimer_c(double           interval_sec,
     interval_sec_m(-1.0),
     user_cback_pm(user_cback_p),
     user_data_pm(user_data_p),
-    priority_m(priority)
+    priority_m(priority),
+    g_timeout_source_new_funct_pm(NULL)
 {
     //syslog(LOG_INFO, "gtimer_c::gtimer_c() - interval_sec=%f s", interval_sec);
     set_timeout(interval_sec);
