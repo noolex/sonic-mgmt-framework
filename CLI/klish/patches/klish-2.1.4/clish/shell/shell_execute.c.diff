@@ -124,20 +124,7 @@
 >                 }
 >         }
 >    	
-272,273c357,360
-< 	real_stdout = dup(STDOUT_FILENO);
-< 	dup2(pipe1[1], STDOUT_FILENO);
----
-> 	if (real_stdout = dup(STDOUT_FILENO) == -1)
-> 		goto stdout_error;
-> 	if (dup2(pipe1[1], STDOUT_FILENO) == -1)
-> 		goto stdout_error;
-281c368,369
-< 	dup2(real_stdout, STDOUT_FILENO);
----
-> 	if (dup2(real_stdout, STDOUT_FILENO) == -1)
-> 		goto stdout_error;
-299a388,405
+299a385,402
 > static int clish_shell_exec_sym_api(const clish_sym_t *sym, clish_hook_action_fn_t *func,
 > 	       				clish_context_t *context, char *script, char **out)	
 > {
@@ -156,17 +143,17 @@
 > 	return result;
 > }
 > 
-306c412,413
+306c409,410
 < 	const void *func = NULL; /* We don't know the func API at this time */
 ---
 > 	clish_hook_action_fn_t *func = NULL;
 > 
-308a416,419
+308a413,416
 > 	clish_parg_t *parg = NULL;
 >         clish_ptype_t *ptype = NULL;
 >         clish_ptype_method_e method = CLISH_PTYPE_METHOD_REGEXP;
 > 
-346,359c457,551
+346,359c454,548
 < 	/* Find out the function API */
 < 	/* CLISH_SYM_API_SIMPLE */
 < 	if (clish_sym__get_api(sym) == CLISH_SYM_API_SIMPLE) {
@@ -277,7 +264,7 @@
 > 			result = clish_shell_exec_sym_api(sym, func, context, script, out);
 >                 }
 >         }
-377c569
+377c566
 < 	lub_string_free(script);
 ---
 > 	if (script) lub_string_free(script);
