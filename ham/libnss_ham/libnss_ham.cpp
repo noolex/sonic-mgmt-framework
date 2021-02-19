@@ -168,6 +168,8 @@ static void read_cmdline()
             *p-- = '\0';
         }
     }
+    else
+        buffer[0] = '\0';
 
     cmdline_p = strdup(buffer);
 

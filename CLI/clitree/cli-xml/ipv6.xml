@@ -223,7 +223,7 @@ limitations under the License.
             dbpath="sonic-ip-neighbor:sonic-ip-neighbor/NEIGH/NEIGH_LIST/neigh"
             />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${po_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -251,7 +251,7 @@ limitations under the License.
             help="MAC Address"
             ptype="MAC_ADDR" />
 
-        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${iface} ${static-ip}
+        <ACTION builtin="clish_pyobj">sonic_cli_if delete_openconfig_if_ipv6_interfaces_interface_subinterfaces_subinterface_static_nd_config ${po_name} ${static-ip}
              ${neigh}</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -451,14 +451,32 @@ limitations under the License.
             order = "true"
 	    mode="subcommand"
             ptype="SUBCOMMAND">
-	    <PARAM
-		help="Name of VRF"
-		name="vrfname"
-		ptype="STRING_15">
+            <PARAM name="vrforall"
+              help=""
+              ptype="SUBCOMMAND"
+              mode="switch">
+              <PARAM
+                name="all"
+                help="All VRFs"
+                ptype="SUBCOMMAND"
+                mode="subcommand">
+                <PARAM
+                     name="summary"
+                     help="Summary of all routes"
+                     mode="subcommand"
+                     ptype="SUBCOMMAND">
+                </PARAM>
+              </PARAM>
+	      <PARAM
+	          help="Name of VRF"
+	          name="vrfname"
+	          ptype="ALL_VRF">
+              </PARAM>
             </PARAM>
         </PARAM>
 	<PARAM
 	   name="route-cmd"
+           test='"${vrforall}" != "all"'
 	   help=""
 	   mode="switch"
 	   ptype="SUBCOMMAND"

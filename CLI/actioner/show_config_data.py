@@ -103,6 +103,7 @@ config_view_hierarchy= \
        'configure-vxlan',
        'configure-${fbs-class-type}-classifier',
        'copp-action',
+       'configure-pbf-${fbs-dynamic-nhgrp-type}-nh-grp',
        'configure-policy',
        'configure-mclag',
        'configure-mirror',
@@ -319,8 +320,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode,
                   'line_vty_view_cb'        : show_running_config_line_vty_view_cb,
                   'ipv4_subintf_dhcp_relay'     : show_ipv4_subintf_dhcp_relay,
-                  'ipv6_subintf_dhcp_relay'     : show_ipv6_subintf_dhcp_relay
-
+                  'ipv6_subintf_dhcp_relay'     : show_ipv6_subintf_dhcp_relay,
+                  'show_running_next_hop_group': show_running_next_hop_group 
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

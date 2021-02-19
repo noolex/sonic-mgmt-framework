@@ -85,11 +85,6 @@ def build_intf_vrf_binding (intf_vrf_binding):
              "INTERFACE_LIST",
              "portname")
 
-    tSubIntf = ("/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/",
-             "sonic-interface:VLAN_SUB_INTERFACE",
-             "VLAN_SUB_INTERFACE_LIST",
-             "id")
-
     tVlanIntf = ("/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/",
                  "sonic-vlan-interface:VLAN_INTERFACE",
                  "VLAN_INTERFACE_LIST",
@@ -105,7 +100,12 @@ def build_intf_vrf_binding (intf_vrf_binding):
                      "LOOPBACK_INTERFACE_LIST",
                      "loIfName")
 
-    requests = [tIntf, tSubIntf, tLoopbackIntf, tPortChannelIntf, tVlanIntf]
+    tVlanSubIntf = ("/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/",
+                 "sonic-interface:VLAN_SUB_INTERFACE",
+                 "VLAN_SUB_INTERFACE_LIST",
+                 "id")
+
+    requests = [tIntf, tLoopbackIntf, tPortChannelIntf, tVlanIntf, tVlanSubIntf]
 
     for request in requests:
         keypath = cc.Path(request[0])
