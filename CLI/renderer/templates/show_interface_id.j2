@@ -97,6 +97,9 @@
         {% for subinterface in interface[key] %}
           {% set subif_list = interface[key][subinterface] %}
           {% for subif in subif_list %}
+            {% if "index" in subif and subif["index"] != 0 %}
+              {% continue %}
+            {% endif %}
             {% if vars.update({'ipv4':"IPV4"}) %}{% endif %}
             {% if vars.update({'ipv6':"IPV6"}) %}{% endif %}
             {% if subif["openconfig-if-ip:ipv4"] and "addresses" in subif["openconfig-if-ip:ipv4"] and "address" in
