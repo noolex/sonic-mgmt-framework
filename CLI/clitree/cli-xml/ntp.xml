@@ -148,7 +148,8 @@ limitations under the License.
              mode="subcommand"
              command_keys="global_key=global"
              command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
-             dbpath="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/auth_enabled=true">
+             dbpath="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/auth_enabled=true"
+             render_command_viewid="renderCfg_ntp">
       <ACTION
         builtin="clish_pyobj">sonic_cli_ntp set_ntp_authentication True
       </ACTION>
@@ -191,7 +192,8 @@ limitations under the License.
              help="Configure NTP authentication key"
              mode="subcommand"
              command_tables="sonic-system-ntp:sonic-system-ntp/NTP_AUTHENTICATION_KEY/NTP_AUTHENTICATION_KEY_LIST/id={id}"
-             render_command_cb="ntp_authentication_key">
+             render_command_cb="ntp_authentication_key"
+             render_command_viewid="renderCfg_ntp">
       <PARAM name="key-number"
              help="Authentication key number"
              ptype="RANGE_1_65535"
@@ -264,7 +266,8 @@ limitations under the License.
     <COMMAND name="ntp server"
              help="Configure NTP server"
              mode="subcommand"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address={addr}">
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP_SERVER/NTP_SERVER_LIST/server_address={addr}"
+             render_command_viewid="renderCfg_ntp">
       <PARAM name="svropt"
              help="Address of NTP server"
              mode="switch"
@@ -379,7 +382,8 @@ limitations under the License.
              mode="subcommand"
              command_keys="global_key=global"
              command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
-             render_command_cb="ntp_server_source_if">
+             render_command_cb="ntp_server_source_if"
+             render_command_viewid="renderCfg_ntp">
       <PARAM name="iftype"
              help="Interface type"
              mode="switch"
@@ -508,7 +512,8 @@ limitations under the License.
              mode="subcommand"
              command_keys="global_key=global"
              command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
-             render_command_cb="ntp_trusted_key">
+             render_command_cb="ntp_trusted_key"
+             render_command_viewid="renderCfg_ntp">
       <PARAM name="key-number"
              help="Trusted key number"
              ptype="RANGE_1_65535">
@@ -562,7 +567,8 @@ limitations under the License.
              help="Enable NTP on VRF"
              mode="subcommand"
              command_keys="global_key=global"
-             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}">
+             command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
+             render_command_viewid="renderCfg_ntp">
       <PARAM name="vrfopt"
              help="VRF type"
              mode="switch"
