@@ -1401,7 +1401,9 @@
       <PARAM name="vrf" help="Displays VRF specific OSPFv2 information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
           <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING_15" default="default"/>
+          <!--
           <PARAM name = "all" help = "All VRF router information" ptype="SUBCOMMAND" mode="subcommand" />
+          -->
         </PARAM>
       </PARAM>
 

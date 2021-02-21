@@ -579,7 +579,7 @@ def invoke_api(func, args=[]):
     ospf_cli_log("invoke_api: argslen {} args={}".format(len(args), args))
 
     if func.find('openconfig_interfaces_interface_subinterfaces_subinterface') != -1 :
-        if len(args) > 2 and 'PortChannel' in args[0] and 'PortChannel' in args[1] :
+        if len(args) >= 2 and 'PortChannel' in args[0] and 'PortChannel' in args[1] :
             temp_args = []
             temp_args.insert(0, args[0])
             idx = 2
@@ -1422,6 +1422,7 @@ def invoke_api(func, args=[]):
            if_address = args[2] if (len(args) >= 3 and args[2] != "") else "0.0.0.0"
 
         cfg_body = { "config" : {"authentication-type" : auth_type}}
+
         return patch_ospf_interface_config(api, if_name, if_address, cfg_body)
 
     elif func == 'delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type' :
