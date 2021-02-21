@@ -101,9 +101,9 @@ def run(func, args):
 
         #print("DEBUG: {0}".format(json.dumps(xcvrInfo, indent=4)))
 
-        if func == "show-interface-transceiver-diagnostics-capability":
+        if func.find("show-interface-transceiver-diagnostics-capability") >= 0:
             template = "show_interface_xcvr_diag_capability.j2"
-        elif func == "show-interface-transceiver-diagnostics-status":
+        elif func.find("show-interface-transceiver-diagnostics-status") >= 0:
             template = "show_interface_xcvr_diag_status.j2"
         show_cli_output(template, xcvrInfo)
 
