@@ -3168,7 +3168,9 @@ def run(func, args):
     elif func == 'get_show_bgp_peer_group_all':
         response = invoke_show_api(func, args)
     elif func[:9] == '_PyParse:':
-        invoke_parse(func, args)
+        ret = invoke_parse(func, args)
+        if ret != 0:
+            return 1
     else:
         response = invoke_api(func, args)
         if response.ok():

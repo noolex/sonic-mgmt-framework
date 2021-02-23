@@ -69,7 +69,7 @@ def invoke_api(func, args):
 
     if func == 'patch_openconfig_system_ext_system_aaa_authentication_config_failthrough':
        path = cc.Path('/restconf/data/openconfig-system:system/aaa/authentication/config/openconfig-system-ext:failthrough')
-       if args[0] == 'True':
+       if args[0] == 'enable':
            failthrough = 'True'
        body = { "openconfig-system-ext:failthrough": failthrough}
        return api.put(path, body)
@@ -132,12 +132,14 @@ def run(func, args):
 
             if api_response is None:
                 print("%Error: Transaction Failure")
+                return 1
             elif func == 'get_openconfig_system_system_aaa_authentication_config':
                 show_cli_output(args[0], api_response)
             else:
                 return
     else:
         print(response.error_message())
+        return 1
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
