@@ -353,7 +353,10 @@ def show_running_next_hop_group(render_tables):
     
     response = fbs_client.get(path, ignore404=False)
     if not response.ok():
-        return 'CB_SUCCESS', "%Error: No pbf next-hop group found", True
+        if 'fbs-nhgrp-name' in render_tables:
+            return 'CB_SUCCESS', "%Error: No pbf next-hop group found", True
+        else:
+            return 'CB_SUCCESS', '', True
 
     all_groups = response.content.get("openconfig-fbs-ext:next-hop-group", list())
     data = dict()
