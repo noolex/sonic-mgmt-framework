@@ -237,11 +237,11 @@ def get_vrf(intf):
         if response is  None:
             return 'default'
 
-        if intf.lower().startswith('e'):
+        if intf.lower().startswith('e') or "." in intf:
             vrf = response.get('sonic-interface:vrf_name')
-        if intf.lower().startswith('vlan'):
+        elif intf.lower().startswith('vlan'):
             vrf = response.get('sonic-vlan-interface:vrf_name')
-        if intf.lower().startswith('p'):
+        elif intf.lower().startswith('p'):
             vrf = response.get('sonic-portchannel-interface:vrf_name')
 
         if vrf is None or vrf == '':
